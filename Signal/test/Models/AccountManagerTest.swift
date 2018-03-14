@@ -42,7 +42,7 @@ class VerifyingTSAccountManager: FailingTSAccountManager {
         success()
     }
 
-    override func registerForManualMessageFetching(success successBlock: @escaping () -> Swift.Void, failure failureBlock: @escaping (Error) -> Swift.Void) {
+    override func registerForManualMessageFetching(success successBlock: @escaping () -> Void, failure failureBlock: @escaping (Error) -> Void) {
         successBlock()
     }
 }

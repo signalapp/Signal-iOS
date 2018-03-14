@@ -21,8 +21,6 @@ typedef NSData *_Nullable (^BackupStorageKeySpecBlock)(void);
 - (instancetype)initBackupStorageWithDatabaseDirPath:(NSString *)databaseDirPath
                                         keySpecBlock:(BackupStorageKeySpecBlock)keySpecBlock NS_DESIGNATED_INITIALIZER;
 
-- (YapDatabaseConnection *)dbConnection;
-
 - (void)runSyncRegistrations;
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion;
 - (BOOL)areAllRegistrationsComplete;

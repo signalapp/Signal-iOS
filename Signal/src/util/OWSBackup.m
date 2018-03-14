@@ -364,6 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self ensureBackupExportState];
     } else {
+        DDLogWarn(@"%@ obsolete job succeeded: %@", self.logTag, [backupJob class]);
         return;
     }
 
@@ -387,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self ensureBackupExportState];
     } else {
-        DDLogInfo(@"%@ stale backup job failed.", self.logTag);
+        DDLogInfo(@"%@ obsolete backup job failed.", self.logTag);
         return;
     }
 

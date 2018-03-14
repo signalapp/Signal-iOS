@@ -21,8 +21,8 @@ import CloudKit
 
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
-                                          success: @escaping (String) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+                                          success: @escaping (String) -> Void,
+                                          failure: @escaping (Error) -> Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: NSUUID().uuidString,
                         recordType: signalBackupRecordType,
@@ -36,8 +36,8 @@ import CloudKit
     // complete.
     @objc
     public class func saveEphemeralDatabaseFileToCloud(fileUrl: URL,
-                                                       success: @escaping (String) -> Swift.Void,
-                                                       failure: @escaping (Error) -> Swift.Void) {
+                                                       success: @escaping (String) -> Void,
+                                                       failure: @escaping (Error) -> Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: "ephemeralFile-\(NSUUID().uuidString)",
                         recordType: signalBackupRecordType,
@@ -50,9 +50,9 @@ import CloudKit
     // backups can reuse the same record.
     @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
-                                                    fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                                    success: @escaping (String) -> Swift.Void,
-                                                    failure: @escaping (Error) -> Swift.Void) {
+                                                    fileUrlBlock: @escaping (()) -> URL?,
+                                                    success: @escaping (String) -> Void,
+                                                    failure: @escaping (Error) -> Void) {
         saveFileOnceToCloud(recordName: "persistentFile-\(fileId)",
             recordType: signalBackupRecordType,
             fileUrlBlock: fileUrlBlock,
@@ -62,8 +62,8 @@ import CloudKit
 
     @objc
     public class func upsertManifestFileToCloud(fileUrl: URL,
-                                                success: @escaping (String) -> Swift.Void,
-                                                failure: @escaping (Error) -> Swift.Void) {
+                                                success: @escaping (String) -> Void,
+                                                failure: @escaping (Error) -> Void) {
         // We want to use a well-known record id and type for manifest files.
         upsertFileToCloud(fileUrl: fileUrl,
                           recordName: manifestRecordName,
@@ -76,8 +76,8 @@ import CloudKit
     public class func saveFileToCloud(fileUrl: URL,
                                       recordName: String,
                                       recordType: String,
-                                      success: @escaping (String) -> Swift.Void,
-                                      failure: @escaping (Error) -> Swift.Void) {
+                                      success: @escaping (String) -> Void,
+                                      failure: @escaping (Error) -> Void) {
         let recordID = CKRecordID(recordName: recordName)
         let record = CKRecord(recordType: recordType, recordID: recordID)
         let asset = CKAsset(fileURL: fileUrl)
@@ -90,8 +90,8 @@ import CloudKit
 
     @objc
     public class func saveRecordToCloud(record: CKRecord,
-                                        success: @escaping (String) -> Swift.Void,
-                                        failure: @escaping (Error) -> Swift.Void) {
+                                        success: @escaping (String) -> Void,
+                                        failure: @escaping (Error) -> Void) {
 
         let myContainer = CKContainer.default()
         let privateDatabase = myContainer.privateCloudDatabase
@@ -117,8 +117,8 @@ import CloudKit
 
     @objc
     public class func deleteRecordFromCloud(recordName: String,
-                                            success: @escaping (Swift.Void) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (()) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         let recordID = CKRecordID(recordName: recordName)
 
@@ -146,8 +146,8 @@ import CloudKit
     public class func upsertFileToCloud(fileUrl: URL,
                                         recordName: String,
                                         recordType: String,
-                                        success: @escaping (String) -> Swift.Void,
-                                        failure: @escaping (Error) -> Swift.Void) {
+                                        success: @escaping (String) -> Void,
+                                        failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
                             success: { (record) in
@@ -178,9 +178,9 @@ import CloudKit
     @objc
     public class func saveFileOnceToCloud(recordName: String,
                                           recordType: String,
-                                          fileUrlBlock: @escaping (Swift.Void) -> URL?,
-                                          success: @escaping (String) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+                                          fileUrlBlock: @escaping (()) -> URL?,
+                                          success: @escaping (String) -> Void,
+                                          failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
                             success: { (record) in
@@ -208,8 +208,8 @@ import CloudKit
     }
 
     private class func checkForFileInCloud(recordName: String,
-                                          success: @escaping (CKRecord?) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+                                          success: @escaping (CKRecord?) -> Void,
+                                          failure: @escaping (Error) -> Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Don't download the file; we're just using the fetch to check whether or
@@ -246,8 +246,8 @@ import CloudKit
     }
 
     @objc
-    public class func checkForManifestInCloud(success: @escaping (Bool) -> Swift.Void,
-                                              failure: @escaping (Error) -> Swift.Void) {
+    public class func checkForManifestInCloud(success: @escaping (Bool) -> Void,
+                                              failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: manifestRecordName,
                             success: { (record) in
@@ -257,8 +257,8 @@ import CloudKit
     }
 
     @objc
-    public class func fetchAllRecordNames(success: @escaping ([String]) -> Swift.Void,
-                                          failure: @escaping (Error) -> Swift.Void) {
+    public class func fetchAllRecordNames(success: @escaping ([String]) -> Void,
+                                          failure: @escaping (Error) -> Void) {
 
         let query = CKQuery(recordType: signalBackupRecordType, predicate: NSPredicate(value: true))
         // Fetch the first page of results for this query.
@@ -272,8 +272,8 @@ import CloudKit
     private class func fetchAllRecordNamesStep(query: CKQuery,
                                                previousRecordNames: [String],
                                                cursor: CKQueryCursor?,
-                                               success: @escaping ([String]) -> Swift.Void,
-                                               failure: @escaping (Error) -> Swift.Void) {
+                                               success: @escaping ([String]) -> Void,
+                                               failure: @escaping (Error) -> Void) {
 
         var allRecordNames = previousRecordNames
 
@@ -314,8 +314,8 @@ import CloudKit
 
     @objc
     public class func downloadManifestFromCloud(
-                                            success: @escaping (Data) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (Data) -> Void,
+                                            failure: @escaping (Error) -> Void) {
         downloadDataFromCloud(recordName: manifestRecordName,
                                             success: success,
                                             failure: failure)
@@ -323,8 +323,8 @@ import CloudKit
 
     @objc
     public class func downloadDataFromCloud(recordName: String,
-                                            success: @escaping (Data) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (Data) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
                           success: { (asset) in
@@ -346,8 +346,8 @@ import CloudKit
     @objc
     public class func downloadFileFromCloud(recordName: String,
                                             toFileUrl: URL,
-                                            success: @escaping (Swift.Void) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (()) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
                           success: { (asset) in
@@ -367,8 +367,8 @@ import CloudKit
     }
 
     private class func downloadFromCloud(recordName: String,
-                                            success: @escaping (CKAsset) -> Swift.Void,
-                                            failure: @escaping (Error) -> Swift.Void) {
+                                            success: @escaping (CKAsset) -> Void,
+                                            failure: @escaping (Error) -> Void) {
 
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
@@ -400,7 +400,7 @@ import CloudKit
     }
 
     @objc
-    public class func checkCloudKitAccess(completion: @escaping (Bool) -> Swift.Void) {
+    public class func checkCloudKitAccess(completion: @escaping (Bool) -> Void) {
         CKContainer.default().accountStatus(completionHandler: { (accountStatus, error) in
             DispatchQueue.main.async {
                 switch accountStatus {

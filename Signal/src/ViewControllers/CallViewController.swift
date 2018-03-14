@@ -18,7 +18,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var callUIAdapter: CallUIAdapter {
         return SignalApp.shared().callUIAdapter
     }
-    
+
     let contactsManager: OWSContactsManager
 
     // MARK: Properties
@@ -134,7 +134,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactId: call.remotePhoneNumber)
         super.init(nibName: nil, bundle: nil)
-        
+
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
 
         assert(callUIAdapter.audioService.delegate == nil)
@@ -144,9 +144,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func observeNotifications() {
         NotificationCenter.default.addObserver(self,
-                                               selector:#selector(didBecomeActive),
-                                               name:NSNotification.Name.OWSApplicationDidBecomeActive,
-                                               object:nil)
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
     }
 
     deinit {
@@ -202,8 +202,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createViews() {
         self.view.isUserInteractionEnabled = true
-        self.view.addGestureRecognizer(OWSAnyTouchGestureRecognizer(target:self,
-                                                                    action:#selector(didTouchRootView)))
+        self.view.addGestureRecognizer(OWSAnyTouchGestureRecognizer(target: self,
+                                                                    action: #selector(didTouchRootView)))
 
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
@@ -252,7 +252,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.trailingBuffer = ScaleFromIPhone5(80.0)
 
         // label config
-        contactNameLabel.font = UIFont.ows_lightFont(withSize:ScaleFromIPhone5To7Plus(32, 40))
+        contactNameLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(32, 40))
         contactNameLabel.textColor = UIColor.white
         contactNameLabel.layer.shadowOffset = CGSize.zero
         contactNameLabel.layer.shadowOpacity = 0.35
@@ -261,7 +261,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.view.addSubview(contactNameLabel)
 
         callStatusLabel = UILabel()
-        callStatusLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(19, 25))
+        callStatusLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(19, 25))
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.layer.shadowOffset = CGSize.zero
         callStatusLabel.layer.shadowOpacity = 0.35
@@ -287,41 +287,41 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         settingsNagDescriptionLabel = UILabel()
         settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
                                                              comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
-        settingsNagDescriptionLabel.font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(16, 18))
+        settingsNagDescriptionLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(16, 18))
         settingsNagDescriptionLabel.textColor = UIColor.white
         settingsNagDescriptionLabel.numberOfLines = 0
         settingsNagDescriptionLabel.lineBreakMode = .byWordWrapping
         viewStack.addSubview(settingsNagDescriptionLabel)
         settingsNagDescriptionLabel.autoPinWidthToSuperview()
-        settingsNagDescriptionLabel.autoPinEdge(toSuperviewEdge:.top)
+        settingsNagDescriptionLabel.autoPinEdge(toSuperviewEdge: .top)
 
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
         let descriptionVSpacingHeight = ScaleFromIPhone5To7Plus(30, 60)
 
-        let callSettingsButton = OWSFlatButton.button(title:NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
+        let callSettingsButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
                                                                               comment: "Label for button that shows the privacy settings."),
-                                                      font:OWSFlatButton.fontForHeight(buttonHeight),
-                                                      titleColor:UIColor.white,
-                                                      backgroundColor:UIColor.ows_signalBrandBlue,
-                                                      target:self,
-                                                      selector:#selector(didPressShowCallSettings))
+                                                      font: OWSFlatButton.fontForHeight(buttonHeight),
+                                                      titleColor: UIColor.white,
+                                                      backgroundColor: UIColor.ows_signalBrandBlue,
+                                                      target: self,
+                                                      selector: #selector(didPressShowCallSettings))
         viewStack.addSubview(callSettingsButton)
-        callSettingsButton.autoSetDimension(.height, toSize:buttonHeight)
+        callSettingsButton.autoSetDimension(.height, toSize: buttonHeight)
         callSettingsButton.autoPinWidthToSuperview()
-        callSettingsButton.autoPinEdge(.top, to:.bottom, of:settingsNagDescriptionLabel, withOffset:descriptionVSpacingHeight)
+        callSettingsButton.autoPinEdge(.top, to: .bottom, of: settingsNagDescriptionLabel, withOffset: descriptionVSpacingHeight)
 
-        let notNowButton = OWSFlatButton.button(title:NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
+        let notNowButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
                                                                         comment: "Label for button that dismiss the call view's settings nag."),
-                                                font:OWSFlatButton.fontForHeight(buttonHeight),
-                                                titleColor:UIColor.white,
-                                                backgroundColor:UIColor.ows_signalBrandBlue,
-                                                target:self,
-                                                selector:#selector(didPressDismissNag))
+                                                font: OWSFlatButton.fontForHeight(buttonHeight),
+                                                titleColor: UIColor.white,
+                                                backgroundColor: UIColor.ows_signalBrandBlue,
+                                                target: self,
+                                                selector: #selector(didPressDismissNag))
         viewStack.addSubview(notNowButton)
-        notNowButton.autoSetDimension(.height, toSize:buttonHeight)
+        notNowButton.autoSetDimension(.height, toSize: buttonHeight)
         notNowButton.autoPinWidthToSuperview()
-        notNowButton.autoPinEdge(toSuperviewEdge:.bottom)
-        notNowButton.autoPinEdge(.top, to:.bottom, of:callSettingsButton, withOffset:12)
+        notNowButton.autoPinEdge(toSuperviewEdge: .bottom)
+        notNowButton.autoPinEdge(.top, to: .bottom, of: callSettingsButton, withOffset: 12)
     }
 
     func buttonSize() -> CGFloat {
@@ -336,31 +336,31 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
 //        textMessageButton = createButton(imageName:"message-active-wide",
 //                                                action:#selector(didPressTextMessage))
-        audioSourceButton = createButton(imageName:"audio-call-speaker-inactive",
-                                          action:#selector(didPressAudioSource))
+        audioSourceButton = createButton(imageName: "audio-call-speaker-inactive",
+                                          action: #selector(didPressAudioSource))
         audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
                                                                  comment: "Accessibility label for selection the audio source")
 
-        hangUpButton = createButton(imageName:"hangup-active-wide",
-                                    action:#selector(didPressHangup))
+        hangUpButton = createButton(imageName: "hangup-active-wide",
+                                    action: #selector(didPressHangup))
         hangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                             comment: "Accessibility label for hang up call")
 
-        audioModeMuteButton = createButton(imageName:"audio-call-mute-inactive",
-                                           action:#selector(didPressMute))
+        audioModeMuteButton = createButton(imageName: "audio-call-mute-inactive",
+                                           action: #selector(didPressMute))
         audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
                                                                    comment: "Accessibility label for muting the microphone")
 
-        videoModeMuteButton = createButton(imageName:"video-mute-unselected",
-                                           action:#selector(didPressMute))
+        videoModeMuteButton = createButton(imageName: "video-mute-unselected",
+                                           action: #selector(didPressMute))
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
 
-        audioModeVideoButton = createButton(imageName:"audio-call-video-inactive",
-                                            action:#selector(didPressVideo))
+        audioModeVideoButton = createButton(imageName: "audio-call-video-inactive",
+                                            action: #selector(didPressVideo))
         audioModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call")
 
-        videoModeVideoButton = createButton(imageName:"video-video-unselected",
-                                            action:#selector(didPressVideo))
+        videoModeVideoButton = createButton(imageName: "video-video-unselected",
+                                            action: #selector(didPressVideo))
         videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
 
         setButtonSelectedImage(button: audioModeMuteButton, imageName: "audio-call-mute-active")
@@ -368,7 +368,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
         setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
 
-        ongoingCallView = createContainerForCallControls(controlGroups : [
+        ongoingCallView = createContainerForCallControls(controlGroups: [
             [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
             [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
         ])
@@ -379,7 +379,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         let actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-        let dismissAction = UIAlertAction(title:  CommonStrings.dismissButton, style: .cancel, handler: nil)
+        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel, handler: nil)
         actionSheetController.addAction(dismissAction)
 
         let currentAudioSource = callUIAdapter.audioService.currentAudioSource(call: self.call)
@@ -402,9 +402,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func setButtonSelectedImage(button: UIButton, imageName: String) {
-        let image = UIImage(named:imageName)
+        let image = UIImage(named: imageName)
         assert(image != nil)
-        button.setImage(image, for:.selected)
+        button.setImage(image, for: .selected)
     }
 
     func updateAvatarImage() {
@@ -413,16 +413,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createIncomingCallControls() {
 
-        acceptIncomingButton = createButton(imageName:"call-active-wide",
-                                            action:#selector(didPressAnswerCall))
+        acceptIncomingButton = createButton(imageName: "call-active-wide",
+                                            action: #selector(didPressAnswerCall))
         acceptIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
                                                                     comment: "Accessibility label for accepting incoming calls")
-        declineIncomingButton = createButton(imageName:"hangup-active-wide",
-                                             action:#selector(didPressDeclineCall))
+        declineIncomingButton = createButton(imageName: "hangup-active-wide",
+                                             action: #selector(didPressDeclineCall))
         declineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                                                                      comment: "Accessibility label for declining incoming calls")
 
-        incomingCallView = createContainerForCallControls(controlGroups : [
+        incomingCallView = createContainerForCallControls(controlGroups: [
             [acceptIncomingButton, declineIncomingButton ]
             ])
     }
@@ -432,7 +432,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.view.addSubview(containerView)
         var rows: [UIView] = []
         for controlGroup in controlGroups {
-            rows.append(rowWithSubviews(subviews:controlGroup))
+            rows.append(rowWithSubviews(subviews: controlGroup))
         }
         let rowspacing = ScaleFromIPhone5To7Plus(6, 7)
         var prevRow: UIView?
@@ -440,29 +440,29 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             containerView.addSubview(row)
             row.autoHCenterInSuperview()
             if prevRow != nil {
-                row.autoPinEdge(.top, to:.bottom, of:prevRow!, withOffset:rowspacing)
+                row.autoPinEdge(.top, to: .bottom, of: prevRow!, withOffset: rowspacing)
             }
             prevRow = row
         }
 
         containerView.setContentHuggingVerticalHigh()
-        rows.first!.autoPinEdge(toSuperviewEdge:.top)
-        rows.last!.autoPinEdge(toSuperviewEdge:.bottom)
+        rows.first!.autoPinEdge(toSuperviewEdge: .top)
+        rows.last!.autoPinEdge(toSuperviewEdge: .bottom)
         return containerView
     }
 
     func createButton(imageName: String, action: Selector) -> UIButton {
-        let image = UIImage(named:imageName)
+        let image = UIImage(named: imageName)
         assert(image != nil)
         let button = UIButton()
-        button.setImage(image, for:.normal)
+        button.setImage(image, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: buttonInset(),
                                               left: buttonInset(),
                                               bottom: buttonInset(),
                                               right: buttonInset())
-        button.addTarget(self, action:action, for:.touchUpInside)
-        button.autoSetDimension(.width, toSize:buttonSize())
-        button.autoSetDimension(.height, toSize:buttonSize())
+        button.addTarget(self, action: action, for: .touchUpInside)
+        button.autoSetDimension(.width, toSize: buttonSize())
+        button.autoSetDimension(.height, toSize: buttonSize())
         return button
     }
 
@@ -470,7 +470,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func rowWithSubviews(subviews: [UIView]) -> UIView {
         let row = UIView()
         row.setContentHuggingVerticalHigh()
-        row.autoSetDimension(.height, toSize:buttonSize())
+        row.autoSetDimension(.height, toSize: buttonSize())
 
         if subviews.count > 1 {
             // If there's more than one subview in the row,
@@ -485,8 +485,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                     let spacer = UIView()
                     spacer.isHidden = true
                     row.addSubview(spacer)
-                    spacer.autoPinEdge(.left, to:.right, of:lastSubview!)
-                    spacer.autoPinEdge(.right, to:.left, of:subview)
+                    spacer.autoPinEdge(.left, to: .right, of: lastSubview!)
+                    spacer.autoPinEdge(.right, to: .left, of: subview)
                     spacer.setContentHuggingHorizontalLow()
                     spacer.autoVCenterInSuperview()
 
@@ -500,8 +500,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
                 lastSubview = subview
             }
-            subviews.first!.autoPinEdge(toSuperviewEdge:.left)
-            subviews.last!.autoPinEdge(toSuperviewEdge:.right)
+            subviews.first!.autoPinEdge(toSuperviewEdge: .left)
+            subviews.last!.autoPinEdge(toSuperviewEdge: .right)
         } else if subviews.count == 1 {
             // If there's only one subview in this row, center it.
             let subview = subviews.first!
@@ -544,25 +544,25 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             blurView.autoPinEdgesToSuperviewEdges()
 
             localVideoView.autoPinTrailingToSuperview(withMargin: videoPreviewHMargin)
-            localVideoView.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
+            localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
             let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
-            localVideoView.autoSetDimension(.width, toSize:localVideoSize)
-            localVideoView.autoSetDimension(.height, toSize:localVideoSize)
+            localVideoView.autoSetDimension(.width, toSize: localVideoSize)
+            localVideoView.autoSetDimension(.height, toSize: localVideoSize)
 
             remoteVideoView.autoPinEdgesToSuperviewEdges()
 
-            contactNameLabel.autoPinEdge(toSuperviewEdge:.top, withInset:topMargin)
+            contactNameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
             contactNameLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             contactNameLabel.setContentHuggingVerticalHigh()
             contactNameLabel.setCompressionResistanceHigh()
 
-            callStatusLabel.autoPinEdge(.top, to:.bottom, of:contactNameLabel, withOffset:contactVSpacing)
+            callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
             callStatusLabel.autoPinLeadingToSuperview(withMargin: contactHMargin)
             callStatusLabel.setContentHuggingVerticalHigh()
             callStatusLabel.setCompressionResistanceHigh()
 
-            contactAvatarContainerView.autoPinEdge(.top, to:.bottom, of:callStatusLabel, withOffset:+avatarTopSpacing)
-            contactAvatarContainerView.autoPinEdge(.bottom, to:.top, of:ongoingCallView, withOffset:-avatarBottomSpacing)
+            contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
+            contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingCallView, withOffset: -avatarBottomSpacing)
             contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
 
             contactAvatarView.autoCenterInSuperview()
@@ -579,19 +579,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             }
 
             // Ongoing call controls
-            ongoingCallView.autoPinEdge(toSuperviewEdge:.bottom, withInset:ongoingBottomMargin)
-            ongoingCallView.autoPinWidthToSuperview(withMargin:ongoingHMargin)
+            ongoingCallView.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
+            ongoingCallView.autoPinWidthToSuperview(withMargin: ongoingHMargin)
             ongoingCallView.setContentHuggingVerticalHigh()
 
             // Incoming call controls
-            incomingCallView.autoPinEdge(toSuperviewEdge:.bottom, withInset:incomingBottomMargin)
-            incomingCallView.autoPinWidthToSuperview(withMargin:incomingHMargin)
+            incomingCallView.autoPinEdge(toSuperviewEdge: .bottom, withInset: incomingBottomMargin)
+            incomingCallView.autoPinWidthToSuperview(withMargin: incomingHMargin)
             incomingCallView.setContentHuggingVerticalHigh()
 
             // Settings nag views
-            settingsNagView.autoPinEdge(toSuperviewEdge:.bottom, withInset:settingsNagBottomMargin)
-            settingsNagView.autoPinWidthToSuperview(withMargin:settingsNagHMargin)
-            settingsNagView.autoPinEdge(.top, to:.bottom, of:callStatusLabel)
+            settingsNagView.autoPinEdge(toSuperviewEdge: .bottom, withInset: settingsNagBottomMargin)
+            settingsNagView.autoPinWidthToSuperview(withMargin: settingsNagHMargin)
+            settingsNagView.autoPinEdge(.top, to: .bottom, of: callStatusLabel)
         }
 
         updateRemoteVideoLayout()
@@ -648,11 +648,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             return NSLocalizedString("IN_CALL_SECURING", comment: "Call setup status label")
         case .connected:
             let callDuration = call.connectionDuration()
-            let callDurationDate = Date(timeIntervalSinceReferenceDate:callDuration)
+            let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
             if dateFormatter == nil {
                 dateFormatter = DateFormatter()
                 dateFormatter!.dateFormat = "HH:mm:ss"
-                dateFormatter!.timeZone = TimeZone(identifier:"UTC")!
+                dateFormatter!.timeZone = TimeZone(identifier: "UTC")!
             }
             var formattedDate = dateFormatter!.string(from: callDurationDate)
             if formattedDate.hasPrefix("00:") {
@@ -771,10 +771,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         switch callState {
         case .remoteHangup, .remoteBusy, .localFailure:
             Logger.debug("\(TAG) dismissing after delay because new state is \(callState)")
-            dismissIfPossible(shouldDelay:true)
+            dismissIfPossible(shouldDelay: true)
         case .localHangup:
             Logger.debug("\(TAG) dismissing immediately from local hangup")
-            dismissIfPossible(shouldDelay:false)
+            dismissIfPossible(shouldDelay: false)
         default: break
         }
 
@@ -782,9 +782,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
-                                                         target:self,
-                                                         userInfo:nil,
-                                                         repeats:true) {[weak self] _ in
+                                                         target: self,
+                                                         userInfo: nil,
+                                                         repeats: true) {[weak self] _ in
                                                             self?.updateCallDuration()
                 }
             }
@@ -831,7 +831,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         callUIAdapter.localHangupCall(call)
 
-        dismissIfPossible(shouldDelay:false)
+        dismissIfPossible(shouldDelay: false)
     }
 
     func didPressMute(sender muteButton: UIButton) {
@@ -861,7 +861,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func didPressTextMessage(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
-        dismissIfPossible(shouldDelay:false)
+        dismissIfPossible(shouldDelay: false)
     }
 
     func didPressAnswerCall(sender: UIButton) {
@@ -885,7 +885,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         callUIAdapter.declineCall(call)
 
-        dismissIfPossible(shouldDelay:false)
+        dismissIfPossible(shouldDelay: false)
     }
 
     func didPressShowCallSettings(sender: UIButton) {
@@ -901,7 +901,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
             // Construct the "settings" view & push the "privacy settings" view.
             let navigationController = AppSettingsViewController.inModalNavigationController()
-            navigationController.pushViewController(PrivacySettingsTableViewController(), animated:false)
+            navigationController.pushViewController(PrivacySettingsTableViewController(), animated: false)
 
             fromViewController?.present(navigationController, animated: true, completion: nil)
         })
@@ -1022,7 +1022,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         updateRemoteVideoLayout()
     }
 
-    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Swift.Void)? = nil) {
+    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Void)? = nil) {
         callUIAdapter.audioService.delegate = nil
 
         let ignoreNag: Bool = {
@@ -1071,11 +1071,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             hasDismissed = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 guard let strongSelf = self else { return }
-                strongSelf.dismiss(animated: true, completion:completion)
+                strongSelf.dismiss(animated: true, completion: completion)
             }
         } else {
             hasDismissed = true
-            self.dismiss(animated: false, completion:completion)
+            self.dismiss(animated: false, completion: completion)
         }
     }
 
