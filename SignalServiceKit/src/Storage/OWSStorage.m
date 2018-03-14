@@ -74,7 +74,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    //    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
+    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
 
     OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
