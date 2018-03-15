@@ -956,6 +956,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Camera";
 
@@ -964,6 +967,9 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";

@@ -2033,10 +2033,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaPageViewController *vc =
-        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+    MediaGalleryViewController *vc =
+        [[MediaGalleryViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
 
-    [vc presentFromViewController:self replacingView:imageView];
+    [vc presentDetailViewFromViewController:self replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
@@ -2055,9 +2055,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaPageViewController *vc =
-        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
-    [vc presentFromViewController:self replacingView:imageView];
+    MediaGalleryViewController *vc =
+        [[MediaGalleryViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+
+    [vc presentDetailViewFromViewController:self replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream

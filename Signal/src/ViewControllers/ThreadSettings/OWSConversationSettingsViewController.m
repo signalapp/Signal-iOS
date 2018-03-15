@@ -330,6 +330,14 @@ NS_ASSUME_NONNULL_BEGIN
                                  }]];
     }
 
+    [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        // FIXME proper icon
+        return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
+    }
+                             actionBlock:^{
+                                 [weakSelf showMediaGallery];
+                             }]];
+
     [mainSection
         addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [UITableViewCell new];
@@ -1152,6 +1160,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)showMediaGallery
+{
+    DDLogDebug(@"%@ in showMediaGallery", self.logTag);
+
+    // [[AllMediaViewController alloc] initWithThread:self.thread];
+}
 #pragma mark - Notifications
 
 - (void)identityStateDidChange:(NSNotification *)notification

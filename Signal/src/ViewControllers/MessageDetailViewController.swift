@@ -757,12 +757,12 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     // MARK: MediaDetailPresenter
 
     public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
-        guard let attachmentStream = self.attachmentStream else {
+        guard self.attachmentStream != nil else {
             owsFail("attachment stream unexpectedly nil")
             return
         }
 
-        let mediaPageViewController = MediaPageViewController(thread: self.thread, mediaMessage: self.message, includeGallery: false)
-        mediaPageViewController.present(fromViewController: self, replacingView: fromView)
+        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, mediaMessage: self.message, includeGallery: false)
+        mediaGalleryViewController.presentDetailView(fromViewController: self, replacingView: fromView)
     }
 }

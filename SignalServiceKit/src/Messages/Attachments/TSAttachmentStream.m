@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)image
 {
     if ([self isVideo]) {
-        return [self videoThumbnail];
+        return [self videoStillImage];
     } else if ([self isImage] || [self isAnimated]) {
         NSURL *_Nullable mediaUrl = [self mediaURL];
         if (!mediaUrl) {
@@ -290,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable UIImage *)videoThumbnail
+- (nullable UIImage *)videoStillImage
 {
     NSURL *_Nullable mediaUrl = [self mediaURL];
     if (!mediaUrl) {
@@ -330,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)calculateImageSize
 {
     if ([self isVideo]) {
-        return [self videoThumbnail].size;
+        return [self videoStillImage].size;
     } else if ([self isImage] || [self isAnimated]) {
         NSURL *_Nullable mediaUrl = [self mediaURL];
         if (!mediaUrl) {
