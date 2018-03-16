@@ -46,7 +46,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 //
 // We typically want to order messages locally by when
 // they were received & decrypted, not by when they were sent.
-@property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+@property (nonatomic) uint64_t receivedAtTimestamp;
 
 @end
 
