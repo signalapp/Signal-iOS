@@ -226,6 +226,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.attachmentIds ? (self.attachmentIds.count > 0) : NO;
 }
 
+- (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    if (!self.hasAttachments) {
+        return nil;
+    }
+
+    OWSAssert(self.attachmentIds.count == 1);
+    return [TSAttachment fetchObjectWithUniqueID:self.attachmentIds.firstObject transaction:transaction];
+}
+
 - (NSString *)debugDescription
 {
     if ([self hasAttachments] && self.body.length > 0) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Abstract message class.
  */
 
-@class TSAttachmentPointer;
+@class TSAttachment;
 
 @interface TSMessage : TSInteraction
 
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
-
+- (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimer;

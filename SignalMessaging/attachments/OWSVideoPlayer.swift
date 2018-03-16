@@ -53,6 +53,12 @@ public class OWSVideoPlayer: NSObject {
         avPlayer.play()
     }
 
+    public func stop() {
+        avPlayer.pause()
+        avPlayer.seek(to: kCMTimeZero)
+        OWSAudioSession.shared.endAudioActivity(self.audioActivity)
+    }
+
     @objc(seekToTime:)
     public func seek(to time: CMTime) {
         avPlayer.seek(to: time)

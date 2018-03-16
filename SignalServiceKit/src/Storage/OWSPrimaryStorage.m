@@ -11,6 +11,7 @@
 #import "OWSFailedMessagesJob.h"
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
+#import "OWSMediaGalleryFinder.h"
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
 #import "TSDatabaseSecondaryIndexes.h"
@@ -55,6 +56,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
 }
 
 #pragma mark -
