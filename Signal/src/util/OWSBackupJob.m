@@ -3,7 +3,6 @@
 //
 
 #import "OWSBackupJob.h"
-#import "OWSBackupEncryption.h"
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>

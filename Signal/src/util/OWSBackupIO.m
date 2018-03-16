@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBackupEncryption.h"
+#import "OWSBackupIO.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 
@@ -19,7 +19,7 @@ static const NSUInteger kOWSBackupKeyLength = 32;
 
 #pragma mark -
 
-@interface OWSBackupEncryption ()
+@interface OWSBackupIO ()
 
 @property (nonatomic) NSString *jobTempDirPath;
 
@@ -27,7 +27,7 @@ static const NSUInteger kOWSBackupKeyLength = 32;
 
 #pragma mark -
 
-@implementation OWSBackupEncryption
+@implementation OWSBackupIO
 
 - (instancetype)initWithJobTempDirPath:(NSString *)jobTempDirPath
 {

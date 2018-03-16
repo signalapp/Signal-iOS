@@ -3,7 +3,7 @@
 //
 
 #import "OWSBackupImportJob.h"
-#import "OWSBackupEncryption.h"
+#import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "Signal-Swift.h"
@@ -46,7 +46,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
-@property (nonatomic) OWSBackupEncryption *encryption;
+@property (nonatomic) OWSBackupIO *backupIO;
 
 @property (nonatomic) NSArray<OWSBackupImportItem *> *databaseItems;
 @property (nonatomic) NSArray<OWSBackupImportItem *> *attachmentsItems;
@@ -173,7 +173,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return NO;
     }
 
-    self.encryption = [[OWSBackupEncryption alloc] initWithJobTempDirPath:self.jobTempDirPath];
+    self.backupIO = [[OWSBackupIO alloc] initWithJobTempDirPath:self.jobTempDirPath];
 
     return YES;
 }
@@ -209,7 +209,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 - (void)processManifest:(NSData *)manifestDataEncrypted completion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
-    OWSAssert(self.encryption);
+    OWSAssert(self.backupIO);
 
     if (self.isComplete) {
         return;
@@ -218,7 +218,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSData *_Nullable manifestDataDecrypted =
-        [self.encryption decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
+        [self.backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
     if (!manifestDataDecrypted) {
         OWSProdLogAndFail(@"%@ Could not decrypt manifest.", self.logTag);
         return completion(NO);
@@ -408,9 +408,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
             continue;
         }
-        if (![self.encryption decryptFileAsFile:item.downloadFilePath
-                                    dstFilePath:dstFilePath
-                                  encryptionKey:item.encryptionKey]) {
+        if (![self.backupIO decryptFileAsFile:item.downloadFilePath
+                                  dstFilePath:dstFilePath
+                                encryptionKey:item.encryptionKey]) {
             DDLogError(@"%@ attachment could not be restored.", self.logTag);
             // Attachment-related errors are recoverable and can be ignored.
             continue;
@@ -498,15 +498,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                        progress:@(count / (CGFloat)self.databaseItems.count)];
 
             NSData *_Nullable compressedData =
-                [self.encryption decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
+                [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
             if (!compressedData) {
                 // Database-related errors are unrecoverable.
                 aborted = YES;
                 return completion(NO);
             }
             NSData *_Nullable uncompressedData =
-                [self.encryption decompressData:compressedData
-                         uncompressedDataLength:item.uncompressedDataLength.unsignedIntValue];
+                [self.backupIO decompressData:compressedData
+                       uncompressedDataLength:item.uncompressedDataLength.unsignedIntValue];
             if (!uncompressedData) {
                 // Database-related errors are unrecoverable.
                 aborted = YES;

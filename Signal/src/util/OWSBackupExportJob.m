@@ -3,7 +3,7 @@
 //
 
 #import "OWSBackupExportJob.h"
-#import "OWSBackupEncryption.h"
+#import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "Signal-Swift.h"
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDBExportStream : NSObject
 
-@property (nonatomic) OWSBackupEncryption *encryption;
+@property (nonatomic) OWSBackupIO *backupIO;
 
 @property (nonatomic) NSMutableArray<OWSBackupExportItem *> *exportItems;
 
@@ -83,16 +83,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDBExportStream
 
-- (instancetype)initWithEncryption:(OWSBackupEncryption *)encryption
+- (instancetype)initWithBackupIO:(OWSBackupIO *)backupIO
 {
     if (!(self = [super init])) {
         return self;
     }
 
-    OWSAssert(encryption);
+    OWSAssert(backupIO);
 
     self.exportItems = [NSMutableArray new];
-    self.encryption = encryption;
+    self.backupIO = backupIO;
 
     return self;
 }
@@ -146,9 +146,9 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    NSData *compressedData = [self.encryption compressData:uncompressedData];
+    NSData *compressedData = [self.backupIO compressData:uncompressedData];
 
-    OWSBackupEncryptedItem *_Nullable encryptedItem = [self.encryption encryptDataAsTempFile:compressedData];
+    OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptDataAsTempFile:compressedData];
     if (!encryptedItem) {
         OWSProdLogAndFail(@"%@ couldn't encrypt database snapshot.", self.logTag);
         return NO;
@@ -167,7 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSAttachmentExport : NSObject
 
-@property (nonatomic) OWSBackupEncryption *encryption;
+@property (nonatomic) OWSBackupIO *backupIO;
 @property (nonatomic) NSString *attachmentId;
 @property (nonatomic) NSString *attachmentFilePath;
 @property (nonatomic, nullable) NSString *relativeFilePath;
@@ -181,19 +181,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAttachmentExport
 
-- (instancetype)initWithEncryption:(OWSBackupEncryption *)encryption
-                      attachmentId:(NSString *)attachmentId
-                attachmentFilePath:(NSString *)attachmentFilePath
+- (instancetype)initWithBackupIO:(OWSBackupIO *)backupIO
+                    attachmentId:(NSString *)attachmentId
+              attachmentFilePath:(NSString *)attachmentFilePath
 {
     if (!(self = [super init])) {
         return self;
     }
 
-    OWSAssert(encryption);
+    OWSAssert(backupIO);
     OWSAssert(attachmentId.length > 0);
     OWSAssert(attachmentFilePath.length > 0);
 
-    self.encryption = encryption;
+    self.backupIO = backupIO;
     self.attachmentId = attachmentId;
     self.attachmentFilePath = attachmentFilePath;
 
@@ -225,7 +225,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.relativeFilePath = relativeFilePath;
 
-    OWSBackupEncryptedItem *_Nullable encryptedItem = [self.encryption encryptFileAsTempFile:self.attachmentFilePath];
+    OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptFileAsTempFile:self.attachmentFilePath];
     if (!encryptedItem) {
         DDLogError(@"%@ attachment could not be encrypted.", self.logTag);
         OWSFail(@"%@ attachment could not be encrypted: %@", self.logTag, self.attachmentFilePath);
@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
-@property (nonatomic) OWSBackupEncryption *encryption;
+@property (nonatomic) OWSBackupIO *backupIO;
 
 @property (nonatomic) NSMutableArray<OWSBackupExportItem *> *unsavedDatabaseItems;
 
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    self.encryption = [[OWSBackupEncryption alloc] initWithJobTempDirPath:self.jobTempDirPath];
+    self.backupIO = [[OWSBackupIO alloc] initWithJobTempDirPath:self.jobTempDirPath];
 
     // We need to verify that we have a valid account.
     // Otherwise, if we re-register on another device, we
@@ -365,7 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)exportDatabase
 {
-    OWSAssert(self.encryption);
+    OWSAssert(self.backupIO);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -379,7 +379,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSDBExportStream *exportStream = [[OWSDBExportStream alloc] initWithEncryption:self.encryption];
+    OWSDBExportStream *exportStream = [[OWSDBExportStream alloc] initWithBackupIO:self.backupIO];
 
     __block BOOL aborted = NO;
     typedef BOOL (^EntityFilter)(id object);
@@ -453,9 +453,9 @@ NS_ASSUME_NONNULL_BEGIN
                 // OWSAttachmentExport is used to lazily write an encrypted copy of the
                 // attachment to disk.
                 OWSAttachmentExport *attachmentExport =
-                    [[OWSAttachmentExport alloc] initWithEncryption:self.encryption
-                                                       attachmentId:attachmentStream.uniqueId
-                                                 attachmentFilePath:filePath];
+                    [[OWSAttachmentExport alloc] initWithBackupIO:self.backupIO
+                                                     attachmentId:attachmentStream.uniqueId
+                                               attachmentFilePath:filePath];
                 [self.unsavedAttachmentExports addObject:attachmentExport];
 
                 return YES;
@@ -727,7 +727,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.savedDatabaseItems.count > 0);
     OWSAssert(self.savedAttachmentItems);
     OWSAssert(self.jobTempDirPath.length > 0);
-    OWSAssert(self.encryption);
+    OWSAssert(self.backupIO);
 
     NSDictionary *json = @{
         kOWSBackup_ManifestKey_DatabaseFiles : [self jsonForItems:self.savedDatabaseItems],
@@ -743,7 +743,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ error encoding manifest file: %@", self.logTag, error);
         return nil;
     }
-    return [self.encryption encryptDataAsTempFile:jsonData encryptionKey:self.delegate.backupEncryptionKey];
+    return [self.backupIO encryptDataAsTempFile:jsonData encryptionKey:self.delegate.backupEncryptionKey];
 }
 
 - (NSArray<NSDictionary<NSString *, id> *> *)jsonForItems:(NSArray<OWSBackupExportItem *> *)items

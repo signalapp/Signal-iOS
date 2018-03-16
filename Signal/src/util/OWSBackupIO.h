@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSBackupEncryption : NSObject
+@interface OWSBackupIO : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
