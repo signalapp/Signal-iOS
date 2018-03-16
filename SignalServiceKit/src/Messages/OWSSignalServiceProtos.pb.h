@@ -2266,18 +2266,18 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
 @end
 
 #define BackupEntity_type @"type"
-#define BackupEntity_data @"data"
+#define BackupEntity_entityData @"entityData"
 @interface OWSSignalServiceProtosBackupSnapshotBackupEntity : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasData_:1;
+  BOOL hasEntityData_:1;
   BOOL hasType_:1;
-  NSData* data;
+  NSData* entityData;
   OWSSignalServiceProtosBackupSnapshotBackupEntityType type;
 }
 - (BOOL) hasType;
-- (BOOL) hasData;
+- (BOOL) hasEntityData;
 @property (readonly) OWSSignalServiceProtosBackupSnapshotBackupEntityType type;
-@property (readonly, strong) NSData* data;
+@property (readonly, strong) NSData* entityData;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -2319,10 +2319,10 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
 - (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setType:(OWSSignalServiceProtosBackupSnapshotBackupEntityType) value;
 - (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearType;
 
-- (BOOL) hasData;
-- (NSData*) data;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setData:(NSData*) value;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearData;
+- (BOOL) hasEntityData;
+- (NSData*) entityData;
+- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setEntityData:(NSData*) value;
+- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearEntityData;
 @end
 
 @interface OWSSignalServiceProtosBackupSnapshotBuilder : PBGeneratedMessageBuilder {

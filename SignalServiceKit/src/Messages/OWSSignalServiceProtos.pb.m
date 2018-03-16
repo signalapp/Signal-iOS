@@ -9830,7 +9830,7 @@ static OWSSignalServiceProtosBackupSnapshot* defaultOWSSignalServiceProtosBackup
 
 @interface OWSSignalServiceProtosBackupSnapshotBackupEntity ()
 @property OWSSignalServiceProtosBackupSnapshotBackupEntityType type;
-@property (strong) NSData* data;
+@property (strong) NSData* entityData;
 @end
 
 @implementation OWSSignalServiceProtosBackupSnapshotBackupEntity
@@ -9842,17 +9842,17 @@ static OWSSignalServiceProtosBackupSnapshot* defaultOWSSignalServiceProtosBackup
   hasType_ = !!_value_;
 }
 @synthesize type;
-- (BOOL) hasData {
-  return !!hasData_;
+- (BOOL) hasEntityData {
+  return !!hasEntityData_;
 }
-- (void) setHasData:(BOOL) _value_ {
-  hasData_ = !!_value_;
+- (void) setHasEntityData:(BOOL) _value_ {
+  hasEntityData_ = !!_value_;
 }
-@synthesize data;
+@synthesize entityData;
 - (instancetype) init {
   if ((self = [super init])) {
     self.type = OWSSignalServiceProtosBackupSnapshotBackupEntityTypeUnknown;
-    self.data = [NSData data];
+    self.entityData = [NSData data];
   }
   return self;
 }
@@ -9875,8 +9875,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   if (self.hasType) {
     [output writeEnum:1 value:self.type];
   }
-  if (self.hasData) {
-    [output writeData:2 value:self.data];
+  if (self.hasEntityData) {
+    [output writeData:2 value:self.entityData];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -9890,8 +9890,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   if (self.hasType) {
     size_ += computeEnumSize(1, self.type);
   }
-  if (self.hasData) {
-    size_ += computeDataSize(2, self.data);
+  if (self.hasEntityData) {
+    size_ += computeDataSize(2, self.entityData);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -9931,8 +9931,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   if (self.hasType) {
     [output appendFormat:@"%@%@: %@\n", indent, @"type", NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(self.type)];
   }
-  if (self.hasData) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"data", self.data];
+  if (self.hasEntityData) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"entityData", self.entityData];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -9940,8 +9940,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   if (self.hasType) {
     [dictionary setObject: @(self.type) forKey: @"type"];
   }
-  if (self.hasData) {
-    [dictionary setObject: self.data forKey: @"data"];
+  if (self.hasEntityData) {
+    [dictionary setObject: self.entityData forKey: @"entityData"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -9956,8 +9956,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   return
       self.hasType == otherMessage.hasType &&
       (!self.hasType || self.type == otherMessage.type) &&
-      self.hasData == otherMessage.hasData &&
-      (!self.hasData || [self.data isEqual:otherMessage.data]) &&
+      self.hasEntityData == otherMessage.hasEntityData &&
+      (!self.hasEntityData || [self.entityData isEqual:otherMessage.entityData]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -9965,8 +9965,8 @@ static OWSSignalServiceProtosBackupSnapshotBackupEntity* defaultOWSSignalService
   if (self.hasType) {
     hashCode = hashCode * 31 + self.type;
   }
-  if (self.hasData) {
-    hashCode = hashCode * 31 + [self.data hash];
+  if (self.hasEntityData) {
+    hashCode = hashCode * 31 + [self.entityData hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -10043,8 +10043,8 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
   if (other.hasType) {
     [self setType:other.type];
   }
-  if (other.hasData) {
-    [self setData:other.data];
+  if (other.hasEntityData) {
+    [self setEntityData:other.entityData];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -10077,7 +10077,7 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
         break;
       }
       case 18: {
-        [self setData:[input readData]];
+        [self setEntityData:[input readData]];
         break;
       }
     }
@@ -10099,20 +10099,20 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
   resultBackupEntity.type = OWSSignalServiceProtosBackupSnapshotBackupEntityTypeUnknown;
   return self;
 }
-- (BOOL) hasData {
-  return resultBackupEntity.hasData;
+- (BOOL) hasEntityData {
+  return resultBackupEntity.hasEntityData;
 }
-- (NSData*) data {
-  return resultBackupEntity.data;
+- (NSData*) entityData {
+  return resultBackupEntity.entityData;
 }
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setData:(NSData*) value {
-  resultBackupEntity.hasData = YES;
-  resultBackupEntity.data = value;
+- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setEntityData:(NSData*) value {
+  resultBackupEntity.hasEntityData = YES;
+  resultBackupEntity.entityData = value;
   return self;
 }
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearData {
-  resultBackupEntity.hasData = NO;
-  resultBackupEntity.data = [NSData data];
+- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearEntityData {
+  resultBackupEntity.hasEntityData = NO;
+  resultBackupEntity.entityData = [NSData data];
   return self;
 }
 @end

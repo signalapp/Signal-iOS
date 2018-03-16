@@ -3,13 +3,13 @@
 //
 
 #import "OWSBackupExportJob.h"
+#import "OWSBackupEncryption.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBackupStorage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSAttachment.h>
@@ -17,11 +17,6 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/Threading.h>
-
-@import Compression;
-#import "OWSBackupEncryption.h"
-
-// TODO:
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,6 +34,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This property is optional and is only used for attachments.
 @property (nonatomic, nullable) OWSAttachmentExport *attachmentExport;
+
+// This property is optional.
+@property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -69,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSBackupEncryption *encryption;
 
-@property (nonatomic) NSMutableArray<OWSBackupEncryptedItem *> *encryptedItems;
+@property (nonatomic) NSMutableArray<OWSBackupExportItem *> *exportItems;
 
 @property (nonatomic, nullable) OWSSignalServiceProtosBackupSnapshotBuilder *backupSnapshotBuilder;
 
@@ -93,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(encryption);
 
-    self.encryptedItems = [NSMutableArray new];
+    self.exportItems = [NSMutableArray new];
     self.encryption = encryption;
 
     return self;
@@ -117,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder *entityBuilder =
         [OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder new];
     [entityBuilder setType:entityType];
-    [entityBuilder setData:data];
+    [entityBuilder setEntityData:data];
 
     [self.backupSnapshotBuilder addEntity:[entityBuilder build]];
 
@@ -140,6 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder build].data;
+    NSUInteger uncompressedDataLength = uncompressedData.length;
     self.backupSnapshotBuilder = nil;
     self.cachedItemCount = 0;
     if (!uncompressedData) {
@@ -147,31 +146,18 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    size_t srcLength = [uncompressedData length];
-    const uint8_t *srcBuffer = (const uint8_t *)[uncompressedData bytes];
-    if (!srcBuffer) {
-        return NO;
-    }
-    // This assumes that dst will always be smaller than src.
-    uint8_t *dstBuffer = malloc(sizeof(uint8_t) * srcLength);
-    if (!dstBuffer) {
-        return NO;
-    }
-    // TODO: Should we use COMPRESSION_LZFSE?
-    size_t dstLength = compression_encode_buffer(dstBuffer, srcLength, srcBuffer, srcLength, NULL, COMPRESSION_LZFSE);
-    NSData *compressedData = [NSData dataWithBytes:dstBuffer length:dstLength];
-    DDLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
-        self.logTag,
-        srcLength,
-        dstLength,
-        (dstLength > srcLength ? (dstLength / (CGFloat)srcLength) : 0));
-    free(dstBuffer);
+    NSData *compressedData = [self.encryption compressData:uncompressedData];
 
     OWSBackupEncryptedItem *_Nullable encryptedItem = [self.encryption encryptDataAsTempFile:compressedData];
     if (!encryptedItem) {
         OWSProdLogAndFail(@"%@ couldn't encrypt database snapshot.", self.logTag);
         return NO;
     }
+
+    OWSBackupExportItem *exportItem = [[OWSBackupExportItem alloc] initWithEncryptedItem:encryptedItem];
+    exportItem.uncompressedDataLength = @(uncompressedDataLength);
+    [self.exportItems addObject:exportItem];
+
     return YES;
 }
 
@@ -519,8 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    self.unsavedDatabaseItems =
-        [[self exportItemsForEncryptedItems:exportStream.encryptedItems label:@"database snapshots"] mutableCopy];
+    self.unsavedDatabaseItems = [exportStream.exportItems mutableCopy];
 
     // TODO: Should we do a database checkpoint?
 
@@ -533,26 +518,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (NSArray<OWSBackupExportItem *> *)exportItemsForEncryptedItems:(NSArray<OWSBackupEncryptedItem *> *)encryptedItems
-                                                           label:(NSString *)label
-{
-    OWSAssert(encryptedItems);
-    OWSAssert(label.length);
-
-    NSMutableArray<OWSBackupExportItem *> *exportItems = [NSMutableArray new];
-    unsigned long long totalFileSize = 0;
-    for (OWSBackupEncryptedItem *encryptedItem in encryptedItems) {
-        OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-        exportItem.encryptedItem = encryptedItem;
-        [exportItems addObject:exportItem];
-
-        totalFileSize += [OWSFileSystem fileSizeOfPath:encryptedItem.filePath].unsignedLongLongValue;
-    }
-    DDLogInfo(@"%@ exported %@: count: %zd, bytes: %llu.", self.logTag, label, exportItems.count, totalFileSize);
-
-    return exportItems;
-}
-
 - (void)saveToCloud:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
@@ -561,6 +526,29 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.savedDatabaseItems = [NSMutableArray new];
     self.savedAttachmentItems = [NSMutableArray new];
+
+    {
+        unsigned long long totalFileSize = 0;
+        for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
+            totalFileSize += [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
+        }
+        DDLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
+            self.logTag,
+            @"database items",
+            self.unsavedDatabaseItems.count,
+            totalFileSize);
+    }
+    {
+        unsigned long long totalFileSize = 0;
+        for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
+            totalFileSize += [OWSFileSystem fileSizeOfPath:attachmentExport.attachmentFilePath].unsignedLongLongValue;
+        }
+        DDLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
+            self.logTag,
+            @"attachment items",
+            self.unsavedAttachmentExports.count,
+            totalFileSize);
+    }
 
     [self saveNextFileToCloud:completion];
 }
@@ -773,6 +761,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(item.attachmentExport.relativeFilePath.length > 0);
             itemJson[kOWSBackup_ManifestKey_RelativeFilePath] = item.attachmentExport.relativeFilePath;
         }
+        if (item.uncompressedDataLength) {
+            itemJson[kOWSBackup_ManifestKey_DataSize] = item.uncompressedDataLength;
+        }
         [result addObject:itemJson];
     }
 
@@ -852,8 +843,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (obsoleteRecordNames.count < 1) {
         // No more records to delete; cleanup is complete.
-        completion(nil);
-        return;
+        return completion(nil);
+    }
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return completion(nil);
     }
 
     CGFloat progress = (obsoleteRecordNames.count / (CGFloat)(obsoleteRecordNames.count + deletedCount));

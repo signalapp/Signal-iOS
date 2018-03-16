@@ -251,7 +251,7 @@ message BackupSnapshot
             ATTACHMENT = 4;
         }
         optional Type type = 1;
-        optional bytes data = 2;
+        optional bytes entityData = 2;
     }
 
     repeated BackupEntity entity = 1;

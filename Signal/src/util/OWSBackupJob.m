@@ -16,6 +16,7 @@ NSString *const kOWSBackup_ManifestKey_AttachmentFiles = @"attachment_files";
 NSString *const kOWSBackup_ManifestKey_RecordName = @"record_name";
 NSString *const kOWSBackup_ManifestKey_EncryptionKey = @"encryption_key";
 NSString *const kOWSBackup_ManifestKey_RelativeFilePath = @"relative_file_path";
+NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
@@ -144,51 +145,6 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         }
         [self.delegate backupJobDidUpdate:self description:description progress:progress];
     });
-}
-
-#pragma mark - Database KeySpec
-
-+ (nullable NSData *)loadDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-
-    NSError *error;
-    NSData *_Nullable value =
-        [SAMKeychain passwordDataForService:kOWSBackup_KeychainService account:keychainKey error:&error];
-    if (!value || error) {
-        DDLogError(@"%@ could not load database keyspec: %@", self.logTag, error);
-    }
-    return value;
-}
-
-+ (BOOL)storeDatabaseKeySpec:(NSData *)data keychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-    OWSAssert(data.length > 0);
-
-    NSError *error;
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success =
-        [SAMKeychain setPasswordData:data forService:kOWSBackup_KeychainService account:keychainKey error:&error];
-    if (!success || error) {
-        OWSFail(@"%@ Could not store database keyspec: %@.", self.logTag, error);
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
-+ (BOOL)generateRandomDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-
-    NSData *_Nullable databaseKeySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
-    if (!databaseKeySpec) {
-        OWSFail(@"%@ Could not generate database keyspec.", self.logTag);
-        return NO;
-    }
-
-    return [self storeDatabaseKeySpec:databaseKeySpec keychainKey:keychainKey];
 }
 
 @end

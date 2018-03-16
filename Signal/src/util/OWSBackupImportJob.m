@@ -9,7 +9,6 @@
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBackupStorage.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSMessage.h>
@@ -21,20 +20,36 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 #pragma mark -
 
+@interface OWSBackupImportItem : NSObject
+
+@property (nonatomic) NSString *recordName;
+
+@property (nonatomic) NSData *encryptionKey;
+
+@property (nonatomic, nullable) NSString *relativeFilePath;
+
+@property (nonatomic, nullable) NSString *downloadFilePath;
+
+@property (nonatomic, nullable) NSNumber *uncompressedDataLength;
+
+@end
+
+#pragma mark -
+
+@implementation OWSBackupImportItem
+
+@end
+
+#pragma mark -
+
 @interface OWSBackupImportJob ()
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
-@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
+@property (nonatomic) OWSBackupEncryption *encryption;
 
-// A map of "record name"-to-"file name".
-@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *databaseRecordMap;
-
-// A map of "record name"-to-"file relative path".
-@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *attachmentRecordMap;
-
-// A map of "record name"-to-"downloaded file path".
-@property (nonatomic) NSMutableDictionary<NSString *, NSString *> *downloadedFileMap;
+@property (nonatomic) NSArray<OWSBackupImportItem *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupImportItem *> *attachmentsItems;
 
 @end
 
@@ -93,13 +108,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             return;
         }
 
-        NSMutableArray<NSString *> *allRecordNames = [NSMutableArray new];
-        [allRecordNames addObjectsFromArray:weakSelf.databaseRecordMap.allKeys];
-        // TODO: We could skip attachments that have already been restored
-        // by previous "backup import" attempts.
-        [allRecordNames addObjectsFromArray:weakSelf.attachmentRecordMap.allKeys];
+        OWSAssert(self.databaseItems);
+        OWSAssert(self.attachmentsItems);
+        NSMutableArray<OWSBackupImportItem *> *allItems = [NSMutableArray new];
+        [allItems addObjectsFromArray:self.databaseItems];
+        [allItems addObjectsFromArray:self.attachmentsItems];
         [weakSelf
-            downloadFilesFromCloud:allRecordNames
+            downloadFilesFromCloud:allItems
                         completion:^(NSError *_Nullable fileDownloadError) {
                             if (fileDownloadError) {
                                 [weakSelf failWithError:fileDownloadError];
@@ -157,6 +172,9 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return NO;
     }
+
+    self.encryption = [[OWSBackupEncryption alloc] initWithJobTempDirPath:self.jobTempDirPath];
+
     return YES;
 }
 
@@ -183,14 +201,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
         failure:^(NSError *error) {
             // The manifest file is critical so any error downloading it is unrecoverable.
-            OWSProdLogAndFail(@"%@ Could not download manifest.", self.logTag);
+            OWSProdLogAndFail(@"%@ Could not download manifest.", weakSelf.logTag);
             completion(error);
         }];
 }
 
-- (void)processManifest:(NSData *)manifestData completion:(OWSBackupJobBoolCompletion)completion
+- (void)processManifest:(NSData *)manifestDataEncrypted completion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
+    OWSAssert(self.encryption);
 
     if (self.isComplete) {
         return;
@@ -198,9 +217,16 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
+    NSData *_Nullable manifestDataDecrypted =
+        [self.encryption decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
+    if (!manifestDataDecrypted) {
+        OWSProdLogAndFail(@"%@ Could not decrypt manifest.", self.logTag);
+        return completion(NO);
+    }
+
     NSError *error;
     NSDictionary<NSString *, id> *_Nullable json =
-        [NSJSONSerialization JSONObjectWithData:manifestData options:0 error:&error];
+        [NSJSONSerialization JSONObjectWithData:manifestDataDecrypted options:0 error:&error];
     if (![json isKindOfClass:[NSDictionary class]]) {
         OWSProdLogAndFail(@"%@ Could not download manifest.", self.logTag);
         return completion(NO);
@@ -208,49 +234,97 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     DDLogVerbose(@"%@ json: %@", self.logTag, json);
 
-    NSDictionary<NSString *, NSString *> *_Nullable databaseRecordMap = json[kOWSBackup_ManifestKey_DatabaseFiles];
-    NSDictionary<NSString *, NSString *> *_Nullable attachmentRecordMap = json[kOWSBackup_ManifestKey_AttachmentFiles];
-    NSString *_Nullable databaseKeySpecBase64 = json[kOWSBackup_ManifestKey_DatabaseKeySpec];
-    if (!([databaseRecordMap isKindOfClass:[NSDictionary class]] &&
-            [attachmentRecordMap isKindOfClass:[NSDictionary class]] &&
-            [databaseKeySpecBase64 isKindOfClass:[NSString class]])) {
-        OWSProdLogAndFail(@"%@ Invalid manifest.", self.logTag);
+    NSArray<OWSBackupImportItem *> *_Nullable databaseItems =
+        [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
+    if (!databaseItems) {
         return completion(NO);
     }
-    NSData *_Nullable databaseKeySpec = [NSData dataFromBase64String:databaseKeySpecBase64];
-    if (!databaseKeySpec) {
-        OWSProdLogAndFail(@"%@ Invalid manifest databaseKeySpec.", self.logTag);
-        return completion(NO);
-    }
-    if (![OWSBackupJob storeDatabaseKeySpec:databaseKeySpec keychainKey:kOWSBackup_ImportDatabaseKeySpec]) {
-        OWSProdLogAndFail(@"%@ Couldn't store databaseKeySpec from manifest.", self.logTag);
+    NSArray<OWSBackupImportItem *> *_Nullable attachmentsItems =
+        [self parseItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
+    if (!attachmentsItems) {
         return completion(NO);
     }
 
-    self.databaseRecordMap = [databaseRecordMap mutableCopy];
-    self.attachmentRecordMap = [attachmentRecordMap mutableCopy];
+    self.databaseItems = databaseItems;
+    self.attachmentsItems = attachmentsItems;
 
     return completion(YES);
 }
 
-- (void)downloadFilesFromCloud:(NSMutableArray<NSString *> *)recordNames completion:(OWSBackupJobCompletion)completion
+- (nullable NSArray<OWSBackupImportItem *> *)parseItems:(id)json key:(NSString *)key
 {
-    OWSAssert(recordNames.count > 0);
+    OWSAssert(json);
+    OWSAssert(key.length);
+
+    if (![json isKindOfClass:[NSArray class]]) {
+        OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
+        return nil;
+    }
+    NSArray *itemMaps = json[key];
+    if (![itemMaps isKindOfClass:[NSArray class]]) {
+        OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
+        return nil;
+    }
+    NSMutableArray<OWSBackupImportItem *> *items = [NSMutableArray new];
+    for (NSDictionary *itemMap in itemMaps) {
+        if (![itemMap isKindOfClass:[NSDictionary class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid item: %@.", self.logTag, key);
+            return nil;
+        }
+        NSString *_Nullable recordName = itemMap[kOWSBackup_ManifestKey_RecordName];
+        NSString *_Nullable encryptionKeyString = itemMap[kOWSBackup_ManifestKey_EncryptionKey];
+        NSString *_Nullable relativeFilePath = itemMap[kOWSBackup_ManifestKey_RelativeFilePath];
+        NSNumber *_Nullable uncompressedDataLength = itemMap[kOWSBackup_ManifestKey_DataSize];
+        if (![recordName isKindOfClass:[NSString class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid recordName: %@.", self.logTag, key);
+            return nil;
+        }
+        if (![encryptionKeyString isKindOfClass:[NSString class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid encryptionKey: %@.", self.logTag, key);
+            return nil;
+        }
+        // relativeFilePath is an optional field.
+        if (relativeFilePath && ![relativeFilePath isKindOfClass:[NSString class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, key);
+            return nil;
+        }
+        NSData *_Nullable encryptionKey = [NSData dataFromBase64String:encryptionKeyString];
+        if (!encryptionKey) {
+            OWSProdLogAndFail(@"%@ manifest has corrupt encryptionKey: %@.", self.logTag, key);
+            return nil;
+        }
+        // uncompressedDataLength is an optional field.
+        if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid uncompressedDataLength: %@.", self.logTag, key);
+            return nil;
+        }
+
+        OWSBackupImportItem *item = [OWSBackupImportItem new];
+        item.recordName = recordName;
+        item.encryptionKey = encryptionKey;
+        item.relativeFilePath = relativeFilePath;
+        item.uncompressedDataLength = uncompressedDataLength;
+        [items addObject:item];
+    }
+    return items;
+}
+
+- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupImportItem *> *)items
+                    completion:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(items.count > 0);
     OWSAssert(completion);
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    // A map of "record name"-to-"downloaded file path".
-    self.downloadedFileMap = [NSMutableDictionary new];
-
-    [self downloadNextFileFromCloud:recordNames recordCount:recordNames.count completion:completion];
+    [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
 }
 
-- (void)downloadNextFileFromCloud:(NSMutableArray<NSString *> *)recordNames
+- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupImportItem *> *)items
                       recordCount:(NSUInteger)recordCount
                        completion:(OWSBackupJobCompletion)completion
 {
-    OWSAssert(recordNames);
+    OWSAssert(items);
     OWSAssert(completion);
 
     if (self.isComplete) {
@@ -258,43 +332,43 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return completion(nil);
     }
 
-    if (recordNames.count < 1) {
+    if (items.count < 1) {
         // All downloads are complete; exit.
         return completion(nil);
     }
-    NSString *recordName = recordNames.lastObject;
-    [recordNames removeLastObject];
+    OWSBackupImportItem *item = items.lastObject;
+    [items removeLastObject];
 
+    CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
     [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_DOWNLOAD",
                                             @"Indicates that the backup import data is being downloaded.")
-                               progress:@((recordCount - recordNames.count) / (CGFloat)recordCount)];
-
-    if (![recordName isKindOfClass:[NSString class]]) {
-        DDLogError(@"%@ invalid record name in manifest: %@", self.logTag, [recordName class]);
-        // Invalid record name in the manifest. This may be recoverable.
-        // Ignore this for now and proceed with the other downloads.
-        return [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
-    }
+                               progress:@(progress)];
 
     // Use a predictable file path so that multiple "import backup" attempts
     // will leverage successful file downloads from previous attempts.
-    NSString *tempFilePath = [self.jobTempDirPath stringByAppendingPathComponent:recordName];
+    //
+    // TODO: This will also require imports using a predictable jobTempDirPath.
+    NSString *tempFilePath = [self.jobTempDirPath stringByAppendingPathComponent:item.recordName];
 
     // Skip redundant file download.
     if ([NSFileManager.defaultManager fileExistsAtPath:tempFilePath]) {
         [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
-        self.downloadedFileMap[recordName] = tempFilePath;
-        [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
+
+        item.downloadFilePath = tempFilePath;
+
+        [self downloadNextItemFromCloud:items recordCount:recordCount completion:completion];
         return;
     }
 
-    [OWSBackupAPI downloadFileFromCloudWithRecordName:recordName
+    __weak OWSBackupImportJob *weakSelf = self;
+    [OWSBackupAPI downloadFileFromCloudWithRecordName:item.recordName
         toFileUrl:[NSURL fileURLWithPath:tempFilePath]
         success:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [OWSFileSystem protectFileOrFolderAtPath:tempFilePath];
-                self.downloadedFileMap[recordName] = tempFilePath;
-                [self downloadNextFileFromCloud:recordNames recordCount:recordCount completion:completion];
+                item.downloadFilePath = tempFilePath;
+
+                [weakSelf downloadNextItemFromCloud:items recordCount:recordCount completion:completion];
             });
         }
         failure:^(NSError *error) {
@@ -304,28 +378,45 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 - (void)restoreAttachmentFiles
 {
-    DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentRecordMap.count);
+    DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentsItems.count);
 
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
 
     NSUInteger count = 0;
-    for (NSString *recordName in self.attachmentRecordMap) {
+    for (OWSBackupImportItem *item in self.attachmentsItems) {
         if (self.isComplete) {
             return;
+        }
+        if (item.recordName.length < 1) {
+            DDLogError(@"%@ attachment was not downloaded.", self.logTag);
+            // Attachment-related errors are recoverable and can be ignored.
+            continue;
+        }
+        if (item.relativeFilePath.length < 1) {
+            DDLogError(@"%@ attachment missing relative file path.", self.logTag);
+            // Attachment-related errors are recoverable and can be ignored.
+            continue;
         }
 
         count++;
         [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
                                                 @"Indicates that the backup import data is being restored.")
-                                   progress:@(count / (CGFloat)self.attachmentRecordMap.count)];
+                                   progress:@(count / (CGFloat)self.attachmentsItems.count)];
 
-
-        NSString *dstRelativePath = self.attachmentRecordMap[recordName];
-        if (!
-            [self restoreFileWithRecordName:recordName dstRelativePath:dstRelativePath dstDirPath:attachmentsDirPath]) {
+        NSString *dstFilePath = [attachmentsDirPath stringByAppendingPathComponent:item.relativeFilePath];
+        if ([NSFileManager.defaultManager fileExistsAtPath:dstFilePath]) {
+            DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
+            continue;
+        }
+        if (![self.encryption decryptFileAsFile:item.downloadFilePath
+                                    dstFilePath:dstFilePath
+                                  encryptionKey:item.encryptionKey]) {
+            DDLogError(@"%@ attachment could not be restored.", self.logTag);
             // Attachment-related errors are recoverable and can be ignored.
             continue;
         }
+
+        DDLogError(@"%@ restored file: %@.", self.logTag, item.relativeFilePath);
     }
 }
 
@@ -335,84 +426,16 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_DATABASE",
-                                            @"Indicates that the backup database is being restored.")
-                               progress:nil];
-
-    NSString *jobDatabaseDirPath = [self.jobTempDirPath stringByAppendingPathComponent:@"database"];
-    if (![OWSFileSystem ensureDirectoryExists:jobDatabaseDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not create jobDatabaseDirPath.", self.logTag);
-        return completion(NO);
-    }
-
-    for (NSString *recordName in self.databaseRecordMap) {
-        if (self.isComplete) {
-            return completion(NO);
-        }
-
-        NSString *dstRelativePath = self.databaseRecordMap[recordName];
-        if (!
-            [self restoreFileWithRecordName:recordName dstRelativePath:dstRelativePath dstDirPath:jobDatabaseDirPath]) {
-            // Database-related errors are unrecoverable.
-            return completion(NO);
-        }
-    }
-
-    BackupStorageKeySpecBlock keySpecBlock = ^{
-        NSData *_Nullable databaseKeySpec =
-            [OWSBackupJob loadDatabaseKeySpecWithKeychainKey:kOWSBackup_ImportDatabaseKeySpec];
-        if (!databaseKeySpec) {
-            OWSProdLogAndFail(@"%@ Could not load database keyspec for import.", self.logTag);
-        }
-        return databaseKeySpec;
-    };
-    self.backupStorage =
-        [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:jobDatabaseDirPath keySpecBlock:keySpecBlock];
-    if (!self.backupStorage) {
-        OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
-        return completion(NO);
-    }
-
-    // TODO: Do we really need to run these registrations on the main thread?
-    __weak OWSBackupImportJob *weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.backupStorage runSyncRegistrations];
-        [weakSelf.backupStorage runAsyncRegistrationsWithCompletion:^{
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [weakSelf restoreDatabaseContents:completion];
-            });
-        }];
-    });
-}
-
-- (void)restoreDatabaseContents:(OWSBackupJobBoolCompletion)completion
-{
-    OWSAssert(self.backupStorage);
-    OWSAssert(completion);
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
     if (self.isComplete) {
         return completion(NO);
     }
 
-    YapDatabaseConnection *_Nullable tempDBConnection = self.backupStorage.newDatabaseConnection;
-    if (!tempDBConnection) {
-        OWSProdLogAndFail(@"%@ Could not create tempDBConnection.", self.logTag);
-        return completion(NO);
-    }
-    YapDatabaseConnection *_Nullable primaryDBConnection = self.primaryStorage.newDatabaseConnection;
-    if (!primaryDBConnection) {
-        OWSProdLogAndFail(@"%@ Could not create primaryDBConnection.", self.logTag);
+    YapDatabaseConnection *_Nullable dbConnection = self.primaryStorage.newDatabaseConnection;
+    if (!dbConnection) {
+        OWSProdLogAndFail(@"%@ Could not create dbConnection.", self.logTag);
         return completion(NO);
     }
 
-    NSDictionary<NSString *, Class> *collectionTypeMap = @{
-        [TSThread collection] : [TSThread class],
-        [TSAttachment collection] : [TSAttachment class],
-        [TSInteraction collection] : [TSInteraction class],
-        [OWSDatabaseMigration collection] : [OWSDatabaseMigration class],
-    };
     // Order matters here.
     NSArray<NSString *> *collectionsToRestore = @[
         [TSThread collection],
@@ -425,85 +448,123 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
-    [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *srcTransaction) {
-        [primaryDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
-            if (![srcTransaction boolForKey:kOWSBackup_Snapshot_ValidKey
-                               inCollection:kOWSBackup_Snapshot_Collection
-                               defaultValue:NO]) {
-                DDLogError(@"%@ invalid database.", self.logTag);
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (NSString *collection in collectionsToRestore) {
+            if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
+                // It's okay if there are existing migrations; we'll clear those
+                // before restoring.
+                continue;
+            }
+            if ([transaction numberOfKeysInCollection:collection] > 0) {
+                DDLogError(@"%@ unexpected contents in database (%@).", self.logTag, collection);
+            }
+        }
+
+        // Clear existing database contents.
+        //
+        // This should be safe since we only ever import into an empty database.
+        //
+        // Note that if the app receives a message after registering and before restoring
+        // backup, it will be lost.
+        //
+        // Note that this will clear all migrations.
+        for (NSString *collection in collectionsToRestore) {
+            [transaction removeAllObjectsInCollection:collection];
+        }
+
+        NSUInteger count = 0;
+        for (OWSBackupImportItem *item in self.databaseItems) {
+            if (self.isComplete) {
+                return;
+            }
+            if (item.recordName.length < 1) {
+                DDLogError(@"%@ database snapshot was not downloaded.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                // Database-related errors are unrecoverable.
+                aborted = YES;
+                return completion(NO);
+            }
+            if (!item.uncompressedDataLength || item.uncompressedDataLength.unsignedIntValue < 1) {
+                DDLogError(@"%@ database snapshot missing size.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                // Database-related errors are unrecoverable.
                 aborted = YES;
                 return completion(NO);
             }
 
-            for (NSString *collection in collectionsToRestore) {
-                if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
-                    // It's okay if there are existing migrations; we'll clear those
-                    // before restoring.
-                    continue;
+            count++;
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_DATABASE",
+                                                    @"Indicates that the backup database is being restored.")
+                                       progress:@(count / (CGFloat)self.databaseItems.count)];
+
+            NSData *_Nullable compressedData =
+                [self.encryption decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
+            if (!compressedData) {
+                // Database-related errors are unrecoverable.
+                aborted = YES;
+                return completion(NO);
+            }
+            NSData *_Nullable uncompressedData =
+                [self.encryption decompressData:compressedData
+                         uncompressedDataLength:item.uncompressedDataLength.unsignedIntValue];
+            if (!uncompressedData) {
+                // Database-related errors are unrecoverable.
+                aborted = YES;
+                return completion(NO);
+            }
+            OWSSignalServiceProtosBackupSnapshot *_Nullable entities =
+                [OWSSignalServiceProtosBackupSnapshot parseFromData:uncompressedData];
+            if (!entities || entities.entity.count < 1) {
+                DDLogError(@"%@ missing entities.", self.logTag);
+                // Database-related errors are unrecoverable.
+                aborted = YES;
+                return completion(NO);
+            }
+            for (OWSSignalServiceProtosBackupSnapshotBackupEntity *entity in entities.entity) {
+                NSData *_Nullable entityData = entity.entityData;
+                if (entityData.length < 1) {
+                    DDLogError(@"%@ missing entity data.", self.logTag);
+                    // Database-related errors are unrecoverable.
+                    aborted = YES;
+                    return completion(NO);
                 }
-                if ([dstTransaction numberOfKeysInCollection:collection] > 0) {
-                    DDLogError(@"%@ unexpected contents in database (%@).", self.logTag, collection);
+
+                __block TSYapDatabaseObject *object = nil;
+                @try {
+                    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:entityData];
+                    object = [unarchiver decodeObjectForKey:@"root"];
+                    if (![object isKindOfClass:[object class]]) {
+                        DDLogError(@"%@ invalid decoded entity: %@.", self.logTag, [object class]);
+                        // Database-related errors are unrecoverable.
+                        aborted = YES;
+                        return completion(NO);
+                    }
+                } @catch (NSException *exception) {
+                    DDLogError(@"%@ could not decode entity.", self.logTag);
+                    // Database-related errors are unrecoverable.
+                    aborted = YES;
+                    return completion(NO);
                 }
-            }
 
-            // Clear existing database contents.
-            //
-            // This should be safe since we only ever import into an empty database.
-            //
-            // Note that if the app receives a message after registering and before restoring
-            // backup, it will be lost.
-            //
-            // Note that this will clear all migrations.
-            for (NSString *collection in collectionsToRestore) {
-                [dstTransaction removeAllObjectsInCollection:collection];
+                [object saveWithTransaction:transaction];
+                copiedEntities++;
+                NSString *collection = [object.class collection];
+                NSUInteger restoredEntityCount = restoredEntityCounts[collection].unsignedIntValue;
+                restoredEntityCounts[collection] = @(restoredEntityCount + 1);
             }
-
-            // Copy database entities.
-            for (NSString *collection in collectionsToRestore) {
-                [srcTransaction enumerateKeysAndObjectsInCollection:collection
-                                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                             if (self.isComplete) {
-                                                                 *stop = YES;
-                                                                 aborted = YES;
-                                                                 return;
-                                                             }
-                                                             Class expectedType = collectionTypeMap[collection];
-                                                             OWSAssert(expectedType);
-                                                             if (![object isKindOfClass:expectedType]) {
-                                                                 OWSProdLogAndFail(@"%@ unexpected class: %@ != %@",
-                                                                     self.logTag,
-                                                                     [object class],
-                                                                     expectedType);
-                                                                 return;
-                                                             }
-                                                             TSYapDatabaseObject *databaseObject = object;
-                                                             [databaseObject saveWithTransaction:dstTransaction];
-
-                                                             NSUInteger count
-                                                                 = restoredEntityCounts[collection].unsignedIntValue;
-                                                             restoredEntityCounts[collection] = @(count + 1);
-                                                             copiedEntities++;
-                                                         }];
-            }
-        }];
+        }
     }];
 
-    if (aborted) {
+    if (self.isComplete || aborted) {
         return;
     }
 
-    for (NSString *collection in collectionsToRestore) {
-        Class expectedType = collectionTypeMap[collection];
-        OWSAssert(expectedType);
-        DDLogInfo(@"%@ copied %@ (%@): %@", self.logTag, expectedType, collection, restoredEntityCounts[collection]);
+    for (NSString *collection in restoredEntityCounts) {
+        DDLogInfo(@"%@ copied %@: %@", self.logTag, collection, restoredEntityCounts[collection]);
     }
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
 
-    [self.backupStorage logFileSizes];
-
-    // Close the database.
-    tempDBConnection = nil;
-    self.backupStorage = nil;
+    [self.primaryStorage logFileSizes];
 
     completion(YES);
 }
@@ -528,45 +589,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 completion(YES);
             }];
     });
-}
-
-- (BOOL)restoreFileWithRecordName:(NSString *)recordName
-                  dstRelativePath:(NSString *)dstRelativePath
-                       dstDirPath:(NSString *)dstDirPath
-{
-    OWSAssert(recordName);
-    OWSAssert(dstDirPath.length > 0);
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    if (![recordName isKindOfClass:[NSString class]]) {
-        DDLogError(@"%@ invalid record name in manifest: %@", self.logTag, [recordName class]);
-        return NO;
-    }
-    if (![dstRelativePath isKindOfClass:[NSString class]]) {
-        DDLogError(@"%@ invalid dstRelativePath in manifest: %@", self.logTag, [recordName class]);
-        return NO;
-    }
-    NSString *dstFilePath = [dstDirPath stringByAppendingPathComponent:dstRelativePath];
-    if ([NSFileManager.defaultManager fileExistsAtPath:dstFilePath]) {
-        DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
-        return YES;
-    }
-    NSString *downloadedFilePath = self.downloadedFileMap[recordName];
-    if (![NSFileManager.defaultManager fileExistsAtPath:downloadedFilePath]) {
-        DDLogError(@"%@ missing downloaded attachment file.", self.logTag);
-        return NO;
-    }
-    NSError *error;
-    BOOL success = [NSFileManager.defaultManager moveItemAtPath:downloadedFilePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        DDLogError(@"%@ could not restore attachment file.", self.logTag);
-        return NO;
-    }
-
-    DDLogError(@"%@ restored file: %@ (%@).", self.logTag, dstFilePath, dstRelativePath);
-
-    return YES;
 }
 
 @end

@@ -33,9 +33,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Decrypt
 
-- (nullable NSString *)decryptFileAsTempFile:(NSString *)srcFilePath encryptionKey:(NSData *)encryptionKey;
+- (BOOL)decryptFileAsFile:(NSString *)srcFilePath
+              dstFilePath:(NSString *)dstFilePath
+            encryptionKey:(NSData *)encryptionKey;
+
+- (nullable NSData *)decryptFileAsData:(NSString *)srcFilePath encryptionKey:(NSData *)encryptionKey;
 
 - (nullable NSData *)decryptDataAsData:(NSData *)srcData encryptionKey:(NSData *)encryptionKey;
+
+#pragma mark - Compression
+
+- (nullable NSData *)compressData:(NSData *)srcData;
+
+- (nullable NSData *)decompressData:(NSData *)srcData uncompressedDataLength:(NSUInteger)uncompressedDataLength;
 
 @end
 

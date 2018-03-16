@@ -46,14 +46,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 #pragma mark -
 
-//@interface OWSDatabaseConnection : YapDatabaseConnection
-//
-//@property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
-//
-//@end
-
-#pragma mark -
-
 @implementation OWSDatabaseConnection
 
 - (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
