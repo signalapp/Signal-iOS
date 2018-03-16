@@ -225,28 +225,30 @@ import CloudKit
     // MARK: - Delete
 
     @objc
-    public class func deleteRecordFromCloud(recordName: String,
+    public class func deleteRecordsFromCloud(recordNames: [String],
                                             success: @escaping (()) -> Void,
                                             failure: @escaping (Error) -> Void) {
-        deleteRecordFromCloud(recordName: recordName,
+        deleteRecordsFromCloud(recordNames: recordNames,
                               remainingRetries: maxRetries,
                               success: success,
                               failure: failure)
     }
 
-    private class func deleteRecordFromCloud(recordName: String,
+    private class func deleteRecordsFromCloud(recordNames: [String],
                                              remainingRetries: Int,
                                              success: @escaping (()) -> Void,
                                              failure: @escaping (Error) -> Void) {
 
-        let recordID = CKRecordID(recordName: recordName)
-
-        database().delete(withRecordID: recordID) {
-            (_, error) in
+        var recordIDs = [CKRecordID]()
+        for recordName in recordNames {
+            recordIDs.append(CKRecordID(recordName: recordName))
+        }
+        let deleteOperation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIDs)
+        deleteOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 
             let outcome = outcomeForCloudKitError(error: error,
-                                                    remainingRetries: remainingRetries,
-                                                    label: "Delete Record")
+                                                  remainingRetries: remainingRetries,
+                                                  label: "Delete Records")
             switch outcome {
             case .success:
                 success()
@@ -254,23 +256,24 @@ import CloudKit
                 failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
                 DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
-                    deleteRecordFromCloud(recordName: recordName,
-                                          remainingRetries: remainingRetries - 1,
-                                          success: success,
-                                          failure: failure)
+                    deleteRecordsFromCloud(recordNames: recordNames,
+                                        remainingRetries: remainingRetries - 1,
+                                        success: success,
+                                        failure: failure)
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
-                    deleteRecordFromCloud(recordName: recordName,
-                                          remainingRetries: remainingRetries - 1,
-                                          success: success,
-                                          failure: failure)
+                    deleteRecordsFromCloud(recordNames: recordNames,
+                                        remainingRetries: remainingRetries - 1,
+                                        success: success,
+                                        failure: failure)
                 }
             case .unknownItem:
                 owsFail("\(self.logTag) unexpected CloudKit response.")
                 failure(invalidServiceResponseError())
             }
         }
+        database().add(deleteOperation)
     }
 
     // MARK: - Exists?

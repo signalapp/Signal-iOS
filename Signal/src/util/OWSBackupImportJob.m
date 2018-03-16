@@ -256,7 +256,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(json);
     OWSAssert(key.length);
 
-    if (![json isKindOfClass:[NSArray class]]) {
+    if (![json isKindOfClass:[NSDictionary class]]) {
         OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
         return nil;
     }
@@ -408,12 +408,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
             continue;
         }
-        if (![self.backupIO decryptFileAsFile:item.downloadFilePath
-                                  dstFilePath:dstFilePath
-                                encryptionKey:item.encryptionKey]) {
-            DDLogError(@"%@ attachment could not be restored.", self.logTag);
-            // Attachment-related errors are recoverable and can be ignored.
-            continue;
+        @autoreleasepool {
+            if (![self.backupIO decryptFileAsFile:item.downloadFilePath
+                                      dstFilePath:dstFilePath
+                                    encryptionKey:item.encryptionKey]) {
+                DDLogError(@"%@ attachment could not be restored.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
         }
 
         DDLogError(@"%@ restored file: %@.", self.logTag, item.relativeFilePath);
@@ -497,60 +499,62 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                                     @"Indicates that the backup database is being restored.")
                                        progress:@(count / (CGFloat)self.databaseItems.count)];
 
-            NSData *_Nullable compressedData =
-                [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
-            if (!compressedData) {
-                // Database-related errors are unrecoverable.
-                aborted = YES;
-                return completion(NO);
-            }
-            NSData *_Nullable uncompressedData =
-                [self.backupIO decompressData:compressedData
-                       uncompressedDataLength:item.uncompressedDataLength.unsignedIntValue];
-            if (!uncompressedData) {
-                // Database-related errors are unrecoverable.
-                aborted = YES;
-                return completion(NO);
-            }
-            OWSSignalServiceProtosBackupSnapshot *_Nullable entities =
-                [OWSSignalServiceProtosBackupSnapshot parseFromData:uncompressedData];
-            if (!entities || entities.entity.count < 1) {
-                DDLogError(@"%@ missing entities.", self.logTag);
-                // Database-related errors are unrecoverable.
-                aborted = YES;
-                return completion(NO);
-            }
-            for (OWSSignalServiceProtosBackupSnapshotBackupEntity *entity in entities.entity) {
-                NSData *_Nullable entityData = entity.entityData;
-                if (entityData.length < 1) {
-                    DDLogError(@"%@ missing entity data.", self.logTag);
+            @autoreleasepool {
+                NSData *_Nullable compressedData =
+                    [self.backupIO decryptFileAsData:item.downloadFilePath encryptionKey:item.encryptionKey];
+                if (!compressedData) {
                     // Database-related errors are unrecoverable.
                     aborted = YES;
                     return completion(NO);
                 }
-
-                __block TSYapDatabaseObject *object = nil;
-                @try {
-                    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:entityData];
-                    object = [unarchiver decodeObjectForKey:@"root"];
-                    if (![object isKindOfClass:[object class]]) {
-                        DDLogError(@"%@ invalid decoded entity: %@.", self.logTag, [object class]);
+                NSData *_Nullable uncompressedData =
+                    [self.backupIO decompressData:compressedData
+                           uncompressedDataLength:item.uncompressedDataLength.unsignedIntValue];
+                if (!uncompressedData) {
+                    // Database-related errors are unrecoverable.
+                    aborted = YES;
+                    return completion(NO);
+                }
+                OWSSignalServiceProtosBackupSnapshot *_Nullable entities =
+                    [OWSSignalServiceProtosBackupSnapshot parseFromData:uncompressedData];
+                if (!entities || entities.entity.count < 1) {
+                    DDLogError(@"%@ missing entities.", self.logTag);
+                    // Database-related errors are unrecoverable.
+                    aborted = YES;
+                    return completion(NO);
+                }
+                for (OWSSignalServiceProtosBackupSnapshotBackupEntity *entity in entities.entity) {
+                    NSData *_Nullable entityData = entity.entityData;
+                    if (entityData.length < 1) {
+                        DDLogError(@"%@ missing entity data.", self.logTag);
                         // Database-related errors are unrecoverable.
                         aborted = YES;
                         return completion(NO);
                     }
-                } @catch (NSException *exception) {
-                    DDLogError(@"%@ could not decode entity.", self.logTag);
-                    // Database-related errors are unrecoverable.
-                    aborted = YES;
-                    return completion(NO);
-                }
 
-                [object saveWithTransaction:transaction];
-                copiedEntities++;
-                NSString *collection = [object.class collection];
-                NSUInteger restoredEntityCount = restoredEntityCounts[collection].unsignedIntValue;
-                restoredEntityCounts[collection] = @(restoredEntityCount + 1);
+                    __block TSYapDatabaseObject *object = nil;
+                    @try {
+                        NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:entityData];
+                        object = [unarchiver decodeObjectForKey:@"root"];
+                        if (![object isKindOfClass:[object class]]) {
+                            DDLogError(@"%@ invalid decoded entity: %@.", self.logTag, [object class]);
+                            // Database-related errors are unrecoverable.
+                            aborted = YES;
+                            return completion(NO);
+                        }
+                    } @catch (NSException *exception) {
+                        DDLogError(@"%@ could not decode entity.", self.logTag);
+                        // Database-related errors are unrecoverable.
+                        aborted = YES;
+                        return completion(NO);
+                    }
+
+                    [object saveWithTransaction:transaction];
+                    copiedEntities++;
+                    NSString *collection = [object.class collection];
+                    NSUInteger restoredEntityCount = restoredEntityCounts[collection].unsignedIntValue;
+                    restoredEntityCounts[collection] = @(restoredEntityCount + 1);
+                }
             }
         }
     }];

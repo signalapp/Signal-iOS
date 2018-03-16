@@ -124,7 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     static const int kMaxDBSnapshotSize = 1000;
     if (self.cachedItemCount > kMaxDBSnapshotSize) {
-        return [self flush];
+        @autoreleasepool {
+            return [self flush];
+        }
     }
 
     return YES;
@@ -137,26 +139,30 @@ NS_ASSUME_NONNULL_BEGIN
         return YES;
     }
 
-    NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder build].data;
-    NSUInteger uncompressedDataLength = uncompressedData.length;
-    self.backupSnapshotBuilder = nil;
-    self.cachedItemCount = 0;
-    if (!uncompressedData) {
-        OWSProdLogAndFail(@"%@ couldn't convert database snapshot to data.", self.logTag);
-        return NO;
+    // Try to release allocated buffers ASAP.
+    @autoreleasepool {
+
+        NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder build].data;
+        NSUInteger uncompressedDataLength = uncompressedData.length;
+        self.backupSnapshotBuilder = nil;
+        self.cachedItemCount = 0;
+        if (!uncompressedData) {
+            OWSProdLogAndFail(@"%@ couldn't convert database snapshot to data.", self.logTag);
+            return NO;
+        }
+
+        NSData *compressedData = [self.backupIO compressData:uncompressedData];
+
+        OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptDataAsTempFile:compressedData];
+        if (!encryptedItem) {
+            OWSProdLogAndFail(@"%@ couldn't encrypt database snapshot.", self.logTag);
+            return NO;
+        }
+
+        OWSBackupExportItem *exportItem = [[OWSBackupExportItem alloc] initWithEncryptedItem:encryptedItem];
+        exportItem.uncompressedDataLength = @(uncompressedDataLength);
+        [self.exportItems addObject:exportItem];
     }
-
-    NSData *compressedData = [self.backupIO compressData:uncompressedData];
-
-    OWSBackupEncryptedItem *_Nullable encryptedItem = [self.backupIO encryptDataAsTempFile:compressedData];
-    if (!encryptedItem) {
-        OWSProdLogAndFail(@"%@ couldn't encrypt database snapshot.", self.logTag);
-        return NO;
-    }
-
-    OWSBackupExportItem *exportItem = [[OWSBackupExportItem alloc] initWithEncryptedItem:encryptedItem];
-    exportItem.uncompressedDataLength = @(uncompressedDataLength);
-    [self.exportItems addObject:exportItem];
 
     return YES;
 }
@@ -500,9 +506,11 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    if (![exportStream flush]) {
-        OWSProdLogAndFail(@"%@ Could not flush database snapshots.", self.logTag);
-        return NO;
+    @autoreleasepool {
+        if (![exportStream flush]) {
+            OWSProdLogAndFail(@"%@ Could not flush database snapshots.", self.logTag);
+            return NO;
+        }
     }
 
     self.unsavedDatabaseItems = [exportStream.exportItems mutableCopy];
@@ -629,15 +637,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentExport *attachmentExport = self.unsavedAttachmentExports.lastObject;
     [self.unsavedAttachmentExports removeLastObject];
 
-    // OWSAttachmentExport is used to lazily write an encrypted copy of the
-    // attachment to disk.
-    if (![attachmentExport prepareForUpload]) {
-        // Attachment files are non-critical so any error uploading them is recoverable.
-        [weakSelf saveNextFileToCloud:completion];
-        return YES;
+    @autoreleasepool {
+        // OWSAttachmentExport is used to lazily write an encrypted copy of the
+        // attachment to disk.
+        if (![attachmentExport prepareForUpload]) {
+            // Attachment files are non-critical so any error uploading them is recoverable.
+            [weakSelf saveNextFileToCloud:completion];
+            return YES;
+        }
+        OWSAssert(attachmentExport.relativeFilePath.length > 0);
+        OWSAssert(attachmentExport.encryptedItem);
     }
-    OWSAssert(attachmentExport.relativeFilePath.length > 0);
-    OWSAssert(attachmentExport.encryptedItem);
 
     [OWSBackupAPI savePersistentFileOnceToCloudWithFileId:attachmentExport.attachmentId
         fileUrlBlock:^{
@@ -856,16 +866,21 @@ NS_ASSUME_NONNULL_BEGIN
                                             @"Indicates that the cloud is being cleaned up.")
                                progress:@(progress)];
 
-    NSString *recordName = obsoleteRecordNames.lastObject;
-    [obsoleteRecordNames removeLastObject];
+    static const NSUInteger kMaxBatchSize = 100;
+    NSMutableArray<NSString *> *batchRecordNames = [NSMutableArray new];
+    while (obsoleteRecordNames.count > 0 && batchRecordNames.count < kMaxBatchSize) {
+        NSString *recordName = obsoleteRecordNames.lastObject;
+        [obsoleteRecordNames removeLastObject];
+        [batchRecordNames addObject:recordName];
+    }
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [OWSBackupAPI deleteRecordFromCloudWithRecordName:recordName
+    [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:batchRecordNames
         success:^{
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                    deletedCount:deletedCount + 1
+                                    deletedCount:deletedCount + batchRecordNames.count
                                       completion:completion];
             });
         }
@@ -874,7 +889,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // Cloud cleanup is non-critical so any error is recoverable.
                 [weakSelf deleteRecordsFromCloud:obsoleteRecordNames
-                                    deletedCount:deletedCount + 1
+                                    deletedCount:deletedCount + batchRecordNames.count
                                       completion:completion];
             });
         }];
