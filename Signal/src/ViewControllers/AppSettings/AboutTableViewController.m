@@ -72,18 +72,28 @@
 #ifdef DEBUG
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
+    __block NSUInteger attachmentCount;
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        threadCount = [[transaction ext:TSThreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
-        messageCount = [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInAllGroups];
+        threadCount = [transaction numberOfKeysInCollection:[TSThread collection]];
+        messageCount = [transaction numberOfKeysInCollection:[TSInteraction collection]];
+        attachmentCount = [transaction numberOfKeysInCollection:[TSAttachment collection]];
     }];
-    unsigned long long databaseFileSize = [OWSPrimaryStorage.sharedManager databaseFileSize];
 
     OWSTableSection *debugSection = [OWSTableSection new];
     debugSection.headerTitle = @"Debug";
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %zd", threadCount]]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %zd", messageCount]]];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %llu", databaseFileSize]]];
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Attachments: %zd", attachmentCount]]];
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %llu",
+                                                          [OWSPrimaryStorage.sharedManager databaseFileSize]]]];
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database WAL size: %llu",
+                                                          [OWSPrimaryStorage.sharedManager databaseWALFileSize]]]];
+    [debugSection
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %llu",
+                                                          [OWSPrimaryStorage.sharedManager databaseSHMFileSize]]]];
     [contents addSection:debugSection];
 
     OWSPreferences *preferences = [Environment preferences];

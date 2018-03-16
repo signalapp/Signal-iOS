@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup tryToImportBackup];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Log Database Size Stats"
+                                     actionBlock:^{
+                                         [DebugUIBackup logDatabaseSizeStats];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -95,15 +99,55 @@ NS_ASSUME_NONNULL_BEGIN
                                             message:@"This will delete all of your database contents."
                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    [controller addAction:[UIAlertAction
-                              actionWithTitle:@"Restore"
-                                        style:UIAlertActionStyleDefault
-                                      handler:^(UIAlertAction *_Nonnull action) {
-                                          [OWSBackup.sharedManager tryToImportBackup];
-                                      }]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"Restore"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                     [OWSBackup.sharedManager tryToImportBackup];
+                                                 }]];
     [controller addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentViewController:controller animated:YES completion:nil];
+}
+
++ (void)logDatabaseSizeStats
+{
+    DDLogInfo(@"%@ logDatabaseSizeStats.", self.logTag);
+
+    __block unsigned long long interactionCount = 0;
+    __block unsigned long long interactionSizeTotal = 0;
+    __block unsigned long long attachmentCount = 0;
+    __block unsigned long long attachmentSizeTotal = 0;
+    [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [transaction enumerateKeysAndObjectsInCollection:[TSInteraction collection]
+                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                                  TSInteraction *interaction = object;
+                                                  interactionCount++;
+                                                  NSData *_Nullable data =
+                                                      [NSKeyedArchiver archivedDataWithRootObject:interaction];
+                                                  OWSAssert(data);
+                                                  interactionSizeTotal += data.length;
+                                              }];
+        [transaction enumerateKeysAndObjectsInCollection:[TSAttachment collection]
+                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                                  TSAttachment *attachment = object;
+                                                  attachmentCount++;
+                                                  NSData *_Nullable data =
+                                                      [NSKeyedArchiver archivedDataWithRootObject:attachment];
+                                                  OWSAssert(data);
+                                                  attachmentSizeTotal += data.length;
+                                              }];
+    }];
+
+    DDLogInfo(@"%@ interactionCount: %llu", self.logTag, interactionCount);
+    DDLogInfo(@"%@ interactionSizeTotal: %llu", self.logTag, interactionSizeTotal);
+    if (interactionCount > 0) {
+        DDLogInfo(@"%@ interaction average size: %f", self.logTag, interactionSizeTotal / (double)interactionCount);
+    }
+    DDLogInfo(@"%@ attachmentCount: %llu", self.logTag, attachmentCount);
+    DDLogInfo(@"%@ attachmentSizeTotal: %llu", self.logTag, attachmentSizeTotal);
+    if (attachmentCount > 0) {
+        DDLogInfo(@"%@ attachment average size: %f", self.logTag, attachmentSizeTotal / (double)attachmentCount);
+    }
 }
 
 @end

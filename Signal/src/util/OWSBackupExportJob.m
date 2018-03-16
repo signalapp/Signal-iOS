@@ -5,6 +5,8 @@
 #import "OWSBackupExportJob.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import "zlib.h"
+#import <SSZipArchive/SSZipArchive.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -18,10 +20,166 @@
 #import <SignalServiceKit/Threading.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabasePrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKeySpec";
+
+@interface YapDatabase (OWSBackupExportJob)
+
+- (void)flushInternalQueue;
+- (void)flushCheckpointQueue;
+
+@end
+
+#pragma mark -
+
+@interface OWSStorageReference : NSObject
+
+@property (nonatomic, nullable) OWSStorage *storage;
+
+@end
+
+#pragma mark -
+
+@implementation OWSStorageReference
+
+@end
+
+#pragma mark -
+
+// TODO: This implementation is a proof-of-concept and
+// isn't production ready.
+@interface OWSExportStream : NSObject
+
+@property (nonatomic) NSString *dataFilePath;
+
+@property (nonatomic) NSString *zipFilePath;
+
+@property (nonatomic, nullable) NSFileHandle *fileHandle;
+
+@property (nonatomic, nullable) SSZipArchive *zipFile;
+
+@end
+
+#pragma mark -
+
+@implementation OWSExportStream
+
+- (void)dealloc
+{
+    // Surface memory leaks by logging the deallocation of view controllers.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
+    [self.fileHandle closeFile];
+
+    if (self.zipFile) {
+        if (![self.zipFile close]) {
+            DDLogError(@"%@ couldn't close to database snapshot zip.", self.logTag);
+        }
+    }
+}
+
++ (OWSExportStream *)exportStreamWithName:(NSString *)filename jobTempDirPath:(NSString *)jobTempDirPath
+{
+    OWSAssert(filename.length > 0);
+    OWSAssert(jobTempDirPath.length > 0);
+
+    OWSExportStream *exportStream = [OWSExportStream new];
+    exportStream.dataFilePath = [jobTempDirPath stringByAppendingPathComponent:filename];
+    exportStream.zipFilePath = [exportStream.dataFilePath stringByAppendingPathExtension:@"zip"];
+    if (![exportStream open]) {
+        return nil;
+    }
+    return exportStream;
+}
+
+- (BOOL)open
+{
+    if (![[NSFileManager defaultManager] createFileAtPath:self.dataFilePath contents:nil attributes:nil]) {
+        OWSProdLogAndFail(@"%@ Could not create database snapshot stream.", self.logTag);
+        return NO;
+    }
+    if (![OWSFileSystem protectFileOrFolderAtPath:self.dataFilePath]) {
+        OWSProdLogAndFail(@"%@ Could not protect database snapshot stream.", self.logTag);
+        return NO;
+    }
+    NSError *error;
+    self.fileHandle = [NSFileHandle fileHandleForWritingToURL:[NSURL fileURLWithPath:self.dataFilePath] error:&error];
+    if (!self.fileHandle || error) {
+        OWSProdLogAndFail(@"%@ Could not open database snapshot stream: %@.", self.logTag, error);
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)writeObject:(TSYapDatabaseObject *)object
+{
+    OWSAssert(object);
+    OWSAssert(self.fileHandle);
+
+    NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:object];
+    if (!data) {
+        OWSProdLogAndFail(@"%@ couldn't serialize database object: %@", self.logTag, [object class]);
+        return NO;
+    }
+
+    // We use a fixed width data type.
+    unsigned int dataLength = (unsigned int)data.length;
+    NSData *dataLengthData = [NSData dataWithBytes:&dataLength length:sizeof(dataLength)];
+    [self.fileHandle writeData:dataLengthData];
+    [self.fileHandle writeData:data];
+    return YES;
+}
+
+- (BOOL)closeAndZipData
+{
+    [self.fileHandle closeFile];
+    self.fileHandle = nil;
+
+    self.zipFile = [[SSZipArchive alloc] initWithPath:self.zipFilePath];
+    if (!self.zipFile) {
+        OWSProdLogAndFail(@"%@ Could not create database snapshot zip.", self.logTag);
+        return NO;
+    }
+    if (![self.zipFile open]) {
+        OWSProdLogAndFail(@"%@ Could not open database snapshot zip.", self.logTag);
+        return NO;
+    }
+
+    BOOL success = [self.zipFile writeFileAtPath:self.dataFilePath
+                                    withFileName:@"payload"
+                                compressionLevel:Z_BEST_COMPRESSION
+                                        password:nil
+                                             AES:NO];
+    if (!success) {
+        OWSProdLogAndFail(@"%@ Could not write to database snapshot zip.", self.logTag);
+        return NO;
+    }
+
+    if (![self.zipFile close]) {
+        DDLogError(@"%@ couldn't close database snapshot zip.", self.logTag);
+        return NO;
+    }
+    self.zipFile = nil;
+
+    if (![OWSFileSystem protectFileOrFolderAtPath:self.zipFilePath]) {
+        DDLogError(@"%@ could not protect database snapshot zip.", self.logTag);
+    }
+
+    DDLogInfo(@"%@ wrote database snapshot zip: %@ (%@ -> %@)",
+        self.logTag,
+        self.zipFilePath.lastPathComponent,
+        [OWSFileSystem fileSizeOfPath:self.dataFilePath],
+        [OWSFileSystem fileSizeOfPath:self.zipFilePath]);
+
+    return YES;
+}
+
+@end
+
+#pragma mark -
 
 @interface OWSAttachmentExport : NSObject
 
@@ -87,8 +245,6 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 @interface OWSBackupExportJob ()
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
-
-@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
 
 @property (nonatomic) NSMutableArray<NSString *> *databaseFilePaths;
 // A map of "record name"-to-"file name".
@@ -238,9 +394,10 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         return databaseKeySpec;
     };
 
-    self.backupStorage =
+    OWSStorageReference *storageReference = [OWSStorageReference new];
+    storageReference.storage =
         [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:jobDatabaseDirPath keySpecBlock:keySpecBlock];
-    if (!self.backupStorage) {
+    if (!storageReference.storage) {
         OWSProdLogAndFail(@"%@ Could not create backupStorage.", self.logTag);
         return completion(NO);
     }
@@ -248,29 +405,143 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     // TODO: Do we really need to run these registrations on the main thread?
     __weak OWSBackupExportJob *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.backupStorage runSyncRegistrations];
-        [weakSelf.backupStorage runAsyncRegistrationsWithCompletion:^{
+        [storageReference.storage runSyncRegistrations];
+        [storageReference.storage runAsyncRegistrationsWithCompletion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion([weakSelf exportDatabaseContents]);
+                [weakSelf exportDatabaseContentsAndCleanup:storageReference completion:completion];
             });
         }];
     });
 }
 
-- (BOOL)exportDatabaseContents
+- (void)exportDatabaseContentsAndCleanup:(OWSStorageReference *)storageReference
+                              completion:(OWSBackupJobBoolCompletion)completion
 {
+    OWSAssert(storageReference);
+    OWSAssert(completion);
+
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    YapDatabaseConnection *_Nullable tempDBConnection = self.backupStorage.newDatabaseConnection;
+    __weak YapDatabase *_Nullable weakDatabase = nil;
+    dispatch_queue_t snapshotQueue;
+    dispatch_queue_t writeQueue;
+    NSArray<NSString *> *_Nullable allDatabaseFilePaths = nil;
+
+    @autoreleasepool {
+        allDatabaseFilePaths = [self exportDatabaseContents:storageReference];
+        if (!allDatabaseFilePaths) {
+            completion(NO);
+        }
+
+        // After the data has been written to the database snapshot,
+        // we need to synchronously block until the database has been
+        // completely closed.  This is non-trivial because the database
+        // does a bunch of async work as its closing.
+        YapDatabase *database = storageReference.storage.database;
+
+        weakDatabase = database;
+        snapshotQueue = database->snapshotQueue;
+        writeQueue = database->writeQueue;
+
+        [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_DATABASE_FINALIZED",
+                                                @"Indicates that the backup export data is being finalized.")
+                                   progress:nil];
+
+        // Flush these two queues immediately.
+        [database flushInternalQueue];
+        [database flushCheckpointQueue];
+
+        // Close the database.
+        storageReference.storage = nil;
+    }
+
+    // Flush these queues, which may contain lingering
+    // references to the database.
+    dispatch_sync(snapshotQueue,
+        ^{
+        });
+    dispatch_sync(writeQueue,
+        ^{
+        });
+
+    // YapDatabase retains the registration connection for N seconds.
+    // The conneciton retains a strong reference to the database.
+    // We therefore need to wait a bit longer to ensure that this
+    // doesn't block deallocation.
+    NSTimeInterval kRegistrationConnectionDelaySeconds = 5.0 * 1.2;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(kRegistrationConnectionDelaySeconds * NSEC_PER_SEC)),
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            // Dispatch to main thread to wait for any lingering notifications fired by
+            // database (e.g. cross process notifier).
+            dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    // Verify that the database is indeed closed.
+                    YapDatabase *_Nullable strongDatabase = weakDatabase;
+                    OWSAssert(!strongDatabase);
+
+                    // Capture the list of database files to save.
+                    NSMutableArray<NSString *> *databaseFilePaths = [NSMutableArray new];
+                    for (NSString *filePath in allDatabaseFilePaths) {
+                        if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+                            [databaseFilePaths addObject:filePath];
+                        }
+                    }
+                    if (databaseFilePaths.count < 1) {
+                        OWSProdLogAndFail(@"%@ Can't find database file.", self.logTag);
+                        return completion(NO);
+                    }
+                    self.databaseFilePaths = [databaseFilePaths mutableCopy];
+
+                    completion(YES);
+                });
+            });
+        });
+}
+
+- (nullable NSArray<NSString *> *)exportDatabaseContents:(OWSStorageReference *)storageReference
+{
+    OWSAssert(storageReference);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_DATABASE_EXPORT",
+                                            @"Indicates that the database data is being exported.")
+                               progress:nil];
+
+    YapDatabaseConnection *_Nullable tempDBConnection = storageReference.storage.newDatabaseConnection;
     if (!tempDBConnection) {
         OWSProdLogAndFail(@"%@ Could not create tempDBConnection.", self.logTag);
-        return NO;
+        return nil;
     }
     YapDatabaseConnection *_Nullable primaryDBConnection = self.primaryStorage.newDatabaseConnection;
     if (!primaryDBConnection) {
         OWSProdLogAndFail(@"%@ Could not create primaryDBConnection.", self.logTag);
-        return NO;
+        return nil;
     }
+
+    NSString *const kDatabaseSnapshotFilename_Threads = @"threads";
+    NSString *const kDatabaseSnapshotFilename_Interactions = @"interactions";
+    NSString *const kDatabaseSnapshotFilename_Attachments = @"attachments";
+    NSString *const kDatabaseSnapshotFilename_Migrations = @"migrations";
+    OWSExportStream *_Nullable exportStream_Threads =
+        [OWSExportStream exportStreamWithName:kDatabaseSnapshotFilename_Threads jobTempDirPath:self.jobTempDirPath];
+    OWSExportStream *_Nullable exportStream_Interactions =
+        [OWSExportStream exportStreamWithName:kDatabaseSnapshotFilename_Interactions
+                               jobTempDirPath:self.jobTempDirPath];
+    OWSExportStream *_Nullable exportStream_Attachments =
+        [OWSExportStream exportStreamWithName:kDatabaseSnapshotFilename_Attachments jobTempDirPath:self.jobTempDirPath];
+    OWSExportStream *_Nullable exportStream_Migrations =
+        [OWSExportStream exportStreamWithName:kDatabaseSnapshotFilename_Migrations jobTempDirPath:self.jobTempDirPath];
+    if (!(exportStream_Threads && exportStream_Interactions && exportStream_Attachments && exportStream_Migrations)) {
+        return nil;
+    }
+    NSArray<OWSExportStream *> *exportStreams = @[
+        exportStream_Threads,
+        exportStream_Interactions,
+        exportStream_Attachments,
+        exportStream_Migrations,
+    ];
 
     __block unsigned long long copiedThreads = 0;
     __block unsigned long long copiedInteractions = 0;
@@ -280,6 +551,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
     self.attachmentFilePathMap = [NSMutableDictionary new];
 
+    __block BOOL aborted = NO;
     [primaryDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
         [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
             [dstTransaction setObject:@(YES)
@@ -303,6 +575,12 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              [thread saveWithTransaction:dstTransaction];
                                              copiedThreads++;
                                              copiedEntities++;
+
+                                             if (![exportStream_Threads writeObject:thread]) {
+                                                 *stop = YES;
+                                                 aborted = YES;
+                                                 return;
+                                             }
                                          }];
 
             // Copy attachments.
@@ -330,6 +608,12 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              [attachment saveWithTransaction:dstTransaction];
                                              copiedAttachments++;
                                              copiedEntities++;
+
+                                             if (![exportStream_Attachments writeObject:attachment]) {
+                                                 *stop = YES;
+                                                 aborted = YES;
+                                                 return;
+                                             }
                                          }];
 
             // Copy interactions.
@@ -362,6 +646,12 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              [interaction saveWithTransaction:dstTransaction];
                                              copiedInteractions++;
                                              copiedEntities++;
+
+                                             if (![exportStream_Interactions writeObject:interaction]) {
+                                                 *stop = YES;
+                                                 aborted = YES;
+                                                 return;
+                                             }
                                          }];
 
             // Copy migrations.
@@ -381,12 +671,36 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              [migration saveWithTransaction:dstTransaction];
                                              copiedMigrations++;
                                              copiedEntities++;
+
+                                             if (![exportStream_Migrations writeObject:migration]) {
+                                                 *stop = YES;
+                                                 aborted = YES;
+                                                 return;
+                                             }
                                          }];
         }];
     }];
 
+    unsigned long long totalZipFileSize = 0;
+    for (OWSExportStream *exportStream in exportStreams) {
+        if (![exportStream closeAndZipData]) {
+            DDLogError(@"%@ couldn't close database snapshot zip.", self.logTag);
+            return nil;
+        }
+        NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:exportStream.zipFilePath];
+        if (!fileSize) {
+            DDLogError(@"%@ couldn't get file size of database snapshot zip.", self.logTag);
+            return nil;
+        }
+        totalZipFileSize += fileSize.unsignedLongLongValue;
+    }
+
+    if (aborted) {
+        return nil;
+    }
+
     if (self.isComplete) {
-        return NO;
+        return nil;
     }
     // TODO: Should we do a database checkpoint?
 
@@ -396,19 +710,44 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     DDLogInfo(@"%@ copiedAttachments: %llu", self.logTag, copiedAttachments);
     DDLogInfo(@"%@ copiedMigrations: %llu", self.logTag, copiedMigrations);
 
-    [self.backupStorage logFileSizes];
+    [storageReference.storage logFileSizes];
+
+    unsigned long long totalDbFileSize
+        = ([OWSFileSystem fileSizeOfPath:storageReference.storage.databaseFilePath].unsignedLongLongValue +
+            [OWSFileSystem fileSizeOfPath:storageReference.storage.databaseFilePath_WAL].unsignedLongLongValue +
+            [OWSFileSystem fileSizeOfPath:storageReference.storage.databaseFilePath_SHM].unsignedLongLongValue);
+    if (totalZipFileSize > 0 && totalDbFileSize > 0) {
+        DDLogInfo(@"%@ file size savings: %llu / %llu = %0.2f",
+            self.logTag,
+            totalZipFileSize,
+            totalDbFileSize,
+            totalZipFileSize / (CGFloat)totalDbFileSize);
+    }
 
     // Capture the list of files to save.
-    self.databaseFilePaths = [@[
-        self.backupStorage.databaseFilePath,
-        self.backupStorage.databaseFilePath_WAL,
-        self.backupStorage.databaseFilePath_SHM,
-    ] mutableCopy];
+    return @[
+        storageReference.storage.databaseFilePath,
+        storageReference.storage.databaseFilePath_WAL,
+        storageReference.storage.databaseFilePath_SHM,
+    ];
+}
 
-    // Close the database.
-    tempDBConnection = nil;
-    self.backupStorage = nil;
+- (BOOL)writeObject:(TSYapDatabaseObject *)object fileHandle:(NSFileHandle *)fileHandle
+{
+    OWSAssert(object);
+    OWSAssert(fileHandle);
 
+    NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:object];
+    if (!data) {
+        OWSProdLogAndFail(@"%@ couldn't serialize database object: %@", self.logTag, [object class]);
+        return NO;
+    }
+
+    // We use a fixed width data type.
+    unsigned int dataLength = (unsigned int)data.length;
+    NSData *dataLengthData = [NSData dataWithBytes:&dataLength length:sizeof(dataLength)];
+    [fileHandle writeData:dataLengthData];
+    [fileHandle writeData:data];
     return YES;
 }
 
@@ -477,6 +816,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         }
         failure:^(NSError *error) {
             // Database files are critical so any error uploading them is unrecoverable.
+            DDLogVerbose(@"%@ error while saving file: %@", self.logTag, filePath);
             completion(error);
         }];
     return YES;

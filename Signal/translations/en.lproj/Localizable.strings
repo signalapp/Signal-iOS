@@ -161,7 +161,7 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid server response.";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
 
 /* Error indicating the a backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
@@ -171,6 +171,12 @@
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+
+/* Indicates that the backup export data is being finalized. */
+"BACKUP_EXPORT_PHASE_DATABASE_FINALIZED" = "Finalizing Data";
 
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";

@@ -326,6 +326,16 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     return OWSPrimaryStorage.databaseFilePath;
 }
 
+- (NSString *)databaseFilePath_SHM
+{
+    return OWSPrimaryStorage.databaseFilePath_SHM;
+}
+
+- (NSString *)databaseFilePath_WAL
+{
+    return OWSPrimaryStorage.databaseFilePath_WAL;
+}
+
 - (NSString *)databaseFilename_SHM
 {
     return OWSPrimaryStorage.databaseFilename_SHM;
