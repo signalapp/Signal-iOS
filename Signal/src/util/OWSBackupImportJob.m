@@ -3,6 +3,7 @@
 //
 
 #import "OWSBackupImportJob.h"
+#import "OWSBackupEncryption.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSDatabaseMigrationRunner.h"
 #import "Signal-Swift.h"

@@ -13,7 +13,6 @@ NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBac
 
 NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
-NSString *const OWSBackup_BackupKeyKey = @"OWSBackup_BackupKeyKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
 
@@ -105,31 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self ensureBackupExportState];
     });
-}
-
-- (void)setBackupPrivateKey:(NSData *)value
-{
-    OWSAssert(value);
-
-    // TODO: Use actual key.
-    [self.dbConnection setObject:value
-                          forKey:OWSBackup_BackupKeyKey
-                    inCollection:OWSPrimaryStorage_OWSBackupCollection];
-}
-
-- (nullable NSData *)backupPrivateKey
-{
-    NSData *_Nullable result =
-        [self.dbConnection objectForKey:OWSBackup_BackupKeyKey inCollection:OWSPrimaryStorage_OWSBackupCollection];
-    if (!result) {
-        // TODO: Use actual key.
-        const NSUInteger kBackupPrivateKeyLength = 32;
-        result = [Randomness generateRandomBytes:kBackupPrivateKeyLength];
-        [self setBackupPrivateKey:result];
-    }
-    OWSAssert(result);
-    OWSAssert([result isKindOfClass:[NSData class]]);
-    return result;
 }
 
 #pragma mark - Backup Export
@@ -383,9 +357,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - OWSBackupJobDelegate
 
 // We use a delegate method to avoid storing this key in memory.
-- (nullable NSData *)backupKey
+- (nullable NSData *)backupEncryptionKey
 {
-    return self.backupPrivateKey;
+    // TODO: Use actual encryption key.
+    return [@"temp" dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 - (void)backupJobDidSucceed:(OWSBackupJob *)backupJob

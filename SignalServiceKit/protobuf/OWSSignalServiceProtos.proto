@@ -238,3 +238,21 @@ message GroupDetails {
   optional bool   active      = 5 [default = true];
   optional uint32 expireTimer = 6;
 }
+
+message BackupSnapshot
+{
+    message BackupEntity
+    {
+        enum Type {
+            UNKNOWN = 0;
+            MIGRATION = 1;
+            THREAD = 2;
+            INTERACTION = 3;
+            ATTACHMENT = 4;
+        }
+        optional Type type = 1;
+        optional bytes data = 2;
+    }
+
+    repeated BackupEntity entity = 1;
+}
