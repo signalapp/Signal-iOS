@@ -28,14 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSString *recordName;
 
-// This property is optional and represents the location of this
-// item relative to the root directory for items of this type.
-//@property (nonatomic, nullable) NSString *fileRelativePath;
-
 // This property is optional and is only used for attachments.
 @property (nonatomic, nullable) OWSAttachmentExport *attachmentExport;
 
 // This property is optional.
+//
+// See comments in `OWSBackupIO`.
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -63,6 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// Used to serialize database snapshot contents.
+// Writes db entities using protobufs into snapshot fragments.
+// Snapshot fragments are compressed (they compress _very well_,
+// around 20x smaller) then encrypted.  Ordering matters in
+// snapshot contents (entities should we restored in the same
+// order they are serialized), so we are always careful to preserve
+// ordering of entities within a snapshot AND ordering of snapshot
+// fragments within a bakckup.
+//
+// This stream is used to write entities one at a time and takes
+// care of sharding them into fragments, compressing and encrypting
+// those fragments.  Fragment size is fixed to reduce worst case
+// memory usage.
 @interface OWSDBExportStream : NSObject
 
 @property (nonatomic) OWSBackupIO *backupIO;
@@ -97,6 +108,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+
+// It isn't strictly necessary to capture the entity type (the importer doesn't
+// use this state), but I think it'll be helpful to have around to future-proof
+// this work, help with debugging issue, etc.
 - (BOOL)writeObject:(TSYapDatabaseObject *)object
          entityType:(OWSSignalServiceProtosBackupSnapshotBackupEntityType)entityType
 {
@@ -133,15 +148,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Write cached data to disk, if necessary.
+//
+// Returns YES on success.
 - (BOOL)flush
 {
     if (!self.backupSnapshotBuilder) {
+        // No data to flush to disk.
         return YES;
     }
 
     // Try to release allocated buffers ASAP.
     @autoreleasepool {
-
         NSData *_Nullable uncompressedData = [self.backupSnapshotBuilder build].data;
         NSUInteger uncompressedDataLength = uncompressedData.length;
         self.backupSnapshotBuilder = nil;
@@ -171,6 +188,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// This class is used to:
+//
+// * Lazy-encrypt and eagerly cleanup attachment uploads.
+//   To reduce disk footprint of backup export process,
+//   we only want to have one attachment export on disk
+//   at a time.
 @interface OWSAttachmentExport : NSObject
 
 @property (nonatomic) OWSBackupIO *backupIO;
@@ -210,9 +233,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Surface memory leaks by logging the deallocation.
     DDLogVerbose(@"Dealloc: %@", self.class);
+
+    [self cleanUp];
 }
 
 // On success, encryptedItem will be non-nil.
+//
+// Returns YES on success.
 - (BOOL)prepareForUpload
 {
     OWSAssert(self.attachmentId.length > 0);
@@ -239,6 +266,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.encryptedItem = encryptedItem;
     return YES;
+}
+
+// Returns YES on success.
+- (BOOL)cleanUp
+{
+    return [OWSFileSystem deleteFileIfExists:self.encryptedItem.filePath];
 }
 
 @end
@@ -669,6 +702,11 @@ NS_ASSUME_NONNULL_BEGIN
                     return;
                 }
 
+                if (![attachmentExport cleanUp]) {
+                    DDLogError(@"%@ couldn't clean up attachment export.", self.logTag);
+                    // Attachment files are non-critical so any error uploading them is recoverable.
+                }
+
                 OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
                 exportItem.encryptedItem = attachmentExport.encryptedItem;
                 exportItem.recordName = recordName;
@@ -685,6 +723,11 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (![attachmentExport cleanUp]) {
+                    DDLogError(@"%@ couldn't clean up attachment export.", self.logTag);
+                    // Attachment files are non-critical so any error uploading them is recoverable.
+                }
+
                 // Attachment files are non-critical so any error uploading them is recoverable.
                 [weakSelf saveNextFileToCloudWithCompletion:completion];
             });

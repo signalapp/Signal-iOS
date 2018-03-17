@@ -45,6 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)compressData:(NSData *)srcData;
 
+// I'm using the (new in iOS 9) compressionlib.  One of its weaknesses is that it
+// requires you to pre-allocate output buffers during compression and decompression.
+// During decompression this is particularly tricky since there's no way to safely
+// predict how large the output will be based on the input.  So, we store the
+// uncompressed size for compressed backup items.
 - (nullable NSData *)decompressData:(NSData *)srcData uncompressedDataLength:(NSUInteger)uncompressedDataLength;
 
 @end
