@@ -160,32 +160,44 @@
 /* Error indicating the a backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid server response.";
+
 /* Error indicating the a backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning up backup data.";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing backup.";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting backup data.";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading backup data.";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
 
 /* Error indicating the a backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
-/* Error indicating the a backup import failed to download a file from the cloud. */
-"BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED" = "Could not download backup data.";
-
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring backup restore.";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
@@ -1585,8 +1597,35 @@
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "Backup";
 
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "Phase";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "Progress";
+
+/* Label for status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "Status";
+
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add…";

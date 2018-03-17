@@ -90,7 +90,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogInfo(@"%@ tryToImportBackup.", self.logTag);
 
-    [OWSBackup.sharedManager tryToImportBackup];
+    UIAlertController *controller =
+        [UIAlertController alertControllerWithTitle:@"Restore CloudKit Backup"
+                                            message:@"This will delete all of your database contents."
+                                     preferredStyle:UIAlertControllerStyleAlert];
+
+    [controller addAction:[UIAlertAction
+                              actionWithTitle:@"Restore"
+                                        style:UIAlertActionStyleDefault
+                                      handler:^(UIAlertAction *_Nonnull action) {
+                                          [OWSBackup.sharedManager tryToImportBackup];
+                                      }]];
+    [controller addAction:[OWSAlerts cancelAction]];
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:controller animated:YES completion:nil];
 }
 
 @end

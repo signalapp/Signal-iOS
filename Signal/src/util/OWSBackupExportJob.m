@@ -3,6 +3,7 @@
 //
 
 #import "OWSBackupExportJob.h"
+#import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -10,6 +11,7 @@
 #import <SignalServiceKit/OWSBackupStorage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -84,9 +86,9 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
 @interface OWSBackupExportJob ()
 
-@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
-
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
+
+@property (nonatomic, nullable) OWSBackupStorage *backupStorage;
 
 @property (nonatomic) NSMutableArray<NSString *> *databaseFilePaths;
 // A map of "record name"-to-"file name".
@@ -133,8 +135,8 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                progress:nil];
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [self configureExport:^(BOOL success) {
-        if (!success) {
+    [self configureExport:^(BOOL configureExportSuccess) {
+        if (!configureExportSuccess) {
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
                           @"Error indicating the a backup export could not export the user's data.")];
@@ -147,26 +149,29 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
                                                 @"Indicates that the backup export data is being exported.")
                                    progress:nil];
-        if (![self exportDatabase]) {
-            [self failWithErrorDescription:
-                      NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                          @"Error indicating the a backup export could not export the user's data.")];
-            return;
-        }
-        if (self.isComplete) {
-            return;
-        }
-        [self saveToCloud:^(NSError *_Nullable saveError) {
-            if (saveError) {
-                [weakSelf failWithError:saveError];
+        [self exportDatabase:^(BOOL exportDatabaseSuccess) {
+            if (!exportDatabaseSuccess) {
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                              @"Error indicating the a backup export could not export the user's data.")];
                 return;
             }
-            [self cleanUpCloud:^(NSError *_Nullable cleanUpError) {
-                if (cleanUpError) {
-                    [weakSelf failWithError:cleanUpError];
+
+            if (self.isComplete) {
+                return;
+            }
+            [self saveToCloud:^(NSError *_Nullable saveError) {
+                if (saveError) {
+                    [weakSelf failWithError:saveError];
                     return;
                 }
-                [weakSelf succeed];
+                [self cleanUpCloud:^(NSError *_Nullable cleanUpError) {
+                    if (cleanUpError) {
+                        [weakSelf failWithError:cleanUpError];
+                        return;
+                    }
+                    [weakSelf succeed];
+                }];
             }];
         }];
     }];
@@ -182,6 +187,35 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return completion(NO);
     }
+
+    // We need to verify that we have a valid account.
+    // Otherwise, if we re-register on another device, we
+    // continue to backup on our old device, overwriting
+    // backups from the new device.
+    //
+    // We use an arbitrary request that requires authentication
+    // to verify our account state.
+    TSRequest *currentSignedPreKey = [OWSRequestFactory currentSignedPreKeyRequest];
+    [[TSNetworkManager sharedManager] makeRequest:currentSignedPreKey
+        success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(YES);
+            });
+        }
+        failure:^(NSURLSessionDataTask *task, NSError *error) {
+            // TODO: We may want to surface this in the UI.
+            DDLogError(@"%@ could not verify account status: %@.", self.logTag, error);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(NO);
+            });
+        }];
+}
+
+- (void)exportDatabase:(OWSBackupJobBoolCompletion)completion
+{
+    OWSAssert(completion);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (![OWSBackupJob generateRandomDatabaseKeySpecWithKeychainKey:kOWSBackup_ExportDatabaseKeySpec]) {
         OWSProdLogAndFail(@"%@ Could not generate database key spec for export.", self.logTag);
@@ -203,6 +237,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         }
         return databaseKeySpec;
     };
+
     self.backupStorage =
         [[OWSBackupStorage alloc] initBackupStorageWithDatabaseDirPath:jobDatabaseDirPath keySpecBlock:keySpecBlock];
     if (!self.backupStorage) {
@@ -211,17 +246,18 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     }
 
     // TODO: Do we really need to run these registrations on the main thread?
+    __weak OWSBackupExportJob *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.backupStorage runSyncRegistrations];
-        [self.backupStorage runAsyncRegistrationsWithCompletion:^{
+        [weakSelf.backupStorage runSyncRegistrations];
+        [weakSelf.backupStorage runAsyncRegistrationsWithCompletion:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(YES);
+                completion([weakSelf exportDatabaseContents]);
             });
         }];
     });
 }
 
-- (BOOL)exportDatabase
+- (BOOL)exportDatabaseContents
 {
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -240,11 +276,16 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
     __block unsigned long long copiedInteractions = 0;
     __block unsigned long long copiedEntities = 0;
     __block unsigned long long copiedAttachments = 0;
+    __block unsigned long long copiedMigrations = 0;
 
     self.attachmentFilePathMap = [NSMutableDictionary new];
 
     [primaryDBConnection readWithBlock:^(YapDatabaseReadTransaction *srcTransaction) {
         [tempDBConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *dstTransaction) {
+            [dstTransaction setObject:@(YES)
+                               forKey:kOWSBackup_Snapshot_ValidKey
+                         inCollection:kOWSBackup_Snapshot_Collection];
+
             // Copy threads.
             [srcTransaction
                 enumerateKeysAndObjectsInCollection:[TSThread collection]
@@ -266,7 +307,7 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
 
             // Copy attachments.
             [srcTransaction
-                enumerateKeysAndObjectsInCollection:[TSAttachmentStream collection]
+                enumerateKeysAndObjectsInCollection:[TSAttachment collection]
                                          usingBlock:^(NSString *key, id object, BOOL *stop) {
                                              if (self.isComplete) {
                                                  *stop = YES;
@@ -322,15 +363,38 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                                              copiedInteractions++;
                                              copiedEntities++;
                                          }];
+
+            // Copy migrations.
+            [srcTransaction
+                enumerateKeysAndObjectsInCollection:[OWSDatabaseMigration collection]
+                                         usingBlock:^(NSString *key, id object, BOOL *stop) {
+                                             if (self.isComplete) {
+                                                 *stop = YES;
+                                                 return;
+                                             }
+                                             if (![object isKindOfClass:[OWSDatabaseMigration class]]) {
+                                                 OWSProdLogAndFail(
+                                                     @"%@ unexpected class: %@", self.logTag, [object class]);
+                                                 return;
+                                             }
+                                             OWSDatabaseMigration *migration = object;
+                                             [migration saveWithTransaction:dstTransaction];
+                                             copiedMigrations++;
+                                             copiedEntities++;
+                                         }];
         }];
     }];
 
+    if (self.isComplete) {
+        return NO;
+    }
     // TODO: Should we do a database checkpoint?
 
     DDLogInfo(@"%@ copiedThreads: %llu", self.logTag, copiedThreads);
     DDLogInfo(@"%@ copiedMessages: %llu", self.logTag, copiedInteractions);
     DDLogInfo(@"%@ copiedEntities: %llu", self.logTag, copiedEntities);
     DDLogInfo(@"%@ copiedAttachments: %llu", self.logTag, copiedAttachments);
+    DDLogInfo(@"%@ copiedMigrations: %llu", self.logTag, copiedMigrations);
 
     [self.backupStorage logFileSizes];
 
@@ -460,6 +524,10 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
                     return;
                 }
                 strongSelf.attachmentRecordMap[recordName] = attachmentExport.relativeFilePath;
+                DDLogVerbose(@"%@ exported attachment: %@ as %@",
+                    self.logTag,
+                    attachmentFilePath,
+                    attachmentExport.relativeFilePath);
                 [strongSelf saveNextFileToCloud:completion];
             });
         }
@@ -526,6 +594,8 @@ NSString *const kOWSBackup_ExportDatabaseKeySpec = @"kOWSBackup_ExportDatabaseKe
         // JSON doesn't support byte arrays.
         kOWSBackup_ManifestKey_DatabaseKeySpec : databaseKeySpec.base64EncodedString,
     };
+
+    DDLogVerbose(@"%@ json: %@", self.logTag, json);
 
     NSError *error;
     NSData *_Nullable jsonData =

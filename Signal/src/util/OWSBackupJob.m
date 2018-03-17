@@ -16,11 +16,15 @@ NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec = @"database_key_spec";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
+NSString *const kOWSBackup_Snapshot_Collection = @"kOWSBackup_Snapshot_Collection";
+NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
+
 @interface OWSBackupJob ()
 
 @property (nonatomic, weak) id<OWSBackupJobDelegate> delegate;
 
 @property (atomic) BOOL isComplete;
+@property (atomic) BOOL hasSucceeded;
 
 @property (nonatomic) OWSPrimaryStorage *primaryStorage;
 
@@ -75,6 +79,10 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
         return NO;
     }
+    if (![OWSFileSystem protectFileOrFolderAtPath:self.jobTempDirPath]) {
+        OWSProdLogAndFail(@"%@ Could not protect jobTempDirPath.", self.logTag);
+        return NO;
+    }
     return YES;
 }
 
@@ -93,9 +101,16 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.isComplete) {
+            OWSAssert(!self.hasSucceeded);
             return;
         }
         self.isComplete = YES;
+
+        // There's a lot of asynchrony in these backup jobs;
+        // ensure we only end up finishing these jobs once.
+        OWSAssert(!self.hasSucceeded);
+        self.hasSucceeded = YES;
+
         [self.delegate backupJobDidSucceed:self];
     });
 }
@@ -110,6 +125,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     OWSProdLogAndFail(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, error);
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        OWSAssert(!self.hasSucceeded);
         if (self.isComplete) {
             return;
         }

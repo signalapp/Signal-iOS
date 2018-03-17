@@ -13,11 +13,25 @@ import CloudKit
     static let signalBackupRecordType = "signalBackup"
     static let manifestRecordName = "manifest"
     static let payloadKey = "payload"
+    static let maxRetries = 5
 
-    @objc
-    public class func recordIdForTest() -> String {
+    private class func recordIdForTest() -> String {
         return "test-\(NSUUID().uuidString)"
     }
+
+    private class func database() -> CKDatabase {
+        let myContainer = CKContainer.default()
+        let privateDatabase = myContainer.privateCloudDatabase
+        return privateDatabase
+    }
+
+    private class func invalidServiceResponseError() -> Error {
+        return OWSErrorWithCodeDescription(.backupFailure,
+                                           NSLocalizedString("BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE",
+                                                             comment: "Error indicating that the app received an invalid response from CloudKit."))
+    }
+
+    // MARK: - Upload
 
     @objc
     public class func saveTestFileToCloud(fileUrl: URL,
@@ -40,9 +54,9 @@ import CloudKit
                                                        failure: @escaping (Error) -> Void) {
         saveFileToCloud(fileUrl: fileUrl,
                         recordName: "ephemeralFile-\(NSUUID().uuidString)",
-                        recordType: signalBackupRecordType,
-                        success: success,
-                        failure: failure)
+            recordType: signalBackupRecordType,
+            success: success,
+            failure: failure)
     }
 
     // "Persistent" files may be shared between backup export; they should only be saved
@@ -92,47 +106,46 @@ import CloudKit
     public class func saveRecordToCloud(record: CKRecord,
                                         success: @escaping (String) -> Void,
                                         failure: @escaping (Error) -> Void) {
-
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.save(record) {
-            (record, error) in
-
-            if let error = error {
-                Logger.error("\(self.logTag) error saving record: \(error)")
-                failure(error)
-            } else {
-                guard let recordName = record?.recordID.recordName else {
-                    Logger.error("\(self.logTag) error retrieving saved record's name.")
-                    failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                        NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
-                                                                          comment: "Error indicating the a backup export failed to save a file to the cloud.")))
-                    return
-                }
-                Logger.info("\(self.logTag) saved record.")
-                success(recordName)
-            }
-        }
+        saveRecordToCloud(record: record,
+                          remainingRetries: maxRetries,
+                          success: success,
+                          failure: failure)
     }
 
-    @objc
-    public class func deleteRecordFromCloud(recordName: String,
-                                            success: @escaping (()) -> Void,
-                                            failure: @escaping (Error) -> Void) {
+    private class func saveRecordToCloud(record: CKRecord,
+                                         remainingRetries: Int,
+                                         success: @escaping (String) -> Void,
+                                         failure: @escaping (Error) -> Void) {
 
-        let recordID = CKRecordID(recordName: recordName)
+        database().save(record) {
+            (_, error) in
 
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.delete(withRecordID: recordID) {
-            (record, error) in
-
-            if let error = error {
-                Logger.error("\(self.logTag) error deleting record: \(error)")
-                failure(error)
-            } else {
-                Logger.info("\(self.logTag) deleted record.")
-                success()
+            let outcome = outcomeForCloudKitError(error: error,
+                                                    remainingRetries: remainingRetries,
+                                                    label: "Save Record")
+            switch outcome {
+            case .success:
+                let recordName = record.recordID.recordName
+                success(recordName)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
+            case .failureRetryAfterDelay(let retryDelay):
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    saveRecordToCloud(record: record,
+                                      remainingRetries: remainingRetries - 1,
+                                      success: success,
+                                      failure: failure)
+                })
+            case .failureRetryWithoutDelay:
+                DispatchQueue.global().async {
+                    saveRecordToCloud(record: record,
+                                      remainingRetries: remainingRetries - 1,
+                                      success: success,
+                                      failure: failure)
+                }
+            case .unknownItem:
+                owsFail("\(self.logTag) unexpected CloudKit response.")
+                failure(invalidServiceResponseError())
             }
         }
     }
@@ -150,6 +163,7 @@ import CloudKit
                                         failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
+                            remainingRetries: maxRetries,
                             success: { (record) in
                                 if let record = record {
                                     // Record found, updating existing record.
@@ -183,6 +197,7 @@ import CloudKit
                                           failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: recordName,
+                            remainingRetries: maxRetries,
                             success: { (record) in
                                 if record != nil {
                                     // Record found, skipping save.
@@ -207,42 +222,104 @@ import CloudKit
                             failure: failure)
     }
 
+    // MARK: - Delete
+
+    @objc
+    public class func deleteRecordFromCloud(recordName: String,
+                                            success: @escaping (()) -> Void,
+                                            failure: @escaping (Error) -> Void) {
+        deleteRecordFromCloud(recordName: recordName,
+                              remainingRetries: maxRetries,
+                              success: success,
+                              failure: failure)
+    }
+
+    private class func deleteRecordFromCloud(recordName: String,
+                                             remainingRetries: Int,
+                                             success: @escaping (()) -> Void,
+                                             failure: @escaping (Error) -> Void) {
+
+        let recordID = CKRecordID(recordName: recordName)
+
+        database().delete(withRecordID: recordID) {
+            (_, error) in
+
+            let outcome = outcomeForCloudKitError(error: error,
+                                                    remainingRetries: remainingRetries,
+                                                    label: "Delete Record")
+            switch outcome {
+            case .success:
+                success()
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
+            case .failureRetryAfterDelay(let retryDelay):
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    deleteRecordFromCloud(recordName: recordName,
+                                          remainingRetries: remainingRetries - 1,
+                                          success: success,
+                                          failure: failure)
+                })
+            case .failureRetryWithoutDelay:
+                DispatchQueue.global().async {
+                    deleteRecordFromCloud(recordName: recordName,
+                                          remainingRetries: remainingRetries - 1,
+                                          success: success,
+                                          failure: failure)
+                }
+            case .unknownItem:
+                owsFail("\(self.logTag) unexpected CloudKit response.")
+                failure(invalidServiceResponseError())
+            }
+        }
+    }
+
+    // MARK: - Exists?
+
     private class func checkForFileInCloud(recordName: String,
-                                          success: @escaping (CKRecord?) -> Void,
-                                          failure: @escaping (Error) -> Void) {
+                                           remainingRetries: Int,
+                                           success: @escaping (CKRecord?) -> Void,
+                                           failure: @escaping (Error) -> Void) {
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Don't download the file; we're just using the fetch to check whether or
         // not this record already exists.
         fetchOperation.desiredKeys = []
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
-            if let error = error {
-                if let ckerror = error as? CKError {
-                    if ckerror.code == .unknownItem {
-                        // Record not found.
-                        success(nil)
-                        return
-                    }
-                    Logger.error("\(self.logTag) error fetching record: \(error) \(ckerror.code).")
-                } else {
-                    Logger.error("\(self.logTag) error fetching record: \(error).")
+
+            let outcome = outcomeForCloudKitError(error: error,
+                                                    remainingRetries: remainingRetries,
+                                                    label: "Check for Record")
+            switch outcome {
+            case .success:
+                guard let record = record else {
+                    owsFail("\(self.logTag) missing fetching record.")
+                    failure(invalidServiceResponseError())
+                    return
                 }
-                failure(error)
-                return
+                // Record found.
+                success(record)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
+            case .failureRetryAfterDelay(let retryDelay):
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    checkForFileInCloud(recordName: recordName,
+                                        remainingRetries: remainingRetries - 1,
+                                        success: success,
+                                        failure: failure)
+                })
+            case .failureRetryWithoutDelay:
+                DispatchQueue.global().async {
+                    checkForFileInCloud(recordName: recordName,
+                                        remainingRetries: remainingRetries - 1,
+                                        success: success,
+                                        failure: failure)
+                }
+            case .unknownItem:
+                // Record not found.
+                success(nil)
             }
-            guard let record = record else {
-                Logger.error("\(self.logTag) missing fetching record.")
-                failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                    NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
-                                                                      comment: "Error indicating the a backup export failed to save a file to the cloud.")))
-                return
-            }
-            // Record found.
-            success(record)
         }
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.add(fetchOperation)
+        database().add(fetchOperation)
     }
 
     @objc
@@ -250,6 +327,7 @@ import CloudKit
                                               failure: @escaping (Error) -> Void) {
 
         checkForFileInCloud(recordName: manifestRecordName,
+                            remainingRetries: maxRetries,
                             success: { (record) in
                                 success(record != nil)
         },
@@ -265,6 +343,7 @@ import CloudKit
         fetchAllRecordNamesStep(query: query,
                                 previousRecordNames: [String](),
                                 cursor: nil,
+                                remainingRetries: maxRetries,
                                 success: success,
                                 failure: failure)
     }
@@ -272,12 +351,13 @@ import CloudKit
     private class func fetchAllRecordNamesStep(query: CKQuery,
                                                previousRecordNames: [String],
                                                cursor: CKQueryCursor?,
+                                               remainingRetries: Int,
                                                success: @escaping ([String]) -> Void,
                                                failure: @escaping (Error) -> Void) {
 
         var allRecordNames = previousRecordNames
 
-        let  queryOperation = CKQueryOperation(query: query)
+        let queryOperation = CKQueryOperation(query: query)
         // If this isn't the first page of results for this query, resume
         // where we left off.
         queryOperation.cursor = cursor
@@ -288,37 +368,62 @@ import CloudKit
             allRecordNames.append(record.recordID.recordName)
         }
         queryOperation.queryCompletionBlock = { (cursor, error) in
-            if let error = error {
-                Logger.error("\(self.logTag) error fetching all record names: \(error).")
-                failure(error)
-                return
-            }
-            if let cursor = cursor {
-                Logger.verbose("\(self.logTag) fetching more record names \(allRecordNames.count).")
-                // There are more pages of results, continue fetching.
-                fetchAllRecordNamesStep(query: query,
-                                        previousRecordNames: allRecordNames,
-                                        cursor: cursor,
-                                        success: success,
-                                        failure: failure)
-                return
-            }
-            Logger.info("\(self.logTag) fetched \(allRecordNames.count) record names.")
-            success(allRecordNames)
-        }
 
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.add(queryOperation)
+            let outcome = outcomeForCloudKitError(error: error,
+                                                    remainingRetries: remainingRetries,
+                                                    label: "Fetch All Records")
+            switch outcome {
+            case .success:
+                if let cursor = cursor {
+                    Logger.verbose("\(self.logTag) fetching more record names \(allRecordNames.count).")
+                    // There are more pages of results, continue fetching.
+                    fetchAllRecordNamesStep(query: query,
+                                            previousRecordNames: allRecordNames,
+                                            cursor: cursor,
+                                            remainingRetries: maxRetries,
+                                            success: success,
+                                            failure: failure)
+                    return
+                }
+                Logger.info("\(self.logTag) fetched \(allRecordNames.count) record names.")
+                success(allRecordNames)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
+            case .failureRetryAfterDelay(let retryDelay):
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    fetchAllRecordNamesStep(query: query,
+                                            previousRecordNames: allRecordNames,
+                                            cursor: cursor,
+                                            remainingRetries: remainingRetries - 1,
+                                            success: success,
+                                            failure: failure)
+                })
+            case .failureRetryWithoutDelay:
+                DispatchQueue.global().async {
+                    fetchAllRecordNamesStep(query: query,
+                                            previousRecordNames: allRecordNames,
+                                            cursor: cursor,
+                                            remainingRetries: remainingRetries - 1,
+                                            success: success,
+                                            failure: failure)
+                }
+            case .unknownItem:
+                owsFail("\(self.logTag) unexpected CloudKit response.")
+                failure(invalidServiceResponseError())
+            }
+        }
+        database().add(queryOperation)
     }
+
+    // MARK: - Download
 
     @objc
     public class func downloadManifestFromCloud(
-                                            success: @escaping (Data) -> Void,
-                                            failure: @escaping (Error) -> Void) {
+        success: @escaping (Data) -> Void,
+        failure: @escaping (Error) -> Void) {
         downloadDataFromCloud(recordName: manifestRecordName,
-                                            success: success,
-                                            failure: failure)
+                              success: success,
+                              failure: failure)
     }
 
     @objc
@@ -327,6 +432,7 @@ import CloudKit
                                             failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
+                          remainingRetries: maxRetries,
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
@@ -334,9 +440,7 @@ import CloudKit
                                     success(data)
                                 } catch {
                                     Logger.error("\(self.logTag) couldn't load asset file: \(error).")
-                                    failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                                        NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
-                                                                                          comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                                    failure(invalidServiceResponseError())
                                 }
                             }
         },
@@ -350,6 +454,7 @@ import CloudKit
                                             failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
+                          remainingRetries: maxRetries,
                           success: { (asset) in
                             DispatchQueue.global().async {
                                 do {
@@ -357,47 +462,69 @@ import CloudKit
                                     success()
                                 } catch {
                                     Logger.error("\(self.logTag) couldn't copy asset file: \(error).")
-                                    failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                                        NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
-                                                                                          comment: "Error indicating the a backup import failed to download a file from the cloud.")))
+                                    failure(invalidServiceResponseError())
                                 }
                             }
         },
                           failure: failure)
     }
 
+    // We return the CKAsset and not its fileUrl because
+    // CloudKit offers no guarantees around how long it'll
+    // keep around the underlying file.  Presumably we can
+    // defer cleanup by maintaining a strong reference to
+    // the asset.
     private class func downloadFromCloud(recordName: String,
-                                            success: @escaping (CKAsset) -> Void,
-                                            failure: @escaping (Error) -> Void) {
+                                         remainingRetries: Int,
+                                         success: @escaping (CKAsset) -> Void,
+                                         failure: @escaping (Error) -> Void) {
 
         let recordId = CKRecordID(recordName: recordName)
         let fetchOperation = CKFetchRecordsOperation(recordIDs: [recordId ])
         // Download all keys for this record.
         fetchOperation.perRecordCompletionBlock = { (record, recordId, error) in
-            if let error = error {
-                failure(error)
-                return
-            }
-            guard let record = record else {
+
+            let outcome = outcomeForCloudKitError(error: error,
+                                                    remainingRetries: remainingRetries,
+                                                    label: "Download Record")
+            switch outcome {
+            case .success:
+                guard let record = record else {
+                    Logger.error("\(self.logTag) missing fetching record.")
+                    failure(invalidServiceResponseError())
+                    return
+                }
+                guard let asset = record[payloadKey] as? CKAsset else {
+                    Logger.error("\(self.logTag) record missing payload.")
+                    failure(invalidServiceResponseError())
+                    return
+                }
+                success(asset)
+            case .failureDoNotRetry(let outcomeError):
+                failure(outcomeError)
+            case .failureRetryAfterDelay(let retryDelay):
+                DispatchQueue.global().asyncAfter(deadline: DispatchTime.now() + retryDelay, execute: {
+                    downloadFromCloud(recordName: recordName,
+                                      remainingRetries: remainingRetries - 1,
+                                      success: success,
+                                      failure: failure)
+                })
+            case .failureRetryWithoutDelay:
+                DispatchQueue.global().async {
+                    downloadFromCloud(recordName: recordName,
+                                      remainingRetries: remainingRetries - 1,
+                                      success: success,
+                                      failure: failure)
+                }
+            case .unknownItem:
                 Logger.error("\(self.logTag) missing fetching record.")
-                failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                    NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
-                                                                      comment: "Error indicating the a backup import failed to download a file from the cloud.")))
-                return
+                failure(invalidServiceResponseError())
             }
-            guard let asset = record[payloadKey] as? CKAsset else {
-                Logger.error("\(self.logTag) record missing payload.")
-                failure(OWSErrorWithCodeDescription(.exportBackupError,
-                                                    NSLocalizedString("BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED",
-                                                                      comment: "Error indicating the a backup import failed to download a file from the cloud.")))
-                return
-            }
-            success(asset)
         }
-        let myContainer = CKContainer.default()
-        let privateDatabase = myContainer.privateCloudDatabase
-        privateDatabase.add(fetchOperation)
+        database().add(fetchOperation)
     }
+
+    // MARK: - Access
 
     @objc
     public class func checkCloudKitAccess(completion: @escaping (Bool) -> Void) {
@@ -421,5 +548,66 @@ import CloudKit
                 }
             }
         })
+    }
+
+    // MARK: - Retry
+
+    private enum APIOutcome {
+        case success
+        case failureDoNotRetry(error:Error)
+        case failureRetryAfterDelay(retryDelay: TimeInterval)
+        case failureRetryWithoutDelay
+        // This only applies to fetches.
+        case unknownItem
+    }
+
+    private class func outcomeForCloudKitError(error: Error?,
+                                                remainingRetries: Int,
+                                                label: String) -> APIOutcome {
+        if let error = error as? CKError {
+            if error.code == CKError.unknownItem {
+                // This is not always an error for our purposes.
+                Logger.verbose("\(self.logTag) \(label) unknown item.")
+                return .unknownItem
+            }
+
+            Logger.error("\(self.logTag) \(label) failed: \(error)")
+
+            if remainingRetries < 1 {
+                Logger.verbose("\(self.logTag) \(label) no more retries.")
+                return .failureDoNotRetry(error:error)
+            }
+
+            if #available(iOS 11, *) {
+                if error.code == CKError.serverResponseLost {
+                    Logger.verbose("\(self.logTag) \(label) retry without delay.")
+                    return .failureRetryWithoutDelay
+                }
+            }
+
+            switch error {
+            case CKError.requestRateLimited, CKError.serviceUnavailable, CKError.zoneBusy:
+                let retryDelay = error.retryAfterSeconds ?? 3.0
+                Logger.verbose("\(self.logTag) \(label) retry with delay: \(retryDelay).")
+                return .failureRetryAfterDelay(retryDelay:retryDelay)
+            case CKError.networkFailure:
+                Logger.verbose("\(self.logTag) \(label) retry without delay.")
+                return .failureRetryWithoutDelay
+            default:
+                Logger.verbose("\(self.logTag) \(label) unknown CKError.")
+                return .failureDoNotRetry(error:error)
+            }
+        } else if let error = error {
+            Logger.error("\(self.logTag) \(label) failed: \(error)")
+            if remainingRetries < 1 {
+                Logger.verbose("\(self.logTag) \(label) no more retries.")
+                return .failureDoNotRetry(error:error)
+            }
+            Logger.verbose("\(self.logTag) \(label) unknown error.")
+            return .failureDoNotRetry(error:error)
+        } else {
+            Logger.info("\(self.logTag) \(label) succeeded.")
+            return .success
+        }
     }
 }
