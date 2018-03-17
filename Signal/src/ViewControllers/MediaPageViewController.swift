@@ -23,6 +23,12 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             return image
         }
+
+        // MARK: Equatable
+
+        static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
+            return lhs.message.uniqueId == rhs.message.uniqueId
+        }
     }
 
     private var cachedItems: [MediaGalleryItem] = []
