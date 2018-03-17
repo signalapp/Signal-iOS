@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -122,33 +122,33 @@ extension GiphyError: LocalizedError {
 
     public func pickStillRendition() -> GiphyRendition? {
         // Stills are just temporary placeholders, so use the smallest still possible.
-        return pickRendition(renditionType: .stillPreview, pickingStrategy: .smallerIsBetter, maxFileSize: kPreferedPreviewFileSize)
+        return pickRendition(renditionType: .stillPreview, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize)
     }
 
     public func pickPreviewRendition() -> GiphyRendition? {
         // Try to pick a small file...
-        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy: .largerIsBetter, maxFileSize: kPreferedPreviewFileSize) {
+        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedPreviewFileSize) {
             return rendition
         }
         // ...but gradually relax the file restriction...
-        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy: .smallerIsBetter, maxFileSize: kPreferedPreviewFileSize * 2) {
+        if let rendition = pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 2) {
             return rendition
         }
         // ...and relax even more until we find an animated rendition.
-        return pickRendition(renditionType: .animatedLowQuality, pickingStrategy: .smallerIsBetter, maxFileSize: kPreferedPreviewFileSize * 3)
+        return pickRendition(renditionType: .animatedLowQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedPreviewFileSize * 3)
     }
 
     public func pickSendingRendition() -> GiphyRendition? {
         // Try to pick a small file...
-        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy: .largerIsBetter, maxFileSize: kPreferedSendingFileSize) {
+        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.largerIsBetter, maxFileSize:kPreferedSendingFileSize) {
             return rendition
         }
         // ...but gradually relax the file restriction...
-        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy: .smallerIsBetter, maxFileSize: kPreferedSendingFileSize * 2) {
+        if let rendition = pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 2) {
             return rendition
         }
         // ...and relax even more until we find an animated rendition.
-        return pickRendition(renditionType: .animatedHighQuality, pickingStrategy: .smallerIsBetter, maxFileSize: kPreferedSendingFileSize * 3)
+        return pickRendition(renditionType: .animatedHighQuality, pickingStrategy:.smallerIsBetter, maxFileSize:kPreferedSendingFileSize * 3)
     }
 
     enum RenditionType {
@@ -299,12 +299,12 @@ extension GiphyError: LocalizedError {
     }
 
     private func giphyAPISessionManager() -> AFHTTPSessionManager? {
-        guard let baseUrl = NSURL(string: kGiphyBaseURL) else {
+        guard let baseUrl = NSURL(string:kGiphyBaseURL) else {
             Logger.error("\(TAG) Invalid base URL.")
             return nil
         }
-        let sessionManager = AFHTTPSessionManager(baseURL: baseUrl as URL,
-                                                  sessionConfiguration: GiphyAPI.giphySessionConfiguration())
+        let sessionManager = AFHTTPSessionManager(baseURL:baseUrl as URL,
+                                                  sessionConfiguration:GiphyAPI.giphySessionConfiguration())
         sessionManager.requestSerializer = AFJSONRequestSerializer()
         sessionManager.responseSerializer = AFJSONResponseSerializer()
 
@@ -319,7 +319,7 @@ extension GiphyError: LocalizedError {
             failure(nil)
             return
         }
-        guard NSURL(string: kGiphyBaseURL) != nil else {
+        guard NSURL(string:kGiphyBaseURL) != nil else {
             Logger.error("\(TAG) Invalid base URL.")
             failure(nil)
             return
@@ -338,11 +338,10 @@ extension GiphyError: LocalizedError {
 
         sessionManager.get(urlString,
                            parameters: {},
-                           progress: nil,
-                           success: { task, value in
+                           progress:nil,
+                           success: { _, value in
                             Logger.error("\(GiphyAPI.TAG) search request succeeded")
-                            Logger.error("\(GiphyAPI.TAG) search request succeeded \(task.originalRequest?.url)")
-                            guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+                            guard let imageInfos = self.parseGiphyImages(responseJson:value) else {
                                 failure(nil)
                                 return
                             }
@@ -356,16 +355,16 @@ extension GiphyError: LocalizedError {
 
     // MARK: Parse API Responses
 
-    private func parseGiphyImages(responseJson: Any?) -> [GiphyImageInfo]? {
+    private func parseGiphyImages(responseJson:Any?) -> [GiphyImageInfo]? {
         guard let responseJson = responseJson else {
             Logger.error("\(TAG) Missing response.")
             return nil
         }
-        guard let responseDict = responseJson as? [String: Any] else {
+        guard let responseDict = responseJson as? [String:Any] else {
             Logger.error("\(TAG) Invalid response.")
             return nil
         }
-        guard let imageDicts = responseDict["data"] as? [[String: Any]] else {
+        guard let imageDicts = responseDict["data"] as? [[String:Any]] else {
             Logger.error("\(TAG) Invalid response data.")
             return nil
         }
@@ -375,7 +374,7 @@ extension GiphyError: LocalizedError {
     }
 
     // Giphy API results are often incomplete or malformed, so we need to be defensive.
-    private func parseGiphyImage(imageDict: [String: Any]) -> GiphyImageInfo? {
+    private func parseGiphyImage(imageDict: [String:Any]) -> GiphyImageInfo? {
         guard let giphyId = imageDict["id"] as? String else {
             Logger.warn("\(TAG) Image dict missing id.")
             return nil
@@ -384,18 +383,18 @@ extension GiphyError: LocalizedError {
             Logger.warn("\(TAG) Image dict has invalid id.")
             return nil
         }
-        guard let renditionDicts = imageDict["images"] as? [String: Any] else {
+        guard let renditionDicts = imageDict["images"] as? [String:Any] else {
             Logger.warn("\(TAG) Image dict missing renditions.")
             return nil
         }
         var renditions = [GiphyRendition]()
         for (renditionName, renditionDict) in renditionDicts {
-            guard let renditionDict = renditionDict as? [String: Any] else {
+            guard let renditionDict = renditionDict as? [String:Any] else {
                 Logger.warn("\(TAG) Invalid rendition dict.")
                 continue
             }
-            guard let rendition = parseGiphyRendition(renditionName: renditionName,
-                                                      renditionDict: renditionDict) else {
+            guard let rendition = parseGiphyRendition(renditionName:renditionName,
+                                                      renditionDict:renditionDict) else {
                                                         continue
             }
             renditions.append(rendition)
@@ -405,13 +404,13 @@ extension GiphyError: LocalizedError {
             return nil
         }
 
-        guard let originalRendition = findOriginalRendition(renditions: renditions) else {
+        guard let originalRendition = findOriginalRendition(renditions:renditions) else {
             Logger.warn("\(TAG) Image has no original rendition.")
             return nil
         }
 
-        return GiphyImageInfo(giphyId: giphyId,
-                              renditions: renditions,
+        return GiphyImageInfo(giphyId : giphyId,
+                              renditions : renditions,
                               originalRendition: originalRendition)
     }
 
@@ -426,15 +425,15 @@ extension GiphyError: LocalizedError {
     //
     // We should discard renditions which are missing or have invalid properties.
     private func parseGiphyRendition(renditionName: String,
-                                     renditionDict: [String: Any]) -> GiphyRendition? {
-        guard let width = parsePositiveUInt(dict: renditionDict, key: "width", typeName: "rendition") else {
+                                     renditionDict: [String:Any]) -> GiphyRendition? {
+        guard let width = parsePositiveUInt(dict:renditionDict, key:"width", typeName:"rendition") else {
             return nil
         }
-        guard let height = parsePositiveUInt(dict: renditionDict, key: "height", typeName: "rendition") else {
+        guard let height = parsePositiveUInt(dict:renditionDict, key:"height", typeName:"rendition") else {
             return nil
         }
         // Be lenient when parsing file sizes - we don't require them for stills.
-        let fileSize = parseLenientUInt(dict: renditionDict, key: "size")
+        let fileSize = parseLenientUInt(dict:renditionDict, key:"size")
         guard let urlString = renditionDict["url"] as? String else {
             return nil
         }
@@ -442,7 +441,7 @@ extension GiphyError: LocalizedError {
             Logger.warn("\(TAG) Rendition has invalid url.")
             return nil
         }
-        guard let url = NSURL(string: urlString) else {
+        guard let url = NSURL(string:urlString) else {
             Logger.warn("\(TAG) Rendition url could not be parsed.")
             return nil
         }
@@ -465,16 +464,16 @@ extension GiphyError: LocalizedError {
         }
 
         return GiphyRendition(
-            format: format,
-            name: renditionName,
-            width: width,
-            height: height,
-            fileSize: fileSize,
-            url: url
+            format : format,
+            name : renditionName,
+            width : width,
+            height : height,
+            fileSize : fileSize,
+            url : url
         )
     }
 
-    private func parsePositiveUInt(dict: [String: Any], key: String, typeName: String) -> UInt? {
+    private func parsePositiveUInt(dict: [String:Any], key: String, typeName: String) -> UInt? {
         guard let value = dict[key] else {
             return nil
         }
@@ -491,7 +490,7 @@ extension GiphyError: LocalizedError {
         return parsedValue
     }
 
-    private func parseLenientUInt(dict: [String: Any], key: String) -> UInt {
+    private func parseLenientUInt(dict: [String:Any], key: String) -> UInt {
         let defaultValue = UInt(0)
 
         guard let value = dict[key] else {
