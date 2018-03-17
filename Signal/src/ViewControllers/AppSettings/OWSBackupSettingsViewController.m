@@ -88,15 +88,16 @@ NS_ASSUME_NONNULL_BEGIN
                 if (OWSBackup.sharedManager.backupExportProgress) {
                     NSUInteger progressPercent
                         = (NSUInteger)round(OWSBackup.sharedManager.backupExportProgress.floatValue * 100);
+                    NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+                    [numberFormatter setNumberStyle:NSNumberFormatterPercentStyle];
+                    [numberFormatter setMaximumFractionDigits:0];
+                    [numberFormatter setMultiplier:@1];
+                    NSString *progressString = [numberFormatter stringFromNumber:@(progressPercent)];
                     [progressSection
                         addItem:[OWSTableItem
                                     labelItemWithText:NSLocalizedString(@"SETTINGS_BACKUP_PROGRESS",
                                                           @"Label for phase row in the in the backup settings view.")
-                                        accessoryText:[NSString
-                                                          stringWithFormat:NSLocalizedString(@"PERCENTAGE_FORMAT",
-                                                                               @"Format for percentages, e.g. 65%. "
-                                                                               @"Embeds {{percentage}}, e.g. 65."),
-                                                          @(progressPercent).stringValue]]];
+                                        accessoryText:progressString]];
                 }
             }
         }

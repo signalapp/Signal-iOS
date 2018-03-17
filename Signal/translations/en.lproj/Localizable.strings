@@ -160,6 +160,9 @@
 /* Error indicating the a backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid server response.";
+
 /* Error indicating the a backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
 
@@ -177,9 +180,6 @@
 
 /* Error indicating the a backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
-
-/* Error indicating the a backup import failed to download a file from the cloud. */
-"BACKUP_IMPORT_ERROR_DOWNLOAD_FILE_FROM_CLOUD_FAILED" = "Could not download backup data.";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
@@ -1224,9 +1224,6 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
-
-/* Format for percentages, e.g. 65%. Embeds {{percentage}}, e.g. 65. */
-"PERCENTAGE_FORMAT" = "%@%%";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Example: %@";

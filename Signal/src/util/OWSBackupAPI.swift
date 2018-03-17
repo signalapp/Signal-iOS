@@ -552,10 +552,10 @@ import CloudKit
 
     // MARK: - Retry
 
-    private enum CKOutcome {
+    private enum APIOutcome {
         case success
         case failureDoNotRetry(error:Error)
-        case failureRetryAfterDelay(retryDelay: Double)
+        case failureRetryAfterDelay(retryDelay: TimeInterval)
         case failureRetryWithoutDelay
         // This only applies to fetches.
         case unknownItem
@@ -563,7 +563,7 @@ import CloudKit
 
     private class func outcomeForCloudKitError(error: Error?,
                                                 remainingRetries: Int,
-                                                label: String) -> CKOutcome {
+                                                label: String) -> APIOutcome {
         if let error = error as? CKError {
             if error.code == CKError.unknownItem {
                 // This is not always an error for our purposes.
