@@ -17,7 +17,7 @@ extern NSString *const kOWSBackup_ManifestKey_DataSize;
 
 typedef void (^OWSBackupJobBoolCompletion)(BOOL success);
 typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
-typedef void (^OWSBackupJobManifestSuccess)(OWSBackupManifestContents *_Nullable manifest);
+typedef void (^OWSBackupJobManifestSuccess)(OWSBackupManifestContents *manifest);
 typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @interface OWSBackupManifestItem : NSObject
@@ -26,10 +26,13 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @property (nonatomic) NSData *encryptionKey;
 
+// This property is only set for certain types of manifest item;
 @property (nonatomic, nullable) NSString *relativeFilePath;
 
+// This property is only set if the manifest item is downloaded.
 @property (nonatomic, nullable) NSString *downloadFilePath;
 
+// This property is only set if the manifest item is compressed.
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 @end

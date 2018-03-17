@@ -76,18 +76,12 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *_Nullable manifest) {
+    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
         OWSBackupImportJob *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
         }
         if (self.isComplete) {
-            return;
-        }
-        if (!manifest) {
-            [strongSelf failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                     @"Error indicating the a backup import "
-                                                     @"could not import the user's data.")];
             return;
         }
         OWSCAssert(manifest.databaseItems.count > 0);
@@ -97,10 +91,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         [strongSelf downloadAndProcessImport];
     }
         failure:^(NSError *manifestError) {
-            if (manifestError) {
-                [weakSelf failWithError:manifestError];
-                return;
-            }
+            [weakSelf failWithError:manifestError];
         }
         backupIO:self.backupIO];
 }

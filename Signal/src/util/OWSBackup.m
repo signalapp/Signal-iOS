@@ -459,6 +459,30 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
+- (void)clearAllCloudKitRecords
+{
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+        if (recordNames.count < 1) {
+            DDLogInfo(@"%@ No CloudKit records found to clear.", self.logTag);
+            return;
+        }
+        [OWSBackupAPI deleteRecordsFromCloudWithRecordNames:recordNames
+            success:^{
+                DDLogInfo(@"%@ Clear all CloudKit records succeeded.", self.logTag);
+            }
+            failure:^(NSError *error) {
+                DDLogError(@"%@ Clear all CloudKit records failed: %@.", self.logTag, error);
+            }];
+    }
+        failure:^(NSError *error) {
+            DDLogError(@"%@ Failed to retrieve CloudKit records: %@", self.logTag, error);
+        }];
+}
+
 #pragma mark - Notifications
 
 - (void)postDidChangeNotification

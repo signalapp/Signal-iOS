@@ -44,6 +44,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup logDatabaseSizeStats];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear All CloudKit Records"
+                                     actionBlock:^{
+                                         [DebugUIBackup clearAllCloudKitRecords];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -148,6 +152,13 @@ NS_ASSUME_NONNULL_BEGIN
     if (attachmentCount > 0) {
         DDLogInfo(@"%@ attachment average size: %f", self.logTag, attachmentSizeTotal / (double)attachmentCount);
     }
+}
+
++ (void)clearAllCloudKitRecords
+{
+    DDLogInfo(@"%@ clearAllCloudKitRecords.", self.logTag);
+
+    [OWSBackup.sharedManager clearAllCloudKitRecords];
 }
 
 @end

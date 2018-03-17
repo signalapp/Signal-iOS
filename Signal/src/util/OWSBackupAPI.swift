@@ -63,11 +63,19 @@ import CloudKit
     // once.  For example, attachment files should only be uploaded once.  Subsequent
     // backups can reuse the same record.
     @objc
+    public class func recordNameForPersistentFile(fileId: String) -> String {
+        return "persistentFile-\(fileId)"
+    }
+
+    // "Persistent" files may be shared between backup export; they should only be saved
+    // once.  For example, attachment files should only be uploaded once.  Subsequent
+    // backups can reuse the same record.
+    @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
                                                     fileUrlBlock: @escaping (()) -> URL?,
                                                     success: @escaping (String) -> Void,
                                                     failure: @escaping (Error) -> Void) {
-        saveFileOnceToCloud(recordName: "persistentFile-\(fileId)",
+        saveFileOnceToCloud(recordName: recordNameForPersistentFile(fileId: fileId),
             recordType: signalBackupRecordType,
             fileUrlBlock: fileUrlBlock,
             success: success,

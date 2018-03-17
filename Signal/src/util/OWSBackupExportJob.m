@@ -294,6 +294,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSBackupExportItem *manifestItem;
 
+// If we are replacing an existing backup, we use some of its contents for continuity.
+@property (nonatomic, nullable) NSDictionary<NSString *, OWSBackupManifestItem *> *lastManifestItemMap;
+
 @end
 
 #pragma mark -
@@ -338,29 +341,41 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.isComplete) {
             return;
         }
-        [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
-                                                @"Indicates that the backup export data is being exported.")
-                                   progress:nil];
-        if (![self exportDatabase]) {
-            [self failWithErrorDescription:
-                      NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                          @"Error indicating the a backup export could not export the user's data.")];
-            return;
-        }
-        if (self.isComplete) {
-            return;
-        }
-        [self saveToCloudWithCompletion:^(NSError *_Nullable saveError) {
-            if (saveError) {
-                [weakSelf failWithError:saveError];
+        [self tryToFetchManifestWithCompletion:^(BOOL tryToFetchManifestSuccess) {
+            if (!tryToFetchManifestSuccess) {
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                              @"Error indicating the a backup export could not export the user's data.")];
                 return;
             }
-            [self cleanUpCloudWithCompletion:^(NSError *_Nullable cleanUpError) {
-                if (cleanUpError) {
-                    [weakSelf failWithError:cleanUpError];
+
+            if (self.isComplete) {
+                return;
+            }
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
+                                                    @"Indicates that the backup export data is being exported.")
+                                       progress:nil];
+            if (![self exportDatabase]) {
+                [self failWithErrorDescription:
+                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                              @"Error indicating the a backup export could not export the user's data.")];
+                return;
+            }
+            if (self.isComplete) {
+                return;
+            }
+            [self saveToCloudWithCompletion:^(NSError *_Nullable saveError) {
+                if (saveError) {
+                    [weakSelf failWithError:saveError];
                     return;
                 }
-                [weakSelf succeed];
+                [self cleanUpCloudWithCompletion:^(NSError *_Nullable cleanUpError) {
+                    if (cleanUpError) {
+                        [weakSelf failWithError:cleanUpError];
+                        return;
+                    }
+                    [weakSelf succeed];
+                }];
             }];
         }];
     }];
@@ -400,6 +415,80 @@ NS_ASSUME_NONNULL_BEGIN
                 completion(NO);
             });
         }];
+}
+
+- (void)tryToFetchManifestWithCompletion:(OWSBackupJobBoolCompletion)completion
+{
+    OWSAssert(completion);
+
+    if (self.isComplete) {
+        return;
+    }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CHECK_BACKUP",
+                                            @"Indicates that the backup import is checking for an existing backup.")
+                               progress:nil];
+
+    __weak OWSBackupExportJob *weakSelf = self;
+
+    [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (value) {
+                [weakSelf fetchManifestWithCompletion:completion];
+            } else {
+                // There is no existing manifest; continue.
+                completion(YES);
+            }
+        });
+    }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(NO);
+            });
+        }];
+}
+
+- (void)fetchManifestWithCompletion:(OWSBackupJobBoolCompletion)completion
+{
+    OWSAssert(completion);
+
+    if (self.isComplete) {
+        return;
+    }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    __weak OWSBackupExportJob *weakSelf = self;
+    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
+        OWSBackupExportJob *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        if (self.isComplete) {
+            return;
+        }
+        OWSCAssert(manifest.databaseItems.count > 0);
+        OWSCAssert(manifest.attachmentsItems);
+        [strongSelf processLastManifest:manifest];
+        completion(YES);
+    }
+        failure:^(NSError *manifestError) {
+            completion(NO);
+        }
+        backupIO:self.backupIO];
+}
+
+- (void)processLastManifest:(OWSBackupManifestContents *)manifest
+{
+    OWSAssert(manifest);
+
+    NSMutableDictionary<NSString *, OWSBackupManifestItem *> *lastManifestItemMap = [NSMutableDictionary new];
+    for (OWSBackupManifestItem *manifestItem in manifest.attachmentsItems) {
+        lastManifestItemMap[manifestItem.recordName] = manifestItem;
+    }
+    self.lastManifestItemMap = [lastManifestItemMap copy];
 }
 
 - (BOOL)exportDatabase
@@ -678,6 +767,39 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentExport *attachmentExport = self.unsavedAttachmentExports.lastObject;
     [self.unsavedAttachmentExports removeLastObject];
 
+    if (self.lastManifestItemMap) {
+        // Wherever possible, we do incremental backups and re-use fragments of the last backup.
+        // Recycling fragments doesn't just reduce redundant network activity,
+        // it allows us to skip the local export work, i.e. encryption.
+        // To do so, we must preserve the metadata for these fragments.
+
+        NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
+        OWSBackupManifestItem *_Nullable lastManifestItem = self.lastManifestItemMap[lastRecordName];
+        if (lastManifestItem) {
+            OWSAssert(lastManifestItem.encryptionKey.length > 0);
+            OWSAssert(lastManifestItem.relativeFilePath.length > 0);
+
+            // Recycle the metadata from the last backup's manifest.
+            OWSBackupEncryptedItem *encryptedItem = [OWSBackupEncryptedItem new];
+            encryptedItem.encryptionKey = lastManifestItem.encryptionKey;
+            attachmentExport.encryptedItem = encryptedItem;
+            attachmentExport.relativeFilePath = lastManifestItem.relativeFilePath;
+
+            OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
+            exportItem.encryptedItem = attachmentExport.encryptedItem;
+            exportItem.recordName = lastRecordName;
+            exportItem.attachmentExport = attachmentExport;
+            [self.savedAttachmentItems addObject:exportItem];
+
+            DDLogVerbose(@"%@ recycled attachment: %@ as %@",
+                self.logTag,
+                attachmentExport.attachmentFilePath,
+                attachmentExport.relativeFilePath);
+            [self saveNextFileToCloudWithCompletion:completion];
+            return YES;
+        }
+    }
+
     @autoreleasepool {
         // OWSAttachmentExport is used to lazily write an encrypted copy of the
         // attachment to disk.
@@ -815,7 +937,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(item.recordName.length > 0);
 
         itemJson[kOWSBackup_ManifestKey_RecordName] = item.recordName;
-        OWSAssert(item.encryptedItem.filePath.length > 0);
         OWSAssert(item.encryptedItem.encryptionKey.length > 0);
         itemJson[kOWSBackup_ManifestKey_EncryptionKey] = item.encryptedItem.encryptionKey.base64EncodedString;
         if (item.attachmentExport) {
