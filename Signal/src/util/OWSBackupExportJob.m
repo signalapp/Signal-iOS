@@ -296,6 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // If we are replacing an existing backup, we use some of its contents for continuity.
 @property (nonatomic, nullable) NSDictionary<NSString *, OWSBackupManifestItem *> *lastManifestItemMap;
+@property (nonatomic, nullable) NSSet<NSString *> *lastRecordNames;
 
 @end
 
@@ -315,11 +316,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        if (hasAccess) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (hasAccess) {
                 [weakSelf start];
-            });
-        }
+            } else {
+                [weakSelf failWithErrorDescription:
+                              NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                                  @"Error indicating the a backup export could not export the user's data.")];
+            }
+        });
     }];
 }
 
@@ -466,18 +471,49 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        if (self.isComplete) {
+        if (strongSelf.isComplete) {
             return;
         }
         OWSCAssert(manifest.databaseItems.count > 0);
         OWSCAssert(manifest.attachmentsItems);
         [strongSelf processLastManifest:manifest];
-        completion(YES);
+        [strongSelf fetchAllRecordsWithCompletion:completion];
     }
         failure:^(NSError *manifestError) {
             completion(NO);
         }
         backupIO:self.backupIO];
+}
+
+- (void)fetchAllRecordsWithCompletion:(OWSBackupJobBoolCompletion)completion
+{
+    OWSAssert(completion);
+
+    if (self.isComplete) {
+        return;
+    }
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    __weak OWSBackupExportJob *weakSelf = self;
+    [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            OWSBackupExportJob *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (strongSelf.isComplete) {
+                return;
+            }
+            strongSelf.lastRecordNames = [NSSet setWithArray:recordNames];
+            completion(YES);
+        });
+    }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(NO);
+            });
+        }];
 }
 
 - (void)processLastManifest:(OWSBackupManifestContents *)manifest
@@ -746,9 +782,12 @@ NS_ASSUME_NONNULL_BEGIN
             });
         }
         failure:^(NSError *error) {
-            // Database files are critical so any error uploading them is unrecoverable.
-            DDLogVerbose(@"%@ error while saving file: %@", weakSelf.logTag, item.encryptedItem.filePath);
-            completion(error);
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // Database files are critical so any error uploading them is unrecoverable.
+                DDLogVerbose(@"%@ error while saving file: %@", weakSelf.logTag, item.encryptedItem.filePath);
+                completion(error);
+            });
         }];
     return YES;
 }
@@ -767,15 +806,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentExport *attachmentExport = self.unsavedAttachmentExports.lastObject;
     [self.unsavedAttachmentExports removeLastObject];
 
-    if (self.lastManifestItemMap) {
+    if (self.lastManifestItemMap && self.lastRecordNames) {
         // Wherever possible, we do incremental backups and re-use fragments of the last backup.
         // Recycling fragments doesn't just reduce redundant network activity,
         // it allows us to skip the local export work, i.e. encryption.
         // To do so, we must preserve the metadata for these fragments.
-
+        //
+        // We check two things:
+        //
+        // * That the "last known backup manifest" contains an item from which we can recover
+        //   this record's metadata.
+        // * That this record does in fact exist in our CloudKit database.
         NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
         OWSBackupManifestItem *_Nullable lastManifestItem = self.lastManifestItemMap[lastRecordName];
-        if (lastManifestItem) {
+        if (lastManifestItem && [self.lastRecordNames containsObject:lastRecordName]) {
             OWSAssert(lastManifestItem.encryptionKey.length > 0);
             OWSAssert(lastManifestItem.relativeFilePath.length > 0);
 
@@ -900,8 +944,11 @@ NS_ASSUME_NONNULL_BEGIN
             });
         }
         failure:^(NSError *error) {
-            // The manifest file is critical so any error uploading them is unrecoverable.
-            completion(error);
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // The manifest file is critical so any error uploading them is unrecoverable.
+                completion(error);
+            });
         }];
 }
 

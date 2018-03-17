@@ -184,6 +184,9 @@
 /* Error indicating the a backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
+/* Indicates that the backup import is checking for an existing backup. */
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
 

@@ -47,11 +47,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     __weak OWSBackupImportJob *weakSelf = self;
     [OWSBackupAPI checkCloudKitAccessWithCompletion:^(BOOL hasAccess) {
-        if (hasAccess) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            if (hasAccess) {
                 [weakSelf start];
-            });
-        }
+            } else {
+                [weakSelf failWithErrorDescription:
+                              NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                  @"Error indicating the a backup import could not import the user's data.")];
+            }
+        });
     }];
 }
 
@@ -233,7 +237,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             });
         }
         failure:^(NSError *error) {
-            completion(error);
+            // Ensure that we continue to work off the main thread.
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(error);
+            });
         }];
 }
 
