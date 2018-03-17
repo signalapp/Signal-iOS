@@ -11,10 +11,39 @@ extern NSString *const kOWSBackup_ManifestKey_EncryptionKey;
 extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
 extern NSString *const kOWSBackup_ManifestKey_DataSize;
 
+@class OWSBackupIO;
+@class OWSBackupJob;
+@class OWSBackupManifestContents;
+
 typedef void (^OWSBackupJobBoolCompletion)(BOOL success);
 typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
+typedef void (^OWSBackupJobManifestSuccess)(OWSBackupManifestContents *_Nullable manifest);
+typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
-@class OWSBackupJob;
+@interface OWSBackupManifestItem : NSObject
+
+@property (nonatomic) NSString *recordName;
+
+@property (nonatomic) NSData *encryptionKey;
+
+@property (nonatomic, nullable) NSString *relativeFilePath;
+
+@property (nonatomic, nullable) NSString *downloadFilePath;
+
+@property (nonatomic, nullable) NSNumber *uncompressedDataLength;
+
+@end
+
+#pragma mark -
+
+@interface OWSBackupManifestContents : NSObject
+
+@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
+
+@end
+
+#pragma mark -
 
 @protocol OWSBackupJobDelegate <NSObject>
 
@@ -62,6 +91,12 @@ typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 - (void)failWithErrorDescription:(NSString *)description;
 - (void)failWithError:(NSError *)error;
 - (void)updateProgressWithDescription:(nullable NSString *)description progress:(nullable NSNumber *)progress;
+
+#pragma mark - Manifest
+
+- (void)downloadAndProcessManifestWithSuccess:(OWSBackupJobManifestSuccess)success
+                                      failure:(OWSBackupJobManifestFailure)failure
+                                     backupIO:(OWSBackupIO *)backupIO;
 
 @end
 

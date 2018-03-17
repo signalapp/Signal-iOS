@@ -20,36 +20,14 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 #pragma mark -
 
-@interface OWSBackupImportItem : NSObject
-
-@property (nonatomic) NSString *recordName;
-
-@property (nonatomic) NSData *encryptionKey;
-
-@property (nonatomic, nullable) NSString *relativeFilePath;
-
-@property (nonatomic, nullable) NSString *downloadFilePath;
-
-@property (nonatomic, nullable) NSNumber *uncompressedDataLength;
-
-@end
-
-#pragma mark -
-
-@implementation OWSBackupImportItem
-
-@end
-
-#pragma mark -
-
 @interface OWSBackupImportJob ()
 
 @property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
 @property (nonatomic) OWSBackupIO *backupIO;
 
-@property (nonatomic) NSArray<OWSBackupImportItem *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupImportItem *> *attachmentsItems;
+@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
 
 @end
 
@@ -98,26 +76,69 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf downloadAndProcessManifestWithCompletion:^(NSError *_Nullable manifestError) {
-        if (manifestError) {
-            [weakSelf failWithError:manifestError];
+    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *_Nullable manifest) {
+        OWSBackupImportJob *strongSelf = weakSelf;
+        if (!strongSelf) {
             return;
         }
-
-        if (weakSelf.isComplete) {
+        if (self.isComplete) {
             return;
         }
+        if (!manifest) {
+            [strongSelf failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                                     @"Error indicating the a backup import "
+                                                     @"could not import the user's data.")];
+            return;
+        }
+        OWSCAssert(manifest.databaseItems.count > 0);
+        OWSCAssert(manifest.attachmentsItems);
+        strongSelf.databaseItems = manifest.databaseItems;
+        strongSelf.attachmentsItems = manifest.attachmentsItems;
+        [strongSelf downloadAndProcessImport];
+    }
+        failure:^(NSError *manifestError) {
+            if (manifestError) {
+                [weakSelf failWithError:manifestError];
+                return;
+            }
+        }
+        backupIO:self.backupIO];
+}
 
-        OWSAssert(self.databaseItems);
-        OWSAssert(self.attachmentsItems);
-        NSMutableArray<OWSBackupImportItem *> *allItems = [NSMutableArray new];
-        [allItems addObjectsFromArray:self.databaseItems];
-        [allItems addObjectsFromArray:self.attachmentsItems];
-        [weakSelf
-            downloadFilesFromCloud:allItems
-                        completion:^(NSError *_Nullable fileDownloadError) {
-                            if (fileDownloadError) {
-                                [weakSelf failWithError:fileDownloadError];
+- (void)downloadAndProcessImport
+{
+    OWSAssert(self.databaseItems);
+    OWSAssert(self.attachmentsItems);
+
+    NSMutableArray<OWSBackupManifestItem *> *allItems = [NSMutableArray new];
+    [allItems addObjectsFromArray:self.databaseItems];
+    [allItems addObjectsFromArray:self.attachmentsItems];
+
+    __weak OWSBackupImportJob *weakSelf = self;
+    [weakSelf
+        downloadFilesFromCloud:allItems
+                    completion:^(NSError *_Nullable fileDownloadError) {
+                        if (fileDownloadError) {
+                            [weakSelf failWithError:fileDownloadError];
+                            return;
+                        }
+
+                        if (weakSelf.isComplete) {
+                            return;
+                        }
+
+                        [weakSelf restoreAttachmentFiles];
+
+                        if (weakSelf.isComplete) {
+                            return;
+                        }
+
+                        [weakSelf restoreDatabaseWithCompletion:^(BOOL restoreDatabaseSuccess) {
+                            if (!restoreDatabaseSuccess) {
+                                [weakSelf
+                                    failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                                                 @"Error indicating the a backup import "
+                                                                 @"could not import the user's data.")];
                                 return;
                             }
 
@@ -125,14 +146,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 return;
                             }
 
-                            [weakSelf restoreAttachmentFiles];
-
-                            if (weakSelf.isComplete) {
-                                return;
-                            }
-
-                            [weakSelf restoreDatabaseWithCompletion:^(BOOL restoreDatabaseSuccess) {
-                                if (!restoreDatabaseSuccess) {
+                            [weakSelf ensureMigrationsWithCompletion:^(BOOL ensureMigrationsSuccess) {
+                                if (!ensureMigrationsSuccess) {
                                     [weakSelf failWithErrorDescription:NSLocalizedString(
                                                                            @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
                                                                            @"Error indicating the a backup import "
@@ -144,24 +159,10 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                     return;
                                 }
 
-                                [weakSelf ensureMigrationsWithCompletion:^(BOOL ensureMigrationsSuccess) {
-                                    if (!ensureMigrationsSuccess) {
-                                        [weakSelf failWithErrorDescription:NSLocalizedString(
-                                                                               @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                                               @"Error indicating the a backup import "
-                                                                               @"could not import the user's data.")];
-                                        return;
-                                    }
-
-                                    if (weakSelf.isComplete) {
-                                        return;
-                                    }
-
-                                    [weakSelf succeed];
-                                }];
+                                [weakSelf succeed];
                             }];
                         }];
-    }];
+                    }];
 }
 
 - (BOOL)configureImport
@@ -178,138 +179,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return YES;
 }
 
-- (void)downloadAndProcessManifestWithCompletion:(OWSBackupJobCompletion)completion
-{
-    OWSAssert(completion);
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    __weak OWSBackupImportJob *weakSelf = self;
-    [OWSBackupAPI downloadManifestFromCloudWithSuccess:^(NSData *data) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [weakSelf processManifest:data
-                           completion:^(BOOL success) {
-                               if (success) {
-                                   completion(nil);
-                               } else {
-                                   completion(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
-                                       NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                           @"Error indicating the a backup import could not import the user's data.")));
-                               }
-                           }];
-        });
-    }
-        failure:^(NSError *error) {
-            // The manifest file is critical so any error downloading it is unrecoverable.
-            OWSProdLogAndFail(@"%@ Could not download manifest.", weakSelf.logTag);
-            completion(error);
-        }];
-}
-
-- (void)processManifest:(NSData *)manifestDataEncrypted completion:(OWSBackupJobBoolCompletion)completion
-{
-    OWSAssert(completion);
-    OWSAssert(self.backupIO);
-
-    if (self.isComplete) {
-        return;
-    }
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    NSData *_Nullable manifestDataDecrypted =
-        [self.backupIO decryptDataAsData:manifestDataEncrypted encryptionKey:self.delegate.backupEncryptionKey];
-    if (!manifestDataDecrypted) {
-        OWSProdLogAndFail(@"%@ Could not decrypt manifest.", self.logTag);
-        return completion(NO);
-    }
-
-    NSError *error;
-    NSDictionary<NSString *, id> *_Nullable json =
-        [NSJSONSerialization JSONObjectWithData:manifestDataDecrypted options:0 error:&error];
-    if (![json isKindOfClass:[NSDictionary class]]) {
-        OWSProdLogAndFail(@"%@ Could not download manifest.", self.logTag);
-        return completion(NO);
-    }
-
-    DDLogVerbose(@"%@ json: %@", self.logTag, json);
-
-    NSArray<OWSBackupImportItem *> *_Nullable databaseItems =
-        [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
-    if (!databaseItems) {
-        return completion(NO);
-    }
-    NSArray<OWSBackupImportItem *> *_Nullable attachmentsItems =
-        [self parseItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
-    if (!attachmentsItems) {
-        return completion(NO);
-    }
-
-    self.databaseItems = databaseItems;
-    self.attachmentsItems = attachmentsItems;
-
-    return completion(YES);
-}
-
-- (nullable NSArray<OWSBackupImportItem *> *)parseItems:(id)json key:(NSString *)key
-{
-    OWSAssert(json);
-    OWSAssert(key.length);
-
-    if (![json isKindOfClass:[NSDictionary class]]) {
-        OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
-        return nil;
-    }
-    NSArray *itemMaps = json[key];
-    if (![itemMaps isKindOfClass:[NSArray class]]) {
-        OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
-        return nil;
-    }
-    NSMutableArray<OWSBackupImportItem *> *items = [NSMutableArray new];
-    for (NSDictionary *itemMap in itemMaps) {
-        if (![itemMap isKindOfClass:[NSDictionary class]]) {
-            OWSProdLogAndFail(@"%@ manifest has invalid item: %@.", self.logTag, key);
-            return nil;
-        }
-        NSString *_Nullable recordName = itemMap[kOWSBackup_ManifestKey_RecordName];
-        NSString *_Nullable encryptionKeyString = itemMap[kOWSBackup_ManifestKey_EncryptionKey];
-        NSString *_Nullable relativeFilePath = itemMap[kOWSBackup_ManifestKey_RelativeFilePath];
-        NSNumber *_Nullable uncompressedDataLength = itemMap[kOWSBackup_ManifestKey_DataSize];
-        if (![recordName isKindOfClass:[NSString class]]) {
-            OWSProdLogAndFail(@"%@ manifest has invalid recordName: %@.", self.logTag, key);
-            return nil;
-        }
-        if (![encryptionKeyString isKindOfClass:[NSString class]]) {
-            OWSProdLogAndFail(@"%@ manifest has invalid encryptionKey: %@.", self.logTag, key);
-            return nil;
-        }
-        // relativeFilePath is an optional field.
-        if (relativeFilePath && ![relativeFilePath isKindOfClass:[NSString class]]) {
-            OWSProdLogAndFail(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, key);
-            return nil;
-        }
-        NSData *_Nullable encryptionKey = [NSData dataFromBase64String:encryptionKeyString];
-        if (!encryptionKey) {
-            OWSProdLogAndFail(@"%@ manifest has corrupt encryptionKey: %@.", self.logTag, key);
-            return nil;
-        }
-        // uncompressedDataLength is an optional field.
-        if (uncompressedDataLength && ![uncompressedDataLength isKindOfClass:[NSNumber class]]) {
-            OWSProdLogAndFail(@"%@ manifest has invalid uncompressedDataLength: %@.", self.logTag, key);
-            return nil;
-        }
-
-        OWSBackupImportItem *item = [OWSBackupImportItem new];
-        item.recordName = recordName;
-        item.encryptionKey = encryptionKey;
-        item.relativeFilePath = relativeFilePath;
-        item.uncompressedDataLength = uncompressedDataLength;
-        [items addObject:item];
-    }
-    return items;
-}
-
-- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupImportItem *> *)items
+- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
                     completion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(items.count > 0);
@@ -320,7 +190,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
 }
 
-- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupImportItem *> *)items
+- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
                       recordCount:(NSUInteger)recordCount
                        completion:(OWSBackupJobCompletion)completion
 {
@@ -336,7 +206,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         // All downloads are complete; exit.
         return completion(nil);
     }
-    OWSBackupImportItem *item = items.lastObject;
+    OWSBackupManifestItem *item = items.lastObject;
     [items removeLastObject];
 
     CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
@@ -383,7 +253,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
 
     NSUInteger count = 0;
-    for (OWSBackupImportItem *item in self.attachmentsItems) {
+    for (OWSBackupManifestItem *item in self.attachmentsItems) {
         if (self.isComplete) {
             return;
         }
@@ -475,7 +345,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
 
         NSUInteger count = 0;
-        for (OWSBackupImportItem *item in self.databaseItems) {
+        for (OWSBackupManifestItem *item in self.databaseItems) {
             if (self.isComplete) {
                 return;
             }
