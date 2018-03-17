@@ -294,7 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
                                progress:nil];
 
     __weak OWSBackupExportJob *weakSelf = self;
-    [self configureExport:^(BOOL configureExportSuccess) {
+    [self configureExportWithCompletion:^(BOOL configureExportSuccess) {
         if (!configureExportSuccess) {
             [self failWithErrorDescription:
                       NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
@@ -317,12 +317,12 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.isComplete) {
             return;
         }
-        [self saveToCloud:^(NSError *_Nullable saveError) {
+        [self saveToCloudWithCompletion:^(NSError *_Nullable saveError) {
             if (saveError) {
                 [weakSelf failWithError:saveError];
                 return;
             }
-            [self cleanUpCloud:^(NSError *_Nullable cleanUpError) {
+            [self cleanUpCloudWithCompletion:^(NSError *_Nullable cleanUpError) {
                 if (cleanUpError) {
                     [weakSelf failWithError:cleanUpError];
                     return;
@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (void)configureExport:(OWSBackupJobBoolCompletion)completion
+- (void)configureExportWithCompletion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
 
@@ -526,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (void)saveToCloud:(OWSBackupJobCompletion)completion
+- (void)saveToCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -558,13 +558,13 @@ NS_ASSUME_NONNULL_BEGIN
             totalFileSize);
     }
 
-    [self saveNextFileToCloud:completion];
+    [self saveNextFileToCloudWithCompletion:completion];
 }
 
 // This method uploads one file (the "next" file) each time it
 // is called.  Each successful file upload re-invokes this method
 // until the last (the manifest file).
-- (void)saveNextFileToCloud:(OWSBackupJobCompletion)completion
+- (void)saveNextFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -581,17 +581,17 @@ NS_ASSUME_NONNULL_BEGIN
                                             @"Indicates that the backup export data is being uploaded.")
                                progress:@(progress)];
 
-    if ([self saveNextDatabaseFileToCloud:completion]) {
+    if ([self saveNextDatabaseFileToCloudWithCompletion:completion]) {
         return;
     }
-    if ([self saveNextAttachmentFileToCloud:completion]) {
+    if ([self saveNextAttachmentFileToCloudWithCompletion:completion]) {
         return;
     }
-    [self saveManifestFileToCloud:completion];
+    [self saveManifestFileToCloudWithCompletion:completion];
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
-- (BOOL)saveNextDatabaseFileToCloud:(OWSBackupJobCompletion)completion
+- (BOOL)saveNextDatabaseFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -612,7 +612,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 item.recordName = recordName;
                 [weakSelf.savedDatabaseItems addObject:item];
-                [weakSelf saveNextFileToCloud:completion];
+                [weakSelf saveNextFileToCloudWithCompletion:completion];
             });
         }
         failure:^(NSError *error) {
@@ -624,7 +624,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // This method returns YES IFF "work was done and there might be more work to do".
-- (BOOL)saveNextAttachmentFileToCloud:(OWSBackupJobCompletion)completion
+- (BOOL)saveNextAttachmentFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -642,7 +642,7 @@ NS_ASSUME_NONNULL_BEGIN
         // attachment to disk.
         if (![attachmentExport prepareForUpload]) {
             // Attachment files are non-critical so any error uploading them is recoverable.
-            [weakSelf saveNextFileToCloud:completion];
+            [weakSelf saveNextFileToCloudWithCompletion:completion];
             return YES;
         }
         OWSAssert(attachmentExport.relativeFilePath.length > 0);
@@ -679,21 +679,21 @@ NS_ASSUME_NONNULL_BEGIN
                     self.logTag,
                     attachmentExport.attachmentFilePath,
                     attachmentExport.relativeFilePath);
-                [strongSelf saveNextFileToCloud:completion];
+                [strongSelf saveNextFileToCloudWithCompletion:completion];
             });
         }
         failure:^(NSError *error) {
             // Ensure that we continue to work off the main thread.
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // Attachment files are non-critical so any error uploading them is recoverable.
-                [weakSelf saveNextFileToCloud:completion];
+                [weakSelf saveNextFileToCloudWithCompletion:completion];
             });
         }];
 
     return YES;
 }
 
-- (void)saveManifestFileToCloud:(OWSBackupJobCompletion)completion
+- (void)saveManifestFileToCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -780,7 +780,7 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (void)cleanUpCloud:(OWSBackupJobCompletion)completion
+- (void)cleanUpCloudWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 

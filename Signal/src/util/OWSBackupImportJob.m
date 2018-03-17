@@ -98,7 +98,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                progress:nil];
 
     __weak OWSBackupImportJob *weakSelf = self;
-    [weakSelf downloadAndProcessManifest:^(NSError *_Nullable manifestError) {
+    [weakSelf downloadAndProcessManifestWithCompletion:^(NSError *_Nullable manifestError) {
         if (manifestError) {
             [weakSelf failWithError:manifestError];
             return;
@@ -131,7 +131,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 return;
                             }
 
-                            [weakSelf restoreDatabase:^(BOOL restoreDatabaseSuccess) {
+                            [weakSelf restoreDatabaseWithCompletion:^(BOOL restoreDatabaseSuccess) {
                                 if (!restoreDatabaseSuccess) {
                                     [weakSelf failWithErrorDescription:NSLocalizedString(
                                                                            @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
@@ -144,7 +144,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                     return;
                                 }
 
-                                [weakSelf ensureMigrations:^(BOOL ensureMigrationsSuccess) {
+                                [weakSelf ensureMigrationsWithCompletion:^(BOOL ensureMigrationsSuccess) {
                                     if (!ensureMigrationsSuccess) {
                                         [weakSelf failWithErrorDescription:NSLocalizedString(
                                                                                @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
@@ -178,7 +178,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return YES;
 }
 
-- (void)downloadAndProcessManifest:(OWSBackupJobCompletion)completion
+- (void)downloadAndProcessManifestWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
 
@@ -422,7 +422,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 }
 
-- (void)restoreDatabase:(OWSBackupJobBoolCompletion)completion
+- (void)restoreDatabaseWithCompletion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
 
@@ -573,7 +573,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     completion(YES);
 }
 
-- (void)ensureMigrations:(OWSBackupJobBoolCompletion)completion
+- (void)ensureMigrationsWithCompletion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
 
