@@ -2033,8 +2033,9 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaGalleryViewController *vc =
-        [[MediaGalleryViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
+                                                                           mediaMessage:mediaMessage
+                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
 
     [vc presentDetailViewFromViewController:self replacingView:imageView];
 }
@@ -2055,8 +2056,9 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaGalleryViewController *vc =
-        [[MediaGalleryViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
+                                                                           mediaMessage:mediaMessage
+                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
 
     [vc presentDetailViewFromViewController:self replacingView:imageView];
 }
@@ -2807,6 +2809,8 @@ typedef enum : NSUInteger {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
+        // Increase object cache limit. Default is 250.
+        _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;

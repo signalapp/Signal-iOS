@@ -72,7 +72,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
-        // TODO move responsibility to MediaGalleryVC?
+        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
         self.includeGallery = includeGallery
         self.mediaGalleryDataSource = mediaGalleryDataSource

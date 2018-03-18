@@ -4,10 +4,22 @@
 
 import Foundation
 
+public enum GalleryDirection {
+    case before, after, around
+}
+
 public struct MediaGalleryItem: Equatable {
+    let logTag = "[MediaGalleryItem]"
+
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
-    let logTag = "[MediaGalleryItem]"
+    let galleryDate: GalleryDate
+
+    init(message: TSMessage, attachmentStream: TSAttachmentStream) {
+        self.message = message
+        self.attachmentStream = attachmentStream
+        self.galleryDate = GalleryDate(message: message)
+    }
 
     var isVideo: Bool {
         return attachmentStream.isVideo()
@@ -29,7 +41,7 @@ public struct MediaGalleryItem: Equatable {
     }
 }
 
-public struct GalleryDate: Hashable {
+public struct GalleryDate: Hashable, Comparable, Equatable {
     let year: Int
     let month: Int
 
@@ -41,6 +53,8 @@ public struct GalleryDate: Hashable {
     }
 
     init(year: Int, month: Int) {
+        assert(month >= 1 && month <= 12)
+
         self.year = year
         self.month = month
     }
@@ -101,19 +115,70 @@ public struct GalleryDate: Hashable {
         return month.hashValue ^ year.hashValue
     }
 
+    // Mark: Comparable
+
+    public static func < (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
+        if lhs.year != rhs.year {
+            return lhs.year < rhs.year
+        } else if lhs.month != rhs.month {
+            return lhs.month < rhs.month
+        } else {
+            return false
+        }
+    }
+
     // MARK: Equatable
 
     public static func == (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
         return lhs.month == rhs.month && lhs.year == rhs.year
     }
+
+//    // MARK: Sequence / IteratorProtocol
+//    public func until(_ toDate: GalleryDate) -> GalleryDateSequence {
+//        return GalleryDateSequence(from: self, to: toDate)
+//    }
+//
+//    public class GalleryDateSequence: Sequence, IteratorProtocol {
+//        public typealias Element = GalleryDate
+//
+//        var currentDate: GalleryDate
+//        let toDate: GalleryDate
+//
+//        init(from: GalleryDate, to: GalleryDate) {
+//            self.currentDate = from
+//            self.toDate = to
+//        }
+//
+//        public func next() -> GalleryDate? {
+//            guard currentDate < toDate else {
+//                return nil
+//            }
+//
+//            let nextDate: GalleryDate = {
+//                if currentDate.month == 12 {
+//                    return GalleryDate(year: currentDate.year + 1, month: 1)
+//                } else {
+//                    return GalleryDate(year: currentDate.year, month: currentDate.month + 1)
+//                }
+//            }()
+//            currentDate = nextDate
+//            return nextDate
+//        }
+//    }
+
 }
 
 protocol MediaGalleryDataSource: class {
+    var hasFetchedOldest: Bool { get }
+    var hasFetchedMostRecent: Bool { get }
+
     var galleryItems: [MediaGalleryItem] { get }
     var galleryItemCount: Int { get }
 
     var sections: [GalleryDate: [MediaGalleryItem]] { get }
     var sectionDates: [GalleryDate] { get }
+
+    func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)?)
 
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem?
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
@@ -137,26 +202,29 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     private let thread: TSThread
     private let includeGallery: Bool
 
-    convenience init(thread: TSThread, mediaMessage: TSMessage) {
-        self.init(thread: thread, mediaMessage: mediaMessage, includeGallery: true)
+    // we start with a small range size for quick loading.
+    private let fetchRangeSize: UInt = 10
+
+    convenience init(thread: TSThread, mediaMessage: TSMessage, uiDatabaseConnection: YapDatabaseConnection) {
+        self.init(thread: thread, mediaMessage: mediaMessage, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)
     }
 
-    init(thread: TSThread, mediaMessage: TSMessage, includeGallery: Bool) {
+    init(thread: TSThread, mediaMessage: TSMessage, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
         self.thread = thread
+        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
+        self.uiDatabaseConnection = uiDatabaseConnection
         self.includeGallery = includeGallery
-
-        self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-        self.mediaGalleryFinder = OWSMediaGalleryFinder()
+        self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
-
-        uiDatabaseConnection.beginLongLivedReadTransaction()
 
         uiDatabaseConnection.read { transaction in
             self.initialGalleryItem = self.buildGalleryItem(message: mediaMessage, transaction: transaction)!
         }
 
-        updateGalleryItems(thread: thread)
+        // For a speedy load, we only fetch a few items on either side of
+        // the initial message
+        ensureGalleryItemsLoaded(.around, item: self.initialGalleryItem, amount: 10)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -417,6 +485,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     // MARK: MediaGalleryDataSource
 
     func showAllMedia() {
+
+        ensureGalleryItemsLoaded(.around, item: self.initialGalleryItem, amount: 100)
+
         // TODO fancy animation - zoom media item into it's tile in the all media grid
         let allMediaController = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
         allMediaController.delegate = self
@@ -427,6 +498,8 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     var galleryItems: [MediaGalleryItem] = []
     var sections: [GalleryDate: [MediaGalleryItem]] = [:]
     var sectionDates: [GalleryDate] = []
+    var hasFetchedOldest = false
+    var hasFetchedMostRecent = false
 
     func buildGalleryItem(message: TSMessage, transaction: YapDatabaseReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = message.attachment(with: transaction) as? TSAttachmentStream else {
@@ -437,41 +510,148 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         return MediaGalleryItem(message: message, attachmentStream: attachmentStream)
     }
 
-    func updateGalleryItems(thread: TSThread) {
-        var galleryItems: [MediaGalleryItem] = []
-        var sections: [GalleryDate: [MediaGalleryItem]] = [:]
-        var sectionDates: [GalleryDate] = []
+    // Range instead of indexSet since it's contiguous?
+    var fetchedIndexSet = IndexSet() {
+        didSet {
+            Logger.debug("\(logTag) in \(#function) \(oldValue) -> \(fetchedIndexSet)")
+        }
+    }
 
-        self.uiDatabaseConnection.read { transaction in
-            self.mediaGalleryFinder.enumerateMediaMessages(with: thread, transaction: transaction) { (message: TSMessage) in
+    func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
 
-                guard let item: MediaGalleryItem = self.buildGalleryItem(message: message, transaction: transaction) else {
-                    owsFail("\(self.logTag) in \(#function) unexpectedly failed to buildGalleryItem")
+        // TODO avoid copy?
+        // TODO read off main thread?
+        var galleryItems: [MediaGalleryItem] = self.galleryItems
+        var sections: [GalleryDate: [MediaGalleryItem]] = self.sections
+        var sectionDates: [GalleryDate] = self.sectionDates
+
+        var newGalleryItems: [MediaGalleryItem] = []
+        var newDates: [GalleryDate] = []
+
+        Bench(title: "fetching gallery items") {
+            self.uiDatabaseConnection.read { transaction in
+
+                let initialIndex: Int = Int(self.mediaGalleryFinder.mediaIndex(message: item.message, transaction: transaction))
+                let mediaCount: Int = Int(self.mediaGalleryFinder.mediaCount(transaction: transaction))
+
+                let requestRange: Range<Int> = { () -> Range<Int> in
+                    let range: Range<Int> = { () -> Range<Int> in
+                        switch direction {
+                        case .around:
+                            // To keep it simple, this isn't exactly *amount* sized if `message` window overlaps the end or
+                            // beginning of the view. Still, we have sufficient buffer to fetch more as the user swipes.
+                            let start: Int = initialIndex - Int(amount) / 2
+                            let end: Int = initialIndex + Int(amount) / 2
+
+                            return start..<end
+                        case .before:
+                            let start: Int = initialIndex - Int(amount)
+                            let end: Int = initialIndex
+
+                            return start..<end
+                        case  .after:
+                            let start: Int = initialIndex
+                            let end: Int = initialIndex  + Int(amount)
+
+                            return start..<end
+                        }
+                    }()
+
+                    return range.clamped(to: 0..<mediaCount)
+                }()
+
+                let requestSet = IndexSet(integersIn: requestRange)
+                guard !self.fetchedIndexSet.contains(integersIn: requestSet) else {
+                    Logger.debug("\(self.logTag) in \(#function) all requested messages have already been loaded.")
                     return
                 }
 
-                let date = GalleryDate(message: message)
+                let unfetchedSet = requestSet.subtracting(self.fetchedIndexSet)
+                guard unfetchedSet.count > (requestSet.count / 2) else {
+                    // For perf we only want to fetch a relatively full batch, unless the requestSet is very small.
+                    Logger.debug("\(self.logTag) in \(#function) ignoring small fetch request: \(unfetchedSet.count)")
+                    return
+                }
 
-                // TODO do we need to box this for reasonable perf?
-                galleryItems.append(item)
-                if sections[date] != nil {
-                    // TODO do we need to box this for reasonable perf?
-                    sections[date]!.append(item)
-                } else {
-                    sectionDates.append(date)
-                    sections[date] = [item]
+                Logger.debug("\(self.logTag) in \(#function) fetching set: \(unfetchedSet)")
+                let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
+                self.mediaGalleryFinder.enumerateMediaMessages(range: nsRange, transaction: transaction) { (message: TSMessage) in
+                    guard let item: MediaGalleryItem = self.buildGalleryItem(message: message, transaction: transaction) else {
+                        owsFail("\(self.logTag) in \(#function) unexpectedly failed to buildGalleryItem")
+                        return
+                    }
+
+                    let date = item.galleryDate
+
+                    galleryItems.append(item)
+                    if sections[date] != nil {
+                        sections[date]!.append(item)
+
+                        // so we can update collectionView
+                        newGalleryItems.append(item)
+                    } else {
+                        sectionDates.append(date)
+                        sections[date] = [item]
+
+                        // so we can update collectionView
+                        newDates.append(date)
+                        newGalleryItems.append(item)
+                    }
+                }
+
+                self.fetchedIndexSet = self.fetchedIndexSet.union(unfetchedSet)
+                self.hasFetchedOldest = self.fetchedIndexSet.min() == 0
+                self.hasFetchedMostRecent = self.fetchedIndexSet.max() == mediaCount - 1
+            }
+        }
+
+        // TODO only sort if changed
+        var sortedSections: [GalleryDate: [MediaGalleryItem]] = [:]
+
+        Bench(title: "sorting gallery items") {
+            galleryItems.sort { lhs, rhs -> Bool in
+                return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
+            }
+            sectionDates.sort()
+
+            for (date, galleryItems) in sections {
+                sortedSections[date] = galleryItems.sorted { lhs, rhs -> Bool in
+                    return lhs.message.timestampForSorting() < rhs.message.timestampForSorting()
                 }
             }
         }
 
         self.galleryItems = galleryItems
-        self.sections = sections
+        self.sections = sortedSections
         self.sectionDates = sectionDates
+
+        if let completionBlock = completion {
+            Bench(title: "calculating changes for collectionView") {
+                // FIXME can we avoid this index offset?
+                let dateIndices = newDates.map { sectionDates.index(of: $0)! + 1 }
+                let addedSections: IndexSet = IndexSet(dateIndices)
+
+                let addedItems: [IndexPath] = newGalleryItems.map { galleryItem in
+                    let sectionIdx = sectionDates.index(of: galleryItem.galleryDate)!
+                    let section = sections[galleryItem.galleryDate]!
+                    let itemIdx = section.index(of: galleryItem)!
+
+                    // FIXME can we avoid this index offset?
+                    return IndexPath(item: itemIdx, section: sectionIdx + 1)
+                }
+
+                completionBlock(addedSections, addedItems)
+            }
+        }
     }
+
+    let kGallerySwipeLoadBatchSize: UInt = 5
 
     // TODO extract to public extension?
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("\(logTag) in \(#function)")
+
+        self.ensureGalleryItemsLoaded(.after, item: currentItem, amount: kGallerySwipeLoadBatchSize)
 
         guard let currentIndex = galleryItems.index(of: currentItem) else {
             owsFail("currentIndex was unexpectedly nil in \(#function)")
@@ -485,6 +665,8 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("\(logTag) in \(#function)")
 
+        self.ensureGalleryItemsLoaded(.before, item: currentItem, amount: kGallerySwipeLoadBatchSize)
+
         guard let currentIndex = galleryItems.index(of: currentItem) else {
             owsFail("currentIndex was unexpectedly nil in \(#function)")
             return nil
@@ -497,7 +679,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     var galleryItemCount: Int {
         var count: UInt = 0
         self.uiDatabaseConnection.read { (transaction: YapDatabaseReadTransaction) in
-            count = self.mediaGalleryFinder.mediaCount(thread: self.thread, transaction: transaction)
+            count = self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
         return Int(count)
     }
