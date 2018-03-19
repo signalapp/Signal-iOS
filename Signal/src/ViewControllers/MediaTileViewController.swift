@@ -10,13 +10,20 @@ public protocol MediaTileViewControllerDelegate: class {
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryCellDelegate {
 
-    // TODO weak?
-    private var mediaGalleryDataSource: MediaGalleryDataSource
+    private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
     private var galleryItems: [GalleryDate: [MediaGalleryItem]] {
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return [:]
+        }
         return mediaGalleryDataSource.sections
     }
     private var galleryDates: [GalleryDate] {
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return []
+        }
         return mediaGalleryDataSource.sectionDates
     }
     public var focusedItem: MediaGalleryItem?
@@ -24,6 +31,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     private let uiDatabaseConnection: YapDatabaseConnection
 
     public weak var delegate: MediaTileViewControllerDelegate?
+
+    deinit {
+        Logger.debug("\(logTag) deinit")
+    }
 
     init(mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection) {
 
@@ -250,10 +261,18 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         switch section {
         case kLoadOlderSectionIdx:
             // Show "loading older..." iff there is still older data to be fetched
-            return self.mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : CGSize(width: 0, height: 100)
+            guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+                owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+                return CGSize.zero
+            }
+            return mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : CGSize(width: 0, height: 100)
         case kLoadNewerSectionIdx:
             // Show "loading newer..." iff there is still more recent data to be fetched
-            return self.mediaGalleryDataSource.hasFetchedMostRecent ? CGSize.zero : CGSize(width: 0, height: 100)
+            guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+                owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+                return CGSize.zero
+            }
+            return mediaGalleryDataSource.hasFetchedMostRecent ? CGSize.zero : CGSize(width: 0, height: 100)
         default:
             return CGSize(width: 0, height: kHeaderHeight)
         }
@@ -305,6 +324,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
             return
         }
 
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return
+        }
+
         let contentOffsetY = collectionView.contentOffset.y
         let oldContentHeight = collectionView.contentSize.height
 
@@ -326,7 +350,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
             let scrollDistanceToBottom = oldContentHeight - contentOffsetY
 
             collectionView.performBatchUpdates({
-                self.mediaGalleryDataSource.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
+                mediaGalleryDataSource.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
                     Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections) items: \(addedItems)")
 
                     collectionView.insertSections(addedSections)
@@ -357,13 +381,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
             isFetchingMoreData = true
             collectionView.performBatchUpdates({
-                self.mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
-                    guard let collectionView = self.collectionView else {
-                        Logger.debug("\(self.logTag) in \(#function) collectionView was unexpectedly nil")
-                        return
-                    }
+                mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
                     Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections), items: \(addedItems)")
-
                     collectionView.insertSections(addedSections)
                     collectionView.insertItems(at: addedItems)
                 }

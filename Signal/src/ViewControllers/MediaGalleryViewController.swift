@@ -158,7 +158,6 @@ protocol MediaGalleryDataSource: class {
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem?
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
 
-    // TODO this doesn't seem very "data-source"
     func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)?)
 }
@@ -176,6 +175,10 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     // we start with a small range size for quick loading.
     private let fetchRangeSize: UInt = 10
+
+    deinit {
+        Logger.debug("\(logTag) deinit")
+    }
 
     convenience init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection) {
         self.init(thread: thread, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)

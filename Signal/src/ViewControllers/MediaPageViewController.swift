@@ -35,7 +35,7 @@ public struct MediaGalleryPage: Equatable {
 
 class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate {
 
-    let mediaGalleryDataSource: MediaGalleryDataSource
+    private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
     private var cachedPages: [MediaGalleryPage] = []
     private var initialPage: MediaGalleryPage!
@@ -181,7 +181,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
 
-        self.mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return
+        }
+        mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
     }
 
     @objc
@@ -344,6 +348,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return cachedPage.viewController
         }
 
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return nil
+        }
+
         guard let previousItem: MediaGalleryItem = mediaGalleryDataSource.galleryItem(before: currentPage.galleryItem) else {
             return nil
         }
@@ -368,6 +377,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let newIndex = currentIndex + 1
         if let cachedPage = cachedPages[safe: newIndex] {
             return cachedPage.viewController
+        }
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return nil
         }
 
         guard let nextItem: MediaGalleryItem = mediaGalleryDataSource.galleryItem(after: currentPage.galleryItem) else {
@@ -406,7 +420,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         currentPage.viewController.zoomOut(animated: true)
-        self.mediaGalleryDataSource.dismissSelf(animated: isAnimated, completion: completion)
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
+        mediaGalleryDataSource.dismissSelf(animated: isAnimated, completion: completion)
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
