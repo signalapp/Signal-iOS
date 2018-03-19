@@ -4,32 +4,30 @@
 
 import UIKit
 
-public struct MediaGalleryPage: Equatable {
-
-    public let viewController: MediaDetailViewController
-    public let galleryItem: MediaGalleryItem
-
-    public var message: TSMessage {
-        return galleryItem.message
+// Objc wrapper for the MediaGalleryItem struct
+@objc
+public class GalleryItemBox: NSObject {
+    public let value: MediaGalleryItem
+    
+    init(_ value: MediaGalleryItem) {
+        self.value = value
     }
-
+    
     public var attachmentStream: TSAttachmentStream {
-        return galleryItem.attachmentStream
+        return value.attachmentStream
     }
+}
 
-    public var isVideo: Bool {
-        return galleryItem.isVideo
+fileprivate class Box<A> {
+    var value: A
+    init(_ val: A) {
+        self.value = val
     }
+}
 
-    public var image: UIImage {
-        // TODO cache this
-        return galleryItem.fullSizedImage
-    }
-
-    // MARK: Equatable
-
-    public static func == (lhs: MediaGalleryPage, rhs: MediaGalleryPage) -> Bool {
-        return lhs.galleryItem == rhs.galleryItem
+fileprivate extension MediaDetailViewController {
+    fileprivate var galleryItem: MediaGalleryItem {
+        return self.galleryItemBox.value
     }
 }
 
@@ -37,26 +35,24 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
-    private var cachedPages: [MediaGalleryPage] = []
-    private var initialPage: MediaGalleryPage!
+    private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
+    private var initialPage: MediaDetailViewController!
 
-    public var currentPage: MediaGalleryPage! {
-        return cachedPages.first { $0.viewController == viewControllers?.first }
+    private var currentViewController: MediaDetailViewController {
+        return viewControllers!.first as! MediaDetailViewController
     }
 
     public var currentItem: MediaGalleryItem! {
         get {
-            return currentPage.galleryItem
+            return currentViewController.galleryItemBox.value
         }
         set {
-            // FIXME cache separate from ordering so we don't have to clear cache
             guard let galleryPage = self.buildGalleryPage(galleryItem: newValue) else {
-                owsFail("unexpetedly unable to build initial gallery item")
+                owsFail("unexpetedly unable to build new gallery page")
                 return
             }
 
-            self.cachedPages = [galleryPage]
-            self.setViewControllers([galleryPage.viewController], direction: .forward, animated: false, completion: nil)
+            self.setViewControllers([galleryPage], direction: .forward, animated: false, completion: nil)
         }
     }
 
@@ -88,8 +84,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
         self.initialPage = initialPage
-        cachedPages = [initialPage]
-        self.setViewControllers([initialPage.viewController], direction: .forward, animated: false, completion: nil)
+        self.setViewControllers([initialPage], direction: .forward, animated: false, completion: nil)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -175,8 +170,22 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         view.addGestureRecognizer(verticalSwipe)
     }
 
+    override func didReceiveMemoryWarning() {
+        Logger.info("\(logTag) in \(#function)")
+        super.didReceiveMemoryWarning()
+
+        self.cachedPages = [:]
+    }
+
     // MARK: View Helpers
 
+    public func wasPresented() {
+        let currentViewController = self.currentViewController
+
+        if currentViewController.galleryItem.isVideo {
+            currentViewController.playVideo()
+        }
+    }
     @objc
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
@@ -218,7 +227,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             self.view.backgroundColor = shouldHideToolbars ? UIColor.black : UIColor.white
 
             UIView.animate(withDuration: 0.1) {
-                self.currentPage.viewController.setShouldHideToolbars(self.shouldHideToolbars)
+                self.currentViewController.setShouldHideToolbars(self.shouldHideToolbars)
                 self.footerBar.alpha = self.shouldHideToolbars ? 0 : 1
             }
         }
@@ -237,7 +246,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil)
         ]
 
-        if (self.currentPage.isVideo) {
+        if (self.currentItem.isVideo) {
             toolbarItems += [
                 isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton,
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil)
@@ -301,13 +310,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         assert(pendingViewControllers.count == 1)
         pendingViewControllers.forEach { viewController in
-            guard let pendingPage = self.cachedPages.first(where: { $0.viewController == viewController}) else {
+            guard let pendingPage = viewController as? MediaDetailViewController else {
                 owsFail("\(logTag) in \(#function) unexpected mediaDetailViewController: \(viewController)")
                 return
             }
 
             // Ensure upcoming page respects current toolbar status
-            pendingPage.viewController.setShouldHideToolbars(self.shouldHideToolbars)
+            pendingPage.setShouldHideToolbars(self.shouldHideToolbars)
         }
     }
 
@@ -316,16 +325,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         assert(previousViewControllers.count == 1)
         previousViewControllers.forEach { viewController in
-            guard let previousPage = self.cachedPages.first(where: { $0.viewController == viewController}) else {
+            guard let previousPage = viewController as? MediaDetailViewController else {
                 owsFail("\(logTag) in \(#function) unexpected mediaDetailViewController: \(viewController)")
                 return
             }
 
             // Do any cleanup for the no-longer visible view controller
             if transitionCompleted {
-                previousPage.viewController.zoomOut(animated: false)
-                if previousPage.isVideo {
-                    previousPage.viewController.stopVideo()
+                previousPage.zoomOut(animated: false)
+
+                if previousPage.galleryItem.isVideo {
+                    previousPage.stopVideo()
                 }
                 updateFooterBarButtonItems(isPlayingVideo: false)
             }
@@ -337,15 +347,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(logTag) in \(#function)")
 
-        guard let currentIndex = cachedPages.index(where: { $0.viewController == viewController }) else {
-            owsFail("\(self.logTag) unknown view controller. \(viewController)")
+        guard let previousDetailViewController = viewController as? MediaDetailViewController else {
+            owsFail("\(logTag) in \(#function) unexpected viewController: \(viewController)")
             return nil
-        }
-        let currentPage = cachedPages[currentIndex]
-
-        let newIndex = currentIndex - 1
-        if let cachedPage = cachedPages[safe: newIndex] {
-            return cachedPage.viewController
         }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
@@ -353,30 +357,24 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return nil
         }
 
-        guard let previousItem: MediaGalleryItem = mediaGalleryDataSource.galleryItem(before: currentPage.galleryItem) else {
+        let previousItem = previousDetailViewController.galleryItem
+        guard let nextItem: MediaGalleryItem = mediaGalleryDataSource.galleryItem(before: previousItem) else {
             return nil
         }
 
-        guard let previousPage: MediaGalleryPage = buildGalleryPage(galleryItem: previousItem) else {
+        guard let nextPage: MediaDetailViewController = buildGalleryPage(galleryItem: nextItem) else {
             return nil
         }
 
-        cachedPages.insert(previousPage, at: currentIndex)
-        return previousPage.viewController
+        return nextPage
     }
 
     public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         Logger.debug("\(logTag) in \(#function)")
 
-        guard let currentIndex = cachedPages.index(where: { $0.viewController == viewController }) else {
-            owsFail("\(self.logTag) unknown view controller. \(viewController)")
+        guard let previousDetailViewController = viewController as? MediaDetailViewController else {
+            owsFail("\(logTag) in \(#function) unexpected viewController: \(viewController)")
             return nil
-        }
-        let currentPage = cachedPages[currentIndex]
-
-        let newIndex = currentIndex + 1
-        if let cachedPage = cachedPages[safe: newIndex] {
-            return cachedPage.viewController
         }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
@@ -384,19 +382,27 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return nil
         }
 
-        guard let nextItem: MediaGalleryItem = mediaGalleryDataSource.galleryItem(after: currentPage.galleryItem) else {
+        let previousItem = previousDetailViewController.galleryItem
+        guard let nextItem = mediaGalleryDataSource.galleryItem(after: previousItem) else {
+            // no more pages
             return nil
         }
 
-        guard let nextPage: MediaGalleryPage = buildGalleryPage(galleryItem: nextItem) else {
+        guard let nextPage: MediaDetailViewController = buildGalleryPage(galleryItem: nextItem) else {
             return nil
         }
 
-        cachedPages.insert(nextPage, at: newIndex)
-        return nextPage.viewController
+        return nextPage
     }
 
-    private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaGalleryPage? {
+    private func buildGalleryPage(galleryItem: MediaGalleryItem) -> MediaDetailViewController? {
+
+        if let cachedPage = cachedPages[galleryItem] {
+            Logger.debug("\(logTag) in \(#function) cache hit.")
+            return cachedPage
+        }
+
+        Logger.debug("\(logTag) in \(#function) cache miss.")
         var fetchedItem: ConversationViewItem? = nil
         self.uiDatabaseConnection.read { transaction in
             let message = galleryItem.message
@@ -405,21 +411,23 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         guard let viewItem = fetchedItem else {
-            owsFail("viewItem stream unexpectedly nil")
+            owsFail("viewItem was unexpectedly nil")
             return nil
         }
 
-        let viewController = MediaDetailViewController(attachmentStream: galleryItem.attachmentStream, viewItem: viewItem)
+        let viewController = MediaDetailViewController(galleryItemBox: GalleryItemBox(galleryItem), viewItem: viewItem)
         viewController.delegate = self
 
-        return MediaGalleryPage(viewController: viewController, galleryItem: galleryItem)
+        cachedPages[galleryItem] = viewController
+        return viewController
     }
 
     // MARK: MediaDetailViewControllerDelegate
 
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
-        currentPage.viewController.zoomOut(animated: true)
+        // currentVC
+        currentViewController.zoomOut(animated: true)
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
@@ -432,7 +440,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
-        guard mediaDetailViewController == currentPage.viewController else {
+        guard mediaDetailViewController == currentViewController else {
             Logger.verbose("\(logTag) in \(#function) ignoring stale delegate.")
             return
         }

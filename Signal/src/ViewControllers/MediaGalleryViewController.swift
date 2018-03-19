@@ -8,7 +8,7 @@ public enum GalleryDirection {
     case before, after, around
 }
 
-public struct MediaGalleryItem: Equatable {
+public struct MediaGalleryItem: Equatable, Hashable {
     let logTag = "[MediaGalleryItem]"
 
     let message: TSMessage
@@ -48,6 +48,13 @@ public struct MediaGalleryItem: Equatable {
     public static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
         return lhs.message.uniqueId == rhs.message.uniqueId
     }
+
+    // MARK: Hashable
+
+    public var hashValue: Int {
+        return message.hashValue
+    }
+
 }
 
 public struct GalleryDate: Hashable, Comparable, Equatable {
@@ -226,8 +233,8 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     // MARK: Present/Dismiss
 
-    private var currentPage: MediaGalleryPage? {
-        return self.pageViewController!.currentPage
+    private var currentItem: MediaGalleryItem {
+        return self.pageViewController!.currentItem
     }
 
     private var replacingView: UIView?
@@ -327,15 +334,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
                             self.view.isUserInteractionEnabled = true
 
-                            guard let currentPage = self.currentPage else {
-                                owsFail("\(self.logTag) in \(#function) currentPage was unexpectedly nil")
-                                self.dismissSelf(animated: false, completion: nil)
-                                return
-                            }
-
-                            if currentPage.isVideo {
-                                currentPage.viewController.playVideo()
-                            }
+                            pageViewController.wasPresented()
             })
         }
     }
@@ -391,12 +390,6 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.view.isUserInteractionEnabled = false
         UIApplication.shared.isStatusBarHidden = false
 
-        guard let currentPage = self.currentPage else {
-            owsFail("\(logTag) in \(#function) currentItem was unexpectedly nil")
-            self.presentingViewController?.dismiss(animated: false, completion: completion)
-            return
-        }
-
         guard let detailView = pageViewController?.view else {
             owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: false, completion: completion)
@@ -407,9 +400,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
         // Move the presentationView back to it's initial position, i.e. where
         // it sits on the screen in the conversation view.
-        let changedItems = currentPage.galleryItem != self.initialDetailItem
+        let changedItems = currentItem != self.initialDetailItem
         if changedItems {
-            self.presentationView.image = currentPage.image
+            self.presentationView.image = currentItem.fullSizedImage
             self.applyOffscreenMediaViewConstraints()
         } else {
             self.applyInitialMediaViewConstraints()

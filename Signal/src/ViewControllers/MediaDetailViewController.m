@@ -58,10 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
-@property (nonatomic) CGRect originRect;
 @property (nonatomic) NSData *fileData;
 
-@property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
+@property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
@@ -80,18 +79,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation MediaDetailViewController
 
-- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                viewItem:(ConversationViewItem *_Nullable)viewItem
+- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
+                              viewItem:(ConversationViewItem *_Nullable)viewItem
 {
     self = [super initWithNibName:nil bundle:nil];
     if (!self) {
         return self;
     }
 
-    self.attachmentStream = attachmentStream;
-    self.viewItem = viewItem;
+    _galleryItemBox = galleryItemBox;
+    _viewItem = viewItem;
 
     return self;
+}
+
+- (TSAttachmentStream *)attachmentStream
+{
+    return self.galleryItemBox.attachmentStream;
 }
 
 - (NSURL *_Nullable)attachmentUrl
