@@ -1147,6 +1147,18 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
     [[OWSBatchMessageProcessor sharedInstance] handleAnyUnprocessedEnvelopesAsync];
 
+    if (!Environment.preferences.hasGeneratedThumbnails) {
+        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+            asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+                [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
+                    // no-op. It's sufficient to initWithCoder: each object.
+                }];
+            }
+            completionBlock:^{
+                [Environment.preferences setHasGeneratedThumbnails:YES];
+            }];
+    }
+
 #ifdef DEBUG
     // A bug in orphan cleanup could be disastrous so let's only
     // run it in DEBUG builds for a few releases.
