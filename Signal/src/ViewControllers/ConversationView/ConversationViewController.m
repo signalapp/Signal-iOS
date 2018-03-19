@@ -1485,7 +1485,7 @@ typedef enum : NSUInteger {
 
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
     settingsVC.showVerificationOnAppear = showVerification;
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
@@ -2034,10 +2034,9 @@ typedef enum : NSUInteger {
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
     MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
-                                                                           mediaMessage:mediaMessage
                                                                    uiDatabaseConnection:self.uiDatabaseConnection];
 
-    [vc presentDetailViewFromViewController:self replacingView:imageView];
+    [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
@@ -2057,10 +2056,9 @@ typedef enum : NSUInteger {
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
     MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
-                                                                           mediaMessage:mediaMessage
                                                                    uiDatabaseConnection:self.uiDatabaseConnection];
 
-    [vc presentDetailViewFromViewController:self replacingView:imageView];
+    [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream

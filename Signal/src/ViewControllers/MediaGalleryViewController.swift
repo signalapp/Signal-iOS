@@ -141,40 +141,6 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     public static func == (lhs: GalleryDate, rhs: GalleryDate) -> Bool {
         return lhs.month == rhs.month && lhs.year == rhs.year
     }
-
-//    // MARK: Sequence / IteratorProtocol
-//    public func until(_ toDate: GalleryDate) -> GalleryDateSequence {
-//        return GalleryDateSequence(from: self, to: toDate)
-//    }
-//
-//    public class GalleryDateSequence: Sequence, IteratorProtocol {
-//        public typealias Element = GalleryDate
-//
-//        var currentDate: GalleryDate
-//        let toDate: GalleryDate
-//
-//        init(from: GalleryDate, to: GalleryDate) {
-//            self.currentDate = from
-//            self.toDate = to
-//        }
-//
-//        public func next() -> GalleryDate? {
-//            guard currentDate < toDate else {
-//                return nil
-//            }
-//
-//            let nextDate: GalleryDate = {
-//                if currentDate.month == 12 {
-//                    return GalleryDate(year: currentDate.year + 1, month: 1)
-//                } else {
-//                    return GalleryDate(year: currentDate.year, month: currentDate.month + 1)
-//                }
-//            }()
-//            currentDate = nextDate
-//            return nextDate
-//        }
-//    }
-
 }
 
 protocol MediaGalleryDataSource: class {
@@ -192,33 +158,30 @@ protocol MediaGalleryDataSource: class {
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem?
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
 
-    func showAllMedia()
-
     // TODO this doesn't seem very "data-source"
+    func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)?)
 }
 
 class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
 
     private var pageViewController: MediaPageViewController?
-    //    private let tileViewController: MediaTileViewController
-    //
+
     private let uiDatabaseConnection: YapDatabaseConnection
     private let mediaGalleryFinder: OWSMediaGalleryFinder
 
-    // FIXME get rid of `!`
-    private var initialGalleryItem: MediaGalleryItem!
+    private var initialDetailItem: MediaGalleryItem?
     private let thread: TSThread
     private let includeGallery: Bool
 
     // we start with a small range size for quick loading.
     private let fetchRangeSize: UInt = 10
 
-    convenience init(thread: TSThread, mediaMessage: TSMessage, uiDatabaseConnection: YapDatabaseConnection) {
-        self.init(thread: thread, mediaMessage: mediaMessage, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)
+    convenience init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection) {
+        self.init(thread: thread, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)
     }
 
-    init(thread: TSThread, mediaMessage: TSMessage, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
+    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
         self.thread = thread
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
@@ -226,14 +189,6 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
-
-        uiDatabaseConnection.read { transaction in
-            self.initialGalleryItem = self.buildGalleryItem(message: mediaMessage, transaction: transaction)!
-        }
-
-        // For a speedy load, we only fetch a few items on either side of
-        // the initial message
-        ensureGalleryItemsLoaded(.around, item: self.initialGalleryItem, amount: 10)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -268,6 +223,10 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     // MARK: Present/Dismiss
 
+    private var currentPage: MediaGalleryPage? {
+        return self.pageViewController!.currentPage
+    }
+
     private var replacingView: UIView?
     private var presentationView: UIImageView!
     private var presentationViewConstraints: [NSLayoutConstraint] = []
@@ -275,9 +234,27 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     // TODO rename to replacingOriginRect
     private var originRect: CGRect?
 
-    public func presentDetailView(fromViewController: UIViewController, replacingView: UIView) {
+    public func presentDetailView(fromViewController: UIViewController, mediaMessage: TSMessage, replacingView: UIView) {
+        var galleryItem: MediaGalleryItem?
+        uiDatabaseConnection.read { transaction in
+            galleryItem = self.buildGalleryItem(message: mediaMessage, transaction: transaction)!
+        }
 
-        let pageViewController = MediaPageViewController(initialItem: self.initialGalleryItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, includeGallery: self.includeGallery)
+        guard let initialDetailItem = galleryItem else {
+            owsFail("\(logTag) in \(#function) unexpectedly failed to build initialDetailItem.")
+            return
+        }
+
+        presentDetailView(fromViewController: fromViewController, initialDetailItem: initialDetailItem, replacingView: replacingView)
+    }
+
+    public func presentDetailView(fromViewController: UIViewController, initialDetailItem: MediaGalleryItem, replacingView: UIView) {
+        // For a speedy load, we only fetch a few items on either side of
+        // the initial message
+        ensureGalleryItemsLoaded(.around, item: initialDetailItem, amount: 10)
+        self.initialDetailItem = initialDetailItem
+
+        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, includeGallery: self.includeGallery)
 
         self.pageViewController = pageViewController
         self.setViewControllers([pageViewController], animated: false)
@@ -289,7 +266,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
         // loadView hasn't necessarily been called yet.
         self.loadViewIfNeeded()
-        self.presentationView.image = self.initialGalleryItem.fullSizedImage
+        self.presentationView.image = initialDetailItem.fullSizedImage
         self.applyInitialMediaViewConstraints()
 
         // We want to animate the tapped media from it's position in the previous VC
@@ -360,8 +337,51 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
-    private var currentPage: MediaGalleryPage? {
-        return self.pageViewController!.currentPage
+    // If we're using a navigationController other than self to present the views
+    // e.g. the conversation settings view controller
+    var fromNavController: UINavigationController?
+
+    func pushTileView(fromNavController: UINavigationController) {
+        var mostRecentItem: MediaGalleryItem?
+        self.uiDatabaseConnection.read { transaction in
+            if let message = self.mediaGalleryFinder.mostRecentMediaMessage(transaction: transaction) {
+                mostRecentItem = self.buildGalleryItem(message: message, transaction: transaction)
+            }
+        }
+
+        if let mostRecentItem = mostRecentItem {
+            mediaTileViewController.focusedItem = mostRecentItem
+            ensureGalleryItemsLoaded(.around, item: mostRecentItem, amount: 100)
+        }
+        self.fromNavController = fromNavController
+        fromNavController.pushViewController(mediaTileViewController, animated: true)
+    }
+
+    func showAllMedia(focusedItem: MediaGalleryItem) {
+        // TODO fancy animation - zoom media item into it's tile in the all media grid
+        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 100)
+
+        if let fromNavController = self.fromNavController {
+            // If from conversation settings view, we've already pushed
+            fromNavController.popViewController(animated: true)
+        } else {
+            // If from conversation view
+            mediaTileViewController.focusedItem = focusedItem
+            self.pushViewController(mediaTileViewController, animated: true)
+        }
+    }
+
+    // MARK: MediaTileViewControllerDelegate
+
+    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem) {
+        if self.fromNavController != nil {
+            // If from conversation settings view, we've already pushed
+            self.presentDetailView(fromViewController: mediaTileViewController, initialDetailItem: mediaGalleryItem, replacingView: tappedView)
+        } else {
+            // If from conversation view
+            self.pageViewController!.currentItem = mediaGalleryItem
+            self.popViewController(animated: true)
+        }
     }
 
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
@@ -384,7 +404,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
         // Move the presentationView back to it's initial position, i.e. where
         // it sits on the screen in the conversation view.
-        let changedItems = currentPage.galleryItem != initialGalleryItem
+        let changedItems = currentPage.galleryItem != self.initialDetailItem
         if changedItems {
             self.presentationView.image = currentPage.image
             self.applyOffscreenMediaViewConstraints()
@@ -493,16 +513,11 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     // MARK: MediaGalleryDataSource
 
-    func showAllMedia() {
-
-        ensureGalleryItemsLoaded(.around, item: self.initialGalleryItem, amount: 100)
-
-        // TODO fancy animation - zoom media item into it's tile in the all media grid
-        let allMediaController = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
-        allMediaController.delegate = self
-
-        self.pushViewController(allMediaController, animated: true)
-    }
+    lazy var mediaTileViewController: MediaTileViewController = {
+        let vc = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
+        vc.delegate = self
+        return vc
+    }()
 
     var galleryItems: [MediaGalleryItem] = []
     var sections: [GalleryDate: [MediaGalleryItem]] = [:]
@@ -689,12 +704,4 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
         return Int(count)
     }
-
-    // MARK: MediaTileViewControllerDelegate
-
-    func mediaTileViewController(_ viewController: MediaTileViewController, didTapMediaGalleryItem mediaGalleryItem: MediaGalleryItem) {
-        self.pageViewController!.currentItem = mediaGalleryItem
-        self.popViewController(animated: true)
-    }
-
 }

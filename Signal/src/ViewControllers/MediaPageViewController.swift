@@ -181,7 +181,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
 
-        self.mediaGalleryDataSource.showAllMedia()
+        self.mediaGalleryDataSource.showAllMedia(focusedItem: currentItem)
     }
 
     @objc

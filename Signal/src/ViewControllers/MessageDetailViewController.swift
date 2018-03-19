@@ -762,7 +762,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             return
         }
 
-        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, mediaMessage: self.message, uiDatabaseConnection: self.uiDatabaseConnection, includeGallery: false)
-        mediaGalleryViewController.presentDetailView(fromViewController: self, replacingView: fromView)
+        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection, includeGallery: false)
+        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
     }
 }

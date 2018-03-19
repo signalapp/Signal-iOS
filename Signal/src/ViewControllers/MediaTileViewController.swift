@@ -5,7 +5,7 @@
 import Foundation
 
 public protocol MediaTileViewControllerDelegate: class {
-    func mediaTileViewController(_ viewController: MediaTileViewController, didTapMediaGalleryItem mediaGalleryItem: MediaGalleryItem)
+    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryCellDelegate {
@@ -19,6 +19,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     private var galleryDates: [GalleryDate] {
         return mediaGalleryDataSource.sectionDates
     }
+    public var focusedItem: MediaGalleryItem?
 
     private let uiDatabaseConnection: YapDatabaseConnection
 
@@ -79,6 +80,33 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
         self.view.layoutIfNeeded()
         scrollToBottom(animated: false)
+    }
+
+    private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
+        guard let sectionIdx = galleryDates.index(of: galleryItem.galleryDate) else {
+            return nil
+        }
+        guard let rowIdx = galleryItems[galleryItem.galleryDate]!.index(of: galleryItem) else {
+            return nil
+        }
+
+        return IndexPath(row: rowIdx, section: sectionIdx + 1)
+    }
+
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard let focusedItem = self.focusedItem else {
+            return
+        }
+
+        guard let indexPath = self.indexPath(galleryItem: focusedItem) else {
+            owsFail("\(logTag) unexpectedly unable to find indexPath for focusedItem: \(focusedItem)")
+            return
+        }
+
+        Logger.debug("\(logTag) scrolling to focused item at indexPath: \(indexPath)")
+        self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
     }
 
     // MARK: UIColletionViewDelegate
@@ -234,7 +262,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
     public func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem) {
         Logger.debug("\(logTag) in \(#function)")
-        self.delegate?.mediaTileViewController(self, didTapMediaGalleryItem: item)
+        self.delegate?.mediaTileViewController(self, didTapView: cell.imageView, mediaGalleryItem: item)
     }
 
     // MARK: Lazy Loading
@@ -461,7 +489,7 @@ public class MediaGalleryCell: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryCell"
 
-    private let imageView: UIImageView
+    public let imageView: UIImageView
     private var tapGesture: UITapGestureRecognizer!
 
     private var item: MediaGalleryItem?

@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) TSThread *thread;
+@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
@@ -139,10 +140,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
-- (void)configureWithThread:(TSThread *)thread
+- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssert(thread);
     self.thread = thread;
+    self.uiDatabaseConnection = uiDatabaseConnection;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         self.title = NSLocalizedString(
@@ -262,6 +264,13 @@ NS_ASSUME_NONNULL_BEGIN
     mainSection.customHeaderView = [self mainSectionHeader];
     mainSection.customHeaderHeight = @(100.f);
 
+    [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
+    }
+                             actionBlock:^{
+                                 [weakSelf showMediaGallery];
+                             }]];
+
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -329,13 +338,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      [weakSelf showShareProfileAlert];
                                  }]];
     }
-
-    [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
-    }
-                             actionBlock:^{
-                                 [weakSelf showMediaGallery];
-                             }]];
 
     [mainSection
         addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -1163,7 +1165,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogDebug(@"%@ in showMediaGallery", self.logTag);
 
-    // [[AllMediaViewController alloc] initWithThread:self.thread];
+    MediaGalleryViewController *vc =
+        [[MediaGalleryViewController alloc] initWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
+
+    [vc pushTileViewFromNavController:self.navigationController];
 }
 #pragma mark - Notifications
 

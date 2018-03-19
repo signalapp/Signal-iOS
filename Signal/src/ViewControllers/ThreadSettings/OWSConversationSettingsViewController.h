@@ -9,6 +9,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
+@class YapDatabaseConnection;
 
 @interface OWSConversationSettingsViewController : OWSTableViewController
 
@@ -16,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL showVerificationOnAppear;
 
-- (void)configureWithThread:(TSThread *)thread;
+- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
 
 @end
 
