@@ -268,8 +268,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     // MARK: Lazy Loading
 
     // This should be substantially larger than one screen size so we don't have to call it
-    // multiple times in a rapid succession.
-    let kMediaTileViewLoadBatchSize: UInt = 200
+    // multiple times in a rapid succession, but not so large that loading more get's chopping
+    let kMediaTileViewLoadBatchSize: UInt = 80
     var oldestLoadedItem: MediaGalleryItem? {
         guard let oldestDate = galleryDates.first else {
             return nil

@@ -26,7 +26,7 @@ public struct MediaGalleryItem: Equatable {
     }
 
     var thumbnailImage: UIImage {
-        guard let image = attachmentStream.thumbnailImage else {
+        guard let image = attachmentStream.thumbnailImage() else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
             return UIImage()
         }
