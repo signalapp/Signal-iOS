@@ -329,13 +329,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Select Country";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "CLOUDKIT_STATUS_COULD_NOT_DETERMINE";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "CLOUDKIT_STATUS_NO_ACCOUNT";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "CLOUDKIT_STATUS_RESTRICTED";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Compare with Clipboard";

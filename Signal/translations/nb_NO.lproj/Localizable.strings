@@ -31,7 +31,7 @@
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Ikke lagre";
 
-/* Title for a generic error alert. */
+/* No comment provided by engineer. */
 "ALERT_ERROR_TITLE" = "Feil";
 
 /* The label for the 'save' button in action sheets. */
@@ -118,6 +118,9 @@
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Vedlagte bilde kunne ikke håndteres.";
 
+/* Attachment error message for image attachments in which metadata could not be removed */
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Vedlegget er for stort.";
 
@@ -154,62 +157,47 @@
 /* button text for back button */
 "BACK_BUTTON" = "Tilbake";
 
-/* Message indicating that backup export is complete. */
-"BACKUP_EXPORT_COMPLETE_MESSAGE" = "Sikkerhetskopiering ferdig.";
+/* Error indicating the a backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
-/* Label for button that copies backup password to the pasteboard. */
-"BACKUP_EXPORT_COPY_PASSWORD_BUTTON" = "Kopier passord";
+/* Error indicating that the app received an invalid response from CloudKit. */
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid server response.";
 
-/* Message indicating that backup export failed. */
-"BACKUP_EXPORT_FAILED_MESSAGE" = "Eksportering av sikkerhetskopi feilet.";
+/* Error indicating the a backup export failed to save a file to the cloud. */
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
 
-/* Message indicating that backup export is in progress. */
-"BACKUP_EXPORT_IN_PROGRESS_MESSAGE" = "Eksporterer sikkerhetskopi...";
+/* Indicates that the cloud is being cleaned up. */
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
 
-/* Format for message indicating that backup export is complete. Embeds: {{the backup password}}. */
-"BACKUP_EXPORT_PASSWORD_MESSAGE_FORMAT" = "Sikkerhetskopi-passordet ditt er: %@. Ta godt bare på dette passordet, uten det vil du ikke kunne gjenopprette fra denne sikkerhetskopien.";
+/* Indicates that the backup export is being configured. */
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
 
-/* Label for button that 'send backup' in the current conversation. */
-"BACKUP_EXPORT_SEND_BACKUP_BUTTON" = "Send sikkerhetskopi som en melding";
+/* Indicates that the backup export data is being exported. */
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
 
-/* Message indicating that sending the backup failed. */
-"BACKUP_EXPORT_SEND_BACKUP_FAILED" = "Sending av sikkerhetskopi feilet.";
+/* Indicates that the backup export data is being uploaded. */
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
 
-/* Message indicating that sending the backup succeeded. */
-"BACKUP_EXPORT_SEND_BACKUP_SUCCESS" = "Sikkerhetskopi sendt.";
+/* Error indicating the a backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
-/* Label for button that opens share UI for backup. */
-"BACKUP_EXPORT_SHARE_BACKUP_BUTTON" = "Del sikkerhetskopi";
+/* Indicates that the backup import is being configured. */
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
 
-/* Title for the 'backup export' view. */
-"BACKUP_EXPORT_VIEW_TITLE" = "Sikkerhetskopi";
+/* Indicates that the backup import data is being downloaded. */
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
 
-/* Format for backup filenames. Embeds: {{the date and time of the backup}}. Should not include characters like slash (/ or \\) or colon (:). */
-"BACKUP_FILENAME_FORMAT" = "Signal sikkerhetskopi %@";
+/* Indicates that the backup import data is being finalized. */
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
 
-/* Message indicating that backup import is complete. */
-"BACKUP_IMPORT_COMPLETE_MESSAGE" = "Gjenoppretting fullført";
+/* Indicates that the backup import data is being imported. */
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
 
-/* Label for button confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_BUTTON" = "Gjenopprett";
+/* Indicates that the backup database is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
 
-/* Message for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_MESSAGE" = "For å gjenopprette denne sikkerhetskopien må du restarte Signal-appen. Advarsel: Du vil miste alle dine nåværende Signal data.";
-
-/* Title for alert confirming backup import. */
-"BACKUP_IMPORT_CONFIRM_ALERT_TITLE" = "Gjenopprette fra sikkerhetskopi?";
-
-/* Message indicating that backup import failed. */
-"BACKUP_IMPORT_FAILED_MESSAGE" = "Gjenoppretting feilet";
-
-/* Message indicating that backup import is in progress. */
-"BACKUP_IMPORT_IN_PROGRESS_MESSAGE" = "Gjenoppretter sikkerhetskopi...";
-
-/* Label for button that restarts app to complete restore. */
-"BACKUP_IMPORT_RESTART_BUTTON" = "Restart appen";
-
-/* Title for the 'backup import' view. */
-"BACKUP_IMPORT_VIEW_TITLE" = "Gjenopprett fra sikkerhetskopi";
+/* Indicates that the backup import data is being restored. */
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Blokkerte brukere vil ikke kunne ringe deg eller sende deg meldinger.";
@@ -339,6 +327,15 @@
 
 /* Title for the 'censorship circumvention country' view. */
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Velg land";
+
+/* Error indicating that the app could not determine that user's CloudKit account status */
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+
+/* Error indicating that user does not have an iCloud account. */
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+
+/* Error indicating that the app was prevented from accessing the user's CloudKit account. */
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med utklippstavlen";
@@ -770,6 +767,12 @@
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Fullfør oppretting av gruppe";
 
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loadering Newer Media...";
+
+/* Label indicating loading is in progress */
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media...";
+
 /* A default label for attachment whose file extension cannot be determined. */
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
 
@@ -959,6 +962,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logger";
 
+/* nav bar button item */
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
 
@@ -967,6 +973,9 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Kamerarull";
+
+/* Section header in media gallery collection view */
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Melding";
@@ -1597,6 +1606,39 @@
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
 
+/* Label for the backup view in app settings. */
+"SETTINGS_BACKUP" = "Backup";
+
+/* Label for 'backup now' button in the backup settings view. */
+"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+
+/* Label for 'cancel backup' button in the backup settings view. */
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+
+/* Label for switch in settings that controls whether or not backup is enabled. */
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PHASE" = "Phase";
+
+/* Label for phase row in the in the backup settings view. */
+"SETTINGS_BACKUP_PROGRESS" = "Progress";
+
+/* Label for status row in the in the backup settings view. */
+"SETTINGS_BACKUP_STATUS" = "Status";
+
+/* Indicates that the last backup failed. */
+"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+
+/* Indicates that app is not backing up. */
+"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+
+/* Indicates that app is backing up. */
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+
+/* Indicates that the last backup succeeded. */
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Legg til...";
 
@@ -1683,6 +1725,15 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del når meldinger har blitt lest. Denne innstillingen er valgfri og gjelder for alle samtaler.";
+
+/* Remove metadata table cell label */
+"SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
+
+/* Remove metadata section footer */
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+
+/* Remove metadata section header */
+"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Bruk skjermsikkerhet";
@@ -1883,7 +1934,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Skyv for å besvare";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've choosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
