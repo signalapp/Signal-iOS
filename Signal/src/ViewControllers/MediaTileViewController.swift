@@ -438,7 +438,7 @@ class MediaGallerySectionHeader: UICollectionReusableView {
     override init(frame: CGRect) {
         label = UILabel()
 
-        let blurEffect = UIBlurEffect(style: .light)
+        let blurEffect = UIBlurEffect(style: .extraLight)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
 
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -484,7 +484,6 @@ public class MediaGalleryLoadingHeader: UICollectionViewCell {
         super.init(frame: frame)
 
         // TODO add spinnner, start/stop animating on will/end display
-        self.backgroundColor = UIColor.green
         addSubview(label)
 
         label.autoCenterInSuperview()
