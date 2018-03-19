@@ -11,15 +11,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMediaGalleryFinder : NSObject
 
+- (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+
 // How many media items a thread has
-- (NSUInteger)mediaCountForThread:(TSThread *)thread transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaCount(thread:transaction:));
+- (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaCount(transaction:));
 
 // The ordinal position of a message within a thread's media gallery
 - (NSUInteger)mediaIndexForMessage:(TSMessage *)message transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mediaIndex(message:transaction:));
 
-- (void)enumerateMediaMessagesWithThread:(TSThread *)thread
-                             transaction:(YapDatabaseReadTransaction *)transaction
-                                   block:(void (^)(TSMessage *))messageBlock;
+- (nullable TSMessage *)oldestMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(oldestMediaMessage(transaction:));
+- (nullable TSMessage *)mostRecentMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(mostRecentMediaMessage(transaction:));
+
+- (void)enumerateMediaMessagesWithRange:(NSRange)range
+                            transaction:(YapDatabaseReadTransaction *)transaction
+                                  block:(void (^)(TSMessage *))messageBlock NS_SWIFT_NAME(enumerateMediaMessages(range:transaction:block:));
+
+#pragma mark - Extension registration
 
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 

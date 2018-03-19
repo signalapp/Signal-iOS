@@ -61,6 +61,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setIOSUpgradeNagDate:(NSDate *)value;
 - (nullable NSDate *)iOSUpgradeNagDate;
 
+- (BOOL)hasGeneratedThumbnails;
+- (void)setHasGeneratedThumbnails:(BOOL)value;
+
 #pragma mark - Calling
 
 #pragma mark Callkit

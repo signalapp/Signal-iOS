@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
+- (nullable UIImage *)thumbnailImage;
 #endif
 
 - (BOOL)isAnimated;
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURL *)mediaURL;
 
 - (nullable NSString *)filePath;
+- (nullable NSString *)thumbnailPath;
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;

@@ -1485,7 +1485,7 @@ typedef enum : NSUInteger {
 
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread];
+    [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
     settingsVC.showVerificationOnAppear = showVerification;
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
@@ -2033,10 +2033,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaPageViewController *vc =
-        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
+                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
 
-    [vc presentFromViewController:self replacingView:imageView];
+    [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
 - (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
@@ -2055,9 +2055,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaPageViewController *vc =
-        [[MediaPageViewController alloc] initWithThread:self.thread mediaMessage:mediaMessage];
-    [vc presentFromViewController:self replacingView:imageView];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
+                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+
+    [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
 
 - (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
@@ -2806,6 +2807,8 @@ typedef enum : NSUInteger {
     NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
+        // Increase object cache limit. Default is 250.
+        _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;

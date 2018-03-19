@@ -16,14 +16,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFinderExtensionName";
 
+@interface OWSMediaGalleryFinder ()
+
+@property (nonatomic, readonly) TSThread *thread;
+
+@end
+
 @implementation OWSMediaGalleryFinder
+
+- (instancetype)initWithThread:(TSThread *)thread
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _thread = thread;
+
+    return self;
+}
 
 #pragma mark - Public Finder Methods
 
--  (NSUInteger)mediaCountForThread:(TSThread *)thread transaction:(YapDatabaseReadTransaction *)transaction
+- (NSUInteger)mediaCountWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    NSString *group = [self mediaGroupWithThreadId:thread.uniqueId];
-    return [[self galleryExtensionWithTransaction:transaction] numberOfItemsInGroup:group];
+    return [[self galleryExtensionWithTransaction:transaction] numberOfItemsInGroup:self.mediaGroup];
 }
 
 - (NSUInteger)mediaIndexForMessage:(TSMessage *)message transaction:(YapDatabaseReadTransaction *)transaction
@@ -37,22 +54,36 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
                                                                     inCollection:[TSMessage collection]];
 
     OWSAssert(wasFound);
+    OWSAssert([self.mediaGroup isEqual:groupId]);
 
     return index;
 }
 
-- (void)enumerateMediaMessagesWithThread:(TSThread *)thread
-                             transaction:(YapDatabaseReadTransaction *)transaction
-                                   block:(void (^)(TSMessage *))messageBlock
+- (nullable TSMessage *)oldestMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    NSString *group = [self mediaGroupWithThreadId:thread.uniqueId];
+    return [[self galleryExtensionWithTransaction:transaction] firstObjectInGroup:self.mediaGroup];
+}
+
+- (nullable TSMessage *)mostRecentMediaMessageWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [[self galleryExtensionWithTransaction:transaction] lastObjectInGroup:self.mediaGroup];
+}
+
+- (void)enumerateMediaMessagesWithRange:(NSRange)range
+                            transaction:(YapDatabaseReadTransaction *)transaction
+                                  block:(void (^)(TSMessage *))messageBlock
+{
+
     [[self galleryExtensionWithTransaction:transaction]
-        enumerateKeysAndObjectsInGroup:group
+        enumerateKeysAndObjectsInGroup:self.mediaGroup
+                           withOptions:0
+                                 range:range
                             usingBlock:^(NSString *_Nonnull collection,
                                 NSString *_Nonnull key,
                                 id _Nonnull object,
                                 NSUInteger index,
                                 BOOL *_Nonnull stop) {
+
                                 OWSAssert([object isKindOfClass:[TSMessage class]]);
                                 messageBlock((TSMessage *)object);
                             }];
@@ -73,9 +104,9 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     return [NSString stringWithFormat:@"%@-media", threadId];
 }
 
-- (NSString *)mediaGroupWithThreadId:(NSString *)threadId
+- (NSString *)mediaGroup
 {
-    return [[self class] mediaGroupWithThreadId:threadId];
+    return [[self class] mediaGroupWithThreadId:self.thread.uniqueId];
 }
 
 #pragma mark - Extension registration

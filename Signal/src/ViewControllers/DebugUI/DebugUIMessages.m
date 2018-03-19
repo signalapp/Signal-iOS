@@ -25,6 +25,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+@interface TSOutgoingMessage (PostDatingDebug)
+
+- (void)setReceivedAtTimestamp:(uint64_t)value;
+
+@end
+
 @implementation DebugUIMessages
 
 #pragma mark - Factory Methods
@@ -114,6 +121,14 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Create 1k fake threads with 1 message"
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
+                        }],
+        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 100"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMediaMessages:100 thread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 1k"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMediaMessages:1000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
@@ -1105,6 +1120,149 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
             }
         }
+    }
+}
+
++ (void)sendFakeMediaMessages:(NSUInteger)counter thread:(TSThread *)thread
+{
+    // Download media
+    void (^failureBlock)(void) = ^void(void) {
+        OWSFail(@"%@ Failed to download example media.", self.logTag);
+        return;
+    };
+
+    [self ensureRandomGifWithSuccess:^(NSString *_Nonnull gifFilePath) {
+        [self ensureRandomJpegWithSuccess:^(NSString *_Nonnull jpegFilePath) {
+            [self ensureRandomMp4WithSuccess:^(NSString *_Nonnull mp4FilePath) {
+                DataSource *gifDataSource = [DataSourcePath dataSourceWithFilePath:gifFilePath];
+                DataSource *jpegDataSource = [DataSourcePath dataSourceWithFilePath:jpegFilePath];
+                DataSource *mp4DataSource = [DataSourcePath dataSourceWithFilePath:mp4FilePath];
+
+                [self sendFakeMediaMessages:counter
+                                     thread:thread
+                              gifDataSource:gifDataSource
+                             jpegDataSource:jpegDataSource
+                              mp4DataSource:mp4DataSource];
+            }
+                                     failure:failureBlock];
+        }
+                                  failure:failureBlock];
+    }
+                             failure:failureBlock];
+}
+
++ (void)sendFakeMediaMessages:(NSUInteger)counter
+                       thread:(TSThread *)thread
+                gifDataSource:(DataSource *)gifDataSource
+               jpegDataSource:(DataSource *)jpegDataSource
+                mp4DataSource:(DataSource *)mp4DataSource
+{
+    const NSUInteger kMaxBatchSize = 2500;
+    if (counter < kMaxBatchSize) {
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self sendFakeMediaMessages:counter
+                                 thread:thread
+                          gifDataSource:gifDataSource
+                         jpegDataSource:jpegDataSource
+                          mp4DataSource:mp4DataSource
+                            transaction:transaction];
+        }];
+    } else {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSUInteger remainder = counter;
+            while (remainder > 0) {
+                NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
+                [OWSPrimaryStorage.dbReadWriteConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [self sendFakeMediaMessages:batchSize
+                                             thread:thread
+                                      gifDataSource:gifDataSource
+                                     jpegDataSource:jpegDataSource
+                                      mp4DataSource:mp4DataSource
+                                        transaction:transaction];
+                    }];
+                remainder -= batchSize;
+                DDLogInfo(@"%@ sendFakeMediaMessages %zd / %zd", self.logTag, counter - remainder, counter);
+            }
+        });
+    }
+}
+
++ (void)sendFakeMediaMessages:(NSUInteger)counter
+                       thread:(TSThread *)thread
+                gifDataSource:(DataSource *)gifDataSource
+               jpegDataSource:(DataSource *)jpegDataSource
+                mp4DataSource:(DataSource *)mp4DataSource
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    DDLogInfo(@"%@ sendFakeMediaMessages: %zd", self.logTag, counter);
+
+    for (NSUInteger i = 0; i < counter; i++) {
+
+        // Random time within last n years. Helpful for filling out a media gallery over time.
+        double yearsMillis = 4.0 * 365.0 * 24.0 * 60.0 * 60.0 * 1000.0;
+        uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
+
+        uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
+
+
+        NSString *_Nullable randomCaption;
+        if (arc4random() % 2 == 2) {
+            randomCaption = [self randomText];
+        }
+        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
+                                                                         inThread:thread
+                                                                      messageBody:randomCaption
+                                                                   isVoiceMessage:NO
+                                                                 expiresInSeconds:0];
+        [message setReceivedAtTimestamp:timestamp];
+
+        TSAttachmentStream *attachmentStream;
+        NSString *filename;
+        switch (arc4random_uniform(3)) {
+            case 0: {
+                DataSource *dataSource = gifDataSource;
+                filename = dataSource.sourceFilename;
+                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/gif"
+                                                                         byteCount:(UInt32)dataSource.dataLength
+                                                                    sourceFilename:filename];
+                NSError *error;
+                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+                OWSAssert(success && !error);
+                break;
+            }
+            case 1: {
+                DataSource *dataSource = jpegDataSource;
+                filename = dataSource.sourceFilename;
+                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
+                                                                         byteCount:(UInt32)dataSource.dataLength
+                                                                    sourceFilename:filename];
+                NSError *error;
+                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+                OWSAssert(success && !error);
+                break;
+            }
+            case 2: {
+                DataSource *dataSource = mp4DataSource;
+                filename = dataSource.sourceFilename;
+                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"
+                                                                         byteCount:(UInt32)dataSource.dataLength
+                                                                    sourceFilename:filename];
+                NSError *error;
+                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+                OWSAssert(success && !error);
+                break;
+            }
+        }
+
+        [attachmentStream saveWithTransaction:transaction];
+        [message.attachmentIds addObject:attachmentStream.uniqueId];
+        if (filename) {
+            message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+        }
+        [message saveWithTransaction:transaction];
+
+        [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
     }
 }
 

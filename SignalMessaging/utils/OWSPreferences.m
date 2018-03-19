@@ -4,11 +4,11 @@
 
 #import "OWSPreferences.h"
 #import <SignalServiceKit/AppContext.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,6 +28,7 @@ NSString *const OWSPreferencesKeyCallKitPrivacyEnabled = @"CallKitPrivacyEnabled
 NSString *const OWSPreferencesKeyCallsHideIPAddress = @"CallsHideIPAddress";
 NSString *const OWSPreferencesKeyRemoveMetadata = @"Remove Metadata Key";
 NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoContactsView";
+NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHasGeneratedThumbnails";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
@@ -192,6 +193,18 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 - (void)setHasDeclinedNoContactsView:(BOOL)value
 {
     [self setValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
+}
+
+- (BOOL)hasGeneratedThumbnails
+{
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasGeneratedThumbnails];
+    // Default to NO.
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setHasGeneratedThumbnails:(BOOL)value
+{
+    [self setValueForKey:OWSPreferencesKeyHasGeneratedThumbnails toValue:@(value)];
 }
 
 - (void)setIOSUpgradeNagDate:(NSDate *)value

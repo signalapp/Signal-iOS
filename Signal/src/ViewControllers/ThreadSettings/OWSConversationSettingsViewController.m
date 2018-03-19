@@ -40,10 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
 
 @property (nonatomic) TSThread *thread;
+@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-
+@property (nullable, nonatomic) MediaGalleryViewController *mediaGalleryViewController;
 @property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -139,10 +140,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
-- (void)configureWithThread:(TSThread *)thread
+- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssert(thread);
     self.thread = thread;
+    self.uiDatabaseConnection = uiDatabaseConnection;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         self.title = NSLocalizedString(
@@ -261,6 +263,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     mainSection.customHeaderView = [self mainSectionHeader];
     mainSection.customHeaderHeight = @(100.f);
+
+    [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
+        return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
+    }
+                             actionBlock:^{
+                                 [weakSelf showMediaGallery];
+                             }]];
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
@@ -1152,6 +1161,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (void)showMediaGallery
+{
+    DDLogDebug(@"%@ in showMediaGallery", self.logTag);
+
+    MediaGalleryViewController *vc =
+        [[MediaGalleryViewController alloc] initWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
+
+    // although we don't present the mediaGalleryViewController directly, we need to maintain a strong
+    // reference to it until we're dismissed.
+    self.mediaGalleryViewController = vc;
+
+    [vc pushTileViewFromNavController:self.navigationController];
+}
 #pragma mark - Notifications
 
 - (void)identityStateDidChange:(NSNotification *)notification
