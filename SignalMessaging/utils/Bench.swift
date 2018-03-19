@@ -9,7 +9,7 @@ public func BenchAsync(title: String, block: (() -> Void) -> Void) {
 
     block {
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        print("[Bench] title: \(title), duration: \(timeElapsed)")
+        Logger.debug("[Bench] title: \(title), duration: \(timeElapsed)")
     }
 }
 

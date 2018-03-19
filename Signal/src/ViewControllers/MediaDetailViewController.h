@@ -7,9 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationViewItem;
+@class GalleryItemBox;
 @class MediaDetailViewController;
-@class SignalAttachment;
-@class TSAttachmentStream;
 
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
@@ -22,14 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MediaDetailViewController : OWSViewController
 
 @property (nonatomic, weak) id<MediaDetailViewControllerDelegate> delegate;
+@property (nonatomic, readonly) GalleryItemBox *galleryItemBox;
 
 // If viewItem is non-null, long press will show a menu controller.
-- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                viewItem:(ConversationViewItem *_Nullable)viewItem;
-
-- (void)presentFromViewController:(UIViewController *)viewController
-                    replacingView:(UIView *)view NS_SWIFT_NAME(present(fromViewController:replacingView:));
-
+- (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
+                              viewItem:(ConversationViewItem *_Nullable)viewItem;
 #pragma mark - Actions
 
 - (void)didPressShare:(id)sender;
