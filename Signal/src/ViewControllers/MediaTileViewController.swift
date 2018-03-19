@@ -36,6 +36,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         Logger.debug("\(logTag) deinit")
     }
 
+    fileprivate let mediaTileViewLayout: MediaTileViewLayout
+
     init(mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection) {
 
         self.mediaGalleryDataSource = mediaGalleryDataSource
@@ -51,12 +53,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         let availableWidth = screenWidth - CGFloat(kItemsPerRow + 1) * kInterItemSpacing
         let kItemWidth = floor(availableWidth / CGFloat(kItemsPerRow))
 
-        let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
+        let layout: MediaTileViewLayout = MediaTileViewLayout()
         layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         layout.itemSize = CGSize(width: kItemWidth, height: kItemWidth)
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
         layout.sectionHeadersPinToVisibleBounds = true
+        self.mediaTileViewLayout = layout
 
         super.init(collectionViewLayout: layout)
     }
@@ -279,7 +282,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     }
     // MARK: MediaGalleryDelegate
 
-    public func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem) {
+    fileprivate func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem) {
         Logger.debug("\(logTag) in \(#function)")
         self.delegate?.mediaTileViewController(self, didTapView: cell.imageView, mediaGalleryItem: item)
     }
@@ -287,8 +290,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     // MARK: Lazy Loading
 
     // This should be substantially larger than one screen size so we don't have to call it
-    // multiple times in a rapid succession, but not so large that loading more get's chopping
-    let kMediaTileViewLoadBatchSize: UInt = 80
+    // multiple times in a rapid succession, but not so large that loading get's really chopping
+    let kMediaTileViewLoadBatchSize: UInt = 40
     var oldestLoadedItem: MediaGalleryItem? {
         guard let oldestDate = galleryDates.first else {
             return nil
@@ -340,15 +343,25 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return
             }
 
+            guard !mediaGalleryDataSource.hasFetchedOldest else {
+                return
+            }
+
             guard !isFetchingMoreData else {
                 Logger.debug("\(logTag) in \(#function) already fetching more data")
                 return
             }
-
             isFetchingMoreData = true
 
-            let scrollDistanceToBottom = oldContentHeight - contentOffsetY
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
 
+            // mediaTileViewLayout will adjust content offset to compensate for the change in content height so that
+            // the same content is visible after the update. I considered doing something like setContentOffset in the
+            // batchUpdate completion block, but it caused a distinct flicker, which I was able to avoid with the
+            // `CollectionViewLayout.prepare` based approach.
+            mediaTileViewLayout.isInsertingCellsToTop = true
+            mediaTileViewLayout.contentSizeBeforeInsertingToTop = collectionView.contentSize
             collectionView.performBatchUpdates({
                 mediaGalleryDataSource.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
                     Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections) items: \(addedItems)")
@@ -357,15 +370,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                     collectionView.insertItems(at: addedItems)
                 }
             }, completion: { finished in
-
-                // Adjust content offset to affect change in content height so that the same content is visible after
-                // the update.
-                let newContentOffset = CGPoint(x: 0, y: collectionView.contentSize.height - scrollDistanceToBottom)
-                collectionView.setContentOffset(newContentOffset, animated: false)
-
                 Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
                 self.isFetchingMoreData = false
+                CATransaction.commit()
             })
+
         } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
             // Near the bottom, load newer content
 
@@ -374,22 +383,31 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return
             }
 
+            guard !mediaGalleryDataSource.hasFetchedMostRecent else {
+                return
+            }
+
             guard !isFetchingMoreData else {
                 Logger.debug("\(logTag) in \(#function) already fetching more data")
                 return
             }
-
             isFetchingMoreData = true
-            collectionView.performBatchUpdates({
-                mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
-                    Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections), items: \(addedItems)")
-                    collectionView.insertSections(addedSections)
-                    collectionView.insertItems(at: addedItems)
-                }
-            }, completion: { finished in
-                Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
-                self.isFetchingMoreData = false
-            })
+
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            UIView.performWithoutAnimation {
+                collectionView.performBatchUpdates({
+                    mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
+                        Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections), items: \(addedItems)")
+                        collectionView.insertSections(addedSections)
+                        collectionView.insertItems(at: addedItems)
+                    }
+                }, completion: { finished in
+                    Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
+                    self.isFetchingMoreData = false
+                    CATransaction.commit()
+                })
+            }
         }
     }
 
@@ -408,7 +426,33 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     }
 }
 
-class MediaGallerySectionHeader: UICollectionReusableView {
+// MARK: - Private Helper Classes
+
+// Accomodates remaining scrolled to the same "apparent" position when new content is insterted
+// into the top of a collectionView. There are multiple ways to solve this problem, but this
+// is the only one which avoided a perceptible flicker.
+fileprivate class MediaTileViewLayout: UICollectionViewFlowLayout {
+
+    fileprivate var isInsertingCellsToTop: Bool = false
+    fileprivate var contentSizeBeforeInsertingToTop: CGSize?
+
+    override public func prepare() {
+        super.prepare()
+
+        if isInsertingCellsToTop {
+            if let collectionView = collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
+                let newContentSize = collectionViewContentSize
+                let contentOffsetY = collectionView.contentOffset.y + (newContentSize.height - oldContentSize.height)
+                let newOffset = CGPoint(x: collectionView.contentOffset.x, y: contentOffsetY)
+                collectionView.setContentOffset(newOffset, animated: false)
+            }
+            contentSizeBeforeInsertingToTop = nil
+            isInsertingCellsToTop = false
+        }
+    }
+}
+
+fileprivate class MediaGallerySectionHeader: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGallerySectionHeader"
 
@@ -470,11 +514,11 @@ class MediaGallerySectionHeader: UICollectionReusableView {
     }
 }
 
-public protocol MediaGalleryCellDelegate: class {
+fileprivate protocol MediaGalleryCellDelegate: class {
     func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem)
 }
 
-public class MediaGalleryLoadingHeader: UICollectionViewCell {
+fileprivate class MediaGalleryLoadingHeader: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryLoadingHeader"
 
@@ -503,7 +547,7 @@ public class MediaGalleryLoadingHeader: UICollectionViewCell {
     }
 }
 
-public class MediaGalleryCell: UICollectionViewCell {
+fileprivate class MediaGalleryCell: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryCell"
 
