@@ -4,7 +4,6 @@
 
 import UIKit
 
-// TODO Can we make this private to MediaPageViewController?
 public struct MediaGalleryPage: Equatable {
 
     public let viewController: MediaDetailViewController
@@ -23,7 +22,7 @@ public struct MediaGalleryPage: Equatable {
     }
 
     public var image: UIImage {
-        // TODO cache this?
+        // TODO cache this
         return galleryItem.fullSizedImage
     }
 
@@ -41,12 +40,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private var cachedPages: [MediaGalleryPage] = []
     private var initialPage: MediaGalleryPage!
 
-    // FIXME can this be private?
     public var currentPage: MediaGalleryPage! {
         return cachedPages.first { $0.viewController == viewControllers?.first }
     }
 
-    // FIXME can this be private?
     public var currentItem: MediaGalleryItem! {
         get {
             return currentPage.galleryItem
@@ -63,7 +60,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
 
-    // TODO remove?
     private let uiDatabaseConnection: YapDatabaseConnection
 
     private let includeGallery: Bool

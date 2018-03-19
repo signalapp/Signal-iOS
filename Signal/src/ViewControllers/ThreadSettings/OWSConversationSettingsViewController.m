@@ -331,7 +331,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [mainSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        // FIXME proper icon
         return [weakSelf disclosureCellWithName:MediaStrings.allMedia iconName:@"actionsheet_camera_roll_black"];
     }
                              actionBlock:^{

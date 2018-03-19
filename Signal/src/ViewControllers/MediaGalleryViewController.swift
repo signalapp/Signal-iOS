@@ -528,8 +528,6 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
 
-        // TODO avoid copy?
-        // TODO read off main thread?
         var galleryItems: [MediaGalleryItem] = self.galleryItems
         var sections: [GalleryDate: [MediaGalleryItem]] = self.sections
         var sectionDates: [GalleryDate] = self.sectionDates
@@ -656,7 +654,6 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     let kGallerySwipeLoadBatchSize: UInt = 5
 
-    // TODO extract to public extension?
     internal func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem? {
         Logger.debug("\(logTag) in \(#function)")
 
