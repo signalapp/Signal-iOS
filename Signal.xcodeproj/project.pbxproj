@@ -291,7 +291,6 @@
 		454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */; };
 		454EBAB41F2BE14C00ACE0BB /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4551DB59205C562300C8AE75 /* Collection+OWS.swift */; };
-		4551DB5E205C692A00C8AE75 /* Sequence+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4551DB5D205C692A00C8AE75 /* Sequence+OWS.swift */; };
 		4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */; };
 		455A16DD1F1FEA0000F86704 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DB1F1FEA0000F86704 /* Metal.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		455A16DE1F1FEA0000F86704 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 455A16DC1F1FEA0000F86704 /* MetalKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -876,7 +875,6 @@
 		454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSFlatButton.swift; path = SignalMessaging/Views/OWSFlatButton.swift; sourceTree = SOURCE_ROOT; };
 		454B35071D08EED80026D658 /* mk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mk; path = translations/mk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4551DB59205C562300C8AE75 /* Collection+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+OWS.swift"; sourceTree = "<group>"; };
-		4551DB5D205C692A00C8AE75 /* Sequence+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Sequence+OWS.swift"; sourceTree = "<group>"; };
 		4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIProfile.swift; sourceTree = "<group>"; };
 		455A16DB1F1FEA0000F86704 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		455A16DC1F1FEA0000F86704 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
@@ -1388,7 +1386,6 @@
 				34480B601FD0A98800BC14EF /* UIView+OWS.m */,
 				346129D41FD20ADC00532771 /* UIViewController+OWS.h */,
 				346129D31FD20ADB00532771 /* UIViewController+OWS.m */,
-				4551DB5D205C692A00C8AE75 /* Sequence+OWS.swift */,
 			);
 			path = categories;
 			sourceTree = "<group>";
@@ -3085,7 +3082,6 @@
 				3461293C1FD1D46A00532771 /* OWSMath.m in Sources */,
 				451F8A391FD711D6005CB9DA /* ContactsViewHelper.m in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
-				4551DB5E205C692A00C8AE75 /* Sequence+OWS.swift in Sources */,
 				344F248B20069F0600CFB4F4 /* ViewControllerUtils.m in Sources */,
 				451F8A411FD714B8005CB9DA /* ContactTableViewCell.m in Sources */,
 				346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */,
