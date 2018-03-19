@@ -340,15 +340,20 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return
             }
 
+            guard !mediaGalleryDataSource.hasFetchedOldest else {
+                return
+            }
+
             guard !isFetchingMoreData else {
                 Logger.debug("\(logTag) in \(#function) already fetching more data")
                 return
             }
-
             isFetchingMoreData = true
 
             let scrollDistanceToBottom = oldContentHeight - contentOffsetY
 
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
             collectionView.performBatchUpdates({
                 mediaGalleryDataSource.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
                     Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections) items: \(addedItems)")
@@ -365,7 +370,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
                 Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
                 self.isFetchingMoreData = false
+                CATransaction.commit()
             })
+
         } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
             // Near the bottom, load newer content
 
@@ -374,22 +381,31 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return
             }
 
+            guard !mediaGalleryDataSource.hasFetchedMostRecent else {
+                return
+            }
+
             guard !isFetchingMoreData else {
                 Logger.debug("\(logTag) in \(#function) already fetching more data")
                 return
             }
-
             isFetchingMoreData = true
-            collectionView.performBatchUpdates({
-                mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
-                    Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections), items: \(addedItems)")
-                    collectionView.insertSections(addedSections)
-                    collectionView.insertItems(at: addedItems)
-                }
-            }, completion: { finished in
-                Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
-                self.isFetchingMoreData = false
-            })
+
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            UIView.performWithoutAnimation {
+                collectionView.performBatchUpdates({
+                    mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
+                        Logger.debug("\(self.logTag) in \(#function) insertingSections: \(addedSections), items: \(addedItems)")
+                        collectionView.insertSections(addedSections)
+                        collectionView.insertItems(at: addedItems)
+                    }
+                }, completion: { finished in
+                    Logger.debug("\(self.logTag) in \(#function) performBatchUpdates finished: \(finished)")
+                    self.isFetchingMoreData = false
+                    CATransaction.commit()
+                })
+            }
         }
     }
 
