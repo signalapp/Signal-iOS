@@ -181,8 +181,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                     owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
                 }
-                // TODO localize
-                sectionHeader.configure(title: "Loading older...")
+                let title = NSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
+                sectionHeader.configure(title: title)
                 return sectionHeader
             case kLoadNewerSectionIdx:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryLoadingHeader.reuseIdentifier, for: indexPath) as? MediaGalleryLoadingHeader else {
@@ -190,8 +190,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                     owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
                 }
-                // TODO localize
-                sectionHeader.configure(title: "Loading newer...")
+                let title = NSLocalizedString("GALLERY_TILES_LOADING_MORE_RECENT_LABEL", comment: "Label indicating loading is in progress")
+                sectionHeader.configure(title: title)
                 return sectionHeader
             default:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier, for: indexPath) as? MediaGallerySectionHeader else {
