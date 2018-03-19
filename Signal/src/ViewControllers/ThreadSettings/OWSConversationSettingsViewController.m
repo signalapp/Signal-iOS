@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-
+@property (nullable, nonatomic) MediaGalleryViewController *mediaGalleryViewController;
 @property (nonatomic, readonly) TSAccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -1167,6 +1167,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     MediaGalleryViewController *vc =
         [[MediaGalleryViewController alloc] initWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
+
+    // although we don't present the mediaGalleryViewController directly, we need to maintain a strong
+    // reference to it until we're dismissed.
+    self.mediaGalleryViewController = vc;
 
     [vc pushTileViewFromNavController:self.navigationController];
 }
