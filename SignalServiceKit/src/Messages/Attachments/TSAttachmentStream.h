@@ -29,6 +29,11 @@ NS_ASSUME_NONNULL_BEGIN
 // messages received from other clients
 @property (nullable, nonatomic) NSData *digest;
 
+// A serialized image which lives in the db, accessible without additional disk access.
+// This is useful for the gallery view which allows us to fetch potentially many
+// attachments in a single read.
+@property (nullable, readonly) UIImage *thumbnailImage;
+
 // This only applies for attachments being uploaded.
 @property (atomic) BOOL isUploaded;
 
@@ -36,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
+- (nullable UIImage *)thumbnailImage;
 #endif
 
 - (BOOL)isAnimated;

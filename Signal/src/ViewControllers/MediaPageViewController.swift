@@ -23,7 +23,8 @@ public struct MediaGalleryPage: Equatable {
     }
 
     public var image: UIImage {
-        return galleryItem.image
+        // TODO cache this?
+        return galleryItem.fullSizedImage
     }
 
     // MARK: Equatable

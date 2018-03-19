@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
+    [self ensureThumbnail];
 
     return self;
 }
@@ -71,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
+    [self ensureThumbnail];
 
     return self;
 }
@@ -89,6 +91,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_creationTimestamp) {
         _creationTimestamp = [NSDate new];
     }
+
+    // This is going to be slow the first time it runs.
+    [self ensureThumbnail];
 
     return self;
 }
@@ -224,6 +229,25 @@ NS_ASSUME_NONNULL_BEGIN
     return [[[self class] attachmentsFolder] stringByAppendingPathComponent:self.localRelativeFilePath];
 }
 
+- (nullable NSString *)thumbnailPath
+{
+    NSString *filePath = self.filePath;
+    if (!filePath) {
+        OWSFail(@"%@ Attachment missing local file path.", self.logTag);
+        return nil;
+    }
+
+    if (!self.isImage && !self.isVideo && !self.isAnimated) {
+        return nil;
+    }
+
+    NSString *filename = filePath.lastPathComponent.stringByDeletingPathExtension;
+    NSString *containingDir = filePath.stringByDeletingLastPathComponent;
+    NSString *newFilename = [filename stringByAppendingString:@"-thumbnail"];
+
+    return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
+}
+
 - (nullable NSURL *)mediaURL
 {
     NSString *_Nullable filePath = self.filePath;
@@ -290,18 +314,100 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (nullable UIImage *)thumbnailImage
+{
+    NSString *thumbnailPath = self.thumbnailPath;
+    if (!thumbnailPath) {
+        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
+
+        return nil;
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+
+        return nil;
+    }
+
+    return [UIImage imageWithContentsOfFile:self.thumbnailPath];
+}
+
+- (void)ensureThumbnail
+{
+    NSString *thumbnailPath = self.thumbnailPath;
+    if (!thumbnailPath) {
+        return;
+    }
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+        // already exists
+        return;
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
+        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL) return;
+    }
+
+    // TODO proper resolution?
+    CGFloat thumbnailSize = 200;
+
+    UIImage *_Nullable result;
+    if (self.isImage || self.isAnimated) {
+        CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
+        OWSAssert(imageSource != NULL) NSDictionary *imageOptions = @{
+            (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
+            (NSString const *)kCGImageSourceThumbnailMaxPixelSize : @(thumbnailSize),
+            (NSString const *)kCGImageSourceCreateThumbnailWithTransform : (NSNumber const *)kCFBooleanTrue
+        };
+        CGImageRef thumbnail
+            = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, (__bridge CFDictionaryRef)imageOptions);
+        CFRelease(imageSource);
+
+        result = [[UIImage alloc] initWithCGImage:thumbnail];
+        CGImageRelease(thumbnail);
+
+    } else if (self.isVideo) {
+        result = [self videoStillImageWithMaxSize:CGSizeMake(thumbnailSize, thumbnailSize)];
+    } else {
+        OWSFail(@"%@ trying to generate thumnail for unexpected attachment: %@ of type: %@",
+            self.logTag,
+            self.uniqueId,
+            self.contentType);
+    }
+
+    if (result == nil) {
+        OWSFail(@"%@ Unable to build thumnail for attachmentId: %@", self.logTag, self.uniqueId);
+        return;
+    }
+
+    NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
+
+    OWSAssert(thumbnailData.length > 0)
+        DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
+    [thumbnailData writeToFile:thumbnailPath atomically:YES];
+}
+
 - (nullable UIImage *)videoStillImage
+{
+    // Uses the assets intrinsic size by default
+    return [self videoStillImageWithMaxSize:CGSizeZero];
+}
+
+- (nullable UIImage *)videoStillImageWithMaxSize:(CGSize)maxSize
 {
     NSURL *_Nullable mediaUrl = [self mediaURL];
     if (!mediaUrl) {
         return nil;
     }
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:mediaUrl options:nil];
-    AVAssetImageGenerator *generate         = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generate.appliesPreferredTrackTransform = YES;
-    NSError *err                            = NULL;
-    CMTime time                             = CMTimeMake(1, 60);
-    CGImageRef imgRef                       = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+
+    AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generator.maximumSize = maxSize;
+    generator.appliesPreferredTrackTransform = YES;
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generator copyCGImageAtTime:time actualTime:NULL error:&err];
+
     return [[UIImage alloc] initWithCGImage:imgRef];
 }
 

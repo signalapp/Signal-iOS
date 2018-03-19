@@ -489,7 +489,7 @@ public class MediaGalleryCell: UICollectionViewCell {
 
     public func configure(item: MediaGalleryItem, delegate: MediaGalleryCellDelegate) {
         self.item = item
-        self.imageView.image = item.image
+        self.imageView.image = item.thumbnailImage
         self.delegate = delegate
     }
 

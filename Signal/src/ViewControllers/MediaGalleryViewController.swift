@@ -25,7 +25,16 @@ public struct MediaGalleryItem: Equatable {
         return attachmentStream.isVideo()
     }
 
-    var image: UIImage {
+    var thumbnailImage: UIImage {
+        guard let image = attachmentStream.thumbnailImage else {
+            owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
+            return UIImage()
+        }
+
+        return image
+    }
+
+    var fullSizedImage: UIImage {
         guard let image = attachmentStream.image() else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment image")
             return UIImage()
@@ -280,7 +289,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
         // loadView hasn't necessarily been called yet.
         self.loadViewIfNeeded()
-        self.presentationView.image = self.initialGalleryItem.image
+        self.presentationView.image = self.initialGalleryItem.fullSizedImage
         self.applyInitialMediaViewConstraints()
 
         // We want to animate the tapped media from it's position in the previous VC
