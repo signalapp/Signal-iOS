@@ -155,7 +155,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
             return 0
         }
 
-        if sectionIdx == kLoadNewerSectionIdx {
+        if sectionIdx == loadNewerSectionIdx {
             // load more recent
             return 0
         }
@@ -187,7 +187,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 let title = NSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
                 sectionHeader.configure(title: title)
                 return sectionHeader
-            case kLoadNewerSectionIdx:
+            case loadNewerSectionIdx:
                 guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryLoadingHeader.reuseIdentifier, for: indexPath) as? MediaGalleryLoadingHeader else {
 
                     owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
@@ -223,8 +223,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         case kLoadOlderSectionIdx:
             owsFail("\(logTag) in \(#function) unexpected cell for kLoadOlderSectionIdx")
             return defaultCell
-        case kLoadNewerSectionIdx:
-            owsFail("\(logTag) in \(#function) unexpected cell for kLoadNewerSectionIdx")
+        case loadNewerSectionIdx:
+            owsFail("\(logTag) in \(#function) unexpected cell for loadNewerSectionIdx")
             return defaultCell
         default:
             guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
@@ -269,7 +269,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return CGSize.zero
             }
             return mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : CGSize(width: 0, height: 100)
-        case kLoadNewerSectionIdx:
+        case loadNewerSectionIdx:
             // Show "loading newer..." iff there is still more recent data to be fetched
             guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
                 owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
@@ -311,7 +311,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     var isFetchingMoreData: Bool = false
 
     let kLoadOlderSectionIdx = 0
-    var kLoadNewerSectionIdx: Int {
+    var loadNewerSectionIdx: Int {
         return galleryDates.count + 1
     }
 

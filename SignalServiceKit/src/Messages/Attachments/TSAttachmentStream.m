@@ -243,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = filePath.lastPathComponent.stringByDeletingPathExtension;
     NSString *containingDir = filePath.stringByDeletingLastPathComponent;
-    NSString *newFilename = [filename stringByAppendingString:@"-thumbnail"];
+    NSString *newFilename = [filename stringByAppendingString:@"-signal-ios-thumbnail"];
 
     return [[containingDir stringByAppendingPathComponent:newFilename] stringByAppendingPathExtension:@"jpg"];
 }
@@ -260,12 +260,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeFileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    NSError *error;
+
+    NSString *_Nullable thumbnailPath = self.thumbnailPath;
+    if (thumbnailPath) {
+        [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
+
+        if (error) {
+            DDLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+        }
+    }
+
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
     }
-    NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
@@ -345,7 +355,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL) return;
+        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        return;
     }
 
     // TODO proper resolution?
@@ -353,6 +364,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
+        if (![NSData ows_isValidImageAtPath:self.filePath]) {
+            DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
+            return;
+        }
+
         CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
         OWSAssert(imageSource != NULL) NSDictionary *imageOptions = @{
             (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
