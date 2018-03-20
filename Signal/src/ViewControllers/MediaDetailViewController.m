@@ -79,6 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation MediaDetailViewController
 
+- (void)dealloc
+{
+    [self stopVideo];
+}
+
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
                               viewItem:(ConversationViewItem *_Nullable)viewItem
 {
