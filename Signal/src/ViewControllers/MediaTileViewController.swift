@@ -555,29 +555,22 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     private var tapGesture: UITapGestureRecognizer!
 
     private let badgeView: UIImageView
+    private let gradientView: GradientView
 
     private var item: MediaGalleryItem?
     public weak var delegate: MediaGalleryCellDelegate?
 
-    // TODO real icons
-    let videoBadgeImage = #imageLiteral(resourceName: "video-video-selected")
-    let animatedBadgeImage = #imageLiteral(resourceName: "video-mute-selected")
+    static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
+    static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
 
     override init(frame: CGRect) {
         self.imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
 
         self.badgeView = UIImageView()
-        badgeView.contentMode = .scaleAspectFit
         badgeView.isHidden = true
 
-        badgeView.backgroundColor = UIColor.white
-        let badgeLabel = UILabel()
-//        badgeLabel.text = "GIF"
-        badgeLabel.textColor = UIColor.gray
-        badgeLabel.adjustsFontSizeToFitWidth = true
-        badgeView.addSubview(badgeLabel)
-        badgeLabel.autoPinEdgesToSuperviewEdges()
+        self.gradientView = GradientView(from: .clear, to: UIColor.black.withAlphaComponent(0.5))
 
         super.init(frame: frame)
 
@@ -586,13 +579,20 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.clipsToBounds = true
         self.contentView.addSubview(imageView)
+        self.contentView.addSubview(gradientView)
         self.contentView.addSubview(badgeView)
 
+        imageView.autoPinEdgesToSuperviewEdges()
+
+        gradientView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+        gradientView.autoSetDimension(.height, toSize: 16)
+
+        // Note assets were rendered to match exactly. We don't want to re-size with
+        // content mode lest they become less legible.
+        let kBadgeSize = CGSize(width: 18, height: 12)
         badgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
         badgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        badgeView.autoSetDimensions(to: CGSize(width: 15, height: 10))
-        badgeView.layer.cornerRadius = 2
-        imageView.autoPinEdgesToSuperviewEdges()
+        badgeView.autoSetDimensions(to: kBadgeSize)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -604,13 +604,16 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.item = item
         self.imageView.image = item.thumbnailImage
         if item.isVideo {
+            self.gradientView.isHidden = false
             self.badgeView.isHidden = false
-//            self.badgeView.image = self.videoBadgeImage
+            self.badgeView.image = MediaGalleryCell.videoBadgeImage
         } else if item.isAnimated {
+            self.gradientView.isHidden = false
             self.badgeView.isHidden = false
-//            self.badgeView.image = self.animatedBadgeImage
+            self.badgeView.image = MediaGalleryCell.animatedBadgeImage
         } else {
             assert(item.isImage)
+            self.gradientView.isHidden = true
             self.badgeView.isHidden = true
         }
 

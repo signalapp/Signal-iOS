@@ -472,22 +472,23 @@ extension AttachmentApprovalViewController: UIScrollViewDelegate {
     }
 }
 
-private class GradientView: UIView {
+// TODO extract into it's own file
+public class GradientView: UIView {
 
     let gradientLayer = CAGradientLayer()
 
-    required init(from fromColor: UIColor, to toColor: UIColor) {
+    public required init(from fromColor: UIColor, to toColor: UIColor) {
         gradientLayer.colors = [fromColor.cgColor, toColor.cgColor]
         super.init(frame: CGRect.zero)
 
         self.layer.addSublayer(gradientLayer)
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         gradientLayer.frame = self.bounds
     }
