@@ -49,7 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
     _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
-    [self ensureThumbnail];
 
     return self;
 }
@@ -72,7 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
     _creationTimestamp = [NSDate new];
 
     [self ensureFilePath];
-    [self ensureThumbnail];
 
     return self;
 }
@@ -96,6 +94,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureThumbnail];
 
     return self;
+}
+
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super saveWithTransaction:transaction];
+    [self ensureThumbnail];
 }
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
