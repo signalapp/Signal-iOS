@@ -72,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Re-register"
                            actionBlock:^{
-
                                [OWSAlerts
                                    showConfirmationAlertWithTitle:@"Re-register?"
                                                           message:@"If you proceed, you will not lose any of your "
@@ -80,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   @"deactivated until you complete re-registration."
                                                      proceedTitle:@"Proceed"
                                                     proceedAction:^(UIAlertAction *_Nonnull action) {
-                                                        [self reregister];
+                                                        [DebugUIMisc reregister];
                                                     }];
                            }]];
 
@@ -124,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-- (void)reregister
++ (void)reregister
 {
     DDLogInfo(@"%@ re-registering.", self.logTag);
     [[TSAccountManager sharedInstance] resetForRegistration];

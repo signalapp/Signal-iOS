@@ -67,7 +67,14 @@ NS_ASSUME_NONNULL_BEGIN
                   }];
 
     for (NSString *interactionId in interactionIds) {
-        [transaction removeObjectForKey:interactionId inCollection:[[TSInteraction class] collection]];
+        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
+        TSInteraction *_Nullable interaction =
+            [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
+        if (!interaction) {
+            OWSProdLogAndFail(@"%@ couldn't load thread's interaction for deletion.", self.logTag);
+            continue;
+        }
+        [interaction removeWithTransaction:transaction];
     }
 }
 

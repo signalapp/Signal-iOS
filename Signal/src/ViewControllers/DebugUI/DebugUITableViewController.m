@@ -110,9 +110,9 @@ NS_ASSUME_NONNULL_BEGIN
                        [viewController.navigationController pushViewController:fileBrowser animated:YES];
                    }];
     [subsectionItems addObject:documentsFileBrowserItem];
-    [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:thread]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:thread]];
 
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
@@ -137,8 +137,8 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUISessionState new] viewController:viewController thread:nil]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
-    [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 
     viewController.contents = contents;

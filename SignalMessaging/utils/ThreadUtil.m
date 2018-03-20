@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadUtil.h"
@@ -605,6 +605,56 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+#pragma mark - Delete Content
+
++ (void)deleteAllContent
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self removeAllObjectsInCollection:[TSThread collection] class:[TSThread class] transaction:transaction];
+            [self removeAllObjectsInCollection:[TSInteraction collection]
+                                         class:[TSInteraction class]
+                                   transaction:transaction];
+            [self removeAllObjectsInCollection:[TSAttachment collection]
+                                         class:[TSAttachment class]
+                                   transaction:transaction];
+            [self removeAllObjectsInCollection:[SignalRecipient collection]
+                                         class:[SignalRecipient class]
+                                   transaction:transaction];
+        }];
+    [TSAttachmentStream deleteAttachments];
+}
+
++ (void)removeAllObjectsInCollection:(NSString *)collection
+                               class:(Class) class
+                         transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    OWSAssert(collection.length > 0);
+    OWSAssert(class);
+    OWSAssert(transaction);
+
+    NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
+    if (!uniqueIds) {
+        OWSProdLogAndFail(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
+        return;
+    }
+    DDLogInfo(@"%@ Deleting %zd objects from: %@", self.logTag, uniqueIds.count, collection);
+    NSUInteger count = 0;
+    for (NSString *uniqueId in uniqueIds) {
+        // We need to fetch each object, since [TSYapDatabaseObject removeWithTransaction:] sometimes does important
+        // work.
+        TSYapDatabaseObject *_Nullable object = [class fetchObjectWithUniqueID:uniqueId transaction:transaction];
+        if (!object) {
+            OWSProdLogAndFail(@"%@ couldn't load object for deletion: %@.", self.logTag, collection);
+            continue;
+        }
+        [object removeWithTransaction:transaction];
+        count++;
+    };
+    DDLogInfo(@"%@ Deleted %zd/%zd objects from: %@", self.logTag, count, uniqueIds.count, collection);
+}
+
 @end
 
-NS_ASSUME_NONNULL_END
+    NS_ASSUME_NONNULL_END
