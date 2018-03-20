@@ -364,6 +364,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
+        if (![NSData ows_isValidImageAtPath:self.filePath]) {
+            DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
+            return;
+        }
+
         CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)self.mediaURL, NULL);
         OWSAssert(imageSource != NULL) NSDictionary *imageOptions = @{
             (NSString const *)kCGImageSourceCreateThumbnailFromImageIfAbsent : (NSNumber const *)kCFBooleanTrue,
