@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)dealloc
 {
-    [self stopVideo];
+    [self stopAnyVideo];
 }
 
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
@@ -574,6 +574,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.videoPlayer pause];
 
     [self.delegate mediaDetailViewController:self isPlayingVideo:NO];
+}
+
+- (void)stopAnyVideo
+{
+    if (self.isVideo) {
+        [self stopVideo];
+    }
 }
 
 - (void)stopVideo

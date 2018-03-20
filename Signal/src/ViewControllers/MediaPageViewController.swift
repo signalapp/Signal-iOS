@@ -190,7 +190,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
 
-        currentViewController.stopVideo()
+        currentViewController.stopAnyVideo()
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
@@ -335,10 +335,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             // Do any cleanup for the no-longer visible view controller
             if transitionCompleted {
                 previousPage.zoomOut(animated: false)
-
-                if previousPage.galleryItem.isVideo {
-                    previousPage.stopVideo()
-                }
+                previousPage.stopAnyVideo()
                 updateFooterBarButtonItems(isPlayingVideo: false)
             }
         }
