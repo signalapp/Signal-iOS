@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Writes db entities using protobufs into snapshot fragments.
 // Snapshot fragments are compressed (they compress _very well_,
 // around 20x smaller) then encrypted.  Ordering matters in
-// snapshot contents (entities should we restored in the same
+// snapshot contents (entities should be restored in the same
 // order they are serialized), so we are always careful to preserve
 // ordering of entities within a snapshot AND ordering of snapshot
 // fragments within a bakckup.
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSMutableArray<OWSBackupExportItem *> *exportItems;
 
-@property (nonatomic, nullable) OWSSignalServiceProtosBackupSnapshotBuilder *backupSnapshotBuilder;
+@property (nonatomic, nullable) OWSSignaliOSProtosBackupSnapshotBuilder *backupSnapshotBuilder;
 
 @property (nonatomic) NSUInteger cachedItemCount;
 
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 // use this state), but I think it'll be helpful to have around to future-proof
 // this work, help with debugging issue, etc.
 - (BOOL)writeObject:(TSYapDatabaseObject *)object
-         entityType:(OWSSignalServiceProtosBackupSnapshotBackupEntityType)entityType
+         entityType:(OWSSignaliOSProtosBackupSnapshotBackupEntityType)entityType
 {
     OWSAssert(object);
 
@@ -124,11 +124,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (!self.backupSnapshotBuilder) {
-        self.backupSnapshotBuilder = [OWSSignalServiceProtosBackupSnapshotBuilder new];
+        self.backupSnapshotBuilder = [OWSSignaliOSProtosBackupSnapshotBuilder new];
     }
 
-    OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder *entityBuilder =
-        [OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder new];
+    OWSSignaliOSProtosBackupSnapshotBackupEntityBuilder *entityBuilder =
+        [OWSSignaliOSProtosBackupSnapshotBackupEntityBuilder new];
     [entityBuilder setType:entityType];
     [entityBuilder setEntityData:data];
 
@@ -426,12 +426,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *,
         Class,
         EntityFilter _Nullable,
-        OWSSignalServiceProtosBackupSnapshotBackupEntityType);
+        OWSSignaliOSProtosBackupSnapshotBackupEntityType);
     ExportBlock exportEntities = ^(YapDatabaseReadTransaction *transaction,
         NSString *collection,
         Class expectedClass,
         EntityFilter _Nullable filter,
-        OWSSignalServiceProtosBackupSnapshotBackupEntityType entityType) {
+        OWSSignaliOSProtosBackupSnapshotBackupEntityType entityType) {
         __block NSUInteger count = 0;
         [transaction
             enumerateKeysAndObjectsInCollection:collection
@@ -469,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSThread collection],
             [TSThread class],
             nil,
-            OWSSignalServiceProtosBackupSnapshotBackupEntityTypeThread);
+            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeThread);
         if (aborted) {
             return;
         }
@@ -499,7 +499,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 return YES;
             },
-            OWSSignalServiceProtosBackupSnapshotBackupEntityTypeAttachment);
+            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeAttachment);
         if (aborted) {
             return;
         }
@@ -523,7 +523,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 return YES;
             },
-            OWSSignalServiceProtosBackupSnapshotBackupEntityTypeInteraction);
+            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeInteraction);
         if (aborted) {
             return;
         }
@@ -532,7 +532,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSDatabaseMigration collection],
             [OWSDatabaseMigration class],
             nil,
-            OWSSignalServiceProtosBackupSnapshotBackupEntityTypeMigration);
+            OWSSignaliOSProtosBackupSnapshotBackupEntityTypeMigration);
     }];
 
     if (aborted || self.isComplete) {
@@ -568,28 +568,36 @@ NS_ASSUME_NONNULL_BEGIN
     self.savedDatabaseItems = [NSMutableArray new];
     self.savedAttachmentItems = [NSMutableArray new];
 
+    unsigned long long totalFileSize = 0;
+    NSUInteger totalFileCount = 0;
     {
-        unsigned long long totalFileSize = 0;
+        unsigned long long databaseFileSize = 0;
         for (OWSBackupExportItem *item in self.unsavedDatabaseItems) {
-            totalFileSize += [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
+            databaseFileSize += [OWSFileSystem fileSizeOfPath:item.encryptedItem.filePath].unsignedLongLongValue;
         }
         DDLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
             self.logTag,
             @"database items",
             self.unsavedDatabaseItems.count,
-            totalFileSize);
+            databaseFileSize);
+        totalFileSize += databaseFileSize;
+        totalFileCount += self.unsavedDatabaseItems.count;
     }
     {
-        unsigned long long totalFileSize = 0;
+        unsigned long long attachmentFileSize = 0;
         for (OWSAttachmentExport *attachmentExport in self.unsavedAttachmentExports) {
-            totalFileSize += [OWSFileSystem fileSizeOfPath:attachmentExport.attachmentFilePath].unsignedLongLongValue;
+            attachmentFileSize +=
+                [OWSFileSystem fileSizeOfPath:attachmentExport.attachmentFilePath].unsignedLongLongValue;
         }
         DDLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.",
             self.logTag,
             @"attachment items",
             self.unsavedAttachmentExports.count,
-            totalFileSize);
+            attachmentFileSize);
+        totalFileSize += attachmentFileSize;
+        totalFileCount += self.unsavedAttachmentExports.count;
     }
+    DDLogInfo(@"%@ exporting %@: count: %zd, bytes: %llu.", self.logTag, @"all items", totalFileCount, totalFileSize);
 
     [self saveNextFileToCloudWithCompletion:completion];
 }

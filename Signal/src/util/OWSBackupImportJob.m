@@ -515,15 +515,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                     aborted = YES;
                     return completion(NO);
                 }
-                OWSSignalServiceProtosBackupSnapshot *_Nullable entities =
-                    [OWSSignalServiceProtosBackupSnapshot parseFromData:uncompressedData];
+                OWSSignaliOSProtosBackupSnapshot *_Nullable entities =
+                    [OWSSignaliOSProtosBackupSnapshot parseFromData:uncompressedData];
                 if (!entities || entities.entity.count < 1) {
                     DDLogError(@"%@ missing entities.", self.logTag);
                     // Database-related errors are unrecoverable.
                     aborted = YES;
                     return completion(NO);
                 }
-                for (OWSSignalServiceProtosBackupSnapshotBackupEntity *entity in entities.entity) {
+                for (OWSSignaliOSProtosBackupSnapshotBackupEntity *entity in entities.entity) {
                     NSData *_Nullable entityData = entity.entityData;
                     if (entityData.length < 1) {
                         DDLogError(@"%@ missing entity data.", self.logTag);

@@ -239,10 +239,7 @@ import CloudKit
                                              success: @escaping (()) -> Void,
                                              failure: @escaping (Error) -> Void) {
 
-        var recordIDs = [CKRecordID]()
-        for recordName in recordNames {
-            recordIDs.append(CKRecordID(recordName: recordName))
-        }
+        let recordIDs = recordNames.map { CKRecordID(recordName: $0) }
         let deleteOperation = CKModifyRecordsOperation(recordsToSave: nil, recordIDsToDelete: recordIDs)
         deleteOperation.modifyRecordsCompletionBlock = { (records, recordIds, error) in
 

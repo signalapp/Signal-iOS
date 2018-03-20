@@ -13,6 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO:
 static const NSUInteger kOWSBackupKeyLength = 32;
 
+// LZMA algorithm significantly outperforms the other compressionlib options
+// for our database snapshots and is a widely adopted standard.
+static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA;
+
 @implementation OWSBackupEncryptedItem
 
 @end
@@ -196,9 +200,8 @@ static const NSUInteger kOWSBackupKeyLength = 32;
         if (!dstBuffer) {
             return nil;
         }
-        // TODO: Should we use COMPRESSION_LZFSE?
-        size_t dstLength
-            = compression_encode_buffer(dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, COMPRESSION_LZFSE);
+        size_t dstLength = compression_encode_buffer(
+            dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *compressedData = [NSData dataWithBytesNoCopy:dstBuffer length:dstLength freeWhenDone:YES];
 
         DDLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
@@ -233,9 +236,8 @@ static const NSUInteger kOWSBackupKeyLength = 32;
         if (!dstBuffer) {
             return nil;
         }
-        // TODO: Should we use COMPRESSION_LZFSE?
-        size_t dstLength
-            = compression_decode_buffer(dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, COMPRESSION_LZFSE);
+        size_t dstLength = compression_decode_buffer(
+            dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, SignalCompressionAlgorithm);
         NSData *decompressedData = [NSData dataWithBytesNoCopy:dstBuffer length:dstLength freeWhenDone:YES];
         OWSAssert(decompressedData.length == uncompressedDataLength);
         DDLogVerbose(@"%@ decompressed %zd -> %zd = %0.2f",
