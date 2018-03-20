@@ -554,12 +554,30 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     public let imageView: UIImageView
     private var tapGesture: UITapGestureRecognizer!
 
+    private let badgeView: UIImageView
+
     private var item: MediaGalleryItem?
     public weak var delegate: MediaGalleryCellDelegate?
+
+    // TODO real icons
+    let videoBadgeImage = #imageLiteral(resourceName: "video-video-selected")
+    let animatedBadgeImage = #imageLiteral(resourceName: "video-mute-selected")
 
     override init(frame: CGRect) {
         self.imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+
+        self.badgeView = UIImageView()
+        badgeView.contentMode = .scaleAspectFit
+        badgeView.isHidden = true
+
+        badgeView.backgroundColor = UIColor.white
+        let badgeLabel = UILabel()
+//        badgeLabel.text = "GIF"
+        badgeLabel.textColor = UIColor.gray
+        badgeLabel.adjustsFontSizeToFitWidth = true
+        badgeView.addSubview(badgeLabel)
+        badgeLabel.autoPinEdgesToSuperviewEdges()
 
         super.init(frame: frame)
 
@@ -567,8 +585,13 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.addGestureRecognizer(tapGesture)
 
         self.clipsToBounds = true
-        self.addSubview(imageView)
+        self.contentView.addSubview(imageView)
+        self.contentView.addSubview(badgeView)
 
+        badgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
+        badgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        badgeView.autoSetDimensions(to: CGSize(width: 15, height: 10))
+        badgeView.layer.cornerRadius = 2
         imageView.autoPinEdgesToSuperviewEdges()
     }
 
@@ -580,6 +603,17 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     public func configure(item: MediaGalleryItem, delegate: MediaGalleryCellDelegate) {
         self.item = item
         self.imageView.image = item.thumbnailImage
+        if item.isVideo {
+            self.badgeView.isHidden = false
+//            self.badgeView.image = self.videoBadgeImage
+        } else if item.isAnimated {
+            self.badgeView.isHidden = false
+//            self.badgeView.image = self.animatedBadgeImage
+        } else {
+            assert(item.isImage)
+            self.badgeView.isHidden = true
+        }
+
         self.delegate = delegate
     }
 
@@ -588,6 +622,7 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.item = nil
         self.imageView.image = nil
+        self.badgeView.isHidden = true
         self.delegate = nil
     }
 

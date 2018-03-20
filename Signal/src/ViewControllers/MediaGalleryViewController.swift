@@ -25,6 +25,14 @@ public struct MediaGalleryItem: Equatable, Hashable {
         return attachmentStream.isVideo()
     }
 
+    var isAnimated: Bool {
+        return attachmentStream.isAnimated()
+    }
+
+    var isImage: Bool {
+        return attachmentStream.isImage()
+    }
+
     var thumbnailImage: UIImage {
         guard let image = attachmentStream.thumbnailImage() else {
             owsFail("\(logTag) in \(#function) unexpectedly unable to build attachment thumbnail")
