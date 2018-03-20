@@ -178,7 +178,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     private var initialDetailItem: MediaGalleryItem?
     private let thread: TSThread
-    private let includeGallery: Bool
+    private let options: MediaGalleryOption
 
     // we start with a small range size for quick loading.
     private let fetchRangeSize: UInt = 10
@@ -187,15 +187,11 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         Logger.debug("\(logTag) deinit")
     }
 
-    convenience init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection) {
-        self.init(thread: thread, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)
-    }
-
-    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
+    init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption = []) {
         self.thread = thread
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
-        self.includeGallery = includeGallery
+        self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
@@ -264,7 +260,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         ensureGalleryItemsLoaded(.around, item: initialDetailItem, amount: 10)
         self.initialDetailItem = initialDetailItem
 
-        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, includeGallery: self.includeGallery)
+        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, options: self.options)
 
         self.pageViewController = pageViewController
         self.setViewControllers([pageViewController], animated: false)

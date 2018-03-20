@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIView+OWS.h"
@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector
+{
+    return [[self class] createOWSBackButtonWithTarget:target selector:selector];
+}
+
++ (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector
 {
     OWSAssert(target);
     OWSAssert(selector);

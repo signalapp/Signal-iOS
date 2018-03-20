@@ -2033,8 +2033,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
-                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc]
+              initWithThread:self.thread
+        uiDatabaseConnection:self.uiDatabaseConnection
+                     options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
     [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
@@ -2055,8 +2057,10 @@ typedef enum : NSUInteger {
     }
     TSMessage *mediaMessage = (TSMessage *)viewItem.interaction;
 
-    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc] initWithThread:self.thread
-                                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+    MediaGalleryViewController *vc = [[MediaGalleryViewController alloc]
+              initWithThread:self.thread
+        uiDatabaseConnection:self.uiDatabaseConnection
+                     options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
 
     [vc presentDetailViewFromViewController:self mediaMessage:mediaMessage replacingView:imageView];
 }
