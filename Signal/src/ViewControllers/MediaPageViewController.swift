@@ -58,16 +58,14 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     private let uiDatabaseConnection: YapDatabaseConnection
 
-    private let includeGallery: Bool
+    private let showAllMediaButton: Bool
+    private let sliderEnabled: Bool
 
-    convenience init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection) {
-        self.init(initialItem: initialItem, mediaGalleryDataSource: mediaGalleryDataSource, uiDatabaseConnection: uiDatabaseConnection, includeGallery: true)
-    }
-
-    init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, includeGallery: Bool) {
+    init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
-        self.includeGallery = includeGallery
+        self.showAllMediaButton = options.contains(.showAllMediaButton)
+        self.sliderEnabled = options.contains(.sliderEnabled)
         self.mediaGalleryDataSource = mediaGalleryDataSource
 
         let kSpacingBetweenItems: CGFloat = 20
@@ -108,7 +106,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismissButton))
 
-        if includeGallery {
+        if showAllMediaButton {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: MediaStrings.allMedia, style: .plain, target: self, action: #selector(didPressAllMediaButton))
         }
 
@@ -129,9 +127,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // Hack to avoid "page" bouncing when not in gallery view.
         // e.g. when getting to media details via message details screen, there's only
         // one "Page" so the bounce doesn't make sense.
-        if !self.includeGallery {
-            pagerScrollView.isScrollEnabled = false
-        }
+        pagerScrollView.isScrollEnabled = sliderEnabled
 
         // FIXME dynamic title with sender/date
         self.title = "Attachment"

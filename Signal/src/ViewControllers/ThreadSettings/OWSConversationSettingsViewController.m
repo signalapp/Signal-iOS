@@ -1166,7 +1166,9 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogDebug(@"%@ in showMediaGallery", self.logTag);
 
     MediaGalleryViewController *vc =
-        [[MediaGalleryViewController alloc] initWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
+        [[MediaGalleryViewController alloc] initWithThread:self.thread
+                                      uiDatabaseConnection:self.uiDatabaseConnection
+                                                   options:MediaGalleryOptionSliderEnabled];
 
     // although we don't present the mediaGalleryViewController directly, we need to maintain a strong
     // reference to it until we're dismissed.

@@ -10,6 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class GalleryItemBox;
 @class MediaDetailViewController;
 
+typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
+    MediaGalleryOptionSliderEnabled = 1 << 0,
+    MediaGalleryOptionShowAllMediaButton = 1 << 1
+};
+
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
 - (void)dismissSelfAnimated:(BOOL)isAnimated completion:(void (^_Nullable)(void))completionBlock;
