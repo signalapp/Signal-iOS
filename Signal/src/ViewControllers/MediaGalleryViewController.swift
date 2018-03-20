@@ -283,6 +283,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.presentationView.image = initialDetailItem.fullSizedImage
         self.applyInitialMediaViewConstraints()
 
+        // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
+        self.presentationView.alpha = 1
+
         // We want to animate the tapped media from it's position in the previous VC
         // to it's resting place in the center of this view controller.
         //
