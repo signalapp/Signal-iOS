@@ -8,11 +8,11 @@ import UIKit
 @objc
 public class GalleryItemBox: NSObject {
     public let value: MediaGalleryItem
-    
+
     init(_ value: MediaGalleryItem) {
         self.value = value
     }
-    
+
     public var attachmentStream: TSAttachmentStream {
         return value.attachmentStream
     }
@@ -189,6 +189,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     @objc
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
+
+        currentViewController.stopVideo()
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
