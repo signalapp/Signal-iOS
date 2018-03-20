@@ -7,6 +7,7 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
+#import "ConversationHeaderView.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"

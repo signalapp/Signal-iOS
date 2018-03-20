@@ -52,6 +52,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 return
             }
 
+            self.updateTitle(item: newValue)
             self.setViewControllers([galleryPage], direction: .forward, animated: false, completion: nil)
         }
     }
@@ -61,12 +62,17 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
+    private let navItemTitleView: ConversationHeaderView!
+
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
         self.showAllMediaButton = options.contains(.showAllMediaButton)
         self.sliderEnabled = options.contains(.sliderEnabled)
         self.mediaGalleryDataSource = mediaGalleryDataSource
+
+        let headerView =  ConversationHeaderView()
+        self.navItemTitleView = headerView
 
         let kSpacingBetweenItems: CGFloat = 20
 
@@ -109,6 +115,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
 
+        navItemTitleView.titleLabel = headerNameLabel
+        navItemTitleView.subtitleLabel = headerDateLabel
+        navItemTitleView.addSubview(headerNameLabel)
+        navItemTitleView.addSubview(headerDateLabel)
+        navItemTitleView.frame = CGRect(origin: .zero, size: CGSize(width: 150, height: 35))
+        navItemTitleView.layoutSubviews()
+        self.navigationItem.titleView = navItemTitleView
+        self.updateTitle()
+
         if showAllMediaButton {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: MediaStrings.allMedia, style: .plain, target: self, action: #selector(didPressAllMediaButton))
         }
@@ -132,7 +147,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // one "Page" so the bounce doesn't make sense.
         pagerScrollView.isScrollEnabled = sliderEnabled
 
-        // FIXME dynamic title with sender/date
         self.title = "Attachment"
 
         // Views
@@ -337,6 +351,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             // Do any cleanup for the no-longer visible view controller
             if transitionCompleted {
+                updateTitle()
                 previousPage.zoomOut(animated: false)
                 previousPage.stopAnyVideo()
                 updateFooterBarButtonItems(isPlayingVideo: false)
@@ -449,5 +464,70 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         self.shouldHideToolbars = isPlayingVideo
         self.updateFooterBarButtonItems(isPlayingVideo: isPlayingVideo)
+    }
+
+    // MARK: Dynamic Header
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.current().contactsManager
+    }
+
+    private func senderName(message: TSMessage) -> String {
+        switch message {
+        case let incomingMessage as TSIncomingMessage:
+            return self.contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+        case is TSOutgoingMessage:
+            return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
+        default:
+            owsFail("\(logTag) Unknown message type: \(type(of: message))")
+            return ""
+        }
+    }
+
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+
+        return formatter
+    }()
+
+    lazy private var headerNameLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = .ows_dynamicTypeBody()
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
+
+        return label
+    }()
+
+    lazy private var headerDateLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont.preferredFont(forTextStyle: .caption1)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+
+        return label
+    }()
+
+    private func updateTitle() {
+        guard let currentItem = self.currentItem else {
+            owsFail("\(logTag) currentItem was unexpectedly nil")
+            return
+        }
+        updateTitle(item: currentItem)
+    }
+
+    private func updateTitle(item: MediaGalleryItem) {
+        let name = senderName(message: item.message)
+        headerNameLabel.text = name
+
+        // use sent date
+        let date = Date(timeIntervalSince1970: Double(item.message.timestamp) / 1000)
+        let formattedDate = dateFormatter.string(from: date)
+        headerDateLabel.text = formattedDate
     }
 }

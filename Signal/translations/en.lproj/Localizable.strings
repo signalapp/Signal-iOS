@@ -175,9 +175,6 @@
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
 
-/* Indicates that the backup export data is being finalized. */
-"BACKUP_EXPORT_PHASE_DATABASE_FINALIZED" = "Finalizing Data";
-
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
 
@@ -979,6 +976,9 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Photo Library";
+
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
