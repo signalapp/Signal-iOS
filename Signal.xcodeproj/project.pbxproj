@@ -228,6 +228,7 @@
 		450DF2051E0D74AC003D14BE /* Platform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2041E0D74AC003D14BE /* Platform.swift */; };
 		450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */ = {isa = PBXBuildFile; fileRef = 450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */; };
 		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
+		451573962061B49500803601 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451573952061B49500803601 /* GradientView.swift */; };
 		451686AB1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451686AA1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift */; };
 		4517642A1DE939FD00EDB8B9 /* ContactCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 451764281DE939FD00EDB8B9 /* ContactCell.xib */; };
 		4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451764291DE939FD00EDB8B9 /* ContactCell.swift */; };
@@ -843,6 +844,7 @@
 		450DF2041E0D74AC003D14BE /* Platform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Platform.swift; sourceTree = "<group>"; };
 		450DF2081E0DD2C6003D14BE /* UserNotificationsAdaptee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = UserNotificationsAdaptee.swift; path = UserInterface/Notifications/UserNotificationsAdaptee.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		451573952061B49500803601 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = GradientView.swift; path = SignalMessaging/Views/GradientView.swift; sourceTree = SOURCE_ROOT; };
 		451686AA1F520CDA00AC3D4B /* MultiDeviceProfileKeyUpdateJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MultiDeviceProfileKeyUpdateJob.swift; sourceTree = "<group>"; };
 		451764281DE939FD00EDB8B9 /* ContactCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactCell.xib; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
@@ -1504,6 +1506,7 @@
 				340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */,
 				346129D11FD2085A00532771 /* CommonStrings.swift */,
 				45BE4EA12012AD2000935E59 /* DisappearingTimerConfigurationView.swift */,
+				451573952061B49500803601 /* GradientView.swift */,
 				346129CF1FD207F200532771 /* OWSAlerts.swift */,
 				454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */,
 				3400C7971EAFB772008A8584 /* ThreadViewHelper.h */,
@@ -3049,6 +3052,7 @@
 				346129D01FD207F300532771 /* OWSAlerts.swift in Sources */,
 				454A965F1FD60EA3008D2A0E /* OWSFlatButton.swift in Sources */,
 				346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */,
+				451573962061B49500803601 /* GradientView.swift in Sources */,
 				346129F51FD5F31400532771 /* OWS102MoveLoggingPreferenceToUserDefaults.m in Sources */,
 				45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */,
 				451F8A3B1FD71297005CB9DA /* UIUtil.m in Sources */,

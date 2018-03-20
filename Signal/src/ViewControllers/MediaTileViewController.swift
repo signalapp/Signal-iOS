@@ -554,12 +554,20 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     public let imageView: UIImageView
     private var tapGesture: UITapGestureRecognizer!
 
+    private let badgeView: UIImageView
+
     private var item: MediaGalleryItem?
     public weak var delegate: MediaGalleryCellDelegate?
+
+    static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
+    static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
 
     override init(frame: CGRect) {
         self.imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
+
+        self.badgeView = UIImageView()
+        badgeView.isHidden = true
 
         super.init(frame: frame)
 
@@ -567,9 +575,17 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.addGestureRecognizer(tapGesture)
 
         self.clipsToBounds = true
-        self.addSubview(imageView)
+        self.contentView.addSubview(imageView)
+        self.contentView.addSubview(badgeView)
 
         imageView.autoPinEdgesToSuperviewEdges()
+
+        // Note assets were rendered to match exactly. We don't want to re-size with
+        // content mode lest they become less legible.
+        let kBadgeSize = CGSize(width: 18, height: 12)
+        badgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
+        badgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        badgeView.autoSetDimensions(to: kBadgeSize)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -580,6 +596,17 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     public func configure(item: MediaGalleryItem, delegate: MediaGalleryCellDelegate) {
         self.item = item
         self.imageView.image = item.thumbnailImage
+        if item.isVideo {
+            self.badgeView.isHidden = false
+            self.badgeView.image = MediaGalleryCell.videoBadgeImage
+        } else if item.isAnimated {
+            self.badgeView.isHidden = false
+            self.badgeView.image = MediaGalleryCell.animatedBadgeImage
+        } else {
+            assert(item.isImage)
+            self.badgeView.isHidden = true
+        }
+
         self.delegate = delegate
     }
 
@@ -588,6 +615,7 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.item = nil
         self.imageView.image = nil
+        self.badgeView.isHidden = true
         self.delegate = nil
     }
 
