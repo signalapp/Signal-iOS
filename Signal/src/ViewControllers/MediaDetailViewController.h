@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playVideo;
 
 // Stops playback and rewinds
-- (void)stopVideo;
+- (void)stopAnyVideo;
 
 - (void)setShouldHideToolbars:(BOOL)shouldHideToolbars;
 - (void)zoomOutAnimated:(BOOL)isAnimated;
