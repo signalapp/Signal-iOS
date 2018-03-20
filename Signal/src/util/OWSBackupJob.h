@@ -6,10 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kOWSBackup_ManifestKey_DatabaseFiles;
 extern NSString *const kOWSBackup_ManifestKey_AttachmentFiles;
-extern NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec;
-
-extern NSString *const kOWSBackup_Snapshot_Collection;
-extern NSString *const kOWSBackup_Snapshot_ValidKey;
+extern NSString *const kOWSBackup_ManifestKey_RecordName;
+extern NSString *const kOWSBackup_ManifestKey_EncryptionKey;
+extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
+extern NSString *const kOWSBackup_ManifestKey_DataSize;
 
 typedef void (^OWSBackupJobBoolCompletion)(BOOL success);
 typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
@@ -18,8 +18,7 @@ typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 
 @protocol OWSBackupJobDelegate <NSObject>
 
-// TODO: Use actual key.
-- (nullable NSData *)backupKey;
+- (nullable NSData *)backupEncryptionKey;
 
 // Either backupJobDidSucceed:... or backupJobDidFail:... will
 // be called exactly once on the main thread UNLESS:
@@ -63,23 +62,6 @@ typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 - (void)failWithErrorDescription:(NSString *)description;
 - (void)failWithError:(NSError *)error;
 - (void)updateProgressWithDescription:(nullable NSString *)description progress:(nullable NSNumber *)progress;
-
-
-#pragma mark - Database KeySpec
-
-+ (nullable NSData *)loadDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey;
-+ (BOOL)storeDatabaseKeySpec:(NSData *)data keychainKey:(NSString *)keychainKey;
-+ (BOOL)generateRandomDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey;
-
-#pragma mark - Encryption
-
-+ (nullable NSString *)encryptFileAsTempFile:(NSString *)srcFilePath
-                              jobTempDirPath:(NSString *)jobTempDirPath
-                                    delegate:(id<OWSBackupJobDelegate>)delegate;
-
-+ (nullable NSString *)encryptDataAsTempFile:(NSData *)data
-                              jobTempDirPath:(NSString *)jobTempDirPath
-                                    delegate:(id<OWSBackupJobDelegate>)delegate;
 
 @end
 

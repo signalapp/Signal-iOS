@@ -6,7 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class YapDatabase;
+
 @interface OWSStorage (Subclass)
+
+@property (atomic, nullable, readonly) YapDatabase *database;
 
 - (void)loadDatabase;
 

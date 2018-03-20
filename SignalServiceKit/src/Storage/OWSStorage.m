@@ -58,7 +58,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
     OWSAssert(delegate);
 
-    _delegate = delegate;
+    self.delegate = delegate;
 
     return self;
 }
@@ -134,9 +134,8 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 
-@property (atomic, nullable) YapDatabaseConnection *registrationConnectionCached;
-
 - (instancetype)init NS_UNAVAILABLE;
+
 - (id)initWithPath:(NSString *)inPath
         serializer:(nullable YapDatabaseSerializer)inSerializer
       deserializer:(YapDatabaseDeserializer)inDeserializer
@@ -163,7 +162,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
     OWSAssert(delegate);
 
-    _delegate = delegate;
+    self.delegate = delegate;
 
     return self;
 }
@@ -184,21 +183,15 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (YapDatabaseConnection *)registrationConnection
 {
-    @synchronized(self)
-    {
-        if (!self.registrationConnectionCached) {
-            YapDatabaseConnection *connection = [super registrationConnection];
+    YapDatabaseConnection *connection = [super registrationConnection];
 
 #ifdef DEBUG
-            // Flag the registration connection as such.
-            OWSAssert([connection isKindOfClass:[OWSDatabaseConnection class]]);
-            ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
+    // Flag the registration connection as such.
+    OWSAssert([connection isKindOfClass:[OWSDatabaseConnection class]]);
+    ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
 #endif
 
-            self.registrationConnectionCached = connection;
-        }
-        return self.registrationConnectionCached;
-    }
+    return connection;
 }
 
 @end
@@ -278,6 +271,9 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (void)dealloc
 {
+    // Surface memory leaks by logging the deallocation of this class.
+    DDLogVerbose(@"Dealloc: %@", self.class);
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -363,11 +359,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     for (OWSStorage *storage in self.allStorages) {
         [storage runAsyncRegistrationsWithCompletion:^{
             if ([self postRegistrationCompleteNotificationIfPossible]) {
-                // If all registrations are complete, clean up the
-                // registration process.
-
-                ((OWSDatabase *)storage.database).registrationConnectionCached = nil;
-
                 backgroundTask = nil;
             }
         }];
@@ -408,15 +399,23 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 - (BOOL)tryToLoadDatabase
 {
+    __weak OWSStorage *weakSelf = self;
+
     YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
     options.corruptAction = YapDatabaseCorruptAction_Fail;
     options.enableMultiProcessSupport = YES;
     options.cipherKeySpecBlock = ^{
+        // NOTE: It's critical that we don't capture a reference to self
+        // (e.g. by using OWSAssert()) or this database will contain a
+        // circular reference and will leak.
+        OWSStorage *strongSelf = weakSelf;
+        OWSCAssert(strongSelf);
+
         // Rather than compute this once and capture the value of the key
         // in the closure, we prefer to fetch the key from the keychain multiple times
         // in order to keep the key out of application memory.
-        NSData *databaseKeySpec = [self databaseKeySpec];
-        OWSAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
+        NSData *databaseKeySpec = [strongSelf databaseKeySpec];
+        OWSCAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);
         return databaseKeySpec;
     };
 
@@ -707,6 +706,16 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (unsigned long long)databaseFileSize
 {
     return [OWSFileSystem fileSizeOfPath:self.databaseFilePath].unsignedLongLongValue;
+}
+
+- (unsigned long long)databaseWALFileSize
+{
+    return [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL].unsignedLongLongValue;
+}
+
+- (unsigned long long)databaseSHMFileSize
+{
+    return [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM].unsignedLongLongValue;
 }
 
 + (nullable NSData *)tryToLoadKeyChainValue:(NSString *)keychainKey errorHandle:(NSError **)errorHandle

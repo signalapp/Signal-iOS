@@ -61,6 +61,8 @@ extern NSString *const StorageIsReadyNotification;
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
 - (unsigned long long)databaseFileSize;
+- (unsigned long long)databaseWALFileSize;
+- (unsigned long long)databaseSHMFileSize;
 
 - (YapDatabaseConnection *)registrationConnection;
 

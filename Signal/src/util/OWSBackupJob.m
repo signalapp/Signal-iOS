@@ -12,12 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kOWSBackup_ManifestKey_DatabaseFiles = @"database_files";
 NSString *const kOWSBackup_ManifestKey_AttachmentFiles = @"attachment_files";
-NSString *const kOWSBackup_ManifestKey_DatabaseKeySpec = @"database_key_spec";
+NSString *const kOWSBackup_ManifestKey_RecordName = @"record_name";
+NSString *const kOWSBackup_ManifestKey_EncryptionKey = @"encryption_key";
+NSString *const kOWSBackup_ManifestKey_RelativeFilePath = @"relative_file_path";
+NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
-
-NSString *const kOWSBackup_Snapshot_Collection = @"kOWSBackup_Snapshot_Collection";
-NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
 
 @interface OWSBackupJob ()
 
@@ -144,100 +144,6 @@ NSString *const kOWSBackup_Snapshot_ValidKey = @"kOWSBackup_Snapshot_ValidKey";
         }
         [self.delegate backupJobDidUpdate:self description:description progress:progress];
     });
-}
-
-#pragma mark - Database KeySpec
-
-+ (nullable NSData *)loadDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-
-    NSError *error;
-    NSData *_Nullable value =
-        [SAMKeychain passwordDataForService:kOWSBackup_KeychainService account:keychainKey error:&error];
-    if (!value || error) {
-        DDLogError(@"%@ could not load database keyspec: %@", self.logTag, error);
-    }
-    return value;
-}
-
-+ (BOOL)storeDatabaseKeySpec:(NSData *)data keychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-    OWSAssert(data.length > 0);
-
-    NSError *error;
-    [SAMKeychain setAccessibilityType:kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly];
-    BOOL success =
-        [SAMKeychain setPasswordData:data forService:kOWSBackup_KeychainService account:keychainKey error:&error];
-    if (!success || error) {
-        OWSFail(@"%@ Could not store database keyspec: %@.", self.logTag, error);
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
-+ (BOOL)generateRandomDatabaseKeySpecWithKeychainKey:(NSString *)keychainKey
-{
-    OWSAssert(keychainKey.length > 0);
-
-    NSData *_Nullable databaseKeySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
-    if (!databaseKeySpec) {
-        OWSFail(@"%@ Could not generate database keyspec.", self.logTag);
-        return NO;
-    }
-
-    return [self storeDatabaseKeySpec:databaseKeySpec keychainKey:keychainKey];
-}
-
-#pragma mark - Encryption
-
-+ (nullable NSString *)encryptFileAsTempFile:(NSString *)srcFilePath
-                              jobTempDirPath:(NSString *)jobTempDirPath
-                                    delegate:(id<OWSBackupJobDelegate>)delegate
-{
-    OWSAssert(srcFilePath.length > 0);
-    OWSAssert(jobTempDirPath.length > 0);
-    OWSAssert(delegate);
-
-    // TODO: Encrypt the file using self.delegate.backupKey;
-    NSData *_Nullable backupKey = [delegate backupKey];
-    OWSAssert(backupKey);
-
-    NSString *dstFilePath = [jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    BOOL success = [fileManager copyItemAtPath:srcFilePath toPath:dstFilePath error:&error];
-    if (!success || error) {
-        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
-        return nil;
-    }
-    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
-    return dstFilePath;
-}
-
-+ (nullable NSString *)encryptDataAsTempFile:(NSData *)data
-                              jobTempDirPath:(NSString *)jobTempDirPath
-                                    delegate:(id<OWSBackupJobDelegate>)delegate
-{
-    OWSAssert(data);
-    OWSAssert(jobTempDirPath.length > 0);
-    OWSAssert(delegate);
-
-    // TODO: Encrypt the file using self.delegate.backupKey;
-    NSData *_Nullable backupKey = [delegate backupKey];
-    OWSAssert(backupKey);
-
-    NSString *dstFilePath = [jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
-    NSError *error;
-    BOOL success = [data writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
-    if (!success || error) {
-        OWSProdLogAndFail(@"%@ error writing encrypted file: %@", self.logTag, error);
-        return nil;
-    }
-    [OWSFileSystem protectFileOrFolderAtPath:dstFilePath];
-    return dstFilePath;
 }
 
 @end

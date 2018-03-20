@@ -227,20 +227,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)deleteFile:(NSString *)filePath
++ (BOOL)deleteFile:(NSString *)filePath
 {
     NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-    if (error) {
+    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
+    if (!success || error) {
         DDLogError(@"%@ Failed to delete file: %@", self.logTag, error.description);
+        return NO;
     }
+    return YES;
 }
 
-+ (void)deleteFileIfExists:(NSString *)filePath
++ (BOOL)deleteFileIfExists:(NSString *)filePath
 {
-    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        [self deleteFile:filePath];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+        return YES;
     }
+    return [self deleteFile:filePath];
 }
 
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
