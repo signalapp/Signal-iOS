@@ -10,6 +10,8 @@ import CloudKit
 
     // If we change the record types, we need to ensure indices
     // are configured properly in the CloudKit dashboard.
+    //
+    // TODO: Change the record types when we ship to production.
     static let signalBackupRecordType = "signalBackup"
     static let manifestRecordName = "manifest"
     static let payloadKey = "payload"

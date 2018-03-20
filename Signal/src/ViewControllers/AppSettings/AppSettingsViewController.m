@@ -7,6 +7,7 @@
 #import "AdvancedSettingsTableViewController.h"
 #import "DebugUITableViewController.h"
 #import "NotificationSettingsViewController.h"
+#import "OWSBackup.h"
 #import "OWSBackupSettingsViewController.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "OWSNavigationController.h"
@@ -188,13 +189,26 @@
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
+    // Show backup UI in debug builds OR if backup has already been enabled.
+    //
+    // NOTE: Backup format is not yet finalized and backups are not yet
+    //       properly encrypted, so these debug backups should only be
+    //       done on test devices and will not be usable if/when we ship
+    //       backup to production.
+    //
+    // TODO: Always show backup when we go to production.
+    BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
+    BOOL showBackup = isBackupEnabled;
 #ifdef DEBUG
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
-                                                              @"Label for the backup view in app settings.")
-                                              actionBlock:^{
-                                                  [weakSelf showBackup];
-                                              }]];
+    showBackup = YES;
 #endif
+    if (showBackup) {
+        [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
+                                                                  @"Label for the backup view in app settings.")
+                                                  actionBlock:^{
+                                                      [weakSelf showBackup];
+                                                  }]];
+    }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
                                               actionBlock:^{
                                                   [weakSelf showAbout];
