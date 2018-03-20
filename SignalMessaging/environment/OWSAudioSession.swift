@@ -19,7 +19,7 @@ public class AudioActivity: NSObject {
     }
 
     deinit {
-        OWSAudioSession.shared.ensureAudioSessionActivationState()
+        OWSAudioSession.shared.ensureAudioSessionActivationStateAfterDelay()
     }
 }
 
@@ -38,8 +38,10 @@ public class OWSAudioSession: NSObject {
     public func startAmbientAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
 
-        startAudioActivity(audioActivity)
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
 
+        startAudioActivity(audioActivity)
         guard currentActivities.count == 1 else {
             // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
             Logger.info("\(logTag) in \(#function) not touching audio session since another currentActivity exists.")
@@ -57,6 +59,9 @@ public class OWSAudioSession: NSObject {
     public func startPlaybackAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
 
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+
         startAudioActivity(audioActivity)
 
         do {
@@ -68,6 +73,9 @@ public class OWSAudioSession: NSObject {
 
     public func startRecordingAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("\(logTag) in \(#function)")
+
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
 
         assert(avAudioSession.recordPermission() == .granted)
 
@@ -85,17 +93,35 @@ public class OWSAudioSession: NSObject {
     public func startAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function) with \(audioActivity)")
 
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+
         self.currentActivities.append(Weak(value: audioActivity))
     }
 
     public func endAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function) with audioActivity: \(audioActivity)")
 
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
-        ensureAudioSessionActivationState()
+        ensureAudioSessionActivationStateAfterDelay()
     }
 
-    fileprivate func ensureAudioSessionActivationState() {
+    fileprivate func ensureAudioSessionActivationStateAfterDelay() {
+        // Without this delay, we sometimes error when deactivating the audio session with:
+        //     Error Domain=NSOSStatusErrorDomain Code=560030580 “The operation couldn’t be completed. (OSStatus error 560030580.)”
+        // aka "AVAudioSessionErrorCodeIsBusy"
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+            self.ensureAudioSessionActivationState()
+        }
+    }
+
+    private func ensureAudioSessionActivationState() {
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+
         // Cull any stale activities
         currentActivities = currentActivities.flatMap { oldActivity in
             guard oldActivity.value != nil else {
