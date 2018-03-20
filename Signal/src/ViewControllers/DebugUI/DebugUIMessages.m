@@ -1201,7 +1201,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSUInteger i = 0; i < counter; i++) {
 
         // Random time within last n years. Helpful for filling out a media gallery over time.
-        double yearsMillis = 4.0 * kYearsInMillis;
+        double yearsMillis = 4.0 * kYearsInMs;
         uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
 
         uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
