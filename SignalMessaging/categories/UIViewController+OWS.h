@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
  * interactivePopGesture.delegate to self/nil on viewWillAppear/Disappear
  */
 - (UIBarButtonItem *)createOWSBackButton;
+
++ (UIBarButtonItem *)createOWSBackButtonWithTarget:(id)target selector:(SEL)selector;
 
 @end
 

@@ -104,7 +104,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Navigation
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressDismissButton))
+        // Note: using a custom leftBarButtonItem breaks the interactive pop gesture, but we don't want to be able
+        // to swipe to go back in the pager view anyway, instead swiping back should show the next page.
+        let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
+        self.navigationItem.leftBarButtonItem = backButton
 
         if showAllMediaButton {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: MediaStrings.allMedia, style: .plain, target: self, action: #selector(didPressAllMediaButton))
