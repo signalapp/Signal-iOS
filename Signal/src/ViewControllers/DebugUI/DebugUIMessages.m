@@ -10,6 +10,7 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
@@ -1200,7 +1201,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSUInteger i = 0; i < counter; i++) {
 
         // Random time within last n years. Helpful for filling out a media gallery over time.
-        double yearsMillis = 4.0 * 365.0 * 24.0 * 60.0 * 60.0 * 1000.0;
+        double yearsMillis = 4.0 * kYearsInMillis;
         uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
 
         uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
