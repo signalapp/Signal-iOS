@@ -161,7 +161,7 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could be exported.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid server response.";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
 
 /* Error indicating the a backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup could not upload data.";
@@ -171,6 +171,9 @@
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+
+/* Indicates that the database data is being exported. */
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
 
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
@@ -767,8 +770,11 @@
 /* Accessibilty label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Slutför skapa grupp";
 
+/* Label indicating media gallery is empty */
+"GALLERY_TILES_EMPTY_GALLERY" = "You haven't sent or received any media in this conversation yet.";
+
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loadering Newer Media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media...";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media...";
@@ -973,6 +979,9 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Bildbibliotek";
+
+/* Short sender label for media sent by you */
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
