@@ -377,11 +377,39 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem) {
         if self.fromNavController != nil {
-            // If from conversation settings view, we've already pushed
+            // If we got to the gallery via conversation settings, present the detail view
+            // on top of the tile view
+            //
+            // == ViewController Schematic ==
+            //
+            // [DetailView] <--,
+            // [TileView] -----'
+            // [ConversationSettingsView]
+            // [ConversationView]
+            //
+
             self.presentDetailView(fromViewController: mediaTileViewController, initialDetailItem: mediaGalleryItem, replacingView: tappedView)
         } else {
-            // If from conversation view
-            self.pageViewController!.currentItem = mediaGalleryItem
+            // If we got to the gallery via the conversation view, pop the tile view
+            // to return to the detail view
+            //
+            // == ViewController Schematic ==
+            //
+            // [TileView] -----,
+            // [DetailView] <--'
+            // [ConversationView]
+            //
+
+            guard let pageViewController = self.pageViewController else {
+                owsFail("\(logTag) in \(#function) pageeViewController was unexpectedly nil")
+                self.dismissSelf(animated: true)
+                return
+            }
+
+            pageViewController.currentItem = mediaGalleryItem
+            pageViewController.willBePresentedAgain()
+
+            // TODO fancy zoom animation
             self.popViewController(animated: true)
         }
     }
