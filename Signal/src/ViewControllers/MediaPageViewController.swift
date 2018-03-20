@@ -179,6 +179,10 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     // MARK: View Helpers
 
+    public func willBePresentedAgain() {
+        updateFooterBarButtonItems(isPlayingVideo: false)
+    }
+
     public func wasPresented() {
         let currentViewController = self.currentViewController
 
