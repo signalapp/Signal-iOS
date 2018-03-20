@@ -17,7 +17,9 @@ extern const NSTimeInterval kMonthInterval;
 #define kDayInMs (kHourInMs * 24)
 #define kWeekInMs (kDayInMs * 7)
 #define kMonthInMs (kDayInMs * 30)
-#define kYearsInMs (kDayInMs * 365)
+
+// kYearsInMs is a double to avoid overflow
+#define kYearsInMs (kDayInMs * 365.0)
 
 @interface NSDate (OWS)
 
