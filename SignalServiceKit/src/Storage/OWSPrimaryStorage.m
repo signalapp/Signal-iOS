@@ -57,6 +57,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage];
 }
 
 #pragma mark -

@@ -86,14 +86,10 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     // might want to use a predictable directory so that repeated
     // import attempts can reuse downloads from previous attempts.
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    self.jobTempDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
+    self.jobTempDirPath = [temporaryDirectory stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
 
     if (![OWSFileSystem ensureDirectoryExists:self.jobTempDirPath]) {
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
-        return NO;
-    }
-    if (![OWSFileSystem protectFileOrFolderAtPath:self.jobTempDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not protect jobTempDirPath.", self.logTag);
         return NO;
     }
     return YES;

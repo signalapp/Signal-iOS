@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
+@property (nonatomic, nullable) NSString *backupRestoreRecordName;
+@property (nonatomic, nullable) NSData *backupRestoreEncryptionKey;
+
 @end
 
 #pragma mark -
@@ -608,6 +611,33 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return audioDurationSeconds;
+}
+
+#pragma mark - Update With... Methods
+
+- (void)updateWithBackupRestoreRecordName:(NSString *)recordName encryptionKey:(NSData *)encryptionKey
+{
+    OWSAssert(recordName.length > 0);
+    OWSAssert(encryptionKey.length > 0);
+
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestCopy:transaction
+                                 changeBlock:^(TSAttachmentStream *attachment) {
+                                     [attachment setBackupRestoreRecordName:recordName];
+                                     [attachment setBackupRestoreEncryptionKey:encryptionKey];
+                                 }];
+    }];
+}
+
+- (void)updateWithBackupRestoreComplete
+{
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestCopy:transaction
+                                 changeBlock:^(TSAttachmentStream *attachment) {
+                                     [attachment setBackupRestoreRecordName:nil];
+                                     [attachment setBackupRestoreEncryptionKey:nil];
+                                 }];
+    }];
 }
 
 @end

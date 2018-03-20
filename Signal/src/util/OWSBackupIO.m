@@ -44,6 +44,16 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     return self;
 }
 
+- (nullable NSString *)createTempFile
+{
+    NSString *filePath = [self.jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    if (![OWSFileSystem ensureFileExists:filePath]) {
+        OWSProdLogAndFail(@"%@ could not create temp file.", self.logTag);
+        return nil;
+    }
+    return filePath;
+}
+
 #pragma mark - Encrypt
 
 - (nullable OWSBackupEncryptedItem *)encryptFileAsTempFile:(NSString *)srcFilePath
@@ -92,7 +102,10 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         // TODO: Encrypt the data using key;
         NSData *encryptedData = unencryptedData;
 
-        NSString *dstFilePath = [self.jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+        NSString *_Nullable dstFilePath = [self createTempFile];
+        if (!dstFilePath) {
+            return nil;
+        }
         NSError *error;
         BOOL success = [encryptedData writeToFile:dstFilePath options:NSDataWritingAtomic error:&error];
         if (!success || error) {

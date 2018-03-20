@@ -227,6 +227,21 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (BOOL)ensureFileExists:(NSString *)filePath
+{
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:filePath];
+    if (exists) {
+        return [self protectFileOrFolderAtPath:filePath];
+    } else {
+        BOOL success = [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
+        if (!success) {
+            OWSFail(@"%@ Failed to create file.", self.logTag);
+            return NO;
+        }
+        return [self protectFileOrFolderAtPath:filePath];
+    }
+}
+
 + (BOOL)deleteFile:(NSString *)filePath
 {
     NSError *error;

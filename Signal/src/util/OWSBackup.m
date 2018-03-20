@@ -4,6 +4,7 @@
 
 #import "OWSBackup.h"
 #import "OWSBackupExportJob.h"
+#import "OWSBackupIO.h"
 #import "OWSBackupImportJob.h"
 #import "Signal-Swift.h"
 #import <Curve25519Kit/Randomness.h>
@@ -481,6 +482,149 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             DDLogError(@"%@ Failed to retrieve CloudKit records: %@", self.logTag, error);
         }];
+}
+
+#pragma mark - Lazy Restore
+
+- (NSArray<TSAttachmentStream *> *)attachmentsForLazyRestore
+{
+    NSMutableArray<TSAttachmentStream *> *attachments = [NSMutableArray new];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        id ext = [transaction ext:TSMessageDatabaseViewExtensionName];
+        if (!ext) {
+            OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
+            return;
+        }
+
+        [ext enumerateKeysAndObjectsInGroup:TSLazyRestoreAttachmentsGroup
+                                 usingBlock:^(
+                                     NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
+                                     if (![object isKindOfClass:[TSAttachmentStream class]]) {
+                                         OWSProdLogAndFail(@"%@ Unexpected object: %@ in collection:%@",
+                                             self.logTag,
+                                             [object class],
+                                             collection);
+                                         return;
+                                     }
+                                     [attachments addObject:object];
+                                 }];
+    }];
+    return attachments;
+}
+
+- (NSArray<NSString *> *)attachmentIdsForLazyRestore
+{
+    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        id ext = [transaction ext:TSMessageDatabaseViewExtensionName];
+        if (!ext) {
+            OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
+            return;
+        }
+
+        [ext enumerateKeysInGroup:TSLazyRestoreAttachmentsGroup
+                       usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+                           [attachmentIds addObject:key];
+                       }];
+    }];
+    return attachmentIds;
+}
+
+- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+                     backupIO:(OWSBackupIO *)backupIO
+                   completion:(OWSBackupBoolBlock)completion
+{
+    OWSAssert(attachment);
+    OWSAssert(backupIO);
+    OWSAssert(completion);
+
+    NSString *_Nullable attachmentFilePath = [attachment filePath];
+    if (attachmentFilePath.length < 1) {
+        DDLogError(@"%@ Attachment has invalid file path.", self.logTag);
+        return completion(NO);
+    }
+    if ([NSFileManager.defaultManager fileExistsAtPath:attachmentFilePath]) {
+        DDLogError(@"%@ Attachment already has file.", self.logTag);
+        return completion(NO);
+    }
+
+    NSString *_Nullable recordName = attachment.backupRestoreRecordName;
+    NSData *_Nullable encryptionKey = attachment.backupRestoreEncryptionKey;
+    if (recordName.length < 1 || encryptionKey.length < 1) {
+        return completion(NO);
+    }
+
+    // Use a predictable file path so that multiple "import backup" attempts
+    // will leverage successful file downloads from previous attempts.
+    //
+    // TODO: This will also require imports using a predictable jobTempDirPath.
+    NSString *_Nullable tempFilePath = [backupIO createTempFile];
+    if (!tempFilePath) {
+        return completion(NO);
+    }
+
+    [OWSBackupAPI downloadFileFromCloudWithRecordName:recordName
+        toFileUrl:[NSURL fileURLWithPath:tempFilePath]
+        success:^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self lazyRestoreAttachment:attachment
+                                   backupIO:backupIO
+                          encryptedFilePath:tempFilePath
+                              encryptionKey:encryptionKey
+                                 completion:completion];
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                completion(NO);
+            });
+        }];
+}
+
+- (void)lazyRestoreAttachment:(TSAttachmentStream *)attachment
+                     backupIO:(OWSBackupIO *)backupIO
+            encryptedFilePath:(NSString *)encryptedFilePath
+                encryptionKey:(NSData *)encryptionKey
+                   completion:(OWSBackupBoolBlock)completion
+{
+    OWSAssert(attachment);
+    OWSAssert(backupIO);
+    OWSAssert(encryptedFilePath.length > 0);
+    OWSAssert(encryptionKey.length > 0);
+    OWSAssert(completion);
+
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:encryptedFilePath];
+    if (!data) {
+        DDLogError(@"%@ Could not load encrypted file.", self.logTag);
+        return completion(NO);
+    }
+
+    NSString *_Nullable decryptedFilePath = [backupIO createTempFile];
+    if (!decryptedFilePath) {
+        return completion(NO);
+    }
+
+    if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
+        DDLogError(@"%@ Could not load decrypt file.", self.logTag);
+        return completion(NO);
+    }
+
+    NSString *_Nullable attachmentFilePath = [attachment filePath];
+    if (attachmentFilePath.length < 1) {
+        DDLogError(@"%@ Attachment has invalid file path.", self.logTag);
+        return completion(NO);
+    }
+    NSError *error;
+    BOOL success =
+        [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];
+    if (!success || error) {
+        DDLogError(@"%@ Attachment file could not be restored: %@.", self.logTag, error);
+        return completion(NO);
+    }
+
+    [attachment updateWithBackupRestoreComplete];
+
+    completion(YES);
 }
 
 #pragma mark - Notifications

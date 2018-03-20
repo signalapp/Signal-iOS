@@ -6,6 +6,15 @@ import Foundation
 import SignalServiceKit
 import CloudKit
 
+// We don't worry about atomic writes.  Each backup export
+// will diff against last successful backup.
+//
+// Note that all of our CloudKit records are immutable.
+// "Persistent" records are only uploaded once.
+// "Ephemeral" records are always uploaded to a new record name.
+//
+// TODO: We could store known encryption ids locally to
+// facilitate "resume" of failed backup exports.
 @objc public class OWSBackupAPI: NSObject {
 
     // If we change the record types, we need to ensure indices

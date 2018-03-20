@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns NO IFF the directory does not exist and could not be created.
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath;
 
++ (BOOL)ensureFileExists:(NSString *)filePath;
+
 + (BOOL)deleteFile:(NSString *)filePath;
 
 + (BOOL)deleteFileIfExists:(NSString *)filePath;
