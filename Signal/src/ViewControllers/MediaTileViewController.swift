@@ -84,7 +84,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
         collectionView.register(MediaGalleryCell.self, forCellWithReuseIdentifier: MediaGalleryCell.reuseIdentifier)
         collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
-        collectionView.register(MediaGalleryLoadingHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGalleryLoadingHeader.reuseIdentifier)
+        collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
         collectionView.delegate = self
 
@@ -146,10 +146,22 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     // MARK: UIColletionViewDataSource
 
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        guard galleryDates.count > 0 else {
+            // empty gallery
+            return 1
+        }
+
+        // One for each galleryDate plus a "loading older" and "loading newer" section
         return galleryItems.keys.count + 2
     }
 
     override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
+
+        guard galleryDates.count > 0 else {
+            // empty gallery
+            return 0
+        }
+
         if sectionIdx == kLoadOlderSectionIdx {
             // load older
             return 0
@@ -176,10 +188,22 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
     override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
         let defaultView = UICollectionReusableView()
+
+        guard galleryDates.count > 0 else {
+            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
+
+                owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
+                return defaultView
+            }
+            let title = NSLocalizedString("GALLERY_TILES_EMPTY_GALLERY", comment: "Label indicating media gallery is empty")
+            sectionHeader.configure(title: title)
+            return sectionHeader
+        }
+
         if (kind == UICollectionElementKindSectionHeader) {
             switch indexPath.section {
             case kLoadOlderSectionIdx:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryLoadingHeader.reuseIdentifier, for: indexPath) as? MediaGalleryLoadingHeader else {
+                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
 
                     owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
@@ -188,7 +212,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 sectionHeader.configure(title: title)
                 return sectionHeader
             case loadNewerSectionIdx:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryLoadingHeader.reuseIdentifier, for: indexPath) as? MediaGalleryLoadingHeader else {
+                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
 
                     owsFail("\(logTag) in \(#function) unable to build section header for kLoadOlderSectionIdx")
                     return defaultView
@@ -218,6 +242,11 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         Logger.debug("\(logTag) in \(#function) indexPath: \(indexPath)")
 
         let defaultCell = UICollectionViewCell()
+
+        guard galleryDates.count > 0 else {
+            owsFail("\(logTag) in \(#function) unexpected cell for loadNewerSectionIdx")
+            return defaultCell
+        }
 
         switch indexPath.section {
         case kLoadOlderSectionIdx:
@@ -259,25 +288,27 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                                layout collectionViewLayout: UICollectionViewLayout,
                                referenceSizeForHeaderInSection section: Int) -> CGSize {
 
-        let kHeaderHeight: CGFloat = 50
+        let kMonthHeaderSize: CGSize = CGSize(width: 0, height: 50)
+        let kStaticHeaderSize: CGSize = CGSize(width: 0, height: 100)
+
+        guard galleryDates.count > 0 else {
+            return kStaticHeaderSize
+        }
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return CGSize.zero
+        }
 
         switch section {
         case kLoadOlderSectionIdx:
             // Show "loading older..." iff there is still older data to be fetched
-            guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-                owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
-                return CGSize.zero
-            }
-            return mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : CGSize(width: 0, height: 100)
+            return mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : kStaticHeaderSize
         case loadNewerSectionIdx:
             // Show "loading newer..." iff there is still more recent data to be fetched
-            guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-                owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
-                return CGSize.zero
-            }
-            return mediaGalleryDataSource.hasFetchedMostRecent ? CGSize.zero : CGSize(width: 0, height: 100)
+            return mediaGalleryDataSource.hasFetchedMostRecent ? CGSize.zero : kStaticHeaderSize
         default:
-            return CGSize(width: 0, height: kHeaderHeight)
+            return kMonthHeaderSize
         }
     }
     // MARK: MediaGalleryDelegate
@@ -518,19 +549,20 @@ fileprivate protocol MediaGalleryCellDelegate: class {
     func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem)
 }
 
-fileprivate class MediaGalleryLoadingHeader: UICollectionViewCell {
+fileprivate class MediaGalleryStaticHeader: UICollectionViewCell {
 
-    static let reuseIdentifier = "MediaGalleryLoadingHeader"
+    static let reuseIdentifier = "MediaGalleryStaticHeader"
 
     let label = UILabel()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        // TODO add spinnner, start/stop animating on will/end display
         addSubview(label)
 
-        label.autoCenterInSuperview()
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.autoPinEdgesToSuperviewMargins()
     }
 
     @available(*, unavailable, message: "Unimplemented")
