@@ -555,7 +555,6 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     private var tapGesture: UITapGestureRecognizer!
 
     private let badgeView: UIImageView
-    private let gradientView: GradientView
 
     private var item: MediaGalleryItem?
     public weak var delegate: MediaGalleryCellDelegate?
@@ -570,8 +569,6 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.badgeView = UIImageView()
         badgeView.isHidden = true
 
-        self.gradientView = GradientView(from: .clear, to: UIColor.black.withAlphaComponent(0.5))
-
         super.init(frame: frame)
 
         self.tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
@@ -579,13 +576,9 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.clipsToBounds = true
         self.contentView.addSubview(imageView)
-        self.contentView.addSubview(gradientView)
         self.contentView.addSubview(badgeView)
 
         imageView.autoPinEdgesToSuperviewEdges()
-
-        gradientView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-        gradientView.autoSetDimension(.height, toSize: 16)
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
@@ -604,16 +597,13 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.item = item
         self.imageView.image = item.thumbnailImage
         if item.isVideo {
-            self.gradientView.isHidden = false
             self.badgeView.isHidden = false
             self.badgeView.image = MediaGalleryCell.videoBadgeImage
         } else if item.isAnimated {
-            self.gradientView.isHidden = false
             self.badgeView.isHidden = false
             self.badgeView.image = MediaGalleryCell.animatedBadgeImage
         } else {
             assert(item.isImage)
-            self.gradientView.isHidden = true
             self.badgeView.isHidden = true
         }
 
