@@ -260,12 +260,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeFileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    NSError *error;
+
+    NSString *_Nullable thumbnailPath = self.thumbnailPath;
+    if (thumbnailPath) {
+        [[NSFileManager defaultManager] removeItemAtPath:thumbnailPath error:&error];
+
+        if (error) {
+            DDLogError(@"%@ remove thumbnail errored with: %@", self.logTag, error);
+        }
+    }
+
     NSString *_Nullable filePath = self.filePath;
     if (!filePath) {
         OWSFail(@"%@ Missing path for attachment.", self.logTag);
         return;
     }
-    NSError *error;
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
 
     if (error) {
@@ -345,7 +355,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL) return;
+        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        return;
     }
 
     // TODO proper resolution?
