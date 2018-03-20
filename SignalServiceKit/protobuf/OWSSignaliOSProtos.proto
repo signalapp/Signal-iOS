@@ -1,0 +1,29 @@
+/**
+ * Copyright (C) 2014-2016 Open Whisper Systems
+ *
+ * Licensed according to the LICENSE file in this repository.
+ */
+
+package signalios;
+
+// Signal-iOS
+import "objectivec-descriptor.proto";
+option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignaliOSProtos";
+
+message BackupSnapshot
+{
+    message BackupEntity
+    {
+        enum Type {
+            UNKNOWN = 0;
+            MIGRATION = 1;
+            THREAD = 2;
+            INTERACTION = 3;
+            ATTACHMENT = 4;
+        }
+        optional Type type = 1;
+        optional bytes entityData = 2;
+    }
+
+    repeated BackupEntity entity = 1;
+}

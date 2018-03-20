@@ -6,10 +6,6 @@
 
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosAttachmentPointerBuilder;
-@class OWSSignalServiceProtosBackupSnapshot;
-@class OWSSignalServiceProtosBackupSnapshotBackupEntity;
-@class OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder;
-@class OWSSignalServiceProtosBackupSnapshotBuilder;
 @class OWSSignalServiceProtosCallMessage;
 @class OWSSignalServiceProtosCallMessageAnswer;
 @class OWSSignalServiceProtosCallMessageAnswerBuilder;
@@ -171,17 +167,6 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosGroupContextType) {
 
 BOOL OWSSignalServiceProtosGroupContextTypeIsValidValue(OWSSignalServiceProtosGroupContextType value);
 NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServiceProtosGroupContextType value);
-
-typedef NS_ENUM(SInt32, OWSSignalServiceProtosBackupSnapshotBackupEntityType) {
-  OWSSignalServiceProtosBackupSnapshotBackupEntityTypeUnknown = 0,
-  OWSSignalServiceProtosBackupSnapshotBackupEntityTypeMigration = 1,
-  OWSSignalServiceProtosBackupSnapshotBackupEntityTypeThread = 2,
-  OWSSignalServiceProtosBackupSnapshotBackupEntityTypeInteraction = 3,
-  OWSSignalServiceProtosBackupSnapshotBackupEntityTypeAttachment = 4,
-};
-
-BOOL OWSSignalServiceProtosBackupSnapshotBackupEntityTypeIsValidValue(OWSSignalServiceProtosBackupSnapshotBackupEntityType value);
-NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSignalServiceProtosBackupSnapshotBackupEntityType value);
 
 
 @interface OWSSignalServiceProtosOwssignalServiceProtosRoot : NSObject {
@@ -2237,116 +2222,6 @@ NSString *NSStringFromOWSSignalServiceProtosBackupSnapshotBackupEntityType(OWSSi
 - (UInt32) expireTimer;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) setExpireTimer:(UInt32) value;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) clearExpireTimer;
-@end
-
-#define BackupSnapshot_entity @"entity"
-@interface OWSSignalServiceProtosBackupSnapshot : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  NSMutableArray * entityArray;
-}
-@property (readonly, strong) NSArray<OWSSignalServiceProtosBackupSnapshotBackupEntity*> * entity;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntity*)entityAtIndex:(NSUInteger)index;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) builder;
-+ (OWSSignalServiceProtosBackupSnapshotBuilder*) builder;
-+ (OWSSignalServiceProtosBackupSnapshotBuilder*) builderWithPrototype:(OWSSignalServiceProtosBackupSnapshot*) prototype;
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) toBuilder;
-
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromData:(NSData*) data;
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSSignalServiceProtosBackupSnapshot*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-#define BackupEntity_type @"type"
-#define BackupEntity_entityData @"entityData"
-@interface OWSSignalServiceProtosBackupSnapshotBackupEntity : PBGeneratedMessage<GeneratedMessageProtocol> {
-@private
-  BOOL hasEntityData_:1;
-  BOOL hasType_:1;
-  NSData* entityData;
-  OWSSignalServiceProtosBackupSnapshotBackupEntityType type;
-}
-- (BOOL) hasType;
-- (BOOL) hasEntityData;
-@property (readonly) OWSSignalServiceProtosBackupSnapshotBackupEntityType type;
-@property (readonly, strong) NSData* entityData;
-
-+ (instancetype) defaultInstance;
-- (instancetype) defaultInstance;
-
-- (BOOL) isInitialized;
-- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) builder;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) builder;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) builderWithPrototype:(OWSSignalServiceProtosBackupSnapshotBackupEntity*) prototype;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) toBuilder;
-
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromData:(NSData*) data;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromInputStream:(NSInputStream*) input;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromCodedInputStream:(PBCodedInputStream*) input;
-+ (OWSSignalServiceProtosBackupSnapshotBackupEntity*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-@end
-
-@interface OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder : PBGeneratedMessageBuilder {
-@private
-  OWSSignalServiceProtosBackupSnapshotBackupEntity* resultBackupEntity;
-}
-
-- (OWSSignalServiceProtosBackupSnapshotBackupEntity*) defaultInstance;
-
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clear;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clone;
-
-- (OWSSignalServiceProtosBackupSnapshotBackupEntity*) build;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntity*) buildPartial;
-
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) mergeFrom:(OWSSignalServiceProtosBackupSnapshotBackupEntity*) other;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (BOOL) hasType;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityType) type;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setType:(OWSSignalServiceProtosBackupSnapshotBackupEntityType) value;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearType;
-
-- (BOOL) hasEntityData;
-- (NSData*) entityData;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) setEntityData:(NSData*) value;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntityBuilder*) clearEntityData;
-@end
-
-@interface OWSSignalServiceProtosBackupSnapshotBuilder : PBGeneratedMessageBuilder {
-@private
-  OWSSignalServiceProtosBackupSnapshot* resultBackupSnapshot;
-}
-
-- (OWSSignalServiceProtosBackupSnapshot*) defaultInstance;
-
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) clear;
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) clone;
-
-- (OWSSignalServiceProtosBackupSnapshot*) build;
-- (OWSSignalServiceProtosBackupSnapshot*) buildPartial;
-
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) mergeFrom:(OWSSignalServiceProtosBackupSnapshot*) other;
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
-- (OWSSignalServiceProtosBackupSnapshotBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
-
-- (NSMutableArray<OWSSignalServiceProtosBackupSnapshotBackupEntity*> *)entity;
-- (OWSSignalServiceProtosBackupSnapshotBackupEntity*)entityAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosBackupSnapshotBuilder *)addEntity:(OWSSignalServiceProtosBackupSnapshotBackupEntity*)value;
-- (OWSSignalServiceProtosBackupSnapshotBuilder *)setEntityArray:(NSArray<OWSSignalServiceProtosBackupSnapshotBackupEntity*> *)array;
-- (OWSSignalServiceProtosBackupSnapshotBuilder *)clearEntity;
 @end
 
 
