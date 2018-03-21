@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+
+const NSTimeInterval kSecondInterval = 1;
 const NSTimeInterval kMinuteInterval = 60;
 const NSTimeInterval kHourInterval = 60 * kMinuteInterval;
 const NSTimeInterval kDayInterval = 24 * kHourInterval;

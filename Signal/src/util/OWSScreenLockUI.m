@@ -143,16 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(screenLockTimeout >= 0);
         if (self.appBecameInactiveDate && screenLockInterval < screenLockTimeout) {
             // Don't show 'Screen Lock' if 'Screen Lock' timeout hasn't elapsed.
-            shouldHaveScreenProtection = YES;
-
-            // Check again when screen lock timeout should elapse.
-            NSTimeInterval screenLockRemaining = screenLockTimeout - screenLockInterval + 0.2f;
-            OWSAssert(screenLockRemaining >= 0);
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(screenLockRemaining * NSEC_PER_SEC)),
-                dispatch_get_main_queue(),
-                ^{
-                    [self ensureScreenProtection];
-                });
+            shouldHaveScreenLock = NO;
         } else {
             // Otherwise, show 'Screen Lock'.
             shouldHaveScreenLock = YES;
@@ -160,6 +151,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
+    DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",
+        self.logTag,
+        shouldHaveScreenProtection,
+        shouldHaveScreenLock,
+        shouldShowBlockWindow);
     self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
 
     if (shouldHaveScreenLock) {
