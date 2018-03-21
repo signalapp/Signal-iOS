@@ -22,6 +22,7 @@ import LocalAuthentication
 
     private let OWSScreenLock_Collection = "OWSScreenLock_Collection"
     private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
+    private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
 
     // MARK - Singleton class
 
@@ -37,19 +38,49 @@ import LocalAuthentication
         SwiftSingletons.register(self)
     }
 
+    // MARK: - Properties
+
     @objc public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
+
+        if !OWSStorage.isStorageReady() {
+            owsFail("\(TAG) accessed screen lock state before storage is ready.")
+            return false
+        }
 
         return self.dbConnection.bool(forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection, defaultValue: false)
     }
 
     private func setIsScreenLockEnabled(value: Bool) {
         AssertIsOnMainThread()
+        assert(OWSStorage.isStorageReady())
 
         self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
     }
+
+    @objc public func screenLockTimeout() -> TimeInterval {
+        AssertIsOnMainThread()
+
+        if !OWSStorage.isStorageReady() {
+            owsFail("\(TAG) accessed screen lock state before storage is ready.")
+            return 0
+        }
+
+        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: 0)
+    }
+
+    private func setIsScreenLockEnabled(value: TimeInterval) {
+        AssertIsOnMainThread()
+        assert(OWSStorage.isStorageReady())
+
+        self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
+
+        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+    }
+
+    // MARK: - Methods
 
 //    @objc public func isScreenLockSupported() -> Bool {
 //        AssertIsOnMainThread()
@@ -132,6 +163,30 @@ import LocalAuthentication
                                             completion(nil)
                                         case .cancel:
                                             completion(nil)
+                                        }
+        })
+    }
+
+    @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
+                                            failure: @escaping ((Error) -> Void),
+                                            cancel: @escaping (() -> Void)) {
+        tryToVerifyLocalAuthentication(defaultReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
+                                                                        comment: "Description of how and why Signal iOS uses Touch ID/Face ID to unlock 'screen lock'."),
+                                       touchIdReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK_TOUCH_ID",
+                                                                        comment: "Description of how and why Signal iOS uses Touch ID to unlock 'screen lock'."),
+                                       faceIdReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK_FACE_ID",
+                                                                       comment: "Description of how and why Signal iOS uses Face ID to unlock 'screen lock'."),
+
+                                       completion: { (outcome: OWSScreenLockOutcome) in
+                                        AssertIsOnMainThread()
+
+                                        switch outcome {
+                                        case .failure(let error):
+                                            failure(self.authenticationError(errorDescription: error))
+                                        case .success:
+                                            success()
+                                        case .cancel:
+                                            cancel()
                                         }
         })
     }
@@ -296,16 +351,7 @@ import LocalAuthentication
 
         return context
     }
-    //    /// Fallback button title.
-    //    /// @discussion Allows fallback button title customization. If set to empty string, the button will be hidden.
-    //    ///             A default title "Enter Password" is used when this property is left nil.
-    //    @property (nonatomic, nullable, copy) NSString *localizedFallbackTitle;
-    //
-    //    /// Cancel button title.
-    //    /// @discussion Allows cancel button title customization. A default title "Cancel" is used when
-    //    ///             this property is left nil or is set to empty string.
-    //    @property (nonatomic, nullable, copy) NSString *localizedCancelTitle NS_AVAILABLE(10_12, 10_0);
-    //
+    
     //
     //    typedef NS_ENUM(NSInteger, LAAccessControlOperation)
     //    {

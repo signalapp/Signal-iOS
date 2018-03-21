@@ -1579,6 +1579,21 @@
 /* Description of how and why Signal iOS uses Touch ID to enable 'screen lock'. */
 "SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK_TOUCH_ID" = "Use Touch ID to lock access to Signal.";
 
+/* Description of how and why Signal iOS uses Touch ID/Face ID to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Use Touch ID or Face ID to unlock Screen Lock.";
+
+/* Description of how and why Signal iOS uses Face ID to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK_FACE_ID" = "Use Face ID to unlock Screen Lock.";
+
+/* Description of how and why Signal iOS uses Touch ID to unlock 'screen lock'. */
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK_TOUCH_ID" = "Use Touch ID to unlock Screen Lock.";
+
+/* Message for alert indicating that screen lock unlock was cancelled. */
+"SCREEN_LOCK_UNLOCK_CANCELLED" = "Unlock of Screen Lock was cancelled.";
+
+/* Title for alert indicating that screen lock could not be unlocked. */
+"SCREEN_LOCK_UNLOCK_FAILED" = "Unlock of Screen Lock failed.";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
 
