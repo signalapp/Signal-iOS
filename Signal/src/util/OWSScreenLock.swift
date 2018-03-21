@@ -82,37 +82,6 @@ import LocalAuthentication
 
     // MARK: - Methods
 
-//    @objc public func isScreenLockSupported() -> Bool {
-//        AssertIsOnMainThread()
-//
-//        let context = screenLockContext()
-//
-//        var authError: NSError?
-//        let result = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError)
-//        guard authError == nil else {
-//            Logger.error("\(TAG) could not determine if screen lock is supported: \(String(describing: authError))")
-//            return false
-//        }
-//        return result
-//    }
-
-//    @objc public func supportedBiometryType() -> LABiometryType {
-//        AssertIsOnMainThread()
-//
-//        let context = screenLockContext()
-//
-//        var authError: NSError?
-//        let result = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError)
-//        guard authError == nil else {
-//            Logger.error("\(TAG) could not determine if screen lock is supported: \(String(describing: authError))")
-//            return .none
-//        }
-//        guard let biometryType = context.biometryType else {
-//            return .none
-//        }
-//        return biometryType
-//    }
-
     // On failure, completion is called with an error argument.
     // On success or cancel, completion is called with nil argument.
     // Success and cancel can be differentiated by consulting
@@ -269,7 +238,6 @@ import LocalAuthentication
                 return .failure(error:defaultErrorDescription)
             }
 
-            // TODO: I'm not sure this is necessary.
             if #available(iOS 11.0, *) {
                 switch laError.code {
                 case .biometryNotAvailable:
@@ -321,7 +289,6 @@ import LocalAuthentication
                 owsFail("\(self.TAG) context not interactive.")
                 break
             }
-            // This switch may fall through.
         }
         return .failure(error:defaultErrorDescription)
     }
@@ -351,73 +318,4 @@ import LocalAuthentication
 
         return context
     }
-    
-    //
-    //    typedef NS_ENUM(NSInteger, LAAccessControlOperation)
-    //    {
-    //    /// Access control will be used for item creation.
-    //    LAAccessControlOperationCreateItem,
-    //
-    //    /// Access control will be used for accessing existing item.
-    //    LAAccessControlOperationUseItem,
-    //
-    //    /// Access control will be used for key creation.
-    //    LAAccessControlOperationCreateKey,
-    //
-    //    /// Access control will be used for sign operation with existing key.
-    //    LAAccessControlOperationUseKeySign,
-    //
-    //    /// Access control will be used for data decryption using existing key.
-    //    LAAccessControlOperationUseKeyDecrypt NS_ENUM_AVAILABLE(10_12, 10_0),
-    //
-    //    /// Access control will be used for key exchange.
-    //    LAAccessControlOperationUseKeyKeyExchange NS_ENUM_AVAILABLE(10_12, 10_0),
-    //    } NS_ENUM_AVAILABLE(10_11, 9_0) __WATCHOS_AVAILABLE(3.0) __TVOS_AVAILABLE(10.0);
-    //
-    //
-    //
-    //    typedef NS_ENUM(NSInteger, LAPolicy)
-    //    {
-    //    /// Device owner is going to be authenticated using a biometric method (Touch ID or Face ID).
-    //    ///
-    //    /// @discussion Biometric authentication is required. If the biometry is not available, not enrolled,
-    //    ///             or locked out, then the evaluation of this policy will fail with LAErrorBiometryNotAvailable,
-    //    ///             LAErrorBiometryNotEnrolled or LAErrorBiometryLockout. Biometry can't be used without a passcode,
-    //    ///             i.e. when biometry is available, enrolled and not locked out but passcode is not set, then
-    //    ///             the evaluation will fail with LAErrorPasscodeNotSet.
-    //    ///
-    //    ///             Touch ID authentication dialog contains a cancel button with default title "Cancel"
-    //    ///             which can be customized using localizedCancelTitle property, and a fallback button with
-    //    ///             default title "Enter Password" which can be customized using localizedFallbackTitle
-    //    ///             property. Fallback button is initially hidden and shows up after first unsuccessful
-    //    ///             Touch ID attempt. Tapping either button causes evaluatePolicy call to fail, returning
-    //    ///             a distinct error code: LAErrorUserCancel or LAErrorUserFallback.
-    //    ///
-    //    ///             Face ID authentication begins with animating HUD. If it succeeds at first attempt,
-    //    ///             the HUD will disappear and no other UI is shown. If the first attempt fails, then
-    //    ///             LocalAuthentication will show a dialog with two buttons: "Cancel" and "Try Face ID Again".
-    //    ///             After second failure, the buttons are "Cancel" and "Enter Password" with the same
-    //    //              semantics as in the case of Touch ID.
-    //    ///
-    //    ///             Biometric authentication will get locked after 5 unsuccessful attempts. After that,
-    //    ///             users have to unlock it by entering passcode. The passcode can be entered either at
-    //    ///             Lock Screen or even in app by the means of LAPolicyDeviceOwnerAuthentication.
-    //    ///             The Lock Screen unlock is preferred user experience because we generaly don't want users to
-    //    ///             enter their passcode at app's request.
-    //    LAPolicyDeviceOwnerAuthenticationWithBiometrics NS_ENUM_AVAILABLE(10_12_2, 8_0) __WATCHOS_AVAILABLE(3.0) __TVOS_AVAILABLE(10.0) = kLAPolicyDeviceOwnerAuthenticationWithBiometrics,
-    //
-    //    /// Device owner is going to be authenticated by biometry or device passcode.
-    //    ///
-    //    /// @discussion Biometric or passcode authentication is required. If the biometry is available, enrolled and
-    //    ///             not locked out, users are asked for it first. Otherwise they are asked to enter device
-    //    ///             passcode. If passcode is not enabled, policy evaluation will fail with LAErrorPasscodeNotSet.
-    //    ///
-    //    ///             Biometric authentication dialog behaves similarly as the one used by
-    //    ///             LAPolicyDeviceOwnerAuthenticationWithBiometrics. However, instead of "Enter Password"
-    //    ///             button there is "Enter Passcode" button which, when tapped, switches the authentication
-    //    ///             method and allows users to enter device passcode.
-    //    ///
-    //    ///             Passcode authentication will get locked after 6 unsuccessful attempts with progressively
-    //    ///             increased backoff delay.
-    //    LAPolicyDeviceOwnerAuthentication NS_ENUM_AVAILABLE(10_11, 9_0) = kLAPolicyDeviceOwnerAuthentication
 }
