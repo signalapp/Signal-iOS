@@ -203,6 +203,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             currentViewController.playVideo()
         }
     }
+
     @objc
     public func didPressAllMediaButton(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
@@ -255,7 +256,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private func updateFooterBarButtonItems(isPlayingVideo: Bool) {
         // TODO do we still need this? seems like a vestige
         // from when media detail view was used for attachment approval
-        if (self.footerBar == nil) {
+        if self.footerBar == nil {
             owsFail("\(logTag) No footer bar visible.")
             return
         }
@@ -453,7 +454,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        mediaGalleryDataSource.dismissSelf(animated: isAnimated, completion: completion)
+        mediaGalleryDataSource.dismissDetailView(self, animated: isAnimated, completion: completion)
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
