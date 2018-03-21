@@ -167,26 +167,19 @@ NS_ASSUME_NONNULL_BEGIN
                             }]];
     [contents addSection:twoFactorAuthSection];
 
-    //    BOOL showScreenLockUI = OWSScreenLock.sharedManager.isScreenLockSupported;
-    //#ifdef DEBUG
-    //    showScreenLockUI = YES;
-    //#endif
-    BOOL showScreenLockUI = YES;
-    if (showScreenLockUI) {
-        OWSTableSection *screenLockSection = [OWSTableSection new];
-        screenLockSection.headerTitle = NSLocalizedString(
-            @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
-        screenLockSection.footerTitle = NSLocalizedString(
-            @"SETTINGS_SCREEN_LOCK_SECTION_FOOTER", @"Footer for the 'screen lock' section of the privacy settings.");
-        [screenLockSection
-            addItem:[OWSTableItem
-                        switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
-                                               @"Label for the 'enable screen lock' switch of the privacy settings.")
-                                      isOn:OWSScreenLock.sharedManager.isScreenLockEnabled
-                                    target:self
-                                  selector:@selector(isScreenLockEnabledDidChange:)]];
-        [contents addSection:screenLockSection];
-    }
+    OWSTableSection *screenLockSection = [OWSTableSection new];
+    screenLockSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
+    screenLockSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_SCREEN_LOCK_SECTION_FOOTER", @"Footer for the 'screen lock' section of the privacy settings.");
+    [screenLockSection
+        addItem:[OWSTableItem
+                    switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
+                                           @"Label for the 'enable screen lock' switch of the privacy settings.")
+                                  isOn:OWSScreenLock.sharedManager.isScreenLockEnabled
+                                target:self
+                              selector:@selector(isScreenLockEnabledDidChange:)]];
+    [contents addSection:screenLockSection];
 
     self.contents = contents;
 }

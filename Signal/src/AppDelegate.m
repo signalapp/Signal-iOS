@@ -12,6 +12,7 @@
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSNavigationController.h"
+#import "OWSScreenLockUI.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
@@ -66,15 +67,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
 
-// Unlike UIApplication.applicationState, this state is
-// updated conservatively, e.g. the flag is cleared during
-// "will enter background."
-@property (nonatomic) BOOL appIsInactive;
-@property (nonatomic, nullable) NSDate *appBecameInactiveDate;
-@property (nonatomic) UIWindow *screenBlockingWindow;
-@property (nonatomic) BOOL hasUnlockedScreenLock;
-@property (nonatomic) BOOL isShowingScreenLockUI;
-
 @end
 
 #pragma mark -
@@ -87,8 +79,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogWarn(@"%@ applicationDidEnterBackground.", self.logTag);
 
     [DDLog flushLog];
-
-    self.appIsInactive = YES;
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
@@ -200,7 +190,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
 
-    [self prepareScreenProtection];
+    [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
 
     // Ensure OWSContactsSyncing is instantiated.
     [OWSContactsSyncing sharedManager];
@@ -216,10 +206,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(screenLockDidChange:)
-                                                 name:OWSScreenLock.ScreenLockDidChange
                                                object:nil];
 
     DDLogInfo(@"%@ application: didFinishLaunchingWithOptions completed.", self.logTag);
@@ -604,8 +590,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [self handleActivation];
     }];
 
-    self.appIsInactive = NO;
-
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
 
@@ -722,8 +706,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
-
-    self.appIsInactive = YES;
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
     [AppReadiness runNowOrWhenAppIsReady:^{
@@ -1152,8 +1134,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self ensureRootViewController];
 
     [OWSBackup.sharedManager setup];
-
-    [self ensureScreenProtection];
 }
 
 - (void)registrationStateDidChange
@@ -1179,8 +1159,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         // For non-legacy users, read receipts are on by default.
         [OWSReadReceiptManager.sharedManager setAreReadReceiptsEnabled:YES];
     }
-
-    [self ensureScreenProtection];
 }
 
 - (void)registrationLockDidChange:(NSNotification *)notification
@@ -1215,151 +1193,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
-
-    [self ensureScreenProtection];
-}
-
-#pragma mark - Screen Lock and Protection
-
-- (void)setAppIsInactive:(BOOL)appIsInactive
-{
-    if (appIsInactive) {
-        if (!_appIsInactive) {
-            // Whenever app becomes inactive, clear this state.
-            self.hasUnlockedScreenLock = NO;
-
-            // Note the time when app became inactive.
-            self.appBecameInactiveDate = [NSDate new];
-        }
-    }
-
-    _appIsInactive = appIsInactive;
-
-    [self ensureScreenProtection];
-}
-
-- (void)ensureScreenProtection
-{
-    OWSAssertIsOnMainThread();
-
-    if (!AppReadiness.isAppReady) {
-        [AppReadiness runNowOrWhenAppIsReady:^{
-            [self ensureScreenProtection];
-        }];
-        return;
-    }
-
-    // Don't show 'Screen Protection' if:
-    //
-    // * App is active or...
-    // * 'Screen Protection' is not enabled.
-    BOOL shouldHaveScreenProtection = (self.appIsInactive && Environment.preferences.screenSecurityIsEnabled);
-
-    BOOL shouldHaveScreenLock = NO;
-    if (self.appIsInactive) {
-        // Don't show 'Screen Lock' if app is inactive.
-    } else if (![TSAccountManager isRegistered]) {
-        // Don't show 'Screen Lock' if user is not registered.
-    } else if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
-        // Don't show 'Screen Lock' if 'Screen Lock' isn't enabled.
-    } else if (self.hasUnlockedScreenLock) {
-        // Don't show 'Screen Lock' if 'Screen Lock' has been unlocked.
-    } else if (!self.appBecameInactiveDate) {
-        // Show 'Screen Lock' if app hasn't become inactive yet (just launched).
-        shouldHaveScreenLock = YES;
-    } else {
-        OWSAssert(self.appBecameInactiveDate);
-
-        NSTimeInterval screenLockInterval = fabs([self.appBecameInactiveDate timeIntervalSinceNow]);
-        NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
-        OWSAssert(screenLockInterval >= 0);
-        OWSAssert(screenLockTimeout >= 0);
-        if (self.appBecameInactiveDate && screenLockInterval < screenLockTimeout) {
-            // Don't show 'Screen Lock' if 'Screen Lock' timeout hasn't elapsed.
-            shouldHaveScreenProtection = YES;
-
-            // Check again when screen lock timeout should elapse.
-            NSTimeInterval screenLockRemaining = screenLockTimeout - screenLockInterval + 0.2f;
-            OWSAssert(screenLockRemaining >= 0);
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(screenLockRemaining * NSEC_PER_SEC)),
-                dispatch_get_main_queue(),
-                ^{
-                    [self ensureScreenProtection];
-                });
-        } else {
-            // Otherwise, show 'Screen Lock'.
-            shouldHaveScreenLock = YES;
-        }
-    }
-
-    BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
-    self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
-
-    if (shouldHaveScreenLock) {
-        if (!self.isShowingScreenLockUI) {
-            self.isShowingScreenLockUI = YES;
-
-            [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
-                DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
-                self.isShowingScreenLockUI = NO;
-                self.hasUnlockedScreenLock = YES;
-                [self ensureScreenProtection];
-            }
-                failure:^(NSError *error) {
-                    DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
-                    self.isShowingScreenLockUI = NO;
-
-                    [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
-                }
-                cancel:^{
-                    DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
-                    self.isShowingScreenLockUI = NO;
-
-                    [self showScreenLockFailureAlertWithMessage:
-                              NSLocalizedString(@"SCREEN_LOCK_UNLOCK_CANCELLED",
-                                  @"Message for alert indicating that screen lock unlock was cancelled.")];
-                }];
-        }
-    }
-}
-
-- (void)showScreenLockFailureAlertWithMessage:(NSString *)message
-{
-    OWSAssertIsOnMainThread();
-
-    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
-                                      @"Title for alert indicating that screen lock could not be unlocked.")
-                          message:message
-                      buttonTitle:nil
-                     buttonAction:^(UIAlertAction *action) {
-                         // After the alert, re-show the unlock UI.
-                         [self ensureScreenProtection];
-                     }];
-}
-
-- (void)screenLockDidChange:(NSNotification *)notification
-{
-    [self ensureScreenProtection];
-}
-
-// 'Screen Blocking' window obscures the app screen:
-//
-// * In the app switcher.
-// * During 'Screen Lock' unlock process.
-- (void)prepareScreenProtection
-{
-    OWSAssertIsOnMainThread();
-
-    UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
-    window.hidden = YES;
-    window.opaque = YES;
-    window.userInteractionEnabled = NO;
-    window.windowLevel = CGFLOAT_MAX;
-    window.backgroundColor = UIColor.ows_materialBlueColor;
-    window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-    self.screenBlockingWindow = window;
 }
 
 @end

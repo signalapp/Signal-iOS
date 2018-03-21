@@ -173,7 +173,7 @@ import LocalAuthentication
         let completion = { (outcome: OWSScreenLockOutcome) in
             switch outcome {
             case .failure(let error):
-                Logger.error("\(self.TAG) enable screen lock failed with error: \(error)")
+                Logger.error("\(self.TAG) local authentication failed with error: \(error)")
             default:
                 break
             }
@@ -189,13 +189,13 @@ import LocalAuthentication
         var authError: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &authError)
         if !canEvaluatePolicy || authError != nil {
-            Logger.error("\(TAG) could not determine if screen lock is supported: \(String(describing: authError))")
+            Logger.error("\(TAG) could not determine if local authentication is supported: \(String(describing: authError))")
 
             let outcome = self.outcomeForLAError(errorParam: authError,
                                                  defaultErrorDescription: defaultErrorDescription)
             switch outcome {
             case .success:
-                owsFail("\(self.TAG) unexpected success")
+                owsFail("\(self.TAG) local authentication unexpected success")
                 completion(.failure(error:defaultErrorDescription))
             case .cancel, .failure:
                 completion(outcome)
@@ -214,14 +214,14 @@ import LocalAuthentication
 
         context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: localizedReason) { success, evaluateError in
             if success {
-                Logger.info("\(self.TAG) enable screen lock succeeded.")
+                Logger.info("\(self.TAG) local authentication succeeded.")
                 completion(.success)
             } else {
                 let outcome = self.outcomeForLAError(errorParam: evaluateError,
                                                      defaultErrorDescription: defaultErrorDescription)
                 switch outcome {
                 case .success:
-                    owsFail("\(self.TAG) unexpected success")
+                    owsFail("\(self.TAG) local authentication unexpected success")
                     completion(.failure(error:defaultErrorDescription))
                 case .cancel, .failure:
                     completion(outcome)
