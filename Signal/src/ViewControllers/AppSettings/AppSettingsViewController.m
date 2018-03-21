@@ -91,6 +91,10 @@
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
 
     [self updateTableContents];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showPrivacy];
+    });
 }
 
 - (void)viewWillAppear:(BOOL)animated

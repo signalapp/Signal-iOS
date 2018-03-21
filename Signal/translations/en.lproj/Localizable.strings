@@ -1537,6 +1537,48 @@
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
 
+/* Title for alert indicating that screen lock could not be disabled. */
+"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+
+/* Title for alert indicating that screen lock could not be enabled. */
+"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+
+/* Indicates that an unknown error occurred while using Touch ID or Face ID. */
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Touch ID and Face ID could not be accessed.";
+
+/* Indicates that Touch ID/Face ID authentication failed. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication with Touch ID or Face ID failed.";
+
+/* Indicates that Touch ID/Face ID is 'locked out' on this device due to authentication failures. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Touch ID or Face ID is locked out; too many failures.";
+
+/* Indicates that Touch ID/Face ID are not available on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Touch ID or Face ID is not available on this device.";
+
+/* Indicates that Touch ID/Face ID is not configured on this device. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Touch ID or Face ID is not configured.";
+
+/* Indicates that Touch ID/Face ID passcode is not set. */
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Touch ID or Face ID is not available; no passcode has been set.";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID to disable 'screen lock'. */
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Use Touch ID or Face ID to disable Screen Lock.";
+
+/* Description of how and why Signal iOS uses Face ID to disable 'screen lock'. */
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK_FACE_ID" = "Use Face ID to disable Screen Lock.";
+
+/* Description of how and why Signal iOS uses Touch ID to disable 'screen lock'. */
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK_TOUCH_ID" = "Use Touch ID to disable Screen Lock.";
+
+/* Description of how and why Signal iOS uses Touch ID/Face ID to enable 'screen lock'. */
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Use Touch ID or Face ID to lock access to Signal.";
+
+/* Description of how and why Signal iOS uses Face ID to enable 'screen lock'. */
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK_FACE_ID" = "Use Face ID to lock access to Signal.";
+
+/* Description of how and why Signal iOS uses Touch ID to enable 'screen lock'. */
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK_TOUCH_ID" = "Use Touch ID to lock access to Signal.";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
 
@@ -1746,6 +1788,15 @@
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
+
+/* Footer for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal access with iOS Touch ID or Face ID.";
+
+/* Title for the 'screen lock' section of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+
+/* Label for the 'enable screen lock' switch of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";

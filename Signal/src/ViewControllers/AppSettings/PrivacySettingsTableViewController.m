@@ -22,12 +22,27 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
 
+    [self observeNotifications];
+
     [self updateTableContents];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [self updateTableContents];
+}
+
+- (void)observeNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(screenLockDidChange:)
+                                                 name:OWSScreenLock.ScreenLockDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Table Contents
@@ -152,6 +167,27 @@ NS_ASSUME_NONNULL_BEGIN
                             }]];
     [contents addSection:twoFactorAuthSection];
 
+    //    BOOL showScreenLockUI = OWSScreenLock.sharedManager.isScreenLockSupported;
+    //#ifdef DEBUG
+    //    showScreenLockUI = YES;
+    //#endif
+    BOOL showScreenLockUI = YES;
+    if (showScreenLockUI) {
+        OWSTableSection *screenLockSection = [OWSTableSection new];
+        screenLockSection.headerTitle = NSLocalizedString(
+            @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
+        screenLockSection.footerTitle = NSLocalizedString(
+            @"SETTINGS_SCREEN_LOCK_SECTION_FOOTER", @"Footer for the 'screen lock' section of the privacy settings.");
+        [screenLockSection
+            addItem:[OWSTableItem
+                        switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
+                                               @"Label for the 'enable screen lock' switch of the privacy settings.")
+                                      isOn:OWSScreenLock.sharedManager.isScreenLockEnabled
+                                    target:self
+                                  selector:@selector(isScreenLockEnabledDidChange:)]];
+        [contents addSection:screenLockSection];
+    }
+
     self.contents = contents;
 }
 
@@ -255,6 +291,48 @@ NS_ASSUME_NONNULL_BEGIN
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
     vc.mode = OWS2FASettingsMode_Status;
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)isScreenLockEnabledDidChange:(UISwitch *)sender
+{
+    BOOL shouldBeEnabled = sender.isOn;
+
+    if (shouldBeEnabled == OWSScreenLock.sharedManager.isScreenLockEnabled) {
+        DDLogError(@"%@ ignoring redundant screen lock.", self.logTag);
+        return;
+    }
+
+    DDLogInfo(@"%@ trying to set is screen lock enabled: %@", self.logTag, @(shouldBeEnabled));
+
+    __weak typeof(self) weakSelf = self;
+    if (shouldBeEnabled) {
+        [OWSScreenLock.sharedManager tryToEnableScreenLockWithCompletion:^(NSError *_Nullable error) {
+            [weakSelf updateTableContents];
+
+            if (error) {
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_ENABLE_FAILED",
+                                                  @"Title for alert indicating that screen lock could not be enabled.")
+                                      message:error.localizedDescription];
+            }
+        }];
+    } else {
+        [OWSScreenLock.sharedManager tryToDisableScreenLockWithCompletion:^(NSError *_Nullable error) {
+            [weakSelf updateTableContents];
+
+            if (error) {
+                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_DISABLE_FAILED",
+                                                  @"Title for alert indicating that screen lock could not be disabled.")
+                                      message:error.localizedDescription];
+            }
+        }];
+    }
+}
+
+- (void)screenLockDidChange:(NSNotification *)notification
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self updateTableContents];
 }
 
 @end
