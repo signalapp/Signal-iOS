@@ -158,13 +158,13 @@
 "BACK_BUTTON" = "Zurück";
 
 /* Error indicating the a backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Sicherungsdaten konnten nicht exportiert werden.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ungültige Serverantwort";
 
 /* Error indicating the a backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Sicherungsdaten konnten nicht hochgeladen werden.";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Sicherung wird bereinigt";
@@ -173,7 +173,7 @@
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Sicherung wird vorbereitet";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Daten werden exportiert";
 
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Sicherung wird exportiert";
@@ -771,10 +771,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "Gruppenerstellung abschließen";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You haven't sent or received any media in this conversation yet.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Du hast in dieser Unterhaltung bisher keine Medieninhalte gesendet oder empfangen.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Neuere Medieninhalte werden geladen …";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Ältere Medieninhalte werden geladen …";
@@ -981,7 +981,7 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fotogalerie";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Du";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Diesen Monat";
