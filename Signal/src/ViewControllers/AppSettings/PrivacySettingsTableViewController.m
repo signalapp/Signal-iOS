@@ -9,6 +9,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
+#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 
@@ -53,19 +54,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak PrivacySettingsTableViewController *weakSelf = self;
 
-    [contents
-        addSection:[OWSTableSection
-                       sectionWithTitle:nil
-                                  items:@[
-                                      [OWSTableItem disclosureItemWithText:
-                                                        NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE",
-                                                            @"Label for the block list section of the settings view")
-                                                               actionBlock:^{
-                                                                   [weakSelf showBlocklist];
-                                                               }],
-                                  ]]];
+    OWSTableSection *blocklistSection = [OWSTableSection new];
+    blocklistSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE", @"Label for the block list section of the settings view");
+    [blocklistSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_TITLE",
+                                                         @"Label for the block list section of the settings view")
+                                         actionBlock:^{
+                                             [weakSelf showBlocklist];
+                                         }]];
+    [contents addSection:blocklistSection];
 
     OWSTableSection *readReceiptsSection = [OWSTableSection new];
+    readReceiptsSection.headerTitle
+        = NSLocalizedString(@"SETTINGS_READ_RECEIPT", @"Label for the 'read receipts' setting.");
     readReceiptsSection.footerTitle = NSLocalizedString(
         @"SETTINGS_READ_RECEIPTS_SECTION_FOOTER", @"An explanation of the 'read receipts' setting.");
     [readReceiptsSection
@@ -75,6 +77,36 @@ NS_ASSUME_NONNULL_BEGIN
                                           target:weakSelf
                                         selector:@selector(didToggleReadReceiptsSwitch:)]];
     [contents addSection:readReceiptsSection];
+
+    OWSTableSection *screenLockSection = [OWSTableSection new];
+    screenLockSection.headerTitle = NSLocalizedString(
+        @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
+    screenLockSection.footerTitle = NSLocalizedString(
+        @"SETTINGS_SCREEN_LOCK_SECTION_FOOTER", @"Footer for the 'screen lock' section of the privacy settings.");
+    [screenLockSection
+        addItem:[OWSTableItem
+                    switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
+                                           @"Label for the 'enable screen lock' switch of the privacy settings.")
+                                  isOn:OWSScreenLock.sharedManager.isScreenLockEnabled
+                                target:self
+                              selector:@selector(isScreenLockEnabledDidChange:)]];
+    [contents addSection:screenLockSection];
+
+    if (OWSScreenLock.sharedManager.isScreenLockEnabled) {
+        OWSTableSection *screenLockTimeoutSection = [OWSTableSection new];
+        uint32_t screenLockTimeout = (uint32_t)round(OWSScreenLock.sharedManager.screenLockTimeout);
+        NSString *screenLockTimeoutString = [NSString formatDurationSeconds:screenLockTimeout useShortFormat:YES];
+        [screenLockTimeoutSection
+            addItem:[OWSTableItem
+                        disclosureItemWithText:
+                            NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
+                                @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
+                                    detailText:screenLockTimeoutString
+                                   actionBlock:^{
+                                       [weakSelf showScreenLockTimeoutUI];
+                                   }]];
+        [contents addSection:screenLockTimeoutSection];
+    }
 
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
@@ -166,20 +198,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 [weakSelf show2FASettings];
                             }]];
     [contents addSection:twoFactorAuthSection];
-
-    OWSTableSection *screenLockSection = [OWSTableSection new];
-    screenLockSection.headerTitle = NSLocalizedString(
-        @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
-    screenLockSection.footerTitle = NSLocalizedString(
-        @"SETTINGS_SCREEN_LOCK_SECTION_FOOTER", @"Footer for the 'screen lock' section of the privacy settings.");
-    [screenLockSection
-        addItem:[OWSTableItem
-                    switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_SWITCH_LABEL",
-                                           @"Label for the 'enable screen lock' switch of the privacy settings.")
-                                  isOn:OWSScreenLock.sharedManager.isScreenLockEnabled
-                                target:self
-                              selector:@selector(isScreenLockEnabledDidChange:)]];
-    [contents addSection:screenLockSection];
 
     self.contents = contents;
 }
@@ -326,6 +344,31 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self updateTableContents];
+}
+
+- (void)showScreenLockTimeoutUI
+{
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    UIAlertController *controller = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT",
+                                     @"Label for the 'screen lock activity timeout' setting of the privacy settings.")
+                         message:nil
+                  preferredStyle:UIAlertControllerStyleActionSheet];
+    for (NSNumber *timeoutValue in OWSScreenLock.sharedManager.screenLockTimeouts) {
+        uint32_t screenLockTimeout = (uint32_t)round(timeoutValue.doubleValue);
+        NSString *screenLockTimeoutString = [NSString formatDurationSeconds:screenLockTimeout useShortFormat:NO];
+
+        [controller addAction:[UIAlertAction actionWithTitle:screenLockTimeoutString
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction *action) {
+                                                         [OWSScreenLock.sharedManager
+                                                             setScreenLockTimeout:screenLockTimeout];
+                                                     }]];
+    }
+    [controller addAction:[OWSAlerts cancelAction]];
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:controller animated:YES completion:nil];
 }
 
 @end

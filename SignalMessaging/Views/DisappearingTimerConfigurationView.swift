@@ -57,7 +57,7 @@ public class DisappearingTimerConfigurationView: UIView {
         imageView.contentMode = .scaleAspectFit
 
         self.label = UILabel()
-        label.text = OWSDisappearingMessagesConfiguration.string(forDurationSeconds: durationSeconds, useShortFormat: true)
+        label.text = NSString.formatDurationSeconds(durationSeconds, useShortFormat: true)
         label.font = UIFont.systemFont(ofSize: 10)
         label.textColor = UIColor.white
         label.textAlignment = .center
@@ -81,7 +81,7 @@ public class DisappearingTimerConfigurationView: UIView {
         // Accessability
         self.accessibilityLabel = NSLocalizedString("DISAPPEARING_MESSAGES_LABEL", comment: "Accessibility label for disappearing messages")
         let hintFormatString = NSLocalizedString("DISAPPEARING_MESSAGES_HINT", comment: "Accessibility hint that contains current timeout information")
-        let durationString = OWSDisappearingMessagesConfiguration.string(forDurationSeconds: durationSeconds, useShortFormat: false)
+        let durationString = NSString.formatDurationSeconds(durationSeconds, useShortFormat: false)
         self.accessibilityHint = String(format: hintFormatString, durationString)
 
         // Layout

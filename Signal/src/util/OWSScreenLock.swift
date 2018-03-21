@@ -84,7 +84,7 @@ import LocalAuthentication
         return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: defaultTimeout)
     }
 
-    private func setIsScreenLockEnabled(value: TimeInterval) {
+    @objc public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
         assert(OWSStorage.isStorageReady())
 

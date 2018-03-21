@@ -1804,6 +1804,9 @@
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
 
+/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+
 /* Footer for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal access with iOS Touch ID or Face ID.";
 
