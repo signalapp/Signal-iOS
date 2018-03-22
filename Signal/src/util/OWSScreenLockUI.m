@@ -146,7 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (!self.appBecameInactiveDate) {
         // Show 'Screen Lock' if app has just launched.
         shouldHaveScreenLock = YES;
-        DDLogVerbose(@"%@, shouldHaveScreenLock 2: %d", self.logTag, self.appIsInBackground);
     } else {
         OWSAssert(self.appBecameInactiveDate);
 
@@ -160,7 +159,6 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             // Otherwise, show 'Screen Lock'.
             shouldHaveScreenLock = YES;
-            DDLogVerbose(@"%@, shouldHaveScreenLock 1: %d", self.logTag, self.appIsInBackground);
         }
     }
 
