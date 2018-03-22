@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (OWSScreenLock.sharedManager.isScreenLockEnabled) {
         OWSTableSection *screenLockTimeoutSection = [OWSTableSection new];
         uint32_t screenLockTimeout = (uint32_t)round(OWSScreenLock.sharedManager.screenLockTimeout);
-        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout];
+        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout useShortFormat:YES];
         [screenLockTimeoutSection
             addItem:[OWSTableItem
                         disclosureItemWithText:
@@ -357,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
                   preferredStyle:UIAlertControllerStyleActionSheet];
     for (NSNumber *timeoutValue in OWSScreenLock.sharedManager.screenLockTimeouts) {
         uint32_t screenLockTimeout = (uint32_t)round(timeoutValue.doubleValue);
-        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout];
+        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout useShortFormat:NO];
 
         [controller addAction:[UIAlertAction actionWithTitle:screenLockTimeoutString
                                                        style:UIAlertActionStyleDefault
@@ -371,13 +371,13 @@ NS_ASSUME_NONNULL_BEGIN
     [fromViewController presentViewController:controller animated:YES completion:nil];
 }
 
-- (NSString *)formatScreenLockTimeout:(NSInteger)value
+- (NSString *)formatScreenLockTimeout:(NSInteger)value useShortFormat:(BOOL)useShortFormat
 {
     if (value <= 1) {
         return NSLocalizedString(@"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE",
             @"Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately.");
     }
-    return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:YES];
+    return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:useShortFormat];
 }
 
 @end
