@@ -624,21 +624,21 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Update With... Methods
 
 - (void)updateWithLazyRestoreFragment:(OWSBackupFragment *)lazyRestoreFragment
+                          transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(lazyRestoreFragment);
+    OWSAssert(transaction);
 
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if (!lazyRestoreFragment.uniqueId) {
-            // If metadata hasn't been saved yet, save now.
-            [lazyRestoreFragment saveWithTransaction:transaction];
+    if (!lazyRestoreFragment.uniqueId) {
+        // If metadata hasn't been saved yet, save now.
+        [lazyRestoreFragment saveWithTransaction:transaction];
 
-            OWSAssert(lazyRestoreFragment.uniqueId);
-        }
-        [self applyChangeToSelfAndLatestCopy:transaction
-                                 changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                                 }];
-    }];
+        OWSAssert(lazyRestoreFragment.uniqueId);
+    }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSAttachmentStream *attachment) {
+                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                             }];
 }
 
 - (void)updateWithLazyRestoreComplete

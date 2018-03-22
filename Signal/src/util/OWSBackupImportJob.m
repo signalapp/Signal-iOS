@@ -255,53 +255,43 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 {
     DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentsItems.count);
 
-    NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
-
-    NSUInteger count = 0;
-    for (OWSBackupFragment *item in self.attachmentsItems) {
-        if (self.isComplete) {
-            return;
-        }
-        if (item.recordName.length < 1) {
-            DDLogError(@"%@ attachment was not downloaded.", self.logTag);
-            // Attachment-related errors are recoverable and can be ignored.
-            continue;
-        }
-        if (item.relativeFilePath.length < 1) {
-            DDLogError(@"%@ attachment missing relative file path.", self.logTag);
-            // Attachment-related errors are recoverable and can be ignored.
-            continue;
-        }
-
-        count++;
-        [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
-                                                @"Indicates that the backup import data is being restored.")
-                                   progress:@(count / (CGFloat)self.attachmentsItems.count)];
-
-        NSString *dstFilePath = [attachmentsDirPath stringByAppendingPathComponent:item.relativeFilePath];
-        if ([NSFileManager.defaultManager fileExistsAtPath:dstFilePath]) {
-            DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
-            continue;
-        }
-        NSString *dstDirPath = [dstFilePath stringByDeletingLastPathComponent];
-        if (![NSFileManager.defaultManager fileExistsAtPath:dstDirPath]) {
-            if (![OWSFileSystem ensureDirectoryExists:dstDirPath]) {
-                DDLogError(@"%@ couldn't create directory for file restore: %@.", self.logTag, dstFilePath);
-                continue;
+    __block NSUInteger count = 0;
+    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (OWSBackupFragment *item in self.attachmentsItems) {
+            if (self.isComplete) {
+                return;
             }
-        }
-        @autoreleasepool {
-            if (![self.backupIO decryptFileAsFile:item.downloadFilePath
-                                      dstFilePath:dstFilePath
-                                    encryptionKey:item.encryptionKey]) {
-                DDLogError(@"%@ attachment could not be restored.", self.logTag);
+            if (item.recordName.length < 1) {
+                DDLogError(@"%@ attachment was not downloaded.", self.logTag);
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
+            if (item.attachmentId.length < 1) {
+                DDLogError(@"%@ attachment missing attachment id.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            if (item.relativeFilePath.length < 1) {
+                DDLogError(@"%@ attachment missing relative file path.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            TSAttachmentStream *_Nullable attachment =
+                [TSAttachmentStream fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
+            if (!attachment) {
+                DDLogError(@"%@ attachment to restore could not be found.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            [attachment updateWithLazyRestoreFragment:item transaction:transaction];
+            count++;
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
+                                                    @"Indicates that the backup import data is being restored.")
+                                       progress:@(count / (CGFloat)self.attachmentsItems.count)];
         }
+    }];
 
-        DDLogError(@"%@ restored file: %@.", self.logTag, item.relativeFilePath);
-    }
+    DDLogError(@"%@ enqueued lazy restore of %zd files.", self.logTag, count);
 }
 
 - (void)restoreDatabaseWithCompletion:(OWSBackupJobBoolCompletion)completion

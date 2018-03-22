@@ -616,9 +616,11 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
-        DDLogError(@"%@ Could not load decrypt file.", self.logTag);
-        return completion(NO);
+    @autoreleasepool {
+        if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
+            DDLogError(@"%@ Could not load decrypt file.", self.logTag);
+            return completion(NO);
+        }
     }
 
     NSString *_Nullable attachmentFilePath = [attachment filePath];
