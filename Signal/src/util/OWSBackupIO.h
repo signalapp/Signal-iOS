@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithJobTempDirPath:(NSString *)jobTempDirPath;
 
+- (NSString *)generateTempFilePath;
+
 - (nullable NSString *)createTempFile;
 
 #pragma mark - Encrypt

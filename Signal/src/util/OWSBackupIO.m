@@ -44,9 +44,14 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
     return self;
 }
 
+- (NSString *)generateTempFilePath
+{
+    return [self.jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+}
+
 - (nullable NSString *)createTempFile
 {
-    NSString *filePath = [self.jobTempDirPath stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
+    NSString *filePath = [self generateTempFilePath];
     if (![OWSFileSystem ensureFileExists:filePath]) {
         OWSProdLogAndFail(@"%@ could not create temp file.", self.logTag);
         return nil;

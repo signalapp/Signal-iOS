@@ -259,7 +259,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentsItems.count);
 
     __block NSUInteger count = 0;
-    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    YapDatabaseConnection *dbConnection = self.primaryStorage.newDatabaseConnection;
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSBackupFragment *item in self.attachmentsItems) {
             if (self.isComplete) {
                 return;

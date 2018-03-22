@@ -490,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *recordNames = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id ext = [transaction ext:TSMessageDatabaseViewExtensionName];
+        id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
             OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
             return;
@@ -524,7 +524,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id ext = [transaction ext:TSMessageDatabaseViewExtensionName];
+        id ext = [transaction ext:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
         if (!ext) {
             OWSProdLogAndFail(@"%@ Could not load database view.", self.logTag);
             return;
@@ -570,10 +570,7 @@ NS_ASSUME_NONNULL_BEGIN
     // will leverage successful file downloads from previous attempts.
     //
     // TODO: This will also require imports using a predictable jobTempDirPath.
-    NSString *_Nullable tempFilePath = [backupIO createTempFile];
-    if (!tempFilePath) {
-        return completion(NO);
-    }
+    NSString *tempFilePath = [backupIO generateTempFilePath];
 
     [OWSBackupAPI downloadFileFromCloudWithRecordName:lazyRestoreFragment.recordName
         toFileUrl:[NSURL fileURLWithPath:tempFilePath]
@@ -611,10 +608,7 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    NSString *_Nullable decryptedFilePath = [backupIO createTempFile];
-    if (!decryptedFilePath) {
-        return completion(NO);
-    }
+    NSString *decryptedFilePath = [backupIO generateTempFilePath];
 
     @autoreleasepool {
         if (![backupIO decryptFileAsFile:encryptedFilePath dstFilePath:decryptedFilePath encryptionKey:encryptionKey]) {
@@ -628,6 +622,13 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogError(@"%@ Attachment has invalid file path.", self.logTag);
         return completion(NO);
     }
+
+    NSString *attachmentDirPath = [attachmentFilePath stringByDeletingLastPathComponent];
+    if (![OWSFileSystem ensureDirectoryExists:attachmentDirPath]) {
+        DDLogError(@"%@ Couldn't create directory for attachment file.", self.logTag);
+        return completion(NO);
+    }
+
     NSError *error;
     BOOL success =
         [NSFileManager.defaultManager moveItemAtPath:decryptedFilePath toPath:attachmentFilePath error:&error];
