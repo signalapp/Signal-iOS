@@ -69,8 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Update With... Methods
 
 // Marks attachment as needing "lazy backup restore."
-- (void)updateWithLazyRestoreFragment:(OWSBackupFragment *)lazyRestoreFragment
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 // Marks attachment as having completed "lazy backup restore."
 - (void)updateWithLazyRestoreComplete;
 

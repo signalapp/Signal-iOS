@@ -623,8 +623,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithLazyRestoreFragment:(OWSBackupFragment *)lazyRestoreFragment
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(lazyRestoreFragment);
     OWSAssert(transaction);

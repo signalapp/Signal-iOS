@@ -219,7 +219,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                             @"Indicates that the backup import data is being downloaded.")
                                progress:@(progress)];
 
-    // Use a predictable file path so that multiple "import backup" attempts
+    // TODO: Use a predictable file path so that multiple "import backup" attempts
     // will leverage successful file downloads from previous attempts.
     //
     // TODO: This will also require imports using a predictable jobTempDirPath.
@@ -287,7 +287,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
-            [attachment updateWithLazyRestoreFragment:item transaction:transaction];
+            [attachment markForLazyRestoreWithFragment:item transaction:transaction];
             count++;
             [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
                                                     @"Indicates that the backup import data is being restored.")
