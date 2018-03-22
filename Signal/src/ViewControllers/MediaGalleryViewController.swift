@@ -174,7 +174,7 @@ protocol MediaGalleryDataSource: class {
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
 
     func showAllMedia(focusedItem: MediaGalleryItem)
-    func dismissDetailView(_ pageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
+    func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
 }
 
 class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
@@ -423,11 +423,11 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
-    public func dismissDetailView(_ pageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
+    public func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
         self.view.isUserInteractionEnabled = false
         UIApplication.shared.isStatusBarHidden = false
 
-        guard let detailView = pageViewController.view else {
+        guard let detailView = mediaDetailViewController.view else {
             owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: false, completion: completion)
             return

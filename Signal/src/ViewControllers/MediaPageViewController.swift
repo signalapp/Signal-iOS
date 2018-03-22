@@ -454,7 +454,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
-        mediaGalleryDataSource.dismissDetailView(self, animated: isAnimated, completion: completion)
+        mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated, completion: completion)
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {
