@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (OWSScreenLock.sharedManager.isScreenLockEnabled) {
         OWSTableSection *screenLockTimeoutSection = [OWSTableSection new];
         uint32_t screenLockTimeout = (uint32_t)round(OWSScreenLock.sharedManager.screenLockTimeout);
-        NSString *screenLockTimeoutString = [NSString formatDurationSeconds:screenLockTimeout useShortFormat:YES];
+        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout];
         [screenLockTimeoutSection
             addItem:[OWSTableItem
                         disclosureItemWithText:
@@ -111,10 +111,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                                               isOn:[Environment.preferences screenSecurityIsEnabled]
-                                                             target:weakSelf
-                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
+    [screenSecuritySection
+        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+                                            // If 'Screen Lock' is enabled, 'Screen Protection' is auto-enabled.
+                                            isOn:([Environment.preferences screenSecurityIsEnabled]
+                                                     || OWSScreenLock.sharedManager.isScreenLockEnabled)
+                                       isEnabled:!OWSScreenLock.sharedManager.isScreenLockEnabled
+                                          target:weakSelf
+                                        selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
     
     OWSTableSection *removeMetadataSection = [OWSTableSection new];
@@ -172,14 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:callKitSection];
     }
 
-    OWSTableSection *historyLogsSection = [OWSTableSection new];
-    historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
-    [historyLogsSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
-                                                         actionBlock:^{
-                                                             [weakSelf clearHistoryLogs];
-                                                         }]];
-    [contents addSection:historyLogsSection];
-
     OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
     twoFactorAuthSection.headerTitle = NSLocalizedString(
         @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
@@ -198,6 +194,14 @@ NS_ASSUME_NONNULL_BEGIN
                                 [weakSelf show2FASettings];
                             }]];
     [contents addSection:twoFactorAuthSection];
+
+    OWSTableSection *historyLogsSection = [OWSTableSection new];
+    historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
+    [historyLogsSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_CLEAR_HISTORY", @"")
+                                                         actionBlock:^{
+                                                             [weakSelf clearHistoryLogs];
+                                                         }]];
+    [contents addSection:historyLogsSection];
 
     self.contents = contents;
 }
@@ -357,7 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
                   preferredStyle:UIAlertControllerStyleActionSheet];
     for (NSNumber *timeoutValue in OWSScreenLock.sharedManager.screenLockTimeouts) {
         uint32_t screenLockTimeout = (uint32_t)round(timeoutValue.doubleValue);
-        NSString *screenLockTimeoutString = [NSString formatDurationSeconds:screenLockTimeout useShortFormat:NO];
+        NSString *screenLockTimeoutString = [self formatScreenLockTimeout:screenLockTimeout];
 
         [controller addAction:[UIAlertAction actionWithTitle:screenLockTimeoutString
                                                        style:UIAlertActionStyleDefault
@@ -369,6 +373,15 @@ NS_ASSUME_NONNULL_BEGIN
     [controller addAction:[OWSAlerts cancelAction]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentViewController:controller animated:YES completion:nil];
+}
+
+- (NSString *)formatScreenLockTimeout:(NSInteger)value
+{
+    if (value <= 1) {
+        return NSLocalizedString(@"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE",
+            @"Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately.");
+    }
+    return [NSString formatDurationSeconds:(uint32_t)value useShortFormat:YES];
 }
 
 @end
