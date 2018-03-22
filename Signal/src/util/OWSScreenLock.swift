@@ -10,16 +10,18 @@ import LocalAuthentication
     public enum OWSScreenLockOutcome {
         case success
         case cancel
+//        case userCancel
+//        case otherCancel
         case failure(error:String)
+//        case permanentFailure(error:String)
     }
 
-    @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
     @objc public let screenLockTimeouts = [
+        5 * kSecondInterval,
+        15 * kSecondInterval,
+        30 * kSecondInterval,
         1 * kMinuteInterval,
         5 * kMinuteInterval,
-        15 * kMinuteInterval,
-        30 * kMinuteInterval,
-        1 * kHourInterval,
         0
     ]
 
@@ -76,7 +78,8 @@ import LocalAuthentication
             return 0
         }
 
-        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: screenLockTimeoutDefault)
+        let defaultTimeout = screenLockTimeouts[0]
+        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: defaultTimeout)
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
