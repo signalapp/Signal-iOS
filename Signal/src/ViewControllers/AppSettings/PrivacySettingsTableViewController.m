@@ -111,14 +111,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *screenSecuritySection = [OWSTableSection new];
     screenSecuritySection.headerTitle = NSLocalizedString(@"SETTINGS_SECURITY_TITLE", @"Section header");
     screenSecuritySection.footerTitle = NSLocalizedString(@"SETTINGS_SCREEN_SECURITY_DETAIL", nil);
-    [screenSecuritySection
-        addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
-                                            // If 'Screen Lock' is enabled, 'Screen Protection' is auto-enabled.
-                                            isOn:([Environment.preferences screenSecurityIsEnabled]
-                                                     || OWSScreenLock.sharedManager.isScreenLockEnabled)
-                                       isEnabled:!OWSScreenLock.sharedManager.isScreenLockEnabled
-                                          target:weakSelf
-                                        selector:@selector(didToggleScreenSecuritySwitch:)]];
+    [screenSecuritySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_SCREEN_SECURITY", @"")
+                                                               isOn:[Environment.preferences screenSecurityIsEnabled]
+                                                             target:weakSelf
+                                                           selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
     
     OWSTableSection *removeMetadataSection = [OWSTableSection new];
