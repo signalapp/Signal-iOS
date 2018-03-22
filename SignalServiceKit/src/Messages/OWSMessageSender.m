@@ -206,7 +206,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
         [strongSelf.message updateWithSendingError:error];
 
-        DDLogDebug(@"%@ failed with error: %@", strongSelf.logTag, error);
+        DDLogDebug(@"%@ failed with error.", strongSelf.logTag);
         aFailureHandler(error);
 
         [strongSelf markAsComplete];
@@ -262,7 +262,7 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
         onceFlag = YES;
 
         if (![error isRetryable] || [error isFatal]) {
-            DDLogInfo(@"%@ Skipping retry due to terminal error: %@", self.logTag, error);
+            DDLogInfo(@"%@ Skipping retry due to terminal error.", self.logTag);
             self.failureHandler(error);
             return;
         }
@@ -1028,7 +1028,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            DDLogInfo(@"%@ sending to recipient: %@, failed with error: %@", self.logTag, recipient.uniqueId, error);
+            DDLogInfo(@"%@ sending to recipient: %@, failed with error.", self.logTag, recipient.uniqueId);
             [DDLog flushLog];
 
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
