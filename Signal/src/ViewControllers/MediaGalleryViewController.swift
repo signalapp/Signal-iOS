@@ -175,6 +175,8 @@ protocol MediaGalleryDataSource: class {
 
     func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
+
+    func delete(message: TSMessage)
 }
 
 class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
@@ -182,6 +184,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     private var pageViewController: MediaPageViewController?
 
     private let uiDatabaseConnection: YapDatabaseConnection
+    private let editingDatabaseConnection: YapDatabaseConnection
     private let mediaGalleryFinder: OWSMediaGalleryFinder
 
     private var initialDetailItem: MediaGalleryItem?
@@ -199,6 +202,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.thread = thread
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
         self.uiDatabaseConnection = uiDatabaseConnection
+
+        self.editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+
         self.options = options
         self.mediaGalleryFinder = OWSMediaGalleryFinder(thread: thread)
 
@@ -631,6 +637,12 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                 Logger.debug("\(self.logTag) in \(#function) fetching set: \(unfetchedSet)")
                 let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
                 self.mediaGalleryFinder.enumerateMediaMessages(range: nsRange, transaction: transaction) { (message: TSMessage) in
+
+                    guard !self.deletedMessages.contains(message) else {
+                        Logger.debug("\(self.logTag) skipping \(message) which has been deleted.")
+                        return
+                    }
+
                     guard let item: MediaGalleryItem = self.buildGalleryItem(message: message, transaction: transaction) else {
                         owsFail("\(self.logTag) in \(#function) unexpectedly failed to buildGalleryItem")
                         return
@@ -698,6 +710,65 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                 completionBlock(addedSections, addedItems)
             }
         }
+    }
+
+    var deletedMessages: Set<TSMessage> = Set()
+    func delete(message: TSMessage) {
+        Logger.info("\(logTag) in \(#function) with message: \(String(describing: message.uniqueId)) attachmentId: \(String(describing: message.attachmentIds.firstObject))")
+
+        // TODO put this somewhere reasonable...
+        self.mediaTileViewController.collectionView!.layoutIfNeeded()
+
+        self.editingDatabaseConnection.asyncReadWrite { transaction in
+            message.remove(with: transaction)
+        }
+
+        self.deletedMessages.insert(message)
+
+        var deletedSections: IndexSet = IndexSet()
+        var deletedIndexPaths: [IndexPath] = []
+
+        guard let itemIndex = galleryItems.index(where: { $0.message == message }) else {
+            owsFail("\(logTag) in \(#function) removing unknown item.")
+            return
+        }
+        let item: MediaGalleryItem = galleryItems[itemIndex]
+
+        self.galleryItems.remove(at: itemIndex)
+
+        guard let sectionIndex = sectionDates.index(where: { $0 == item.galleryDate }) else {
+            owsFail("\(logTag) in \(#function) item with unknown date.")
+            return
+        }
+
+        guard var sectionItems = self.sections[item.galleryDate] else {
+            owsFail("\(logTag) in \(#function) item with unknown section")
+            return
+        }
+
+        if sectionItems == [item] {
+            // Last item in section. Delete section.
+            self.sections[item.galleryDate] = nil
+            self.sectionDates.remove(at: sectionIndex)
+
+            deletedSections.insert(sectionIndex + 1)
+            deletedIndexPaths.append(IndexPath(row: 0, section: sectionIndex + 1))
+        } else {
+            guard let sectionRowIndex = sectionItems.index(of: item) else {
+                owsFail("\(logTag) in \(#function) item with unknown sectionRowIndex")
+                return
+            }
+
+            sectionItems.remove(at: sectionRowIndex)
+            self.sections[item.galleryDate] = sectionItems
+
+            deletedIndexPaths.append(IndexPath(row: sectionRowIndex, section: sectionIndex + 1))
+        }
+
+        // TODO? notify pager view
+
+        // notify tile view    
+        self.mediaTileViewController.updatedDataSource(deletedSections: deletedSections, deletedItems: deletedIndexPaths)
     }
 
     let kGallerySwipeLoadBatchSize: UInt = 5

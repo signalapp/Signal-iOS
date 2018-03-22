@@ -440,8 +440,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return viewController
     }
 
-    // MARK: MediaDetailViewControllerDelegate
-
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         // currentVC
@@ -455,6 +453,28 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated, completion: completion)
+    }
+
+    // MARK: MediaDetailViewControllerDelegate
+
+    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete conversationViewItem: ConversationViewItem) {
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
+        guard let message = conversationViewItem.interaction as? TSMessage else {
+            owsFail("\(logTag) in \(#function) unexpected interaction: \(type(of: conversationViewItem))")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
+        dismissSelf(animated: true) {
+            mediaGalleryDataSource.delete(message: message)
+        }
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {

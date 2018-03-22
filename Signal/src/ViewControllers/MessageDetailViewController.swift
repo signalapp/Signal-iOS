@@ -29,6 +29,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     let mode: MessageMetadataViewMode
     let viewItem: ConversationViewItem
     var message: TSMessage
+    var wasDeleted: Bool = false
 
     var mediaMessageView: MediaMessageView?
 
@@ -622,6 +623,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         updateDBConnectionAndMessageToLatest()
 
+        guard !wasDeleted else {
+            // Item was deleted. Don't bother re-rendering, it will fail and we'll soon be dismissed.
+            return
+        }
         updateContent()
     }
 

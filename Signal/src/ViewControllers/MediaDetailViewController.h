@@ -17,7 +17,9 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 
 @protocol MediaDetailViewControllerDelegate <NSObject>
 
-- (void)dismissSelfAnimated:(BOOL)isAnimated completion:(void (^_Nullable)(void))completionBlock;
+- (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
+    requestDeleteConversationViewItem:(ConversationViewItem *)conversationViewItem;
+
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
                    isPlayingVideo:(BOOL)isPlayingVideo;
 

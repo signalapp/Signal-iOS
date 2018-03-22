@@ -145,6 +145,19 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
     // MARK: UIColletionViewDataSource
 
+    public func updatedDataSource(deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpetedly nil")
+            return
+        }
+
+        // If collectionView hasn't been laid out yet, it won't have the sections/rows to remove.
+        collectionView.performBatchUpdates({
+            collectionView.deleteSections(deletedSections)
+            collectionView.deleteItems(at: deletedItems)
+        })
+    }
+
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
         guard galleryDates.count > 0 else {
             // empty gallery

@@ -411,35 +411,27 @@ NS_ASSUME_NONNULL_BEGIN
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
     [actionSheet
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
-                                           style:UIAlertActionStyleDestructive
-                                         handler:^(UIAlertAction *action) {
-                                             OWSAssert([self.presentingViewController
-                                                 isKindOfClass:[UINavigationController class]]);
-                                             UINavigationController *navController
-                                                 = (UINavigationController *)self.presentingViewController;
+        addAction:[UIAlertAction
+                      actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                style:UIAlertActionStyleDestructive
+                              handler:^(UIAlertAction *action) {
+                                  [self.delegate mediaDetailViewController:self
+                                         requestDeleteConversationViewItem:self.viewItem];
 
-                                             if ([navController.topViewController
-                                                     isKindOfClass:[ConversationViewController class]]) {
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                             } else if ([navController.topViewController
-                                                            isKindOfClass:[MessageDetailViewController class]]) {
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                                 [navController popViewControllerAnimated:YES];
-                                             } else {
-                                                 OWSFail(@"Unexpected presentation context.");
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                             }
-                                         }]];
+                                  // TODO maybe this would be more straight forward if the MessageDetailVC was the
+                                  // deleteDelegate
+                                  if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
+                                      UINavigationController *navController
+                                          = (UINavigationController *)self.presentingViewController;
+                                      if ([navController.topViewController
+                                              isKindOfClass:[MessageDetailViewController class]]) {
+                                          MessageDetailViewController *messageDetailViewController
+                                              = (MessageDetailViewController *)navController.topViewController;
+                                          messageDetailViewController.wasDeleted = YES;
+                                          [navController popViewControllerAnimated:YES];
+                                      }
+                                  }
+                              }]];
 
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
