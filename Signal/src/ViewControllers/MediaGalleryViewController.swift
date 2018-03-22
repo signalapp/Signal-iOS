@@ -174,7 +174,7 @@ protocol MediaGalleryDataSource: class {
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
 
     func showAllMedia(focusedItem: MediaGalleryItem)
-    func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)?)
+    func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
 }
 
 class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
@@ -282,6 +282,10 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.loadViewIfNeeded()
         self.presentationView.image = initialDetailItem.fullSizedImage
         self.applyInitialMediaViewConstraints()
+
+        // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
+        pageViewController.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.presentationView.alpha = 1
 
         // We want to animate the tapped media from it's position in the previous VC
         // to it's resting place in the center of this view controller.
@@ -405,8 +409,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
             //
 
             guard let pageViewController = self.pageViewController else {
-                owsFail("\(logTag) in \(#function) pageeViewController was unexpectedly nil")
-                self.dismissSelf(animated: true)
+                owsFail("\(logTag) in \(#function) pageViewController was unexpectedly nil")
+                self.dismiss(animated: true)
+
                 return
             }
 
@@ -418,11 +423,11 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
-    public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
+    public func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
         self.view.isUserInteractionEnabled = false
         UIApplication.shared.isStatusBarHidden = false
 
-        guard let detailView = pageViewController?.view else {
+        guard let detailView = mediaDetailViewController.view else {
             owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: false, completion: completion)
             return
