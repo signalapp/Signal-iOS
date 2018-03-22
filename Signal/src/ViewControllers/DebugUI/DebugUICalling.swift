@@ -27,26 +27,30 @@ class DebugUICalling: DebugUIPage {
         }
 
         let sectionItems = [
-            OWSTableItem(title:"Send 'hangup' for old call") {
+            OWSTableItem(title: "Send 'hangup' for old call") { [weak self] in
+                guard let strongSelf = self else { return }
+
                 let kFakeCallId = UInt64(12345)
                 let hangupMessage = OWSCallHangupMessage(callId: kFakeCallId)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
 
-                self.messageSender.sendPromise(message: callMessage).then {
-                    Logger.debug("\(self.logTag) Successfully sent hangup call message to \(thread.contactIdentifier())")
+                strongSelf.messageSender.sendPromise(message: callMessage).then {
+                    Logger.debug("\(strongSelf.logTag) Successfully sent hangup call message to \(thread.contactIdentifier())")
                 }.catch { error in
-                    Logger.error("\(self.logTag) failed to send hangup call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("\(strongSelf.logTag) failed to send hangup call message to \(thread.contactIdentifier()) with error: \(error)")
                 }
             },
-            OWSTableItem(title:"Send 'busy' for old call") {
+            OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
+                guard let strongSelf = self else { return }
+
                 let kFakeCallId = UInt64(12345)
                 let busyMessage = OWSCallBusyMessage(callId: kFakeCallId)
                 let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
 
-                self.messageSender.sendPromise(message: callMessage).then {
-                    Logger.debug("\(self.logTag) Successfully sent busy call message to \(thread.contactIdentifier())")
+                strongSelf.messageSender.sendPromise(message: callMessage).then {
+                    Logger.debug("\(strongSelf.logTag) Successfully sent busy call message to \(thread.contactIdentifier())")
                 }.catch { error in
-                    Logger.error("\(self.logTag) failed to send busy call message to \(thread.contactIdentifier()) with error: \(error)")
+                    Logger.error("\(strongSelf.logTag) failed to send busy call message to \(thread.contactIdentifier()) with error: \(error)")
                 }
             }
         ]

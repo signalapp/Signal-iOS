@@ -304,7 +304,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super removeWithTransaction:transaction];
 
     for (NSString *attachmentId in self.attachmentIds) {
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
+        TSAttachment *_Nullable attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if (!attachment) {
+            OWSProdLogAndFail(@"%@ couldn't load interaction's attachment for deletion.", self.logTag);
+            continue;
+        }
         [attachment removeWithTransaction:transaction];
     };
 
