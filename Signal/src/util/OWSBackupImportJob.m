@@ -129,12 +129,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                             return;
                         }
 
-                        [weakSelf restoreAttachmentFiles];
-
-                        if (weakSelf.isComplete) {
-                            return;
-                        }
-
                         [weakSelf restoreDatabaseWithCompletion:^(BOOL restoreDatabaseSuccess) {
                             if (!restoreDatabaseSuccess) {
                                 [weakSelf
@@ -160,6 +154,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 if (weakSelf.isComplete) {
                                     return;
                                 }
+
+                                [weakSelf restoreAttachmentFiles];
+
+                                if (weakSelf.isComplete) {
+                                    return;
+                                }
+
+                                // Kick off lazy restore.
+                                [OWSBackupLazyRestoreJob run];
 
                                 [weakSelf succeed];
                             }];

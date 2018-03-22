@@ -9,8 +9,6 @@ import SignalServiceKit
 @objc
 public class OWSBackupLazyRestoreJob: NSObject {
 
-    let TAG = "[OWSBackupLazyRestoreJob]"
-
     let primaryStorage: OWSPrimaryStorage
 
     private var jobTempDirPath: String?
@@ -43,10 +41,9 @@ public class OWSBackupLazyRestoreJob: NSObject {
     private func restoreAttachments() {
         let temporaryDirectory = NSTemporaryDirectory()
         let jobTempDirPath = (temporaryDirectory as NSString).appendingPathComponent(NSUUID().uuidString)
-        //            let jobTempDirPath = temporaryDirectory.appendingPathComponent(UUID().uuidString)
 
         guard OWSFileSystem.ensureDirectoryExists(jobTempDirPath) else {
-            Logger.error("\(TAG) could not create temp directory.")
+            Logger.error("\(logTag) could not create temp directory.")
             return
         }
 
@@ -55,6 +52,11 @@ public class OWSBackupLazyRestoreJob: NSObject {
         let backupIO = OWSBackupIO(jobTempDirPath: jobTempDirPath)
 
         let attachmentIds = OWSBackup.shared().attachmentIdsForLazyRestore()
+        guard attachmentIds.count > 0 else {
+            Logger.info("\(logTag) No attachments need lazy restore.")
+            return
+        }
+        Logger.info("\(logTag) Lazy restoring \(attachmentIds.count) attachments.")
         self.tryToRestoreNextAttachment(attachmentIds: attachmentIds, backupIO: backupIO)
     }
 
@@ -62,12 +64,12 @@ public class OWSBackupLazyRestoreJob: NSObject {
         var attachmentIdsCopy = attachmentIds
         guard let attachmentId = attachmentIdsCopy.last else {
             // This job is done.
-            Logger.verbose("\(TAG) job is done.")
+            Logger.verbose("\(logTag) job is done.")
             return
         }
         attachmentIdsCopy.removeLast()
         guard let attachment = TSAttachmentStream.fetch(uniqueId: attachmentId) else {
-            Logger.warn("\(TAG) could not load attachment.")
+            Logger.warn("\(logTag) could not load attachment.")
             // Not necessarily an error.
             // The attachment might have been deleted since the job began.
             // Continue trying to restore the other attachments.
@@ -78,9 +80,9 @@ public class OWSBackupLazyRestoreJob: NSObject {
                                                  backupIO: backupIO,
                                                  completion: { (success) in
                                                     if success {
-                                                        Logger.info("\(self.TAG) restored attachment.")
+                                                        Logger.info("\(self.logTag) restored attachment.")
                                                     } else {
-                                                        Logger.warn("\(self.TAG) could not restore attachment.")
+                                                        Logger.warn("\(self.logTag) could not restore attachment.")
                                                     }
                                                 // Continue trying to restore the other attachments.
                                                 self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, backupIO: backupIO)

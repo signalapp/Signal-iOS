@@ -362,7 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
         return;
     }
 
@@ -649,6 +649,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      [attachment setLazyRestoreFragmentId:nil];
                                  }];
     }];
+
+    [self ensureThumbnail];
 }
 
 @end
