@@ -26,7 +26,9 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @property (nonatomic) NSData *encryptionKey;
 
-// This property is only set for certain types of manifest item;
+// This property is only set for certain types of manifest item,
+// namely attachments where we need to know where the attachment's
+// file should reside relative to the attachments folder.
 @property (nonatomic, nullable) NSString *relativeFilePath;
 
 // This property is only set if the manifest item is downloaded.

@@ -276,6 +276,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
             continue;
         }
+        NSString *dstDirPath = [dstFilePath stringByDeletingLastPathComponent];
+        if (![NSFileManager.defaultManager fileExistsAtPath:dstDirPath]) {
+            if (![OWSFileSystem ensureDirectoryExists:dstDirPath]) {
+                DDLogError(@"%@ couldn't create directory for file restore: %@.", self.logTag, dstFilePath);
+                continue;
+            }
+        }
         @autoreleasepool {
             if (![self.backupIO decryptFileAsFile:item.downloadFilePath
                                       dstFilePath:dstFilePath
