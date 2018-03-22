@@ -109,6 +109,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [allItems addObjectsFromArray:self.databaseItems];
     [allItems addObjectsFromArray:self.attachmentsItems];
 
+    // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
+    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (OWSBackupManifestItem *item in allItems) {
+            [item saveWithTransaction:transaction];
+        }
+    }];
+
     __weak OWSBackupImportJob *weakSelf = self;
     [weakSelf
         downloadFilesFromCloud:allItems

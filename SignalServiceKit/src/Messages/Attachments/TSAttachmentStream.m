@@ -26,8 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
-@property (nonatomic, nullable) NSString *backupRestoreRecordName;
-@property (nonatomic, nullable) NSData *backupRestoreEncryptionKey;
+@property (nonatomic, nullable) NSString *backupRestoreMetadataId;
 
 @end
 
@@ -613,18 +612,30 @@ NS_ASSUME_NONNULL_BEGIN
     return audioDurationSeconds;
 }
 
+- (nullable OWSBackupManifestItem *)backupRestoreMetadata
+{
+    if (!self.backupRestoreMetadataId) {
+        return nil;
+    }
+    return [OWSBackupManifestItem fetchObjectWithUniqueID:self.backupRestoreMetadataId];
+}
+
 #pragma mark - Update With... Methods
 
-- (void)updateWithBackupRestoreRecordName:(NSString *)recordName encryptionKey:(NSData *)encryptionKey
+- (void)updateWithBackupRestoreMetadata:(OWSBackupManifestItem *)backupRestoreMetadata
 {
-    OWSAssert(recordName.length > 0);
-    OWSAssert(encryptionKey.length > 0);
+    OWSAssert(backupRestoreMetadata);
 
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        if (!backupRestoreMetadata.uniqueId) {
+            // If metadata hasn't been saved yet, save now.
+            [backupRestoreMetadata saveWithTransaction:transaction];
+
+            OWSAssert(backupRestoreMetadata.uniqueId);
+        }
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setBackupRestoreRecordName:recordName];
-                                     [attachment setBackupRestoreEncryptionKey:encryptionKey];
+                                     [attachment setBackupRestoreMetadataId:backupRestoreMetadata.uniqueId];
                                  }];
     }];
 }
@@ -634,8 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setBackupRestoreRecordName:nil];
-                                     [attachment setBackupRestoreEncryptionKey:nil];
+                                     [attachment setBackupRestoreMetadataId:nil];
                                  }];
     }];
 }

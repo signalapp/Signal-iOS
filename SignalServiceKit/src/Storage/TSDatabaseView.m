@@ -354,8 +354,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSAttachmentStream *attachmentStream = (TSAttachmentStream *)object;
-        if (attachmentStream.backupRestoreRecordName.length > 0
-            && attachmentStream.backupRestoreEncryptionKey.length > 0) {
+        if (attachmentStream.backupRestoreMetadata) {
             return TSLazyRestoreAttachmentsGroup;
         } else {
             return nil;

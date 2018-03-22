@@ -3,6 +3,7 @@
 //
 
 #import "DataSource.h"
+#import "OWSBackupManifestItem.h"
 #import "TSAttachment.h"
 
 #if TARGET_OS_IPHONE
@@ -34,10 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSDate *creationTimestamp;
 
-// Optional properties.  Set only for attachments which
-// need "lazy backup restore."
-@property (nonatomic, readonly, nullable) NSString *backupRestoreRecordName;
-@property (nonatomic, readonly, nullable) NSData *backupRestoreEncryptionKey;
+// Optional property.  Only set for attachments which need "lazy backup restore."
+@property (nonatomic, readonly, nullable) NSString *backupRestoreMetadataId;
 
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
@@ -67,10 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSError *)migrateToSharedData;
 
+- (nullable OWSBackupManifestItem *)backupRestoreMetadata;
+
 #pragma mark - Update With... Methods
 
 // Marks attachment as needing "lazy backup restore."
-- (void)updateWithBackupRestoreRecordName:(NSString *)recordName encryptionKey:(NSData *)encryptionKey;
+- (void)updateWithBackupRestoreMetadata:(OWSBackupManifestItem *)backupRestoreMetadata;
 // Marks attachment as having completed "lazy backup restore."
 - (void)updateWithBackupRestoreComplete;
 

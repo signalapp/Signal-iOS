@@ -20,12 +20,6 @@ NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
-@implementation OWSBackupManifestItem
-
-@end
-
-#pragma mark -
-
 @implementation OWSBackupManifestContents
 
 @end

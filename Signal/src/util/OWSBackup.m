@@ -507,14 +507,14 @@ NS_ASSUME_NONNULL_BEGIN
                                          return;
                                      }
                                      TSAttachmentStream *attachmentStream = object;
-                                     if (attachmentStream.backupRestoreRecordName.length < 1) {
+                                     if (!attachmentStream.backupRestoreMetadata) {
                                          OWSProdLogAndFail(@"%@ Invalid object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
                                          return;
                                      }
-                                     [recordNames addObject:attachmentStream.backupRestoreRecordName];
+                                     [recordNames addObject:attachmentStream.backupRestoreMetadata.recordName];
                                  }];
     }];
     return recordNames;
@@ -556,9 +556,13 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    NSString *_Nullable recordName = attachment.backupRestoreRecordName;
-    NSData *_Nullable encryptionKey = attachment.backupRestoreEncryptionKey;
-    if (recordName.length < 1 || encryptionKey.length < 1) {
+    OWSBackupManifestItem *_Nullable backupRestoreMetadata = attachment.backupRestoreMetadata;
+    if (!backupRestoreMetadata) {
+        DDLogWarn(@"%@ Attachment missing lazy restore metadata.", self.logTag);
+        return completion(NO);
+    }
+    if (backupRestoreMetadata.recordName.length < 1 || backupRestoreMetadata.encryptionKey.length < 1) {
+        DDLogError(@"%@ Incomplete attachment metadata.", self.logTag);
         return completion(NO);
     }
 
@@ -571,14 +575,14 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    [OWSBackupAPI downloadFileFromCloudWithRecordName:recordName
+    [OWSBackupAPI downloadFileFromCloudWithRecordName:backupRestoreMetadata.recordName
         toFileUrl:[NSURL fileURLWithPath:tempFilePath]
         success:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [self lazyRestoreAttachment:attachment
                                    backupIO:backupIO
                           encryptedFilePath:tempFilePath
-                              encryptionKey:encryptionKey
+                              encryptionKey:backupRestoreMetadata.encryptionKey
                                  completion:completion];
             });
         }
