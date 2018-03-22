@@ -178,9 +178,9 @@ import LocalAuthentication
     // Success and cancel can be differentiated by consulting
     // isScreenLockEnabled.
     private func tryToVerifyLocalAuthentication(defaultReason: String,
-                                                     touchIdReason: String,
-                                                     faceIdReason: String,
-                                                     completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
+                                                touchIdReason: String,
+                                                faceIdReason: String,
+                                                completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
 
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: OWSScreenLockOutcome) in
