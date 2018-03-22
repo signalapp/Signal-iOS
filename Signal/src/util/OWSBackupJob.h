@@ -3,7 +3,7 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import <SignalServiceKit/OWSBackupManifestItem.h>
+#import <SignalServiceKit/OWSBackupFragment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,8 +25,8 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @interface OWSBackupManifestContents : NSObject
 
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
 
 @end
 

@@ -26,8 +26,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic) OWSBackupIO *backupIO;
 
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
 
 @end
 
@@ -105,13 +105,13 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(self.databaseItems);
     OWSAssert(self.attachmentsItems);
 
-    NSMutableArray<OWSBackupManifestItem *> *allItems = [NSMutableArray new];
+    NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
     [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (OWSBackupManifestItem *item in allItems) {
+        for (OWSBackupFragment *item in allItems) {
             [item saveWithTransaction:transaction];
         }
     }];
@@ -181,7 +181,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return YES;
 }
 
-- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
+- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
                     completion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(items.count > 0);
@@ -192,7 +192,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
 }
 
-- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
+- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
                       recordCount:(NSUInteger)recordCount
                        completion:(OWSBackupJobCompletion)completion
 {
@@ -208,7 +208,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         // All downloads are complete; exit.
         return completion(nil);
     }
-    OWSBackupManifestItem *item = items.lastObject;
+    OWSBackupFragment *item = items.lastObject;
     [items removeLastObject];
 
     CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
@@ -258,7 +258,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
 
     NSUInteger count = 0;
-    for (OWSBackupManifestItem *item in self.attachmentsItems) {
+    for (OWSBackupFragment *item in self.attachmentsItems) {
         if (self.isComplete) {
             return;
         }
@@ -357,7 +357,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
 
         NSUInteger count = 0;
-        for (OWSBackupManifestItem *item in self.databaseItems) {
+        for (OWSBackupFragment *item in self.databaseItems) {
             if (self.isComplete) {
                 return;
             }

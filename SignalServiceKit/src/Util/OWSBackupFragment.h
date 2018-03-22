@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 // * Backup exports can reuse fragments from previous Backup exports even if they
 //   don't complete (i.e. backup export resume).
 // * Backup exports can reuse fragments from the backup import, if any.
-@interface OWSBackupManifestItem : TSYapDatabaseObject
+@interface OWSBackupFragment : TSYapDatabaseObject
 
 @property (nonatomic) NSString *recordName;
 

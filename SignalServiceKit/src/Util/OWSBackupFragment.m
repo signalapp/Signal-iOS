@@ -2,11 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBackupManifestItem.h"
+#import "OWSBackupFragment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation OWSBackupManifestItem
+@implementation OWSBackupFragment
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {

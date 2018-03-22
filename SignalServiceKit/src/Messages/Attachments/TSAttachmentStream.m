@@ -26,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
-@property (nonatomic, nullable) NSString *backupRestoreMetadataId;
+// Optional property.  Only set for attachments which need "lazy backup restore."
+@property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
 
 @end
 
@@ -612,40 +613,40 @@ NS_ASSUME_NONNULL_BEGIN
     return audioDurationSeconds;
 }
 
-- (nullable OWSBackupManifestItem *)backupRestoreMetadata
+- (nullable OWSBackupFragment *)lazyRestoreFragment
 {
-    if (!self.backupRestoreMetadataId) {
+    if (!self.lazyRestoreFragmentId) {
         return nil;
     }
-    return [OWSBackupManifestItem fetchObjectWithUniqueID:self.backupRestoreMetadataId];
+    return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
 }
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithBackupRestoreMetadata:(OWSBackupManifestItem *)backupRestoreMetadata
+- (void)updateWithLazyRestoreFragment:(OWSBackupFragment *)lazyRestoreFragment
 {
-    OWSAssert(backupRestoreMetadata);
+    OWSAssert(lazyRestoreFragment);
 
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        if (!backupRestoreMetadata.uniqueId) {
+        if (!lazyRestoreFragment.uniqueId) {
             // If metadata hasn't been saved yet, save now.
-            [backupRestoreMetadata saveWithTransaction:transaction];
+            [lazyRestoreFragment saveWithTransaction:transaction];
 
-            OWSAssert(backupRestoreMetadata.uniqueId);
+            OWSAssert(lazyRestoreFragment.uniqueId);
         }
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setBackupRestoreMetadataId:backupRestoreMetadata.uniqueId];
+                                     [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
                                  }];
     }];
 }
 
-- (void)updateWithBackupRestoreComplete
+- (void)updateWithLazyRestoreComplete
 {
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self applyChangeToSelfAndLatestCopy:transaction
                                  changeBlock:^(TSAttachmentStream *attachment) {
-                                     [attachment setBackupRestoreMetadataId:nil];
+                                     [attachment setLazyRestoreFragmentId:nil];
                                  }];
     }];
 }

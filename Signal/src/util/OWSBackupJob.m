@@ -216,12 +216,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
     DDLogVerbose(@"%@ json: %@", self.logTag, json);
 
-    NSArray<OWSBackupManifestItem *> *_Nullable databaseItems =
+    NSArray<OWSBackupFragment *> *_Nullable databaseItems =
         [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
     if (!databaseItems) {
         return failure();
     }
-    NSArray<OWSBackupManifestItem *> *_Nullable attachmentsItems =
+    NSArray<OWSBackupFragment *> *_Nullable attachmentsItems =
         [self parseItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
     if (!attachmentsItems) {
         return failure();
@@ -234,7 +234,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     return success(contents);
 }
 
-- (nullable NSArray<OWSBackupManifestItem *> *)parseItems:(id)json key:(NSString *)key
+- (nullable NSArray<OWSBackupFragment *> *)parseItems:(id)json key:(NSString *)key
 {
     OWSAssert(json);
     OWSAssert(key.length);
@@ -248,7 +248,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
         return nil;
     }
-    NSMutableArray<OWSBackupManifestItem *> *items = [NSMutableArray new];
+    NSMutableArray<OWSBackupFragment *> *items = [NSMutableArray new];
     for (NSDictionary *itemMap in itemMaps) {
         if (![itemMap isKindOfClass:[NSDictionary class]]) {
             OWSProdLogAndFail(@"%@ manifest has invalid item: %@.", self.logTag, key);
@@ -282,7 +282,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return nil;
         }
 
-        OWSBackupManifestItem *item = [OWSBackupManifestItem new];
+        OWSBackupFragment *item = [OWSBackupFragment new];
         item.recordName = recordName;
         item.encryptionKey = encryptionKey;
         item.relativeFilePath = relativeFilePath;

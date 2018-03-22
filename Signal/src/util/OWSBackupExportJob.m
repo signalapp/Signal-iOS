@@ -743,17 +743,16 @@ NS_ASSUME_NONNULL_BEGIN
         //   this record's metadata.
         // * That this record does in fact exist in our CloudKit database.
         NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
-        OWSBackupManifestItem *_Nullable lastManifestItem =
-            [OWSBackupManifestItem fetchObjectWithUniqueID:lastRecordName];
-        if (lastManifestItem && [self.lastValidRecordNames containsObject:lastRecordName]) {
-            OWSAssert(lastManifestItem.encryptionKey.length > 0);
-            OWSAssert(lastManifestItem.relativeFilePath.length > 0);
+        OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:lastRecordName];
+        if (lastBackupFragment && [self.lastValidRecordNames containsObject:lastRecordName]) {
+            OWSAssert(lastBackupFragment.encryptionKey.length > 0);
+            OWSAssert(lastBackupFragment.relativeFilePath.length > 0);
 
             // Recycle the metadata from the last backup's manifest.
             OWSBackupEncryptedItem *encryptedItem = [OWSBackupEncryptedItem new];
-            encryptedItem.encryptionKey = lastManifestItem.encryptionKey;
+            encryptedItem.encryptionKey = lastBackupFragment.encryptionKey;
             attachmentExport.encryptedItem = encryptedItem;
-            attachmentExport.relativeFilePath = lastManifestItem.relativeFilePath;
+            attachmentExport.relativeFilePath = lastBackupFragment.relativeFilePath;
 
             OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
             exportItem.encryptedItem = attachmentExport.encryptedItem;
@@ -814,12 +813,12 @@ NS_ASSUME_NONNULL_BEGIN
                 [strongSelf.savedAttachmentItems addObject:exportItem];
 
                 // Immediately save the record metadata to facilitate export resume.
-                OWSBackupManifestItem *backupRestoreMetadata = [OWSBackupManifestItem new];
-                backupRestoreMetadata.recordName = recordName;
-                backupRestoreMetadata.encryptionKey = exportItem.encryptedItem.encryptionKey;
-                backupRestoreMetadata.relativeFilePath = attachmentExport.relativeFilePath;
-                backupRestoreMetadata.uncompressedDataLength = exportItem.uncompressedDataLength;
-                [backupRestoreMetadata save];
+                OWSBackupFragment *backupFragment = [OWSBackupFragment new];
+                backupFragment.recordName = recordName;
+                backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
+                backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
+                backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
+                [backupFragment save];
 
                 DDLogVerbose(@"%@ saved attachment: %@ as %@",
                     self.logTag,
@@ -992,11 +991,10 @@ NS_ASSUME_NONNULL_BEGIN
     // the latest backup export.
     [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
-        [obsoleteRecordNames addObjectsFromArray:[transaction allKeysInCollection:[OWSBackupManifestItem collection]]];
+        [obsoleteRecordNames addObjectsFromArray:[transaction allKeysInCollection:[OWSBackupFragment collection]]];
         [obsoleteRecordNames minusSet:activeRecordNames];
 
-        [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects
-                             inCollection:[OWSBackupManifestItem collection]];
+        [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
     }];
 }
 

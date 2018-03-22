@@ -507,14 +507,14 @@ NS_ASSUME_NONNULL_BEGIN
                                          return;
                                      }
                                      TSAttachmentStream *attachmentStream = object;
-                                     if (!attachmentStream.backupRestoreMetadata) {
+                                     if (!attachmentStream.lazyRestoreFragment) {
                                          OWSProdLogAndFail(@"%@ Invalid object: %@ in collection:%@",
                                              self.logTag,
                                              [object class],
                                              collection);
                                          return;
                                      }
-                                     [recordNames addObject:attachmentStream.backupRestoreMetadata.recordName];
+                                     [recordNames addObject:attachmentStream.lazyRestoreFragment.recordName];
                                  }];
     }];
     return recordNames;
@@ -556,13 +556,13 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    OWSBackupManifestItem *_Nullable backupRestoreMetadata = attachment.backupRestoreMetadata;
-    if (!backupRestoreMetadata) {
+    OWSBackupFragment *_Nullable lazyRestoreFragment = attachment.lazyRestoreFragment;
+    if (!lazyRestoreFragment) {
         DDLogWarn(@"%@ Attachment missing lazy restore metadata.", self.logTag);
         return completion(NO);
     }
-    if (backupRestoreMetadata.recordName.length < 1 || backupRestoreMetadata.encryptionKey.length < 1) {
-        DDLogError(@"%@ Incomplete attachment metadata.", self.logTag);
+    if (lazyRestoreFragment.recordName.length < 1 || lazyRestoreFragment.encryptionKey.length < 1) {
+        DDLogError(@"%@ Incomplete lazy restore metadata.", self.logTag);
         return completion(NO);
     }
 
@@ -575,14 +575,14 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    [OWSBackupAPI downloadFileFromCloudWithRecordName:backupRestoreMetadata.recordName
+    [OWSBackupAPI downloadFileFromCloudWithRecordName:lazyRestoreFragment.recordName
         toFileUrl:[NSURL fileURLWithPath:tempFilePath]
         success:^{
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [self lazyRestoreAttachment:attachment
                                    backupIO:backupIO
                           encryptedFilePath:tempFilePath
-                              encryptionKey:backupRestoreMetadata.encryptionKey
+                              encryptionKey:lazyRestoreFragment.encryptionKey
                                  completion:completion];
             });
         }
@@ -634,7 +634,7 @@ NS_ASSUME_NONNULL_BEGIN
         return completion(NO);
     }
 
-    [attachment updateWithBackupRestoreComplete];
+    [attachment updateWithLazyRestoreComplete];
 
     completion(YES);
 }

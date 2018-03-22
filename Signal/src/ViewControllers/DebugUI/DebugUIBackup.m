@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:[OWSBackupManifestItem collection]];
+            [transaction removeAllObjectsInCollection:[OWSBackupFragment collection]];
         }];
 }
 
