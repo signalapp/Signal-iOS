@@ -10,18 +10,16 @@ import LocalAuthentication
     public enum OWSScreenLockOutcome {
         case success
         case cancel
-//        case userCancel
-//        case otherCancel
         case failure(error:String)
-//        case permanentFailure(error:String)
     }
 
+    @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
     @objc public let screenLockTimeouts = [
-        5 * kSecondInterval,
-        15 * kSecondInterval,
-        30 * kSecondInterval,
         1 * kMinuteInterval,
         5 * kMinuteInterval,
+        15 * kMinuteInterval,
+        30 * kMinuteInterval,
+        1 * kHourInterval,
         0
     ]
 
@@ -33,6 +31,10 @@ import LocalAuthentication
     private let OWSScreenLock_Collection = "OWSScreenLock_Collection"
     private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
     private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
+
+    // We don't want the verification process itself to trigger unlock verification.
+    // Passcode-code only authentication process deactivates the app.
+    private var ignoreUnlock = false
 
     // MARK - Singleton class
 
@@ -78,8 +80,7 @@ import LocalAuthentication
             return 0
         }
 
-        let defaultTimeout = screenLockTimeouts[0]
-        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: defaultTimeout)
+        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: screenLockTimeoutDefault)
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
@@ -140,6 +141,13 @@ import LocalAuthentication
     @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
                                             failure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
+        guard !ignoreUnlock else {
+            DispatchQueue.main.async {
+                success()
+            }
+            return
+        }
+
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                         comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
@@ -162,6 +170,7 @@ import LocalAuthentication
     // isScreenLockEnabled.
     private func tryToVerifyLocalAuthentication(localizedReason: String,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
+        AssertIsOnMainThread()
 
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: OWSScreenLockOutcome) in
@@ -197,7 +206,14 @@ import LocalAuthentication
             return
         }
 
+        // Use ignoreUnlock to suppress unlock verifications.
+        ignoreUnlock = true
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: localizedReason) { success, evaluateError in
+
+            DispatchQueue.main.async {
+                self.ignoreUnlock = false
+            }
+
             if success {
                 Logger.info("\(self.logTag) local authentication succeeded.")
                 completion(.success)

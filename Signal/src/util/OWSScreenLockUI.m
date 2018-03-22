@@ -117,9 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL shouldHaveScreenLock = NO;
-    if (self.appIsInactive) {
-        // Don't show 'Screen Lock' if app is inactive.
-    } else if (![TSAccountManager isRegistered]) {
+    if (![TSAccountManager isRegistered]) {
         // Don't show 'Screen Lock' if user is not registered.
     } else if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
         // Don't show 'Screen Lock' if 'Screen Lock' isn't enabled.
@@ -128,6 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (!self.appBecameInactiveDate) {
         // Show 'Screen Lock' if app hasn't become inactive yet (just launched).
         shouldHaveScreenLock = YES;
+        DDLogVerbose(@"%@, shouldHaveScreenLock 2: %d", self.logTag, self.appIsInactive);
+    } else if (!self.appIsInactive) {
+        // Don't show 'Screen Lock' if app is inactive.
     } else {
         OWSAssert(self.appBecameInactiveDate);
 
@@ -141,15 +142,15 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             // Otherwise, show 'Screen Lock'.
             shouldHaveScreenLock = YES;
+            DDLogVerbose(@"%@, shouldHaveScreenLock 1: %d", self.logTag, self.appIsInactive);
         }
     }
 
     // Show 'Screen Protection' if:
     //
     // * App is inactive and...
-    // * Either 'Screen Protection' or 'Screen Lock' is enabled.
-    BOOL shouldHaveScreenProtection = (self.appIsInactive
-        && (Environment.preferences.screenSecurityIsEnabled || OWSScreenLock.sharedManager.isScreenLockEnabled));
+    // * 'Screen Protection' is enabled.
+    BOOL shouldHaveScreenProtection = (self.appIsInactive && Environment.preferences.screenSecurityIsEnabled);
 
     BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
     DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",
