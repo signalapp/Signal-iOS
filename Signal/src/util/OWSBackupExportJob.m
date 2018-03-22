@@ -817,6 +817,7 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.recordName = recordName;
                 backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
                 backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
+                backupFragment.attachmentId = attachmentExport.attachmentId;
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
                 [backupFragment save];
 
@@ -922,6 +923,10 @@ NS_ASSUME_NONNULL_BEGIN
         if (item.attachmentExport) {
             OWSAssert(item.attachmentExport.relativeFilePath.length > 0);
             itemJson[kOWSBackup_ManifestKey_RelativeFilePath] = item.attachmentExport.relativeFilePath;
+        }
+        if (item.attachmentExport.attachmentId) {
+            OWSAssert(item.attachmentExport.attachmentId.length > 0);
+            itemJson[kOWSBackup_ManifestKey_AttachmentId] = item.attachmentExport.attachmentId;
         }
         if (item.uncompressedDataLength) {
             itemJson[kOWSBackup_ManifestKey_DataSize] = item.uncompressedDataLength;

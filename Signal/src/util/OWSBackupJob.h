@@ -12,6 +12,7 @@ extern NSString *const kOWSBackup_ManifestKey_AttachmentFiles;
 extern NSString *const kOWSBackup_ManifestKey_RecordName;
 extern NSString *const kOWSBackup_ManifestKey_EncryptionKey;
 extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
+extern NSString *const kOWSBackup_ManifestKey_AttachmentId;
 extern NSString *const kOWSBackup_ManifestKey_DataSize;
 
 @class OWSBackupIO;

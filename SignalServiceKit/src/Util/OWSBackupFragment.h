@@ -28,6 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 // file should reside relative to the attachments folder.
 @property (nonatomic, nullable) NSString *relativeFilePath;
 
+// This property is only set for attachments.
+@property (nonatomic, nullable) NSString *attachmentId;
+
 // This property is only set if the manifest item is downloaded.
 @property (nonatomic, nullable) NSString *downloadFilePath;
 
