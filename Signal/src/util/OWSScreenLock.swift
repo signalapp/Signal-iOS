@@ -34,7 +34,7 @@ import LocalAuthentication
 
     // We don't want the verification process itself to trigger unlock verification.
     // Passcode-code only authentication process deactivates the app.
-    private var ignoreUnlock = false
+    private var ignoreUnlockUntilActive = false
 
     // MARK - Singleton class
 
@@ -48,6 +48,21 @@ import LocalAuthentication
         super.init()
 
         SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        ignoreUnlockUntilActive = false
     }
 
     // MARK: - Properties
@@ -141,7 +156,7 @@ import LocalAuthentication
     @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
                                             failure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
-        guard !ignoreUnlock else {
+        guard !ignoreUnlockUntilActive else {
             DispatchQueue.main.async {
                 success()
             }
@@ -206,13 +221,9 @@ import LocalAuthentication
             return
         }
 
-        // Use ignoreUnlock to suppress unlock verifications.
-        ignoreUnlock = true
+        // Use ignoreUnlockUntilActive to suppress unlock verifications.
+        ignoreUnlockUntilActive = true
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: localizedReason) { success, evaluateError in
-
-            DispatchQueue.main.async {
-                self.ignoreUnlock = false
-            }
 
             if success {
                 Logger.info("\(self.logTag) local authentication succeeded.")

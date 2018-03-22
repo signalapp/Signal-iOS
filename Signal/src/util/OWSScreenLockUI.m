@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 // updated conservatively, e.g. the flag is cleared during
 // "will enter background."
 @property (nonatomic) BOOL appIsInactive;
+@property (nonatomic) BOOL appIsInBackground;
 @property (nonatomic, nullable) NSDate *appBecameInactiveDate;
 @property (nonatomic) UIWindow *screenBlockingWindow;
 @property (nonatomic) BOOL hasUnlockedScreenLock;
@@ -65,6 +66,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:OWSApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:OWSApplicationDidEnterBackgroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange)
                                                  name:RegistrationStateDidChangeNotification
                                                object:nil];
@@ -105,6 +114,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureScreenProtection];
 }
 
+- (void)setAppIsInBackground:(BOOL)appIsInBackground
+{
+    _appIsInBackground = appIsInBackground;
+
+    [self ensureScreenProtection];
+}
+
 - (void)ensureScreenProtection
 {
     OWSAssertIsOnMainThread();
@@ -123,12 +139,14 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't show 'Screen Lock' if 'Screen Lock' isn't enabled.
     } else if (self.hasUnlockedScreenLock) {
         // Don't show 'Screen Lock' if 'Screen Lock' has been unlocked.
-    } else if (!self.appBecameInactiveDate) {
-        // Show 'Screen Lock' if app hasn't become inactive yet (just launched).
-        shouldHaveScreenLock = YES;
-        DDLogVerbose(@"%@, shouldHaveScreenLock 2: %d", self.logTag, self.appIsInactive);
-    } else if (!self.appIsInactive) {
+    } else if (self.appIsInBackground) {
+        // Don't show 'Screen Lock' if app is in background.
+    } else if (self.appIsInactive) {
         // Don't show 'Screen Lock' if app is inactive.
+    } else if (!self.appBecameInactiveDate) {
+        // Show 'Screen Lock' if app has just launched.
+        shouldHaveScreenLock = YES;
+        DDLogVerbose(@"%@, shouldHaveScreenLock 2: %d", self.logTag, self.appIsInBackground);
     } else {
         OWSAssert(self.appBecameInactiveDate);
 
@@ -136,13 +154,13 @@ NS_ASSUME_NONNULL_BEGIN
         NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
         OWSAssert(screenLockInterval >= 0);
         OWSAssert(screenLockTimeout >= 0);
-        if (self.appBecameInactiveDate && screenLockInterval < screenLockTimeout) {
+        if (screenLockInterval < screenLockTimeout) {
             // Don't show 'Screen Lock' if 'Screen Lock' timeout hasn't elapsed.
             shouldHaveScreenLock = NO;
         } else {
             // Otherwise, show 'Screen Lock'.
             shouldHaveScreenLock = YES;
-            DDLogVerbose(@"%@, shouldHaveScreenLock 1: %d", self.logTag, self.appIsInactive);
+            DDLogVerbose(@"%@, shouldHaveScreenLock 1: %d", self.logTag, self.appIsInBackground);
         }
     }
 
@@ -246,6 +264,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
     self.appIsInactive = YES;
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    self.appIsInBackground = NO;
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    self.appIsInBackground = YES;
 }
 
 @end
