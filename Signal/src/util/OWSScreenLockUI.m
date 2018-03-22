@@ -147,9 +147,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Show 'Screen Protection' if:
     //
     // * App is inactive and...
-    // * Either 'Screen Protection' or 'Screen Lock' is enabled.
-    BOOL shouldHaveScreenProtection = (self.appIsInactive
-        && (Environment.preferences.screenSecurityIsEnabled || OWSScreenLock.sharedManager.isScreenLockEnabled));
+    // * 'Screen Protection' is enabled.
+    BOOL shouldHaveScreenProtection = (self.appIsInactive && Environment.preferences.screenSecurityIsEnabled);
 
     BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
     DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",

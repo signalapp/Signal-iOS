@@ -1538,7 +1538,7 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Scan QR Code";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "None";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
 
 /* Title for alert indicating that screen lock could not be disabled. */
 "SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
