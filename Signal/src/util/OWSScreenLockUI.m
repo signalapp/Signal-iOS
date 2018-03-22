@@ -179,9 +179,8 @@ NS_ASSUME_NONNULL_BEGIN
                     DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
                     self.isShowingScreenLockUI = NO;
 
-                    [self showScreenLockFailureAlertWithMessage:
-                              NSLocalizedString(@"SCREEN_LOCK_UNLOCK_CANCELLED",
-                                  @"Message for alert indicating that screen lock unlock was cancelled.")];
+                    // Re-show the unlock UI.
+                    [self ensureScreenProtection];
                 }];
         }
     }
