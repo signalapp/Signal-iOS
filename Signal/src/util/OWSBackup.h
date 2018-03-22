@@ -75,7 +75,7 @@ typedef NS_ENUM(NSUInteger, OWSBackupState) {
 
 #pragma mark - Lazy Restore
 
-- (NSArray<TSAttachmentStream *> *)attachmentsForLazyRestore;
+- (NSArray<NSString *> *)attachmentRecordNamesForLazyRestore;
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore;
 

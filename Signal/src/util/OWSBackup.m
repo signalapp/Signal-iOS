@@ -486,9 +486,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Lazy Restore
 
-- (NSArray<TSAttachmentStream *> *)attachmentsForLazyRestore
+- (NSArray<NSString *> *)attachmentRecordNamesForLazyRestore
 {
-    NSMutableArray<TSAttachmentStream *> *attachments = [NSMutableArray new];
+    NSMutableArray<NSString *> *recordNames = [NSMutableArray new];
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         id ext = [transaction ext:TSMessageDatabaseViewExtensionName];
         if (!ext) {
@@ -506,10 +506,18 @@ NS_ASSUME_NONNULL_BEGIN
                                              collection);
                                          return;
                                      }
-                                     [attachments addObject:object];
+                                     TSAttachmentStream *attachmentStream = object;
+                                     if (attachmentStream.backupRestoreRecordName.length < 1) {
+                                         OWSProdLogAndFail(@"%@ Invalid object: %@ in collection:%@",
+                                             self.logTag,
+                                             [object class],
+                                             collection);
+                                         return;
+                                     }
+                                     [recordNames addObject:attachmentStream.backupRestoreRecordName];
                                  }];
     }];
-    return attachments;
+    return recordNames;
 }
 
 - (NSArray<NSString *> *)attachmentIdsForLazyRestore
