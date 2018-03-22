@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // These NSTimeInterval constants provide simplified durations for readability.
+extern const NSTimeInterval kSecondInterval;
 extern const NSTimeInterval kMinuteInterval;
 extern const NSTimeInterval kHourInterval;
 extern const NSTimeInterval kDayInterval;

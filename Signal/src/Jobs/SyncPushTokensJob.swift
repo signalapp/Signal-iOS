@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -63,9 +63,9 @@ class SyncPushTokensJob: NSObject {
             }
 
             Logger.warn("\(self.TAG) uploading tokens to account servers. pushToken: \(pushToken), voipToken: \(voipToken)")
-            return self.accountManager.updatePushTokens(pushToken:pushToken, voipToken:voipToken).then {
+            return self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken).then {
                 Logger.info("\(self.TAG) successfully updated push tokens on server")
-                return self.recordPushTokensLocally(pushToken:pushToken, voipToken:voipToken)
+                return self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
             }
         }.then {
             Logger.info("\(self.TAG) completed successfully.")
@@ -108,9 +108,7 @@ class SyncPushTokensJob: NSObject {
         }
 
         if (didTokensChange) {
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: SyncPushTokensJob.PushTokensDidChange, object: nil)
-            }
+            NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
         }
 
         return Promise(value: ())

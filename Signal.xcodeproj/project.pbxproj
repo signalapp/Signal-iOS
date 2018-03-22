@@ -204,6 +204,8 @@
 		34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */; };
 		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
+		34D2CCD4206294B900CB1A14 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */; };
+		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
@@ -809,6 +811,9 @@
 		34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
 		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
+		34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSScreenLock.swift; sourceTree = "<group>"; };
+		34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScreenLockUI.h; sourceTree = "<group>"; };
+		34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScreenLockUI.m; sourceTree = "<group>"; };
 		34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarViewHelper.h; sourceTree = "<group>"; };
 		34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarViewHelper.m; sourceTree = "<group>"; };
 		34D8C0231ED3673300188D7C /* DebugUIMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessages.h; sourceTree = "<group>"; };
@@ -1961,14 +1966,17 @@
 				34A9105E1FFEB113000C4745 /* OWSBackup.h */,
 				34A9105F1FFEB114000C4745 /* OWSBackup.m */,
 				340FC8C6204DE64D007AEB0F /* OWSBackupAPI.swift */,
-				340FC8CF205BF2FA007AEB0F /* OWSBackupIO.h */,
-				340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */,
 				340FC8BE204DB7D1007AEB0F /* OWSBackupExportJob.h */,
 				340FC8BF204DB7D2007AEB0F /* OWSBackupExportJob.m */,
 				340FC8C920517B84007AEB0F /* OWSBackupImportJob.h */,
 				340FC8C820517B84007AEB0F /* OWSBackupImportJob.m */,
+				340FC8CF205BF2FA007AEB0F /* OWSBackupIO.h */,
+				340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */,
 				340FC8CB20518C76007AEB0F /* OWSBackupJob.h */,
 				340FC8CC20518C76007AEB0F /* OWSBackupJob.m */,
+				34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */,
+				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
+				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
@@ -3209,6 +3217,7 @@
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				340FC8A7204DAC8D007AEB0F /* RegistrationViewController.m in Sources */,
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
+				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,
 				345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */,
 				340FC8CA20517B84007AEB0F /* OWSBackupImportJob.m in Sources */,
@@ -3236,6 +3245,7 @@
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
+				34D2CCD4206294B900CB1A14 /* OWSScreenLock.swift in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,

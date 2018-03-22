@@ -3,6 +3,7 @@
 //
 
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
+#import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -58,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"strings for context.");
 
             NSString *durationString =
-                [OWSDisappearingMessagesConfiguration stringForDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
+                [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
             return [NSString stringWithFormat:infoFormat, self.createdByRemoteName, durationString];
         } else {
             NSString *infoFormat = NSLocalizedString(@"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",
@@ -71,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context.");
 
             NSString *durationString =
-                [OWSDisappearingMessagesConfiguration stringForDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
+                [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
             return [NSString stringWithFormat:infoFormat, durationString];
         } else {
             return NSLocalizedString(@"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION",

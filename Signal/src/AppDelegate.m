@@ -12,6 +12,7 @@
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSNavigationController.h"
+#import "OWSScreenLockUI.h"
 #import "Pastelog.h"
 #import "PushManager.h"
 #import "RegistrationViewController.h"
@@ -62,7 +63,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
 @interface AppDelegate ()
 
-@property (nonatomic) UIWindow *screenProtectionWindow;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
@@ -190,7 +190,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         [self application:application didReceiveRemoteNotification:remoteNotif];
     }
 
-    [self prepareScreenProtection];
+    [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
 
     // Ensure OWSContactsSyncing is instantiated.
     [OWSContactsSyncing sharedManager];
@@ -583,8 +583,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     if (CurrentAppContext().isRunningTests) {
         return;
     }
-    
-    [self removeScreenProtection];
 
     [self ensureRootViewController];
 
@@ -710,22 +708,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [AppReadiness runNowOrWhenAppIsReady:^{
         if ([TSAccountManager isRegistered]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
-                    // If app has not re-entered active, show screen protection if necessary.
-                    [self showScreenProtection];
-                }
-                [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
-
-                backgroundTask = nil;
-            });
-        } else {
-            backgroundTask = nil;
+            [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
         }
-    });
+        backgroundTask = nil;
+    }];
 
     [DDLog flushLog];
 }
@@ -921,40 +909,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     //    }
 
     return NO;
-}
-
-/**
- * Screen protection obscures the app screen shown in the app switcher.
- */
-- (void)prepareScreenProtection
-{
-    OWSAssertIsOnMainThread();
-
-    UIWindow *window = [[UIWindow alloc] initWithFrame:self.window.bounds];
-    window.hidden = YES;
-    window.opaque = YES;
-    window.userInteractionEnabled = NO;
-    window.windowLevel = CGFLOAT_MAX;
-    window.backgroundColor = UIColor.ows_materialBlueColor;
-    window.rootViewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-    self.screenProtectionWindow = window;
-}
-
-- (void)showScreenProtection
-{
-    OWSAssertIsOnMainThread();
-
-    if (Environment.preferences.screenSecurityIsEnabled) {
-        self.screenProtectionWindow.hidden = NO;
-    }
-}
-
-- (void)removeScreenProtection {
-    OWSAssertIsOnMainThread();
-
-    self.screenProtectionWindow.hidden = YES;
 }
 
 #pragma mark Push Notifications Delegate Methods

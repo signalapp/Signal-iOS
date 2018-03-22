@@ -41,6 +41,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeImportBackupError = 777418,
     // A non-recoverable while importing or exporting a backup.
     OWSErrorCodeBackupFailure = 777419,
+    OWSErrorCodeLocalAuthenticationError = 777420,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;
