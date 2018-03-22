@@ -123,6 +123,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
                         }],
+        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 5"
+                        actionBlock:^{
+                            [DebugUIMessages sendFakeMediaMessages:5 thread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"🖼 fake media messages: 100"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMediaMessages:100 thread:thread];

@@ -179,6 +179,11 @@ protocol MediaGalleryDataSource: class {
     func delete(message: TSMessage)
 }
 
+protocol MediaGalleryDataSourceDelegate: class {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage)
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
+}
+
 class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
 
     private var pageViewController: MediaPageViewController?
@@ -555,6 +560,12 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     lazy var mediaTileViewController: MediaTileViewController = {
         let vc = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
         vc.delegate = self
+
+        // dataSourceDelegate will either be this tile view, or the MessageDetailView, but they should
+        // be mutually exclusive
+        assert(self.dataSourceDelegate == nil)
+        self.dataSourceDelegate = vc
+
         return vc
     }()
 
@@ -712,12 +723,12 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
+    weak var dataSourceDelegate: MediaGalleryDataSourceDelegate?
     var deletedMessages: Set<TSMessage> = Set()
     func delete(message: TSMessage) {
         Logger.info("\(logTag) in \(#function) with message: \(String(describing: message.uniqueId)) attachmentId: \(String(describing: message.attachmentIds.firstObject))")
 
-        // TODO put this somewhere reasonable...
-        self.mediaTileViewController.collectionView!.layoutIfNeeded()
+        self.dataSourceDelegate?.mediaGalleryDataSource(self, willDelete: message)
 
         self.editingDatabaseConnection.asyncReadWrite { transaction in
             message.remove(with: transaction)
@@ -765,10 +776,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
             deletedIndexPaths.append(IndexPath(row: sectionRowIndex, section: sectionIndex + 1))
         }
 
-        // TODO? notify pager view
-
-        // notify tile view    
-        self.mediaTileViewController.updatedDataSource(deletedSections: deletedSections, deletedItems: deletedIndexPaths)
+        self.dataSourceDelegate?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths)
     }
 
     let kGallerySwipeLoadBatchSize: UInt = 5
@@ -806,6 +814,6 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.uiDatabaseConnection.read { (transaction: YapDatabaseReadTransaction) in
             count = self.mediaGalleryFinder.mediaCount(transaction: transaction)
         }
-        return Int(count)
+        return Int(count) - deletedMessages.count
     }
 }

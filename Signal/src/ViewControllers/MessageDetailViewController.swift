@@ -12,10 +12,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, MediaDetailPresenter {
-
-    static let TAG = "[MessageDetailViewController]"
-    let TAG = "[MessageDetailViewController]"
+class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
 
     // MARK: Properties
 
@@ -172,7 +169,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     private func updateContent() {
         guard let contentView = contentView else {
-            owsFail("\(TAG) Missing contentView")
+            owsFail("\(logTag) Missing contentView")
             return
         }
 
@@ -393,7 +390,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         if rows.count == 0 {
             // Neither attachment nor body.
-            owsFail("\(self.TAG) Message has neither attachment nor body.")
+            owsFail("\(self.logTag) Message has neither attachment nor body.")
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
                                                          comment: "Label for messages without a body or attachment in the 'message metadata' view."),
                                  value: ""))
@@ -412,7 +409,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
 
         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
-            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
+            Logger.warn("\(logTag) Missing attachment. Was it deleted?")
             return nil
         }
 
@@ -423,7 +420,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         var rows = [UIView]()
 
         guard let attachment = self.attachment else {
-            Logger.warn("\(TAG) Missing attachment. Was it deleted?")
+            Logger.warn("\(logTag) Missing attachment. Was it deleted?")
             return rows
         }
 
@@ -556,7 +553,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     func shareButtonPressed() {
         guard let attachmentStream = attachmentStream else {
-            Logger.error("\(TAG) Share button should only be shown with attachment, but no attachment found.")
+            Logger.error("\(logTag) Share button should only be shown with attachment, but no attachment found.")
             return
         }
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
@@ -569,15 +566,15 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
 
         guard let attachmentStream = attachmentStream else {
-            Logger.error("\(TAG) Message has neither attachment nor message body.")
+            Logger.error("\(logTag) Message has neither attachment nor message body.")
             return
         }
         guard let utiType = MIMETypeUtil.utiType(forMIMEType: attachmentStream.contentType) else {
-            Logger.error("\(TAG) Attachment has invalid MIME type: \(attachmentStream.contentType).")
+            Logger.error("\(logTag) Attachment has invalid MIME type: \(attachmentStream.contentType).")
             return
         }
         guard let dataSource = dataSource else {
-            Logger.error("\(TAG) Attachment missing data source.")
+            Logger.error("\(logTag) Attachment missing data source.")
             return
         }
         let data = dataSource.data()
@@ -593,11 +590,11 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
         self.uiDatabaseConnection.read { transaction in
             guard let uniqueId = self.message.uniqueId else {
-                Logger.error("\(self.TAG) Message is missing uniqueId.")
+                Logger.error("\(self.logTag) Message is missing uniqueId.")
                 return
             }
             guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
-                Logger.error("\(self.TAG) Couldn't reload message.")
+                Logger.error("\(self.logTag) Couldn't reload message.")
                 return
             }
             self.message = newMessage
@@ -608,25 +605,25 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     internal func yapDatabaseModified(notification: NSNotification) {
         AssertIsOnMainThread()
 
+        guard !wasDeleted else {
+            // Item was deleted. Don't bother re-rendering, it will fail and we'll soon be dismissed.
+            return
+        }
+
         let notifications = self.uiDatabaseConnection.beginLongLivedReadTransaction()
 
         guard let uniqueId = self.message.uniqueId else {
-            Logger.error("\(self.TAG) Message is missing uniqueId.")
+            Logger.error("\(self.logTag) Message is missing uniqueId.")
             return
         }
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {
-                                                    Logger.debug("\(TAG) No relevant changes.")
+                                                    Logger.debug("\(logTag) No relevant changes.")
                                                     return
         }
 
         updateDBConnectionAndMessageToLatest()
-
-        guard !wasDeleted else {
-            // Item was deleted. Don't bother re-rendering, it will fail and we'll soon be dismissed.
-            return
-        }
         updateContent()
     }
 
@@ -674,44 +671,44 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             return
         }
         guard let messageTextProxyView = messageTextProxyView else {
-            owsFail("\(TAG) Missing messageTextProxyView")
+            owsFail("\(logTag) Missing messageTextProxyView")
             return
         }
         guard let scrollView = scrollView else {
-            owsFail("\(TAG) Missing scrollView")
+            owsFail("\(logTag) Missing scrollView")
             return
         }
         guard let contentView = contentView else {
-            owsFail("\(TAG) Missing contentView")
+            owsFail("\(logTag) Missing contentView")
             return
         }
         guard let bubbleView = bubbleView else {
-            owsFail("\(TAG) Missing bubbleView")
+            owsFail("\(logTag) Missing bubbleView")
             return
         }
         guard let bubbleSuperview = bubbleView.superview else {
-            owsFail("\(TAG) Missing bubbleSuperview")
+            owsFail("\(logTag) Missing bubbleSuperview")
             return
         }
         guard let messageTextTopConstraint = messageTextTopConstraint else {
-            owsFail("\(TAG) Missing messageTextTopConstraint")
+            owsFail("\(logTag) Missing messageTextTopConstraint")
             return
         }
         guard let messageTextHeightLayoutConstraint = messageTextHeightLayoutConstraint else {
-            owsFail("\(TAG) Missing messageTextHeightLayoutConstraint")
+            owsFail("\(logTag) Missing messageTextHeightLayoutConstraint")
             return
         }
         guard let messageTextProxyViewHeightConstraint = messageTextProxyViewHeightConstraint else {
-            owsFail("\(TAG) Missing messageTextProxyViewHeightConstraint")
+            owsFail("\(logTag) Missing messageTextProxyViewHeightConstraint")
             return
         }
         guard let bubbleViewWidthConstraint = bubbleViewWidthConstraint else {
-            owsFail("\(TAG) Missing bubbleViewWidthConstraint")
+            owsFail("\(logTag) Missing bubbleViewWidthConstraint")
             return
         }
 
         if messageTextView.width() != messageTextProxyView.width() {
-            owsFail("\(TAG) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
+            owsFail("\(logTag) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
         }
 
         let maxBubbleWidth = bubbleSuperview.width() - (bubbleViewHMargin * 2)
@@ -754,9 +751,28 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        Logger.verbose("\(TAG) scrollViewDidScroll")
+        Logger.verbose("\(logTag) scrollViewDidScroll")
 
         updateTextLayout()
+    }
+
+    // MediaGalleryDataSourceDelegate
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage) {
+        Logger.info("\(self.logTag) in \(#function)")
+        guard message == self.message else {
+            // Should only be one message we can delete when viewing message details
+            owsFail("\(logTag) in \(#function) Unexpectedly informed of irrelevant message deletion")
+            return
+        }
+
+        self.wasDeleted = true
+    }
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        self.dismiss(animated: true) {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     // MARK: MediaDetailPresenter
@@ -768,6 +784,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
 
         let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+        mediaGalleryViewController.dataSourceDelegate = self
         mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
     }
 }
