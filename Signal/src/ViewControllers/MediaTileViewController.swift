@@ -8,7 +8,7 @@ public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
 }
 
-public class MediaTileViewController: UICollectionViewController, MediaGalleryCellDelegate, MediaGalleryDataSourceDelegate {
+public class MediaTileViewController: UICollectionViewController, MediaGalleryDataSourceDelegate {
 
     private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
@@ -88,9 +88,29 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
 
         collectionView.delegate = self
 
-        // TODO iPhoneX
         // feels a bit weird to have content smashed all the way to the bottom edge.
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+
+        let footerBar = UIToolbar()
+        self.footerBar = footerBar
+        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
+                                          target:self,
+                                          action:#selector(didPressDelete))
+        self.deleteButton =  deleteButton
+        let footerItems = [
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil),
+            deleteButton,
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil),
+        ]
+        footerBar.setItems(footerItems, animated: false)
+
+        self.view.addSubview(self.footerBar)
+        footerBar.barTintColor = UIColor.ows_signalBrandBlue
+        footerBar.autoPinWidthToSuperview()
+        footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
+        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
+
+        updateSelectButton()
 
         self.view.layoutIfNeeded()
         scrollToBottom(animated: false)
@@ -123,7 +143,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
     }
 
-    // MARK: UIColletionViewDelegate
+    // MARK: UICollectionViewDelegate
 
     override public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         self.autoLoadMoreIfNecessary()
@@ -137,42 +157,87 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         self.isUserScrolling = false
     }
 
+    override public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard galleryDates.count > 0 else {
+            return false
+        }
+
+        switch indexPath.section {
+        case kLoadOlderSectionIdx, loadNewerSectionIdx:
+            return false
+        default:
+            return true
+        }
+    }
+
+    override public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard galleryDates.count > 0 else {
+            return false
+        }
+
+        switch indexPath.section {
+        case kLoadOlderSectionIdx, loadNewerSectionIdx:
+            return false
+        default:
+            return true
+        }
+    }
+
+    public override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard galleryDates.count > 0 else {
+            return false
+        }
+
+        switch indexPath.section {
+        case kLoadOlderSectionIdx, loadNewerSectionIdx:
+            return false
+        default:
+            return true
+        }
+    }
+
+    override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard let galleryCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? MediaGalleryCell else {
+            owsFail("\(logTag) in \(#function) galleryCell was unexpectedly nil")
+            return
+        }
+
+        guard let galleryItem = galleryCell.item else {
+            owsFail("\(logTag) in \(#function) galleryItem was unexpectedly nil")
+            return
+        }
+
+        if isInBatchSelectMode {
+            updateDeleteButton()
+        } else {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            self.delegate?.mediaTileViewController(self, didTapView: galleryCell.imageView, mediaGalleryItem: galleryItem)
+        }
+    }
+
+    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        if isInBatchSelectMode {
+            updateDeleteButton()
+        }
+    }
+
     private var isUserScrolling: Bool = false {
         didSet {
             autoLoadMoreIfNecessary()
         }
-    }
-
-    // MARK: MediaGalleryDataSourceDelegate
-
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage) {
-        guard let collectionView = self.collectionView else {
-            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
-            return
-        }
-
-        // We've got to lay out the collectionView before any changes are made to the date source
-        // otherwise we'll fail when we try to remove the deleted sections/rows
-        collectionView.layoutIfNeeded()
-    }
-
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
-        guard let collectionView = self.collectionView else {
-            owsFail("\(logTag) in \(#function) collectionView was unexpetedly nil")
-            return
-        }
-
-        guard mediaGalleryDataSource.galleryItemCount > 0  else {
-            // Show Empty
-            self.collectionView?.reloadData()
-            return
-        }
-
-        // If collectionView hasn't been laid out yet, it won't have the sections/rows to remove.
-        collectionView.performBatchUpdates({
-            collectionView.deleteSections(deletedSections)
-            collectionView.deleteItems(at: deletedItems)
-        })
     }
 
     // MARK: UICollectionViewDataSource
@@ -288,18 +353,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
             owsFail("\(logTag) in \(#function) unexpected cell for loadNewerSectionIdx")
             return defaultCell
         default:
-            guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
-                owsFail("\(logTag) in \(#function) unknown section: \(indexPath.section)")
-                return defaultCell
-            }
-
-            guard let sectionItems = self.galleryItems[sectionDate] else {
-                owsFail("\(logTag) in \(#function) no section for date: \(sectionDate)")
-                return defaultCell
-            }
-
-            guard let galleryItem = sectionItems[safe: indexPath.row] else {
-                owsFail("\(logTag) in \(#function) no message for row: \(indexPath.row)")
+            guard let galleryItem = galleryItem(at: indexPath) else {
+                owsFail("\(logTag) in \(#function) no message for path: \(indexPath)")
                 return defaultCell
             }
 
@@ -308,10 +363,29 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
                 return defaultCell
             }
 
-            cell.configure(item: galleryItem, delegate: self)
+            cell.configure(item: galleryItem)
 
             return cell
         }
+    }
+
+    func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
+        guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
+            owsFail("\(logTag) in \(#function) unknown section: \(indexPath.section)")
+            return nil
+        }
+
+        guard let sectionItems = self.galleryItems[sectionDate] else {
+            owsFail("\(logTag) in \(#function) no section for date: \(sectionDate)")
+            return nil
+        }
+
+        guard let galleryItem = sectionItems[safe: indexPath.row] else {
+            owsFail("\(logTag) in \(#function) no message for row: \(indexPath.row)")
+            return nil
+        }
+
+        return galleryItem
     }
 
     // MARK: UICollectionViewDelegateFlowLayout
@@ -343,11 +417,173 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
             return kMonthHeaderSize
         }
     }
-    // MARK: MediaGalleryDelegate
 
-    fileprivate func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem) {
-        Logger.debug("\(logTag) in \(#function)")
-        self.delegate?.mediaTileViewController(self, didTapView: cell.imageView, mediaGalleryItem: item)
+    // MARK: Batch Selection
+
+    var isInBatchSelectMode = false {
+        didSet {
+            collectionView!.allowsMultipleSelection = isInBatchSelectMode
+            updateSelectButton()
+            updateDeleteButton()
+        }
+    }
+
+    func updateDeleteButton() {
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
+            self.deleteButton.isEnabled = true
+        } else {
+            self.deleteButton.isEnabled = false
+        }
+    }
+
+    func updateSelectButton() {
+        if isInBatchSelectMode {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect))
+        } else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
+                                                                     style: .plain,
+                                                                     target: self,
+                                                                     action: #selector(didTapSelect))
+        }
+    }
+
+    @objc
+    func didTapSelect(_ sender: Any) {
+        isInBatchSelectMode = true
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        // show toolbar
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+            self.footerBarBottomConstraint = self.footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
+            self.footerBar.superview?.layoutIfNeeded()
+
+            // ensure toolbar doesn't cover bottom row.
+            collectionView.contentInset.bottom += self.kFooterBarHeight
+        }, completion: nil)
+
+        // disabled until at least one item is selected
+        self.deleteButton.isEnabled = false
+
+        // Don't allow the user to leave mid-selection, so they realized they have
+        // to cancel (lose) their selection if they leave.
+        self.navigationItem.hidesBackButton = true
+    }
+
+    @objc
+    func didCancelSelect(_ sender: Any) {
+        isInBatchSelectMode = false
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        // hide toolbar
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
+            self.footerBar.superview?.layoutIfNeeded()
+
+            // undo "ensure toolbar doesn't cover bottom row."
+            collectionView.contentInset.bottom -= self.kFooterBarHeight
+        }, completion: nil)
+
+        self.navigationItem.hidesBackButton = false
+
+        // deselect any selected
+        collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
+    }
+
+    @objc
+    func didPressDelete(_ sender: Any) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        guard let indexPaths = collectionView.indexPathsForSelectedItems else {
+            owsFail("\(logTag) in \(#function) indexPaths was unexpectedly nil")
+            return
+        }
+
+        let items: [MediaGalleryItem] = indexPaths.flatMap { return self.galleryItem(at: $0) }
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return
+        }
+
+        let confirmationTitle: String = {
+            if indexPaths.count == 1 {
+                return NSLocalizedString("MEDIA_GALLERY_DELETE_SINGLE_MESSAGE", comment: "Confirmation button text to delete selected media message from the gallery")
+            } else {
+                let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT", comment: "Confirmation button text to delete selected media from the gallery, embeds {{number of messages}}")
+                return String(format: format, indexPaths.count)
+            }
+        }()
+
+        let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { _ in
+            mediaGalleryDataSource.delete(items: items)
+        }
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(deleteAction)
+        actionSheet.addAction(OWSAlerts.cancelAction)
+
+        present(actionSheet, animated: true)
+    }
+
+    var footerBar: UIToolbar!
+    var deleteButton: UIBarButtonItem!
+    var footerBarBottomConstraint: NSLayoutConstraint!
+    let kFooterBarHeight: CGFloat = 40
+
+    // MARK: MediaGalleryDataSourceDelegate
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem]) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        // We've got to lay out the collectionView before any changes are made to the date source
+        // otherwise we'll fail when we try to remove the deleted sections/rows
+        collectionView.layoutIfNeeded()
+    }
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        Logger.debug("\(self.logTag) in \(#function) with deletedSections: \(deletedSections) deletedItems: \(deletedItems)")
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpetedly nil")
+            return
+        }
+
+        guard mediaGalleryDataSource.galleryItemCount > 0  else {
+            // Show Empty
+            self.collectionView?.reloadData()
+            return
+        }
+
+        collectionView.performBatchUpdates({
+            collectionView.deleteSections(deletedSections)
+            collectionView.deleteItems(at: deletedItems)
+        })
     }
 
     // MARK: Lazy Loading
@@ -577,10 +813,6 @@ fileprivate class MediaGallerySectionHeader: UICollectionReusableView {
     }
 }
 
-fileprivate protocol MediaGalleryCellDelegate: class {
-    func didTapCell(_ cell: MediaGalleryCell, item: MediaGalleryItem)
-}
-
 fileprivate class MediaGalleryStaticHeader: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryStaticHeader"
@@ -616,40 +848,78 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     static let reuseIdentifier = "MediaGalleryCell"
 
     public let imageView: UIImageView
-    private var tapGesture: UITapGestureRecognizer!
 
-    private let badgeView: UIImageView
+    private let contentTypeBadgeView: UIImageView
+    private let selectedBadgeView: UIImageView
 
-    private var item: MediaGalleryItem?
-    public weak var delegate: MediaGalleryCellDelegate?
+    private let highlightedView: UIView
+    private let selectedView: UIView
+
+    fileprivate var item: MediaGalleryItem?
 
     static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
+    static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
+
+    override var isSelected: Bool {
+        didSet {
+            self.selectedBadgeView.isHidden = !self.isSelected
+            self.selectedView.isHidden = !self.isSelected
+        }
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            self.highlightedView.isHidden = !self.isHighlighted
+        }
+    }
 
     override init(frame: CGRect) {
         self.imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
 
-        self.badgeView = UIImageView()
-        badgeView.isHidden = true
+        self.contentTypeBadgeView = UIImageView()
+        contentTypeBadgeView.isHidden = true
+
+        self.selectedBadgeView = UIImageView()
+        selectedBadgeView.image = MediaGalleryCell.selectedBadgeImage
+        selectedBadgeView.isHidden = true
+
+        self.highlightedView = UIView()
+        highlightedView.alpha = 0.2
+        highlightedView.backgroundColor = .black
+        highlightedView.isHidden = true
+
+        self.selectedView = UIView()
+        selectedView.alpha = 0.3
+        selectedView.backgroundColor = .white
+        selectedView.isHidden = true
 
         super.init(frame: frame)
 
-        self.tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        self.addGestureRecognizer(tapGesture)
-
         self.clipsToBounds = true
+
         self.contentView.addSubview(imageView)
-        self.contentView.addSubview(badgeView)
+        self.contentView.addSubview(contentTypeBadgeView)
+        self.contentView.addSubview(highlightedView)
+        self.contentView.addSubview(selectedView)
+        self.contentView.addSubview(selectedBadgeView)
 
         imageView.autoPinEdgesToSuperviewEdges()
+        highlightedView.autoPinEdgesToSuperviewEdges()
+        selectedView.autoPinEdgesToSuperviewEdges()
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
-        let kBadgeSize = CGSize(width: 18, height: 12)
-        badgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
-        badgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        badgeView.autoSetDimensions(to: kBadgeSize)
+        let kContentTypeBadgeSize = CGSize(width: 18, height: 12)
+        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
+        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
+
+        let kSelectedBadgeSize = CGSize(width: 31, height: 31)
+        selectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
+        selectedBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
+        selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -657,21 +927,19 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func configure(item: MediaGalleryItem, delegate: MediaGalleryCellDelegate) {
+    public func configure(item: MediaGalleryItem) {
         self.item = item
         self.imageView.image = item.thumbnailImage
         if item.isVideo {
-            self.badgeView.isHidden = false
-            self.badgeView.image = MediaGalleryCell.videoBadgeImage
+            self.contentTypeBadgeView.isHidden = false
+            self.contentTypeBadgeView.image = MediaGalleryCell.videoBadgeImage
         } else if item.isAnimated {
-            self.badgeView.isHidden = false
-            self.badgeView.image = MediaGalleryCell.animatedBadgeImage
+            self.contentTypeBadgeView.isHidden = false
+            self.contentTypeBadgeView.image = MediaGalleryCell.animatedBadgeImage
         } else {
             assert(item.isImage)
-            self.badgeView.isHidden = true
+            self.contentTypeBadgeView.isHidden = true
         }
-
-        self.delegate = delegate
     }
 
     override public func prepareForReuse() {
@@ -679,18 +947,9 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.item = nil
         self.imageView.image = nil
-        self.badgeView.isHidden = true
-        self.delegate = nil
-    }
-
-    // MARK: Events
-
-    func didTap(gestureRecognizer: UITapGestureRecognizer) {
-        guard let item = self.item else {
-            owsFail("\(logTag) item was unexpectedly nil")
-            return
-        }
-
-        self.delegate?.didTapCell(self, item: item)
+        self.contentTypeBadgeView.isHidden = true
+        self.highlightedView.isHidden = true
+        self.selectedView.isHidden = true
+        self.selectedBadgeView.isHidden = true
     }
 }
