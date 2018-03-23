@@ -176,11 +176,11 @@ protocol MediaGalleryDataSource: class {
     func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
 
-    func delete(message: TSMessage)
+    func delete(items: [MediaGalleryItem])
 }
 
 protocol MediaGalleryDataSourceDelegate: class {
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage)
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem])
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
@@ -725,58 +725,82 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     weak var dataSourceDelegate: MediaGalleryDataSourceDelegate?
     var deletedMessages: Set<TSMessage> = Set()
-    func delete(message: TSMessage) {
-        Logger.info("\(logTag) in \(#function) with message: \(String(describing: message.uniqueId)) attachmentId: \(String(describing: message.attachmentIds.firstObject))")
 
-        self.dataSourceDelegate?.mediaGalleryDataSource(self, willDelete: message)
+    func delete(items: [MediaGalleryItem]) {
+        AssertIsOnMainThread()
+
+        Logger.info("\(logTag) in \(#function) with items: \(items)")
+
+        dataSourceDelegate?.mediaGalleryDataSource(self, willDelete: items)
 
         self.editingDatabaseConnection.asyncReadWrite { transaction in
-            message.remove(with: transaction)
+            for item in items {
+                let message = item.message
+                message.remove(with: transaction)
+                self.deletedMessages.insert(message)
+            }
         }
-
-        self.deletedMessages.insert(message)
 
         var deletedSections: IndexSet = IndexSet()
         var deletedIndexPaths: [IndexPath] = []
+        let originalSections = self.sections
+        let originalSectionDates = self.sectionDates
 
-        guard let itemIndex = galleryItems.index(where: { $0.message == message }) else {
-            owsFail("\(logTag) in \(#function) removing unknown item.")
-            return
-        }
-        let item: MediaGalleryItem = galleryItems[itemIndex]
+        for item in items {
+            guard let itemIndex = galleryItems.index(of: item) else {
+                owsFail("\(logTag) in \(#function) removing unknown item.")
+                return
+            }
 
-        self.galleryItems.remove(at: itemIndex)
+            self.galleryItems.remove(at: itemIndex)
 
-        guard let sectionIndex = sectionDates.index(where: { $0 == item.galleryDate }) else {
-            owsFail("\(logTag) in \(#function) item with unknown date.")
-            return
-        }
+            guard let sectionIndex = sectionDates.index(where: { $0 == item.galleryDate }) else {
+                owsFail("\(logTag) in \(#function) item with unknown date.")
+                return
+            }
 
-        guard var sectionItems = self.sections[item.galleryDate] else {
-            owsFail("\(logTag) in \(#function) item with unknown section")
-            return
-        }
+            guard var sectionItems = self.sections[item.galleryDate] else {
+                owsFail("\(logTag) in \(#function) item with unknown section")
+                return
+            }
 
-        if sectionItems == [item] {
-            // Last item in section. Delete section.
-            self.sections[item.galleryDate] = nil
-            self.sectionDates.remove(at: sectionIndex)
-
-            deletedSections.insert(sectionIndex + 1)
-            deletedIndexPaths.append(IndexPath(row: 0, section: sectionIndex + 1))
-        } else {
             guard let sectionRowIndex = sectionItems.index(of: item) else {
                 owsFail("\(logTag) in \(#function) item with unknown sectionRowIndex")
                 return
             }
 
-            sectionItems.remove(at: sectionRowIndex)
-            self.sections[item.galleryDate] = sectionItems
+            // We need to calculate the index of the deleted item with respect to it's original position.
+            guard let originalSectionIndex = originalSectionDates.index(where: { $0 == item.galleryDate }) else {
+                owsFail("\(logTag) in \(#function) item with unknown date.")
+                return
+            }
 
-            deletedIndexPaths.append(IndexPath(row: sectionRowIndex, section: sectionIndex + 1))
+            guard let originalSectionItems = originalSections[item.galleryDate] else {
+                owsFail("\(logTag) in \(#function) item with unknown section")
+                return
+            }
+
+            guard let originalSectionRowIndex = originalSectionItems.index(of: item) else {
+                owsFail("\(logTag) in \(#function) item with unknown sectionRowIndex")
+                return
+            }
+
+            if sectionItems == [item] {
+                // Last item in section. Delete section.
+                self.sections[item.galleryDate] = nil
+                self.sectionDates.remove(at: sectionIndex)
+
+                deletedSections.insert(originalSectionIndex + 1)
+                deletedIndexPaths.append(IndexPath(row: originalSectionRowIndex, section: originalSectionIndex + 1))
+            } else {
+                sectionItems.remove(at: sectionRowIndex)
+                self.sections[item.galleryDate] = sectionItems
+
+                deletedIndexPaths.append(IndexPath(row: originalSectionRowIndex, section: originalSectionIndex + 1))
+            }
         }
 
-        self.dataSourceDelegate?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths)
+        dataSourceDelegate?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths)
     }
 
     let kGallerySwipeLoadBatchSize: UInt = 5

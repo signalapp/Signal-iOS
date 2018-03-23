@@ -758,9 +758,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     // MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem]) {
         Logger.info("\(self.logTag) in \(#function)")
-        guard message == self.message else {
+
+        guard (items.map({ $0.message }) == [self.message]) else {
             // Should only be one message we can delete when viewing message details
             owsFail("\(logTag) in \(#function) Unexpectedly informed of irrelevant message deletion")
             return

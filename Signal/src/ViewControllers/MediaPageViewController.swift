@@ -327,7 +327,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                                                 // else we deleted the last piece of media, return to the conversation view
                                                 self.dismissSelf(animated: true)
                                             }
-                                            mediaGalleryDataSource.delete(message: deletedItem.message)
+                                            mediaGalleryDataSource.delete(items: [deletedItem])
         }
         actionSheet.addAction(OWSAlerts.cancelAction)
         actionSheet.addAction(deleteAction)
@@ -502,8 +502,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return
         }
 
+        guard let galleryItem = self.mediaGalleryDataSource?.galleryItems.first(where: { $0.message == message }) else {
+            owsFail("\(logTag) in \(#function) unexpected interaction: \(type(of: conversationViewItem))")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
         dismissSelf(animated: true) {
-            mediaGalleryDataSource.delete(message: message)
+            mediaGalleryDataSource.delete(items: [galleryItem])
         }
     }
 
