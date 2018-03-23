@@ -59,6 +59,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         self.updateTitle(item: item)
         self.setViewControllers([galleryPage], direction: direction, animated: isAnimated)
+        self.updateFooterBarButtonItems(isPlayingVideo: false)
     }
 
     private let uiDatabaseConnection: YapDatabaseConnection
