@@ -35,6 +35,10 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
     DebugMediaType_Random,
 };
 
+typedef void (^ActionSucceesBlock)(void);
+typedef void (^ActionFailureBlock)(void);
+typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failure);
+
 @interface TSOutgoingMessage (PostDatingDebug)
 
 - (void)setReceivedAtTimestamp:(uint64_t)value;
@@ -445,11 +449,13 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
                 break;
         }
 
-        [alert addAction:[UIAlertAction actionWithTitle:label
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *action) {
-                                                    [self sendRandomMedia:mediaType thread:thread];
-                                                }]];
+        [alert addAction:[UIAlertAction
+                             actionWithTitle:label
+                                       style:UIAlertActionStyleDefault
+                                     handler:^(UIAlertAction *action) {
+                                         [self performActionNTimes:[self sendRandomMediaAction:mediaType thread:thread]
+                                                            thread:thread];
+                                     }]];
     }
 
     [alert addAction:[OWSAlerts cancelAction]];
@@ -458,14 +464,54 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
     [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-+ (void)sendRandomMedia:(DebugMediaType)mediaType thread:(TSThread *)thread
++ (ActionBlock)sendRandomMediaAction:(DebugMediaType)mediaType thread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return ^(ActionSucceesBlock success, ActionFailureBlock failure) {
+        void (^sendMessage)(NSString *) = ^(NSString *filePath) {
+            [self sendAttachment:filePath thread:thread success:success failure:failure];
+        };
+        DebugMediaType mediaTypeToSend = mediaType;
+        while (mediaTypeToSend == DebugMediaType_Random) {
+            NSArray<NSNumber *> *allMediaTypes = self.allMediaTypes;
+            NSNumber *value = allMediaTypes[arc4random_uniform((uint32_t)allMediaTypes.count)];
+            mediaTypeToSend = (DebugMediaType)value.intValue;
+        }
+
+        switch (mediaTypeToSend) {
+            case DebugMediaType_Gif:
+                return [self ensureRandomGifWithSuccess:sendMessage
+                                                failure:^{
+                                                }];
+            case DebugMediaType_Jpeg:
+                return [self ensureRandomJpegWithSuccess:sendMessage
+                                                 failure:^{
+                                                 }];
+            case DebugMediaType_Mp3:
+                return [self ensureRandomMp3WithSuccess:sendMessage
+                                                failure:^{
+                                                }];
+            case DebugMediaType_Mp4:
+                return [self ensureRandomMp4WithSuccess:sendMessage
+                                                failure:^{
+                                                }];
+            case DebugMediaType_Random:
+                OWSFail(@"%@ Invalid value.", self.logTag);
+                break;
+        }
+    };
+}
+
++ (void)performActionNTimes:(ActionBlock)action thread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread() OWSAssert(thread);
 
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many to send?"
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many?"
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
     for (NSNumber *countValue in @[
+             @(0),
              @(1),
              @(10),
              @(100),
@@ -474,10 +520,8 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
          ]) {
         [alert addAction:[UIAlertAction actionWithTitle:countValue.stringValue
                                                   style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *action) {
-                                                    [self sendRandomMedia:mediaType
-                                                                    count:countValue.unsignedIntegerValue
-                                                                   thread:thread];
+                                                handler:^(UIAlertAction *ignore) {
+                                                    [self performAction:action count:countValue.unsignedIntegerValue];
                                                 }]];
     }
 
@@ -486,54 +530,22 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
     [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-+ (void)sendRandomMedia:(DebugMediaType)mediaType count:(NSUInteger)count thread:(TSThread *)thread
++ (void)performAction:(ActionBlock)action count:(NSUInteger)count
 {
-    OWSAssert(thread);
+    OWSAssert(action);
     OWSAssert(count > 0);
 
-    void (^completion)(void) = ^{
-        if (count <= 1) {
-            return;
-        }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self sendRandomMedia:mediaType count:count - 1 thread:thread];
+    action(
+        ^{
+            if (count <= 1) {
+                return;
+            }
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self performAction:action count:count - 1];
+            });
+        },
+        ^{
         });
-    };
-    void (^sendMessage)(NSString *) = ^(NSString *filePath) {
-        [self sendAttachment:filePath
-                      thread:thread
-                     success:completion
-                     failure:^{
-                     }];
-    };
-    DebugMediaType mediaTypeToSend = mediaType;
-    while (mediaTypeToSend == DebugMediaType_Random) {
-        NSArray<NSNumber *> *allMediaTypes = self.allMediaTypes;
-        NSNumber *value = allMediaTypes[arc4random_uniform((uint32_t)allMediaTypes.count)];
-        mediaTypeToSend = (DebugMediaType)value.intValue;
-    }
-
-    switch (mediaTypeToSend) {
-        case DebugMediaType_Gif:
-            return [self ensureRandomGifWithSuccess:sendMessage
-                                            failure:^{
-                                            }];
-        case DebugMediaType_Jpeg:
-            return [self ensureRandomJpegWithSuccess:sendMessage
-                                             failure:^{
-                                             }];
-        case DebugMediaType_Mp3:
-            return [self ensureRandomMp3WithSuccess:sendMessage
-                                            failure:^{
-                                            }];
-        case DebugMediaType_Mp4:
-            return [self ensureRandomMp4WithSuccess:sendMessage
-                                            failure:^{
-                                            }];
-        case DebugMediaType_Random:
-            OWSFail(@"%@ Invalid value.", self.logTag);
-            break;
-    }
 }
 
 + (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
