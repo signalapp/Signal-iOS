@@ -185,7 +185,7 @@
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Nepavyko importuoti atsarginės kopijos.";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Tikrinama atsarginė kopija";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigūruojama atsarginė kopija";
@@ -261,6 +261,9 @@
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Atlikta";
+
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Select";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Tam, kad galėtų skambinti ir įrašinėti balso žinutes, Signal reikia prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje.";
@@ -774,7 +777,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Užbaigti grupės kūrimą";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Šiame pokalbyje neturite jokios medijos.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Įkeliama naujesnė medija...";
@@ -982,6 +985,12 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Nuotraukų galerija";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Jūs";
@@ -1538,43 +1547,43 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Skenuoti QR kodą";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Nedelsiant";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+"SCREEN_LOCK_DISABLE_FAILED" = "Nepavyko išjungti ekrano užrakto";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+"SCREEN_LOCK_ENABLE_FAILED" = "Nepavyko įjungti ekrano užrakto";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Nepavyko gauti prieigos prie tapatybės nustatymo.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Tapatybės nustatymas nepavyko.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Pernelyg daug nesėkmių. Bandykite dar kartą vėliau.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Norėdami naudoti Ekrano užraktą, privalote savo telefone sukonfigūruoti slaptą kodą.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Norėdami naudoti Ekrano užraktą, privalote savo telefone sukonfigūruoti slaptą kodą.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Norėdami naudoti Ekrano užraktą, privalote savo telefone sukonfigūruoti slaptą kodą.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Norėdami išjungti Ekrano užraktą, patvirtinkite tapatybę.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Norėdami užrakinti prieigą prie Signal, patvirtinkite tapatybę.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Norėdami gauti prieigą prie Signal, patvirtinkite tapatybę.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Tapatybės nustatymas nepavyko";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Ieškokite vardo ar numerio";
@@ -1787,16 +1796,16 @@
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metaduomenys";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekrano užrakto laiko limitas";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Užrakinkite Signal programėlę, kai ji kurį laiką nėra naudojama. Atrakinkite ją, naudodami Touch ID, Face ID arba savo slaptą kodą.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekrano užraktas";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Ekrano užraktas";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Įjungti ekrano saugumą";

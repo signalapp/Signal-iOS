@@ -262,6 +262,9 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "ပြီးပြီ ";
 
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Select";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "ဖုန်းခေါ်ဆိုမှုများနှင့် အသံဖမ်းယူခြင်းပြုလုပ်ရန်အတွက် Signal ကမိုက်ခရိုဖုန်း နှင့်ချိတ်ဆက်ရန်လိုအပ်သည်။ ပြင်ဆင်ခြင်း app ကိုသွား၍ ခွင့်ပြုချက်ပေးနိုင်ပါသည်။ ";
 
@@ -982,6 +985,12 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "ဓာတ်ပုံတိုက်";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "You";

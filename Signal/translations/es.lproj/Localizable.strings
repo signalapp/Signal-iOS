@@ -185,7 +185,7 @@
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Fallo al importar copia de seguridad.";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Comprobando la copia a importar";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configurando copia de seguridad";
@@ -261,6 +261,9 @@
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Hecho";
+
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Select";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal necesita acceder al micrófono para realizar llamadas y grabar notas de voz. Permite el acceso a Signal desde los ajustes de iOS.";
@@ -774,7 +777,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Grupo creado con éxito";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "No hay ningún adjunto en este chat.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Cargando adjuntos recientes...";
@@ -982,6 +985,12 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fototeca";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Tú";
@@ -1538,43 +1547,43 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Escanear código QR";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Inmediato";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+"SCREEN_LOCK_DISABLE_FAILED" = "Fallo al desactivar el bloqueo de acceso";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+"SCREEN_LOCK_ENABLE_FAILED" = "Fallo al activar el bloqueo de acesso";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "No se ha podido acceder a los datos de identificación.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Fallo en la identificación.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Demasiados fallos. Prueda de nuevo más tarde.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Necesitas configurar un código en este dispositivo para poder usar el bloqueo de acceso.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Necesitas configurar un código en este dispositivo para poder usar el bloqueo de acceso.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Necesitas configurar un código en este dispositivo para poder usar el bloqueo de acceso.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Identifícate para desactivar el bloqueo de acceso.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Identifícate para bloquear el acceso a Signal.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Identifícate para acceder a Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Fallo al identificarse";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nombre o número";
@@ -1787,25 +1796,25 @@
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadatos";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Temporizador de bloqueo de acceso";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Bloquea el acceso a Signal tras un tiempo de inactividad. Desbloquéalo con Touch ID, Face ID o un código.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bloqueo de acceso";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Bloqueo de acceso";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Habilitar pantalla de seguridad";
+"SETTINGS_SCREEN_SECURITY" = "Habilitar protección de pantalla";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Esta opción evita que aparezca contenido en las capturas de pantalla del gestor de aplicaciones.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Esta opción evita que aparezca contenido de Signal en las capturas de pantalla del gestor de aplicaciones.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integración de llamadas en iOS muestra los avisos de llamada de Signal a pantalla completa y en el historial de llamadas del sistema de forma anónima. Opcionalmente puedes activar que se muestre el nombre o número del contacto. Con iCloud activado, el historial de llamadas se comparte con Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "La integración de llamadas en iOS muestra los avisos de llamada de Signal a pantalla completa y en el historial de llamadas del sistema de forma anónima. También puedes optar a que se muestre el nombre o número del contacto. Con iCloud activado, el historial de llamadas se comparte con Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Notificaciones";
@@ -1817,7 +1826,7 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "Llamadas";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Seguridad de pantalla";
+"SETTINGS_SECURITY_TITLE" = "Protección de pantalla";
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Soporte";

@@ -262,6 +262,9 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Готово";
 
+/* Button text to enable batch selection mode */
+"BUTTON_SELECT" = "Select";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Сигнал се нуждае от достъп до микрофона ви за да извършвате повиквания и за гласови съобщения. Можете да разрешите това от Настройки на телефона.";
 
@@ -982,6 +985,12 @@
 
 /* media picker option to choose from library */
 "MEDIA_FROM_LIBRARY_BUTTON" = "Папка със Снимки";
+
+/* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+
+/* Confirmation button text to delete selected media message from the gallery */
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
