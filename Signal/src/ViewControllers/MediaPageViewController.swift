@@ -38,7 +38,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private var cachedPages: [MediaGalleryItem: MediaDetailViewController] = [:]
     private var initialPage: MediaDetailViewController!
 
-    private var currentViewController: MediaDetailViewController {
+    public var currentViewController: MediaDetailViewController {
         return viewControllers!.first as! MediaDetailViewController
     }
 
@@ -253,7 +253,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             UIView.animate(withDuration: 0.1) {
                 self.currentViewController.setShouldHideToolbars(self.shouldHideToolbars)
-                self.footerBar.alpha = self.shouldHideToolbars ? 0 : 1
+                self.footerBar.isHidden = self.shouldHideToolbars
             }
         }
     }
