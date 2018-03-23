@@ -29,13 +29,160 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
 typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
-typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure);
+typedef void (^StaggeredActionBlock)(NSUInteger index,
+    YapDatabaseReadWriteTransaction *transaction,
+    ActionSuccessBlock success,
+    ActionFailureBlock failure);
+typedef void (^UnstaggeredActionBlock)(NSUInteger index, YapDatabaseReadWriteTransaction *transaction);
+
+typedef NS_ENUM(NSUInteger, SubactionMode) {
+    SubactionMode_Random = 0,
+    SubactionMode_Ordered,
+};
+
+@interface FakeAssetLoader : NSObject
+
+@property (nonatomic) NSString *fileUrl;
+@property (nonatomic) NSString *filename;
+@property (nonatomic) NSString *mimeType;
+
+@property (nonatomic, nullable) NSString *filePath;
+
+@end
+
+#pragma mark -
+
+@implementation FakeAssetLoader
+
+- (void)ensureAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.fileUrl.length > 0);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:self.filename.pathExtension];
+
+    //    NSFileManager *fileManager = [NSFileManager defaultManager];
+    //    [fileManager]
+    //    NSURL *documentDirectoryURL =
+    //    [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    //    NSString *randomFilesDirectoryPath =
+    //    [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
+    //    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
+    //    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:self.filename];
+    //    if ([fileManager fileExistsAtPath:filePath]) {
+    //        success(filePath);
+    //    } else {
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    OWSAssert(sessionManager.responseSerializer);
+    [sessionManager GET:self.fileUrl
+        parameters:nil
+        progress:nil
+        success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
+            if ([responseObject writeToFile:filePath atomically:YES]) {
+                self.filePath = filePath;
+                OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+                success();
+            } else {
+                OWSFail(@"Error write url response [%@]: %@", self.fileUrl, filePath);
+                failure();
+            }
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
+            OWSFail(@"Error downloading url[%@]: %@", self.fileUrl, requestError);
+            failure();
+        }];
+}
+
++ (instancetype)jpegInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG";
+        instance.filename = @"random-jpg.jpg";
+        instance.mimeType = @"image/jpeg";
+    });
+    return instance;
+}
+
++ (instancetype)gifInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif";
+        instance.filename = @"random-gif.gif";
+        instance.mimeType = @"image/gif";
+    });
+    return instance;
+}
+
++ (instancetype)mp3Instance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3";
+        instance.filename = @"random-mp3.mp3";
+        instance.mimeType = @"audio/mpeg";
+    });
+    return instance;
+}
+
++ (instancetype)mp4Instance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4";
+        instance.filename = @"random-mp4.mp4";
+        instance.mimeType = @"video/mp4";
+    });
+    return instance;
+}
+
+- (ActionPrepareBlock)prepareBlock
+{
+    __weak FakeAssetLoader *weakSelf = self;
+    return ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureAssetLoaded:success failure:failure];
+    };
+}
+
+@end
+
+#pragma mark -
+
+@class DebugUIMessagesSingleAction;
 
 @interface DebugUIMessagesAction : NSObject
 
 @property (nonatomic) NSString *label;
-@property (nonatomic) ActionPrepareBlock prepareBlock;
-@property (nonatomic) ActionBlock actionBlock;
+
+@end
+
+#pragma mark -
+
+@interface DebugUIMessagesSingleAction : DebugUIMessagesAction
+
+@property (nonatomic, nullable) ActionPrepareBlock prepareBlock;
+// "Single" actions should have exactly one "staggered" or "unstaggered" action block.
+@property (nonatomic, nullable) StaggeredActionBlock staggeredActionBlock;
+@property (nonatomic, nullable) UnstaggeredActionBlock unstaggeredActionBlock;
 
 @end
 
@@ -43,95 +190,153 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 
 @implementation DebugUIMessagesAction
 
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label actionBlock:(ActionBlock)actionBlock
+- (DebugUIMessagesSingleAction *)nextActionToPerform
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(actionBlock);
-
-    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
-    instance.label = label;
-    instance.actionBlock = actionBlock;
-    return instance;
+    return (DebugUIMessagesSingleAction *)self;
 }
 
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
-                               actionBlock:(ActionBlock)actionBlock
-                              prepareBlock:(ActionPrepareBlock)prepareBlock
+- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
-    OWSAssert(label.length > 0);
-    OWSAssert(actionBlock);
-    OWSAssert(prepareBlock);
+    OWSAssert(success);
+    OWSAssert(failure);
 
-    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
-    instance.label = label;
-    instance.actionBlock = actionBlock;
-    instance.prepareBlock = prepareBlock;
-    return instance;
-}
+    OWS_ABSTRACT_METHOD();
 
-+ (DebugUIMessagesAction *)groupActionWithLabel:(NSString *)label
-                                     subactions:(NSArray<DebugUIMessagesAction *> *)subactions
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(subactions.count > 0);
-
-    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
-    instance.label = label;
-    instance.actionBlock = ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-        DebugUIMessagesAction *subaction = subactions[arc4random_uniform((uint32_t)subactions.count)];
-        [subaction performWithIndex:index success:success failure:failure];
-    };
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
-    };
-    return instance;
+    success();
 }
 
 - (void)prepareAndPerformNTimes:(NSUInteger)count
 {
-    __weak DebugUIMessagesAction *weakSelf = self;
+    //    __weak DebugUIMessagesAction *weakSelf = self;
     [self prepare:^{
-        [weakSelf performNTimes:count
-                        success:^{
-                        }
-                        failure:^{
-                        }];
+        [self performNTimes:count
+                    success:^{
+                    }
+                    failure:^{
+                    }];
     }
           failure:^{
           }];
 }
 
-- (void)performNTimes:(NSUInteger)count success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+- (void)performNTimes:(NSUInteger)countParam success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
     OWSAssert(success);
     OWSAssert(failure);
 
-    DDLogInfo(@"%@ %@ performNTimes: %zd", self.logTag, self.label, count);
+    DDLogInfo(@"%@ %@ performNTimes: %zd", self.logTag, self.label, countParam);
     [DDLog flushLog];
 
-    if (count < 1) {
+    if (countParam < 1) {
         success();
         return;
     }
 
-    __weak DebugUIMessagesAction *weakSelf = self;
-    [self performWithIndex:count
-                   success:^{
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
-                               [weakSelf performNTimes:count - 1 success:success failure:failure];
-                           });
-                   }
-                   failure:failure];
+    __block NSUInteger count = countParam;
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection readWriteWithBlock:^(
+        YapDatabaseReadWriteTransaction *transaction) {
+        NSUInteger batchSize = 0;
+        while (count > 0) {
+            NSUInteger index = count;
+
+            DebugUIMessagesSingleAction *action = [self nextActionToPerform];
+            OWSAssert([action isKindOfClass:[DebugUIMessagesSingleAction class]]);
+
+            if (action.staggeredActionBlock) {
+                OWSAssert(!action.unstaggeredActionBlock);
+                action.staggeredActionBlock(index,
+                    transaction,
+                    ^{
+                        dispatch_after(
+                            dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                                DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
+                                [self performNTimes:count - 1 success:success failure:failure];
+                            });
+                    },
+                    failure);
+
+                break;
+            } else {
+                OWSAssert(action.unstaggeredActionBlock);
+
+                // TODO: We could check result for failure.
+                action.unstaggeredActionBlock(index, transaction);
+
+                const NSUInteger kMaxBatchSize = 2500;
+                batchSize++;
+                if (batchSize >= kMaxBatchSize) {
+                    dispatch_after(
+                        dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                            DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
+                            [self performNTimes:count - 1 success:success failure:failure];
+                        });
+
+                    break;
+                }
+                count--;
+            }
+        }
+    }];
 }
 
-- (void)performWithIndex:(NSUInteger)index success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
+@end
 
-    self.actionBlock(index, success, failure);
+#pragma mark -
+
+@implementation DebugUIMessagesSingleAction
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
+                      staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(staggeredActionBlock);
+
+    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
+    instance.label = label;
+    instance.staggeredActionBlock = staggeredActionBlock;
+    return instance;
+}
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
+                    unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(unstaggeredActionBlock);
+
+    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
+    instance.label = label;
+    instance.unstaggeredActionBlock = unstaggeredActionBlock;
+    return instance;
+}
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
+                      staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
+                              prepareBlock:(ActionPrepareBlock)prepareBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(staggeredActionBlock);
+    OWSAssert(prepareBlock);
+
+    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
+    instance.label = label;
+    instance.staggeredActionBlock = staggeredActionBlock;
+    instance.prepareBlock = prepareBlock;
+    return instance;
+}
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
+                    unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
+                              prepareBlock:(ActionPrepareBlock)prepareBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(unstaggeredActionBlock);
+    OWSAssert(prepareBlock);
+
+    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
+    instance.label = label;
+    instance.unstaggeredActionBlock = unstaggeredActionBlock;
+    instance.prepareBlock = prepareBlock;
+    return instance;
 }
 
 - (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
@@ -146,11 +351,60 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     }
 }
 
+@end
+
+#pragma mark -
+
+@interface DebugUIMessagesGroupAction : DebugUIMessagesAction
+
+// "Group" actions should have these properties.
+@property (nonatomic) SubactionMode subactionMode;
+@property (nonatomic, nullable) NSArray<DebugUIMessagesAction *> *subactions;
+@property (nonatomic) NSUInteger subactionIndex;
+
+//@property (nonatomic, nullable) MessageActionBlock actionBlock;
+//@property (nonatomic, nullable) StaggeredActionBlock staggeredActionBlock;
+//@property (nonatomic, nullable) BulkActionBlock staggeredActionBlock;
+//@property (nonatomic, nullable) BulkActionBlock bulkActionBlock;
+//@property (nonatomic) BOOL isStaggered;
+
+@end
+
+#pragma mark -
+
+@implementation DebugUIMessagesGroupAction
+
+- (DebugUIMessagesSingleAction *)nextActionToPerform
+{
+    OWSAssert(self.subactions.count > 0);
+
+    switch (self.subactionMode) {
+        case SubactionMode_Random: {
+            DebugUIMessagesAction *subaction = self.subactions[arc4random_uniform((uint32_t)self.subactions.count)];
+            OWSAssert(subaction);
+            return subaction.nextActionToPerform;
+        }
+        case SubactionMode_Ordered: {
+            DebugUIMessagesAction *subaction = self.subactions[self.subactionIndex];
+            OWSAssert(subaction);
+            self.subactionIndex = (self.subactionIndex + 1) % self.subactions.count;
+            return subaction.nextActionToPerform;
+        }
+    }
+}
+
+- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    [DebugUIMessagesGroupAction prepareSubactions:[self.subactions mutableCopy] success:success failure:failure];
+}
+
 + (void)prepareSubactions:(NSMutableArray<DebugUIMessagesAction *> *)unpreparedSubactions
                   success:(ActionSuccessBlock)success
                   failure:(ActionFailureBlock)failure
 {
-    OWSAssert(unpreparedSubactions);
     OWSAssert(success);
     OWSAssert(failure);
 
@@ -165,6 +419,52 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     }
                 failure:^{
                 }];
+}
+
+// Given a group of subactions, perform a single random subaction each time.
++ (DebugUIMessagesAction *)randomGroupActionWithLabel:(NSString *)label
+                                           subactions:(NSArray<DebugUIMessagesAction *> *)subactions
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(subactions.count > 0);
+
+    DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
+    instance.label = label;
+    instance.subactions = subactions;
+    instance.subactionMode = SubactionMode_Random;
+    //    instance.staggeredActionBlock = ^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction,
+    //    ActionSuccessBlock success, ActionFailureBlock failure) {
+    //        [self performRandomStaggeredSubaction:subactions index:index transaction:transaction success:success
+    //        failure:failure];
+    //    };
+    //    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+    //        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
+    //    };
+    return instance;
+}
+
+// Given a group of subactions, perform all of the subactions each time.
++ (DebugUIMessagesAction *)allGroupActionWithLabel:(NSString *)label
+                                        subactions:(NSArray<DebugUIMessagesAction *> *)subactions
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(subactions.count > 0);
+
+    DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
+    instance.label = label;
+    instance.subactions = subactions;
+    instance.subactionMode = SubactionMode_Ordered;
+    //    instance.bulkActionBlock = ^(NSUInteger count, YapDatabaseReadWriteTransaction *transaction,
+    //    ActionSuccessBlock success, ActionFailureBlock failure) {
+    //        for (NSUInteger index = 0; index < count; index++) {
+    //            [self performAllUnstaggeredSubactions:[subactions mutableCopy] index:index transaction:transaction
+    //            success:success failure:failure];
+    //        }
+    //    };
+    //    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+    //        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
+    //    };
+    return instance;
 }
 
 @end
@@ -192,7 +492,42 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 {
     OWSAssert(thread);
 
-    NSMutableArray<OWSTableItem *> *items = [@[
+    NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
+
+    for (DebugUIMessagesAction *action in @[
+             [DebugUIMessages sendMessageVariationsAction:thread],
+             // Send Media
+             [DebugUIMessages sendJpegAction:thread],
+             [DebugUIMessages sendGifAction:thread],
+             [DebugUIMessages sendMp3Action:thread],
+             [DebugUIMessages sendMp4Action:thread],
+             [DebugUIMessages sendAllMediaAction:thread],
+             [DebugUIMessages sendRandomMediaAction:thread],
+             // Fake Media
+             [DebugUIMessages fakeAllMediaAction:thread],
+             [DebugUIMessages fakeRandomMediaAction:thread],
+             // Fake Text
+             [DebugUIMessages fakeAllTextAction:thread],
+             [DebugUIMessages fakeRandomTextAction:thread],
+             // Exemplary
+             [DebugUIMessages allExemplaryAction:thread],
+         ]) {
+        [items addObject:[OWSTableItem itemWithTitle:action.label
+                                         actionBlock:^{
+                                             // For "all in group" actions, do each subaction in the group
+                                             // exactly once, in a predictable order.
+                                             if ([action isKindOfClass:[DebugUIMessagesGroupAction class]]) {
+                                                 DebugUIMessagesGroupAction *groupAction
+                                                     = (DebugUIMessagesGroupAction *)action;
+                                                 if (groupAction.subactionMode == SubactionMode_Ordered) {
+                                                     [action prepareAndPerformNTimes:groupAction.subactions.count];
+                                                     return;
+                                                 }
+                                             }
+                                             [DebugUIMessages performActionNTimes:action];
+                                         }]];
+    }
+    [items addObjectsFromArray:@[
 
 #pragma mark - Actions
 
@@ -200,10 +535,10 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendNRandomMediaInThread:thread];
-                        }],
+    //        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
+    //                        actionBlock:^{
+    //                            [DebugUIMessages sendSelectedMediaTypeInThread:thread];
+    //                        }],
 
 #pragma mark - Misc.
 
@@ -266,18 +601,6 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
         [OWSTableItem itemWithTitle:@"Create 1k fake threads with 1 message"
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
-                        }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 5"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:5 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 100"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 1k"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:1000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
@@ -392,7 +715,8 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
                         actionBlock:^{
                             [DebugUIMessages testDirectionalFilenamesInThread:thread];
                         }],
-    ] mutableCopy];
+    ]];
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         NSString *recipientId = contactThread.contactIdentifier;
@@ -448,13 +772,17 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesAction
-        actionWithLabel:@"Send Text Message"
-            actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-                [self sendTextMessageInThread:thread counter:index];
-                // TODO:
-                success();
-            }];
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendTextMessageInThread:thread counter:index];
+                                           // TODO:
+                                           success();
+                                       });
+                                   }];
 }
 
 + (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
@@ -476,43 +804,43 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     });
 }
 
-+ (void)ensureRandomFileWithURL:(NSString *)url
-                       filename:(NSString *)filename
-                        success:(nullable void (^)(NSString *filePath))success
-                        failure:(nullable void (^)(void))failure
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentDirectoryURL =
-        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    NSString *randomFilesDirectoryPath =
-        [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
-    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
-    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:filename];
-    if ([fileManager fileExistsAtPath:filePath]) {
-        success(filePath);
-    } else {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        AFHTTPSessionManager *sessionManager =
-            [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-        OWSAssert(sessionManager.responseSerializer);
-        [sessionManager GET:url
-            parameters:nil
-            progress:nil
-            success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
-                if ([responseObject writeToFile:filePath atomically:YES]) {
-                    success(filePath);
-                } else {
-                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
-                    failure();
-                }
-            }
-            failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
-                failure();
-            }];
-    }
-}
+//+ (void)ensureRandomFileWithURL:(NSString *)url
+//                       filename:(NSString *)filename
+//                        success:(nullable void (^)(NSString *filePath))success
+//                        failure:(nullable void (^)(void))failure
+//{
+//    NSFileManager *fileManager = [NSFileManager defaultManager];
+//    NSURL *documentDirectoryURL =
+//        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+//    NSString *randomFilesDirectoryPath =
+//        [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
+//    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
+//    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:filename];
+//    if ([fileManager fileExistsAtPath:filePath]) {
+//        success(filePath);
+//    } else {
+//        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//        AFHTTPSessionManager *sessionManager =
+//            [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
+//        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+//        OWSAssert(sessionManager.responseSerializer);
+//        [sessionManager GET:url
+//            parameters:nil
+//            progress:nil
+//            success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
+//                if ([responseObject writeToFile:filePath atomically:YES]) {
+//                    success(filePath);
+//                } else {
+//                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
+//                    failure();
+//                }
+//            }
+//            failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
+//                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
+//                failure();
+//            }];
+//    }
+//}
 
 + (void)sendAttachment:(NSString *)filePath
                 thread:(TSThread *)thread
@@ -572,49 +900,38 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-#pragma mark - Media
+#pragma mark - Send Media
 
-//+ (NSArray *)allMediaTypes
+//+ (void)sendSelectedMediaTypeInThread:(TSThread *)thread
 //{
-//    return @[
-//        @(DebugMediaType_Gif),
-//        @(DebugMediaType_Jpeg),
-//        @(DebugMediaType_Mp3),
-//        @(DebugMediaType_Mp4),
-//        @(DebugMediaType_Random),
+//    OWSAssertIsOnMainThread() OWSAssert(thread);
+//
+//    NSArray<DebugUIMessagesAction *> *actions = @[
+//        [self sendJpegAction:thread],
+//        [self sendGifAction:thread],
+//        [self sendMp3Action:thread],
+//        [self sendMp4Action:thread],
+//        [self sendRandomMediaAction:thread],
 //    ];
+//
+//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
+//                                                                   message:nil
+//                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+//    for (DebugUIMessagesAction *action in actions) {
+//        [alert addAction:[UIAlertAction actionWithTitle:action.label
+//                                                  style:UIAlertActionStyleDefault
+//                                                handler:^(UIAlertAction *ignore) {
+//                                                    [self performActionNTimes:action];
+//                                                }]];
+//    }
+//
+//    [alert addAction:[OWSAlerts cancelAction]];
+//
+//    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+//    [fromViewController presentViewController:alert animated:YES completion:nil];
 //}
 
-+ (void)sendNRandomMediaInThread:(TSThread *)thread
-{
-    OWSAssertIsOnMainThread() OWSAssert(thread);
-
-    NSArray<DebugUIMessagesAction *> *actions = @[
-        [self sendJpegAction:thread],
-        [self sendGifAction:thread],
-        [self sendMp3Action:thread],
-        [self sendMp4Action:thread],
-        [self sendRandomMediaAction:thread],
-    ];
-
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-    for (DebugUIMessagesAction *action in actions) {
-        [alert addAction:[UIAlertAction actionWithTitle:action.label
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *ignore) {
-                                                    [self performActionNTimes:action];
-                                                }]];
-    }
-
-    [alert addAction:[OWSAlerts cancelAction]];
-
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
-}
-
-+ (DebugUIMessagesAction *)sendRandomMediaAction:(TSThread *)thread
++ (NSArray<DebugUIMessagesAction *> *)allSendMediaActions:(TSThread *)thread
 {
     OWSAssert(thread);
 
@@ -624,125 +941,631 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
         [self sendMp3Action:thread],
         [self sendMp4Action:thread],
     ];
-
-    return [DebugUIMessagesAction groupActionWithLabel:@"Send Random Media" subactions:actions];
+    return actions;
 }
 
 + (DebugUIMessagesAction *)sendJpegAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    __block NSString *_Nullable filePath = nil;
-    return [DebugUIMessagesAction actionWithLabel:@"Send Jpeg"
-        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-            OWSAssert(filePath.length > 0);
-            [self sendAttachment:filePath thread:thread success:success failure:failure];
-        }
-        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
-            return [self ensureRandomJpegWithSuccess:^(NSString *ensuredFilePath) {
-                OWSAssert(ensuredFilePath.length > 0);
-                filePath = ensuredFilePath;
-                success();
-            }
-                                             failure:failure];
-        }];
+    return [self sendMediaAction:@"Send Jpeg" fakeAssetLoader:[FakeAssetLoader jpegInstance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    __block NSString *_Nullable filePath = nil;
-    return [DebugUIMessagesAction actionWithLabel:@"Send Gif"
-        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-            OWSAssert(filePath.length > 0);
-            [self sendAttachment:filePath thread:thread success:success failure:failure];
-        }
-        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
-            return [self ensureRandomGifWithSuccess:^(NSString *ensuredFilePath) {
-                OWSAssert(ensuredFilePath.length > 0);
-                filePath = ensuredFilePath;
-                success();
-            }
-                                            failure:failure];
-        }];
+    return [self sendMediaAction:@"Send Gif" fakeAssetLoader:[FakeAssetLoader gifInstance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    __block NSString *_Nullable filePath = nil;
-    return [DebugUIMessagesAction actionWithLabel:@"Send Mp3"
-        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-            OWSAssert(filePath.length > 0);
-            [self sendAttachment:filePath thread:thread success:success failure:failure];
-        }
-        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
-            return [self ensureRandomMp3WithSuccess:^(NSString *ensuredFilePath) {
-                OWSAssert(ensuredFilePath.length > 0);
-                filePath = ensuredFilePath;
-                success();
-            }
-                                            failure:failure];
-        }];
+    return [self sendMediaAction:@"Send Mp3" fakeAssetLoader:[FakeAssetLoader mp3Instance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    __block NSString *_Nullable filePath = nil;
-    return [DebugUIMessagesAction actionWithLabel:@"Send Mp4"
-        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-            OWSAssert(filePath.length > 0);
-            [self sendAttachment:filePath thread:thread success:success failure:failure];
+    return [self sendMediaAction:@"Send Mp4" fakeAssetLoader:[FakeAssetLoader mp4Instance] thread:thread];
+}
+
++ (DebugUIMessagesAction *)sendMediaAction:(NSString *)label
+                           fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                                    thread:(TSThread *)thread
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+             actionWithLabel:label
+        staggeredActionBlock:^(NSUInteger index,
+            YapDatabaseReadWriteTransaction *transaction,
+            ActionSuccessBlock success,
+            ActionFailureBlock failure) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OWSAssert(fakeAssetLoader.filePath.length > 0);
+                [self sendAttachment:fakeAssetLoader.filePath thread:thread success:success failure:failure];
+            });
         }
-        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
-            return [self ensureRandomMp4WithSuccess:^(NSString *ensuredFilePath) {
-                OWSAssert(ensuredFilePath.length > 0);
-                filePath = ensuredFilePath;
-                success();
-            }
-                                            failure:failure];
+                prepareBlock:fakeAssetLoader.prepareBlock];
+}
+
++ (DebugUIMessagesAction *)sendAllMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Media"
+                                                    subactions:[self allSendMediaActions:thread]];
+}
+
++ (DebugUIMessagesAction *)sendRandomMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Send Random Media"
+                                                       subactions:[self allSendMediaActions:thread]];
+}
+
+#pragma mark - Fake Outgoing Media
+
++ (DebugUIMessagesAction *)fakeOutgoingJpegAction:(TSThread *)thread
+                                     messageState:(TSOutgoingMessageState)messageState
+                                       hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Jpeg"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader jpegInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingGifAction:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Gif"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMp3Action:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp3"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader mp3Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMp4Action:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp4"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader mp4Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMediaAction:(NSString *)labelParam
+                                      messageState:(TSOutgoingMessageState)messageState
+                                        hasCaption:(BOOL)hasCaption
+                                   fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                                            thread:(TSThread *)thread
+{
+    OWSAssert(labelParam.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
+
+    NSString *label = labelParam;
+    if (hasCaption) {
+        label = [label stringByAppendingString:@" 🔤"];
+    }
+    if (messageState == TSOutgoingMessageStateUnsent) {
+        label = [label stringByAppendingString:@" (Unsent)"];
+    } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+        label = [label stringByAppendingString:@" (Sending)"];
+    } else if (messageState == TSOutgoingMessageStateSentToService) {
+        label = [label stringByAppendingString:@" (Sent)"];
+    } else {
+        OWSFail(@"%@ unknown message state.", self.logTag)
+    }
+
+    return
+        [DebugUIMessagesSingleAction actionWithLabel:label
+                              unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+                                  OWSAssert(fakeAssetLoader.filePath.length > 0);
+                                  [self createFakeOutgoingMedia:index
+                                                   messageState:messageState
+                                                     hasCaption:hasCaption
+                                                fakeAssetLoader:fakeAssetLoader
+                                                         thread:thread
+                                                    transaction:transaction];
+                              }
+                                        prepareBlock:fakeAssetLoader.prepareBlock];
+}
+
++ (void)createFakeOutgoingMedia:(NSUInteger)index
+                   messageState:(TSOutgoingMessageState)messageState
+                     hasCaption:(BOOL)hasCaption
+                fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                         thread:(TSThread *)thread
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(fakeAssetLoader.filePath);
+    OWSAssert(transaction);
+
+    // Random time within last n years. Helpful for filling out a media gallery over time.
+    //    double yearsMillis = 4.0 * kYearsInMs;
+    //    uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
+    //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
+    uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
+
+    NSString *messageBody = nil;
+    if (hasCaption) {
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+
+        if (hasCaption) {
+            messageBody = [messageBody stringByAppendingString:@" 🔤"];
+        }
+        if (messageState == TSOutgoingMessageStateUnsent) {
+            messageBody = [messageBody stringByAppendingString:@" (Unsent)"];
+        } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+            messageBody = [messageBody stringByAppendingString:@" (Sending)"];
+        } else if (messageState == TSOutgoingMessageStateSentToService) {
+            messageBody = [messageBody stringByAppendingString:@" (Sent)"];
+        } else {
+            OWSFail(@"%@ unknown message state.", self.logTag)
+        }
+    }
+
+    NSString *_Nullable randomCaption;
+    if (arc4random() % 2 == 2) {
+        randomCaption = [self randomText];
+    }
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
+                                                                     inThread:thread
+                                                                  messageBody:randomCaption
+                                                               isVoiceMessage:NO
+                                                             expiresInSeconds:0];
+    [message setReceivedAtTimestamp:timestamp];
+
+    DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+    NSString *filename = dataSource.sourceFilename;
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
+                                                                                 byteCount:(UInt32)dataSource.dataLength
+                                                                            sourceFilename:filename];
+    NSError *error;
+    BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+    OWSAssert(success && !error);
+
+    [attachmentStream saveWithTransaction:transaction];
+    [message.attachmentIds addObject:attachmentStream.uniqueId];
+    if (filename) {
+        message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+    }
+    [message saveWithTransaction:transaction];
+    [message updateWithMessageState:messageState transaction:transaction];
+}
+
+#pragma mark - Fake Incoming Media
+
++ (DebugUIMessagesAction *)fakeIncomingJpegAction:(TSThread *)thread
+                           isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                       hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Jpeg"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader jpegInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingGifAction:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Gif"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMp3Action:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Mp3"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader mp3Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMp4Action:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Mp4"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader mp4Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMediaAction:(NSString *)labelParam
+                            isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                        hasCaption:(BOOL)hasCaption
+                                   fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                                            thread:(TSThread *)thread
+{
+    OWSAssert(labelParam.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
+
+    NSString *label = labelParam;
+    if (hasCaption) {
+        label = [label stringByAppendingString:@" 🔤"];
+    }
+
+    if (isAttachmentDownloaded) {
+        label = [label stringByAppendingString:@" 👍"];
+    }
+
+    return
+        [DebugUIMessagesSingleAction actionWithLabel:label
+                              unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+                                  OWSAssert(fakeAssetLoader.filePath.length > 0);
+                                  [self createFakeIncomingMedia:index
+                                         isAttachmentDownloaded:isAttachmentDownloaded
+                                                     hasCaption:hasCaption
+                                                fakeAssetLoader:fakeAssetLoader
+                                                         thread:thread
+                                                    transaction:transaction];
+                              }
+                                        prepareBlock:fakeAssetLoader.prepareBlock];
+}
+
++ (void)createFakeIncomingMedia:(NSUInteger)index
+         isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                     hasCaption:(BOOL)hasCaption
+                fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                         thread:(TSThread *)thread
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(fakeAssetLoader.filePath);
+    OWSAssert(transaction);
+
+    //    // Random time within last n years. Helpful for filling out a media gallery over time.
+    //    double yearsMillis = 4.0 * kYearsInMs;
+    //    uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
+    //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
+
+    NSString *messageBody = nil;
+    if (hasCaption) {
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+
+        if (hasCaption) {
+            messageBody = [messageBody stringByAppendingString:@" 🔤"];
+        }
+
+        if (isAttachmentDownloaded) {
+            messageBody = [messageBody stringByAppendingString:@" 👍"];
+        }
+    }
+    NSString *attachmentId;
+    if (isAttachmentDownloaded) {
+        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+        NSString *filename = dataSource.sourceFilename;
+        TSAttachmentStream *attachmentStream =
+            [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
+                                                  byteCount:(UInt32)dataSource.dataLength
+                                             sourceFilename:filename];
+        NSError *error;
+        BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+        OWSAssert(success && !error);
+
+        [attachmentStream saveWithTransaction:transaction];
+        attachmentId = attachmentStream.uniqueId;
+    } else {
+        UInt32 filesize = 64;
+        TSAttachmentPointer *pointer =
+            [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
+                                                      key:[self createRandomNSDataOfSize:filesize]
+                                                   digest:nil
+                                                byteCount:filesize
+                                              contentType:fakeAssetLoader.mimeType
+                                                    relay:@""
+                                           sourceFilename:fakeAssetLoader.filename
+                                           attachmentType:TSAttachmentTypeDefault];
+        pointer.state = TSAttachmentPointerStateFailed;
+        [pointer saveWithTransaction:transaction];
+        attachmentId = pointer.uniqueId;
+    }
+    TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                     inThread:thread
+                                                                     authorId:@"+19174054215"
+                                                               sourceDeviceId:0
+                                                                  messageBody:messageBody
+                                                                attachmentIds:@[
+                                                                    attachmentId,
+                                                                ]
+                                                             expiresInSeconds:0];
+    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+}
+
+#pragma mark - Fake Media
+
++ (NSArray<DebugUIMessagesAction *> *)allFakeMediaActions:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        // Outgoing
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        // Don't bother with multiple GIF states.
+        [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        //
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+
+        // Incoming
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        // Don't bother with multiple GIF states.
+        [self fakeIncomingGifAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        //
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
+    ];
+    return actions;
+}
+
++ (DebugUIMessagesAction *)fakeAllMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Media"
+                                                    subactions:[self allFakeMediaActions:thread]];
+}
+
++ (DebugUIMessagesAction *)fakeRandomMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Media"
+                                                       subactions:[self allFakeMediaActions:thread]];
+}
+
+#pragma mark - Send Text Messages
+
++ (DebugUIMessagesAction *)sendShortTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Short Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendTextMessageInThread:thread counter:index];
+                                       });
+                                   }];
+}
+
++ (DebugUIMessagesAction *)sendOversizeTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Oversize Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendOversizeTextMessage:thread];
+                                       });
+                                   }];
+}
+
++ (DebugUIMessagesAction *)sendMessageVariationsAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self sendShortTextMessageAction:thread],
+        [self sendOversizeTextMessageAction:thread],
+    ];
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send Conversation Cell Variations" subactions:actions];
+}
+
+#pragma mark - Fake Text Messages
+
++ (DebugUIMessagesAction *)fakeShortIncomingTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:@"Fake Short Incoming Text Message"
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody =
+                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:messageBody];
+            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
         }];
 }
 
-+ (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
-                            failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)fakeIncomingTextMessageAction:(TSThread *)thread text:(NSString *)text
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
-                         filename:@"random-jpg.jpg"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:text];
+            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+        }];
 }
 
-+ (void)ensureRandomMp3WithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)fakeOutgoingTextMessageAction:(TSThread *)thread
+                                            messageState:(TSOutgoingMessageState)messageState
+                                                    text:(NSString *)text
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
-                         filename:@"random-mp3.mp3"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:text];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageState:messageState transaction:transaction];
+        }];
 }
 
-+ (void)ensureRandomMp4WithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
-                         filename:@"random-mp4.mp4"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:@"Fake Short Incoming Text Message"
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody =
+                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:messageBody];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageState:messageState transaction:transaction];
+        }];
 }
 
-+ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
++ (NSArray<DebugUIMessagesAction *> *)allFakeTextActions:(TSThread *)thread
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
-                         filename:@"random-gif.gif"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self fakeShortIncomingTextMessageAction:thread],
+        [self fakeIncomingTextMessageAction:thread text:@"Hi"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣3️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"落"],
+        [self fakeIncomingTextMessageAction:thread text:@"﷽"],
+
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateUnsent],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateAttemptingOut],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"Hi"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
+        [self fakeOutgoingTextMessageAction:thread
+                               messageState:TSOutgoingMessageStateSentToService
+                                       text:@"1️⃣2️⃣"],
+        [self fakeOutgoingTextMessageAction:thread
+                               messageState:TSOutgoingMessageStateSentToService
+                                       text:@"1️⃣2️⃣3️⃣"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"落"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"﷽"],
+    ];
+    return actions;
 }
+
++ (DebugUIMessagesAction *)fakeAllTextAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Text"
+                                                    subactions:[self allFakeTextActions:thread]];
+}
+
++ (DebugUIMessagesAction *)fakeRandomTextAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Text"
+                                                       subactions:[self allFakeTextActions:thread]];
+}
+
+#pragma mark - Exemplary
+
++ (DebugUIMessagesAction *)allExemplaryAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+    [actions addObjectsFromArray:[self allFakeMediaActions:thread]];
+    [actions addObjectsFromArray:[self allFakeTextActions:thread]];
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations" subactions:actions];
+}
+
+#pragma mark -
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
 {
@@ -804,6 +1627,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
                              ignoreErrors:YES
                                completion:nil];
 }
+
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
@@ -1187,148 +2011,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     }
 }
 
-+ (void)sendFakeMediaMessages:(NSUInteger)counter thread:(TSThread *)thread
-{
-    // Download media
-    void (^failureBlock)(void) = ^void(void) {
-        OWSFail(@"%@ Failed to download example media.", self.logTag);
-        return;
-    };
-
-    [self ensureRandomGifWithSuccess:^(NSString *_Nonnull gifFilePath) {
-        [self ensureRandomJpegWithSuccess:^(NSString *_Nonnull jpegFilePath) {
-            [self ensureRandomMp4WithSuccess:^(NSString *_Nonnull mp4FilePath) {
-                DataSource *gifDataSource = [DataSourcePath dataSourceWithFilePath:gifFilePath];
-                DataSource *jpegDataSource = [DataSourcePath dataSourceWithFilePath:jpegFilePath];
-                DataSource *mp4DataSource = [DataSourcePath dataSourceWithFilePath:mp4FilePath];
-
-                [self sendFakeMediaMessages:counter
-                                     thread:thread
-                              gifDataSource:gifDataSource
-                             jpegDataSource:jpegDataSource
-                              mp4DataSource:mp4DataSource];
-            }
-                                     failure:failureBlock];
-        }
-                                  failure:failureBlock];
-    }
-                             failure:failureBlock];
-}
-
-+ (void)sendFakeMediaMessages:(NSUInteger)counter
-                       thread:(TSThread *)thread
-                gifDataSource:(DataSource *)gifDataSource
-               jpegDataSource:(DataSource *)jpegDataSource
-                mp4DataSource:(DataSource *)mp4DataSource
-{
-    const NSUInteger kMaxBatchSize = 2500;
-    if (counter < kMaxBatchSize) {
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self sendFakeMediaMessages:counter
-                                 thread:thread
-                          gifDataSource:gifDataSource
-                         jpegDataSource:jpegDataSource
-                          mp4DataSource:mp4DataSource
-                            transaction:transaction];
-        }];
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSUInteger remainder = counter;
-            while (remainder > 0) {
-                NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                [OWSPrimaryStorage.dbReadWriteConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [self sendFakeMediaMessages:batchSize
-                                             thread:thread
-                                      gifDataSource:gifDataSource
-                                     jpegDataSource:jpegDataSource
-                                      mp4DataSource:mp4DataSource
-                                        transaction:transaction];
-                    }];
-                remainder -= batchSize;
-                DDLogInfo(@"%@ sendFakeMediaMessages %zd / %zd", self.logTag, counter - remainder, counter);
-            }
-        });
-    }
-}
-
-+ (void)sendFakeMediaMessages:(NSUInteger)counter
-                       thread:(TSThread *)thread
-                gifDataSource:(DataSource *)gifDataSource
-               jpegDataSource:(DataSource *)jpegDataSource
-                mp4DataSource:(DataSource *)mp4DataSource
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    DDLogInfo(@"%@ sendFakeMediaMessages: %zd", self.logTag, counter);
-
-    for (NSUInteger i = 0; i < counter; i++) {
-
-        // Random time within last n years. Helpful for filling out a media gallery over time.
-        double yearsMillis = 4.0 * kYearsInMs;
-        uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
-
-        uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
-
-
-        NSString *_Nullable randomCaption;
-        if (arc4random() % 2 == 2) {
-            randomCaption = [self randomText];
-        }
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
-                                                                         inThread:thread
-                                                                      messageBody:randomCaption
-                                                                   isVoiceMessage:NO
-                                                                 expiresInSeconds:0];
-        [message setReceivedAtTimestamp:timestamp];
-
-        TSAttachmentStream *attachmentStream;
-        NSString *filename;
-        switch (arc4random_uniform(3)) {
-            case 0: {
-                DataSource *dataSource = gifDataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/gif"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-            case 1: {
-                DataSource *dataSource = jpegDataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-            case 2: {
-                DataSource *dataSource = mp4DataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-        }
-
-        [attachmentStream saveWithTransaction:transaction];
-        [message.attachmentIds addObject:attachmentStream.uniqueId];
-        if (filename) {
-            message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
-        }
-        [message saveWithTransaction:transaction];
-
-        [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
-    }
-}
+#pragma mark -
 
 + (void)createFakeLargeOutgoingAttachments:(NSUInteger)counter thread:(TSThread *)thread
 {
