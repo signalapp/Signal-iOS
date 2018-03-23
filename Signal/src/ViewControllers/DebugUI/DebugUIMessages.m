@@ -26,15 +26,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// typedef NS_ENUM(NSUInteger, DebugMediaType) {
-//    DebugMediaType_Gif,
-//    DebugMediaType_Jpeg,
-//    DebugMediaType_Mp3,
-//    DebugMediaType_Mp4,
-//    // A mix of the above options.
-//    DebugMediaType_Random,
-//};
-
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
 typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
@@ -45,8 +36,6 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 @property (nonatomic) NSString *label;
 @property (nonatomic) ActionPrepareBlock prepareBlock;
 @property (nonatomic) ActionBlock actionBlock;
-
-//@property (nonatomic, nullable) NSArray<DebugUIMessagesAction *> *subactions;
 
 @end
 
@@ -90,7 +79,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     instance.label = label;
     instance.actionBlock = ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
         DebugUIMessagesAction *subaction = subactions[arc4random_uniform((uint32_t)subactions.count)];
-        [subaction justPerformNTimes:1];
+        [subaction performWithIndex:index success:success failure:failure];
     };
     instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
         [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
@@ -102,28 +91,47 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 {
     __weak DebugUIMessagesAction *weakSelf = self;
     [self prepare:^{
-        [weakSelf justPerformNTimes:count];
+        [weakSelf performNTimes:count
+                        success:^{
+                        }
+                        failure:^{
+                        }];
     }
           failure:^{
           }];
 }
 
-- (void)justPerformNTimes:(NSUInteger)count
+- (void)performNTimes:(NSUInteger)count success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    DDLogInfo(@"%@ %@ performNTimes: %zd", self.logTag, self.label, count);
+    [DDLog flushLog];
+
     if (count < 1) {
+        success();
         return;
     }
 
     __weak DebugUIMessagesAction *weakSelf = self;
-    self.actionBlock(count,
-        ^{
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [weakSelf justPerformNTimes:count - 1];
-            });
-        },
-        ^{
-            // Do nothing.
-        });
+    [self performWithIndex:count
+                   success:^{
+                       dispatch_after(
+                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                               DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
+                               [weakSelf performNTimes:count - 1 success:success failure:failure];
+                           });
+                   }
+                   failure:failure];
+}
+
+- (void)performWithIndex:(NSUInteger)index success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    self.actionBlock(index, success, failure);
 }
 
 - (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
@@ -158,28 +166,6 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
                 failure:^{
                 }];
 }
-// actionBlock:^(NSUInteger index, ActionSuccessBlock   success, ActionFailureBlock   failure) {
-//    OWSAssert(filePath.length > 0);
-//
-//    DebugUIMessagesAction *action = actions[arc4random_uniform((uint32_t) actions.count)];
-//    [action performNTimes:index];
-//} prepareBlock:^(ActionSuccessBlock   success, ActionFailureBlock   failure) {
-//    void (^prepareNextAction)(void);
-//    prepareNextAction = ^{
-//
-//    };
-//    if (unpreparedActions.count < 1) {
-//
-//    }
-//    return [self ensureRandomJpegWithSuccess:
-//            ^(NSString *ensuredFilePath) {
-//                OWSAssert(ensuredFilePath.length > 0);
-//                filePath = ensuredFilePath;
-//            }
-//                                     failure:^{
-//                                     }];
-//}];
-
 
 @end
 
@@ -656,9 +642,9 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
             return [self ensureRandomJpegWithSuccess:^(NSString *ensuredFilePath) {
                 OWSAssert(ensuredFilePath.length > 0);
                 filePath = ensuredFilePath;
+                success();
             }
-                                             failure:^{
-                                             }];
+                                             failure:failure];
         }];
 }
 
@@ -676,9 +662,9 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
             return [self ensureRandomGifWithSuccess:^(NSString *ensuredFilePath) {
                 OWSAssert(ensuredFilePath.length > 0);
                 filePath = ensuredFilePath;
+                success();
             }
-                                            failure:^{
-                                            }];
+                                            failure:failure];
         }];
 }
 
@@ -696,9 +682,9 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
             return [self ensureRandomMp3WithSuccess:^(NSString *ensuredFilePath) {
                 OWSAssert(ensuredFilePath.length > 0);
                 filePath = ensuredFilePath;
+                success();
             }
-                                            failure:^{
-                                            }];
+                                            failure:failure];
         }];
 }
 
@@ -716,9 +702,9 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
             return [self ensureRandomMp4WithSuccess:^(NSString *ensuredFilePath) {
                 OWSAssert(ensuredFilePath.length > 0);
                 filePath = ensuredFilePath;
+                success();
             }
-                                            failure:^{
-                                            }];
+                                            failure:failure];
         }];
 }
 
