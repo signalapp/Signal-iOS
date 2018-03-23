@@ -8,7 +8,7 @@ public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
 }
 
-public class MediaTileViewController: UICollectionViewController, MediaGalleryCellDelegate {
+public class MediaTileViewController: UICollectionViewController, MediaGalleryCellDelegate, MediaGalleryDataSourceDelegate {
 
     private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
@@ -143,7 +143,39 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryCe
         }
     }
 
-    // MARK: UIColletionViewDataSource
+    // MARK: MediaGalleryDataSourceDelegate
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete message: TSMessage) {
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
+        // We've got to lay out the collectionView before any changes are made to the date source
+        // otherwise we'll fail when we try to remove the deleted sections/rows
+        collectionView.layoutIfNeeded()
+    }
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpetedly nil")
+            return
+        }
+
+        guard mediaGalleryDataSource.galleryItemCount > 0  else {
+            // Show Empty
+            self.collectionView?.reloadData()
+            return
+        }
+
+        // If collectionView hasn't been laid out yet, it won't have the sections/rows to remove.
+        collectionView.performBatchUpdates({
+            collectionView.deleteSections(deletedSections)
+            collectionView.deleteItems(at: deletedItems)
+        })
+    }
+
+    // MARK: UICollectionViewDataSource
 
     override public func numberOfSections(in collectionView: UICollectionView) -> Int {
         guard galleryDates.count > 0 else {

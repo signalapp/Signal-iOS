@@ -47,14 +47,18 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return currentViewController.galleryItemBox.value
         }
         set {
-            guard let galleryPage = self.buildGalleryPage(galleryItem: newValue) else {
-                owsFail("unexpetedly unable to build new gallery page")
-                return
-            }
-
-            self.updateTitle(item: newValue)
-            self.setViewControllers([galleryPage], direction: .forward, animated: false, completion: nil)
+            setCurrentItem(newValue, direction: .forward, animated: false)
         }
+    }
+
+    private func setCurrentItem(_ item: MediaGalleryItem, direction: UIPageViewControllerNavigationDirection, animated isAnimated: Bool) {
+        guard let galleryPage = self.buildGalleryPage(galleryItem: item) else {
+            owsFail("unexpetedly unable to build new gallery page")
+            return
+        }
+
+        self.updateTitle(item: item)
+        self.setViewControllers([galleryPage], direction: direction, animated: isAnimated)
     }
 
     private let uiDatabaseConnection: YapDatabaseConnection
@@ -302,7 +306,33 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
             owsFail("\(logTag) in \(#function) currentViewController was unexpectedly nil")
             return
         }
-        currentViewController.didPressDelete(sender)
+
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            return
+        }
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let deleteAction = UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
+                                         style: .destructive) { _ in
+                                            let deletedItem = currentViewController.galleryItem
+
+                                            if !self.sliderEnabled {
+                                                // In message details, which doesn't use the slider, so don't swap pages.
+                                            } else if let nextItem = mediaGalleryDataSource.galleryItem(after: deletedItem) {
+                                                self.setCurrentItem(nextItem, direction: .forward, animated: true)
+                                            } else if let previousItem = mediaGalleryDataSource.galleryItem(before: deletedItem) {
+                                                self.setCurrentItem(previousItem, direction: .reverse, animated: true)
+                                            } else {
+                                                // else we deleted the last piece of media, return to the conversation view
+                                                self.dismissSelf(animated: true)
+                                            }
+                                            mediaGalleryDataSource.delete(message: deletedItem.message)
+        }
+        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(deleteAction)
+
+        self.present(actionSheet, animated: true)
     }
 
     @objc
@@ -440,8 +470,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         return viewController
     }
 
-    // MARK: MediaDetailViewControllerDelegate
-
     public func dismissSelf(animated isAnimated: Bool, completion: (() -> Void)? = nil) {
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         // currentVC
@@ -455,6 +483,28 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         mediaGalleryDataSource.dismissMediaDetailViewController(self, animated: isAnimated, completion: completion)
+    }
+
+    // MARK: MediaDetailViewControllerDelegate
+
+    public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete conversationViewItem: ConversationViewItem) {
+        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
+            owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
+        guard let message = conversationViewItem.interaction as? TSMessage else {
+            owsFail("\(logTag) in \(#function) unexpected interaction: \(type(of: conversationViewItem))")
+            self.presentingViewController?.dismiss(animated: true)
+
+            return
+        }
+
+        dismissSelf(animated: true) {
+            mediaGalleryDataSource.delete(message: message)
+        }
     }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, isPlayingVideo: Bool) {

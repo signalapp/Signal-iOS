@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
+@property (nonatomic, readonly) UIImage *image;
 
 @property (nonatomic, nullable) OWSVideoPlayer *videoPlayer;
 @property (nonatomic, nullable) UIButton *playVideoButton;
@@ -94,6 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _galleryItemBox = galleryItemBox;
     _viewItem = viewItem;
+    // We cache the image data in case the attachment stream is deleted.
+    _image = galleryItemBox.attachmentStream.image;
 
     return self;
 }
@@ -117,11 +120,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     return _fileData;
-}
-
-- (UIImage *)image
-{
-    return self.attachmentStream.image;
 }
 
 - (BOOL)isAnimated
@@ -407,43 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
-                                           style:UIAlertActionStyleDestructive
-                                         handler:^(UIAlertAction *action) {
-                                             OWSAssert([self.presentingViewController
-                                                 isKindOfClass:[UINavigationController class]]);
-                                             UINavigationController *navController
-                                                 = (UINavigationController *)self.presentingViewController;
-
-                                             if ([navController.topViewController
-                                                     isKindOfClass:[ConversationViewController class]]) {
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                             } else if ([navController.topViewController
-                                                            isKindOfClass:[MessageDetailViewController class]]) {
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                                 [navController popViewControllerAnimated:YES];
-                                             } else {
-                                                 OWSFail(@"Unexpected presentation context.");
-                                                 [self.delegate dismissSelfAnimated:YES
-                                                                         completion:^{
-                                                                             [self.viewItem deleteAction];
-                                                                         }];
-                                             }
-                                         }]];
-
-    [actionSheet addAction:[OWSAlerts cancelAction]];
-
-    [self presentViewController:actionSheet animated:YES completion:nil];
+    [self.delegate mediaDetailViewController:self requestDeleteConversationViewItem:self.viewItem];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender

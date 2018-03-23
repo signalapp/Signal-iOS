@@ -999,7 +999,6 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     self.customView.userInteractionEnabled = NO;
     [self.payloadView addSubview:self.customView];
     [self.contentConstraints addObjectsFromArray:[self.customView autoPinToSuperviewEdges]];
-    [self cropMediaViewToBubbbleShape:self.customView];
 }
 
 - (CGSize)textBubbleSizeForContentWidth:(int)contentWidth
