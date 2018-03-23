@@ -107,10 +107,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.view.addSubview(self.footerBar)
         footerBar.barTintColor = UIColor.ows_signalBrandBlue
         footerBar.autoPinWidthToSuperview()
-        footerBar.autoSetDimension(.height, toSize: footerBarHeight)
-        footerBar.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 40)
-        // footerBar is offscreen until user hits "select"
-        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -footerBarHeight)
+        footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
+        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
 
         updateSelectButton()
 
@@ -457,10 +455,21 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     @objc
     func didTapSelect(_ sender: Any) {
         isInBatchSelectMode = true
+
+        guard let collectionView = self.collectionView else {
+            owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
+            return
+        }
+
         // show toolbar
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            self.footerBarBottomConstraint.constant = 0
+            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+            self.footerBarBottomConstraint = self.footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+
             self.footerBar.superview?.layoutIfNeeded()
+
+            // ensure toolbar doesn't cover bottom row.
+            collectionView.contentInset.bottom += self.kFooterBarHeight
         }, completion: nil)
 
         // disabled until at least one item is selected
@@ -474,20 +483,25 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     @objc
     func didCancelSelect(_ sender: Any) {
         isInBatchSelectMode = false
-        // hide toolbar
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            self.footerBarBottomConstraint.constant = self.footerBarHeight
-            self.footerBar.superview?.layoutIfNeeded()
-        }, completion: nil)
 
-        self.navigationItem.hidesBackButton = false
-
-        // deselect any selected
         guard let collectionView = self.collectionView else {
             owsFail("\(logTag) in \(#function) collectionView was unexpectedly nil")
             return
         }
 
+        // hide toolbar
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
+            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
+            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
+            self.footerBar.superview?.layoutIfNeeded()
+
+            // undo "ensure toolbar doesn't cover bottom row."
+            collectionView.contentInset.bottom -= self.kFooterBarHeight
+        }, completion: nil)
+
+        self.navigationItem.hidesBackButton = false
+
+        // deselect any selected
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
     }
 
@@ -535,10 +549,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
     var footerBar: UIToolbar!
     var deleteButton: UIBarButtonItem!
     var footerBarBottomConstraint: NSLayoutConstraint!
-    var footerBarHeight: CGFloat {
-        // bottomLayoutGuide accomodates iPhoneX
-        return 40 + self.bottomLayoutGuide.length
-    }
+    let kFooterBarHeight: CGFloat = 40
 
     // MARK: MediaGalleryDataSourceDelegate
 
