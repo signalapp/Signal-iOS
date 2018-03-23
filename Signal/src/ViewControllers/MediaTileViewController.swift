@@ -852,7 +852,9 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     private let contentTypeBadgeView: UIImageView
     private let selectedBadgeView: UIImageView
 
-    private let highlightView: UIView
+    private let highlightedView: UIView
+    private let selectedView: UIView
+
     fileprivate var item: MediaGalleryItem?
 
     static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
@@ -862,13 +864,13 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             self.selectedBadgeView.isHidden = !self.isSelected
-            self.alpha = self.isSelected ? 0.8 : 1.0
+            self.selectedView.isHidden = !self.isSelected
         }
     }
 
     override var isHighlighted: Bool {
         didSet {
-            self.highlightView.isHidden = !self.isHighlighted
+            self.highlightedView.isHidden = !self.isHighlighted
         }
     }
 
@@ -883,10 +885,15 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         selectedBadgeView.image = MediaGalleryCell.selectedBadgeImage
         selectedBadgeView.isHidden = true
 
-        self.highlightView = UIView()
-        highlightView.alpha = 0.2
-        highlightView.backgroundColor = .black
-        highlightView.isHidden = true
+        self.highlightedView = UIView()
+        highlightedView.alpha = 0.2
+        highlightedView.backgroundColor = .black
+        highlightedView.isHidden = true
+
+        self.selectedView = UIView()
+        selectedView.alpha = 0.3
+        selectedView.backgroundColor = .white
+        selectedView.isHidden = true
 
         super.init(frame: frame)
 
@@ -894,11 +901,13 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
 
         self.contentView.addSubview(imageView)
         self.contentView.addSubview(contentTypeBadgeView)
+        self.contentView.addSubview(highlightedView)
+        self.contentView.addSubview(selectedView)
         self.contentView.addSubview(selectedBadgeView)
-        self.contentView.addSubview(highlightView)
 
         imageView.autoPinEdgesToSuperviewEdges()
-        highlightView.autoPinEdgesToSuperviewEdges()
+        highlightedView.autoPinEdgesToSuperviewEdges()
+        selectedView.autoPinEdgesToSuperviewEdges()
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
@@ -939,6 +948,8 @@ fileprivate class MediaGalleryCell: UICollectionViewCell {
         self.item = nil
         self.imageView.image = nil
         self.contentTypeBadgeView.isHidden = true
+        self.highlightedView.isHidden = true
+        self.selectedView.isHidden = true
         self.selectedBadgeView.isHidden = true
     }
 }
