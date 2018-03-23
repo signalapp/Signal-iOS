@@ -434,11 +434,11 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
-    public func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
+    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?) {
         self.view.isUserInteractionEnabled = false
         UIApplication.shared.isStatusBarHidden = false
 
-        guard let detailView = mediaDetailViewController.view else {
+        guard let detailView = mediaPageViewController.view else {
             owsFail("\(logTag) in \(#function) detailView was unexpectedly nil")
             self.presentingViewController?.dismiss(animated: false, completion: completion)
             return
@@ -461,10 +461,13 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                            delay: 0.0,
                            options:.curveEaseOut,
                            animations: {
+                            // Move back over it's original location
                             self.presentationView.superview?.layoutIfNeeded()
 
                             // In case user has hidden bars, which changes background to black.
-                            self.view.backgroundColor = UIColor.white
+                            mediaPageViewController.view.backgroundColor = .white
+                            mediaPageViewController.view.alpha = 0
+                            self.view.backgroundColor = .clear
 
                             if changedItems {
                                 self.presentationView.alpha = 0
@@ -484,10 +487,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                                 self.presentingViewController?.dismiss(animated: false, completion: completion)
                                 return
                             }
-                            replacingView.alpha = 1.0
-
                             // fade out content and toolbars
-                            self.navigationController?.view.alpha = 0.0
+                            self.view.alpha = 0.0
+                            replacingView.alpha = 1.0
             },
                            completion: { (_: Bool) in
                             self.presentingViewController?.dismiss(animated: false, completion: completion)
