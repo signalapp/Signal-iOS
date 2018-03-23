@@ -316,9 +316,14 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
             return
         }
 
-        detailView.isHidden = true
-
+        // At this point our media view should be overlayed perfectly
+        // by our presentationView. Swapping them out should be imperceptible.
         self.presentationView.isHidden = false
+        // We don't hide the pageViewController entirely - e.g. we want the toolbars to fade in.
+        pageViewController.currentViewController.view.isHidden = true
+        detailView.backgroundColor = .clear
+        self.view.backgroundColor = .clear
+
         self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius
 
         fromViewController.present(self, animated: false) {
@@ -343,12 +348,14 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                             self.presentationView.layer.cornerRadius = 0
                             self.presentationView.superview?.layoutIfNeeded()
 
-                            self.view.backgroundColor = UIColor.white
+                            // fade out content behind the pageViewController
+                            // and behind the presentation view
+                            self.view.backgroundColor = .white
             },
                            completion: { (_: Bool) in
                             // At this point our presentation view should be overlayed perfectly
                             // with our media view. Swapping them out should be imperceptible.
-                            detailView.isHidden = false
+                            pageViewController.currentViewController.view.isHidden = false
                             self.presentationView.isHidden = true
 
                             self.view.isUserInteractionEnabled = true
@@ -443,7 +450,8 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
             self.presentingViewController?.dismiss(animated: false, completion: completion)
             return
         }
-        detailView.isHidden = true
+
+        mediaPageViewController.currentViewController.view.isHidden = true
         self.presentationView.isHidden = false
 
         // Move the presentationView back to it's initial position, i.e. where
@@ -464,10 +472,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                             // Move back over it's original location
                             self.presentationView.superview?.layoutIfNeeded()
 
-                            // In case user has hidden bars, which changes background to black.
-                            mediaPageViewController.view.backgroundColor = .white
-                            mediaPageViewController.view.alpha = 0
-                            self.view.backgroundColor = .clear
+                            detailView.alpha = 0
 
                             if changedItems {
                                 self.presentationView.alpha = 0
@@ -475,7 +480,12 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                                 self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius
                             }
             },
-                           completion:nil)
+                           completion: { (_: Bool) in
+                            // In case user has hidden bars, which changes background to black.
+                            // We don't want to change this while detailView is visible, lest
+                            // we obscure out the presentationView
+                            detailView.backgroundColor = .white
+            })
 
             // This intentionally overlaps the previous animation a bit
             UIView.animate(withDuration: 0.1,
