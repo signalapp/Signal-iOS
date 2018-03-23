@@ -475,6 +475,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // Swapping mediaView for presentationView will be perceptible if we're not zoomed out all the way.
         // currentVC
         currentViewController.zoomOut(animated: true)
+        currentViewController.stopAnyVideo()
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")
