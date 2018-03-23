@@ -26,6 +26,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, DebugMediaType) {
+    DebugMediaType_Gif,
+    DebugMediaType_Jpeg,
+    DebugMediaType_Mp3,
+    DebugMediaType_Mp4,
+    // A mix of the above options.
+    DebugMediaType_Random,
+};
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
@@ -187,65 +195,9 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendRandomAttachment:thread uti:(NSString *)kUTTypePDF];
                         }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random GIF (1/sec.)"
+        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
                         actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random GIF (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random GIF (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1,000 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:1000 thread:thread];
+                            [DebugUIMessages sendRandomMediaInThread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Create all system messages"
                         actionBlock:^{
@@ -452,46 +404,136 @@ NS_ASSUME_NONNULL_BEGIN
     success();
 }
 
-+ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
+#pragma mark - Media
+
++ (NSArray *)allMediaTypes
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
-                         filename:@"random-gif.gif"
-                          success:success
-                          failure:failure];
+    return @[
+        @(DebugMediaType_Gif),
+        @(DebugMediaType_Jpeg),
+        @(DebugMediaType_Mp3),
+        @(DebugMediaType_Mp4),
+        @(DebugMediaType_Random),
+    ];
 }
 
-+ (void)sendRandomGifInThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
++ (void)sendRandomMediaInThread:(TSThread *)thread
 {
-    [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
+    OWSAssertIsOnMainThread() OWSAssert(thread);
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (NSNumber *value in self.allMediaTypes) {
+        DebugMediaType mediaType = (DebugMediaType)value.intValue;
+        NSString *label;
+        switch (mediaType) {
+            case DebugMediaType_Gif:
+                label = @"Gif";
+                break;
+            case DebugMediaType_Jpeg:
+                label = @"Jpeg";
+                break;
+            case DebugMediaType_Mp3:
+                label = @"Mp3";
+                break;
+            case DebugMediaType_Mp4:
+                label = @"Mp4";
+                break;
+            case DebugMediaType_Random:
+                label = @"Random";
+                break;
+        }
+
+        [alert addAction:[UIAlertAction actionWithTitle:label
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [self sendRandomMedia:mediaType thread:thread];
+                                                }]];
     }
-                             failure:failure];
+
+    [alert addAction:[OWSAlerts cancelAction]];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-+ (void)sendRandomGifs:(int)count thread:(TSThread *)thread
++ (void)sendRandomMedia:(DebugMediaType)mediaType thread:(TSThread *)thread
 {
+    OWSAssertIsOnMainThread() OWSAssert(thread);
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many to send?"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (NSNumber *countValue in @[
+             @(1),
+             @(10),
+             @(100),
+             @(1 * 1000),
+             @(10 * 1000),
+         ]) {
+        [alert addAction:[UIAlertAction actionWithTitle:countValue.stringValue
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [self sendRandomMedia:mediaType
+                                                                    count:countValue.unsignedIntegerValue
+                                                                   thread:thread];
+                                                }]];
+    }
+
+    [alert addAction:[OWSAlerts cancelAction]];
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
+}
+
++ (void)sendRandomMedia:(DebugMediaType)mediaType count:(NSUInteger)count thread:(TSThread *)thread
+{
+    OWSAssert(thread);
     OWSAssert(count > 0);
-    [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomGifs:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
+
+    void (^completion)(void) = ^{
+        if (count <= 1) {
+            return;
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self sendRandomMedia:mediaType count:count - 1 thread:thread];
+        });
+    };
+    void (^sendMessage)(NSString *) = ^(NSString *filePath) {
+        [self sendAttachment:filePath
+                      thread:thread
+                     success:completion
+                     failure:^{
+                     }];
+    };
+    DebugMediaType mediaTypeToSend = mediaType;
+    while (mediaTypeToSend == DebugMediaType_Random) {
+        NSArray<NSNumber *> *allMediaTypes = self.allMediaTypes;
+        NSNumber *value = allMediaTypes[arc4random_uniform((uint32_t)allMediaTypes.count)];
+        mediaTypeToSend = (DebugMediaType)value.intValue;
     }
-                             failure:^{
-                             }];
+
+    switch (mediaTypeToSend) {
+        case DebugMediaType_Gif:
+            return [self ensureRandomGifWithSuccess:sendMessage
+                                            failure:^{
+                                            }];
+        case DebugMediaType_Jpeg:
+            return [self ensureRandomJpegWithSuccess:sendMessage
+                                             failure:^{
+                                             }];
+        case DebugMediaType_Mp3:
+            return [self ensureRandomMp3WithSuccess:sendMessage
+                                            failure:^{
+                                            }];
+        case DebugMediaType_Mp4:
+            return [self ensureRandomMp4WithSuccess:sendMessage
+                                            failure:^{
+                                            }];
+        case DebugMediaType_Random:
+            OWSFail(@"%@ Invalid value.", self.logTag);
+            break;
+    }
 }
 
 + (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
@@ -503,39 +545,6 @@ NS_ASSUME_NONNULL_BEGIN
                           failure:failure];
 }
 
-+ (void)sendRandomJpegInThread:(TSThread *)thread
-                       success:(nullable void (^)(void))success
-                       failure:(nullable void (^)(void))failure
-{
-    [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                              failure:failure];
-}
-
-+ (void)sendRandomJpegs:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-    [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomJpegs:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                              failure:^{
-                              }];
-}
-
 + (void)ensureRandomMp3WithSuccess:(nullable void (^)(NSString *filePath))success
                            failure:(nullable void (^)(void))failure
 {
@@ -543,39 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
                          filename:@"random-mp3.mp3"
                           success:success
                           failure:failure];
-}
-
-+ (void)sendRandomMp3InThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
-{
-    [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                             failure:failure];
-}
-
-+ (void)sendRandomMp3s:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-    [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomMp3s:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                             failure:^{
-                             }];
 }
 
 + (void)ensureRandomMp4WithSuccess:(nullable void (^)(NSString *filePath))success
@@ -587,102 +563,13 @@ NS_ASSUME_NONNULL_BEGIN
                           failure:failure];
 }
 
-+ (void)sendRandomMp4InThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
++ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success
+                           failure:(nullable void (^)(void))failure
 {
-    [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                             failure:failure];
-}
-
-+ (void)sendRandomMp4s:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-    [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomMp4s:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                             failure:^{
-                             }];
-}
-
-+ (void)sendMediaAttachments:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-
-    void (^success)(void) = ^{
-        if (count <= 1) {
-            return;
-        }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self sendMediaAttachments:count - 1 thread:thread];
-        });
-    };
-
-    switch (arc4random_uniform(4)) {
-        case 0: {
-            [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                     failure:^{
-                                     }];
-            break;
-        }
-        case 1: {
-            [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                      failure:^{
-                                      }];
-            break;
-        }
-        case 2: {
-            [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                     failure:^{
-                                     }];
-            break;
-        }
-        case 3: {
-            [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                     failure:^{
-                                     }];
-            break;
-        }
-    }
+    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
+                         filename:@"random-gif.gif"
+                          success:success
+                          failure:failure];
 }
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
@@ -713,7 +600,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(size % 4 == 0);
 
-    return [Randomness generateRandomBytes:size];
+    return [Randomness generateRandomBytes:(int)size];
 }
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti
