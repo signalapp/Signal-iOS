@@ -35,9 +35,9 @@ typedef NS_ENUM(NSUInteger, DebugMediaType) {
     DebugMediaType_Random,
 };
 
-typedef void (^ActionSucceesBlock)(void);
+typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
-typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failure);
+typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure);
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
@@ -59,6 +59,20 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     OWSAssert(thread);
 
     NSMutableArray<OWSTableItem *> *items = [@[
+
+#pragma mark - Actions
+
+        [OWSTableItem itemWithTitle:@"Send N text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendNTextMessagesInThread:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendNRandomMediaInThread:thread];
+                        }],
+
+#pragma mark - Misc.
+
         [OWSTableItem itemWithTitle:@"Perform 100 random actions"
                         actionBlock:^{
                             [DebugUIMessages performRandomActions:100 thread:thread];
@@ -66,22 +80,6 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
         [OWSTableItem itemWithTitle:@"Perform 1,000 random actions"
                         actionBlock:^{
                             [DebugUIMessages performRandomActions:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1,000 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:3000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Send 10 tiny text messages (1/sec.)"
                         actionBlock:^{
@@ -199,10 +197,6 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
                         actionBlock:^{
                             [DebugUIMessages sendRandomAttachment:thread uti:(NSString *)kUTTypePDF];
                         }],
-        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMediaInThread:thread];
-                        }],
         [OWSTableItem itemWithTitle:@"Create all system messages"
                         actionBlock:^{
                             [DebugUIMessages createSystemMessagesInThread:thread];
@@ -291,17 +285,17 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-+ (void)sendMessages:(int)counter toAllMembersOfGroup:(TSGroupThread *)groupThread
++ (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
         TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        [DebugUIMessages sendTextMessages:counter thread:contactThread];
+        [self performAction:[self sendTextMessagesActionInThread:contactThread] count:count];
     }
 }
 
-+ (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
++ (void)sendTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
-    DDLogInfo(@"%@ sendTextMessageInThread: %d", self.logTag, counter);
+    DDLogInfo(@"%@ sendTextMessageInThread: %zd", self.logTag, counter);
     [DDLog flushLog];
 
     NSString *randomText = [self randomText];
@@ -311,18 +305,24 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     DDLogError(@"%@ sendTextMessageInThread timestamp: %llu.", self.logTag, message.timestamp);
 }
 
-+ (void)sendTextMessages:(int)counter thread:(TSThread *)thread
++ (void)sendNTextMessagesInThread:(TSThread *)thread
 {
-    if (counter < 1) {
-        return;
-    }
-    [self sendTextMessageInThread:thread counter:counter];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self sendTextMessages:counter - 1 thread:thread];
-    });
+    [self performActionNTimes:[self sendTextMessagesActionInThread:thread]];
 }
 
-+ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(int)counter
++ (ActionBlock)sendTextMessagesActionInThread:(TSThread *)thread
+{
+
+    OWSAssert(thread);
+
+    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+        [self sendTextMessageInThread:thread counter:index];
+        // TODO:
+        success();
+    };
+}
+
++ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     NSString *randomText = [[self randomText] substringToIndex:arc4random_uniform(4)];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -330,7 +330,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
 }
 
-+ (void)sendTinyTextMessages:(int)counter thread:(TSThread *)thread
++ (void)sendTinyTextMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -421,7 +421,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     ];
 }
 
-+ (void)sendRandomMediaInThread:(TSThread *)thread
++ (void)sendNRandomMediaInThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread() OWSAssert(thread);
 
@@ -449,13 +449,12 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
                 break;
         }
 
-        [alert addAction:[UIAlertAction
-                             actionWithTitle:label
-                                       style:UIAlertActionStyleDefault
-                                     handler:^(UIAlertAction *action) {
-                                         [self performActionNTimes:[self sendRandomMediaAction:mediaType thread:thread]
-                                                            thread:thread];
-                                     }]];
+        [alert addAction:[UIAlertAction actionWithTitle:label
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *action) {
+                                                    [self performActionNTimes:[self sendRandomMediaAction:mediaType
+                                                                                                   thread:thread]];
+                                                }]];
     }
 
     [alert addAction:[OWSAlerts cancelAction]];
@@ -468,7 +467,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
 {
     OWSAssert(thread);
 
-    return ^(ActionSucceesBlock success, ActionFailureBlock failure) {
+    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
         void (^sendMessage)(NSString *) = ^(NSString *filePath) {
             [self sendAttachment:filePath thread:thread success:success failure:failure];
         };
@@ -503,15 +502,14 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     };
 }
 
-+ (void)performActionNTimes:(ActionBlock)action thread:(TSThread *)thread
++ (void)performActionNTimes:(ActionBlock)action
 {
-    OWSAssertIsOnMainThread() OWSAssert(thread);
+    OWSAssertIsOnMainThread();
 
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many?"
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
     for (NSNumber *countValue in @[
-             @(0),
              @(1),
              @(10),
              @(100),
@@ -535,7 +533,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     OWSAssert(action);
     OWSAssert(count > 0);
 
-    action(
+    action(count,
         ^{
             if (count <= 1) {
                 return;
@@ -588,7 +586,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSMutableString *message = [NSMutableString new];
-    for (int i = 0; i < 32; i++) {
+    for (NSUInteger i = 0; i < 32; i++) {
         [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
                               @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
                               @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
@@ -824,7 +822,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     }];
 }
 
-+ (void)sendTextAndSystemMessages:(int)counter thread:(TSThread *)thread
++ (void)sendTextAndSystemMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -878,10 +876,10 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     return randomText;
 }
 
-+ (void)createFakeUnreadMessages:(int)counter thread:(TSThread *)thread
++ (void)createFakeUnreadMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (int i = 0; i < counter; i++) {
+        for (NSUInteger i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
@@ -1170,7 +1168,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     }
 }
 
-+ (void)createFakeLargeOutgoingAttachments:(int)counter thread:(TSThread *)thread
++ (void)createFakeLargeOutgoingAttachments:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -1208,7 +1206,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     });
 }
 
-+ (void)sendTinyAttachments:(int)counter thread:(TSThread *)thread
++ (void)sendTinyAttachments:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -1229,7 +1227,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     });
 }
 
-+ (void)createNewGroups:(int)counter recipientId:(NSString *)recipientId
++ (void)createNewGroups:(NSUInteger)counter recipientId:(NSString *)recipientId
 {
     if (counter < 1) {
         return;
@@ -1272,24 +1270,24 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
                           }];
 }
 
-+ (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread
++ (void)injectFakeIncomingMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     // Wait 5 seconds so debug user has time to navigate to another
     // view before message processing occurs.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
-            for (int i = 0; i < counter; i++) {
+            for (NSUInteger i = 0; i < counter; i++) {
                 [self injectIncomingMessageInThread:thread counter:counter - i];
             }
         });
 }
 
-+ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(int)counter
++ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     OWSAssert(thread);
 
-    DDLogInfo(@"%@ injectIncomingMessageInThread: %d", self.logTag, counter);
+    DDLogInfo(@"%@ injectIncomingMessageInThread: %zd", self.logTag, counter);
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -1335,7 +1333,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
     }];
 }
 
-+ (void)performRandomActions:(int)counter thread:(TSThread *)thread
++ (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
                    dispatch_get_main_queue(),
@@ -1347,8 +1345,7 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
                    });
 }
 
-+ (void)performRandomActionInThread:(TSThread *)thread
-                            counter:(int)counter
++ (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     typedef void (^ActionBlock)(YapDatabaseReadWriteTransaction *transaction);
     NSArray<ActionBlock> *actionBlocks = @[
@@ -1394,8 +1391,8 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
         },
     ];
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        int actionCount = 1 + (int)arc4random_uniform(3);
-        for (int actionIdx = 0; actionIdx < actionCount; actionIdx++) {
+        NSUInteger actionCount = 1 + (NSUInteger)arc4random_uniform(3);
+        for (NSUInteger actionIdx = 0; actionIdx < actionCount; actionIdx++) {
             ActionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
             actionBlock(transaction);
         }
@@ -1609,21 +1606,21 @@ typedef void (^ActionBlock)(ActionSucceesBlock success, ActionFailureBlock failu
 {
     OWSAssert(thread);
 
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    long long now = (long long)[NSDate ows_millisecondTimeStamp];
     NSArray<NSNumber *> *timestamps = @[
-        @(now + 1 * kHourInMs),
+        @(now + 1 * (long long)kHourInMs),
         @(now),
-        @(now - 1 * kHourInMs),
-        @(now - 12 * kHourInMs),
-        @(now - 1 * kDayInMs),
-        @(now - 2 * kDayInMs),
-        @(now - 3 * kDayInMs),
-        @(now - 6 * kDayInMs),
-        @(now - 7 * kDayInMs),
-        @(now - 8 * kDayInMs),
-        @(now - 2 * kWeekInMs),
-        @(now - 1 * kMonthInMs),
-        @(now - 2 * kMonthInMs),
+        @(now - 1 * (long long)kHourInMs),
+        @(now - 12 * (long long)kHourInMs),
+        @(now - 1 * (long long)kDayInMs),
+        @(now - 2 * (long long)kDayInMs),
+        @(now - 3 * (long long)kDayInMs),
+        @(now - 6 * (long long)kDayInMs),
+        @(now - 7 * (long long)kDayInMs),
+        @(now - 8 * (long long)kDayInMs),
+        @(now - 2 * (long long)kWeekInMs),
+        @(now - 1 * (long long)kMonthInMs),
+        @(now - 2 * (long long)kMonthInMs),
     ];
     NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
     [recipientIds removeObject:[TSAccountManager localNumber]];

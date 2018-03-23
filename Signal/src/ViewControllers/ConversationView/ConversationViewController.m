@@ -490,6 +490,10 @@ typedef enum : NSUInteger {
     [self createBackButton];
     [self addNotificationListeners];
     [self loadDraftInCompose];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [DebugUITableViewController presentDebugUIForThread:self.thread fromViewController:self];
+    });
 }
 
 - (void)loadView
