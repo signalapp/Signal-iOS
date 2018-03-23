@@ -26,24 +26,172 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, DebugMediaType) {
-    DebugMediaType_Gif,
-    DebugMediaType_Jpeg,
-    DebugMediaType_Mp3,
-    DebugMediaType_Mp4,
-    // A mix of the above options.
-    DebugMediaType_Random,
-};
+// typedef NS_ENUM(NSUInteger, DebugMediaType) {
+//    DebugMediaType_Gif,
+//    DebugMediaType_Jpeg,
+//    DebugMediaType_Mp3,
+//    DebugMediaType_Mp4,
+//    // A mix of the above options.
+//    DebugMediaType_Random,
+//};
 
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
+typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
 typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure);
+
+@interface DebugUIMessagesAction : NSObject
+
+@property (nonatomic) NSString *label;
+@property (nonatomic) ActionPrepareBlock prepareBlock;
+@property (nonatomic) ActionBlock actionBlock;
+
+//@property (nonatomic, nullable) NSArray<DebugUIMessagesAction *> *subactions;
+
+@end
+
+#pragma mark -
+
+@implementation DebugUIMessagesAction
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label actionBlock:(ActionBlock)actionBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(actionBlock);
+
+    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
+    instance.label = label;
+    instance.actionBlock = actionBlock;
+    return instance;
+}
+
++ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
+                               actionBlock:(ActionBlock)actionBlock
+                              prepareBlock:(ActionPrepareBlock)prepareBlock
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(actionBlock);
+    OWSAssert(prepareBlock);
+
+    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
+    instance.label = label;
+    instance.actionBlock = actionBlock;
+    instance.prepareBlock = prepareBlock;
+    return instance;
+}
+
++ (DebugUIMessagesAction *)groupActionWithLabel:(NSString *)label
+                                     subactions:(NSArray<DebugUIMessagesAction *> *)subactions
+{
+    OWSAssert(label.length > 0);
+    OWSAssert(subactions.count > 0);
+
+    DebugUIMessagesAction *instance = [DebugUIMessagesAction new];
+    instance.label = label;
+    instance.actionBlock = ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+        DebugUIMessagesAction *subaction = subactions[arc4random_uniform((uint32_t)subactions.count)];
+        [subaction justPerformNTimes:1];
+    };
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)prepareAndPerformNTimes:(NSUInteger)count
+{
+    __weak DebugUIMessagesAction *weakSelf = self;
+    [self prepare:^{
+        [weakSelf justPerformNTimes:count];
+    }
+          failure:^{
+          }];
+}
+
+- (void)justPerformNTimes:(NSUInteger)count
+{
+    if (count < 1) {
+        return;
+    }
+
+    __weak DebugUIMessagesAction *weakSelf = self;
+    self.actionBlock(count,
+        ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [weakSelf justPerformNTimes:count - 1];
+            });
+        },
+        ^{
+            // Do nothing.
+        });
+}
+
+- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    if (self.prepareBlock) {
+        self.prepareBlock(success, failure);
+    } else {
+        success();
+    }
+}
+
++ (void)prepareSubactions:(NSMutableArray<DebugUIMessagesAction *> *)unpreparedSubactions
+                  success:(ActionSuccessBlock)success
+                  failure:(ActionFailureBlock)failure
+{
+    OWSAssert(unpreparedSubactions);
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    if (unpreparedSubactions.count < 1) {
+        return success();
+    }
+
+    DebugUIMessagesAction *nextAction = unpreparedSubactions.lastObject;
+    [unpreparedSubactions removeLastObject];
+    [nextAction prepare:^{
+        [self prepareSubactions:unpreparedSubactions success:success failure:failure];
+    }
+                failure:^{
+                }];
+}
+// actionBlock:^(NSUInteger index, ActionSuccessBlock   success, ActionFailureBlock   failure) {
+//    OWSAssert(filePath.length > 0);
+//
+//    DebugUIMessagesAction *action = actions[arc4random_uniform((uint32_t) actions.count)];
+//    [action performNTimes:index];
+//} prepareBlock:^(ActionSuccessBlock   success, ActionFailureBlock   failure) {
+//    void (^prepareNextAction)(void);
+//    prepareNextAction = ^{
+//
+//    };
+//    if (unpreparedActions.count < 1) {
+//
+//    }
+//    return [self ensureRandomJpegWithSuccess:
+//            ^(NSString *ensuredFilePath) {
+//                OWSAssert(ensuredFilePath.length > 0);
+//                filePath = ensuredFilePath;
+//            }
+//                                     failure:^{
+//                                     }];
+//}];
+
+
+@end
+
+#pragma mark -
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
 - (void)setReceivedAtTimestamp:(uint64_t)value;
 
 @end
+
+#pragma mark -
 
 @implementation DebugUIMessages
 
@@ -289,7 +437,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
         TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        [self performAction:[self sendTextMessagesActionInThread:contactThread] count:count];
+        [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
 
@@ -310,16 +458,17 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     [self performActionNTimes:[self sendTextMessagesActionInThread:thread]];
 }
 
-+ (ActionBlock)sendTextMessagesActionInThread:(TSThread *)thread
++ (DebugUIMessagesAction *)sendTextMessagesActionInThread:(TSThread *)thread
 {
-
     OWSAssert(thread);
 
-    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-        [self sendTextMessageInThread:thread counter:index];
-        // TODO:
-        success();
-    };
+    return [DebugUIMessagesAction
+        actionWithLabel:@"Send Text Message"
+            actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+                [self sendTextMessageInThread:thread counter:index];
+                // TODO:
+                success();
+            }];
 }
 
 + (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
@@ -408,103 +557,12 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     success();
 }
 
-#pragma mark - Media
+#pragma mark - Infrastructure
 
-+ (NSArray *)allMediaTypes
-{
-    return @[
-        @(DebugMediaType_Gif),
-        @(DebugMediaType_Jpeg),
-        @(DebugMediaType_Mp3),
-        @(DebugMediaType_Mp4),
-        @(DebugMediaType_Random),
-    ];
-}
-
-+ (void)sendNRandomMediaInThread:(TSThread *)thread
-{
-    OWSAssertIsOnMainThread() OWSAssert(thread);
-
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-    for (NSNumber *value in self.allMediaTypes) {
-        DebugMediaType mediaType = (DebugMediaType)value.intValue;
-        NSString *label;
-        switch (mediaType) {
-            case DebugMediaType_Gif:
-                label = @"Gif";
-                break;
-            case DebugMediaType_Jpeg:
-                label = @"Jpeg";
-                break;
-            case DebugMediaType_Mp3:
-                label = @"Mp3";
-                break;
-            case DebugMediaType_Mp4:
-                label = @"Mp4";
-                break;
-            case DebugMediaType_Random:
-                label = @"Random";
-                break;
-        }
-
-        [alert addAction:[UIAlertAction actionWithTitle:label
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *action) {
-                                                    [self performActionNTimes:[self sendRandomMediaAction:mediaType
-                                                                                                   thread:thread]];
-                                                }]];
-    }
-
-    [alert addAction:[OWSAlerts cancelAction]];
-
-    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-    [fromViewController presentViewController:alert animated:YES completion:nil];
-}
-
-+ (ActionBlock)sendRandomMediaAction:(DebugMediaType)mediaType thread:(TSThread *)thread
-{
-    OWSAssert(thread);
-
-    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-        void (^sendMessage)(NSString *) = ^(NSString *filePath) {
-            [self sendAttachment:filePath thread:thread success:success failure:failure];
-        };
-        DebugMediaType mediaTypeToSend = mediaType;
-        while (mediaTypeToSend == DebugMediaType_Random) {
-            NSArray<NSNumber *> *allMediaTypes = self.allMediaTypes;
-            NSNumber *value = allMediaTypes[arc4random_uniform((uint32_t)allMediaTypes.count)];
-            mediaTypeToSend = (DebugMediaType)value.intValue;
-        }
-
-        switch (mediaTypeToSend) {
-            case DebugMediaType_Gif:
-                return [self ensureRandomGifWithSuccess:sendMessage
-                                                failure:^{
-                                                }];
-            case DebugMediaType_Jpeg:
-                return [self ensureRandomJpegWithSuccess:sendMessage
-                                                 failure:^{
-                                                 }];
-            case DebugMediaType_Mp3:
-                return [self ensureRandomMp3WithSuccess:sendMessage
-                                                failure:^{
-                                                }];
-            case DebugMediaType_Mp4:
-                return [self ensureRandomMp4WithSuccess:sendMessage
-                                                failure:^{
-                                                }];
-            case DebugMediaType_Random:
-                OWSFail(@"%@ Invalid value.", self.logTag);
-                break;
-        }
-    };
-}
-
-+ (void)performActionNTimes:(ActionBlock)action
++ (void)performActionNTimes:(DebugUIMessagesAction *)action
 {
     OWSAssertIsOnMainThread();
+    OWSAssert(action);
 
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many?"
                                                                    message:nil
@@ -519,7 +577,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
         [alert addAction:[UIAlertAction actionWithTitle:countValue.stringValue
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *ignore) {
-                                                    [self performAction:action count:countValue.unsignedIntegerValue];
+                                                    [action prepareAndPerformNTimes:countValue.unsignedIntegerValue];
                                                 }]];
     }
 
@@ -528,22 +586,140 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-+ (void)performAction:(ActionBlock)action count:(NSUInteger)count
-{
-    OWSAssert(action);
-    OWSAssert(count > 0);
+#pragma mark - Media
 
-    action(count,
-        ^{
-            if (count <= 1) {
-                return;
+//+ (NSArray *)allMediaTypes
+//{
+//    return @[
+//        @(DebugMediaType_Gif),
+//        @(DebugMediaType_Jpeg),
+//        @(DebugMediaType_Mp3),
+//        @(DebugMediaType_Mp4),
+//        @(DebugMediaType_Random),
+//    ];
+//}
+
++ (void)sendNRandomMediaInThread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread() OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self sendJpegAction:thread],
+        [self sendGifAction:thread],
+        [self sendMp3Action:thread],
+        [self sendMp4Action:thread],
+        [self sendRandomMediaAction:thread],
+    ];
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (DebugUIMessagesAction *action in actions) {
+        [alert addAction:[UIAlertAction actionWithTitle:action.label
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *ignore) {
+                                                    [self performActionNTimes:action];
+                                                }]];
+    }
+
+    [alert addAction:[OWSAlerts cancelAction]];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
+}
+
++ (DebugUIMessagesAction *)sendRandomMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self sendJpegAction:thread],
+        [self sendGifAction:thread],
+        [self sendMp3Action:thread],
+        [self sendMp4Action:thread],
+    ];
+
+    return [DebugUIMessagesAction groupActionWithLabel:@"Send Random Media" subactions:actions];
+}
+
++ (DebugUIMessagesAction *)sendJpegAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    __block NSString *_Nullable filePath = nil;
+    return [DebugUIMessagesAction actionWithLabel:@"Send Jpeg"
+        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+            OWSAssert(filePath.length > 0);
+            [self sendAttachment:filePath thread:thread success:success failure:failure];
+        }
+        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
+            return [self ensureRandomJpegWithSuccess:^(NSString *ensuredFilePath) {
+                OWSAssert(ensuredFilePath.length > 0);
+                filePath = ensuredFilePath;
             }
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self performAction:action count:count - 1];
-            });
-        },
-        ^{
-        });
+                                             failure:^{
+                                             }];
+        }];
+}
+
++ (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    __block NSString *_Nullable filePath = nil;
+    return [DebugUIMessagesAction actionWithLabel:@"Send Gif"
+        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+            OWSAssert(filePath.length > 0);
+            [self sendAttachment:filePath thread:thread success:success failure:failure];
+        }
+        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
+            return [self ensureRandomGifWithSuccess:^(NSString *ensuredFilePath) {
+                OWSAssert(ensuredFilePath.length > 0);
+                filePath = ensuredFilePath;
+            }
+                                            failure:^{
+                                            }];
+        }];
+}
+
++ (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    __block NSString *_Nullable filePath = nil;
+    return [DebugUIMessagesAction actionWithLabel:@"Send Mp3"
+        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+            OWSAssert(filePath.length > 0);
+            [self sendAttachment:filePath thread:thread success:success failure:failure];
+        }
+        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
+            return [self ensureRandomMp3WithSuccess:^(NSString *ensuredFilePath) {
+                OWSAssert(ensuredFilePath.length > 0);
+                filePath = ensuredFilePath;
+            }
+                                            failure:^{
+                                            }];
+        }];
+}
+
++ (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    __block NSString *_Nullable filePath = nil;
+    return [DebugUIMessagesAction actionWithLabel:@"Send Mp4"
+        actionBlock:^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+            OWSAssert(filePath.length > 0);
+            [self sendAttachment:filePath thread:thread success:success failure:failure];
+        }
+        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
+            return [self ensureRandomMp4WithSuccess:^(NSString *ensuredFilePath) {
+                OWSAssert(ensuredFilePath.length > 0);
+                filePath = ensuredFilePath;
+            }
+                                            failure:^{
+                                            }];
+        }];
 }
 
 + (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
@@ -1345,10 +1521,25 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
                    });
 }
 
+//+ (ActionBlock)sendTextMessagesActionInThread:(TSThread *)thread
+//{
+//    OWSAssert(thread);
+//
+//    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
+//        [self sendTextMessageInThread:thread counter:index];
+//        // TODO:
+//        success();
+//    };
+//}
+//
+//+ (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
+//{
+//}
+
 + (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
-    typedef void (^ActionBlock)(YapDatabaseReadWriteTransaction *transaction);
-    NSArray<ActionBlock> *actionBlocks = @[
+    typedef void (^TransactionBlock)(YapDatabaseReadWriteTransaction *transaction);
+    NSArray<TransactionBlock> *actionBlocks = @[
         ^(YapDatabaseReadWriteTransaction *transaction) {
             // injectIncomingMessageInThread doesn't take a transaction.
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1393,7 +1584,7 @@ typedef void (^ActionBlock)(NSUInteger index, ActionSuccessBlock success, Action
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSUInteger actionCount = 1 + (NSUInteger)arc4random_uniform(3);
         for (NSUInteger actionIdx = 0; actionIdx < actionCount; actionIdx++) {
-            ActionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
+            TransactionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
             actionBlock(transaction);
         }
     }];
