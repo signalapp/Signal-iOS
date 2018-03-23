@@ -237,7 +237,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         // It's a static image of the media content.
         let presentationView = UIImageView()
         self.presentationView = presentationView
-        self.view.addSubview(presentationView)
+        self.view.insertSubview(presentationView, at: 0)
         presentationView.isHidden = true
         presentationView.clipsToBounds = true
         presentationView.layer.allowsEdgeAntialiasing = true
