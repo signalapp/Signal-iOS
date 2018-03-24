@@ -199,9 +199,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogVerbose(@"%@, tryToUnlockScreenLockWithSuccess", self.logTag);
-    [DDLog flushLog];
-
+    DDLogVerbose(@"%@, try to unlock screen lock", self.logTag);
 
     self.isShowingScreenLockUI = YES;
     self.lastUnlockAttemptDate = [NSDate new];
