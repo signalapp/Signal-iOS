@@ -19,6 +19,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL hasUnlockedScreenLock;
 @property (nonatomic) BOOL isShowingScreenLockUI;
 
+@property (nonatomic, nullable) NSTimer *screenLockUITimer;
+@property (nonatomic, nullable) NSDate *lastUnlockAttemptDate;
+@property (nonatomic, nullable) NSDate *lastUnlockSuccessDate;
+
 @end
 
 #pragma mark -
@@ -132,6 +136,110 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    BOOL shouldHaveScreenLock = self.shouldHaveScreenLock;
+    BOOL shouldHaveScreenProtection = self.shouldHaveScreenProtection;
+
+    BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
+    DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",
+        self.logTag,
+        shouldHaveScreenProtection,
+        shouldHaveScreenLock,
+        shouldShowBlockWindow);
+    self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
+
+    [self.screenLockUITimer invalidate];
+    self.screenLockUITimer = nil;
+
+    if (shouldHaveScreenLock) {
+        // In pincode-only mode (e.g. device pincode is set
+        // but Touch ID/Face ID are not configured), the pincode
+        // unlock UI is fullscreen and the app becomes inactive.
+        // Hitting the home button will cancel the authentication
+        // UI but not send the app to the background.  Therefore,
+        // to send the "locked" app to the background, you need
+        // to tap the home button twice.
+        //
+        // Therefore, if our last unlock attempt failed or was
+        // cancelled, wait a couple of second before re-presenting
+        // the "unlock screen lock UI" so that users have a chance
+        // to hit home button again.
+        BOOL shouldDelayScreenLockUI = YES;
+        if (!self.lastUnlockAttemptDate) {
+            shouldDelayScreenLockUI = NO;
+        } else if (self.lastUnlockAttemptDate && self.lastUnlockSuccessDate &&
+            [self.lastUnlockSuccessDate isAfterDate:self.lastUnlockAttemptDate]) {
+            shouldDelayScreenLockUI = NO;
+        }
+
+        if (shouldDelayScreenLockUI) {
+            DDLogVerbose(@"%@, Delaying Screen Lock UI.", self.logTag);
+            self.screenLockUITimer = [NSTimer weakScheduledTimerWithTimeInterval:1.25f
+                                                                          target:self
+                                                                        selector:@selector(tryToPresentScreenLockUI)
+                                                                        userInfo:nil
+                                                                         repeats:NO];
+        } else {
+            [self tryToPresentScreenLockUI];
+        }
+    }
+}
+
+- (void)tryToPresentScreenLockUI
+{
+    OWSAssertIsOnMainThread();
+
+    [self.screenLockUITimer invalidate];
+    self.screenLockUITimer = nil;
+
+    // If we no longer want to present the screen lock UI, abort.
+    if (!self.shouldHaveScreenLock) {
+        return;
+    }
+    if (self.isShowingScreenLockUI) {
+        return;
+    }
+
+    DDLogVerbose(@"%@, tryToUnlockScreenLockWithSuccess", self.logTag);
+    [DDLog flushLog];
+
+
+    self.isShowingScreenLockUI = YES;
+    self.lastUnlockAttemptDate = [NSDate new];
+
+    [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
+        DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
+        self.isShowingScreenLockUI = NO;
+        self.hasUnlockedScreenLock = YES;
+        self.lastUnlockSuccessDate = [NSDate new];
+        [self ensureScreenProtection];
+    }
+        failure:^(NSError *error) {
+            DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
+            self.isShowingScreenLockUI = NO;
+
+            [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
+        }
+        cancel:^{
+            DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
+            self.isShowingScreenLockUI = NO;
+
+            // Re-show the unlock UI.
+            [self ensureScreenProtection];
+        }];
+}
+
+- (BOOL)shouldHaveScreenProtection
+{
+    // Show 'Screen Protection' if:
+    //
+    // * App is inactive and...
+    // * 'Screen Protection' is enabled.
+    BOOL shouldHaveScreenProtection = (self.appIsInactive && Environment.preferences.screenSecurityIsEnabled);
+    return shouldHaveScreenProtection;
+}
+
+- (BOOL)shouldHaveScreenLock
+{
     BOOL shouldHaveScreenLock = NO;
     if (![TSAccountManager isRegistered]) {
         // Don't show 'Screen Lock' if user is not registered.
@@ -161,46 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
             shouldHaveScreenLock = YES;
         }
     }
-
-    // Show 'Screen Protection' if:
-    //
-    // * App is inactive and...
-    // * 'Screen Protection' is enabled.
-    BOOL shouldHaveScreenProtection = (self.appIsInactive && Environment.preferences.screenSecurityIsEnabled);
-
-    BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
-    DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",
-        self.logTag,
-        shouldHaveScreenProtection,
-        shouldHaveScreenLock,
-        shouldShowBlockWindow);
-    self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
-
-    if (shouldHaveScreenLock) {
-        if (!self.isShowingScreenLockUI) {
-            self.isShowingScreenLockUI = YES;
-
-            [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
-                DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
-                self.isShowingScreenLockUI = NO;
-                self.hasUnlockedScreenLock = YES;
-                [self ensureScreenProtection];
-            }
-                failure:^(NSError *error) {
-                    DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
-                    self.isShowingScreenLockUI = NO;
-
-                    [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
-                }
-                cancel:^{
-                    DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
-                    self.isShowingScreenLockUI = NO;
-
-                    // Re-show the unlock UI.
-                    [self ensureScreenProtection];
-                }];
-        }
-    }
+    return shouldHaveScreenLock;
 }
 
 - (void)showScreenLockFailureAlertWithMessage:(NSString *)message
@@ -266,6 +335,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
+    // Clear the "delay Screen Lock UI" state; we don't want any
+    // delays when presenting the "unlock screen lock UI" after
+    // returning from background.
+    [self.screenLockUITimer invalidate];
+    self.screenLockUITimer = nil;
+    self.lastUnlockAttemptDate = nil;
+    self.lastUnlockSuccessDate = nil;
+
     self.appIsInBackground = NO;
 }
 
