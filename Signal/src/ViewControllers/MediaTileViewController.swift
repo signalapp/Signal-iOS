@@ -482,6 +482,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     @objc
     func didCancelSelect(_ sender: Any) {
+        endSelectMode()
+    }
+
+    func endSelectMode() {
         isInBatchSelectMode = false
 
         guard let collectionView = self.collectionView else {
@@ -537,6 +541,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
         let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { _ in
             mediaGalleryDataSource.delete(items: items)
+            self.endSelectMode()
         }
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
