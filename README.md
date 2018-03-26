@@ -1,4 +1,4 @@
-# Signal for iOS [![Build Status](https://travis-ci.org/WhisperSystems/Signal-iOS.svg?branch=master)](https://travis-ci.org/WhisperSystems/Signal-iOS)
+# Signal for iOS
 
 Signal is a messaging app for simple private communication with friends.
 
