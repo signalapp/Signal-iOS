@@ -21,9 +21,14 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
     override public func runUp(completion:@escaping ((Void)) -> Void) {
-        let job = CompleteRegistrationFixerJob(completionHandler: {
-            Logger.info("\(self.TAG) Completed. Saving.")
-            self.save()
+        let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
+
+            if (didSucceed) {
+                Logger.info("\(self.TAG) Completed. Saving.")
+                self.save()
+            } else {
+                Logger.error("\(self.TAG) Failed.")
+            }
 
             completion()
         })
@@ -43,40 +48,39 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         let TAG = "[CompleteRegistrationFixerJob]"
 
         // Duration between retries if update fails.
-        static let kRetryInterval: TimeInterval = 5 * 60
+        let kRetryInterval: TimeInterval = 5
 
-        var timer: Timer?
-        let completionHandler: () -> Void
+        let completionHandler: (Bool) -> Void
 
-        init(completionHandler: @escaping () -> Void) {
+        init(completionHandler: @escaping (Bool) -> Void) {
             self.completionHandler = completionHandler
         }
 
         func start() {
-            assert(self.timer == nil)
+            guard TSAccountManager.isRegistered() else {
+                self.completionHandler(true)
+                return
+            }
 
-            let timer = WeakTimer.scheduledTimer(timeInterval: CompleteRegistrationFixerJob.kRetryInterval, target: self, userInfo: nil, repeats: true) { [weak self] aTimer in
-                guard let strongSelf = self else {
-                    return
-                }
-
-                var isCompleted = false
-                strongSelf.ensureProfileComplete().then { _ -> Void in
-                    guard isCompleted == false else {
-                        Logger.info("\(strongSelf.TAG) Already saved. Skipping redundant call.")
+            self.ensureProfileComplete().then { _ -> Void in
+                Logger.info("\(self.TAG) complete. Canceling timer and saving.")
+                self.completionHandler(true)
+            }.catch { error in
+                let nserror = error as NSError
+                if nserror.domain == TSNetworkManagerDomain {
+                    // Don't retry if we had an unrecoverable error.
+                    // In particular, 401 (invalid auth) is unrecoverable.
+                    let isUnrecoverableError = nserror.code == 401
+                    if isUnrecoverableError {
+                        Logger.error("\(self.TAG) failed due to unrecoverable error: \(error). Aborting.")
+                        self.completionHandler(true)
                         return
                     }
-                    Logger.info("\(strongSelf.TAG) complete. Canceling timer and saving.")
-                    isCompleted = true
-                    aTimer.invalidate()
-                    strongSelf.completionHandler()
-                }.catch { error in
-                    Logger.error("\(strongSelf.TAG) failed with \(error). We'll try again in \(CompleteRegistrationFixerJob.kRetryInterval) seconds.")
-                }.retainUntilComplete()
-            }
-            self.timer = timer
+                }
 
-            timer.fire()
+                Logger.error("\(self.TAG) failed with \(error).")
+                self.completionHandler(false)
+            }.retainUntilComplete()
         }
 
         func ensureProfileComplete() -> Promise<Void> {

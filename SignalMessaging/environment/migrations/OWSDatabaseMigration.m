@@ -9,6 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
 
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    DDLogInfo(@"%@ marking migration as complete.", self.logTag);
+
+    [super saveWithTransaction:transaction];
+}
+
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super initWithUniqueId:[self.class migrationId]];
