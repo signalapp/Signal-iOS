@@ -18,7 +18,7 @@ public class GalleryItemBox: NSObject {
     }
 }
 
-fileprivate class Box<A> {
+private class Box<A> {
     var value: A
     init(_ val: A) {
         self.value = val
@@ -31,7 +31,7 @@ fileprivate extension MediaDetailViewController {
     }
 }
 
-class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate {
+class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, MediaDetailViewControllerDelegate, MediaGalleryDataSourceDelegate {
 
     private weak var mediaGalleryDataSource: MediaGalleryDataSource?
 
@@ -171,7 +171,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.view.addSubview(footerBar)
         footerBar.autoPinWidthToSuperview()
         footerBar.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-        footerBar.autoSetDimension(.height, toSize:kFooterHeight)
+        footerBar.autoSetDimension(.height, toSize: kFooterHeight)
 
         // Gestures
 
@@ -244,7 +244,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
             // Hiding the status bar affects the positioning of the navbar. We don't want to show that in an animation, it's
             // better to just have everythign "flit" in/out.
-            UIApplication.shared.setStatusBarHidden(shouldHideToolbars, with:.none)
+            UIApplication.shared.setStatusBarHidden(shouldHideToolbars, with: .none)
             self.navigationController?.setNavigationBarHidden(shouldHideToolbars, animated: false)
 
             // We don't animate the background color change because the old color shows through momentarily
@@ -267,20 +267,20 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         var toolbarItems: [UIBarButtonItem] = [
-            UIBarButtonItem(barButtonSystemItem: .action, target:self, action: #selector(didPressShare)),
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil)
+            UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShare)),
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         ]
 
         if (self.currentItem.isVideo) {
             toolbarItems += [
                 isPlayingVideo ? self.videoPauseBarButton : self.videoPlayBarButton,
-                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil)
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         }
 
         toolbarItems.append(UIBarButtonItem(barButtonSystemItem: .trash,
-                                            target:self,
-                                            action:#selector(didPressDelete)))
+                                            target: self,
+                                            action: #selector(didPressDelete)))
 
         self.footerBar.setItems(toolbarItems, animated: false)
     }
@@ -317,23 +317,49 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let deleteAction = UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""),
                                          style: .destructive) { _ in
                                             let deletedItem = currentViewController.galleryItem
-
-                                            if !self.sliderEnabled {
-                                                // In message details, which doesn't use the slider, so don't swap pages.
-                                            } else if let nextItem = mediaGalleryDataSource.galleryItem(after: deletedItem) {
-                                                self.setCurrentItem(nextItem, direction: .forward, animated: true)
-                                            } else if let previousItem = mediaGalleryDataSource.galleryItem(before: deletedItem) {
-                                                self.setCurrentItem(previousItem, direction: .reverse, animated: true)
-                                            } else {
-                                                // else we deleted the last piece of media, return to the conversation view
-                                                self.dismissSelf(animated: true)
-                                            }
-                                            mediaGalleryDataSource.delete(items: [deletedItem])
+                                            mediaGalleryDataSource.delete(items: [deletedItem], initiatedBy: self)
         }
         actionSheet.addAction(OWSAlerts.cancelAction)
         actionSheet.addAction(deleteAction)
 
         self.present(actionSheet, animated: true)
+    }
+
+    // MARK: MediaGalleryDataSourceDelegate
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard let currentItem = self.currentItem else {
+              owsFail("\(logTag) in \(#function) currentItem was unexpectedly nil")
+            return
+        }
+
+        guard items.contains(currentItem) else {
+            Logger.debug("\(self.logTag) in \(#function) irrelevant item")
+            return
+        }
+
+        // If we setCurrentItem with (animated: true) while this VC is in the background, then
+        // the next/previous cache isn't expired, and we're able to swipe back to the just-deleted vc.
+        // So to get the correct behavior, we should only animate these transitions when this
+        // vc is in the foreground
+        let isAnimated = initiatedBy === self
+
+        if !self.sliderEnabled {
+            // In message details, which doesn't use the slider, so don't swap pages.
+        } else if let nextItem = mediaGalleryDataSource.galleryItem(after: currentItem) {
+            self.setCurrentItem(nextItem, direction: .forward, animated: isAnimated)
+        } else if let previousItem = mediaGalleryDataSource.galleryItem(before: currentItem) {
+            self.setCurrentItem(previousItem, direction: .reverse, animated: isAnimated)
+        } else {
+            // else we deleted the last piece of media, return to the conversation view
+            self.dismissSelf(animated: true)
+        }
+    }
+
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
+        // no-op
     }
 
     @objc
@@ -512,7 +538,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         dismissSelf(animated: true) {
-            mediaGalleryDataSource.delete(items: [galleryItem])
+            mediaGalleryDataSource.delete(items: [galleryItem], initiatedBy: self)
         }
     }
 

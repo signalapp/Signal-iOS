@@ -758,7 +758,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
 
     // MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem]) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
         Logger.info("\(self.logTag) in \(#function)")
 
         guard (items.map({ $0.message }) == [self.message]) else {
@@ -785,7 +785,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
 
         let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
-        mediaGalleryViewController.dataSourceDelegate = self
+        mediaGalleryViewController.addDataSourceDelegate(self)
         mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
     }
 }
