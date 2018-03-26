@@ -417,35 +417,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Send Media
 
-//+ (void)sendSelectedMediaTypeInThread:(TSThread *)thread
-//{
-//    OWSAssertIsOnMainThread() OWSAssert(thread);
-//
-//    NSArray<DebugUIMessagesAction *> *actions = @[
-//        [self sendJpegAction:thread],
-//        [self sendGifAction:thread],
-//        [self sendMp3Action:thread],
-//        [self sendMp4Action:thread],
-//        [self sendRandomMediaAction:thread],
-//    ];
-//
-//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Media Type"
-//                                                                   message:nil
-//                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-//    for (DebugUIMessagesAction *action in actions) {
-//        [alert addAction:[UIAlertAction actionWithTitle:action.label
-//                                                  style:UIAlertActionStyleDefault
-//                                                handler:^(UIAlertAction *ignore) {
-//                                                    [self performActionNTimes:action];
-//                                                }]];
-//    }
-//
-//    [alert addAction:[OWSAlerts cancelAction]];
-//
-//    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
-//    [fromViewController presentViewController:alert animated:YES completion:nil];
-//}
-
 + (NSArray<DebugUIMessagesAction *> *)allSendMediaActions:(TSThread *)thread
 {
     OWSAssert(thread);
