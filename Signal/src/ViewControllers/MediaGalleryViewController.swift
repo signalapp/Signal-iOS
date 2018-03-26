@@ -467,7 +467,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         if isAnimated {
             UIView.animate(withDuration: changedItems ? 0.25 : 0.18,
                            delay: 0.0,
-                           options:.curveEaseOut,
+                           options: .curveEaseOut,
                            animations: {
                             // Move back over it's original location
                             self.presentationView.superview?.layoutIfNeeded()
@@ -535,8 +535,8 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
         self.presentationViewConstraints += self.presentationView.autoSetDimensions(to: convertedRect.size)
         self.presentationViewConstraints += [
-            self.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset:convertedRect.origin.y),
-            self.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset:convertedRect.origin.x)
+            self.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset: convertedRect.origin.y),
+            self.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset: convertedRect.origin.x)
         ]
     }
 
@@ -741,7 +741,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     func delete(items: [MediaGalleryItem]) {
         AssertIsOnMainThread()
 
-        Logger.info("\(logTag) in \(#function) with items: \(items)")
+        Logger.info("\(logTag) in \(#function) with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 
         dataSourceDelegate?.mediaGalleryDataSource(self, willDelete: items)
 
