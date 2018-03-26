@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSError.h"
@@ -53,21 +53,21 @@ NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError()
 {
     return OWSErrorWithCodeDescription(OWSErrorCodeMessageSendDisabledDueToPreKeyUpdateFailures,
         NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES",
-            @"Error mesage indicating that message send is disabled due to prekey update failures"));
+            @"Error message indicating that message send is disabled due to prekey update failures"));
 }
 
 NSError *OWSErrorMakeMessageSendFailedToBlockListError()
 {
     return OWSErrorWithCodeDescription(OWSErrorCodeMessageSendFailedToBlockList,
         NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
-            @"Error mesage indicating that message send failed due to block list"));
+            @"Error message indicating that message send failed due to block list"));
 }
 
 NSError *OWSErrorMakeWriteAttachmentDataError()
 {
     return OWSErrorWithCodeDescription(OWSErrorCodeCouldNotWriteAttachmentData,
         NSLocalizedString(@"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE",
-            @"Error mesage indicating that message send failed due to failed attachment write"));
+            @"Error message indicating that message send failed due to failed attachment write"));
 }
 
 NS_ASSUME_NONNULL_END

@@ -52,11 +52,11 @@ class SafetyNumberConfirmationAlert: NSObject {
         let displayName = contactsManager.displayName(forPhoneIdentifier: untrustedIdentity.recipientId)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
-                                            comment: "Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}}")
+                                            comment: "Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
         let title = String(format: titleFormat, displayName)
 
         let bodyFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT",
-                                           comment: "Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}}")
+                                           comment: "Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
         let body = String(format: bodyFormat, displayName)
 
         let actionSheetController = UIAlertController(title: title, message: body, preferredStyle: .actionSheet)

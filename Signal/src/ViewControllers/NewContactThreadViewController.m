@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ReminderView *contactsPermissionReminderView = [[ReminderView alloc]
         initWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                         @"Multiline label explaining why compose-screen contact picker is empty.")
+                         @"Multi-line label explaining why compose-screen contact picker is empty.")
            tapAction:^{
                [[UIApplication sharedApplication] openSystemSettings];
            }];
@@ -501,7 +501,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
                                                             @"Text for button to send a Signal invite via SMS. %@ is "
-                                                            @"placeholder for the receipient's phone number."),
+                                                            @"placeholder for the recipient's phone number."),
                                        phoneNumber];
             [phoneNumbersSection addItem:[OWSTableItem disclosureItemWithText:text
                                                               customRowHeight:self.actionCellHeight
@@ -590,7 +590,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
                                                         @"Text for button to send a Signal invite via SMS. %@ is "
-                                                        @"placeholder for the receipient's phone number."),
+                                                        @"placeholder for the recipient's phone number."),
                                    displayName];
         [inviteeSection addItem:[OWSTableItem disclosureItemWithText:text
                                                      customRowHeight:self.actionCellHeight

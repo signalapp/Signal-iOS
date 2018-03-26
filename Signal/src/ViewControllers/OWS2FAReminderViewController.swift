@@ -29,7 +29,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     override public func loadView() {
         assert(ows2FAManager.pinCode != nil)
 
-        self.navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is peridoically prompted to enter their registration lock PIN")
+        self.navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is periodically prompted to enter their registration lock PIN")
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressCloseButton))
 
@@ -41,8 +41,8 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         self.pinEntryView = pinEntryView
         pinEntryView.delegate = self
 
-        let instructionsTextHeader = NSLocalizedString("REMINDER_2FA_BODY_HEADER", comment: "Body header for when user is peridoically prompted to enter their registration lock PIN")
-        let instructionsTextBody = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is peridoically prompted to enter their registration lock PIN")
+        let instructionsTextHeader = NSLocalizedString("REMINDER_2FA_BODY_HEADER", comment: "Body header for when user is periodically prompted to enter their registration lock PIN")
+        let instructionsTextBody = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is periodically prompted to enter their registration lock PIN")
 
         let attributes = [NSFontAttributeName: pinEntryView.boldLabelFont]
 
@@ -79,7 +79,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         Logger.info("\(logTag) in \(#function)")
         let alertBody = NSLocalizedString("REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE",
                                           comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'")
-        OWSAlerts.showAlert(title:nil, message:alertBody)
+        OWSAlerts.showAlert(title: nil, message: alertBody)
     }
 
     // MARK: Helpers

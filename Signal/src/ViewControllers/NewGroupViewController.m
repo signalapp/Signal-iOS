@@ -109,7 +109,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                action:@selector(createGroup)];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
-        = NSLocalizedString(@"FINISH_GROUP_CREATION_LABEL", @"Accessibilty label for finishing new group");
+        = NSLocalizedString(@"FINISH_GROUP_CREATION_LABEL", @"Accessibility label for finishing new group");
 
     // First section.
 

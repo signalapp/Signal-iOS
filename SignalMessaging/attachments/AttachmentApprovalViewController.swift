@@ -205,7 +205,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             self.mediaMessageView.videoPlayButton?.isHidden = true
             let playButton = UIButton()
             self.playVideoButton = playButton
-            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "accessability label for button to start media playback")
+            playButton.accessibilityLabel = NSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL", comment: "Accessibility label for button to start media playback")
             playButton.setBackgroundImage(#imageLiteral(resourceName: "play_button"), for: .normal)
             playButton.contentMode = .scaleAspectFit
 

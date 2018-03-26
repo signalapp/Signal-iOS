@@ -196,7 +196,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     ReminderView *missingContactsPermissionView = [ReminderView new];
     missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multiline label explaining how to show names instead of phone numbers in your inbox");
+        @"Multi-line label explaining how to show names instead of phone numbers in your inbox");
     missingContactsPermissionView.tapAction = ^{
         [[UIApplication sharedApplication] openSystemSettings];
     };
