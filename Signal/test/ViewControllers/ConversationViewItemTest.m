@@ -10,16 +10,6 @@
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
-@interface ConversationViewItem (Testing)
-
-- (SEL)copyActionSelector;
-- (SEL)saveActionSelector;
-- (SEL)shareActionSelector;
-- (SEL)deleteActionSelector;
-- (SEL)metadataActionSelector;
-
-@end
-
 @interface ConversationViewItemTest : XCTestCase
 
 @end
@@ -105,66 +95,6 @@
 - (ConversationViewItem *)audioViewItem
 {
     return [self viewItemWithAttachmentMimetype:@"audio/mp3" filename:@"test-mp3.mp3"];
-}
-
-- (void)testCanPerformEditingActionWithNonMediaMessage
-{
-    ConversationViewItem *viewItem = self.textViewItem;
-
-    XCTAssertTrue([viewItem canPerformAction:viewItem.copyActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:viewItem.saveActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.shareActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.deleteActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.metadataActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:@selector(unknownAction:)]);
-}
-
-- (void)testCanPerformEditingActionWithPhotoMessage
-{
-    ConversationViewItem *viewItem = self.stillImageViewItem;
-
-    XCTAssertTrue([viewItem canPerformAction:viewItem.copyActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.saveActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.shareActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.deleteActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.metadataActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:@selector(unknownAction:)]);
-}
-
-- (void)testCanPerformEditingActionWithAnimatedMessage
-{
-    ConversationViewItem *viewItem = self.animatedImageViewItem;
-
-    XCTAssertTrue([viewItem canPerformAction:viewItem.copyActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.saveActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.shareActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.deleteActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.metadataActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:@selector(unknownAction:)]);
-}
-
-- (void)testCanPerformEditingActionWithVideoMessage
-{
-    ConversationViewItem *viewItem = self.videoViewItem;
-
-    XCTAssertTrue([viewItem canPerformAction:viewItem.copyActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.saveActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.shareActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.deleteActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.metadataActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:@selector(unknownAction:)]);
-}
-
-- (void)testCanPerformEditingActionWithAudioMessage
-{
-    ConversationViewItem *viewItem = self.audioViewItem;
-
-    XCTAssertTrue([viewItem canPerformAction:viewItem.copyActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:viewItem.saveActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.shareActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.deleteActionSelector]);
-    XCTAssertTrue([viewItem canPerformAction:viewItem.metadataActionSelector]);
-    XCTAssertFalse([viewItem canPerformAction:@selector(unknownAction:)]);
 }
 
 // Test Delete

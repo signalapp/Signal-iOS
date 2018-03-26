@@ -426,7 +426,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.messageCellType == OWSMessageCellType_Unknown) {
         // Messages of unknown type (including messages with missing attachments)
         // are rendered like empty text messages, but without any interactivity.
-        DDLogWarn(@"%@ Treating unknown message as empty text message: %@", self.logTag, message.description);
+        DDLogWarn(@"%@ Treating unknown message as empty text message: %@ %llu", self.logTag, message.class, message.timestamp);
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }

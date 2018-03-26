@@ -54,6 +54,7 @@ end
 post_install do |installer|
   # Disable some asserts when building for tests
   set_building_for_tests_config(installer, 'SignalServiceKit')
+  disable_optimizations_for_tests(installer)
   enable_extension_support_for_purelayout(installer)
 end
 
@@ -77,6 +78,19 @@ def set_building_for_tests_config(installer, target_name)
     existing_definitions = "$(inheritied)"
   end
   build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = "#{existing_definitions} POD_CONFIGURATION_TEST=1 COCOAPODS=1 SSK_BUILDING_FOR_TESTS=1"
+end
+
+def disable_optimizations_for_tests(installer)
+  installer.pods_project.targets.each do | target|
+    build_config_name = "Test"
+    build_config = target.build_configurations.detect { |config| config.to_s == build_config_name }
+    if build_config == nil
+      throw "failed to find config: #{build_config_name} for target: #{target_name}"
+    end
+
+    # Allow accurate step-thru debugging while in tests
+    build_config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
+  end
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.
