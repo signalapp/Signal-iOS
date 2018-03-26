@@ -4,784 +4,21 @@
 
 #import "DebugUIMessages.h"
 #import "DebugUIContacts.h"
+#import "DebugUIMessagesAction.h"
+#import "DebugUIMessagesAssetLoader.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import "ThreadUtil.h"
-#import <AFNetworking/AFHTTPSessionManager.h>
-#import <AFNetworking/AFNetworking.h>
-#import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
-#import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef void (^ActionSuccessBlock)(void);
-typedef void (^ActionFailureBlock)(void);
-typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
-typedef void (^StaggeredActionBlock)(NSUInteger index,
-    YapDatabaseReadWriteTransaction *transaction,
-    ActionSuccessBlock success,
-    ActionFailureBlock failure);
-typedef void (^UnstaggeredActionBlock)(NSUInteger index, YapDatabaseReadWriteTransaction *transaction);
-
-typedef NS_ENUM(NSUInteger, SubactionMode) {
-    SubactionMode_Random = 0,
-    SubactionMode_Ordered,
-};
-
-@interface FakeAssetLoader : NSObject
-
-@property (nonatomic) NSString *filename;
-@property (nonatomic) NSString *mimeType;
-
-@property (nonatomic) ActionPrepareBlock prepareBlock;
-
-@property (nonatomic, nullable) NSString *filePath;
-
-@end
-
-#pragma mark -
-
-@implementation FakeAssetLoader
-
-+ (FakeAssetLoader *)fakeAssetLoaderWithUrl:(NSString *)fileUrl mimeType:(NSString *)mimeType
-{
-    OWSAssert(fileUrl.length > 0);
-    OWSAssert(mimeType.length > 0);
-
-    FakeAssetLoader *instance = [FakeAssetLoader new];
-    instance.mimeType = mimeType;
-    instance.filename = [NSURL URLWithString:fileUrl].lastPathComponent;
-    __weak FakeAssetLoader *weakSelf = instance;
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensureURLAssetLoaded:fileUrl success:success failure:failure];
-    };
-    return instance;
-}
-
-- (void)ensureURLAssetLoaded:(NSString *)fileUrl success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-    OWSAssert(self.filename.length > 0);
-    OWSAssert(self.mimeType.length > 0);
-
-    if (self.filePath) {
-        success();
-        return;
-    }
-
-    // Use a predictable file path so that we reuse the cache between app launches.
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *cacheDirectory = [temporaryDirectory stringByAppendingPathComponent:@"cached_random_files"];
-    [OWSFileSystem ensureDirectoryExists:cacheDirectory];
-    NSString *filePath = [cacheDirectory stringByAppendingPathComponent:self.filename];
-    if ([NSFileManager.defaultManager fileExistsAtPath:filePath]) {
-        self.filePath = filePath;
-        return success();
-    }
-
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    OWSAssert(sessionManager.responseSerializer);
-    [sessionManager GET:fileUrl
-        parameters:nil
-        progress:nil
-        success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
-            if ([responseObject writeToFile:filePath atomically:YES]) {
-                self.filePath = filePath;
-                OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-                success();
-            } else {
-                OWSFail(@"Error write url response [%@]: %@", fileUrl, filePath);
-                failure();
-            }
-        }
-        failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-            OWSFail(@"Error downloading url[%@]: %@", fileUrl, requestError);
-            failure();
-        }];
-}
-
-#pragma mark -
-
-+ (FakeAssetLoader *)fakePngAssetLoaderWithImageSize:(CGSize)imageSize
-                                     backgroundColor:(UIColor *)backgroundColor
-                                           textColor:(UIColor *)textColor
-                                               label:(NSString *)label
-{
-    OWSAssert(imageSize.width > 0);
-    OWSAssert(imageSize.height > 0);
-    OWSAssert(backgroundColor);
-    OWSAssert(textColor);
-    OWSAssert(label.length > 0);
-
-    FakeAssetLoader *instance = [FakeAssetLoader new];
-    instance.mimeType = OWSMimeTypeImagePng;
-    instance.filename = @"image.png";
-    __weak FakeAssetLoader *weakSelf = instance;
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensurePngAssetLoaded:imageSize
-                       backgroundColor:backgroundColor
-                             textColor:textColor
-                                 label:label
-                               success:success
-                               failure:failure];
-    };
-    return instance;
-}
-
-- (void)ensurePngAssetLoaded:(CGSize)imageSize
-             backgroundColor:(UIColor *)backgroundColor
-                   textColor:(UIColor *)textColor
-                       label:(NSString *)label
-                     success:(ActionSuccessBlock)success
-                     failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-    OWSAssert(self.filename.length > 0);
-    OWSAssert(self.mimeType.length > 0);
-    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
-    OWSAssert(backgroundColor);
-    OWSAssert(textColor);
-    OWSAssert(label.length > 0);
-
-    if (self.filePath) {
-        success();
-        return;
-    }
-
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
-    UIImage *image =
-        [self createRandomPngWithSize:imageSize backgroundColor:backgroundColor textColor:textColor label:label];
-    NSData *pngData = UIImagePNGRepresentation(image);
-    [pngData writeToFile:filePath atomically:YES];
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-    success();
-}
-
-- (nullable UIImage *)createRandomPngWithSize:(CGSize)imageSize
-                              backgroundColor:(UIColor *)backgroundColor
-                                    textColor:(UIColor *)textColor
-                                        label:(NSString *)label
-{
-    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
-    OWSAssert(backgroundColor);
-    OWSAssert(textColor);
-    OWSAssert(label.length > 0);
-
-    CGRect frame = CGRectZero;
-    frame.size = imageSize;
-    CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
-    UIFont *font = [UIFont boldSystemFontOfSize:smallDimension * 0.5f];
-    NSDictionary *textAttributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
-
-    CGRect textFrame =
-        [label boundingRectWithSize:frame.size
-                            options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                         attributes:textAttributes
-                            context:nil];
-
-    UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-
-    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
-    CGContextFillRect(context, frame);
-    [label drawAtPoint:CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(textFrame),
-                           CGRectGetMidY(frame) - CGRectGetMidY(textFrame))
-        withAttributes:textAttributes];
-
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return image;
-}
-
-#pragma mark -
-
-+ (FakeAssetLoader *)fakeRandomAssetLoaderWithLength:(NSUInteger)dataLength mimeType:(NSString *)mimeType
-{
-    OWSAssert(dataLength > 0);
-    OWSAssert(mimeType.length > 0);
-
-    FakeAssetLoader *instance = [FakeAssetLoader new];
-    instance.mimeType = mimeType;
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
-    OWSAssert(fileExtension.length > 0);
-    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
-    __weak FakeAssetLoader *weakSelf = instance;
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensureRandomAssetLoaded:dataLength success:success failure:failure];
-    };
-    return instance;
-}
-
-- (void)ensureRandomAssetLoaded:(NSUInteger)dataLength
-                        success:(ActionSuccessBlock)success
-                        failure:(ActionFailureBlock)failure
-{
-    OWSAssert(dataLength > 0);
-    OWSAssert(success);
-    OWSAssert(failure);
-    OWSAssert(self.filename.length > 0);
-    OWSAssert(self.mimeType.length > 0);
-
-    if (self.filePath) {
-        success();
-        return;
-    }
-
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
-    OWSAssert(fileExtension.length > 0);
-    NSData *data = [Randomness generateRandomBytes:(int)dataLength];
-    OWSAssert(data);
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
-    BOOL didWrite = [data writeToFile:filePath atomically:YES];
-    OWSAssert(didWrite);
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-
-    success();
-}
-
-#pragma mark -
-
-+ (FakeAssetLoader *)fakeMissingAssetLoaderWithMimeType:(NSString *)mimeType
-{
-    OWSAssert(mimeType.length > 0);
-
-    FakeAssetLoader *instance = [FakeAssetLoader new];
-    instance.mimeType = mimeType;
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
-    OWSAssert(fileExtension.length > 0);
-    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
-    __weak FakeAssetLoader *weakSelf = instance;
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensureMissingAssetLoaded:success failure:failure];
-    };
-    return instance;
-}
-
-- (void)ensureMissingAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-    OWSAssert(self.filename.length > 0);
-    OWSAssert(self.mimeType.length > 0);
-
-    if (self.filePath) {
-        success();
-        return;
-    }
-
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
-    OWSAssert(fileExtension.length > 0);
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
-    BOOL didCreate = [NSFileManager.defaultManager createFileAtPath:filePath contents:nil attributes:nil];
-    OWSAssert(didCreate);
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-
-    success();
-}
-
-#pragma mark -
-
-+ (FakeAssetLoader *)fakeOversizeTextAssetLoader
-{
-    FakeAssetLoader *instance = [FakeAssetLoader new];
-    instance.mimeType = OWSMimeTypeOversizeTextMessage;
-    instance.filename = @"attachment.txt";
-    __weak FakeAssetLoader *weakSelf = instance;
-    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensureOversizeTextAssetLoaded:success failure:failure];
-    };
-    return instance;
-}
-
-- (void)ensureOversizeTextAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-    OWSAssert(self.filename.length > 0);
-    OWSAssert(self.mimeType.length > 0);
-
-    if (self.filePath) {
-        success();
-        return;
-    }
-
-    NSMutableString *message = [NSMutableString new];
-    for (NSUInteger i = 0; i < 32; i++) {
-        [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
-                              @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
-                              @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
-                              @"sodales. Aenean ut velit maximus, posuere sem a, accumsan nunc. Donec ullamcorper "
-                              @"turpis lorem. Quisque dignissim purus eu placerat ultricies. Proin at urna eget mi "
-                              @"semper congue. Aenean non elementum ex. Praesent pharetra quam at sem vestibulum, "
-                              @"vestibulum ornare dolor elementum. Vestibulum massa tortor, scelerisque sit amet "
-                              @"pulvinar a, rhoncus vitae nisl. Sed mi nunc, tempus at varius in, malesuada vitae "
-                              @"dui. Vivamus efficitur pulvinar erat vitae congue. Proin vehicula turpis non felis "
-                              @"congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere "
-                              @"lorem, in rhoncus nisi.\n\n"];
-    }
-
-    NSString *fileExtension = @"txt";
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
-    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-    OWSAssert(data);
-    BOOL didWrite = [data writeToFile:filePath atomically:YES];
-    OWSAssert(didWrite);
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-
-    success();
-}
-
-#pragma mark -
-
-+ (instancetype)jpegInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader
-            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
-                          mimeType:@"image/jpeg"];
-    });
-    return instance;
-}
-
-+ (instancetype)gifInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader
-            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
-                          mimeType:@"image/gif"];
-    });
-    return instance;
-}
-
-+ (instancetype)mp3Instance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader
-            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
-                          mimeType:@"audio/mpeg"];
-    });
-    return instance;
-}
-
-+ (instancetype)mp4Instance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader
-            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
-                          mimeType:@"video/mp4"];
-    });
-    return instance;
-}
-
-+ (instancetype)portraitPngInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100)
-                                                    backgroundColor:[UIColor blueColor]
-                                                          textColor:[UIColor whiteColor]
-                                                              label:@"P"];
-    });
-    return instance;
-}
-
-+ (instancetype)landscapePngInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10)
-                                                    backgroundColor:[UIColor greenColor]
-                                                          textColor:[UIColor whiteColor]
-                                                              label:@"L"];
-    });
-    return instance;
-}
-
-+ (instancetype)largePngInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000)
-                                                    backgroundColor:[UIColor redColor]
-                                                          textColor:[UIColor whiteColor]
-                                                              label:@"B"];
-    });
-    return instance;
-}
-
-+ (instancetype)tinyPdfInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
-    });
-    return instance;
-}
-
-+ (instancetype)largePdfInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
-    });
-    return instance;
-}
-
-+ (instancetype)missingPngInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakeMissingAssetLoaderWithMimeType:OWSMimeTypeImagePng];
-    });
-    return instance;
-}
-
-+ (instancetype)missingPdfInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakeMissingAssetLoaderWithMimeType:@"application/pdf"];
-    });
-    return instance;
-}
-
-+ (instancetype)oversizeTextInstance
-{
-    static FakeAssetLoader *instance = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakeOversizeTextAssetLoader];
-    });
-    return instance;
-}
-
-@end
-
-#pragma mark -
-
-@class DebugUIMessagesSingleAction;
-
-@interface DebugUIMessagesAction : NSObject
-
-@property (nonatomic) NSString *label;
-
-@end
-
-#pragma mark -
-
-@interface DebugUIMessagesSingleAction : DebugUIMessagesAction
-
-@property (nonatomic, nullable) ActionPrepareBlock prepareBlock;
-// "Single" actions should have exactly one "staggered" or "unstaggered" action block.
-@property (nonatomic, nullable) StaggeredActionBlock staggeredActionBlock;
-@property (nonatomic, nullable) UnstaggeredActionBlock unstaggeredActionBlock;
-
-@end
-
-#pragma mark -
-
-@implementation DebugUIMessagesAction
-
-- (DebugUIMessagesSingleAction *)nextActionToPerform
-{
-    return (DebugUIMessagesSingleAction *)self;
-}
-
-- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-
-    OWS_ABSTRACT_METHOD();
-
-    success();
-}
-
-- (void)prepareAndPerformNTimes:(NSUInteger)count
-{
-    DDLogInfo(@"%@ %@ prepareAndPerformNTimes: %zd", self.logTag, self.label, count);
-    [DDLog flushLog];
-
-    [self prepare:^{
-        [self performNTimes:count
-                    success:^{
-                    }
-                    failure:^{
-                    }];
-    }
-          failure:^{
-          }];
-}
-
-- (void)performNTimes:(NSUInteger)countParam success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-
-    DDLogInfo(@"%@ %@ performNTimes: %zd", self.logTag, self.label, countParam);
-    [DDLog flushLog];
-
-    if (countParam < 1) {
-        success();
-        return;
-    }
-
-    __block NSUInteger count = countParam;
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
-        NSUInteger batchSize = 0;
-        while (count > 0) {
-            NSUInteger index = count;
-
-            DebugUIMessagesSingleAction *action = [self nextActionToPerform];
-            OWSAssert([action isKindOfClass:[DebugUIMessagesSingleAction class]]);
-
-            if (action.staggeredActionBlock) {
-                OWSAssert(!action.unstaggeredActionBlock);
-                action.staggeredActionBlock(index,
-                    transaction,
-                    ^{
-                        dispatch_after(
-                            dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                                DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
-                                [self performNTimes:count - 1 success:success failure:failure];
-                            });
-                    },
-                    failure);
-
-                break;
-            } else {
-                OWSAssert(action.unstaggeredActionBlock);
-
-                // TODO: We could check result for failure.
-                action.unstaggeredActionBlock(index, transaction);
-
-                const NSUInteger kMaxBatchSize = 2500;
-                batchSize++;
-                if (batchSize >= kMaxBatchSize) {
-                    dispatch_after(
-                        dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            DDLogInfo(@"%@ %@ performNTimes success: %zd", self.logTag, self.label, count);
-                            [self performNTimes:count - 1 success:success failure:failure];
-                        });
-
-                    break;
-                }
-                count--;
-            }
-        }
-    }];
-}
-
-@end
-
-#pragma mark -
-
-@implementation DebugUIMessagesSingleAction
-
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
-                      staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(staggeredActionBlock);
-
-    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
-    instance.label = label;
-    instance.staggeredActionBlock = staggeredActionBlock;
-    return instance;
-}
-
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
-                    unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(unstaggeredActionBlock);
-
-    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
-    instance.label = label;
-    instance.unstaggeredActionBlock = unstaggeredActionBlock;
-    return instance;
-}
-
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
-                      staggeredActionBlock:(StaggeredActionBlock)staggeredActionBlock
-                              prepareBlock:(ActionPrepareBlock)prepareBlock
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(staggeredActionBlock);
-    OWSAssert(prepareBlock);
-
-    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
-    instance.label = label;
-    instance.staggeredActionBlock = staggeredActionBlock;
-    instance.prepareBlock = prepareBlock;
-    return instance;
-}
-
-+ (DebugUIMessagesAction *)actionWithLabel:(NSString *)label
-                    unstaggeredActionBlock:(UnstaggeredActionBlock)unstaggeredActionBlock
-                              prepareBlock:(ActionPrepareBlock)prepareBlock
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(unstaggeredActionBlock);
-    OWSAssert(prepareBlock);
-
-    DebugUIMessagesSingleAction *instance = [DebugUIMessagesSingleAction new];
-    instance.label = label;
-    instance.unstaggeredActionBlock = unstaggeredActionBlock;
-    instance.prepareBlock = prepareBlock;
-    return instance;
-}
-
-- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-
-    if (self.prepareBlock) {
-        self.prepareBlock(success, failure);
-    } else {
-        success();
-    }
-}
-
-@end
-
-#pragma mark -
-
-@interface DebugUIMessagesGroupAction : DebugUIMessagesAction
-
-// "Group" actions should have these properties.
-@property (nonatomic) SubactionMode subactionMode;
-@property (nonatomic, nullable) NSArray<DebugUIMessagesAction *> *subactions;
-@property (nonatomic) NSUInteger subactionIndex;
-
-@end
-
-#pragma mark -
-
-@implementation DebugUIMessagesGroupAction
-
-- (DebugUIMessagesSingleAction *)nextActionToPerform
-{
-    OWSAssert(self.subactions.count > 0);
-
-    switch (self.subactionMode) {
-        case SubactionMode_Random: {
-            DebugUIMessagesAction *subaction = self.subactions[arc4random_uniform((uint32_t)self.subactions.count)];
-            OWSAssert(subaction);
-            return subaction.nextActionToPerform;
-        }
-        case SubactionMode_Ordered: {
-            DebugUIMessagesAction *subaction = self.subactions[self.subactionIndex];
-            OWSAssert(subaction);
-            self.subactionIndex = (self.subactionIndex + 1) % self.subactions.count;
-            return subaction.nextActionToPerform;
-        }
-    }
-}
-
-- (void)prepare:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-
-    [DebugUIMessagesGroupAction prepareSubactions:[self.subactions mutableCopy] success:success failure:failure];
-}
-
-+ (void)prepareSubactions:(NSMutableArray<DebugUIMessagesAction *> *)unpreparedSubactions
-                  success:(ActionSuccessBlock)success
-                  failure:(ActionFailureBlock)failure
-{
-    OWSAssert(success);
-    OWSAssert(failure);
-
-    if (unpreparedSubactions.count < 1) {
-        return success();
-    }
-
-    DebugUIMessagesAction *nextAction = unpreparedSubactions.lastObject;
-    [unpreparedSubactions removeLastObject];
-    DDLogInfo(@"%@ preparing: %@", self.logTag, nextAction.label);
-    [DDLog flushLog];
-    [nextAction prepare:^{
-        [self prepareSubactions:unpreparedSubactions success:success failure:failure];
-    }
-                failure:^{
-                }];
-}
-
-// Given a group of subactions, perform a single random subaction each time.
-+ (DebugUIMessagesAction *)randomGroupActionWithLabel:(NSString *)label
-                                           subactions:(NSArray<DebugUIMessagesAction *> *)subactions
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(subactions.count > 0);
-
-    DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
-    instance.label = label;
-    instance.subactions = subactions;
-    instance.subactionMode = SubactionMode_Random;
-    return instance;
-}
-
-// Given a group of subactions, perform all of the subactions each time.
-+ (DebugUIMessagesAction *)allGroupActionWithLabel:(NSString *)label
-                                        subactions:(NSArray<DebugUIMessagesAction *> *)subactions
-{
-    OWSAssert(label.length > 0);
-    OWSAssert(subactions.count > 0);
-
-    DebugUIMessagesGroupAction *instance = [DebugUIMessagesGroupAction new];
-    instance.label = label;
-    instance.subactions = subactions;
-    instance.subactionMode = SubactionMode_Ordered;
-    return instance;
-}
-
-@end
-
-#pragma mark -
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
@@ -1264,32 +501,32 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Jpeg" fakeAssetLoader:[FakeAssetLoader jpegInstance] thread:thread];
+    return [self sendMediaAction:@"Send Jpeg" fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Gif" fakeAssetLoader:[FakeAssetLoader gifInstance] thread:thread];
+    return [self sendMediaAction:@"Send Gif" fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Mp3" fakeAssetLoader:[FakeAssetLoader mp3Instance] thread:thread];
+    return [self sendMediaAction:@"Send Mp3" fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Mp4" fakeAssetLoader:[FakeAssetLoader mp4Instance] thread:thread];
+    return [self sendMediaAction:@"Send Mp4" fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance] thread:thread];
 }
 
 + (DebugUIMessagesAction *)sendMediaAction:(NSString *)label
-                           fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                           fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                                     thread:(TSThread *)thread
 {
     OWSAssert(label.length > 0);
@@ -1337,7 +574,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Jpeg"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader jpegInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
                                   thread:thread];
 }
 
@@ -1350,7 +587,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Gif"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader gifInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
                                   thread:thread];
 }
 
@@ -1363,7 +600,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp3"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader mp3Instance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
                                   thread:thread];
 }
 
@@ -1376,7 +613,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp4"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader mp4Instance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
                                   thread:thread];
 }
 
@@ -1389,7 +626,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Portrait Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader landscapePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
                                   thread:thread];
 }
 
@@ -1402,7 +639,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Landscape Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader portraitPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
                                   thread:thread];
 }
 
@@ -1415,7 +652,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader largePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
                                   thread:thread];
 }
 
@@ -1428,7 +665,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Tiny Pdf"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader tinyPdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
                                   thread:thread];
 }
 
@@ -1441,7 +678,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Pdf"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader largePdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePdfInstance]
                                   thread:thread];
 }
 
@@ -1454,7 +691,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader missingPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
                                   thread:thread];
 }
 
@@ -1467,7 +704,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Pdf"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader missingPdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
                                   thread:thread];
 }
 
@@ -1480,14 +717,14 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Oversize Text"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader oversizeTextInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader oversizeTextInstance]
                                   thread:thread];
 }
 
 + (DebugUIMessagesAction *)fakeOutgoingMediaAction:(NSString *)labelParam
                                       messageState:(TSOutgoingMessageState)messageState
                                         hasCaption:(BOOL)hasCaption
-                                   fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                                   fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                                             thread:(TSThread *)thread
 {
     OWSAssert(labelParam.length > 0);
@@ -1525,7 +762,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 + (void)createFakeOutgoingMedia:(NSUInteger)index
                    messageState:(TSOutgoingMessageState)messageState
                      hasCaption:(BOOL)hasCaption
-                fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                          thread:(TSThread *)thread
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -1600,7 +837,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Jpeg"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader jpegInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
                                   thread:thread];
 }
 
@@ -1613,7 +850,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Gif"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader gifInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
                                   thread:thread];
 }
 
@@ -1626,7 +863,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Mp3"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader mp3Instance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
                                   thread:thread];
 }
 
@@ -1639,7 +876,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Mp4"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader mp4Instance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
                                   thread:thread];
 }
 
@@ -1652,7 +889,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Portrait Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader portraitPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
                                   thread:thread];
 }
 
@@ -1665,7 +902,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Landscape Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader landscapePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
                                   thread:thread];
 }
 
@@ -1678,7 +915,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Large Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader largePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
                                   thread:thread];
 }
 
@@ -1691,7 +928,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Tiny Pdf"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader tinyPdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
                                   thread:thread];
 }
 
@@ -1704,7 +941,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Large Pdf"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader largePdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePdfInstance]
                                   thread:thread];
 }
 
@@ -1717,7 +954,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Missing Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader missingPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
                                   thread:thread];
 }
 
@@ -1730,7 +967,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Missing Pdf"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader missingPdfInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
                                   thread:thread];
 }
 
@@ -1743,14 +980,14 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     return [self fakeIncomingMediaAction:@"Fake Incoming Oversize Text"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[FakeAssetLoader oversizeTextInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader oversizeTextInstance]
                                   thread:thread];
 }
 
 + (DebugUIMessagesAction *)fakeIncomingMediaAction:(NSString *)labelParam
                             isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                                         hasCaption:(BOOL)hasCaption
-                                   fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                                   fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                                             thread:(TSThread *)thread
 {
     OWSAssert(labelParam.length > 0);
@@ -1783,7 +1020,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 + (void)createFakeIncomingMedia:(NSUInteger)index
          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                      hasCaption:(BOOL)hasCaption
-                fakeAssetLoader:(FakeAssetLoader *)fakeAssetLoader
+                fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                          thread:(TSThread *)thread
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
