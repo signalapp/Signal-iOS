@@ -21,9 +21,14 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
     override public func runUp(completion:@escaping ((Void)) -> Void) {
-        let job = CompleteRegistrationFixerJob(completionHandler: {
-            Logger.info("\(self.TAG) Completed. Saving.")
-            self.save()
+        let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
+
+            if (didSucceed) {
+                Logger.info("\(self.TAG) Completed. Saving.")
+                self.save()
+            } else {
+                Logger.error("\(self.TAG) Failed. Saving.")
+            }
 
             completion()
         })
@@ -46,9 +51,9 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         static let kRetryInterval: TimeInterval = 5 * 60
 
         var timer: Timer?
-        let completionHandler: () -> Void
+        let completionHandler: (Bool) -> Void
 
-        init(completionHandler: @escaping () -> Void) {
+        init(completionHandler: @escaping (Bool) -> Void) {
             self.completionHandler = completionHandler
         }
 
@@ -69,8 +74,21 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     Logger.info("\(strongSelf.TAG) complete. Canceling timer and saving.")
                     isCompleted = true
                     aTimer.invalidate()
-                    strongSelf.completionHandler()
+                    strongSelf.completionHandler(true)
                 }.catch { error in
+                    let nserror = error as NSError
+                    if nserror.domain == TSNetworkManagerDomain {
+                        // Don't retry if we had an unrecoverable error.
+                        // In particular, 401 (invalid auth) is unrecoverable.
+                        let isUnrecoverableError = (400 <= nserror.code) && (nserror.code <= 599)
+                        if isUnrecoverableError {
+                            Logger.error("\(strongSelf.TAG) failed due to unrecoverable error: \(error). Aborting.")
+                                                            aTimer.invalidate()
+                                                            strongSelf.completionHandler(false)
+                            return
+                        }
+                    }
+
                     Logger.error("\(strongSelf.TAG) failed with \(error). We'll try again in \(CompleteRegistrationFixerJob.kRetryInterval) seconds.")
                 }.retainUntilComplete()
             }
