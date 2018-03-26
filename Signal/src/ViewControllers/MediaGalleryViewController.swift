@@ -176,11 +176,11 @@ protocol MediaGalleryDataSource: class {
     func showAllMedia(focusedItem: MediaGalleryItem)
     func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
 
-    func delete(items: [MediaGalleryItem])
+    func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate)
 }
 
 protocol MediaGalleryDataSourceDelegate: class {
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem])
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate)
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
@@ -280,6 +280,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.initialDetailItem = initialDetailItem
 
         let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection, options: self.options)
+        self.addDataSourceDelegate(pageViewController)
 
         self.pageViewController = pageViewController
         self.setViewControllers([pageViewController], animated: false)
@@ -573,10 +574,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         let vc = MediaTileViewController(mediaGalleryDataSource: self, uiDatabaseConnection: self.uiDatabaseConnection)
         vc.delegate = self
 
-        // dataSourceDelegate will either be this tile view, or the MessageDetailView, but they should
-        // be mutually exclusive
-        assert(self.dataSourceDelegate == nil)
-        self.dataSourceDelegate = vc
+        self.addDataSourceDelegate(vc)
 
         return vc
     }()
@@ -735,15 +733,21 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
     }
 
-    weak var dataSourceDelegate: MediaGalleryDataSourceDelegate?
-    var deletedMessages: Set<TSMessage> = Set()
+    var dataSourceDelegates: [Weak<MediaGalleryDataSourceDelegate>] = []
+    func addDataSourceDelegate(_ dataSourceDelegate: MediaGalleryDataSourceDelegate) {
+        dataSourceDelegates.append(Weak(value: dataSourceDelegate))
+    }
 
-    func delete(items: [MediaGalleryItem]) {
+    var deletedMessages: Set<TSMessage> = Set()
+    var deletedGalleryItems: Set<MediaGalleryItem> = Set()
+
+    func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
         AssertIsOnMainThread()
 
         Logger.info("\(logTag) in \(#function) with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 
-        dataSourceDelegate?.mediaGalleryDataSource(self, willDelete: items)
+        deletedGalleryItems.formUnion(items)
+        dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, willDelete: items, initiatedBy: initiatedBy) }
 
         self.editingDatabaseConnection.asyncReadWrite { transaction in
             for item in items {
@@ -812,7 +816,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
             }
         }
 
-        dataSourceDelegate?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths)
+        dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
 
     let kGallerySwipeLoadBatchSize: UInt = 5
@@ -828,7 +832,17 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
 
         let index: Int = galleryItems.index(after: currentIndex)
-        return galleryItems[safe: index]
+        guard let nextItem = galleryItems[safe: index] else {
+            // already at last item
+            return nil
+        }
+
+        guard !deletedGalleryItems.contains(nextItem) else {
+            Logger.debug("\(self.logTag) in \(#function) nextItem was deleted - Recursing.")
+            return galleryItem(after: nextItem)
+        }
+
+        return nextItem
     }
 
     internal func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem? {
@@ -842,7 +856,17 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         }
 
         let index: Int = galleryItems.index(before: currentIndex)
-        return galleryItems[safe: index]
+        guard let previousItem = galleryItems[safe: index] else {
+            // already at first item
+            return nil
+        }
+
+        guard !deletedGalleryItems.contains(previousItem) else {
+            Logger.debug("\(self.logTag) in \(#function) previousItem was deleted - Recursing.")
+            return galleryItem(before: previousItem)
+        }
+
+        return previousItem
     }
 
     var galleryItemCount: Int {

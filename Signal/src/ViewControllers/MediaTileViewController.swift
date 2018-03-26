@@ -539,7 +539,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }()
 
         let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { _ in
-            mediaGalleryDataSource.delete(items: items)
+            mediaGalleryDataSource.delete(items: items, initiatedBy: self)
             self.endSelectMode()
         }
 
@@ -557,7 +557,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     // MARK: MediaGalleryDataSourceDelegate
 
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem]) {
+    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard let collectionView = self.collectionView else {
