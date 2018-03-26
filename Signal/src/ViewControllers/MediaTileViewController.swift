@@ -94,13 +94,13 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         let footerBar = UIToolbar()
         self.footerBar = footerBar
         let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
-                                          target:self,
-                                          action:#selector(didPressDelete))
+                                          target: self,
+                                          action: #selector(didPressDelete))
         self.deleteButton =  deleteButton
         let footerItems = [
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil),
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
             deleteButton,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target:nil, action:nil),
+            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         ]
         footerBar.setItems(footerItems, animated: false)
 
@@ -111,9 +111,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
 
         updateSelectButton()
-
-        self.view.layoutIfNeeded()
-        scrollToBottom(animated: false)
     }
 
     private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
@@ -140,7 +137,9 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         }
 
         Logger.debug("\(logTag) scrolling to focused item at indexPath: \(indexPath)")
+        self.view.layoutIfNeeded()
         self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+        self.autoLoadMoreIfNecessary()
     }
 
     // MARK: UICollectionViewDelegate
@@ -709,20 +708,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             }
         }
     }
-
-    // MARK: Util
-
-    private func scrollToBottom(animated isAnimated: Bool) {
-        guard let collectionView = self.collectionView else {
-            owsFail("\(self.logTag) in \(#function) collectionView was unexpectedly nil")
-            return
-        }
-
-        let yOffset: CGFloat = collectionView.contentSize.height - collectionView.bounds.size.height + collectionView.contentInset.bottom
-        let offset: CGPoint  = CGPoint(x: 0, y: yOffset)
-
-        collectionView.setContentOffset(offset, animated: isAnimated)
-    }
 }
 
 // MARK: - Private Helper Classes
@@ -730,7 +715,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 // Accomodates remaining scrolled to the same "apparent" position when new content is insterted
 // into the top of a collectionView. There are multiple ways to solve this problem, but this
 // is the only one which avoided a perceptible flicker.
-fileprivate class MediaTileViewLayout: UICollectionViewFlowLayout {
+private class MediaTileViewLayout: UICollectionViewFlowLayout {
 
     fileprivate var isInsertingCellsToTop: Bool = false
     fileprivate var contentSizeBeforeInsertingToTop: CGSize?
@@ -751,7 +736,7 @@ fileprivate class MediaTileViewLayout: UICollectionViewFlowLayout {
     }
 }
 
-fileprivate class MediaGallerySectionHeader: UICollectionReusableView {
+private class MediaGallerySectionHeader: UICollectionReusableView {
 
     static let reuseIdentifier = "MediaGallerySectionHeader"
 
@@ -813,7 +798,7 @@ fileprivate class MediaGallerySectionHeader: UICollectionReusableView {
     }
 }
 
-fileprivate class MediaGalleryStaticHeader: UICollectionViewCell {
+private class MediaGalleryStaticHeader: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryStaticHeader"
 
@@ -843,7 +828,7 @@ fileprivate class MediaGalleryStaticHeader: UICollectionViewCell {
     }
 }
 
-fileprivate class MediaGalleryCell: UICollectionViewCell {
+private class MediaGalleryCell: UICollectionViewCell {
 
     static let reuseIdentifier = "MediaGalleryCell"
 
