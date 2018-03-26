@@ -30,9 +30,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Delivered/Read
 // Fake image contents
-// Oversize text messages.
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
 typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
@@ -244,6 +242,57 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 #pragma mark -
 
++ (FakeAssetLoader *)fakeOversizeTextAssetLoader
+{
+    FakeAssetLoader *instance = [FakeAssetLoader new];
+    instance.mimeType = OWSMimeTypeOversizeTextMessage;
+    instance.filename = @"attachment.txt";
+    __weak FakeAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureOversizeTextAssetLoaded:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureOversizeTextAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSMutableString *message = [NSMutableString new];
+    for (NSUInteger i = 0; i < 32; i++) {
+        [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
+                              @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
+                              @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
+                              @"sodales. Aenean ut velit maximus, posuere sem a, accumsan nunc. Donec ullamcorper "
+                              @"turpis lorem. Quisque dignissim purus eu placerat ultricies. Proin at urna eget mi "
+                              @"semper congue. Aenean non elementum ex. Praesent pharetra quam at sem vestibulum, "
+                              @"vestibulum ornare dolor elementum. Vestibulum massa tortor, scelerisque sit amet "
+                              @"pulvinar a, rhoncus vitae nisl. Sed mi nunc, tempus at varius in, malesuada vitae "
+                              @"dui. Vivamus efficitur pulvinar erat vitae congue. Proin vehicula turpis non felis "
+                              @"congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere "
+                              @"lorem, in rhoncus nisi.\n\n"];
+    }
+
+    NSString *fileExtension = @"txt";
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+    OWSAssert(data);
+    BOOL didWrite = [data writeToFile:filePath atomically:YES];
+    OWSAssert(didWrite);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+}
+
+#pragma mark -
+
 + (instancetype)jpegInstance
 {
     static FakeAssetLoader *instance = nil;
@@ -360,6 +409,16 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [FakeAssetLoader fakeMissingAssetLoaderWithMimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)oversizeTextInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakeOversizeTextAssetLoader];
     });
     return instance;
 }
@@ -1336,7 +1395,7 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 {
     OWSAssert(thread);
 
-    return [self fakeOutgoingMediaAction:@"Fake Missing Png"
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Png"
                             messageState:messageState
                               hasCaption:hasCaption
                          fakeAssetLoader:[FakeAssetLoader missingPngInstance]
@@ -1349,10 +1408,23 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 {
     OWSAssert(thread);
 
-    return [self fakeOutgoingMediaAction:@"Fake Missing Pdf"
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Pdf"
                             messageState:messageState
                               hasCaption:hasCaption
                          fakeAssetLoader:[FakeAssetLoader missingPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingOversizeTextAction:(TSThread *)thread
+                                             messageState:(TSOutgoingMessageState)messageState
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Oversize Text"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader oversizeTextInstance]
                                   thread:thread];
 }
 
@@ -1603,6 +1675,19 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                                   thread:thread];
 }
 
++ (DebugUIMessagesAction *)fakeIncomingOversizeTextAction:(TSThread *)thread
+                                   isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Oversize Text"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader oversizeTextInstance]
+                                  thread:thread];
+}
+
 + (DebugUIMessagesAction *)fakeIncomingMediaAction:(NSString *)labelParam
                             isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                                         hasCaption:(BOOL)hasCaption
@@ -1764,6 +1849,10 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         //
         [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
 
         // Incoming
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1808,6 +1897,9 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         //
         [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:YES hasCaption:NO],
     ];
     return actions;
 }
@@ -1928,6 +2020,14 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 + (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
                                                  messageState:(TSOutgoingMessageState)messageState
 {
+    return [self fakeShortOutgoingTextMessageAction:thread messageState:messageState isDelivered:NO isRead:NO];
+}
+
++ (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
+                                                  isDelivered:(BOOL)isDelivered
+                                                       isRead:(BOOL)isRead
+{
     OWSAssert(thread);
 
     return [DebugUIMessagesSingleAction
@@ -1940,6 +2040,20 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                                                                           messageBody:messageBody];
             [message saveWithTransaction:transaction];
             [message updateWithMessageState:messageState transaction:transaction];
+            if (isDelivered) {
+                NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+                OWSAssert(recipientId.length > 0);
+                [message updateWithDeliveredToRecipientId:recipientId
+                                        deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                              transaction:transaction];
+            }
+            if (isRead) {
+                NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+                OWSAssert(recipientId.length > 0);
+                [message updateWithReadRecipientId:recipientId
+                                     readTimestamp:[NSDate ows_millisecondTimeStamp]
+                                       transaction:transaction];
+            }
         }];
 }
 
@@ -1959,6 +2073,14 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateUnsent],
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateAttemptingOut],
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService],
+        [self fakeShortOutgoingTextMessageAction:thread
+                                    messageState:TSOutgoingMessageStateSentToService
+                                     isDelivered:YES
+                                          isRead:NO],
+        [self fakeShortOutgoingTextMessageAction:thread
+                                    messageState:TSOutgoingMessageStateSentToService
+                                     isDelivered:YES
+                                          isRead:YES],
         [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"Hi"],
         [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
         [self fakeOutgoingTextMessageAction:thread
