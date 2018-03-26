@@ -30,7 +30,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Fake image contents
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
 typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
@@ -122,23 +121,36 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 #pragma mark -
 
-+ (FakeAssetLoader *)fakePngAssetLoaderWithImageSize:(CGSize)imageSize imageColor:(UIColor *)imageColor
++ (FakeAssetLoader *)fakePngAssetLoaderWithImageSize:(CGSize)imageSize
+                                     backgroundColor:(UIColor *)backgroundColor
+                                           textColor:(UIColor *)textColor
+                                               label:(NSString *)label
 {
     OWSAssert(imageSize.width > 0);
     OWSAssert(imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
 
     FakeAssetLoader *instance = [FakeAssetLoader new];
     instance.mimeType = OWSMimeTypeImagePng;
     instance.filename = @"image.png";
     __weak FakeAssetLoader *weakSelf = instance;
     instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensurePngAssetLoaded:imageSize imageColor:imageColor success:success failure:failure];
+        [weakSelf ensurePngAssetLoaded:imageSize
+                       backgroundColor:backgroundColor
+                             textColor:textColor
+                                 label:label
+                               success:success
+                               failure:failure];
     };
     return instance;
 }
 
 - (void)ensurePngAssetLoaded:(CGSize)imageSize
-                  imageColor:(UIColor *)imageColor
+             backgroundColor:(UIColor *)backgroundColor
+                   textColor:(UIColor *)textColor
+                       label:(NSString *)label
                      success:(ActionSuccessBlock)success
                      failure:(ActionFailureBlock)failure
 {
@@ -146,14 +158,61 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     OWSAssert(failure);
     OWSAssert(self.filename.length > 0);
     OWSAssert(self.mimeType.length > 0);
+    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
 
     NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
-    UIImage *image = [UIImage imageWithColor:imageColor size:imageSize];
+    UIImage *image =
+        [self createRandomPngWithSize:imageSize backgroundColor:backgroundColor textColor:textColor label:label];
     NSData *pngData = UIImagePNGRepresentation(image);
     [pngData writeToFile:filePath atomically:YES];
     self.filePath = filePath;
     OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
     success();
+}
+
+- (nullable UIImage *)createRandomPngWithSize:(CGSize)imageSize
+                              backgroundColor:(UIColor *)backgroundColor
+                                    textColor:(UIColor *)textColor
+                                        label:(NSString *)label
+{
+    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
+
+    CGRect frame = CGRectZero;
+    frame.size = imageSize;
+    CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
+    UIFont *font = [UIFont boldSystemFontOfSize:smallDimension * 0.5f];
+    NSDictionary *textAttributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
+
+    CGRect textFrame =
+        [label boundingRectWithSize:frame.size
+                            options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                         attributes:textAttributes
+                            context:nil];
+
+    UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, frame);
+    [label drawAtPoint:CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(textFrame),
+                           CGRectGetMidY(frame) - CGRectGetMidY(textFrame))
+        withAttributes:textAttributes];
+
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return image;
 }
 
 #pragma mark -
@@ -199,6 +258,8 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     OWSAssert(didWrite);
     self.filePath = filePath;
     OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
 }
 
 #pragma mark -
@@ -238,6 +299,8 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     OWSAssert(didCreate);
     self.filePath = filePath;
     OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
 }
 
 #pragma mark -
@@ -289,6 +352,8 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     OWSAssert(didWrite);
     self.filePath = filePath;
     OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
 }
 
 #pragma mark -
@@ -346,7 +411,10 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100) imageColor:[UIColor blueColor]];
+        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100)
+                                                    backgroundColor:[UIColor blueColor]
+                                                          textColor:[UIColor whiteColor]
+                                                              label:@"P"];
     });
     return instance;
 }
@@ -356,8 +424,10 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance =
-            [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10) imageColor:[UIColor greenColor]];
+        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10)
+                                                    backgroundColor:[UIColor greenColor]
+                                                          textColor:[UIColor whiteColor]
+                                                              label:@"L"];
     });
     return instance;
 }
@@ -367,8 +437,10 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance =
-            [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000) imageColor:[UIColor greenColor]];
+        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000)
+                                                    backgroundColor:[UIColor redColor]
+                                                          textColor:[UIColor whiteColor]
+                                                              label:@"B"];
     });
     return instance;
 }
@@ -467,7 +539,9 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 - (void)prepareAndPerformNTimes:(NSUInteger)count
 {
-    //    __weak DebugUIMessagesAction *weakSelf = self;
+    DDLogInfo(@"%@ %@ prepareAndPerformNTimes: %zd", self.logTag, self.label, count);
+    [DDLog flushLog];
+
     [self prepare:^{
         [self performNTimes:count
                     success:^{
@@ -622,12 +696,6 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 @property (nonatomic, nullable) NSArray<DebugUIMessagesAction *> *subactions;
 @property (nonatomic) NSUInteger subactionIndex;
 
-//@property (nonatomic, nullable) MessageActionBlock actionBlock;
-//@property (nonatomic, nullable) StaggeredActionBlock staggeredActionBlock;
-//@property (nonatomic, nullable) BulkActionBlock staggeredActionBlock;
-//@property (nonatomic, nullable) BulkActionBlock bulkActionBlock;
-//@property (nonatomic) BOOL isStaggered;
-
 @end
 
 #pragma mark -
@@ -674,6 +742,8 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
     DebugUIMessagesAction *nextAction = unpreparedSubactions.lastObject;
     [unpreparedSubactions removeLastObject];
+    DDLogInfo(@"%@ preparing: %@", self.logTag, nextAction.label);
+    [DDLog flushLog];
     [nextAction prepare:^{
         [self prepareSubactions:unpreparedSubactions success:success failure:failure];
     }
@@ -692,14 +762,6 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     instance.label = label;
     instance.subactions = subactions;
     instance.subactionMode = SubactionMode_Random;
-    //    instance.staggeredActionBlock = ^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction,
-    //    ActionSuccessBlock success, ActionFailureBlock failure) {
-    //        [self performRandomStaggeredSubaction:subactions index:index transaction:transaction success:success
-    //        failure:failure];
-    //    };
-    //    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-    //        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
-    //    };
     return instance;
 }
 
@@ -714,16 +776,6 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     instance.label = label;
     instance.subactions = subactions;
     instance.subactionMode = SubactionMode_Ordered;
-    //    instance.bulkActionBlock = ^(NSUInteger count, YapDatabaseReadWriteTransaction *transaction,
-    //    ActionSuccessBlock success, ActionFailureBlock failure) {
-    //        for (NSUInteger index = 0; index < count; index++) {
-    //            [self performAllUnstaggeredSubactions:[subactions mutableCopy] index:index transaction:transaction
-    //            success:success failure:failure];
-    //        }
-    //    };
-    //    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-    //        [DebugUIMessagesAction prepareSubactions:[subactions mutableCopy] success:success failure:failure];
-    //    };
     return instance;
 }
 
@@ -795,10 +847,14 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-    //        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
-    //                        actionBlock:^{
-    //                            [DebugUIMessages sendSelectedMediaTypeInThread:thread];
-    //                        }],
+        //        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
+        //                        actionBlock:^{
+        //                            [DebugUIMessages sendSelectedMediaTypeInThread:thread];
+        //                        }],
+        [OWSTableItem itemWithTitle:@"Select Action"
+                        actionBlock:^{
+                            [DebugUIMessages selectExemplaryAction:thread];
+                        }],
 
 #pragma mark - Misc.
 
@@ -1514,8 +1570,11 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
     NSString *filename = dataSource.sourceFilename;
+    // To support "fake missing" attachments, we sometimes lie about the
+    // length of the data.
+    UInt32 nominalDataLength = (UInt32)MAX((NSUInteger)1, dataSource.dataLength);
     TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
-                                                                                 byteCount:(UInt32)dataSource.dataLength
+                                                                                 byteCount:nominalDataLength
                                                                             sourceFilename:filename];
     NSError *error;
     BOOL success = [attachmentStream writeData:dataSource.data error:&error];
@@ -1753,10 +1812,12 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     if (isAttachmentDownloaded) {
         DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
         NSString *filename = dataSource.sourceFilename;
-        TSAttachmentStream *attachmentStream =
-            [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
-                                                  byteCount:(UInt32)dataSource.dataLength
-                                             sourceFilename:filename];
+        // To support "fake missing" attachments, we sometimes lie about the
+        // length of the data.
+        UInt32 nominalDataLength = (UInt32)MAX((NSUInteger)1, dataSource.dataLength);
+        TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
+                                                                                     byteCount:nominalDataLength
+                                                                                sourceFilename:filename];
         NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
         OWSAssert(success && !error);
@@ -2030,8 +2091,25 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 {
     OWSAssert(thread);
 
+    NSString *label = @"Fake Short Incoming Text Message";
+    if (messageState == TSOutgoingMessageStateUnsent) {
+        label = [label stringByAppendingString:@" (Unsent)"];
+    } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+        label = [label stringByAppendingString:@" (Sending)"];
+    } else if (messageState == TSOutgoingMessageStateSentToService) {
+        if (isRead) {
+            label = [label stringByAppendingString:@" (Read)"];
+        } else if (isDelivered) {
+            label = [label stringByAppendingString:@" (Delivered)"];
+        } else {
+            label = [label stringByAppendingString:@" (Sent)"];
+        }
+    } else {
+        OWSFail(@"%@ unknown message state.", self.logTag)
+    }
+
     return [DebugUIMessagesSingleAction
-               actionWithLabel:@"Fake Short Incoming Text Message"
+               actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
             NSString *messageBody =
                 [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
@@ -2114,15 +2192,42 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 #pragma mark - Exemplary
 
-+ (DebugUIMessagesAction *)allExemplaryAction:(TSThread *)thread
++ (NSArray<DebugUIMessagesAction *> *)allExemplaryActions:(TSThread *)thread
 {
     OWSAssert(thread);
 
     NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
     [actions addObjectsFromArray:[self allFakeMediaActions:thread]];
     [actions addObjectsFromArray:[self allFakeTextActions:thread]];
+    return actions;
+}
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations" subactions:actions];
++ (DebugUIMessagesAction *)allExemplaryAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations"
+                                                    subactions:[self allExemplaryActions:thread]];
+}
+
++ (void)selectExemplaryAction:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread() OWSAssert(thread);
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Action"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (DebugUIMessagesAction *action in [self allExemplaryActions:thread]) {
+        [alert addAction:[UIAlertAction actionWithTitle:action.label
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *ignore) {
+                                                    [self performActionNTimes:action];
+                                                }]];
+    }
+
+    [alert addAction:[OWSAlerts cancelAction]];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark -
@@ -2751,21 +2856,6 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                        }
                    });
 }
-
-//+ (ActionBlock)sendTextMessagesActionInThread:(TSThread *)thread
-//{
-//    OWSAssert(thread);
-//
-//    return ^(NSUInteger index, ActionSuccessBlock success, ActionFailureBlock failure) {
-//        [self sendTextMessageInThread:thread counter:index];
-//        // TODO:
-//        success();
-//    };
-//}
-//
-//+ (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
-//{
-//}
 
 + (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
