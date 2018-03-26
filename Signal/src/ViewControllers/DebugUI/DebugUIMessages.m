@@ -7,13 +7,17 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "ThreadUtil.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
+#import <AFNetworking/AFNetworking.h>
 #import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
 #import <SignalMessaging/Environment.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -26,6 +30,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Delivered/Read
+// Fake image contents
+// Oversize text messages.
 typedef void (^ActionSuccessBlock)(void);
 typedef void (^ActionFailureBlock)(void);
 typedef void (^ActionPrepareBlock)(ActionSuccessBlock success, ActionFailureBlock failure);
@@ -42,9 +49,10 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 @interface FakeAssetLoader : NSObject
 
-@property (nonatomic) NSString *fileUrl;
 @property (nonatomic) NSString *filename;
 @property (nonatomic) NSString *mimeType;
+
+@property (nonatomic) ActionPrepareBlock prepareBlock;
 
 @property (nonatomic, nullable) NSString *filePath;
 
@@ -54,11 +62,25 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 
 @implementation FakeAssetLoader
 
-- (void)ensureAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
++ (FakeAssetLoader *)fakeAssetLoaderWithUrl:(NSString *)fileUrl mimeType:(NSString *)mimeType
+{
+    OWSAssert(fileUrl.length > 0);
+    OWSAssert(mimeType.length > 0);
+
+    FakeAssetLoader *instance = [FakeAssetLoader new];
+    instance.mimeType = mimeType;
+    instance.filename = [NSURL URLWithString:fileUrl].lastPathComponent;
+    __weak FakeAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureURLAssetLoaded:fileUrl success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureURLAssetLoaded:(NSString *)fileUrl success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
 {
     OWSAssert(success);
     OWSAssert(failure);
-    OWSAssert(self.fileUrl.length > 0);
     OWSAssert(self.filename.length > 0);
     OWSAssert(self.mimeType.length > 0);
 
@@ -67,24 +89,21 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         return;
     }
 
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:self.filename.pathExtension];
+    // Use a predictable file path so that we reuse the cache between app launches.
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *cacheDirectory = [temporaryDirectory stringByAppendingPathComponent:@"cached_random_files"];
+    [OWSFileSystem ensureDirectoryExists:cacheDirectory];
+    NSString *filePath = [cacheDirectory stringByAppendingPathComponent:self.filename];
+    if ([NSFileManager.defaultManager fileExistsAtPath:filePath]) {
+        self.filePath = filePath;
+        return success();
+    }
 
-    //    NSFileManager *fileManager = [NSFileManager defaultManager];
-    //    [fileManager]
-    //    NSURL *documentDirectoryURL =
-    //    [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    //    NSString *randomFilesDirectoryPath =
-    //    [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
-    //    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
-    //    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:self.filename];
-    //    if ([fileManager fileExistsAtPath:filePath]) {
-    //        success(filePath);
-    //    } else {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
     OWSAssert(sessionManager.responseSerializer);
-    [sessionManager GET:self.fileUrl
+    [sessionManager GET:fileUrl
         parameters:nil
         progress:nil
         success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
@@ -93,25 +112,146 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                 OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
                 success();
             } else {
-                OWSFail(@"Error write url response [%@]: %@", self.fileUrl, filePath);
+                OWSFail(@"Error write url response [%@]: %@", fileUrl, filePath);
                 failure();
             }
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-            OWSFail(@"Error downloading url[%@]: %@", self.fileUrl, requestError);
+            OWSFail(@"Error downloading url[%@]: %@", fileUrl, requestError);
             failure();
         }];
 }
+
+#pragma mark -
+
++ (FakeAssetLoader *)fakePngAssetLoaderWithImageSize:(CGSize)imageSize imageColor:(UIColor *)imageColor
+{
+    OWSAssert(imageSize.width > 0);
+    OWSAssert(imageSize.height > 0);
+
+    FakeAssetLoader *instance = [FakeAssetLoader new];
+    instance.mimeType = OWSMimeTypeImagePng;
+    instance.filename = @"image.png";
+    __weak FakeAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensurePngAssetLoaded:imageSize imageColor:imageColor success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensurePngAssetLoaded:(CGSize)imageSize
+                  imageColor:(UIColor *)imageColor
+                     success:(ActionSuccessBlock)success
+                     failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
+    UIImage *image = [UIImage imageWithColor:imageColor size:imageSize];
+    NSData *pngData = UIImagePNGRepresentation(image);
+    [pngData writeToFile:filePath atomically:YES];
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+    success();
+}
+
+#pragma mark -
+
++ (FakeAssetLoader *)fakeRandomAssetLoaderWithLength:(NSUInteger)dataLength mimeType:(NSString *)mimeType
+{
+    OWSAssert(dataLength > 0);
+    OWSAssert(mimeType.length > 0);
+
+    FakeAssetLoader *instance = [FakeAssetLoader new];
+    instance.mimeType = mimeType;
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    OWSAssert(fileExtension.length > 0);
+    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
+    __weak FakeAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureRandomAssetLoaded:dataLength success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureRandomAssetLoaded:(NSUInteger)dataLength
+                        success:(ActionSuccessBlock)success
+                        failure:(ActionFailureBlock)failure
+{
+    OWSAssert(dataLength > 0);
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+    OWSAssert(fileExtension.length > 0);
+    NSData *data = [Randomness generateRandomBytes:(int)dataLength];
+    OWSAssert(data);
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    BOOL didWrite = [data writeToFile:filePath atomically:YES];
+    OWSAssert(didWrite);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+}
+
+#pragma mark -
+
++ (FakeAssetLoader *)fakeMissingAssetLoaderWithMimeType:(NSString *)mimeType
+{
+    OWSAssert(mimeType.length > 0);
+
+    FakeAssetLoader *instance = [FakeAssetLoader new];
+    instance.mimeType = mimeType;
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    OWSAssert(fileExtension.length > 0);
+    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
+    __weak FakeAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureMissingAssetLoaded:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureMissingAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+    OWSAssert(fileExtension.length > 0);
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    BOOL didCreate = [NSFileManager.defaultManager createFileAtPath:filePath contents:nil attributes:nil];
+    OWSAssert(didCreate);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+}
+
+#pragma mark -
 
 + (instancetype)jpegInstance
 {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [self new];
-        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG";
-        instance.filename = @"random-jpg.jpg";
-        instance.mimeType = @"image/jpeg";
+        instance = [FakeAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
+                          mimeType:@"image/jpeg"];
     });
     return instance;
 }
@@ -121,10 +261,9 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [self new];
-        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif";
-        instance.filename = @"random-gif.gif";
-        instance.mimeType = @"image/gif";
+        instance = [FakeAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
+                          mimeType:@"image/gif"];
     });
     return instance;
 }
@@ -134,10 +273,9 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [self new];
-        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3";
-        instance.filename = @"random-mp3.mp3";
-        instance.mimeType = @"audio/mpeg";
+        instance = [FakeAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
+                          mimeType:@"audio/mpeg"];
     });
     return instance;
 }
@@ -147,20 +285,83 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     static FakeAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [self new];
-        instance.fileUrl = @"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4";
-        instance.filename = @"random-mp4.mp4";
-        instance.mimeType = @"video/mp4";
+        instance = [FakeAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
+                          mimeType:@"video/mp4"];
     });
     return instance;
 }
 
-- (ActionPrepareBlock)prepareBlock
++ (instancetype)portraitPngInstance
 {
-    __weak FakeAssetLoader *weakSelf = self;
-    return ^(ActionSuccessBlock success, ActionFailureBlock failure) {
-        [weakSelf ensureAssetLoaded:success failure:failure];
-    };
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100) imageColor:[UIColor blueColor]];
+    });
+    return instance;
+}
+
++ (instancetype)landscapePngInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance =
+            [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10) imageColor:[UIColor greenColor]];
+    });
+    return instance;
+}
+
++ (instancetype)largePngInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance =
+            [FakeAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000) imageColor:[UIColor greenColor]];
+    });
+    return instance;
+}
+
++ (instancetype)tinyPdfInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)largePdfInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)missingPngInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakeMissingAssetLoaderWithMimeType:OWSMimeTypeImagePng];
+    });
+    return instance;
+}
+
++ (instancetype)missingPdfInstance
+{
+    static FakeAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [FakeAssetLoader fakeMissingAssetLoaderWithMimeType:@"application/pdf"];
+    });
+    return instance;
 }
 
 @end
@@ -1064,6 +1265,97 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                                   thread:thread];
 }
 
++ (DebugUIMessagesAction *)fakeOutgoingPortraitPngAction:(TSThread *)thread
+                                            messageState:(TSOutgoingMessageState)messageState
+                                              hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Portrait Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader landscapePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLandscapePngAction:(TSThread *)thread
+                                             messageState:(TSOutgoingMessageState)messageState
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Landscape Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader portraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLargePngAction:(TSThread *)thread
+                                         messageState:(TSOutgoingMessageState)messageState
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingTinyPdfAction:(TSThread *)thread
+                                        messageState:(TSOutgoingMessageState)messageState
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Tiny Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader tinyPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLargePdfAction:(TSThread *)thread
+                                         messageState:(TSOutgoingMessageState)messageState
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader largePdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMissingPngAction:(TSThread *)thread
+                                           messageState:(TSOutgoingMessageState)messageState
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Missing Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader missingPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMissingPdfAction:(TSThread *)thread
+                                           messageState:(TSOutgoingMessageState)messageState
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Missing Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader missingPdfInstance]
+                                  thread:thread];
+}
+
 + (DebugUIMessagesAction *)fakeOutgoingMediaAction:(NSString *)labelParam
                                       messageState:(TSOutgoingMessageState)messageState
                                         hasCaption:(BOOL)hasCaption
@@ -1220,6 +1512,97 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
                                   thread:thread];
 }
 
++ (DebugUIMessagesAction *)fakeIncomingPortraitPngAction:(TSThread *)thread
+                                  isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                              hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Portrait Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader portraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLandscapePngAction:(TSThread *)thread
+                                   isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Landscape Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader landscapePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLargePngAction:(TSThread *)thread
+                               isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Large Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingTinyPdfAction:(TSThread *)thread
+                              isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Tiny Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader tinyPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLargePdfAction:(TSThread *)thread
+                               isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Large Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader largePdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMissingPngAction:(TSThread *)thread
+                                 isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Missing Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader missingPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMissingPdfAction:(TSThread *)thread
+                                 isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Missing Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[FakeAssetLoader missingPdfInstance]
+                                  thread:thread];
+}
+
 + (DebugUIMessagesAction *)fakeIncomingMediaAction:(NSString *)labelParam
                             isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                                         hasCaption:(BOOL)hasCaption
@@ -1352,6 +1735,35 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLargePdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
 
         // Incoming
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:NO],
@@ -1370,6 +1782,32 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLargePdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        //
+        [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ];
     return actions;
 }
@@ -1633,6 +2071,8 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
     OWSAssert(thread);
 
     OWSSignalServiceProtosEnvelopeBuilder *builder = [OWSSignalServiceProtosEnvelopeBuilder new];
+
+    [builder setTimestamp:[NSDate ows_millisecondTimeStamp]];
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
