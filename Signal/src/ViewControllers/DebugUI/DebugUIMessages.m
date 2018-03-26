@@ -357,44 +357,6 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-//+ (void)ensureRandomFileWithURL:(NSString *)url
-//                       filename:(NSString *)filename
-//                        success:(nullable void (^)(NSString *filePath))success
-//                        failure:(nullable void (^)(void))failure
-//{
-//    NSFileManager *fileManager = [NSFileManager defaultManager];
-//    NSURL *documentDirectoryURL =
-//        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-//    NSString *randomFilesDirectoryPath =
-//        [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
-//    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
-//    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:filename];
-//    if ([fileManager fileExistsAtPath:filePath]) {
-//        success(filePath);
-//    } else {
-//        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-//        AFHTTPSessionManager *sessionManager =
-//            [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-//        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//        OWSAssert(sessionManager.responseSerializer);
-//        [sessionManager GET:url
-//            parameters:nil
-//            progress:nil
-//            success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
-//                if ([responseObject writeToFile:filePath atomically:YES]) {
-//                    success(filePath);
-//                } else {
-//                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
-//                    failure();
-//                }
-//            }
-//            failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-//                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
-//                failure();
-//            }];
-//    }
-//}
-
 + (void)sendAttachment:(NSString *)filePath
                 thread:(TSThread *)thread
                success:(nullable void (^)(void))success
