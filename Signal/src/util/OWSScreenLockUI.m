@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 // "will enter background."
 @property (nonatomic) BOOL appIsInactive;
 @property (nonatomic) BOOL appIsInBackground;
-@property (nonatomic, nullable) NSDate *appBecameInactiveDate;
+@property (nonatomic, nullable) NSDate *appEnteredBackgroundDate;
 @property (nonatomic) UIWindow *screenBlockingWindow;
 @property (nonatomic) BOOL hasUnlockedScreenLock;
 @property (nonatomic) BOOL isShowingScreenLockUI;
@@ -103,16 +103,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAppIsInactive:(BOOL)appIsInactive
 {
-    if (appIsInactive) {
-        if (!_appIsInactive) {
-            // Whenever app becomes inactive, clear this state.
-            self.hasUnlockedScreenLock = NO;
-
-            // Note the time when app became inactive.
-            self.appBecameInactiveDate = [NSDate new];
-        }
-    }
-
     _appIsInactive = appIsInactive;
 
     [self ensureScreenProtection];
@@ -120,6 +110,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAppIsInBackground:(BOOL)appIsInBackground
 {
+    if (appIsInBackground) {
+        if (!_appIsInBackground) {
+            // Whenever app enters background, clear this state.
+            self.hasUnlockedScreenLock = NO;
+
+            // Record the time when app entered background.
+            self.appEnteredBackgroundDate = [NSDate new];
+        }
+    }
+
     _appIsInBackground = appIsInBackground;
 
     [self ensureScreenProtection];
@@ -249,13 +249,13 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't show 'Screen Lock' if app is in background.
     } else if (self.appIsInactive) {
         // Don't show 'Screen Lock' if app is inactive.
-    } else if (!self.appBecameInactiveDate) {
+    } else if (!self.appEnteredBackgroundDate) {
         // Show 'Screen Lock' if app has just launched.
         shouldHaveScreenLock = YES;
     } else {
-        OWSAssert(self.appBecameInactiveDate);
+        OWSAssert(self.appEnteredBackgroundDate);
 
-        NSTimeInterval screenLockInterval = fabs([self.appBecameInactiveDate timeIntervalSinceNow]);
+        NSTimeInterval screenLockInterval = fabs([self.appEnteredBackgroundDate timeIntervalSinceNow]);
         NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
         OWSAssert(screenLockInterval >= 0);
         OWSAssert(screenLockTimeout >= 0);
