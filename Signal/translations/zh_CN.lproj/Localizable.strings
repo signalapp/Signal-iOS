@@ -50,10 +50,10 @@
 "APN_MESSAGE_IN_GROUP" = "群组中的消息";
 
 /* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ 在 %@ 群组：%@";
+"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ 在 %@ 群组中：%@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal 无法启动。请将您的调试日志发送给我们的开发团队，以让我们帮助您解决这个问题。";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal 无法正常启动。请将您的调试日志发送给我们的开发团队，以让我们帮助您解决这个问题。";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "错误";
@@ -62,7 +62,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "输入您的名字";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ 版已在 App Store 上线";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ 版已在 App Store 上线。";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signal 有新版本啦";
@@ -119,7 +119,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "无法读取图像附件。";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "无法清除图片的元数据。";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "附件过大。";
@@ -148,7 +148,7 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支持的文件";
 
-/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "语音消息";
 
 /* action sheet button title to enable built in speaker during a call */
@@ -157,53 +157,53 @@
 /* button text for back button */
 "BACK_BUTTON" = "返回";
 
-/* Error indicating the a backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "无法导出要备份的数据。";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "服务端返回无效响应";
 
-/* Error indicating the a backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+/* Error indicating the backup export failed to save a file to the cloud. */
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "无法上传要备份的数据。";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "正在清除备份";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "正在准备备份";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "正在导出数据";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "正在导出备份";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "正在上传备份";
 
-/* Error indicating the a backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "无法导入备份。";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "正在检查备份状态";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "正在准备备份";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "正在下载备份数据";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "备份准备即将完成";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "正在导入备份。";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "正在恢复数据库";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "正在恢复文件";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "黑名单中的用户将不能呼叫您或给你发送消息。";
@@ -263,7 +263,7 @@
 "BUTTON_DONE" = "完成";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "选择";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal 需要访问您的麦克风用于通话和录取语音消息。您可以在系统设置中授予访问权限。";
@@ -271,7 +271,7 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "请求访问麦克风";
 
-/* Accessibilty label for placing call button */
+/* Accessibility label for placing call button */
 "CALL_LABEL" = "打电话";
 
 /* Call setup status label after outgoing call times out */
@@ -281,7 +281,7 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "打电话";
+"CALL_USER_ALERT_CALL_BUTTON" = "拨号";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
 "CALL_USER_ALERT_MESSAGE_FORMAT" = "您要打电话给 %@ 吗？";
@@ -338,13 +338,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "选择国家";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "连接 iCloud 备份时有错误发生。";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "您没有可用于备份的 iCloud 账户。";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal 没有访问您 iCloud 账户的权限。";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "和剪切版比较";
@@ -358,7 +358,7 @@
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "邀请";
 
-/* Multiline label explaining why compose-screen contact picker is empty. */
+/* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "如果想查看您的哪些联系人是 Signal 用户，请在系统设置中允许 Signal 访问联系人。";
 
 /* No comment provided by engineer. */
@@ -376,10 +376,10 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "连接新设备";
 
-/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ 可能重新安装了程序或者更换了设备。让他们验证您的安全码以确保安全。";
 
-/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ 的安全码改变了";
 
 /* Generic button text to proceed with an action */
@@ -520,32 +520,32 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "未找到日志。";
 
-/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "打开调试报告";
 
-/* Label for the 'copy link' option of the the debug log alert. */
+/* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "复制链接";
 
-/* Label for the 'email debug log' option of the the debug log alert. */
+/* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "邮件支持";
 
-/* Label for the 'send to last thread' option of the the debug log alert. */
+/* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "发送到最后一个线程";
 
-/* Label for the 'send to self' option of the the debug log alert. */
+/* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "发送给自己";
 
-/* Label for the 'Share' option of the the debug log alert. */
+/* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "分享";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "再多一步";
 
-/* Message of the alert before redirecting to Github Issues. */
+/* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "本连结已复製至剪贴板。你现在将重新导向到 GitHub 错误回馈列表。";
 
-/* Title of the alert before redirecting to Github Issues. */
+/* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "重新定向到GitHub";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
@@ -623,7 +623,7 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "编辑";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "你好,\n\n最近我在使用 Signal 以保持 iPhone 上的对话私密. 我希望你也能装上, 这样我们可以有信心只有我和你可以看到我们发的消息或者听到我们打的电话.\n\nSignal可以在iPhone和Android上使用. 可以在以下的链接下载: %@\n\nSignal像你用过的聊天软件一样工作. 我们可以发照片或者视频, 打电话, 也可以群聊. 最好的地方在于, 没任何其它人可以看到这些内容, 即使是做出Signal软件的人!\n\n你可以在以下的链接了解更多关于制作 Signal 的 Open Whisper Systems:  %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
@@ -701,16 +701,16 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "未能发送消息。";
 
-/* Error mesage indicating that message send is disabled due to prekey update failures */
+/* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "由于隐私信息过时，无法发送。";
 
-/* Error mesage indicating that message send failed due to block list */
+/* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "无法向黑名单用户发送消息";
 
-/* Error mesage indicating that message send failed due to failed attachment write */
+/* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "因无法写附件而失败。";
 
-/* Generic error used whenver Signal can't contact the server */
+/* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal 无法联网. 请尝试使用其它网络或者使用移动数据.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
@@ -773,17 +773,17 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "重置会话";
 
-/* Accessibilty label for finishing new group */
+/* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "完成组群创建";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "此对话中没有您的媒体数据。";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "正在加载新的媒体...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "正在加载较早的媒体...";
 
 /* A default label for attachment whose file extension cannot be determined. */
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "？";
@@ -791,28 +791,28 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "附件";
 
-/* Error displayed when there is a failure fetching gifs from the remote service. */
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "无法读取所请求的 GIF。请确认您是否处于在线状态。";
 
-/* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "发生了一个未知的错误。";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
-/* Shown when selected gif couldn't be fetched */
+/* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "无法选择 GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "请输入您的搜索词。";
 
-/* Title for the 'gif picker' dialog. */
+/* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "GIF 查找";
 
-/* Indicates that an error occured while searching. */
+/* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "错误。点击重试。";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "无结果。";
 
-/* Placeholder text for the search field in gif view */
+/* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "输入您的搜索词";
 
 /* No comment provided by engineer. */
@@ -890,7 +890,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "您正在查看您存档的消息。点击回到您的收件箱。";
 
-/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "要查看您的联系人名称，请在系统设置中允许访问联系人。";
 
 /* notification body */
@@ -953,7 +953,7 @@
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "重试";
 
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "请扫描设备上面的二维码进行绑定。";
 
 /* Subheading for 'Link New Device' navigation */
@@ -975,7 +975,7 @@
 "LOGGING_SECTION" = "信息记录日志";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "相机";
@@ -987,16 +987,16 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "相册";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "删除%d条消息";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "删除消息";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "您";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "这个月";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "消息";
@@ -1270,7 +1270,7 @@
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "住宅传真";
 
-/* Label for 'IPhone' phone numbers. */
+/* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
@@ -1297,7 +1297,7 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "工作传真";
 
-/* accessability label for button to start media playback */
+/* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒体";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
@@ -1501,16 +1501,16 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "您要注册的电话号码已经在别的服务器被注册，请注销该号码后再次尝试。";
 
-/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "已为您的号码启用了注册锁。为了帮助您记住注册锁 PIN 码，Signal 会定期向您确认 PIN 码。";
 
-/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "提醒：";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "注册锁能防范他人在没有您许可的情况下，使用您的号码进行注册。您随时可在 Signal 隐私设置里关闭该功能。";
 
-/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "请输入您的注册锁 PIN 码";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
@@ -1547,43 +1547,43 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "扫描二维码";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+"SCREEN_LOCK_DISABLE_FAILED" = "无法禁用 Screen Lock";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+"SCREEN_LOCK_ENABLE_FAILED" = "无法启用 Screen Lock";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "无法访问认证数据。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "认证失败。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "认证以禁用 Screen Lock。";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "搜索姓名或号码";
@@ -1591,7 +1591,7 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全会话被重置。";
 
-/* Label for 'select gif to attach' action sheet button */
+/* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
@@ -1612,7 +1612,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "你已经邀请了你的朋友使用 Signal ！";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "通过短信邀请：%@";
 
 /* No comment provided by engineer. */
@@ -1649,7 +1649,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "审查规避只能在联网时启动。";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "不需要审查规避；您已连接上了 Signal 服务。";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "不需要规避审查；您已连接上了 Signal 服务。";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "审查规避";
@@ -1667,43 +1667,43 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（默认）";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "备份";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+"SETTINGS_BACKUP_BACKUP_NOW" = "现在备份";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "取消备份";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "备份已启用";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "阶段";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "进度";
 
 /* Label for status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
+"SETTINGS_BACKUP_STATUS" = "状态";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+"SETTINGS_BACKUP_STATUS_FAILED" = "备份失败";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "等待中";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "正在备份";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "备份成功";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "添加...";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何使用 Signal 的联系人。";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "您没有任何 Signal 联系人。";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "无搜索结果";
@@ -1718,7 +1718,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "始终使用中继进行通话";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Signal 服务器对所有通话进行中继，以防止联系人获取您的IP地址。\n开启会降低通话质量。";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "使用 Signal 服务器对所有通话进行中继，以防止联系人获取您的IP地址。开启后会降低通话质量。";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
@@ -1730,7 +1730,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "删除账号";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您是否确定要删除您所有的历史记录（消息，附件，通话记录）？这个操作将无法撤销。";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "您是否确定要删除您所有的历史记录(消息，附件，通话记录)？这个操作将无法撤销。";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部删除";
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "邀请您的朋友";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "你可用 @WhisperSystems 的 Signal 联系我。";
+"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "消息提示音";
@@ -1775,7 +1775,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "显示最近通话";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS 通话整合";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "与iOS 通话记录整合";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "隐私";
@@ -1787,19 +1787,19 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "消息已读时，查看和分享已读状态。该设置为可选设置，且对所有对话生效。";
 
 /* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
+"SETTINGS_REMOVE_METADATA" = "清除媒体元数据";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
+"SETTINGS_REMOVE_METADATA_TITLE" = "元数据";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock 超时";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
@@ -1814,7 +1814,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "阻止 Signal 预览页面显示在应用切换窗口。";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS 通话整合会在您的锁屏界面和系统通话记录中显示您的Signal通话记录。您可以选择显示您的联系人的名称与号码。如果您已开启iCloud，系统会与苹果公司共享该通话记录。";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS 通话整合会在您的锁屏界面和系统通话记录中显示您的Signal通话记录。您可以选择显示您的联系人的名称与号码。如果您已开启iCloud，系统会与苹果公司共享通话记录。";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "通知";
@@ -1906,25 +1906,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@天";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@天";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@小时";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@时";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@分钟";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@分";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@秒";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@秒";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -1942,7 +1942,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@个星期";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@周";
 
 /* Label for the cancel button in an alert or action sheet. */
@@ -2006,7 +2006,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑动即可应答";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您可以为所有对话设置一个默认提示音，或为每一个对话选择单独的提示音。您的来电铃声将与 iOS 电话簿联系人中所设置的铃声一致。";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "检查通知设置";

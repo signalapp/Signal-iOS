@@ -148,7 +148,7 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Datoteka nije podržana.";
 
-/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Glasovna poruka";
 
 /* action sheet button title to enable built in speaker during a call */
@@ -157,13 +157,13 @@
 /* button text for back button */
 "BACK_BUTTON" = "Back";
 
-/* Error indicating the a backup export could not export the user's data. */
+/* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
 
-/* Error indicating the a backup export failed to save a file to the cloud. */
+/* Error indicating the backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
 
 /* Indicates that the cloud is being cleaned up. */
@@ -181,7 +181,7 @@
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
 
-/* Error indicating the a backup import could not import the user's data. */
+/* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
 /* Indicates that the backup import is checking for an existing backup. */
@@ -271,7 +271,7 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zahtijeva pristup mikrofonu";
 
-/* Accessibilty label for placing call button */
+/* Accessibility label for placing call button */
 "CALL_LABEL" = "Poziv";
 
 /* Call setup status label after outgoing call times out */
@@ -358,7 +358,7 @@
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
 
-/* Multiline label explaining why compose-screen contact picker is empty. */
+/* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Da biste vidjeli koji od vaših kontakata koriste Signal, omogućite pristup kontaktima u podešavanjima sistema.";
 
 /* No comment provided by engineer. */
@@ -376,10 +376,10 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Uveži novi uređaj";
 
-/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ je možda reinstalirao/la Signal ili promijenio/la uređaj. Provjerite svoj sigurnosni broj s njim/njom kako biste osigurali privatnost.";
 
-/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Sigurnosni broj sa %@ je promijenjen.";
 
 /* Generic button text to proceed with an action */
@@ -520,32 +520,32 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
 
-/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
 
-/* Label for the 'copy link' option of the the debug log alert. */
+/* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copy Link";
 
-/* Label for the 'email debug log' option of the the debug log alert. */
+/* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
 
-/* Label for the 'send to last thread' option of the the debug log alert. */
+/* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
 
-/* Label for the 'send to self' option of the the debug log alert. */
+/* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
 
-/* Label for the 'Share' option of the the debug log alert. */
+/* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "One More Step";
 
-/* Message of the alert before redirecting to Github Issues. */
+/* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
 
-/* Title of the alert before redirecting to Github Issues. */
+/* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
@@ -623,7 +623,7 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Uredi";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nOdnedavno koristim Signal kako bi svoje razgovore na mom iPhoneu zadržao privatnim. Volio bi da ga i ti instaliraš, tako da budemo sigurni da samo ja i ti možemo čitati naše poruke i čuti naše razgovore.\n\nSignal je dostupan za iPhone i Android. Preuzmite ga ovdje : %@\n\nSignal radi kao tvoja postojeća aplikacija za razmjenu poruka. Možemo slati slike i video, vršiti pozive i započeti grupne razgovore. Najbolje stvar je što niko drugi osim nas ništa od toga ne može vidjeti, pa čak ni ljudi koje čine Signal.\n\nMožeš pročitati više o Open Whisper System i Signalu, ljudima koji stoje iza ovog projekta, ovdje: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
@@ -701,16 +701,16 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo.";
 
-/* Error mesage indicating that message send is disabled due to prekey update failures */
+/* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nije moguće poslati zbog neažuiranih privatnih podatka.";
 
-/* Error mesage indicating that message send failed due to block list */
+/* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Neuspješno slanje poruke korisniku jer ste ga blokirali.";
 
-/* Error mesage indicating that message send failed due to failed attachment write */
+/* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
 
-/* Generic error used whenver Signal can't contact the server */
+/* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nije u mogućnosti povezati se na internet. Molimo pokušajte sa drugom WiFi ili mobilnom mrežom.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
@@ -773,7 +773,7 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
 
-/* Accessibilty label for finishing new group */
+/* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Završi kreiranje grupe";
 
 /* Label indicating media gallery is empty */
@@ -791,28 +791,28 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Prilog";
 
-/* Error displayed when there is a failure fetching gifs from the remote service. */
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
 
-/* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occured.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
-/* Shown when selected gif couldn't be fetched */
+/* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
 
-/* Title for the 'gif picker' dialog. */
+/* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "GIF Search";
 
-/* Indicates that an error occured while searching. */
+/* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
 
-/* Placeholder text for the search field in gif view */
+/* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
 
 /* No comment provided by engineer. */
@@ -890,7 +890,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Pregledate arhivirane poruke. Dodirnite za povratak u Sandučić.";
 
-/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Da vidite imena kontakata, ažurirajte podešavanja sistema kako bi omogućili pristup kontaktima.";
 
 /* notification body */
@@ -953,7 +953,7 @@
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Pokušaj";
 
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skeniraj QR kôd prikazan na uređaju koji uvezujete.";
 
 /* Subheading for 'Link New Device' navigation */
@@ -1270,7 +1270,7 @@
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Kućni Fax";
 
-/* Label for 'IPhone' phone numbers. */
+/* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
@@ -1297,7 +1297,7 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Poslovni Fax";
 
-/* accessability label for button to start media playback */
+/* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
@@ -1501,16 +1501,16 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Telefonski broj koji pokušavate registrovati je već registrovan na drugom serveru, molimo odjavite ga i pokušajte ponovo.";
 
-/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
 
-/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Reminder:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
 
-/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
@@ -1591,7 +1591,7 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Sigurna sesija je resetovana.";
 
-/* Label for 'select gif to attach' action sheet button */
+/* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
@@ -1612,7 +1612,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Pozvali se prijatelja/icu da koristi Signal!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Pošalji pozivnicu putem SMS: %@";
 
 /* No comment provided by engineer. */
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Pošalji pozivnicu prijateljima";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Povežimo se koristeći Signal od @WhisperSystems, preuzmite aplikaciju sada.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
@@ -1906,25 +1906,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dana";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ sati";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minuta";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ sekundi";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -1942,7 +1942,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ sedmice";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* Label for the cancel button in an alert or action sheet. */

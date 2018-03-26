@@ -148,7 +148,7 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Kartelë Që S\’Mbulohet";
 
-/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mesazh Zanor";
 
 /* action sheet button title to enable built in speaker during a call */
@@ -157,13 +157,13 @@
 /* button text for back button */
 "BACK_BUTTON" = "Mbrapsht";
 
-/* Error indicating the a backup export could not export the user's data. */
+/* Error indicating the backup export could not export the user's data. */
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Të dhënat e kopjeruajtjes s’u eksportuan dot.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Përgjigje Shërbimi e Pavlefshme";
 
-/* Error indicating the a backup export failed to save a file to the cloud. */
+/* Error indicating the backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Të dhënat e kopjeruajtjes s’u ngarkuan dot.";
 
 /* Indicates that the cloud is being cleaned up. */
@@ -181,7 +181,7 @@
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Po Ngarkohet Kopjeruajtja";
 
-/* Error indicating the a backup import could not import the user's data. */
+/* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Kopjeruajtja s’u importua dot.";
 
 /* Indicates that the backup import is checking for an existing backup. */
@@ -263,7 +263,7 @@
 "BUTTON_DONE" = "U bë";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Përzgjidhni";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Që të bëjë thirrje dhe të incizojë mesazhe zanore, Signal-i lyp hyrje te mikrofoni juaj. Këtë leje mund t\’ia akordoni që nga aplikacioni Settings.";
@@ -271,7 +271,7 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Lypset Hyrje Te Mikrofoni";
 
-/* Accessibilty label for placing call button */
+/* Accessibility label for placing call button */
 "CALL_LABEL" = "Thirrje";
 
 /* Call setup status label after outgoing call times out */
@@ -358,7 +358,7 @@
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Ftoni";
 
-/* Multiline label explaining why compose-screen contact picker is empty. */
+/* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Që të shihni se cilët prej kontakteve tuaj janë përdorues të Signal-it, lejoni në rregullimet e sistemit tuaj hyrje te kontaktet.";
 
 /* No comment provided by engineer. */
@@ -376,10 +376,10 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Lidhni Pajisje të Re";
 
-/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ mund të ketë ri-instaluar ose ndryshuar pajisje. Që të siguroni privatësi, verifikoni me të numrin tuaj të sigurisë.";
 
-/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Numri i sigurisë me %@ ka ndryshuar";
 
 /* Generic button text to proceed with an action */
@@ -520,32 +520,32 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "S\’u gjet dot ndonjë regjistër.";
 
-/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Hapni një Njoftim të Mete";
 
-/* Label for the 'copy link' option of the the debug log alert. */
+/* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopjoji Lidhjen";
 
-/* Label for the 'email debug log' option of the the debug log alert. */
+/* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Asistencë Me Email";
 
-/* Label for the 'send to last thread' option of the the debug log alert. */
+/* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Dërgoje te Rrjedha e Fundit";
 
-/* Label for the 'send to self' option of the the debug log alert. */
+/* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Dërgojani Vetes";
 
-/* Label for the 'Share' option of the the debug log alert. */
+/* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Ndajeni Me të Tjerë";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Edhe Një Hap";
 
-/* Message of the alert before redirecting to Github Issues. */
+/* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Lidhja gist u kopjua te e papastra juaj. Ju ndan një hap nga ridrejtimi për te lista e problemeve në GitHub.";
 
-/* Title of the alert before redirecting to Github Issues. */
+/* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ridrejtim Për Te GitHub";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
@@ -623,7 +623,7 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Përpunojeni";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hej,\n\nTani së fundi kam përdorur Signal-in, për t\’i pasur private bisedat në iPhone-in tim. Do të doja ta instalonit edhe ju, që të jemi të sigurt se vetëm ju dhe unë i lexojmë mesazhet tona ose dëgjojmë thirrjet tona.\n\nSignal-i është i gatshëm për telefona iPhone dhe Android. Merreni nga këtu: %@\n\nSignal-i funksionon njësoj si aplikacioni ekzistues për mesazhe. Mund të dërgojmë foto dhe video, të bëjmë thirrje, dhe të bisedojmë në grup. Gjëja më e mirë është se askush tjetër nuk mund të shohë gjë prej këtyre, as edhe ata që krijojnë Signal-in!\n\nMë tepër mund të lexoni mbi Open Whisper Systems, njerëzit që ndërtojnë Signal-in, këtu: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
@@ -701,16 +701,16 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "S\’u arrit të dërgohej mesazhi.";
 
-/* Error mesage indicating that message send is disabled due to prekey update failures */
+/* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "S\’arrihet të bëhet dërgimi, për shkak të dhënash privatësie të vjetruara.";
 
-/* Error mesage indicating that message send failed due to block list */
+/* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Dështoi dërgimi i mesazhit për përdorues, sepse i keni bllokuar.";
 
-/* Error mesage indicating that message send failed due to failed attachment write */
+/* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Dështoi për shkak dështimi shkrimi bashkëngjitjeje.";
 
-/* Generic error used whenver Signal can't contact the server */
+/* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal-i s\’qe në gjendje të lidhej në internet. Ju lutemi, provoni nga një tjetër rrjet WiFi ose përdorni kuota të celularit.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
@@ -773,7 +773,7 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Filloje Sesionin Nga e Para";
 
-/* Accessibilty label for finishing new group */
+/* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Përfundoje krijimin e grupit";
 
 /* Label indicating media gallery is empty */
@@ -791,28 +791,28 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Bashkëngjitje";
 
-/* Error displayed when there is a failure fetching gifs from the remote service. */
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "S\’u arrit të sillej GIF-i i kërkuar. Ju lutemi, verifikoni se jeni i lidhur në internet.";
 
-/* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "Ndodhi një gabim i panjohur.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
-/* Shown when selected gif couldn't be fetched */
+/* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "S\’është në gjendje të Zgjedhë GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Ju lutemi, jepni term kërkimi.";
 
-/* Title for the 'gif picker' dialog. */
+/* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Kërkim GIF-i";
 
-/* Indicates that an error occured while searching. */
+/* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Gabim. Prekeni që të Riprovohet.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "S\’ka Përfundime.";
 
-/* Placeholder text for the search field in gif view */
+/* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Jepni kërkimin tuaj";
 
 /* No comment provided by engineer. */
@@ -890,7 +890,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Po shihni mesazhe tuajt të arkivuar. Prekeni që të ktheheni te Inbox-i juaj.";
 
-/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Që të shihni emrat e kontakteve tuaj, përditësoni rregullimet tuaja për sistemim që të lejohet hyrje te kontaktet.";
 
 /* notification body */
@@ -953,7 +953,7 @@
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Riprovo";
 
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanoni kodin QR të shfaqur te pajisja që do lidhur.";
 
 /* Subheading for 'Link New Device' navigation */
@@ -987,10 +987,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fototekë";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Fshiji %d Mesazhet";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Fshije Mesazhin";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Ju";
@@ -1270,7 +1270,7 @@
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Faks Shtëpie";
 
-/* Label for 'IPhone' phone numbers. */
+/* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
@@ -1297,7 +1297,7 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Faks Pune";
 
-/* accessability label for button to start media playback */
+/* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Luaj Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
@@ -1501,16 +1501,16 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Numri i telefonit që po përpiqeni të regjistroni është regjistruat tashmë në një shërbyes tjetër, ju lutemi, çregjistrojeni prej andej dhe riprovoni.";
 
-/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Kyçja e Regjistrimeve është e aktivizuar për numrin tuaj. Për t’ju ndihmuar të mbani mend PIN-in tuaj të Kyçjes së Regjistrimeve, Signal-i do t’ju kërkojë herë pas here ripohimin e tij.";
 
-/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Kujtues:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kyçja e Regjistrimeve ndihmon të mbrohet numri juaj i telefonit nga përpjekje të paautorizuara. Kjo veçori mund të çaktivizohet në çfarëdo kohe, që nga rregullimet e privatësisë në Signal.";
 
-/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Jepni PIN-in Tuaj të Kyçjes së Regjistrimeve";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Mirëfilltësimi dështoi.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Shumë dështime. Ju lutemi, riprovoni më vonë.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Që të përdorni Kyçje Ekrani në telefonin tuaj, duhet të formësoni një frazëkalim në të. ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Që të përdorni Kyçje Ekrani në telefonin tuaj, duhet të formësoni një frazëkalim në të. ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Që të përdorni Kyçje Ekrani në telefonin tuaj, duhet të formësoni një frazëkalim në të. ";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Që të çaktivizoni Kyçje Ekrani, bëni mirëfilltësimin. ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Që të kyçni përdorimin e Signal-it, bëni mirëfilltësimin. ";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Që të hyni në Signal, bëni mirëfilltësimin. ";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Mirëfilltësimi Dështoi";
@@ -1591,7 +1591,7 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "U rimor sesioni i sigurt.";
 
-/* Label for 'select gif to attach' action sheet button */
+/* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
@@ -1612,7 +1612,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "E ftuat shokun tuaj të përdorë Signal-in!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Ftojeni me SMS: %@";
 
 /* No comment provided by engineer. */
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Ftoni Shokët Tuaj";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Mund të lidheni me mua duke përdorur Signal-in, nga @WhisperSystems, merreni që tani.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tingull Mesazhesh";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Hiq Tejtëdhëna Media";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Heq tejtëdhëna që lejojnë identifikim të përdoruesit dhe të dhëna GPS, kur dërgohen mesazhe me foto dhe video.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Tejtëdhëna";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skadim Kyçjeje Ekrani";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Kyçeni Signal-in, kur s’është përdorur tani afër. Shkyçeni me Touch ID, Face ID ose frazëkalimin tuaj.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kyçje Ekrani";
@@ -1906,25 +1906,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ ditë";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ orë";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ minuta";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ sekonda";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -1942,7 +1942,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ javë";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@j";
 
 /* Label for the cancel button in an alert or action sheet. */

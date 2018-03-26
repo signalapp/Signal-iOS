@@ -113,7 +113,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Resim eki yeniden boyutlandırılamadı.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video işlenemedi.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Resim eki ayrıştırılamadı.";
@@ -148,62 +148,62 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Desteklenmeyen dosya";
 
-/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Sesli Mesaj";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Hoparlör";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Geri";
 
-/* Error indicating the a backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Yedek verisi dışarı aktarılamadı.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Geçersiz Servis Cevabı";
 
-/* Error indicating the a backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+/* Error indicating the backup export failed to save a file to the cloud. */
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Yedek verisi karşıya yüklenemedi.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Yedek Temizleniyor";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Yedek Yükleniyor";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Veri Dışarı Aktarılıyor";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Yedek Dışarı Aktarılıyor";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Yedek Karşıya Yükleniyor";
 
-/* Error indicating the a backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Yedek içeri aktarılamadı.";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Yedek Durumu Kontrol Ediliyor";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Yedek Ayarlanıyor";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Yedek Verisi İndiriliyor";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Yedek Tamamlanıyor";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Yedek içeri aktarılıyor.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Veritabanı Eski Haline Getiriliyor";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Dosyalar Eski Haline Getiriliyor";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Engellenen kullanıcılar sizi arayamaz veya size mesaj gönderemez.";
@@ -263,7 +263,7 @@
 "BUTTON_DONE" = "Tamam";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Seç";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal, arama yapmak ve sesli mesajlar kaydetmek için mikrofonunuza erişime ihtiyaç duyar. Bu izni Ayarlar uygulamasından verebilirsiniz.";
@@ -271,7 +271,7 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon Erişimi Gerekiyor";
 
-/* Accessibilty label for placing call button */
+/* Accessibility label for placing call button */
 "CALL_LABEL" = "Ara";
 
 /* Call setup status label after outgoing call times out */
@@ -338,13 +338,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Ülke Seçin";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Yedekler için iCloud ile iletişim kurulurken bir hata meydana geldi.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Yedekleriniz için bir iCloud Hesap bulunamadı.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal'in iCloud hesap'ınıza erişim izni olmadığı için yedeklerinize ulaşılamadı.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Panodaki ile karşılaştır.";
@@ -358,7 +358,7 @@
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Davet et";
 
-/* Multiline label explaining why compose-screen contact picker is empty. */
+/* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Kişilerinizden kimlerin Signal kullanıcısı olduğunu görmek için, sistem ayarlarınızdan kişilere erişime izin verin.";
 
 /* No comment provided by engineer. */
@@ -376,10 +376,10 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Yeni Cihaz Bağla";
 
-/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@yeniden kurulum yapmış veya cihaz değiştirmiş olabilir. Gizlilikten emin olmak için, onlarla güvenlik numaranızı doğrulayın.";
 
-/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "%@ile güvenlik numarası değişti";
 
 /* Generic button text to proceed with an action */
@@ -506,46 +506,46 @@
 "DATE_YESTERDAY" = "Dün";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Sistem günlüğü kopyalanamadı.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Sistem günlüğü paketlenemedi.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Sistem günlüğü karşıya yüklenemedi.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "Hata kaydınızı içeren bu bağlantı adresiyle ne yapmak istersiniz?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Hiç sistem günlüğü bulunamadı.";
 
-/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Bir Hata Raporu Aç";
 
-/* Label for the 'copy link' option of the the debug log alert. */
+/* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Bağlantı Adresini Kopyala";
 
-/* Label for the 'email debug log' option of the the debug log alert. */
+/* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-posta Desteği";
 
-/* Label for the 'send to last thread' option of the the debug log alert. */
+/* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
 
-/* Label for the 'send to self' option of the the debug log alert. */
+/* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Kendine Gönder";
 
-/* Label for the 'Share' option of the the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+/* Label for the 'Share' option of the debug log alert. */
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Paylaş";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Bir Adım Daha";
 
-/* Message of the alert before redirecting to Github Issues. */
+/* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist linki kopyalandı. GitHub issue listesine aktarılmak üzeresiniz.";
 
-/* Title of the alert before redirecting to Github Issues. */
+/* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GıtHub'a Yönlendirme";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
@@ -623,7 +623,7 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Düzenle";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Hey,\n\nSon zamanlarda konuşmalarımı iPhone'umda gizli tutmak için Signal kullanıyorum. Size de kurmanızı öneririm, bu nedenle yalnızca siz ve ben mesajlarımızı okuyabilir veya aramaları duyabiliriz.\n\nSinyal, iPhone'lar ve Android için kullanılabilir. Buraya bakın: %@ \n\nSignal mevcut mesajlaşma uygulamanız gibi çalışır. Resim ve video gönderebilir, arama yapabilir ve grup sohbetlerine başlayabiliriz. En iyi yanı, hiç kimse Signal'i yapanları bile kimse göremez!\n\nSignal'ı yapan kişiler olan Open Whisper Systems hakkında daha fazla bilgi için: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
@@ -660,37 +660,37 @@
 "EMPTY_INBOX_TITLE" = "Tertemiz.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "PIN kodunuzu doğrulayın.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Kayıt kilidi pasifleştirilemedi.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Kayıt kilidi aktifleştirilemedi.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Pasif Et";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Aktif Et";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Sonraki";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN kodu eşleşmiyor.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Bir kayıt kilidi PIN'i giriniz. Bu telefon numarasıyla Signal'a tekrar kaydolduğunuzda bu PIN kodu sorulacaktır.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "For increased security, enable a Registration Lock PIN that will be required in order to register this phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Arttırılmış güvenlik için, bu telefon numarasıyla Signal'e tekrar kaydolduğunuzda sorulmak üzere bir kayıt kilidi PIN'i aktifleştirin.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Kayıt Kilidi aktifleştirildi. Bu numarayla Signal'e tekrar kaydolduğunuzda PIN kodunuzu girmeniz gerekecek.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "Kayıt Kilidi";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Meşgul.";
@@ -701,16 +701,16 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mesajı gönderilmedi.";
 
-/* Error mesage indicating that message send is disabled due to prekey update failures */
+/* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Eski gizlilik ayarları sebebi ile gönderilemedi.";
 
-/* Error mesage indicating that message send failed due to block list */
+/* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Onu engellediğiniz için kullanıcıya ileti gönderilemedi.";
 
-/* Error mesage indicating that message send failed due to failed attachment write */
+/* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Ek yazımı başarısız olduğundan gönderilemedi.";
 
-/* Generic error used whenver Signal can't contact the server */
+/* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Sinyal internete bağlanamadı. Lütfen başka bir WiFi ağından deneyin veya mobil veri kullanın.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
@@ -771,19 +771,19 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Onaylı olarak işaretle";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Oturumu Sıfırla";
 
-/* Accessibilty label for finishing new group */
+/* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Grup oluşturmayı tamamla";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "Bu konuşmada hiç medyanız yok.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Daha Yeni Medyalar Yükleniyor...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Daha Eski Medyalar Yükleniyor...";
 
 /* A default label for attachment whose file extension cannot be determined. */
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
@@ -791,28 +791,28 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Ek";
 
-/* Error displayed when there is a failure fetching gifs from the remote service. */
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "İstenen GIF getirilemedi. Lütfen çevrimiçi olduğunuzu doğrulayın.";
 
-/* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "Bilinmeyen bir hata oluştu.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
-/* Shown when selected gif couldn't be fetched */
+/* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF Seçilemiyor";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Lütfen aramanızı girin.";
 
-/* Title for the 'gif picker' dialog. */
+/* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "GIF arama";
 
-/* Indicates that an error occured while searching. */
+/* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Başarısız oldu. Tekrar denemek için dokun.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Sonuç Yok.";
 
-/* Placeholder text for the search field in gif view */
+/* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Aramanızı girin";
 
 /* No comment provided by engineer. */
@@ -890,7 +890,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Arşivlenmiş mesajlarınızı görüntülüyorsunuz. Gelen kutusuna dönmek için dokunun.";
 
-/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Kişilerinizin adını görmek için, sistem ayarlarını kişi erişimine izin verecek şekilde güncelleyin.";
 
 /* notification body */
@@ -953,7 +953,7 @@
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Yeniden dene";
 
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Bağlanmak istediğin cihazda görüntülenen QR kodunu tara.";
 
 /* Subheading for 'Link New Device' navigation */
@@ -975,7 +975,7 @@
 "LOGGING_SECTION" = "Sistem kaydı";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tüm Medyalar";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Kamera";
@@ -987,22 +987,22 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Fotoğraf kütüphanesi";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "%dMesaj Sil";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Mesajı Sil";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Siz";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bu Ay";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Kime:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Yeni İleti";
@@ -1062,7 +1062,7 @@
 "MESSAGE_STATUS_FAILED" = "Gönderim başarısız. Bilgi için dokun. ";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Failed";
+"MESSAGE_STATUS_FAILED_SHORT" = "Başarısız";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Okundu";
@@ -1133,10 +1133,10 @@
 "MISSING_CAMERA_PERMISSION_TITLE" = "Sinyalin kameranıza erişmesi gerekiyor.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can grant this permission in the Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Bu izni Ayarlar uygulamasından açabilirsiniz.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal Requires Access to your Media Library to do this.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Bu işlemi yapmak için Signal Medya Kütüphanenize erişim iznine ihtiyaç duyar.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Cevapsız arama  %@.";
@@ -1220,19 +1220,19 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Apple'ın bildirim altyapısındaki bilinen hatalardan dolayı, mesaj önizlemeleri yalnızca mesaj gönderildikten 30 saniye içinde alınırsa gösterilir. Bunun sonucunda uygulama işaretleri hatalı olabilir.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "No Name or Content";
+"NOTIFICATIONS_NONE" = "İsim veya İçerik Yok";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Play While App is Open";
+"NOTIFICATIONS_SECTION_INAPP" = "Uygulama Açıkken Oynat";
 
 /* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Sounds";
+"NOTIFICATIONS_SECTION_SOUNDS" = "Sesler";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "İsim ve İçerik";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "Sadece İsim";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Göster";
@@ -1270,7 +1270,7 @@
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Ev Faksı";
 
-/* Label for 'IPhone' phone numbers. */
+/* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
@@ -1297,8 +1297,8 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "İş faksı";
 
-/* accessability label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+/* Accessibility label for button to start media playback */
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@kullanıcısını doğrulanmış olarak işaretlemediniz.";
@@ -1418,7 +1418,7 @@
 "RATING_TITLE" = "Signal'ı Destekle!";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
-"REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
+"REGISTER_2FA_FORGOT_PIN" = "PIN kodumu unuttum.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
@@ -1501,16 +1501,16 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Kayıt etmeye çalıştığın telefon numarası zaten başka bir sunucuda kayıtlı, lütfen oradan kayıdını kaldır ve tekrar dene. ";
 
-/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
 
-/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Reminder:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
 
-/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
@@ -1591,7 +1591,7 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Güvenli oturum sıfırlandı.";
 
-/* Label for 'select gif to attach' action sheet button */
+/* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
@@ -1612,7 +1612,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Arkadaşınızı Signal kullanmaya davet ettiniz!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "SMS ile davet et:%@";
 
 /* No comment provided by engineer. */
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı davet edin";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Bana @WhisperSystems'in Signal uygulamasını kullanarak erişebilirsiniz. Siz de edinin.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
@@ -1906,25 +1906,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ gün";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ saat";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ dakika";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ saniye";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -1942,7 +1942,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ hafta";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* Label for the cancel button in an alert or action sheet. */

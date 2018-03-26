@@ -119,7 +119,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Не удалось обработать вложенное изображение.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не удается удалить метаданные из изображения.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вложение слишком большое.";
@@ -148,7 +148,7 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдерживаемый файл";
 
-/* Short text label for a voice message attachment, used for thread preview and on lockscreen */
+/* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Голосовое сообщение";
 
 /* action sheet button title to enable built in speaker during a call */
@@ -157,53 +157,53 @@
 /* button text for back button */
 "BACK_BUTTON" = "Назад";
 
-/* Error indicating the a backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+/* Error indicating the backup export could not export the user's data. */
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Не удалось экспортировать резервную копию.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Неверный ответ сервиса";
 
-/* Error indicating the a backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+/* Error indicating the backup export failed to save a file to the cloud. */
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Не удалось выгрузить резервную копию.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Очистка резервной копии";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Инициализация резервного копирования";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Экспорт данных";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Экспорт резервной копии";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Выгрузка резервной копии";
 
-/* Error indicating the a backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+/* Error indicating the backup import could not import the user's data. */
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Не удалось импортировать резервную копию.";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Проверка состояния резервного копирования";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Настройка резервного копирования";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Загрузка резервной копии";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Завершение резервного копирования";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Импорт резервной копии";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Восстановление базы данных";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Восстановление файлов";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить или отправлять сообщения Вам.";
@@ -263,7 +263,7 @@
 "BUTTON_DONE" = "Готово";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Выбор";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Чтобы совершать звонки и записывать голосовые сообщения Signal необходим доступ к микрофону. Вы можете разрешить доступ приложения к микрофону в настройках системы.";
@@ -271,7 +271,7 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Требуется доступ к микрофону";
 
-/* Accessibilty label for placing call button */
+/* Accessibility label for placing call button */
 "CALL_LABEL" = "Позвонить";
 
 /* Call setup status label after outgoing call times out */
@@ -338,13 +338,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Выберите страну";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Произошла ошибка резервного копирования при обращении к iCloud.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "У вас нет учетной записи iCloud для резервного копирования.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal не разрешен доступ к вашей учетной записи iCloud для резервного копирования.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Сравнить с буфером";
@@ -358,7 +358,7 @@
 /* Table section header for invite listing when composing a new message */
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Пригласить";
 
-/* Multiline label explaining why compose-screen contact picker is empty. */
+/* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Чтобы увидеть, кто из Ваших контактов пользуется Signal, разрешите приложению доступ к контактам в настройках телефона.";
 
 /* No comment provided by engineer. */
@@ -376,10 +376,10 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать устройство";
 
-/* Action sheet body presented when a user's SN have recently changed. Embeds {{contact's name or phone nubmer}} */
+/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог переустановить Signal или сменить устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
 
-/* Action sheet title presented when a users's SN have recently changed. Embeds {{contact's name or phone number}} */
+/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безопасности %@ сменился";
 
 /* Generic button text to proceed with an action */
@@ -520,32 +520,32 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Не удалось найти журналы.";
 
-/* Label for the 'Open a Bug Report' option of the the debug log alert. */
+/* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Открыть отчет об ошибке";
 
-/* Label for the 'copy link' option of the the debug log alert. */
+/* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копировать ссылку";
 
-/* Label for the 'email debug log' option of the the debug log alert. */
+/* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Поддержка по электронной почте";
 
-/* Label for the 'send to last thread' option of the the debug log alert. */
+/* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Отправить в последнюю тему";
 
-/* Label for the 'send to self' option of the the debug log alert. */
+/* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Отправить себе";
 
-/* Label for the 'Share' option of the the debug log alert. */
+/* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Поделиться";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Еще один шаг";
 
-/* Message of the alert before redirecting to Github Issues. */
+/* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Ссылка была скопирована в буфер обмена. Вы перенаправлены в список проблем нашего репозитория GitHub.";
 
-/* Title of the alert before redirecting to Github Issues. */
+/* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Перенаправление на GitHub";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
@@ -623,7 +623,7 @@
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Редактировать";
 
-/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to WhisperSystems home page}} */
+/* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
 "EMAIL_INVITE_BODY" = "Привет!\n\nЯ использую Signal на айфоне для сохранения приватности моих сообщений. Если ты его установишь, доступ к нашей переписке и звонкам будет только у нас.\n\nSignal разрабатывается для айфонов и андроид-устройств. Ссылка для скачивания: %@\n\nSignal, как и другие приложения для переписки, поддерживает отправку картинок и видео, звонки и групповые чаты. Важное отличие – все это будет видно только собеседникам, даже создатели Signal не могут получить доступ к этой информации!\n\nПодробнее о людях из Open Whisper Systems, создающих Signal, тут: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
@@ -701,16 +701,16 @@
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ошибка отправки сообщения.";
 
-/* Error mesage indicating that message send is disabled due to prekey update failures */
+/* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не удалось отправить в связи с неактуальными данными приватности";
 
-/* Error mesage indicating that message send failed due to block list */
+/* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не удалось отправить сообщение пользователю, так как Вы заблокировали его.";
 
-/* Error mesage indicating that message send failed due to failed attachment write */
+/* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Произошла ошибка во время прикрепления вложения.";
 
-/* Generic error used whenver Signal can't contact the server */
+/* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Не удалось установить интернет-соединение. Пожалуйста, попробуйте соединиться через другую WiFi-сеть или используйте мобильный интернет.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
@@ -773,17 +773,17 @@
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сессию";
 
-/* Accessibilty label for finishing new group */
+/* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Завершение создания группы";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "You don't have any media in this conversation.";
+"GALLERY_TILES_EMPTY_GALLERY" = "В этой беседе нет медиафайлов.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Загрузка новых медиа...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Загрузка старых медиа...";
 
 /* A default label for attachment whose file extension cannot be determined. */
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
@@ -791,28 +791,28 @@
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Вложение";
 
-/* Error displayed when there is a failure fetching gifs from the remote service. */
+/* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Не удалось получить запрошенный GIF. Убедитесь, что вы подключены к сети.";
 
-/* Generic error displayed when picking a gif */
-"GIF_PICKER_ERROR_GENERIC" = "Произошла неизвестная ошибка.";
+/* Generic error displayed when picking a GIF */
+"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
 
-/* Shown when selected gif couldn't be fetched */
+/* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Не удается выбрать GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Пожалуйста, введите ваш поиск.";
 
-/* Title for the 'gif picker' dialog. */
+/* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Поиск GIF";
 
-/* Indicates that an error occured while searching. */
+/* Indicates that an error occurred while searching. */
 "GIF_VIEW_SEARCH_ERROR" = "Ошибка. Нажмите, чтобы повторить попытку.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Нет результатов.";
 
-/* Placeholder text for the search field in gif view */
+/* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Введите ваш поиск.";
 
 /* No comment provided by engineer. */
@@ -890,7 +890,7 @@
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Вы просматриваете архивные сообщения. Нажмите, чтобы вернуться к списку входящих.";
 
-/* Multiline label explaining how to show names instead of phone numbers in your inbox */
+/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Для того, чтобы видеть имена Ваших контактов, разрешите доступ приложению к контактам в системных настройках.";
 
 /* notification body */
@@ -953,7 +953,7 @@
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Повторить попытку";
 
-/* QR Scanning screen instructions, placed alongside a camera view for scanning QRCodes */
+/* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Для привязки устройства сосканируйте отображенный на нем QR-код.";
 
 /* Subheading for 'Link New Device' navigation */
@@ -975,7 +975,7 @@
 "LOGGING_SECTION" = "Журнал отладки";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Все медиа";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Камера";
@@ -987,16 +987,16 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Библиотека фотографий";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Удалить %d сообщений";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Удалить сообщение";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Вы";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Этот месяц";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Сообщение";
@@ -1270,7 +1270,7 @@
 /* Label for 'HomeFAX' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME_FAX" = "Домашний факс";
 
-/* Label for 'IPhone' phone numbers. */
+/* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
@@ -1297,7 +1297,7 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Рабочий факс";
 
-/* accessability label for button to start media playback */
+/* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Воспроизвести";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
@@ -1501,16 +1501,16 @@
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Телефонный номер, который вы пытаетесь зарегистрировать, уже зарегистрирован на другом сервере. Пожалуйста, отмените там регистрацию и попробуйте заново.";
 
-/* Body text for when user is peridoically prompted to enter their registration lock PIN */
+/* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Блокировка регистрации включена для вашего номера телефона. Чтобы помочь вам запомнить PIN-код блокировки регистрации, Signal будет периодически просить вас подтвердить его.";
 
-/* Body header for when user is peridoically prompted to enter their registration lock PIN */
+/* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Напоминание:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Блокировка регистрации помогает защитить ваш номер телефона от несанкционированных попыток регистрации. Эта функция может быть отключена в любое время в настройках конфиденциальности Signal.";
 
-/* Navbar title for when user is peridoically prompted to enter their registration lock PIN */
+/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Введите PIN-код блокировки регистрации";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
@@ -1547,43 +1547,43 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Сканировать QR-код";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Мгновенно";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+"SCREEN_LOCK_DISABLE_FAILED" = "Блокировка экрана не может быть отключена";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+"SCREEN_LOCK_ENABLE_FAILED" = "Блокировка экрана не может быть включена";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Не удалось получить доступ к аутентификации.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Ошибка аутентификации.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failures. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must configure a passcode on your phone to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Аутентификация для отключения блокировки экрана.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to lock access to Signal.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to access Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Ошибка аутентификации";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Поиск по имени или номеру";
@@ -1591,7 +1591,7 @@
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Безопасный сеанс связи был сброшен.";
 
-/* Label for 'select gif to attach' action sheet button */
+/* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
@@ -1612,7 +1612,7 @@
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Приглашение к использованию Signal отправлено!";
 
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the receipient's phone number. */
+/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Пригласить %@ по SMS";
 
 /* No comment provided by engineer. */
@@ -1667,37 +1667,37 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (по умолчанию)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "Резервная копия";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Создать резервную копию";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Отменить резервное копирование";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервное копирование включено";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Этап";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Прогресс";
 
 /* Label for status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
+"SETTINGS_BACKUP_STATUS" = "Статус";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Сбой резервного копирования";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "Ожидание";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Резервное копирование";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Резервное копирование выполнено";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавить";
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Пригласите друзей";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Вы можете связаться со мной, установив приложение Signal от @WhisperSystems.";
+"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук сообщения";
@@ -1787,25 +1787,25 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Просматривайте и делитесь отчетами о прочтении сообщений. Этот параметр является необязательным и применяется ко всем разговорам.";
 
 /* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "Remove Media Metadata";
+"SETTINGS_REMOVE_METADATA" = "Удалить метаданные для мультимедиа";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Removes user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
 
 /* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
+"SETTINGS_REMOVE_METADATA_TITLE" = "Метаданные";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Тайм-аут блокировки экрана";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lock Signal when it hasn't been used recently. Unlock it with Touch ID, Face ID or your passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Блокировка экрана";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Блокировка экрана";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Включить защиту экрана";
@@ -1906,25 +1906,25 @@
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дней";
 
-/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@д";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS" = "%@ часов";
 
-/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ч";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES" = "%@ минут";
 
-/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@м";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ секунд";
 
-/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@с";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
@@ -1942,7 +1942,7 @@
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ недель";
 
-/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally ommitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
+/* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@н";
 
 /* Label for the cancel button in an alert or action sheet. */
@@ -2006,7 +2006,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите на Ответ";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Теперь вы можете выбирать звуки уведомлений по умолчанию и для разговора, а сигнал вызова будет воспроизводить ту мелодию звонка, которую вы выбрали для каждого системного контакта.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Просмотр параметров уведомлений";
