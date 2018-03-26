@@ -53,7 +53,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             } else {
                 [weakSelf failWithErrorDescription:
                               NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                  @"Error indicating the a backup import could not import the user's data.")];
+                                  @"Error indicating the backup import could not import the user's data.")];
             }
         });
     }];
@@ -67,7 +67,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     if (![self configureImport]) {
         [self failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                           @"Error indicating the a backup import could not import the user's data.")];
+                                           @"Error indicating the backup import could not import the user's data.")];
         return;
     }
 
@@ -132,7 +132,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                             if (!restoreDatabaseSuccess) {
                                 [weakSelf
                                     failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                                 @"Error indicating the a backup import "
+                                                                 @"Error indicating the backup import "
                                                                  @"could not import the user's data.")];
                                 return;
                             }
@@ -145,7 +145,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 if (!ensureMigrationsSuccess) {
                                     [weakSelf failWithErrorDescription:NSLocalizedString(
                                                                            @"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                                                           @"Error indicating the a backup import "
+                                                                           @"Error indicating the backup import "
                                                                            @"could not import the user's data.")];
                                     return;
                                 }

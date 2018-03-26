@@ -218,7 +218,7 @@ import CloudKit
                                         Logger.error("\(self.logTag) error preparing file for upload.")
                                         failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                             NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
-                                                                                              comment: "Error indicating the a backup export failed to save a file to the cloud.")))
+                                                                                              comment: "Error indicating the backup export failed to save a file to the cloud.")))
                                         return
                                     }
 

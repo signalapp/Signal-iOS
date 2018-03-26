@@ -116,7 +116,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                                 target: self,
                                                                 action: #selector(donePressed))
         self.navigationItem.title = NSLocalizedString("GIF_PICKER_VIEW_TITLE",
-                                                      comment: "Title for the 'gif picker' dialog.")
+                                                      comment: "Title for the 'GIF picker' dialog.")
 
         createViews()
 
@@ -158,7 +158,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.searchBarStyle = .minimal
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
-                                                  comment: "Placeholder text for the search field in gif view")
+                                                  comment: "Placeholder text for the search field in GIF view")
         searchBar.backgroundColor = UIColor.white
 
         self.view.addSubview(searchBar)
@@ -205,7 +205,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         noResultsView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
         let searchErrorView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_ERROR",
-                                                                      comment: "Indicates that an error occured while searching."))
+                                                                      comment: "Indicates that an error occurred while searching."))
         self.searchErrorView = searchErrorView
         self.view.addSubview(searchErrorView)
         searchErrorView.autoPinWidthToSuperview(withMargin: 20)
@@ -384,7 +384,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 return
             }
 
-            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected gif couldn't be fetched"),
+            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
                                           message: error.localizedDescription,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in

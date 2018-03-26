@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SECONDS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SECONDS",
@@ -261,7 +261,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_MINUTES_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_MINUTE",
@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_MINUTES_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_MINUTES",
@@ -286,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_HOURS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_HOUR",
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_HOURS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_HOURS",
@@ -312,7 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_DAYS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_DAY",
@@ -325,7 +325,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_DAYS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_DAYS",
@@ -338,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_WEEKS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_SINGLE_WEEK",
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (useShortFormat) {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_WEEKS_SHORT_FORMAT",
                 @"Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 "
-                @"characters, The space is intentionally ommitted between the text and the embedded duration so that "
+                @"characters, The space is intentionally omitted between the text and the embedded duration so that "
                 @"we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings");
         } else {
             amountFormat = NSLocalizedString(@"TIME_AMOUNT_WEEKS",

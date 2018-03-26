@@ -322,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 [weakSelf failWithErrorDescription:
                               NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                                  @"Error indicating the a backup export could not export the user's data.")];
+                                  @"Error indicating the backup export could not export the user's data.")];
             }
         });
     }];
@@ -337,9 +337,9 @@ NS_ASSUME_NONNULL_BEGIN
     __weak OWSBackupExportJob *weakSelf = self;
     [self configureExportWithCompletion:^(BOOL configureExportSuccess) {
         if (!configureExportSuccess) {
-            [self failWithErrorDescription:
-                      NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                          @"Error indicating the a backup export could not export the user's data.")];
+            [self
+                failWithErrorDescription:NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                                             @"Error indicating the backup export could not export the user's data.")];
             return;
         }
 
@@ -350,7 +350,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (!tryToFetchManifestSuccess) {
                 [self failWithErrorDescription:
                           NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                              @"Error indicating the a backup export could not export the user's data.")];
+                              @"Error indicating the backup export could not export the user's data.")];
                 return;
             }
 
@@ -363,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (![self exportDatabase]) {
                 [self failWithErrorDescription:
                           NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                              @"Error indicating the a backup export could not export the user's data.")];
+                              @"Error indicating the backup export could not export the user's data.")];
                 return;
             }
             if (self.isComplete) {
@@ -918,7 +918,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!encryptedItem) {
         completion(OWSErrorWithCodeDescription(OWSErrorCodeExportBackupFailed,
             NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                @"Error indicating the a backup export could not export the user's data.")));
+                @"Error indicating the backup export could not export the user's data.")));
         return;
     }
 

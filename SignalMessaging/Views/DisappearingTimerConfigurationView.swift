@@ -78,7 +78,7 @@ public class DisappearingTimerConfigurationView: UIView {
         // or as a non-interactive status indicator
         pressGesture.isEnabled = false
 
-        // Accessability
+        // Accessibility
         self.accessibilityLabel = NSLocalizedString("DISAPPEARING_MESSAGES_LABEL", comment: "Accessibility label for disappearing messages")
         let hintFormatString = NSLocalizedString("DISAPPEARING_MESSAGES_HINT", comment: "Accessibility hint that contains current timeout information")
         let durationString = NSString.formatDurationSeconds(durationSeconds, useShortFormat: false)

@@ -179,7 +179,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
                               failure:^{
                                   failure(OWSErrorWithCodeDescription(OWSErrorCodeImportBackupFailed,
                                       NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                                          @"Error indicating the a backup import could not import the user's data.")));
+                                          @"Error indicating the backup import could not import the user's data.")));
                               }
                              backupIO:backupIO];
         });

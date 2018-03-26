@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
                     = NSLocalizedString(@"PHONE_NUMBER_TYPE_WORK", @"Label for 'Work' phone numbers.");
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberiPhone]) {
                 phoneNumberNameMap[phoneNumber.stringValue]
-                    = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'IPhone' phone numbers.");
+                    = NSLocalizedString(@"PHONE_NUMBER_TYPE_IPHONE", @"Label for 'iPhone' phone numbers.");
             } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
                 phoneNumberNameMap[phoneNumber.stringValue]
                     = NSLocalizedString(@"PHONE_NUMBER_TYPE_MOBILE", @"Label for 'Mobile' phone numbers.");

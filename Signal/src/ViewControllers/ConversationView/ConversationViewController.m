@@ -1260,7 +1260,7 @@ typedef enum : NSUInteger {
         imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
         imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
         callButton.imageEdgeInsets = imageEdgeInsets;
-        callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibilty label for placing call button");
+        callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
         [callButton addTarget:self action:@selector(callAction) forControlEvents:UIControlEventTouchUpInside];
         callButton.frame = CGRectMake(0,
             0,
@@ -3414,13 +3414,12 @@ typedef enum : NSUInteger {
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheetController addAction:chooseDocumentAction];
 
-    UIAlertAction *gifAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
-                                           @"Label for 'select gif to attach' action sheet button")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
-                                   [self showGifPicker];
-                               }];
+    UIAlertAction *gifAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON", @"Label for 'select GIF to attach' action sheet button")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self showGifPicker];
+                }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssert(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
