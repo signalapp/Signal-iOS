@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
         shouldHaveScreenProtection,
         shouldHaveScreenLock,
         shouldShowBlockWindow);
-    if (self.screenBlockingWindow.hidden != shouldShowBlockWindow) {
+    if (self.screenBlockingWindow.hidden != !shouldShowBlockWindow) {
         DDLogInfo(@"%@, %@.", self.logTag, shouldShowBlockWindow ? @"showing block window" : @"hiding block window");
     }
     self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
