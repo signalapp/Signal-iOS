@@ -50,7 +50,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
 
 //@property (nonatomic) BOOL isOutgoing;
 @property (nonatomic) CAShapeLayer *shapeLayer;
-@property (nonatomic) UIColor *bubbleColor;
+@property (nonatomic, nullable) UIColor *bubbleColor;
 
 @end
 
@@ -90,7 +90,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
     }
 }
 
-- (void)setBubbleColor:(UIColor *)bubbleColor
+- (void)setBubbleColor:(nullable UIColor *)bubbleColor
 {
     _bubbleColor = bubbleColor;
 
@@ -120,97 +120,6 @@ static const CGFloat kBubbleTextVInset = 6.f;
 
     self.maskLayer.path = bezierPath.CGPath;
 }
-
-//- (void)updateMask
-//{
-//    UIView *_Nullable maskedSubview = self.maskedSubview;
-//    if (!maskedSubview) {
-//        return;
-//    }
-//    maskedSubview.frame = self.bounds;
-//    //<<<<<<< HEAD
-//    //    // The JSQ masks are not RTL-safe, so we need to invert the
-//    //    // mask orientation manually.
-//    //    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-//    //
-//    //    // Since the caption has it's own tail, the media bubble just above
-//    //    // it looks better without a tail.
-//    //    if (self.hideTail) {
-//    //        if (hasOutgoingMask) {
-//    //            self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
-//    //        } else {
-//    //            self.layoutMargins = UIEdgeInsetsMake(0, 8, 2, 0);
-//    //        }
-//    //        maskedSubview.clipsToBounds = YES;
-//    //
-//    //        // I arrived at this cornerRadius by superimposing the generated corner
-//    //        // over that generated from the JSQMessagesMediaViewBubbleImageMasker
-//    //        maskedSubview.layer.cornerRadius = 17;
-//    //    } else {
-//    //        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
-//    //                                                                    isOutgoing:hasOutgoingMask];
-//    //    }
-//    //||||||| merged common ancestors
-//    //    // The JSQ masks are not RTL-safe, so we need to invert the
-//    //    // mask orientation manually.
-//    //    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-//    //    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
-//    isOutgoing:hasOutgoingMask];
-//    //=======
-//
-//
-//    UIBezierPath *bezierPath = [BubbleFillView maskPathForSize:self.bounds.size
-//                                                    isOutgoing:self.isOutgoing
-//                                                         isRTL:self.isRTL];
-//    self.maskLayer.path = bezierPath.CGPath;
-//    maskedSubview.layer.mask = self.maskLayer;
-//    //>>>>>>> SQUASHED
-//}
-
-//- (void)setIsOutgoing:(BOOL)isOutgoing {
-//    if (_isOutgoing == isOutgoing) {
-//        return;
-//    }
-//    _isOutgoing = isOutgoing;
-//    [self updateMask];
-//}
-//
-//- (void)setFrame:(CGRect)frame
-//{
-//    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
-//
-//    [super setFrame:frame];
-//
-//    if (didSizeChange || !self.shapeLayer) {
-//        [self updateMask];
-//    }
-//}
-//
-//- (void)setBounds:(CGRect)bounds
-//{
-//    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
-//
-//    [super setBounds:bounds];
-//
-//    if (didSizeChange || !self.shapeLayer) {
-//        [self updateMask];
-//    }
-//}
-//
-//- (void)updateMask
-//{
-//    if (!self.shapeLayer) {
-//        self.shapeLayer = [CAShapeLayer new];
-//        [self.layer addSublayer:self.shapeLayer];
-//    }
-//
-//    UIBezierPath *bezierPath = [self.class maskPathForSize:self.bounds.size
-//                                                isOutgoing:self.isOutgoing
-//                                                     isRTL:self.isRTL];
-//
-//    self.shapeLayer.fillColor = self.bubbleColor.CGColor;
-//    self.shapeLayer.path = bezierPath.CGPath;
-//}
 
 + (UIBezierPath *)maskPathForSize:(CGSize)size
                        isOutgoing:(BOOL)isOutgoing
@@ -311,184 +220,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
     return bezierPath;
 }
 
-//- (void)setBubbleColor:(UIColor *)bubbleColor {
-//    _bubbleColor = bubbleColor;
-//
-//    self.shapeLayer.fillColor = bubbleColor.CGColor;
-//}
-
 @end
-
-#pragma mark -
-
-//@interface BubbleFillView : UIView
-//
-////@property (nonatomic) BOOL isOutgoing;
-////@property (nonatomic) CAShapeLayer *shapeLayer;
-////@property (nonatomic) UIColor *bubbleColor;
-//
-//@end
-//
-//#pragma mark -
-//
-//@implementation BubbleFillView
-//
-////- (void)setIsOutgoing:(BOOL)isOutgoing {
-////    if (_isOutgoing == isOutgoing) {
-////        return;
-////    }
-////    _isOutgoing = isOutgoing;
-////    [self updateMask];
-////}
-////
-////- (void)setFrame:(CGRect)frame
-////{
-////    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
-////
-////    [super setFrame:frame];
-////
-////    if (didSizeChange || !self.shapeLayer) {
-////        [self updateMask];
-////    }
-////}
-////
-////- (void)setBounds:(CGRect)bounds
-////{
-////    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
-////
-////    [super setBounds:bounds];
-////
-////    if (didSizeChange || !self.shapeLayer) {
-////        [self updateMask];
-////    }
-////}
-////
-////- (void)updateMask
-////{
-////    if (!self.shapeLayer) {
-////        self.shapeLayer = [CAShapeLayer new];
-////        [self.layer addSublayer:self.shapeLayer];
-////    }
-////
-////    UIBezierPath *bezierPath = [self.class maskPathForSize:self.bounds.size
-////                                                isOutgoing:self.isOutgoing
-////                                                     isRTL:self.isRTL];
-////
-////    self.shapeLayer.fillColor = self.bubbleColor.CGColor;
-////    self.shapeLayer.path = bezierPath.CGPath;
-////}
-//
-////- (void)setBubbleColor:(UIColor *)bubbleColor {
-////    _bubbleColor = bubbleColor;
-////
-////    self.shapeLayer.fillColor = bubbleColor.CGColor;
-////}
-//
-//@end
-//
-//#pragma mark -
-//
-//@interface BubbleMaskingView : UIView
-//
-//@property (nonatomic) BOOL isOutgoing;
-//@property (nonatomic) BOOL hideTail;
-//@property (nonatomic, nullable, weak) UIView *maskedSubview;
-//@property (nonatomic) CAShapeLayer *maskLayer;
-//
-//@end
-//
-//#pragma mark -
-//
-//@implementation BubbleMaskingView
-//
-//- (void)setMaskedSubview:(UIView * _Nullable)maskedSubview {
-//    if (_maskedSubview == maskedSubview) {
-//        return;
-//    }
-//    _maskedSubview = maskedSubview;
-//    [self updateMask];
-//}
-//
-//- (void)setIsOutgoing:(BOOL)isOutgoing {
-//    if (_isOutgoing == isOutgoing) {
-//        return;
-//    }
-//    _isOutgoing = isOutgoing;
-//    [self updateMask];
-//}
-//
-//- (void)setFrame:(CGRect)frame
-//{
-//    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
-//
-//    [super setFrame:frame];
-//
-//    if (didSizeChange) {
-//        [self updateMask];
-//    }
-//}
-//
-//- (void)setBounds:(CGRect)bounds
-//{
-//    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
-//
-//    [super setBounds:bounds];
-//
-//    if (didSizeChange) {
-//        [self updateMask];
-//    }
-//}
-//
-//- (void)updateMask
-//{
-//    UIView *_Nullable maskedSubview = self.maskedSubview;
-//    if (!maskedSubview) {
-//        return;
-//    }
-//    maskedSubview.frame = self.bounds;
-//    //<<<<<<< HEAD
-//    //    // The JSQ masks are not RTL-safe, so we need to invert the
-//    //    // mask orientation manually.
-//    //    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-//    //
-//    //    // Since the caption has it's own tail, the media bubble just above
-//    //    // it looks better without a tail.
-//    //    if (self.hideTail) {
-//    //        if (hasOutgoingMask) {
-//    //            self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
-//    //        } else {
-//    //            self.layoutMargins = UIEdgeInsetsMake(0, 8, 2, 0);
-//    //        }
-//    //        maskedSubview.clipsToBounds = YES;
-//    //
-//    //        // I arrived at this cornerRadius by superimposing the generated corner
-//    //        // over that generated from the JSQMessagesMediaViewBubbleImageMasker
-//    //        maskedSubview.layer.cornerRadius = 17;
-//    //    } else {
-//    //        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
-//    //                                                                    isOutgoing:hasOutgoingMask];
-//    //    }
-//    //||||||| merged common ancestors
-//    //    // The JSQ masks are not RTL-safe, so we need to invert the
-//    //    // mask orientation manually.
-//    //    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-//    //    [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
-//    isOutgoing:hasOutgoingMask];
-//    //=======
-//
-//    if (!self.maskLayer) {
-//        self.maskLayer = [CAShapeLayer new];
-//    }
-//
-//    UIBezierPath *bezierPath = [OWSBubbleView maskPathForSize:self.bounds.size
-//                                                   isOutgoing:self.isOutgoing
-//                                                        isRTL:self.isRTL];
-//    self.maskLayer.path = bezierPath.CGPath;
-//    maskedSubview.layer.mask = self.maskLayer;
-//    //>>>>>>> SQUASHED
-//}
-//
-//@end
 
 #pragma mark -
 
@@ -602,7 +334,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
 
-@property (nonatomic, nullable) UIImageView *lastImageView;
+@property (nonatomic, nullable) UIView *lastBodyMediaView;
 
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
@@ -742,6 +474,22 @@ static const CGFloat kBubbleTextVInset = 6.f;
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
+
+    self.bubbleView.userInteractionEnabled = YES;
+
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self.bubbleView addGestureRecognizer:tap];
+
+
+    UILongPressGestureRecognizer *longPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+    [self.bubbleView addGestureRecognizer:longPress];
+
+    PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
+        initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
+                   action:@selector(handlePanGesture:)];
+    [self addGestureRecognizer:panGesture];
 
     //    UITapGestureRecognizer *mediaTap =
     //        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaTapGesture:)];
@@ -972,7 +720,8 @@ static const CGFloat kBubbleTextVInset = 6.f;
         self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
         //        self.bubbleFillView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
     } else {
-        OWSFail(@"%@ Unknown interaction type: %@", self.logTag, self.viewItem.interaction.class);
+        // Media-only messages should have no background color; they will fill the bubble's bounds
+        // and we don't want artifacts at the edges.
     }
 
     //<<<<<<< HEAD
@@ -1104,6 +853,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
         OWSAssert(self.unloadCellContentBlock);
         OWSAssert(!lastSubview);
 
+        self.lastBodyMediaView = bodyMediaView;
         bodyMediaView.userInteractionEnabled = NO;
         if (self.isMediaBeingSent) {
             bodyMediaView.layer.opacity = 0.75f;
@@ -1750,7 +1500,6 @@ static const CGFloat kBubbleTextVInset = 6.f;
     self.unloadCellContentBlock = ^{
         stillImageView.image = nil;
     };
-    self.lastImageView = stillImageView;
 
     return stillImageView;
 }
@@ -1793,7 +1542,6 @@ static const CGFloat kBubbleTextVInset = 6.f;
     self.unloadCellContentBlock = ^{
         animatedImageView.image = nil;
     };
-    self.lastImageView = animatedImageView;
 
     return animatedImageView;
 }
@@ -1878,7 +1626,6 @@ static const CGFloat kBubbleTextVInset = 6.f;
     self.unloadCellContentBlock = ^{
         stillImageView.image = nil;
     };
-    self.lastImageView = stillImageView;
 
     return stillImageView;
 }
@@ -2252,6 +1999,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
 
     // TODO:
     self.bubbleView.hidden = YES;
+    self.bubbleView.bubbleColor = nil;
     //<<<<<<< HEAD
     //    self.textBubbleImageView.image = nil;
     //    self.textBubbleImageView.hidden = YES;
@@ -2297,8 +2045,8 @@ static const CGFloat kBubbleTextVInset = 6.f;
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
 
-    [self.lastImageView removeFromSuperview];
-    self.lastImageView = nil;
+    [self.lastBodyMediaView removeFromSuperview];
+    self.lastBodyMediaView = nil;
 
     [self hideMenuControllerIfNecessary];
 }
@@ -2330,6 +2078,30 @@ static const CGFloat kBubbleTextVInset = 6.f;
 }
 
 #pragma mark - Gesture recognizers
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.lastBodyMediaView) {
+        // Treat this as a "body media" gesture if:
+        //
+        // * There is a "body media" view.
+        // * The gesture occured within or above the "body media" view.
+        CGPoint location = [sender locationInView:self.lastBodyMediaView];
+        if (location.y <= self.lastBodyMediaView.height) {
+            [self handleMediaTapGesture:sender];
+            return;
+        }
+    }
+
+    [self handleTextTapGesture:sender];
+}
 
 - (void)handleTextTapGesture:(UITapGestureRecognizer *)sender
 {
@@ -2388,25 +2160,25 @@ static const CGFloat kBubbleTextVInset = 6.f;
             }
             break;
         case OWSMessageCellType_StillImage:
-            OWSAssert(self.lastImageView);
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.lastImageView];
+                                     imageView:self.lastBodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
-            OWSAssert(self.lastImageView);
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.lastImageView];
+                                     imageView:self.lastBodyMediaView];
             break;
         case OWSMessageCellType_Audio:
             [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
             return;
         case OWSMessageCellType_Video:
-            OWSAssert(self.lastImageView);
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapVideoViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.lastImageView];
+                                     imageView:self.lastBodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
             [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
@@ -2419,6 +2191,29 @@ static const CGFloat kBubbleTextVInset = 6.f;
             break;
         }
     }
+}
+
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    if (self.lastBodyMediaView) {
+        // Treat this as a "body media" gesture if:
+        //
+        // * There is a "body media" view.
+        // * The gesture occured within or above the "body media" view.
+        CGPoint location = [sender locationInView:self.lastBodyMediaView];
+        if (location.y <= self.lastBodyMediaView.height) {
+            [self handleMediaLongPressGesture:sender];
+            return;
+        }
+    }
+
+    [self handleTextLongPressGesture:sender];
 }
 
 - (void)handleTextLongPressGesture:(UILongPressGestureRecognizer *)sender
