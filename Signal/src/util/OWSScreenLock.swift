@@ -11,6 +11,7 @@ import LocalAuthentication
         case success
         case cancel
         case failure(error:String)
+        case unexpectedFailure(error:String)
     }
 
     @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
@@ -122,6 +123,8 @@ import LocalAuthentication
                                         switch outcome {
                                         case .failure(let error):
                                             completion(self.authenticationError(errorDescription: error))
+                                        case .unexpectedFailure(let error):
+                                            completion(self.authenticationError(errorDescription: error))
                                         case .success:
                                             self.setIsScreenLockEnabled(value: true)
                                             completion(nil)
@@ -144,6 +147,8 @@ import LocalAuthentication
                                         switch outcome {
                                         case .failure(let error):
                                             completion(self.authenticationError(errorDescription: error))
+                                        case .unexpectedFailure(let error):
+                                            completion(self.authenticationError(errorDescription: error))
                                         case .success:
                                             self.setIsScreenLockEnabled(value: false)
                                             completion(nil)
@@ -155,6 +160,7 @@ import LocalAuthentication
 
     @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
                                             failure: @escaping ((Error) -> Void),
+                                            unexpectedFailure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
         guard !ignoreUnlockUntilActive else {
             DispatchQueue.main.async {
@@ -171,6 +177,8 @@ import LocalAuthentication
                                         switch outcome {
                                         case .failure(let error):
                                             failure(self.authenticationError(errorDescription: error))
+                                        case .unexpectedFailure(let error):
+                                            unexpectedFailure(self.authenticationError(errorDescription: error))
                                         case .success:
                                             success()
                                         case .cancel:
@@ -215,7 +223,7 @@ import LocalAuthentication
             case .success:
                 owsFail("\(self.logTag) local authentication unexpected success")
                 completion(.failure(error:defaultErrorDescription))
-            case .cancel, .failure:
+            case .cancel, .failure, .unexpectedFailure:
                 completion(outcome)
             }
             return
@@ -235,7 +243,7 @@ import LocalAuthentication
                 case .success:
                     owsFail("\(self.logTag) local authentication unexpected success")
                     completion(.failure(error:defaultErrorDescription))
-                case .cancel, .failure:
+                case .cancel, .failure, .unexpectedFailure:
                     completion(outcome)
                 }
             }
@@ -296,10 +304,10 @@ import LocalAuthentication
                                                          comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
             case .invalidContext:
                 owsFail("\(self.logTag) context not valid.")
-                break
+                return .unexpectedFailure(error:defaultErrorDescription)
             case .notInteractive:
                 owsFail("\(self.logTag) context not interactive.")
-                break
+                return .unexpectedFailure(error:defaultErrorDescription)
             }
         }
         return .failure(error:defaultErrorDescription)
@@ -316,6 +324,9 @@ import LocalAuthentication
         let context = LAContext()
 
         context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(screenLockTimeout())
+        if #available(iOS 11.0, *) {
+            assert(!context.interactionNotAllowed)
+        }
 
         return context
     }

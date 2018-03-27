@@ -145,6 +145,9 @@ NS_ASSUME_NONNULL_BEGIN
         shouldHaveScreenProtection,
         shouldHaveScreenLock,
         shouldShowBlockWindow);
+    if (self.screenBlockingWindow.hidden != !shouldShowBlockWindow) {
+        DDLogInfo(@"%@, %@.", self.logTag, shouldShowBlockWindow ? @"showing block window" : @"hiding block window");
+    }
     self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
 
     [self.screenLockUITimer invalidate];
@@ -199,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    DDLogVerbose(@"%@, try to unlock screen lock", self.logTag);
+    DDLogInfo(@"%@, try to unlock screen lock", self.logTag);
 
     self.isShowingScreenLockUI = YES;
     self.lastUnlockAttemptDate = [NSDate new];
@@ -216,6 +219,14 @@ NS_ASSUME_NONNULL_BEGIN
             self.isShowingScreenLockUI = NO;
 
             [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
+        }
+        unexpectedFailure:^(NSError *error) {
+            DDLogInfo(@"%@ unlock screen lock unexpectedly failed.", self.logTag);
+            self.isShowingScreenLockUI = NO;
+
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self ensureScreenProtection];
+            });
         }
         cancel:^{
             DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
