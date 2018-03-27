@@ -175,14 +175,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         // Gestures
 
-        let doubleTap = UITapGestureRecognizer(target: nil, action: nil)
-        doubleTap.numberOfTapsRequired = 2
-        view.addGestureRecognizer(doubleTap)
-
-        let singleTap = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-        singleTap.require(toFail: doubleTap)
-        view.addGestureRecognizer(singleTap)
-
         let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeView))
         verticalSwipe.direction = [.up, .down]
         view.addGestureRecognizer(verticalSwipe)
@@ -227,13 +219,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         Logger.debug("\(logTag) in \(#function)")
 
         self.dismissSelf(animated: true)
-    }
-
-    @objc
-    public func didTapView(sender: Any) {
-        Logger.debug("\(logTag) in \(#function)")
-
-        self.shouldHideToolbars = !self.shouldHideToolbars
     }
 
     private var shouldHideToolbars: Bool = false {
@@ -514,6 +499,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
 
     // MARK: MediaDetailViewControllerDelegate
+
+    @objc
+    public func mediaDetailViewControllerDidTapMedia(_ mediaDetailViewController: MediaDetailViewController) {
+        Logger.debug("\(logTag) in \(#function)")
+
+        self.shouldHideToolbars = !self.shouldHideToolbars
+    }
 
     public func mediaDetailViewController(_ mediaDetailViewController: MediaDetailViewController, requestDelete conversationViewItem: ConversationViewItem) {
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {

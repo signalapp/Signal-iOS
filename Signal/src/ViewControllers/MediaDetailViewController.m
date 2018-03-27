@@ -143,7 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     [self createContents];
-    [self initializeGestureRecognizers];
 
     // Even though bars are opaque, we want content to be layed out behind them.
     // The bars might obscure part of the content, but they can easily be hidden by tapping
@@ -244,6 +243,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(self.mediaView);
 
+    // We add these gestures to mediaView rather than
+    // the root view so that interacting with the video player
+    // progres bar doesn't trigger any of these gestures.
+    [self addGestureRecognizersToView:self.mediaView];
+
     [scrollView addSubview:self.mediaView];
     self.mediaViewLeadingConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     self.mediaViewTopConstraint = [self.mediaView autoPinEdgeToSuperviewEdge:ALEdgeTop];
@@ -323,20 +327,30 @@ NS_ASSUME_NONNULL_BEGIN
     self.videoProgressBar.hidden = shouldHideToolbars;
 }
 
-- (void)initializeGestureRecognizers
+- (void)addGestureRecognizersToView:(UIView *)view
 {
     UITapGestureRecognizer *doubleTap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didDoubleTapImage:)];
     doubleTap.numberOfTapsRequired = 2;
-    [self.view addGestureRecognizer:doubleTap];
+    [view addGestureRecognizer:doubleTap];
+
+    UITapGestureRecognizer *singleTap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didSingleTapImage:)];
+    [singleTap requireGestureRecognizerToFail:doubleTap];
+    [view addGestureRecognizer:singleTap];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGesture:)];
     longPress.delegate = self;
-    [self.view addGestureRecognizer:longPress];
+    [view addGestureRecognizer:longPress];
 }
 
 #pragma mark - Gesture Recognizers
+
+- (void)didSingleTapImage:(UITapGestureRecognizer *)gesture
+{
+    [self.delegate mediaDetailViewControllerDidTapMedia:self];
+}
 
 - (void)didDoubleTapImage:(UITapGestureRecognizer *)gesture
 {

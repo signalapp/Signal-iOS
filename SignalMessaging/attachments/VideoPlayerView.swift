@@ -33,6 +33,23 @@ public protocol PlayerProgressBarDelegate {
     func playerProgressBar(_ playerProgressBar: PlayerProgressBar, didFinishScrubbingAtTime time: CMTime, shouldResumePlayback: Bool)
 }
 
+// Allows the user to tap anywhere on the slider to set it's position,
+// without first having to grab the thumb.
+class TrackingSlider: UISlider {
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+
+    override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        return true
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 @objc
 public class PlayerProgressBar: UIView {
     public let TAG = "[PlayerProgressBar]"
@@ -52,7 +69,7 @@ public class PlayerProgressBar: UIView {
     // MARK: Subviews
     private let positionLabel = UILabel()
     private let remainingLabel = UILabel()
-    private let slider = UISlider()
+    private let slider = TrackingSlider()
     private let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
     weak private var progressObserver: AnyObject?
 
@@ -108,6 +125,12 @@ public class PlayerProgressBar: UIView {
         slider.addTarget(self, action: #selector(handleSliderTouchUp), for: .touchUpInside)
         slider.addTarget(self, action: #selector(handleSliderTouchUp), for: .touchUpOutside)
         slider.addTarget(self, action: #selector(handleSliderValueChanged), for: .valueChanged)
+
+        // Panning is a no-op. We just absorb pan gesture's originating in the video controls
+        // from propogating so we don't inadvertently change pages while trying to scrub in
+        // the MediaPageView.
+        let panAbsorber = UIPanGestureRecognizer(target: self, action: nil)
+        self.addGestureRecognizer(panAbsorber)
 
         // Layout Subviews
 
