@@ -23,6 +23,8 @@ typedef NS_OPTIONS(NSInteger, MediaGalleryOption) {
 - (void)mediaDetailViewController:(MediaDetailViewController *)mediaDetailViewController
                    isPlayingVideo:(BOOL)isPlayingVideo;
 
+- (void)mediaDetailViewControllerDidTapMedia:(MediaDetailViewController *)mediaDetailViewController;
+
 @end
 
 @interface MediaDetailViewController : OWSViewController
