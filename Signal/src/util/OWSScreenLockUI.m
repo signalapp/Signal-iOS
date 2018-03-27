@@ -345,23 +345,9 @@ NS_ASSUME_NONNULL_BEGIN
         [subview removeFromSuperview];
     }
 
-    UIView *edgesView = [UIView containerView];
-    [rootView addSubview:edgesView];
-    [edgesView autoHCenterInSuperview];
-    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    UIView *containerView = [UIView containerView];
-    [edgesView addSubview:containerView];
-    [containerView autoVCenterInSuperview];
-    [containerView autoPinWidthToSuperviewWithMargin:20.f];
-
     UIImage *image = [UIImage imageNamed:@"logoSignal"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
-    [containerView addSubview:imageView];
-    [imageView autoPinTopToSuperview];
-    [imageView autoHCenterInSuperview];
 
     const CGSize screenSize = UIScreen.mainScreen.bounds.size;
     const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
@@ -379,6 +365,11 @@ NS_ASSUME_NONNULL_BEGIN
         shouldShowUnlockButton);
 
     if (shouldHaveScreenLock) {
+        const CGFloat kVMargin = 50.f;
+        [rootView addSubview:imageView];
+        [imageView autoHCenterInSuperview];
+        [imageView autoPinTopToSuperviewWithMargin:kVMargin];
+
         const CGFloat kButtonHeight = 40.f;
         OWSFlatButton *button =
             [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
@@ -388,20 +379,22 @@ NS_ASSUME_NONNULL_BEGIN
                            backgroundColor:[UIColor whiteColor]
                                     target:self
                                   selector:@selector(showUnlockUI)];
-        [containerView addSubview:button];
+        [rootView addSubview:button];
+        [button autoVCenterInSuperview];
         [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-        const CGFloat kVSpacing = 80.f;
-        [button autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:imageView withOffset:kVSpacing];
-        // For symmetry, use equal padding below so that "unlock" button is visually centered
-        // (under the local auth UI alert) and the Signal logo is moved upwards, not blocked by
-        // the local auth UI alert.
-        const CGFloat kBottomPadding = imageSize + kVSpacing;
-        [button autoPinBottomToSuperviewWithMargin:kBottomPadding];
-        [button autoPinLeadingAndTrailingToSuperview];
+        [button autoPinLeadingToSuperviewWithMargin:50.f];
+        [button autoPinTrailingToSuperviewWithMargin:50.f];
 
         button.hidden = !shouldShowUnlockButton;
     } else {
-        [imageView autoPinBottomToSuperview];
+        UIView *edgesView = [UIView containerView];
+        [rootView addSubview:edgesView];
+        [edgesView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+        [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [edgesView autoPinWidthToSuperview];
+
+        [edgesView addSubview:imageView];
+        [imageView autoCenterInSuperview];
     }
 
     [rootView layoutIfNeeded];
