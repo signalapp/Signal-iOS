@@ -1585,6 +1585,9 @@
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authenticatie mislukt";
 
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Zoeken op naam of nummer";
 
@@ -1785,15 +1788,6 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Leesbevestigingen laten je zien wanneer anderen je berichten gelezen hebben, en laten hen zien wanneer jij hun berichten gelezen hebt. Deze instelling is facultatief en wordt toegepast op alle gesprekken.";
-
-/* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "Metadata uit media verwijderen";
-
-/* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Verwijdert gebruikersidentificerende metadata en gps-informatie bij verzenden van afbeeldingen en video’s.";
-
-/* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Schermvergrendelingstime-out";

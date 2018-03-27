@@ -1585,6 +1585,9 @@
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "身份認證失敗";
 
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "依名字或號碼來搜尋";
 
@@ -1785,15 +1788,6 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "訊息可以在被讀取後查看與分享。這個設定是可選設定，且對所有對話有效。";
-
-/* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "移除多媒體檔案元資料";
-
-/* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
-
-/* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "數據資料";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定逾時";

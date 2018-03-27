@@ -1585,6 +1585,9 @@
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Fallo al identificarse";
 
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nombre o número";
 
@@ -1785,15 +1788,6 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Al activar puedes ver cuando tus mensajes han sido leídos y hacer saber a tus remitentes cuándo has leído los suyos. Este ajuste es opcional y se aplica a todos los chats.";
-
-/* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "Eliminar información de la foto";
-
-/* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Elimina los datos de captura y localización de fotos y vídeos antes de enviar.";
-
-/* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metadatos";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Temporizador de bloqueo de acceso";

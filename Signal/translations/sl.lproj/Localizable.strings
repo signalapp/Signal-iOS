@@ -1585,6 +1585,9 @@
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Preverjanje istovetnosti ni bilo uspešno";
 
+/* Label for button on lock screen that lets users unlock Signal. */
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Iskanje po imenu ali številki";
 
@@ -1785,15 +1788,6 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Pošiljatelj je obveščen kadar prejemnik prebere njegovo sporočilo. Ta nastavitev je izbirna in velja za vse pogovore.";
-
-/* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "Odstrani meta podatke";
-
-/* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "S tem boste pred pošiljanjem slik ali video sporočil iz vsebine odstranili metapodatke, ki omogočajo razpoznavo uporabnika, ter podatke GPS.";
-
-/* Remove metadata section header */
-"SETTINGS_REMOVE_METADATA_TITLE" = "Metapodatki";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Časovni interval pred zaklepom aplikacije";
