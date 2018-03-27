@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Niet nu";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer accepteren";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Nieuw veiligheidsnummer aanvaarden";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Toevoegen";
@@ -795,7 +795,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Ophalen van gevraagde GIF mislukt. Controleer of je wel online bent.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Er is een onbekende fout opgetreden.";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Kan GIF niet kiezen";
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authenticatie mislukt.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Te veel pogingen tot authenticatie. Probeer het later opnieuw.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Om schermvergrendeling te kunnen gebruiken, moet je een toegangscode instellen in de iOS-instellingen.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Om schermvergrendeling te kunnen gebruiken, moet je een toegangscode instellen in de iOS-instellingen.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Om schermvergrendeling te kunnen gebruiken, moet je een toegangscode instellen in de iOS-instellingen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticeer om schermvergrendeling uit te schakelen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticeer om schermvergrendeling in te schakelen.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticeer om Signal te openen.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authenticatie mislukt";
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Nodig je vrienden uit";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Je kan me bereiken op @signalapp, download het nu: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Berichtgeluid";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Metadata uit media verwijderen";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Verwijdert gebruikersidentificerende metadata en gps-informatie bij verzenden van afbeeldingen en video’s.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Schermvergrendelingstime-out";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ontgrendel Signal met Touch-ID, Face-ID of je iOS-apparaattoegangscode.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Schermvergrendeling";

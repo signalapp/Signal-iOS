@@ -795,7 +795,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Nepavyko gauti užklausto GIF. Įsitikinkite, kad esate prisijungę prie interneto.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Įvyko nežinoma klaida";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Nepavyko pasirinkti GIF";
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Tapatybės nustatymas nepavyko.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Per daug nesėkmingų tapatybės nustatymo bandymų. Bandykite dar kartą vėliau.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Norėdami naudotis Ekrano užraktu, privalote iOS nustatymuose įjungti slaptą kodą.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Norėdami naudotis Ekrano užraktu, privalote iOS nustatymuose įjungti slaptą kodą.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Norėdami naudotis Ekrano užraktu, privalote iOS nustatymuose įjungti slaptą kodą.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Norėdami išjungti Ekrano užraktą, patvirtinkite tapatybę.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Norėdami įjungti Ekrano užraktą, patvirtinkite tapatybę.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Norėdami atverti Signal, patvirtinkite tapatybę.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Tapatybės nustatymas nepavyko";
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Pakvieskite savo draugus";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Dabar galite su manimi susisiekti, naudojant @signalapp. Atsisiųskite dabar: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Žinutės garsas";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Šalinti medijos metaduomenis";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Siunčiant paveikslus ir vaizdo žinutes, pašalinti naudotoją identifikuojančius metaduomenis ir GPS informaciją.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metaduomenys";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekrano užrakto laiko limitas";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Atrakinkite Signal ekraną, naudodami Touch ID, Face ID ar savo iOS įrenginio slaptą kodą.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekrano užraktas";

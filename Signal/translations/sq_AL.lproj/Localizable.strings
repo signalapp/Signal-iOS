@@ -795,7 +795,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "S\’u arrit të sillej GIF-i i kërkuar. Ju lutemi, verifikoni se jeni i lidhur në internet.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Ndodhi një gabim i panjohur.";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "S\’është në gjendje të Zgjedhë GIF";
@@ -1562,25 +1562,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Mirëfilltësimi dështoi.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Shumë përpjekje të dështuara mirëfilltësimi. Ju lutemi, riprovoni më vonë.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Duhet të aktivizoni një frazëkalim te Rregullimet tuaja për iOS-in, që të mund të përdoret Kyçje Ekrani.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Duhet të aktivizoni një frazëkalim te Rregullimet tuaja për iOS-in, që të mund të përdoret Kyçje Ekrani.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Duhet të aktivizoni një frazëkalim te Rregullimet tuaja për iOS-in, që të mund të përdoret Kyçje Ekrani.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
 "SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Që të çaktivizoni Kyçje Ekrani, bëni mirëfilltësimin. ";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Që të aktivizohet Kyçje Ekrani, bëni mirëfilltësimin.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Që të hapet Signal-i, bëni mirëfilltësimin.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Mirëfilltësimi Dështoi";
@@ -1748,7 +1748,7 @@
 "SETTINGS_INVITE_TITLE" = "Ftoni Shokët Tuaj";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Mund të lidheni me mua duke përdorur @signalapp. Merreni që tani: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tingull Mesazhesh";
@@ -1790,7 +1790,7 @@
 "SETTINGS_REMOVE_METADATA" = "Hiq Tejtëdhëna Media";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "Hiq tejtëdhëna që lejojnë identifikim të përdoruesit dhe të dhëna GPS, kur dërgohen mesazhe me foto dhe video.";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Tejtëdhëna";
@@ -1799,7 +1799,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Skadim Kyçjeje Ekrani";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Shkyçeni ekranin e Signal-it duke përdorur Touch ID, Face ID, ose frazëkalim të pajisjes tuaj iOS.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Kyçje Ekrani";

@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "เอาไว้ก่อน";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ไม่ใช่ตอนนี้";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "ยอมรับตัวเลขความปลอดภัยใหม่";
@@ -41,7 +41,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "รับสาย";
 
 /* No comment provided by engineer. */
-"APN_Message" = "ข้อความใหม่!";
+"APN_Message" = "มีข้อความใหม่!";
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_FROM" = "ข้อความจาก";
@@ -53,7 +53,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ในกลุ่ม %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ไม่สามารถเริ่มต้นใช้งานได้ \nกรุณาส่งบันทึกการดีบั๊กให้กลุ่มผู้พัฒนา เพื่อที่เราจะได้ทำการแก้ไขข้อบกพร่อง";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal ไม่สามารถเริ่มต้นใช้งานได้ กรุณาส่งบันทึกการดีบั๊กให้กับเรา เพื่อที่เราจะได้ทำการแก้ไขข้อบกพร่องนี้ต่อไป";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "ข้อผิดพลาด";
@@ -62,31 +62,31 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ป้อนชื่อของคุณ";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "มีรุ่น %@ แล้วใน App Store";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "พบกับเวอร์ชัน %@ ได้แล้วที่ App Store";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "มี Signal รุ่นใหม่ออกมาแล้ว";
+"APP_UPDATE_NAG_ALERT_TITLE" = "มี Signal เวอร์ชันใหม่แล้ว";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "ปรับปรุง";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัปเดต";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "คลังเก็บ";
+"ARCHIVE_ACTION" = "เก็บถาวร";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "คลังเก็บ";
+"ARCHIVE_NAV_BAR_TITLE" = "เก็บถาวร";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "แฟ้มแนบ";
+"ATTACHMENT" = "ไฟล์แนบ";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "แฟ้มแนบ";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "ไฟล์แนบ";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ชนิดแฟ้ม: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ชนิดของไฟล์: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "ขนาด: %@";
@@ -95,10 +95,10 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "ส่ง";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "แฟ้มแนบ";
+"ATTACHMENT_DEFAULT_FILENAME" = "ไฟล์แนบ";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ล้มเหลว แตะเพื่อลองใหม่";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "ไม่สำเร็จ แตะเพื่อลองใหม่";
 
 /* Status label when an attachment is currently downloading */
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "กำลังดาวน์โหลด…";
@@ -107,7 +107,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "เข้าคิวแล้ว";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งแฟ้มแนบ";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งไฟล์แนบ";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดภาพที่แนบได้";
@@ -119,34 +119,34 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถแยกวิเคราะห์ภาพที่แนบได้";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ไม่สามารถลบข้อมูล metadata จากรูปได้";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "แฟ้มแนบใหญ่เกินไป";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "ไฟล์แนบใหญ่เกินไป";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "แฟ้มแนบมีเนื้อหาไม่ตรงที่กำหนด";
+"ATTACHMENT_ERROR_INVALID_DATA" = "ไฟล์แนบมีเนื้อหาไม่ตรงที่กำหนด";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "แฟ้มแนบมีรูปแบบแฟ้มไม่ตรงที่กำหนด";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "ไฟล์แนบมีรูปแบบไฟล์ที่ไม่ถูกต้อง";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "แฟ้มแนบว่างเปล่า";
+"ATTACHMENT_ERROR_MISSING_DATA" = "ไฟล์แนบว่างเปล่า";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "เลือกหรือถ่ายภาพแล้วส่ง";
+"ATTACHMENT_HINT" = "เลือกภาพหรือถ่ายภาพแล้วส่ง";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "แฟ้มแนบ";
+"ATTACHMENT_LABEL" = "ไฟล์แนบ";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "ไม่สามารถเลือกเอกสาร";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "เลือกเอกสารไม่สำเร็จ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ไม่สามารถจัดการแฟ้มอย่างที่มันเป็นอยู่ได้ ลองย่อขนาดมันก่อนจะส่ง";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ไม่สามารถจัดการกับไฟล์ประเภทนี้ได้ ลองซิปไฟล์ก่อนที่จะส่ง";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "แฟ้มที่ไม่รองรับ";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ไฟล์ที่ไม่รองรับ";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ข้อความเสียง";
@@ -158,112 +158,112 @@
 "BACK_BUTTON" = "กลับไป";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ไม่สามารถส่งออกการสำรองข้อมูลได้";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "การตอบสนองของบริการไม่ถูกต้อง";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "ไม่สามารถอัปโหลดการสำรองข้อมูลได้";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "กำลังล้างข้อมูลสำรอง";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "กำลังล้างการสำรองข้อมูล";
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "เริ่มต้นสำรองข้อมูล";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "การส่งออกข้อมูล";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "กำลังส่งออกข้อมูลสำรอง";
+"BACKUP_EXPORT_PHASE_EXPORT" = "กำลังส่งออกการสำรองข้อมูล";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "กำลังอัปโหลดข้อมูลสำรอง";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "กำลังอัปโหลดการสำรองข้อมูล";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ไม่สามารถส่งออกข้อมูลสำรองได้";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ไม่สามารถส่งออกการสำรองข้อมูลได้";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "กำลังตรวจสอบสถานะการสำรองข้อมูล";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "กำลังกำหนดค่าการสำรองข้อมูล";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "กำลังดาวน์โหลดการสำรองข้อมูล";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "กำลังเสร็จสิ้นการสำรองข้อมูล";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "กำลังนำเข้าข้อมูลสำรอง";
+"BACKUP_IMPORT_PHASE_IMPORT" = "กำลังนำเข้าการสำรองข้อมูล";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "กำลังกู้คืนฐานข้อมูล";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "กำลังคืนค่าฐานข้อมูล";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังกู้คืนแฟ้มข้อมูล";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังคืนค่าไฟล์";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกปิดกั้นจะไม่สามารถโทรหาคุณหรือส่งข้อความถึงคุณ";
+"BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกบล็อกจะไม่สามารถโทรหาคุณหรือส่งข้อความถึงคุณ";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "ปิดกั้น";
+"BLOCK_LIST_BLOCK_BUTTON" = "บล็อก";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "ปิดกั้น %@?";
+"BLOCK_LIST_BLOCK_TITLE_FORMAT" = "บล็อก %@ หรือไม่";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกปิดกั้น";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกบล็อก";
 
 /* A format for the 'unblock user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกปิดกั้น %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "เลิกบล็อก %@ หรือไม่";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "ปิดกั้น";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "บล็อก";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "ไม่สามารถปิดกั้นผู้ใช้";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "การบล็อกผู้ใช้ไม่สำเร็จ";
 
 /* The title of the 'block user failed' alert. */
 "BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "ผิดพลาด";
 
 /* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ถูกปิดกั้นแล้ว";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ ถูกบล็อกแล้ว";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกปิดกั้น";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกบล็อก";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "คุณไม่สามารถปิดกั้นตัวเอง";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "คุณไม่สามารถบล็อกตัวเอง";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "ผิดพลาด";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "ไม่สามารถเลิกปิดกั้นผู้ใช้";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "ยกเลิกการบล็อกผู้ใช้ไม่สำเร็จ";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "ผิดพลาด";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "เลิกปิดกั้น %@ แล้ว";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "เลิกบล็อก %@ แล้ว";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกเลิกปิดกั้น";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกยกเลิกการบล็อก";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "ปิดกั้น";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "บล็อก";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ปิดกั้น %@?";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "บล็อก %@ หรือไม่";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "เสร็จสิ้น";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "เลือก";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal ต้องการเข้าถึงไมโครโฟนของคุณ เพื่อที่จะโทรและบันทึกข้อความเสียง คุณสามารถให้สิทธิการเข้าถึงได้ในแอป 'การตั้งค่า'";
@@ -284,10 +284,10 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "โทร";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "คุณต้องการโทรหา %@ หรือไม่?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "คุณต้องการโทรหา %@ หรือไม่";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "โทร?";
+"CALL_USER_ALERT_TITLE" = "โทรหรือไม่";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "รับสายเข้า";
@@ -338,13 +338,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "เลือกประเทศ";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "เกิดข้อผิดพลาในการสื่อสารกับ iCloud ในการสำรองข้อมูล";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "คุณไม่มีบัญชี iCloud สำหรับการสำรองข้อมูล";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal ไม่ได้รับอนุญาตให้เข้าถึงบัญชี iCloud ของคุณสำหรับการสำรองข้อมูล";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "เปรียบเทียบกับคลิปบอร์ด";
@@ -386,7 +386,7 @@
 "CONFIRMATION_TITLE" = "ยืนยัน";
 
 /* An indicator that a contact has been blocked. */
-"CONTACT_CELL_IS_BLOCKED" = "ถูกปิดกั้น";
+"CONTACT_CELL_IS_BLOCKED" = "บล็อกแล้ว";
 
 /* An indicator that a contact is no longer verified. */
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "ยังไม่ถูกตรวจยืนยัน";
@@ -407,7 +407,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "เพิ่มไปยังรายชื่อที่มีอยู่เดิม";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ปิดกั้นผู้ใช้นี้";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "บล็อกผู้ใช้นี้";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "ข้อมูลผู้ติดต่อ";
@@ -479,7 +479,7 @@
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "แตะเพื่อดูเพิ่ม";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ปิดกั้นผู้ใช้นี้";
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "บล็อกผู้ใช้นี้";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "การล้างวาระของคุณใหม่จะอนุญาตให้คุณรับข้อความในอนาคตจาก %@ แต่จะเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วไม่ได้";
@@ -555,7 +555,7 @@
 "DEVICE_LINKED_AT_LABEL" = "เชื่อมโยง: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "การปรับปรุงรายการอุปกรณ์ล้มเหลว";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "ปรับปรุงรายการอุปกรณ์ไม่สำเร็จ";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ข้อความลบตัวเอง";
@@ -696,25 +696,25 @@
 "END_CALL_RESPONDER_IS_BUSY" = "ไม่ว่าง";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "การโทรล้มเหลว";
+"END_CALL_UNCATEGORIZED_FAILURE" = "การโทรไม่สำเร็จ";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "การส่งข้อความล้มเหลว";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "ส่งข้อความไม่สำเร็จ";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ไม่สามารถส่ง เนื่องจากข้อมูลส่วนบุคคลที่หมดอายุ";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "การส่งข้อความไปหาผู้ใช้ล้มเหลว เนื่องจากคุณได้ปิดกั้นเขา";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้บล็อกเขา";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "เกิดความล้มเหลว เนื่องจากไม่สามารถเขียนแฟ้มแนบได้";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ไม่สำเร็จ เนื่องจากไม่สามารถเขียนไฟล์แนบได้";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองจากเครือข่าย WiFi อื่นหรือต่อเน็ตจากมือถือ";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "การส่งข้อความล้มเหลว เนื่องจากไม่มีชื่อผู้รับที่ส่งได้";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "การส่งข้อความไม่สำเร็จ เนื่องจากไม่มีชื่อผู้รับที่ถูกต้อง";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "อุปกรณ์ของคุณไม่ได้ลงทะเบียนสำหรับหมายเลขโทรศัพท์ของคุณอีกต่อไป คุณต้องเอาออกและติดตั้ง Signal ใหม่";
@@ -789,7 +789,7 @@
 "GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "แฟ้มแนบ";
+"GENERIC_ATTACHMENT_LABEL" = "ไฟล์แนบ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "ไม่สามารถดึงภาพ GIF ที่ต้องการ กรุณาตรวจสอบว่าคุณออนไลน์อยู่";
@@ -861,7 +861,7 @@
 "GROUP_REMOVING" = "กำลังออกจากกลุ่ม %@";
 
 /* Title of alert indicating that group deletion failed. */
-"GROUP_REMOVING_FAILED" = "ไม่สามารถออกจากกลุ่ม";
+"GROUP_REMOVING_FAILED" = "การออกจากกลุ่มไม่สำเร็จ";
 
 /* No comment provided by engineer. */
 "GROUP_TITLE_CHANGED" = "หัวข้อตอนนี้เป็น '%@'";
@@ -873,7 +873,7 @@
 "GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "ปิดกั้นแล้ว";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "บล็อกแล้ว";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "กำลังเชื่อมต่อ…";
@@ -909,7 +909,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "สายไม่ได้รับ เนื่องจากตัวเลขความปลอดภัยเปลี่ยนไป";
 
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "แฟ้มเสียงไม่ตรงที่กำหนด";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ไฟล์เสียงไม่ถูกต้อง";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "เพื่อจะเชิญคนที่คุณติดต่อ คุณจำเป็นต้องอนุญาตให้ Signal เข้าถึงรายชื่อติดต่อของคุณในแอป 'การตั้งค่า'";
@@ -942,7 +942,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "รหัส QR นี้ไม่ถูกต้อง ตรวจสอบให้แน่ใจว่าคุณกำลังสแกนรหัส QR ที่แสดงผลบนอุปกรณ์ที่คุณต้องการเชื่อมโยง";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ล้มเหลว";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์นี้จะสามารถดูกลุ่มและรายชื่อของคุณ อ่านข้อความทั้งหมดของคุณ และส่งข้อความด้วยชื่อของคุณ";
@@ -966,7 +966,7 @@
 "LINKED_DEVICES_TITLE" = "อุปกรณ์ที่เชื่อมโยง";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ล้มเหลว";
+"LINKING_DEVICE_FAILED_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "สมาชิกกลุ่ม";
@@ -1008,13 +1008,13 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "ข้อความใหม่";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "ขนาดแฟ้ม";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "ขนาดไฟล์";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "ชนิด MIME";
 
 /* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "แฟ้มแนบหาย";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "ไฟล์แนบหาย";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "ยังไม่ถูกดาวน์โหลด";
@@ -1023,7 +1023,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ส่งถึงแล้ว";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "ล้มเหลว";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "ไม่สำเร็จ";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "อ่านแล้ว";
@@ -1038,7 +1038,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "กำลังอัปโหลด";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "ข้อความไม่มีเนื้อหาหรือแฟ้มแนบ";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "ข้อความไม่มีเนื้อหาหรือไฟล์แนบ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "ได้รับแล้ว";
@@ -1050,7 +1050,7 @@
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "ส่งไปแล้ว";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ชื่อแฟ้ม";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "ชื่อไฟล์";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "ข้อความ";
@@ -1059,10 +1059,10 @@
 "MESSAGE_STATUS_DELIVERED" = "ส่งถึงแล้ว";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "การส่งล้มเหลว แตะเพื่อดูข้อมูล";
+"MESSAGE_STATUS_FAILED" = "การส่งไม่สำเร็จ แตะเพื่อดูข้อมูล";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "ล้มเหลว";
+"MESSAGE_STATUS_FAILED_SHORT" = "ไม่สำเร็จ";
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "อ่านแล้ว";
@@ -1080,22 +1080,22 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้ปิดกั้นผู้ใช้นี้";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "คุณได้บล็อกผู้ใช้นี้";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ไม่มีเครื่องหมายว่าตรวจยืนยันแล้วอีกต่อไป แตะเพื่อดูตัวเลือก ";
 
 /* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "การดาวน์โหลดล้มเหลว";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "ดาวน์โหลดไม่สำเร็จ";
 
 /* Action sheet button text */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "ดาวน์โหลดอีกครั้ง";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "คุณได้ปิดกั้น 1 สมาชิกของกลุ่มนี้";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "คุณได้บล็อกสมาชิกของกลุ่มนี้ 1 คน";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "คุณปิดกั้นสมาชิก %@ คนในกลุ่มนี้";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "คุณได้บล็อกสมาชิกของกลุ่มนี้ %@ คน";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "คุณต้องการแบ่งปันโปรไฟล์ของคุณให้กับกลุ่มนี้ไหม?";
@@ -1214,7 +1214,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหาผู้ติดต่อด้วยหมายเลขโทรศัพท์";
 
 /* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "ไม่สามารถส่งข้อความของคุณไปยัง %@";
+"NOTIFICATION_SEND_FAILED" = "ไม่สามารถส่งข้อความของคุณไปยัง %@ ได้สำเร็จ";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "เนื่องจากข้อบกพร่องที่ทราบใน Push framework ของ Apple ตัวอย่างข้อความจะแสดงเฉพาะเมื่อข้อความถูกดึงข้อมูลภายใน 30 วินาทีหลังจากส่ง ผลลัพธ์คือป้ายประกาศบนแอปพลิเคชันอาจไม่เที่ยงตรง";
@@ -1367,7 +1367,7 @@
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "ชื่อโปรไฟล์คุณยาวเกินไป";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "การปรับปรุงโปรไฟล์ล้มเหลว";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "อัปเดตโปรไฟล์ไม่สำเร็จ";
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "ป้อนชื่อของคุณ";
@@ -1442,7 +1442,7 @@
 "REGISTER_RATE_LIMITING_BODY" = "คุณลองถี่เกินไปแล้ว กรุณารอสักนาทีก่อนจะลองใหม่";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "ลงทะเบียนใหม่สำหรับการแจ้งเตือนแบบผลักล้มเหลว";
+"REGISTRATION_BODY" = "การลงทะเบียนอีกครั้งสำหรับการแจ้งเตือนแบบพุชไม่สำเร็จ";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "รหัสประเทศ";
@@ -1472,7 +1472,7 @@
 "REGISTRATION_TITLE_LABEL" = "หมายเลขโทรศัพท์ของคุณ";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจยืนยันล้มเหลว";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "การตรวจสอบไม่สำเร็จ";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "ตัวเลขที่คุณส่งมาไม่ตรงกับที่เราส่งให้ ต้องการตรวจสอบอีกครั้ง?";
@@ -1559,10 +1559,10 @@
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "การรับรองความถูกต้องไม่สำเร็จ";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "คุณทำรายการรับรองความถูกต้องไม่สำเร็จหลายครั้งเกินไป โปรดลองใหม่อีกครั้งในภายหลัง";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
@@ -1583,7 +1583,7 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "การรับรองความถูกต้องไม่สำเร็จ";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "ค้นหาโดยชื่อหรือหมายเลข";
@@ -1607,7 +1607,7 @@
 "SEND_BUTTON_TITLE" = "ส่ง";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "การส่งคำเชิญล้มเหลว โปรดลองอีกครั้งในภายหลัง";
+"SEND_INVITE_FAILURE" = "ส่งคำเชิญไม่สำเร็จ โปรดลองอีกครั้งในภายหลัง";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "คุณได้ชวนเพื่อนของคุณให้มาใช้ Signal!";
@@ -1625,13 +1625,13 @@
 "SETTINGS_ABOUT" = "เกี่ยวกับ";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "ปิดกั้นผู้ติดต่อ";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "บล็อกผู้ติดต่อ";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "ปิดกั้นหมายเลขโทรศัพท์";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "บล็อกหมายเลขโทรศัพท์";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "ปิดกั้น";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "บล็อก";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "การหลบเลี่ยงการปิดกั้นข้อมูล";
@@ -1667,7 +1667,7 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (ค่าเริ่มต้น)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "ข้อมูลสำรอง";
+"SETTINGS_BACKUP" = "การสำรองข้อมูล";
 
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "สำรองข้อมูลเดี๋ยวนี้";
@@ -1688,7 +1688,7 @@
 "SETTINGS_BACKUP_STATUS" = "สถานะ";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "การสำรองข้อมูลล้มเหลว";
+"SETTINGS_BACKUP_STATUS_FAILED" = "การสำรองข้อมูลไม่สำเร็จ";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "รอ...";
@@ -1709,7 +1709,7 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "ค้นหาไม่พบ";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "ปิดกั้น";
+"SETTINGS_BLOCK_LIST_TITLE" = "บล็อกแล้ว";
 
 /* Accessibility hint for the settings button */
 "SETTINGS_BUTTON_ACCESSIBILITY" = "การตั้งค่า";
@@ -1730,7 +1730,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ลบบัญชี";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจว่าต้องการลบประวัติทั้งหมดของคุณ (ข้อความ, แฟ้มแนบ, ประวัติการโทร ...)? การกระทำนี้ไม่สามารถย้อนคืนได้";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "คุณแน่ใจหรือว่าต้องการลบประวัติทั้งหมดของคุณ (ข้อความ ไฟล์แนบ ประวัติการโทร ...) การดำเนินการนี้ไม่สามารถย้อนคืนได้";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "ลบทั้งหมด";
@@ -1787,10 +1787,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "ดูและแบ่งปันเมื่อข้อความถูกอ่าน คุณจะตั้งค่านี้หรือไม่ก็ได้ และการตั้งค่านี้ใช้กับการสนทนาทุกอัน";
 
 /* Remove metadata table cell label */
-"SETTINGS_REMOVE_METADATA" = "ลบข้อมูล สื่อ Metadata";
+"SETTINGS_REMOVE_METADATA" = "ลบข้อมูล Metadata ของสื่อ";
 
 /* Remove metadata section footer */
-"SETTINGS_REMOVE_METADATA_DETAIL" = "Remove user-identifying metadata and GPS information when sending image and video messages.";
+"SETTINGS_REMOVE_METADATA_DETAIL" = "ลบข้อมูล metadata ที่ระบุตัวตนและข้อมูล GPS หากต้องการส่งข้อความรูปภาพและวิดีโอ";
 
 /* Remove metadata section header */
 "SETTINGS_REMOVE_METADATA_TITLE" = "Metadata";
@@ -1874,13 +1874,13 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "ไม่พร้อม";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "ไม่สามารถที่จะส่งแฟ้มแนบ";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "ไม่สามารถที่จะส่งไฟล์แนบได้";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "กำลังส่งข้อมูล…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "ไม่สามารถเตรียมแฟ้มแนบได้";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "ไม่สามารถเตรียมไฟล์แนบได้";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "แบ่งปันไปยัง Signal";
@@ -1955,10 +1955,10 @@
 "UNARCHIVE_ACTION" = "นำออกจากคลังเก็บ";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "แฟ้มแนบที่ไม่รู้จัก";
+"UNKNOWN_ATTACHMENT_LABEL" = "ไฟล์แนบที่ไม่รู้จัก";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในรายชื่อติดต่อของคุณ คุณต้องการปิดกั้นผู้ใช้นี้หรือไม่?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในรายชื่อติดต่อของคุณ คุณต้องการบล็อกผู้ใช้นี้หรือไม่";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "ผู้ติดต่อที่ไม่รู้จัก";
@@ -1982,10 +1982,10 @@
 "UNNAMED_DEVICE" = "อุปกรณ์ที่ไม่มีชื่อ";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "การถอนทะเบียนจาก Signal ล้มเหลว";
+"UNREGISTER_SIGNAL_FAIL" = "ยกเลิกการลงทะเบียนจาก Signal ไม่สำเร็จ";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "ได้รับแฟ้มแนบชนิดที่ไม่รองรับ";
+"UNSUPPORTED_ATTACHMENT" = "ได้รับไฟล์แนบชนิดที่ไม่รองรับ";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "อุปกรณ์ของคุณไม่รองรับคุณลักษณะนี้";
