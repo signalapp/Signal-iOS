@@ -27,8 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 // UI is dismissing.
 @property (nonatomic) BOOL shouldClearAuthUIWhenActive;
 
-@property (nonatomic, nullable) NSTimer *screenLockUITimer;
-
 @property (nonatomic, nullable) NSDate *appEnteredBackgroundDate;
 @property (nonatomic, nullable) NSDate *appEnteredForegroundDate;
 @property (nonatomic, nullable) NSDate *lastUnlockAttemptDate;
@@ -160,9 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [self updateScreenBlockingWindow:shouldShowBlockWindow shouldHaveScreenLock:shouldHaveScreenLock];
 
-    [self.screenLockUITimer invalidate];
-    self.screenLockUITimer = nil;
-
     if (shouldHaveScreenLock && !self.didLastUnlockAttemptFail) {
         [self tryToPresentScreenLockUI];
     }
@@ -171,9 +166,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tryToPresentScreenLockUI
 {
     OWSAssertIsOnMainThread();
-
-    [self.screenLockUITimer invalidate];
-    self.screenLockUITimer = nil;
 
     // If we no longer want to present the screen lock UI, abort.
     if (!self.shouldHaveScreenLock) {
@@ -334,6 +326,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateScreenBlockingWindow:YES shouldHaveScreenLock:NO];
 }
 
+// The "screen blocking" window has three possible states:
+//
+// * "Just a logo".  Used when app is launching and in app switcher.  Must match the "Launch Screen"
+//    storyboard pixel-for-pixel.
+// * "Screen Lock, local auth UI presented". Move the Signal logo so that it is visible.
+// * "Screen Lock, local auth UI not presented". Move the Signal logo so that it is visible,
+//    show "unlock" button.
 - (void)updateScreenBlockingWindow:(BOOL)shouldShowBlockWindow shouldHaveScreenLock:(BOOL)shouldHaveScreenLock
 {
     OWSAssertIsOnMainThread();
@@ -429,6 +428,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAuthUIWhenActive
 {
+    // For continuity, continue to present blocking screen in "screen lock" mode while
+    // dismissing the "local auth UI".
     if (self.appIsInactive) {
         self.shouldClearAuthUIWhenActive = YES;
     } else {
@@ -456,8 +457,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Clear the "delay Screen Lock UI" state; we don't want any
     // delays when presenting the "unlock screen lock UI" after
     // returning from background.
-    [self.screenLockUITimer invalidate];
-    self.screenLockUITimer = nil;
     self.lastUnlockAttemptDate = nil;
     self.lastUnlockSuccessDate = nil;
 
