@@ -45,9 +45,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)screenSecurityIsEnabled;
 - (void)setScreenSecurity:(BOOL)flag;
 
-- (BOOL)isRemoveMetadataEnabled;
-- (void)setIsRemoveMetadataEnabled:(BOOL)enabled;
-
 - (NotificationType)notificationPreviewType;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;

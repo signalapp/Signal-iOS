@@ -105,9 +105,6 @@ public enum TSImageQuality: UInt {
 @objc
 public class SignalAttachment: NSObject {
 
-    static let TAG = "[SignalAttachment]"
-    let TAG = "[SignalAttachment]"
-
     // MARK: Properties
 
     @objc
@@ -156,7 +153,7 @@ public class SignalAttachment: NSObject {
             AssertIsOnMainThread()
 
             assert(oldValue == nil)
-            Logger.verbose("\(SignalAttachment.TAG) Attachment has error: \(String(describing: error))")
+            Logger.verbose("\(logTag) Attachment has error: \(String(describing: error))")
         }
     }
 
@@ -204,7 +201,7 @@ public class SignalAttachment: NSObject {
     public var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
-            owsFail("\(TAG) Missing error")
+            owsFail("\(logTag) Missing error")
             return nil
         }
 
@@ -215,7 +212,7 @@ public class SignalAttachment: NSObject {
     public var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
-            owsFail("\(TAG) Missing error")
+            owsFail("\(logTag) Missing error")
             return nil
         }
 
@@ -266,7 +263,7 @@ public class SignalAttachment: NSObject {
             return image
 
         } catch let error {
-            Logger.verbose("\(TAG) Could not generate video thumbnail: \(error.localizedDescription)")
+            Logger.verbose("\(logTag) Could not generate video thumbnail: \(error.localizedDescription)")
             return nil
         }
     }
@@ -504,7 +501,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -515,7 +512,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in videoUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -525,7 +522,7 @@ public class SignalAttachment: NSObject {
         for dataUTI in audioUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-                    owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+                    owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -535,7 +532,7 @@ public class SignalAttachment: NSObject {
 
         let dataUTI = pasteboardUTISet[pasteboardUTISet.startIndex]
         guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
-            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
@@ -547,15 +544,15 @@ public class SignalAttachment: NSObject {
     private class func dataForFirstPasteboardItem(dataUTI: String) -> Data? {
         let itemSet = IndexSet(integer: 0)
         guard let datas = UIPasteboard.general.data(forPasteboardType: dataUTI, inItemSet: itemSet) else {
-            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard datas.count > 0 else {
-            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         guard let data = datas[0] as? Data else {
-            owsFail("\(TAG) Missing expected pasteboard data for UTI: \(dataUTI)")
+            owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
         return data
@@ -585,7 +582,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("\(self.TAG) in \(#function) imageData was empty")
+            owsFail("\(self.logTag) in \(#function) imageData was empty")
             attachment.error = .invalidData
             return attachment
         }
@@ -597,7 +594,7 @@ public class SignalAttachment: NSObject {
             }
 
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
-            Logger.verbose("\(TAG) Sending raw \(attachment.mimeType) to retain any animation")
+            Logger.verbose("\(logTag) Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
         } else {
             guard let image = UIImage(data: dataSource.data()) else {
@@ -621,22 +618,17 @@ public class SignalAttachment: NSObject {
                 // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
                 // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
                 assert(dataUTI == kUTTypeJPEG as String || !isValidOutput)
-                Logger.verbose("\(self.TAG) changing extension: \(sourceFileExtension) to match jpg uti type")
+                Logger.verbose("\(self.logTag) changing extension: \(sourceFileExtension) to match jpg uti type")
 
                 let baseFilename = sourceFilename.filenameWithoutExtension
                 dataSource.sourceFilename = baseFilename.appendingFileExtension("jpg")
             }
 
             if isValidOutput {
-                if Environment.preferences().isRemoveMetadataEnabled() {
-                    Logger.verbose("\(TAG) Rewriting attachment with metadata removed \(attachment.mimeType)")
-                    return removeImageMetadata(attachment : attachment)
-                } else {
-                    Logger.verbose("\(TAG) Sending raw \(attachment.mimeType)")
-                    return attachment
-                }
+                Logger.verbose("\(logTag) Rewriting attachment with metadata removed \(attachment.mimeType)")
+                return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("\(TAG) Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
+                Logger.verbose("\(logTag) Compressing attachment as image/jpeg, \(dataSource.dataLength()) bytes")
                 return compressImageAsJPEG(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -683,7 +675,7 @@ public class SignalAttachment: NSObject {
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
         attachment.cachedImage = image
 
-        Logger.verbose("\(TAG) Writing \(attachment.mimeType) as image/jpeg")
+        Logger.verbose("\(logTag) Writing \(attachment.mimeType) as image/jpeg")
         return compressImageAsJPEG(image: image, attachment: attachment, filename: filename, imageQuality: imageQuality)
     }
 
@@ -725,7 +717,7 @@ public class SignalAttachment: NSObject {
                 dataSource.dataLength() <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("\(TAG) Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
+                Logger.verbose("\(logTag) Converted \(attachment.mimeType) to image/jpeg, \(jpgImageData.count) bytes")
                 return recompressedAttachment
             }
 
@@ -810,29 +802,29 @@ public class SignalAttachment: NSObject {
             return 0.5
         }
     }
-    
+
     private class func removeImageMetadata(attachment: SignalAttachment) -> SignalAttachment {
-        
+
         guard let source = CGImageSourceCreateWithData(attachment.data as CFData, nil) else {
-            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
             attachment.error = .missingData
             return attachment
         }
-        
+
         guard let type = CGImageSourceGetType(source) else {
-            let attachment = SignalAttachment(dataSource : DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
+            let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: attachment.dataUTI)
             attachment.error = .invalidFileFormat
             return attachment
         }
-        
+
         let count = CGImageSourceGetCount(source)
         let mutableData = NSMutableData()
         guard let destination = CGImageDestinationCreateWithData(mutableData as CFMutableData, type, count, nil) else {
             attachment.error = .couldNotRemoveMetadata
             return attachment
         }
-        
-        let removeMetadataProperties : [String : AnyObject] =
+
+        let removeMetadataProperties: [String: AnyObject] =
         [
             kCGImagePropertyExifDictionary as String : kCFNull,
             kCGImagePropertyExifAuxDictionary as String : kCFNull,
@@ -843,22 +835,22 @@ public class SignalAttachment: NSObject {
             kCGImagePropertyIPTCDictionary as String : kCFNull,
             kCGImagePropertyMakerAppleDictionary as String : kCFNull
         ]
-        
+
         for index in 0...count-1 {
             CGImageDestinationAddImageFromSource(destination, source, index, removeMetadataProperties as CFDictionary)
         }
-        
+
         if CGImageDestinationFinalize(destination) {
-            guard let dataSource = DataSourceValue.dataSource(with:mutableData as Data, utiType:attachment.dataUTI) else {
+            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
                 attachment.error = .couldNotRemoveMetadata
                 return attachment
             }
-            
-            let strippedAttachment = SignalAttachment(dataSource : dataSource, dataUTI: attachment.dataUTI)
+
+            let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
             return strippedAttachment
-            
+
         } else {
-            Logger.verbose("\(TAG) CGImageDestinationFinalize failed")
+            Logger.verbose("\(logTag) CGImageDestinationFinalize failed")
             attachment.error = .couldNotRemoveMetadata
             return attachment
         }
@@ -906,7 +898,7 @@ public class SignalAttachment: NSObject {
     }
 
     public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
-        Logger.debug("\(self.TAG) in \(#function)")
+        Logger.debug("\(self.logTag) in \(#function)")
 
         guard let url = dataSource.dataUrl() else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
@@ -924,18 +916,16 @@ public class SignalAttachment: NSObject {
 
         exportSession.shouldOptimizeForNetworkUse = true
         exportSession.outputFileType = AVFileTypeMPEG4
-        if Environment.preferences().isRemoveMetadataEnabled() {
-            exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
-        }
+        exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
         exportSession.outputURL = exportURL
 
         let (promise, fulfill, _) = Promise<SignalAttachment>.pending()
 
-        Logger.debug("\(self.TAG) starting video export")
+        Logger.debug("\(self.logTag) starting video export")
         exportSession.exportAsynchronously {
-            Logger.debug("\(self.TAG) Completed video export")
+            Logger.debug("\(self.logTag) Completed video export")
             let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
@@ -1066,7 +1056,7 @@ public class SignalAttachment: NSObject {
     @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
-            owsFail("\(TAG) must specify image quality type")
+            owsFail("\(logTag) must specify image quality type")
         }
         return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
     }
@@ -1120,7 +1110,7 @@ public class SignalAttachment: NSObject {
         }
 
         guard dataSource.dataLength() > 0 else {
-            owsFail("\(TAG) Empty attachment")
+            owsFail("\(logTag) Empty attachment")
             assert(dataSource.dataLength() > 0)
             attachment.error = .invalidData
             return attachment
