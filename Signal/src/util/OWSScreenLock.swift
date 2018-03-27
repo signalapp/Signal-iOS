@@ -316,7 +316,8 @@ import LocalAuthentication
         let context = LAContext()
 
         // If user has set any non-zero timeout, recycle biometric auth
-        // in the same period as our normal screen lock timeout.
+        // in the same period as our normal screen lock timeout, up to
+        // max of 10 seconds.
         context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(min(10.0, screenLockTimeout()))
 
         if #available(iOS 11.0, *) {

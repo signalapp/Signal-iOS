@@ -13,6 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIWindow *screenBlockingWindow;
 @property (nonatomic) UIViewController *screenBlockingViewController;
+@property (nonatomic) UIView *screenBlockingImageView;
+@property (nonatomic) UIView *screenBlockingButton;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *screenBlockingConstraints;
+@property (nonatomic) NSString *screenBlockingSignature;
 
 // Unlike UIApplication.applicationState, this state is
 // updated conservatively, e.g. the flag is cleared during
@@ -156,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.screenBlockingWindow.hidden != !shouldShowBlockWindow) {
         DDLogInfo(@"%@, %@.", self.logTag, shouldShowBlockWindow ? @"showing block window" : @"hiding block window");
     }
-    [self updateScreenBlockingWindow:shouldShowBlockWindow shouldHaveScreenLock:shouldHaveScreenLock];
+    [self updateScreenBlockingWindow:shouldShowBlockWindow shouldHaveScreenLock:shouldHaveScreenLock animated:YES];
 
     if (shouldHaveScreenLock && !self.didLastUnlockAttemptFail) {
         [self tryToPresentScreenLockUI];
@@ -208,6 +212,8 @@ NS_ASSUME_NONNULL_BEGIN
             // Re-show the unlock UI.
             [self ensureScreenProtection];
         }];
+
+    [self ensureScreenProtection];
 }
 
 - (BOOL)shouldHaveScreenProtection
@@ -318,12 +324,52 @@ NS_ASSUME_NONNULL_BEGIN
     UIViewController *viewController = [UIViewController new];
     viewController.view.backgroundColor = UIColor.ows_materialBlueColor;
 
+
+    UIView *rootView = viewController.view;
+
+    UIView *edgesView = [UIView containerView];
+    [rootView addSubview:edgesView];
+    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [edgesView autoPinWidthToSuperview];
+
+    UIImage *image = [UIImage imageNamed:@"logoSignal"];
+    UIImageView *imageView = [UIImageView new];
+    imageView.image = image;
+    [edgesView addSubview:imageView];
+    [imageView autoHCenterInSuperview];
+
+    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
+    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
+    const CGFloat imageSize = round(shortScreenDimension / 3.f);
+    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
+    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
+
+    const CGFloat kButtonHeight = 40.f;
+    OWSFlatButton *button =
+        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
+                                           @"Label for button on lock screen that lets users unlock Signal.")
+                                  font:[OWSFlatButton fontForHeight:kButtonHeight]
+                            titleColor:[UIColor ows_materialBlueColor]
+                       backgroundColor:[UIColor whiteColor]
+                                target:self
+                              selector:@selector(showUnlockUI)];
+    [edgesView addSubview:button];
+
+    [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
+    [button autoPinLeadingToSuperviewWithMargin:50.f];
+    [button autoPinTrailingToSuperviewWithMargin:50.f];
+    const CGFloat kVMargin = 65.f;
+    [button autoPinBottomToSuperviewWithMargin:kVMargin];
+
     window.rootViewController = viewController;
 
     self.screenBlockingWindow = window;
     self.screenBlockingViewController = viewController;
+    self.screenBlockingImageView = imageView;
+    self.screenBlockingButton = button;
 
-    [self updateScreenBlockingWindow:YES shouldHaveScreenLock:NO];
+    [self updateScreenBlockingWindow:YES shouldHaveScreenLock:NO animated:NO];
 }
 
 // The "screen blocking" window has three possible states:
@@ -333,26 +379,19 @@ NS_ASSUME_NONNULL_BEGIN
 // * "Screen Lock, local auth UI presented". Move the Signal logo so that it is visible.
 // * "Screen Lock, local auth UI not presented". Move the Signal logo so that it is visible,
 //    show "unlock" button.
-- (void)updateScreenBlockingWindow:(BOOL)shouldShowBlockWindow shouldHaveScreenLock:(BOOL)shouldHaveScreenLock
+- (void)updateScreenBlockingWindow:(BOOL)shouldShowBlockWindow
+              shouldHaveScreenLock:(BOOL)shouldHaveScreenLock
+                          animated:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
 
     self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
 
     UIView *rootView = self.screenBlockingViewController.view;
-    for (UIView *subview in rootView.subviews) {
-        [subview removeFromSuperview];
-    }
 
-    UIImage *image = [UIImage imageNamed:@"logoSignal"];
-    UIImageView *imageView = [UIImageView new];
-    imageView.image = image;
+    [NSLayoutConstraint deactivateConstraints:self.screenBlockingConstraints];
 
-    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
-    const CGFloat imageSize = round(shortScreenDimension / 3.f);
-    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
+    NSMutableArray<NSLayoutConstraint *> *screenBlockingConstraints = [NSMutableArray new];
 
     BOOL shouldShowUnlockButton = (!self.appIsInactive && !self.appIsInBackground && self.didLastUnlockAttemptFail);
 
@@ -363,40 +402,35 @@ NS_ASSUME_NONNULL_BEGIN
         shouldHaveScreenLock,
         shouldShowUnlockButton);
 
-    if (shouldHaveScreenLock) {
-        const CGFloat kVMargin = 50.f;
-        [rootView addSubview:imageView];
-        [imageView autoHCenterInSuperview];
-        [imageView autoPinTopToSuperviewWithMargin:kVMargin];
-
-        const CGFloat kButtonHeight = 40.f;
-        OWSFlatButton *button =
-            [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
-                                               @"Label for button on lock screen that lets users unlock Signal.")
-                                      font:[OWSFlatButton fontForHeight:kButtonHeight]
-                                titleColor:[UIColor ows_materialBlueColor]
-                           backgroundColor:[UIColor whiteColor]
-                                    target:self
-                                  selector:@selector(showUnlockUI)];
-        [rootView addSubview:button];
-        [button autoVCenterInSuperview];
-        [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-        [button autoPinLeadingToSuperviewWithMargin:50.f];
-        [button autoPinTrailingToSuperviewWithMargin:50.f];
-
-        button.hidden = !shouldShowUnlockButton;
-    } else {
-        UIView *edgesView = [UIView containerView];
-        [rootView addSubview:edgesView];
-        [edgesView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-        [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [edgesView autoPinWidthToSuperview];
-
-        [edgesView addSubview:imageView];
-        [imageView autoCenterInSuperview];
+    NSString *signature = [NSString stringWithFormat:@"%d %d", shouldHaveScreenLock, self.isShowingScreenLockUI];
+    if ([NSObject isNullableObject:self.screenBlockingSignature equalTo:signature]) {
+        // Skip redundant work to avoid interfering with ongoing animations.
+        return;
     }
 
-    [rootView layoutIfNeeded];
+    self.screenBlockingButton.hidden = !shouldHaveScreenLock;
+
+    if (self.isShowingScreenLockUI) {
+        const CGFloat kVMargin = 60.f;
+        [screenBlockingConstraints addObject:[self.screenBlockingImageView autoPinEdge:ALEdgeTop
+                                                                                toEdge:ALEdgeTop
+                                                                                ofView:rootView
+                                                                            withOffset:kVMargin]];
+    } else {
+        [screenBlockingConstraints addObject:[self.screenBlockingImageView autoVCenterInSuperview]];
+    }
+
+    self.screenBlockingConstraints = screenBlockingConstraints;
+    self.screenBlockingSignature = signature;
+
+    if (animated) {
+        [UIView animateWithDuration:0.35f
+                         animations:^{
+                             [rootView layoutIfNeeded];
+                         }];
+    } else {
+        [rootView layoutIfNeeded];
+    }
 }
 
 - (void)showUnlockUI
@@ -434,17 +468,18 @@ NS_ASSUME_NONNULL_BEGIN
         self.shouldClearAuthUIWhenActive = YES;
     } else {
         self.isShowingScreenLockUI = NO;
+        [self ensureScreenProtection];
     }
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    self.appIsInactive = NO;
-
     if (self.shouldClearAuthUIWhenActive) {
         self.shouldClearAuthUIWhenActive = NO;
         self.isShowingScreenLockUI = NO;
     }
+
+    self.appIsInactive = NO;
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
