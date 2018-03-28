@@ -51,10 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
     for (DebugUIMessagesAction *action in @[
              [DebugUIMessages sendMessageVariationsAction:thread],
              // Send Media
-             [DebugUIMessages sendJpegAction:thread],
-             [DebugUIMessages sendGifAction:thread],
-             [DebugUIMessages sendMp3Action:thread],
-             [DebugUIMessages sendMp4Action:thread],
              [DebugUIMessages sendAllMediaAction:thread],
              [DebugUIMessages sendRandomMediaAction:thread],
              // Fake Media
@@ -755,7 +751,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *messageBody = nil;
     if (hasCaption) {
-        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+        // We want a message body that is "more than one line on all devices,
+        // using all dynamic type sizes."
+        NSString *sampleText = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, "
+                               @"consectetur adipiscing elit.";
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:sampleText];
 
         if (hasCaption) {
             messageBody = [messageBody stringByAppendingString:@" 🔤"];
@@ -771,13 +771,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    NSString *_Nullable randomCaption;
-    if (arc4random() % 2 == 2) {
-        randomCaption = [self randomText];
-    }
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
                                                                      inThread:thread
-                                                                  messageBody:randomCaption
+                                                                  messageBody:messageBody
                                                                isVoiceMessage:NO
                                                              expiresInSeconds:0];
     [message setReceivedAtTimestamp:timestamp];
@@ -1051,7 +1047,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *messageBody = nil;
     if (hasCaption) {
-        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+        // We want a message body that is "more than one line on all devices,
+        // using all dynamic type sizes."
+        NSString *sampleText = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, "
+                               @"consectetur adipiscing elit.";
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:sampleText];
 
         if (hasCaption) {
             messageBody = [messageBody stringByAppendingString:@" 🔤"];

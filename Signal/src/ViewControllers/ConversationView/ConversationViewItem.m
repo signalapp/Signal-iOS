@@ -403,6 +403,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
+    DDLogVerbose(@"%@ --- message. hasAttachments: %d, body: %@ (%zd).",
+        self.logTag,
+        message.hasAttachments,
+        message.body,
+        message.body.length);
+
     // Ignore message body for oversize text attachments.
     if (message.body.length > 0) {
         if (self.hasText) {

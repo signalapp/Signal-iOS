@@ -60,7 +60,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;
 
-
 @end
 
 @implementation OWSMessageCell
@@ -88,17 +87,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self.contentView addSubview:self.bubbleView];
 
-    //    self.messageWrapperView = [UIView new];
-    //    self.messageWrapperView.layoutMargins = UIEdgeInsetsZero;
-    //    [self.messageWrapperView addSubview:self.payloadView];
-    //    self.payloadView = [UIView new];
-    //    self.payloadView.layoutMargins = UIEdgeInsetsZero;
-    //    [self.contentView addSubview:self.payloadView];
-
-    //    self.mediaMaskingView = [BubbleMaskingView new];
-    //    self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
-    //    [self.payloadView addSubview:self.mediaMaskingView];
-
     self.footerView = [UIView containerView];
     [self.contentView addSubview:self.footerView];
 
@@ -108,50 +96,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
     [self.contentView addSubview:self.dateHeaderLabel];
 
-    //<<<<<<< HEAD
-    //    self.textBubbleImageView = [UIImageView new];
-    //    self.textBubbleImageView.layoutMargins = UIEdgeInsetsZero;
-    //    // Enable userInteractionEnabled so that links in textView work.
-    //    self.textBubbleImageView.userInteractionEnabled = YES;
-    //
-    //    [self.payloadView addSubview:self.textBubbleImageView];
-    //
-    //||||||| merged common ancestors
-    //    self.bubbleImageView = [UIImageView new];
-    //    self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
-    //    // Enable userInteractionEnabled so that links in textView work.
-    //    self.bubbleImageView.userInteractionEnabled = YES;
-    //    [self.payloadView addSubview:self.bubbleImageView];
-    //    [self.bubbleImageView autoPinToSuperviewEdges];
-    //
-    //=======
-    //    self.bubbleFillView = [BubbleFillView new];
-    //    self.bubbleFillView.layoutMargins = UIEdgeInsetsZero;
-    //    // TODO:
-    ////    // Enable userInteractionEnabled so that links in textView work.
-    //    self.bubbleFillView.userInteractionEnabled = YES;
-    //    [self.payloadView addSubview:self.bubbleFillView];
-    //    [self.bubbleFillView autoPinToSuperviewEdges];
-    //
-    ////    self.bubbleImageView = [UIImageView new];
-    ////    self.bubbleImageView.layoutMargins = UIEdgeInsetsZero;
-    ////    // Enable userInteractionEnabled so that links in textView work.
-    ////    self.bubbleImageView.userInteractionEnabled = YES;
-    ////    [self.payloadView addSubview:self.bubbleImageView];
-    ////    [self.bubbleImageView autoPinToSuperviewEdges];
-    //
-    //>>>>>>> SQUASHED
     self.bodyTextViewCached = [self newTextView];
-    //<<<<<<< HEAD
-    //
-    //    [self.textBubbleImageView addSubview:self.textView];
-    //
-    //||||||| merged common ancestors
-    //    [self.bubbleImageView addSubview:self.textView];
-    //=======
-    //    [self.bubbleFillView addSubview:self.textView];
-    //>>>>>>> SQUASHED
-    //    OWSAssert(self.textView.superview);
 
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -159,28 +104,12 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [self.footerView addSubview:self.footerLabel];
 
     // Hide these views by default.
-    //<<<<<<< HEAD
-    //    self.textBubbleImageView.hidden = YES;
-    //||||||| merged common ancestors
-    //    self.bubbleImageView.hidden = YES;
-    //=======
-    //    self.bubbleFillView.hidden = YES;
-    ////    self.bubbleImageView.hidden = YES;
-    //>>>>>>> SQUASHED
     self.bodyTextViewCached.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
     [self.bubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
     [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bubbleView];
-
-    //    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    //    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bubbleView];
-
-    //    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    //
-    //    [self.textBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
-    //    [self.textBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -199,29 +128,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
                    action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
-
-    //    UITapGestureRecognizer *mediaTap =
-    //        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaTapGesture:)];
-    //    [self.mediaMaskingView addGestureRecognizer:mediaTap];
-    //
-    //    UITapGestureRecognizer *textTap =
-    //        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextTapGesture:)];
-    //    [self.textBubbleImageView addGestureRecognizer:textTap];
-    //
-    //    UILongPressGestureRecognizer *mediaLongPress =
-    //        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaLongPressGesture:)];
-    //    [self.mediaMaskingView addGestureRecognizer:mediaLongPress];
-    //
-    //    UILongPressGestureRecognizer *textLongPress =
-    //        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextLongPressGesture:)];
-    //    [self.textBubbleImageView addGestureRecognizer:textLongPress];
-    //
-    //    PanDirectionGestureRecognizer *panGesture =
-    //        [[PanDirectionGestureRecognizer alloc] initWithDirection:(self.isRTL ? PanDirectionLeft :
-    //        PanDirectionRight)
-    //                                                          target:self
-    //                                                          action:@selector(handlePanGesture:)];
-    //    [self addGestureRecognizer:panGesture];
 }
 
 - (OWSMessageTextView *)newTextView
@@ -233,6 +139,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     textView.selectable = YES;
     textView.textContainerInset = UIEdgeInsetsZero;
     textView.contentInset = UIEdgeInsetsZero;
+    textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
     return textView;
 }
@@ -392,6 +299,10 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssert(self.contentWidth > 0);
+
+    CGSize bodyMediaContentSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
+    CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
 
     // TODO: We might not need to hide it.
     self.bubbleView.hidden = NO;
@@ -443,12 +354,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     UIView *_Nullable lastSubview = nil;
     CGFloat bottomMargin = 0;
-    //    for (UIView *subview in contentViews) {
-    //        [self.bubbleView addSubview:subview];
-    //        if (last
-    //        lastSubview = subview;
-    //    }
-
     UIView *_Nullable bodyMediaView = nil;
     BOOL bodyMediaViewHasGreedyWidth = NO;
     switch (self.cellType) {
@@ -488,43 +393,31 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         OWSAssert(self.unloadCellContentBlock);
         OWSAssert(!lastSubview);
 
+        bodyMediaView.clipsToBounds = YES;
+
         self.lastBodyMediaView = bodyMediaView;
         bodyMediaView.userInteractionEnabled = NO;
         if (self.isMediaBeingSent) {
             bodyMediaView.layer.opacity = 0.75f;
         }
 
-        // TODO: Is this right?
-        CGFloat contentWidth = self.width;
-        // Sometimes we want the media to "try to fill" the message bubble.
-        // For example, when the message bubble contains just an image, we
-        // want the image's bounds to exactly fill the message bubble.
-        //
-        // In other situations, we want to center the media within the message
-        // bubble.
-        // For example, when a message has a tall portrait image and a long
-        // caption.
-        CGSize bodyMediaSize = [self bodyMediaSizeForContentWidth:(int)contentWidth];
-        BOOL hasValidMediaSize = bodyMediaSize.width > 0.01 && bodyMediaSize.height > 0.01;
-        if (!hasValidMediaSize) {
-            bodyMediaViewHasGreedyWidth = YES;
-        } else if (!self.hasText) {
-            bodyMediaViewHasGreedyWidth = YES;
-        }
-
         [self.bubbleView addSubview:bodyMediaView];
-        if (bodyMediaViewHasGreedyWidth) {
-            [self.viewConstraints addObjectsFromArray:@[
-                [bodyMediaView autoPinLeadingToSuperviewWithMargin:0],
-                [bodyMediaView autoPinTrailingToSuperviewWithMargin:0],
-            ]];
-        } else {
-            CGFloat aspectRatio = bodyMediaSize.width / bodyMediaSize.height;
-            [self.viewConstraints addObjectsFromArray:@[
-                [bodyMediaView autoHCenterInSuperview],
-                [bodyMediaView autoPinToAspectRatio:aspectRatio],
-            ]];
-        }
+        // This layout can lead to extreme cropping of media content,
+        // e.g. a very tall portrait image + long caption.  The media
+        // view will have "max width", so the image will be cropped to
+        // roughly a square.
+        // TODO: Myles is considering alternatives.
+        [self.viewConstraints addObjectsFromArray:@[
+            [bodyMediaView autoPinLeadingToSuperviewWithMargin:0],
+            [bodyMediaView autoPinTrailingToSuperviewWithMargin:0],
+        ]];
+        [NSLayoutConstraint
+            autoSetPriority:UILayoutPriorityDefaultLow
+             forConstraints:^{
+                 [self.viewConstraints
+                     addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaContentSize.height]];
+             }];
+
         if (lastSubview) {
             [self.viewConstraints
                 addObject:[bodyMediaView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:0]];
@@ -535,7 +428,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         bottomMargin = 0;
     }
 
-    UIView *_Nullable bodyTextView = nil;
+    OWSMessageTextView *_Nullable bodyTextView = nil;
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
     if (self.hasText || !bodyMediaView) {
@@ -547,6 +440,12 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             [bodyTextView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [bodyTextView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
         ]];
+        [NSLayoutConstraint
+            autoSetPriority:UILayoutPriorityDefaultLow
+             forConstraints:^{
+                 [self.viewConstraints
+                     addObject:[bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height]];
+             }];
         if (lastSubview) {
             [self.viewConstraints addObject:[bodyTextView autoPinEdge:ALEdgeTop
                                                                toEdge:ALEdgeBottom
@@ -559,6 +458,22 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         lastSubview = bodyTextView;
         bottomMargin = self.textBottomMargin;
     }
+
+#ifdef DEBUG
+    DDLogVerbose(
+        @"%@ --- bodyMediaView: %@ [%@].", self.logTag, bodyMediaView, NSStringFromCGSize(bodyMediaContentSize));
+    DDLogVerbose(@"%@ --- bodyTextView: %@ (%zd) [%@].",
+        self.logTag,
+        bodyTextView.text,
+        bodyTextView.text.length,
+        NSStringFromCGSize(bodyTextContentSize));
+    [bodyMediaView logFrameLaterWithLabel:@"bodyMediaView"];
+    [bodyTextView logFrameLaterWithLabel:@"bodyTextView"];
+    [self.bubbleView logFrameLaterWithLabel:@"bubbleView"];
+    [self.contentView logFrameLaterWithLabel:@"contentView"];
+//    [bodyMediaView addRedBorder];
+//    [bodyTextView addRedBorder];
+#endif
 
     UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
     if (tapForMoreLabel) {
@@ -725,9 +640,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         showFooter = NO;
     }
 
-    return (showFooter ? MAX(kExpirationTimerViewSize,
-                             self.footerLabel.font.lineHeight)
-            : 0.f);
+    return (showFooter ? (CGFloat)ceil(MAX(kExpirationTimerViewSize, self.footerLabel.font.lineHeight)) : 0.f);
 }
 
 - (void)updateFooter
@@ -834,14 +747,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
 {
-    //<<<<<<< HEAD
-    //    self.textBubbleImageView.hidden = NO;
-    //||||||| merged common ancestors
-    //    self.bubbleImageView.hidden = NO;
-    //=======
-    //    self.bubbleFillView.hidden = NO;
-    ////    self.bubbleImageView.hidden = NO;
-    //>>>>>>> SQUASHED
     textView.hidden = NO;
     textView.text = text;
     textView.textColor = textColor;
@@ -888,9 +793,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // some performance cost.
     stillImageView.layer.minificationFilter = kCAFilterTrilinear;
     stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    //    [self setMediaView:self.stillImageView];
     [self addAttachmentUploadViewIfNecessary:stillImageView];
-    //    [self addCaptionIfNecessary];
 
     __weak OWSMessageCell *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -924,9 +827,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
     animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
-    //    [self setMediaView:self.animatedImageView];
     [self addAttachmentUploadViewIfNecessary:animatedImageView];
-    //    [self addCaptionIfNecessary];
 
     __weak OWSMessageCell *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -967,9 +868,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                                                                                    viewItem:self.viewItem];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
-    //    [self setMediaView:self.audioMessageView];
     [self addAttachmentUploadViewIfNecessary:audioMessageView];
-    //    [self addCaptionIfNecessary];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -994,7 +893,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // some performance cost.
     stillImageView.layer.minificationFilter = kCAFilterTrilinear;
     stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    //    [self setMediaView:stillImageView];
 
     UIImage *videoPlayIcon = [UIImage imageNamed:@"play_button"];
     UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:videoPlayIcon];
@@ -1004,7 +902,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                      attachmentStateCallback:^(BOOL isAttachmentReady) {
                          videoPlayButton.hidden = !isAttachmentReady;
                      }];
-    //    [self addCaptionIfNecessary];
 
     __weak OWSMessageCell *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -1036,9 +933,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
     [attachmentView createContents];
-    //    [self setMediaView:attachmentView];
     [self addAttachmentUploadViewIfNecessary:attachmentView];
-    //    [self addCaptionIfNecessary];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -1068,14 +963,12 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             customView.backgroundColor = [UIColor grayColor];
             break;
     }
-    //    [self setMediaView:self.customView];
 
     AttachmentPointerView *attachmentPointerView =
         [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer isIncoming:self.isIncoming];
     [customView addSubview:attachmentPointerView];
     [attachmentPointerView autoPinWidthToSuperviewWithMargin:20.f];
     [attachmentPointerView autoVCenterInSuperview];
-    //    [self addCaptionIfNecessary];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -1113,18 +1006,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 }
 
-//- (void)cropMediaViewToBubbbleShape:(UIView *)view
-//{
-//    OWSAssert(view);
-//    OWSAssert(view.superview == self.mediaMaskingView);
-//
-//    self.mediaMaskingView.isOutgoing = self.isOutgoing;
-//    // Hide tail on attachments followed by a caption
-//    self.mediaMaskingView.hideTail = self.hasText;
-//    self.mediaMaskingView.maskedSubview = view;
-//    [self.mediaMaskingView updateMask];
-//}
-
 - (void)showAttachmentErrorView:(UIView *)mediaView
 {
     OWSAssert(mediaView);
@@ -1140,7 +1021,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 #pragma mark - Measurement
 
 // Size of "message body" text, not quoted reply text.
-- (CGSize)bodyTextSizeForContentWidth:(int)contentWidth
+- (CGSize)bodyTextSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
 {
     if (!self.hasText) {
         return CGSizeZero;
@@ -1157,38 +1038,15 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // Honor dynamic type in the message bodies.
     self.bodyTextViewCached.font = [self textMessageFont];
     CGSize textSize = CGSizeCeil([self.bodyTextViewCached sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-    CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-    CGSize textViewSize = CGSizeCeil(CGSizeMake(textSize.width + leftMargin + rightMargin,
-        textSize.height + self.textTopMargin + self.textBottomMargin + tapForMoreHeight));
+    CGSize textViewSize = textSize;
 
-    return textViewSize;
+    if (includeMargins) {
+        textViewSize.width += leftMargin + rightMargin;
+        textViewSize.height += self.textTopMargin + self.textBottomMargin;
+    }
+
+    return CGSizeCeil(textViewSize);
 }
-//
-//+ (CGSize)textSizeForContentWidth:(int)contentWidth
-//                  displayableText:(DisplayableText *)displayableText
-//                         textView:(OWSMessageTextView *)textView
-//{
-//    OWSAssert(text);
-//    OWSAssert(textView);
-//
-//    BOOL isRTL = self.isRTL;
-//    CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
-//    CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
-//
-//    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-//    const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
-//
-//    textView.text = displayableText.displayText;
-//    // Honor dynamic type in the message bodies.
-//    textView.font = [self textMessageFont];
-//    CGSize textSize = CGSizeCeil([textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-//    CGFloat tapForMoreHeight = (displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-//    CGSize textViewSize = CGSizeCeil(CGSizeMake(textSize.width + leftMargin + rightMargin,
-//                                                textSize.height + self.textTopMargin + self.textBottomMargin +
-//                                                tapForMoreHeight));
-//
-//    return textViewSize;
-//}
 
 - (CGSize)bodyMediaSizeForContentWidth:(int)contentWidth
 {
@@ -1247,7 +1105,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
-    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth];
+    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
 
     CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
     CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
@@ -1257,13 +1115,23 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
+    if (self.hasText && self.displayableText.isTextTruncated) {
+        cellSize.height += self.tapForMoreHeight;
+    }
 
     if (self.shouldHaveFailedSendBadge) {
         cellSize.width += self.failedSendBadgeSize;
     }
 
-    cellSize.width = ceil(cellSize.width);
-    cellSize.height = ceil(cellSize.height);
+    cellSize = CGSizeCeil(cellSize);
+
+    DDLogVerbose(@"%@ --- cellSizeForViewWidth: %@ + %@ + %f + %f = %@.",
+        self.logTag,
+        NSStringFromCGSize(mediaContentSize),
+        NSStringFromCGSize(textContentSize),
+        self.dateHeaderHeight,
+        self.footerHeight,
+        NSStringFromCGSize(cellSize));
 
     return cellSize;
 }
@@ -1272,7 +1140,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
     if (self.viewItem.shouldShowDate) {
         // Add 5pt spacing above and below the date header.
-        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f;
+        return (CGFloat)ceil(MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f);
     } else {
         return 0.f;
     }
@@ -1293,23 +1161,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (CGFloat)textLeadingMargin
 {
     return (self.isIncoming ? kBubbleTextHInset + kBubbleThornSideInset : kBubbleTextHInset);
-
-    //    static const CGFloat kBubbleVRounding =  8.f;
-    //    static const CGFloat kBubbleHRounding = 10.f;
-    //    static const CGFloat kBubbleThornSideInset = 3.f;
-    //    static const CGFloat kBubbleThornVInset = 3.f;
-    //    static const CGFloat kBubbleTextHInset = 10.f;
-    //    static const CGFloat kBubbleTextVInset = 10.f;
-    //    static const CGFloat kBubbleTextTopInset = kBubbleTextVInset;
-    //    static const CGFloat kBubbleTextBottomInset = kBubbleThornVInset + kBubbleTextVInset;
-
-    //    return self.isIncoming ? 15 : 10;
 }
 
 - (CGFloat)textTrailingMargin
 {
     return (self.isIncoming ? kBubbleTextHInset : kBubbleTextHInset + kBubbleThornSideInset);
-    //    return self.isIncoming ? 10 : 15;
 }
 
 - (CGFloat)textTopMargin
@@ -1321,11 +1177,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
     return kBubbleTextVInset + kBubbleThornVInset;
 }
-
-//- (CGFloat)textVMargin
-//{
-//    return 10;
-//}
 
 - (UIColor *)textColor
 {
