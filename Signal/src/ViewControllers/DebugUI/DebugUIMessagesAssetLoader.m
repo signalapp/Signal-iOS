@@ -342,6 +342,18 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
++ (instancetype)largeGifInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance =
+            [DebugUIMessagesAssetLoader fakeAssetLoaderWithUrl:@"https://i.giphy.com/media/LTw0F3GAdaao8/source.gif"
+                                                      mimeType:@"image/gif"];
+    });
+    return instance;
+}
+
 + (instancetype)mp3Instance
 {
     static DebugUIMessagesAssetLoader *instance = nil;

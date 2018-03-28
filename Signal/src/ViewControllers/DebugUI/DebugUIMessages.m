@@ -442,6 +442,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self sendJpegAction:thread hasCaption:YES],
         [self sendGifAction:thread hasCaption:NO],
         [self sendGifAction:thread hasCaption:YES],
+        [self sendLargeGifAction:thread hasCaption:NO],
+        [self sendLargeGifAction:thread hasCaption:YES],
         [self sendMp3Action:thread hasCaption:NO],
         [self sendMp3Action:thread hasCaption:YES],
         [self sendMp4Action:thread hasCaption:NO],
@@ -467,6 +469,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [self sendMediaAction:@"Send Gif"
                       hasCaption:hasCaption
                  fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                          thread:thread];
+}
+
++ (DebugUIMessagesAction *)sendLargeGifAction:(TSThread *)thread hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self sendMediaAction:@"Send Large Gif"
+                      hasCaption:hasCaption
+                 fakeAssetLoader:[DebugUIMessagesAssetLoader largeGifInstance]
                           thread:thread];
 }
 
@@ -571,6 +583,19 @@ NS_ASSUME_NONNULL_BEGIN
                             messageState:messageState
                               hasCaption:hasCaption
                          fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLargeGifAction:(TSThread *)thread
+                                         messageState:(TSOutgoingMessageState)messageState
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Gif"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largeGifInstance]
                                   thread:thread];
 }
 
@@ -873,6 +898,19 @@ NS_ASSUME_NONNULL_BEGIN
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
                          fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLargeGifAction:(TSThread *)thread
+                               isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Large Gif"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largeGifInstance]
                                   thread:thread];
 }
 
@@ -1182,6 +1220,7 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObjectsFromArray:@[
         // Don't bother with multiple GIF states.
         [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingLargeGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
@@ -1363,6 +1402,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [actions addObjectsFromArray:@[
         [self fakeIncomingGifAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingLargeGifAction:thread isAttachmentDownloaded:YES hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Mp3 ⚠️"]];
