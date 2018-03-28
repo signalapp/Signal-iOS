@@ -159,8 +159,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(countryMetadata);
     OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
-    OWSSignalService.sharedInstance.manualCensorshipCircumventionDomain = countryMetadata.googleDomain;
-
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = isEnabled;
 }
 
