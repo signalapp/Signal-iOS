@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader
             fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
-                          mimeType:@"audio/mpeg"];
+                          mimeType:@"audio/mp3"];
     });
     return instance;
 }

@@ -505,6 +505,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (nullable id)tryToLoadCellMedia:(nullable id (^)(void))loadCellMediaBlock
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
+                  shouldSkipCache:(BOOL)shouldSkipCache
 {
     OWSAssert(self.attachmentStream);
     OWSAssert(mediaView);
@@ -525,7 +526,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     cellMedia = loadCellMediaBlock();
     if (cellMedia) {
         DDLogVerbose(@"%@ cell media cache miss", self.logTag);
-        [cellMediaCache setObject:cellMedia forKey:cacheKey];
+        if (!shouldSkipCache) {
+            [cellMediaCache setObject:cellMedia forKey:cacheKey];
+        }
     } else {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
@@ -804,12 +807,17 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         if (stillImageView.image) {
             return;
         }
+        // Don't cache large still images.
+        const NSUInteger kMaxCachableSize = 1024 * 1024;
+        BOOL shouldSkipCache =
+            [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.filePath].unsignedIntegerValue < kMaxCachableSize;
         stillImageView.image = [strongSelf tryToLoadCellMedia:^{
             OWSCAssert([strongSelf.attachmentStream isImage]);
             return strongSelf.attachmentStream.image;
         }
                                                     mediaView:stillImageView
-                                                     cacheKey:strongSelf.attachmentStream.uniqueId];
+                                                     cacheKey:strongSelf.attachmentStream.uniqueId
+                                              shouldSkipCache:shouldSkipCache];
     };
     self.unloadCellContentBlock = ^{
         stillImageView.image = nil;
@@ -849,7 +857,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             return animatedImage;
         }
                                                        mediaView:animatedImageView
-                                                        cacheKey:strongSelf.attachmentStream.uniqueId];
+                                                        cacheKey:strongSelf.attachmentStream.uniqueId
+                                                 shouldSkipCache:NO];
     };
     self.unloadCellContentBlock = ^{
         animatedImageView.image = nil;
@@ -918,7 +927,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             return strongSelf.attachmentStream.image;
         }
                                                     mediaView:stillImageView
-                                                     cacheKey:strongSelf.attachmentStream.uniqueId];
+                                                     cacheKey:strongSelf.attachmentStream.uniqueId
+                                              shouldSkipCache:NO];
     };
     self.unloadCellContentBlock = ^{
         stillImageView.image = nil;
@@ -1071,7 +1081,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             CGFloat contentAspectRatio = self.mediaSize.width / self.mediaSize.height;
             // Clamp the aspect ratio so that very thin/wide content is presented
             // in a reasonable way.
-            const CGFloat minAspectRatio = 0.25f;
+            const CGFloat minAspectRatio = 0.35f;
             const CGFloat maxAspectRatio = 1 / minAspectRatio;
             contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
 

@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
              [DebugUIMessages fakeAllTextAction:thread],
              [DebugUIMessages fakeRandomTextAction:thread],
              // Exemplary
-             [DebugUIMessages allExemplaryAction:thread],
+             [DebugUIMessages allFakeAction:thread],
          ]) {
         [items addObject:[OWSTableItem itemWithTitle:action.label
                                          actionBlock:^{
@@ -89,9 +89,13 @@ NS_ASSUME_NONNULL_BEGIN
         //                        actionBlock:^{
         //                            [DebugUIMessages sendSelectedMediaTypeInThread:thread];
         //                        }],
-        [OWSTableItem itemWithTitle:@"Select Action"
+        [OWSTableItem itemWithTitle:@"Select Fake"
                         actionBlock:^{
-                            [DebugUIMessages selectExemplaryAction:thread];
+                            [DebugUIMessages selectFakeAction:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Select Send Media"
+                        actionBlock:^{
+                            [DebugUIMessages selectSendMediaAction:thread];
                         }],
 
 #pragma mark - Misc.
@@ -360,6 +364,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendAttachment:(NSString *)filePath
                 thread:(TSThread *)thread
+                 label:(NSString *)label
+            hasCaption:(BOOL)hasCaption
                success:(nullable void (^)(void))success
                failure:(nullable void (^)(void))failure
 {
@@ -373,9 +379,18 @@ NS_ASSUME_NONNULL_BEGIN
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
-    if (arc4random_uniform(100) > 50) {
-        attachment.captionText = [self randomCaptionText];
+
+    NSString *messageBody = nil;
+    if (hasCaption) {
+        // We want a message body that is "more than one line on all devices,
+        // using all dynamic type sizes."
+        NSString *sampleText = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, "
+                               @"consectetur adipiscing elit.";
+        messageBody = [[label stringByAppendingString:@" "] stringByAppendingString:sampleText];
+
+        messageBody = [messageBody stringByAppendingString:@" 🔤"];
     }
+    attachment.captionText = messageBody;
 
     OWSAssert(attachment);
     if ([attachment hasError]) {
@@ -423,49 +438,71 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     NSArray<DebugUIMessagesAction *> *actions = @[
-        [self sendJpegAction:thread],
-        [self sendGifAction:thread],
-        [self sendMp3Action:thread],
-        [self sendMp4Action:thread],
+        [self sendJpegAction:thread hasCaption:NO],
+        [self sendJpegAction:thread hasCaption:YES],
+        [self sendGifAction:thread hasCaption:NO],
+        [self sendGifAction:thread hasCaption:YES],
+        [self sendMp3Action:thread hasCaption:NO],
+        [self sendMp3Action:thread hasCaption:YES],
+        [self sendMp4Action:thread hasCaption:NO],
+        [self sendMp4Action:thread hasCaption:YES],
     ];
     return actions;
 }
 
-+ (DebugUIMessagesAction *)sendJpegAction:(TSThread *)thread
++ (DebugUIMessagesAction *)sendJpegAction:(TSThread *)thread hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Jpeg" fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance] thread:thread];
+    return [self sendMediaAction:@"Send Jpeg"
+                      hasCaption:hasCaption
+                 fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+                          thread:thread];
 }
 
-+ (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread
++ (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Gif" fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance] thread:thread];
+    return [self sendMediaAction:@"Send Gif"
+                      hasCaption:hasCaption
+                 fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                          thread:thread];
 }
 
-+ (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread
++ (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Mp3" fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance] thread:thread];
+    return [self sendMediaAction:@"Send Mp3"
+                      hasCaption:hasCaption
+                 fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
+                          thread:thread];
 }
 
-+ (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread
++ (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
-    return [self sendMediaAction:@"Send Mp4" fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance] thread:thread];
+    return [self sendMediaAction:@"Send Mp4"
+                      hasCaption:hasCaption
+                 fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
+                          thread:thread];
 }
 
-+ (DebugUIMessagesAction *)sendMediaAction:(NSString *)label
++ (DebugUIMessagesAction *)sendMediaAction:(NSString *)labelParam
+                                hasCaption:(BOOL)hasCaption
                            fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
                                     thread:(TSThread *)thread
 {
-    OWSAssert(label.length > 0);
+    OWSAssert(labelParam.length > 0);
     OWSAssert(fakeAssetLoader);
     OWSAssert(thread);
+
+    NSString *label = labelParam;
+    if (hasCaption) {
+        label = [label stringByAppendingString:@" 🔤"];
+    }
 
     return [DebugUIMessagesSingleAction
              actionWithLabel:label
@@ -475,7 +512,12 @@ NS_ASSUME_NONNULL_BEGIN
             ActionFailureBlock failure) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 OWSAssert(fakeAssetLoader.filePath.length > 0);
-                [self sendAttachment:fakeAssetLoader.filePath thread:thread success:success failure:failure];
+                [self sendAttachment:fakeAssetLoader.filePath
+                              thread:thread
+                               label:label
+                          hasCaption:hasCaption
+                             success:success
+                             failure:failure];
             });
         }
                 prepareBlock:fakeAssetLoader.prepareBlock];
@@ -485,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Media"
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Send Media"
                                                     subactions:[self allSendMediaActions:thread]];
 }
 
@@ -493,8 +535,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Send Random Media"
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Random Send Media"
                                                        subactions:[self allSendMediaActions:thread]];
+}
+
++ (void)selectSendMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    [self selectActionUI:[self allSendMediaActions:thread] label:@"Select Send Media"];
 }
 
 #pragma mark - Fake Outgoing Media
@@ -1669,7 +1718,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Exemplary
 
-+ (NSArray<DebugUIMessagesAction *> *)allExemplaryActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
++ (NSArray<DebugUIMessagesAction *> *)allFakeActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
@@ -1679,21 +1728,28 @@ NS_ASSUME_NONNULL_BEGIN
     return actions;
 }
 
-+ (DebugUIMessagesAction *)allExemplaryAction:(TSThread *)thread
++ (DebugUIMessagesAction *)allFakeAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations"
-                                                    subactions:[self allExemplaryActions:thread includeLabels:YES]];
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake"
+                                                    subactions:[self allFakeActions:thread includeLabels:YES]];
 }
 
-+ (void)selectExemplaryAction:(TSThread *)thread
++ (void)selectFakeAction:(TSThread *)thread
 {
-    OWSAssertIsOnMainThread() OWSAssert(thread);
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Action"
-                                                                   message:nil
-                                                            preferredStyle:UIAlertControllerStyleActionSheet];
-    for (DebugUIMessagesAction *action in [self allExemplaryActions:thread includeLabels:NO]) {
+    OWSAssertIsOnMainThread();
+    OWSAssert(thread);
+
+    [self selectActionUI:[self allFakeActions:thread includeLabels:NO] label:@"Select Fake"];
+}
+
++ (void)selectActionUI:(NSArray<DebugUIMessagesAction *> *)actions label:(NSString *)label
+{
+    OWSAssertIsOnMainThread();
+    UIAlertController *alert =
+        [UIAlertController alertControllerWithTitle:label message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    for (DebugUIMessagesAction *action in actions) {
         [alert addAction:[UIAlertAction actionWithTitle:action.label
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *ignore) {

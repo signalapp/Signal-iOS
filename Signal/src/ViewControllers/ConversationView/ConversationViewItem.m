@@ -86,8 +86,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     [self ensureViewState:transaction];
 
-    //    OWSAssert(self.hasViewState);
-
     return self;
 }
 
@@ -107,8 +105,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
-
-    //    OWSAssert(self.hasViewState);
 }
 
 - (BOOL)hasText
