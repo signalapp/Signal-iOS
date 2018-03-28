@@ -230,7 +230,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (countryMetadata) {
         // Ensure the "manual censorship circumvention" country state is in sync.
         OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
-        OWSSignalService.sharedInstance.manualCensorshipCircumventionDomain = countryMetadata.googleDomain;
     }
 
     return countryMetadata;

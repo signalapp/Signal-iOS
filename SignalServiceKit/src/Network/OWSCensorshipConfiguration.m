@@ -3,33 +3,78 @@
 //
 
 #import "OWSCensorshipConfiguration.h"
+#import "OWSCountryMetadata.h"
+#import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "TSConstants.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSCensorshipConfiguration_SouqFrontingHost = @"cms.souqcdn.com";
+NSString *const OWSCensorshipConfiguration_YahooViewFrontingHost = @"view.yahoo.com";
+NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipConfiguration_YahooViewFrontingHost;
+
 @implementation OWSCensorshipConfiguration
 
-- (NSString *)frontingHost:(NSString *)e164PhoneNumber
+// returns nil if phone number is not known to be censored
++ (nullable instancetype)censorshipConfigurationWithPhoneNumber:(NSString *)e164PhoneNumber
 {
-    OWSAssert(e164PhoneNumber.length > 0);
-
-    NSString *domain = nil;
-    for (NSString *countryCode in self.censoredCountryCodes) {
-        if ([e164PhoneNumber hasPrefix:countryCode]) {
-            domain = self.censoredCountryCodes[countryCode];
-        }
+    NSString *countryCode = [self censoredCountryCodeWithPhoneNumber:e164PhoneNumber];
+    if (countryCode.length == 0) {
+        return nil;
     }
 
-    // Fronting should only be auto-activated for countries specified in censoredCountryCodes,
-    // all of which have a domain specified.  However users can also manually enable
-    // censorship circumvention.
-    if (!domain) {
-        domain = @"google.com";
-    }
-    
-    return [@"https://" stringByAppendingString:domain];
+
+    return [self censorshipConfigurationWithCountryCode:countryCode];
 }
+
+// returns best censorship configuration for country code. Will return a default if one hasn't
+// been specifically configured.
++ (instancetype)censorshipConfigurationWithCountryCode:(NSString *)countryCode
+{
+    OWSCountryMetadata *countryMetadadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
+    OWSAssert(countryMetadadata);
+
+    NSString *_Nullable specifiedDomain = countryMetadadata.frontingDomain;
+
+    NSURL *baseURL;
+    AFSecurityPolicy *securityPolicy;
+    if (specifiedDomain.length > 0) {
+        NSString *frontingURLString = [NSString stringWithFormat:@"https://%@", specifiedDomain];
+        baseURL = [NSURL URLWithString:frontingURLString];
+        securityPolicy = [self securityPolicyForDomain:(NSString *)specifiedDomain];
+    } else {
+        NSString *frontingURLString =
+            [NSString stringWithFormat:@"https://%@", OWSCensorshipConfiguration_DefaultFrontingHost];
+        baseURL = [NSURL URLWithString:frontingURLString];
+        securityPolicy = [self securityPolicyForDomain:OWSCensorshipConfiguration_DefaultFrontingHost];
+    }
+
+    OWSAssert(baseURL);
+    OWSAssert(securityPolicy);
+
+
+    return [[OWSCensorshipConfiguration alloc] initWithDomainFrontBaseURL:baseURL securityPolicy:securityPolicy];
+}
+
+- (instancetype)initWithDomainFrontBaseURL:(NSURL *)domainFrontBaseURL securityPolicy:(AFSecurityPolicy *)securityPolicy
+{
+    OWSAssert(domainFrontBaseURL);
+    OWSAssert(securityPolicy);
+
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _domainFrontBaseURL = domainFrontBaseURL;
+    _domainFrontSecurityPolicy = securityPolicy;
+
+    return self;
+}
+
+// MARK: Public Getters
 
 - (NSString *)signalServiceReflectorHost
 {
@@ -41,39 +86,152 @@ NS_ASSUME_NONNULL_BEGIN
     return textSecureCDNReflectorHost;
 }
 
-- (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
+// MARK: Util
+
++ (NSDictionary<NSString *, NSString *> *)censoredCountryCodes
 {
-    // The set of countries for which domain fronting should be used.
+    // The set of countries for which domain fronting should be automatically enabled.
     //
-    // For each country, we should add the appropriate google domain,
-    // per:  https://en.wikipedia.org/wiki/List_of_Google_domains
-    //
-    // If we ever use any non-google domains for domain fronting,
-    // remember to:
-    //
-    // a) Add the appropriate pinning certificate(s) in
-    //    SignalServiceKit.podspec.
-    // b) Update signalServiceReflectorHost accordingly.
+    // If you want to use a domain front other than the default, specify the domain front
+    // in OWSCountryMetadata, and ensure we have a Security Policy for that domain in
+    // `securityPolicyForDomain:`
     return @{
-             // Egypt
-             @"+20": @"google.com.eg",
-             // Oman
-             @"+968": @"google.com.om",
-             // Qatar
-             @"+974": @"google.com.qa",
-             // UAE
-             @"+971": @"google.ae",
-             };
+        // Egypt
+        @"+20" : @"EG",
+        // Oman
+        @"+968" : @"OM",
+        // Qatar
+        @"+974" : @"QA",
+        // UAE
+        @"+971" : @"AE",
+    };
 }
 
-- (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber
+// Returns nil if the phone number is not known to be censored
++ (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 {
-    for (NSString *countryCode in self.censoredCountryCodes) {
-        if ([e164PhoneNumber hasPrefix:countryCode]) {
-            return YES;
+    return [self censoredCountryCodeWithPhoneNumber:e164PhoneNumber].length > 0;
+}
+
+// Returns nil if the phone number is not known to be censored
++ (nullable NSString *)censoredCountryCodeWithPhoneNumber:(NSString *)e164PhoneNumber
+{
+    NSDictionary<NSString *, NSString *> *censoredCountryCodes = self.censoredCountryCodes;
+
+    for (NSString *callingCode in censoredCountryCodes) {
+        if ([e164PhoneNumber hasPrefix:callingCode]) {
+            return censoredCountryCodes[callingCode];
         }
     }
-    return NO;
+
+    return nil;
+}
+
+#pragma mark - Reflector Pinning Policy
+
+// When using censorship circumvention, we pin to the fronted domain host.
+// Adding a new domain front entails adding a corresponding AFSecurityPolicy
+// and pinning to it's CA.
+// If the security policy requires new certificates, include them in the SSK bundle
++ (AFSecurityPolicy *)securityPolicyForDomain:(NSString *)domain
+{
+    if ([domain isEqualToString:OWSCensorshipConfiguration_SouqFrontingHost]) {
+        return [self souqPinningPolicy];
+    } else if ([domain isEqualToString:OWSCensorshipConfiguration_YahooViewFrontingHost]) {
+        return [self yahooViewPinningPolicy];
+    } else {
+        OWSFail(@"unknown pinning domain.");
+        return [self yahooViewPinningPolicy];
+    }
+}
+
++ (AFSecurityPolicy *)pinningPolicyWithCertNames:(NSArray<NSString *> *)certNames
+{
+    NSMutableSet<NSData *> *certificates = [NSMutableSet new];
+    for (NSString *certName in certNames) {
+        NSError *error;
+        NSData *certData = [self certificateDataWithName:certName error:&error];
+        if (error) {
+            DDLogError(@"%@ reading data for certificate: %@ failed with error: %@", self.logTag, certName, error);
+            OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
+        }
+
+        if (!certData) {
+            DDLogError(@"%@ No data for certificate: %@", self.logTag, certName);
+            OWSRaiseException(@"OWSSignalService_UnableToReadCertificate", @"%@", error.description);
+        }
+        [certificates addObject:certData];
+    }
+
+    return [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate withPinnedCertificates:certificates];
+}
+
++ (nullable NSData *)certificateDataWithName:(NSString *)name error:(NSError **)error
+{
+    if (!name.length) {
+        OWSFail(@"%@ expected name with length > 0", self.logTag);
+        *error = OWSErrorMakeAssertionError();
+        return nil;
+    }
+
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
+    NSString *path = [bundle pathForResource:name ofType:@"crt"];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        OWSFail(@"%@ Missing certificate for name: %@", self.logTag, name);
+        *error = OWSErrorMakeAssertionError();
+        return nil;
+    }
+
+    NSData *_Nullable certData = [NSData dataWithContentsOfFile:path options:0 error:error];
+
+    if (*error != nil) {
+        OWSFail(@"%@ Failed to read cert file with path: %@", self.logTag, path);
+        return nil;
+    }
+
+    if (certData.length == 0) {
+        OWSFail(@"%@ empty certData for name: %@", self.logTag, name);
+        return nil;
+    }
+
+    DDLogVerbose(@"%@ read cert data with name: %@ length: %lu", self.logTag, name, (unsigned long)certData.length);
+    return certData;
+}
+
++ (AFSecurityPolicy *)yahooViewPinningPolicy
+{
+    static AFSecurityPolicy *securityPolicy = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // DigiCertGlobalRootG2 - view.yahoo.com
+        NSArray<NSString *> *certNames = @[ @"DigiCertSHA2HighAssuranceServerCA" ];
+        securityPolicy = [self pinningPolicyWithCertNames:certNames];
+    });
+    return securityPolicy;
+}
+
++ (AFSecurityPolicy *)souqPinningPolicy
+{
+    static AFSecurityPolicy *securityPolicy = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // SFSRootCAG2 - cms.souqcdn.com
+        NSArray<NSString *> *certNames = @[ @"SFSRootCAG2" ];
+        securityPolicy = [self pinningPolicyWithCertNames:certNames];
+    });
+    return securityPolicy;
+}
+
++ (AFSecurityPolicy *)googlePinningPolicy_deprecated
+{
+    static AFSecurityPolicy *securityPolicy = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // GIAG2 cert plus root certs from pki.goog
+        NSArray<NSString *> *certNames = @[ @"GIAG2", @"GSR2", @"GSR4", @"GTSR1", @"GTSR2", @"GTSR3", @"GTSR4" ];
+        securityPolicy = [self pinningPolicyWithCertNames:certNames];
+    });
+    return securityPolicy;
 }
 
 @end

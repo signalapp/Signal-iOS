@@ -87,7 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(countryMetadata);
 
     OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
-    OWSSignalService.sharedInstance.manualCensorshipCircumventionDomain = countryMetadata.googleDomain;
 
     [self.navigationController popViewControllerAnimated:YES];
 }
