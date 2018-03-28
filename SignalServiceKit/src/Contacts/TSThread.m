@@ -49,8 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [super removeWithTransaction:transaction];
+    [self removeAllThreadInteractionsWithTransaction:transaction];
 
+    [super removeWithTransaction:transaction];
+}
+
+- (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     // We can't safely delete interactions while enumerating them, so
     // we collect and delete separately.
     //

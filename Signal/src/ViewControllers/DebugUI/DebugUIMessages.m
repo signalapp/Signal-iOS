@@ -43,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
+                                     actionBlock:^{
+                                         [DebugUIMessages deleteAllMessagesInThread:thread];
+                                     }]];
+
     for (DebugUIMessagesAction *action in @[
              [DebugUIMessages sendMessageVariationsAction:thread],
              // Send Media
@@ -2587,6 +2592,14 @@ NS_ASSUME_NONNULL_BEGIN
             sendUnsafeFile();
         });
     };
+}
+
++ (void)deleteAllMessagesInThread:(TSThread *)thread
+{
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [thread removeAllThreadInteractionsWithTransaction:transaction];
+        }];
 }
 
 @end
