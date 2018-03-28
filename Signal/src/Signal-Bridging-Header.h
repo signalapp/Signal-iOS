@@ -22,6 +22,7 @@
 #import "OWSBackup.h"
 #import "OWSBackupIO.h"
 #import "OWSBezierPathView.h"
+#import "OWSBubbleView.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSMessageCell.h"

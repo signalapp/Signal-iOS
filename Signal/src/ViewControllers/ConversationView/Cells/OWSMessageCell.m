@@ -8,8 +8,10 @@
 #import "ConversationViewItem.h"
 #import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
+#import "OWSBubbleView.h"
 #import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
+#import "OWSMessageTextView.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
@@ -18,277 +20,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: Choose best thorn.
 // TODO: Review all comments.
 
 CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
     return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
 }
-
-// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
-const CGFloat OWSMessageCellCornerRadius = 17;
-
-// TODO: We could make the bubble shape respond to dynamic text.
-static const CGFloat kBubbleVRounding =  8.5f;
-static const CGFloat kBubbleHRounding = 10.f;
-//static const CGFloat kBubbleThornSideInset = 3.f;
-//static const CGFloat kBubbleThornVInset = 3.f;
-//static const CGFloat kBubbleThornSideInset = 6.f;
-//static const CGFloat kBubbleThornVInset = 0.f;
-static const CGFloat kBubbleThornSideInset = kBubbleHRounding * 0.3f;
-static const CGFloat kBubbleThornVInset = kBubbleVRounding * 0.3f;
-static const CGFloat kBubbleTextHInset = 6.f;
-static const CGFloat kBubbleTextVInset = 6.f;
-
-@interface OWSBubbleView : UIView
-
-@property (nonatomic) BOOL isOutgoing;
-@property (nonatomic) BOOL hideTail;
-//@property (nonatomic, nullable, weak) UIView *maskedSubview;
-@property (nonatomic) CAShapeLayer *maskLayer;
-
-//@property (nonatomic) BOOL isOutgoing;
-@property (nonatomic) CAShapeLayer *shapeLayer;
-@property (nonatomic, nullable) UIColor *bubbleColor;
-
-@end
-
-#pragma mark -
-
-@implementation OWSBubbleView
-
-- (void)setIsOutgoing:(BOOL)isOutgoing {
-    BOOL didChange = _isOutgoing != isOutgoing;
-
-    _isOutgoing = isOutgoing;
-
-    if (didChange || !self.shapeLayer) {
-        [self updateMask];
-    }
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    BOOL didChange = !CGSizeEqualToSize(self.frame.size, frame.size);
-
-    [super setFrame:frame];
-
-    if (didChange || !self.shapeLayer) {
-        [self updateMask];
-    }
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL didChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
-
-    [super setBounds:bounds];
-
-    if (didChange || !self.shapeLayer) {
-        [self updateMask];
-    }
-}
-
-- (void)setBubbleColor:(nullable UIColor *)bubbleColor
-{
-    _bubbleColor = bubbleColor;
-
-    if (!self.shapeLayer) {
-        [self updateMask];
-    }
-    self.shapeLayer.fillColor = bubbleColor.CGColor;
-}
-
-- (void)updateMask
-{
-    if (!self.shapeLayer) {
-        self.shapeLayer = [CAShapeLayer new];
-        [self.layer addSublayer:self.shapeLayer];
-    }
-    if (!self.maskLayer) {
-        self.maskLayer = [CAShapeLayer new];
-        self.layer.mask = self.maskLayer;
-    }
-
-    UIBezierPath *bezierPath = [self.class maskPathForSize:self.bounds.size
-                                                isOutgoing:self.isOutgoing
-                                                     isRTL:self.isRTL];
-
-    self.shapeLayer.fillColor = self.bubbleColor.CGColor;
-    self.shapeLayer.path = bezierPath.CGPath;
-
-    self.maskLayer.path = bezierPath.CGPath;
-}
-
-+ (UIBezierPath *)maskPathForSize:(CGSize)size
-                       isOutgoing:(BOOL)isOutgoing
-                            isRTL:(BOOL)isRTL
-{
-    UIBezierPath *bezierPath = [UIBezierPath new];
-    
-    CGFloat bubbleLeft = 0.f;
-    CGFloat bubbleRight = size.width - kBubbleThornSideInset;
-    CGFloat bubbleTop = 0.f;
-    CGFloat bubbleBottom = size.height - kBubbleThornVInset;
-    
-    [bezierPath moveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleTop)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + kBubbleVRounding)
-                       controlPoint:CGPointMake(bubbleRight, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
-                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleBottom)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - kBubbleVRounding)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + kBubbleVRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
-    
-    // Thorn Tip
-    CGPoint thornTip = CGPointMake(size.width,
-                                   size.height);
-    CGPoint thornA = CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom);
-    CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
-    [bezierPath moveToPoint:thornTip];
-    //    [bezierPath addLineToPoint:CGPointMake(bubbleRight - kBubbleHRounding * 0.85f, bubbleBottom)];
-    //    [bezierPath addLineToPoint:thornA];
-    //    [bezierPath addLineToPoint:thornB];
-    //    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding * 0.5f)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding * 0.8f, bubbleBottom)
-                       controlPoint:CGPointMake(bubbleRight - kBubbleHRounding * 0.4f, bubbleBottom)];
-    [bezierPath addLineToPoint:thornA];
-    [bezierPath addLineToPoint:thornB];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding * 0.7f)];
-    [bezierPath addQuadCurveToPoint:thornTip
-                       controlPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding * 0.3f)];
-
-    //    // Thorn Tip
-    //    [bezierPath moveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)];
-    //    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding)];
-    //    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight + kBubbleThornSideInset, bubbleBottom - 0.f)
-    //                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-    //    //    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight + kBubbleThornSideInset - 1.f, bubbleBottom -
-    //    0.5f)
-    //    //                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-    //    //    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight + kBubbleThornSideInset, bubbleBottom)
-    //    //                       controlPoint:CGPointMake(bubbleRight + kBubbleThornSideInset, bubbleBottom - 0.5f)];
-    //    [bezierPath addLineToPoint:CGPointMake(bubbleRight + kBubbleThornSideInset, bubbleBottom)];
-
-    //    // Thorn Tip
-    //    CGFloat kThornPinchingA = 0.f;
-    //    CGFloat kThornPinchingB = 3.5f;
-    //    CGPoint thornTip = CGPointMake(self.width,
-    //                                   self.height);
-    //    CGPoint thornA = CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom - kThornPinchingA);
-    //    CGPoint thornB = CGPointMake(bubbleRight - kThornPinchingB, bubbleBottom - kBubbleVRounding);
-    //    [bezierPath moveToPoint:thornTip];
-    //    [bezierPath addQuadCurveToPoint:thornA
-    //                       controlPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom - kThornPinchingA)];
-    //    [bezierPath addLineToPoint:thornB];
-    //    [bezierPath addQuadCurveToPoint:thornTip
-    //                       controlPoint:CGPointMake(bubbleRight - kThornPinchingB, bubbleBottom - kBubbleVRounding * 0.1f)];
-    
-    // Thorn Tip
-    //    CGFloat kThornPinchingA = 0.f;
-    //    CGFloat kThornPinchingB = 3.5f;
-    //    CGPoint thornA = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding * 1.65f);
-    //    CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding * 1.f);
-    
-    //    CGPoint thornA = CGPointMake(bubbleRight, bubbleTop + kBubbleVRounding * 1.f);
-    //    CGPoint thornB = CGPointMake(bubbleRight, bubbleTop + kBubbleVRounding * 1.65f);
-    //    CGPoint thornTip = CGPointMake(bubbleRight + kBubbleThornSideInset * 0.85f,
-    //                                   (thornA.y + thornB.y) * 0.5f);
-    //    [bezierPath moveToPoint:thornTip];
-    //    [bezierPath addLineToPoint:thornA];
-    //    [bezierPath addLineToPoint:thornB];
-    
-    //    [bezierPath addQuadCurveToPoint:thornA
-    //                       controlPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom - kThornPinchingA)];
-    //    [bezierPath addLineToPoint:thornB];
-    //    [bezierPath addQuadCurveToPoint:thornTip
-    //                       controlPoint:CGPointMake(bubbleRight - kThornPinchingB, bubbleBottom - kBubbleVRounding * 0.1f)];
-    
-    // Horizontal Flip If Necessary
-    BOOL shouldFlip = isOutgoing == isRTL;
-    if (shouldFlip) {
-        CGAffineTransform flipTransform = CGAffineTransformMakeTranslation(size.width, 0.0);
-        flipTransform = CGAffineTransformScale(flipTransform, -1.0, 1.0);
-        [bezierPath applyTransform:flipTransform];
-    }
-    return bezierPath;
-}
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageTextView : UITextView
-
-@property (nonatomic) BOOL shouldIgnoreEvents;
-
-@end
-
-#pragma mark -
-
-@implementation OWSMessageTextView
-
-// Our message text views are never used for editing;
-// suppress their ability to become first responder
-// so that tapping on them doesn't hide keyboard.
-- (BOOL)canBecomeFirstResponder
-{
-    return NO;
-}
-
-// Ignore interactions with the text view _except_ taps on links.
-//
-// We want to disable "partial" selection of text in the message
-// and we want to enable "tap to resend" by tapping on a message.
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *_Nullable)event
-{
-    if (self.shouldIgnoreEvents) {
-        // We ignore all events for failed messages so that users
-        // can tap-to-resend even "all link" messages.
-        return NO;
-    }
-
-    // Find the nearest text position to the event.
-    UITextPosition *_Nullable position = [self closestPositionToPoint:point];
-    if (!position) {
-        return NO;
-    }
-    // Find the range of the character in the text which contains the event.
-    //
-    // Try every layout direction (this might not be necessary).
-    UITextRange *_Nullable range = nil;
-    for (NSNumber *textLayoutDirection in @[
-             @(UITextLayoutDirectionLeft),
-             @(UITextLayoutDirectionRight),
-             @(UITextLayoutDirectionUp),
-             @(UITextLayoutDirectionDown),
-         ]) {
-        range = [self.tokenizer rangeEnclosingPosition:position
-                                       withGranularity:UITextGranularityCharacter
-                                           inDirection:(UITextDirection)textLayoutDirection.intValue];
-        if (range) {
-            break;
-        }
-    }
-    if (!range) {
-        return NO;
-    }
-    // Ignore the event unless it occurred inside a link.
-    NSInteger startIndex = [self offsetFromPosition:self.beginningOfDocument toPosition:range.start];
-    BOOL result =
-        [self.attributedText attribute:NSLinkAttributeName atIndex:(NSUInteger)startIndex effectiveRange:nil] != nil;
-    return result;
-}
-
-@end
-
-#pragma mark -
 
 @interface OWSMessageCell ()
 
@@ -480,7 +217,6 @@ static const CGFloat kBubbleTextVInset = 6.f;
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self.bubbleView addGestureRecognizer:tap];
-
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
@@ -684,6 +420,11 @@ static const CGFloat kBubbleTextVInset = 6.f;
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
+    // TODO: We might not need to hide it.
+    self.bubbleView.hidden = NO;
+    self.bubbleView.isOutgoing = self.isOutgoing;
+    // TODO: Hide tails/thorns here?
+
     if (self.shouldHaveFailedSendBadge) {
         self.failedSendBadgeView = [UIImageView new];
         self.failedSendBadgeView.image =
@@ -722,6 +463,7 @@ static const CGFloat kBubbleTextVInset = 6.f;
     } else {
         // Media-only messages should have no background color; they will fill the bubble's bounds
         // and we don't want artifacts at the edges.
+        self.bubbleView.bubbleColor = nil;
     }
 
     //<<<<<<< HEAD

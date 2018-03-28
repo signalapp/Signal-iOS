@@ -325,7 +325,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         detailView.backgroundColor = .clear
         self.view.backgroundColor = .clear
 
-        self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius
+        self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius
 
         fromViewController.present(self, animated: false) {
 
@@ -478,7 +478,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                             if changedItems {
                                 self.presentationView.alpha = 0
                             } else {
-                                self.presentationView.layer.cornerRadius = OWSMessageCellCornerRadius
+                                self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius
                             }
             },
                            completion: { (_: Bool) in
