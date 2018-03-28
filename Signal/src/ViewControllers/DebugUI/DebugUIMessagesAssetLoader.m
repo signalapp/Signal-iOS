@@ -360,12 +360,12 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
-+ (instancetype)portraitPngInstance
++ (instancetype)compactPortraitPngInstance
 {
     static DebugUIMessagesAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100)
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(60, 100)
                                                                backgroundColor:[UIColor blueColor]
                                                                      textColor:[UIColor whiteColor]
                                                                          label:@"P"];
@@ -373,13 +373,39 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
-+ (instancetype)landscapePngInstance
++ (instancetype)compactLandscapePngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 60)
+                                                               backgroundColor:[UIColor greenColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"L"];
+    });
+    return instance;
+}
+
++ (instancetype)tallPortraitPngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100)
+                                                               backgroundColor:[UIColor yellowColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"P"];
+    });
+    return instance;
+}
+
++ (instancetype)wideLandscapePngInstance
 {
     static DebugUIMessagesAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10)
-                                                               backgroundColor:[UIColor greenColor]
+                                                               backgroundColor:[UIColor purpleColor]
                                                                      textColor:[UIColor whiteColor]
                                                                          label:@"L"];
     });
@@ -392,9 +418,22 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000)
-                                                               backgroundColor:[UIColor redColor]
+                                                               backgroundColor:[UIColor brownColor]
                                                                      textColor:[UIColor whiteColor]
                                                                          label:@"B"];
+    });
+    return instance;
+}
+
++ (instancetype)tinyPngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(2, 2)
+                                                               backgroundColor:[UIColor cyanColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"T"];
     });
     return instance;
 }

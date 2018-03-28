@@ -550,29 +550,55 @@ NS_ASSUME_NONNULL_BEGIN
                                   thread:thread];
 }
 
-+ (DebugUIMessagesAction *)fakeOutgoingPortraitPngAction:(TSThread *)thread
-                                            messageState:(TSOutgoingMessageState)messageState
-                                              hasCaption:(BOOL)hasCaption
++ (DebugUIMessagesAction *)fakeOutgoingCompactPortraitPngAction:(TSThread *)thread
+                                                   messageState:(TSOutgoingMessageState)messageState
+                                                     hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Portrait Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader compactLandscapePngInstance]
                                   thread:thread];
 }
 
-+ (DebugUIMessagesAction *)fakeOutgoingLandscapePngAction:(TSThread *)thread
-                                             messageState:(TSOutgoingMessageState)messageState
-                                               hasCaption:(BOOL)hasCaption
++ (DebugUIMessagesAction *)fakeOutgoingCompactLandscapePngAction:(TSThread *)thread
+                                                    messageState:(TSOutgoingMessageState)messageState
+                                                      hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
     return [self fakeOutgoingMediaAction:@"Fake Outgoing Landscape Png"
                             messageState:messageState
                               hasCaption:hasCaption
-                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader compactPortraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingTallPortraitPngAction:(TSThread *)thread
+                                                messageState:(TSOutgoingMessageState)messageState
+                                                  hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Tall Portrait Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingWideLandscapePngAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
+                                                   hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Wide Landscape Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
                                   thread:thread];
 }
 
@@ -586,6 +612,19 @@ NS_ASSUME_NONNULL_BEGIN
                             messageState:messageState
                               hasCaption:hasCaption
                          fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingTinyPngAction:(TSThread *)thread
+                                        messageState:(TSOutgoingMessageState)messageState
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Tiny Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
                                   thread:thread];
 }
 
@@ -813,29 +852,55 @@ NS_ASSUME_NONNULL_BEGIN
                                   thread:thread];
 }
 
-+ (DebugUIMessagesAction *)fakeIncomingPortraitPngAction:(TSThread *)thread
-                                  isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
-                                              hasCaption:(BOOL)hasCaption
++ (DebugUIMessagesAction *)fakeIncomingCompactPortraitPngAction:(TSThread *)thread
+                                         isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                                     hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
     return [self fakeIncomingMediaAction:@"Fake Incoming Portrait Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader compactPortraitPngInstance]
                                   thread:thread];
 }
 
-+ (DebugUIMessagesAction *)fakeIncomingLandscapePngAction:(TSThread *)thread
-                                   isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
-                                               hasCaption:(BOOL)hasCaption
++ (DebugUIMessagesAction *)fakeIncomingCompactLandscapePngAction:(TSThread *)thread
+                                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                                      hasCaption:(BOOL)hasCaption
 {
     OWSAssert(thread);
 
     return [self fakeIncomingMediaAction:@"Fake Incoming Landscape Png"
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
-                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader compactLandscapePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingTallPortraitPngAction:(TSThread *)thread
+                                      isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                                  hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Tall Portrait Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingWideLandscapePngAction:(TSThread *)thread
+                                       isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                                   hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Wide Landscape Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
                                   thread:thread];
 }
 
@@ -849,6 +914,19 @@ NS_ASSUME_NONNULL_BEGIN
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
                          fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingTinyPngAction:(TSThread *)thread
+                              isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Tiny Incoming Large Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
                                   thread:thread];
 }
 
@@ -1052,21 +1130,59 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
         //
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread
+                                       messageState:TSOutgoingMessageStateAttemptingOut
+                                         hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread
+                                       messageState:TSOutgoingMessageStateAttemptingOut
+                                         hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread
+                                       messageState:TSOutgoingMessageStateSentToService
+                                         hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread
+                                       messageState:TSOutgoingMessageStateSentToService
+                                         hasCaption:YES],
         //
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread
+                                      messageState:TSOutgoingMessageStateAttemptingOut
+                                        hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread
+                                      messageState:TSOutgoingMessageStateAttemptingOut
+                                        hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread
+                                      messageState:TSOutgoingMessageStateSentToService
+                                        hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread
+                                      messageState:TSOutgoingMessageStateSentToService
+                                        hasCaption:YES],
         //
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread
+                                    messageState:TSOutgoingMessageStateAttemptingOut
+                                      hasCaption:YES],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread
+                                    messageState:TSOutgoingMessageStateSentToService
+                                      hasCaption:YES],
+        //
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
         //
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
@@ -1103,18 +1219,31 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
         //
-        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
-        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
-        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
-        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
         //
-        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
-        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
-        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
-        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
         //
         [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
         //
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],

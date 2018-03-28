@@ -21,9 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)gifInstance;
 + (instancetype)mp3Instance;
 + (instancetype)mp4Instance;
-+ (instancetype)portraitPngInstance;
-+ (instancetype)landscapePngInstance;
++ (instancetype)compactPortraitPngInstance;
++ (instancetype)compactLandscapePngInstance;
++ (instancetype)tallPortraitPngInstance;
++ (instancetype)wideLandscapePngInstance;
 + (instancetype)largePngInstance;
++ (instancetype)tinyPngInstance;
 + (instancetype)tinyPdfInstance;
 + (instancetype)largePdfInstance;
 + (instancetype)missingPngInstance;
