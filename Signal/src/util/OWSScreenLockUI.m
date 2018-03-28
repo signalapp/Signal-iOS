@@ -202,6 +202,16 @@ NS_ASSUME_NONNULL_BEGIN
 
             [self showScreenLockFailureAlertWithMessage:error.localizedDescription];
         }
+        unexpectedFailure:^(NSError *error) {
+            DDLogInfo(@"%@ unlock screen lock unexpectedly failed.", self.logTag);
+
+            // Local Authentication isn't working properly.
+            // This isn't covered by the docs or the forums but in practice
+            // it appears to be effective to retry again after waiting a bit.
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self clearAuthUIWhenActive];
+            });
+        }
         cancel:^{
             DDLogInfo(@"%@ unlock screen lock cancelled.", self.logTag);
 
