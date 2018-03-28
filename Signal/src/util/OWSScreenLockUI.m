@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSDate *lastUnlockAttemptDate;
 @property (nonatomic, nullable) NSDate *lastUnlockSuccessDate;
 
+@property (nonatomic, nullable) NSTimer *inactiveTimer;
+
 @end
 
 #pragma mark -
@@ -116,7 +118,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAppIsInactive:(BOOL)appIsInactive
 {
+    BOOL didChange = _appIsInactive != appIsInactive;
+
     _appIsInactive = appIsInactive;
+
+    if (didChange) {
+        // If app is inactive for more than N seconds,
+        // treat this as "entering the background" for the purposes
+        // of Screen Lock.
+        if (!appIsInactive) {
+            [self.inactiveTimer invalidate];
+            self.inactiveTimer = nil;
+        } else if (!self.isShowingScreenLockUI) {
+            [self.inactiveTimer invalidate];
+            self.inactiveTimer = [NSTimer weakScheduledTimerWithTimeInterval:45.f
+                                                                      target:self
+                                                                    selector:@selector(inactiveTimerDidFire)
+                                                                    userInfo:nil
+                                                                     repeats:NO];
+        }
+    }
 
     [self ensureScreenProtection];
 }
@@ -125,16 +146,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (appIsInBackground) {
         if (!_appIsInBackground) {
-            // Record the time when app entered background.
-            self.appEnteredBackgroundDate = [NSDate new];
-
-            self.didLastUnlockAttemptFail = NO;
+            [self markAppAsInBackground];
         }
     }
 
     _appIsInBackground = appIsInBackground;
 
     [self ensureScreenProtection];
+}
+
+- (void)markAppAsInBackground
+{
+    // Record the time when app entered background.
+    self.appEnteredBackgroundDate = [NSDate new];
+
+    self.didLastUnlockAttemptFail = NO;
+
+    [self.inactiveTimer invalidate];
+    self.inactiveTimer = nil;
 }
 
 - (void)ensureScreenProtection
@@ -512,6 +541,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     self.appIsInBackground = YES;
+}
+
+- (void)inactiveTimerDidFire
+{
+    [self markAppAsInBackground];
 }
 
 @end
