@@ -1586,7 +1586,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Mirëfilltësimi Dështoi";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Shkyçe Signal-in";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Kërkoni sipas emrash ose numrash";

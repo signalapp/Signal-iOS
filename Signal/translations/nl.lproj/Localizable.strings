@@ -1586,7 +1586,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Authenticatie mislukt";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ontgrendelen";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Zoeken op naam of nummer";

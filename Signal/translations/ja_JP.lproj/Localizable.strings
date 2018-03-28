@@ -170,7 +170,7 @@
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "バックアップをクリーンアップ";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "バックアップを初期化しています";
 
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "データのエクスポート";
@@ -194,7 +194,7 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "バックアップデータをダウンロード";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "バックアップの最終処理中";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "バックアップデータをインポート";
@@ -795,7 +795,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "GIFの取り込みに失敗しました。ネットに接続しているか確認してください。";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "未知のエラー";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "GIFを選べません";
@@ -1547,7 +1547,7 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "QRコードを読み取る";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "即座";
 
 /* Title for alert indicating that screen lock could not be disabled. */
 "SCREEN_LOCK_DISABLE_FAILED" = "スクリーンロックを無効にできませんでした。";
@@ -1562,7 +1562,7 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "認証に失敗しました。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "認証に失敗しました。後で再試行してください";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";

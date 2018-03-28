@@ -1586,7 +1586,7 @@
 "SCREEN_LOCK_UNLOCK_FAILED" = "Fallo al identificarse";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloquear Signal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nombre o número";

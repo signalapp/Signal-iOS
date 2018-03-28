@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Teď ne";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nyní ne";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Přijmout nové bezpečnostní číslo";
@@ -53,10 +53,10 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ ve skupině %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nelze spustit. Odešlete prosím debug log našemu týmu, pokusíme se problém opravit.";
 
 /* Title for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Error";
+"APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Zadejte své jméno";
@@ -83,7 +83,7 @@
 "ATTACHMENT" = "Příloha";
 
 /* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
+"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Příloha";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Typ souboru: %@";
@@ -92,7 +92,7 @@
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Velikost: %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Odeslat";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Příloha";
@@ -113,13 +113,13 @@
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Rozměry obrázkové přílohy nemohly být změněny.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Video nelze zpracovat.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Obrázkovou přílohu se nepodařilo zpracovat.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nelze odebrat metadata obrázku.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Příloha je příliš velká.";
@@ -155,55 +155,55 @@
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Reproduktor";
 
 /* button text for back button */
-"BACK_BUTTON" = "Back";
+"BACK_BUTTON" = "Zpět";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Zálohu nelze exportovat.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Neplatná odezva služby";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Data zálohy nelze nahrát.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Čištění zálohy";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Příprava zálohy";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exportuji data";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Exportuji zálohu";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Nahrávám zálohu";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Zálohu nelze importovat";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Kontroluji stav zálohy";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfiguruji zálohu";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Stahuji data zálohy";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizace zálohy";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Nahrávám zálohu.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Nahrávám databázi";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Nahrávám soubory";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_BEHAVIOR_EXPLANATION" = "Zablokovaní uživatelé vám nebudou moci zavolat a posílat vám zprávy.";
@@ -263,7 +263,7 @@
 "BUTTON_DONE" = "Hotovo";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "Vybrat";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal k uskutečňování hovorů a k záznamu hlasových zpráv potřebuje přístup k vašemu mikrofonu. Toto oprávnění můžete povolit v aplikaci Nastavení.";
@@ -290,19 +290,19 @@
 "CALL_USER_ALERT_TITLE" = "Zavolat";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Přijmout příchozí hovor";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Odmítnout příchozí hovor";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "Ukončit hovor";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "Ztlumit";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Pokud změníte svá nastavení, budete moci na zamykací obrazovce odpovídat na hovory a uvidíte jméno a číslo volajícího.\n\nVíce informací naleznete v nastavení soukromí.";
@@ -317,10 +317,10 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Zobrazit nastavení soukromí";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Přepnout na audio hovor";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Přepnout na video hovor";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Zavolat zpět";
@@ -338,25 +338,25 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Vybrat zemi";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Natala chyba při komunikaci s iCloud pro zálohy.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nemáte iCloud účet pro zálohy.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal nemá povoleno přistupovat k iCloud účtu pro zálohy.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Porovnat se schránkou";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakty";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Skupiny";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Pozvat";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Pokud chcete vidět, kteří z vašich kontaktů jsou uživatelé Signalu, povolte v systémovém nastavení přístup ke kontaktům.";
@@ -473,10 +473,10 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Tento uživatel není ve vašich kontaktech.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Načítám více zpráv...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Stisk pro více";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Zablokovat tohoto uživatele";
@@ -500,53 +500,53 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Aktualizace databáze";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "Dnes";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "Včera";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Nelze zkopírovat logy.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Nelze zabalit logy.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Nelze nahrát logy.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Co si přejete dělat s odkazem obsahujícím log?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Nelze najít žádné logy.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Otevřít hlášení chyb";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copy Link";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Zkopírovat odkaz";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Emailová podpora";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Odeslat do posledního vlákna";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
 
 /* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "Sdílet";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
-"DEBUG_LOG_ALERT_TITLE" = "One More Step";
+"DEBUG_LOG_ALERT_TITLE" = "Další krok";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Přesměrování";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Naposledy aktivní: %@";
@@ -612,7 +612,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Kopírovat";
 
 /* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Delete";
+"EDIT_ITEM_DELETE_ACTION" = "Smazat";
 
 /* Short name for edit menu item to show message metadata. */
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
@@ -660,25 +660,25 @@
 "EMPTY_INBOX_TITLE" = "Velký kulový.";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Confirm your PIN.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Potvrďte Váš PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Nelze zrušit zámek registrace.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Could not enable Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Nelze povolit zámek registrace.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Disable";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "Zakázat";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Povolit";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Další";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
+"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Zadaný PIN nesouhlasí.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
@@ -690,7 +690,7 @@
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "Zámek registrace";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Obsazeno.";
@@ -795,25 +795,25 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Nastala neznámá chyba.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Nelze zvolit GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Zadejte prosím vyhledávání.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "Vyhledat GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Chyba. Klepnout pro opakování.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "Žádné výsledky.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Zadejte vyhledávání";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar změněn.";
@@ -969,13 +969,13 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Propojení zařízení selhalo";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Členové skupiny";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logování";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Všechna média";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Fotoaparát";
@@ -990,7 +990,7 @@
 "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Smazat zprávu";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
@@ -999,52 +999,52 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "Zpráva";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "Komu:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "Nová zpráva";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Velikost souboru";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME Typ";
 
 /* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Chybí příloha";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Delivered";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Doručeno";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Failed";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Chyba";
 
 /* Status label for messages which are read. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Přečteno";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Sending";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Odesílám";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Sent";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Odesláno";
 
 /* Status label for messages which are uploading. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Uploading";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Nahrávám";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Message has no content or attachment.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Received";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Přijato";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENDER" = "Sender";
+"MESSAGE_METADATA_VIEW_SENDER" = "Odesílatel";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Sent";
@@ -1065,13 +1065,13 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Failed";
 
 /* message footer for read messages */
-"MESSAGE_STATUS_READ" = "Read";
+"MESSAGE_STATUS_READ" = "Přečteno";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Sending...";
+"MESSAGE_STATUS_SENDING" = "Odesílám...";
 
 /* message footer for sent messages */
-"MESSAGE_STATUS_SENT" = "Odeslána";
+"MESSAGE_STATUS_SENT" = "Odesláno";
 
 /* message footer while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Nahrávání…";
@@ -1550,16 +1550,16 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "Screen Lock Could Not Be Disabled";
+"SCREEN_LOCK_DISABLE_FAILED" = "Zámek displeje nelze vypnout.";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "Screen Lock Could Not Be Enabled";
+"SCREEN_LOCK_ENABLE_FAILED" = "Zámek displeje nelze zapnout.";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autentifikace neúspěšná.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
@@ -1574,19 +1574,19 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Authenticate to disable Screen Lock.";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "Autentifikovat pro zrušení zámku displeje.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Authenticate to enable Screen Lock.";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "Autentifikovat pro zapnutí zámku displeje.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Autentifikovat pro otevření Signalu.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Autentifikace neúspěšná";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Odemknout Signal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Hledat podle telefoního čísla";
@@ -1598,10 +1598,10 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Other Contacts";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Ostatní kontakty";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Recent Chats";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Poslední chaty";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Znovu odeslat";
@@ -1670,37 +1670,37 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Backup";
+"SETTINGS_BACKUP" = "Záloha";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Backup Now";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Zálohovat nyní";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Cancel Backup";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Zrušit zálohu";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Backup Enabled";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Záloha povolena";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Fáze";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Průběh";
 
 /* Label for status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
+"SETTINGS_BACKUP_STATUS" = "Stav";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Backup Failed";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Chyba zálohy";
 
 /* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
+"SETTINGS_BACKUP_STATUS_IDLE" = "Čekám";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Backing Up";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Zálohuji";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Záloha provedena";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Přidat…";
@@ -1724,7 +1724,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Přeposlat všechny hovory přez server Signalu, abyste skryly svou IP adresu před kontaktem. Povolení sníží kvalitu volání.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Smazat historii konverzace";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems\npod GPLv3 licencí";
@@ -1736,13 +1736,13 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Opravdu chcete smazat celou vaši historii (zprávy, přílohy, historii hovorů …) ? Tuto akci nelze vrátit zpět.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Delete Everything";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Smazat vše";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Nápověda";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Smazat historii konverzace";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informace";
@@ -1751,19 +1751,19 @@
 "SETTINGS_INVITE_TITLE" = "Pozvěte vaše přátele";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Můžete mně kontaktovat pomocí aplikace @signalapp. Stáhnout nyní: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
-"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+"SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk zprávy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Nastavení";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Notifikace hovorů a zpráv mohou být zobrazeny, pokud je telefon uzamčen. Můžete omezit, co bude v notifikacích zobrazeno.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Obsah notifikace";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Upozornění";
@@ -1772,10 +1772,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Zobrazit jméno & číslo volajícího";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Zobrazit hovory v \"Poslední volané\" v aplikaci Telefon";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Zobrazit hovory v \"Poslední volané\"";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrace s iOS hovory";
@@ -1784,22 +1784,22 @@
 "SETTINGS_PRIVACY_TITLE" = "Soukromí";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Potvrzení o přečtení";
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Čas zamknutí displeje";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Odemknout Signal pomocí Touch ID, Face ID, nebo kódovým zámkem.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Zámek displeje";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Zámek displeje";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "Ochrana obrazovky";
@@ -1811,10 +1811,10 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integrace s iOS hovory zobrazuje hovory Signalu na zamykací obrazovce a v systémové historii hovorů. Volitelně můžete zobrazit jméno a telefonní číslo. Pokud je povolen iCloud zálohy, tato data jsou sdílena se společností Apple.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Notifications";
+"SETTINGS_SECTION_NOTIFICATIONS" = "Notifikace";
 
 /* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Sounds";
+"SETTINGS_SECTION_SOUNDS" = "Zvuky";
 
 /* settings topic header for table section */
 "SETTINGS_SECTION_TITLE_CALLING" = "Volání";
@@ -1826,16 +1826,16 @@
 "SETTINGS_SUPPORT" = "Podpora";
 
 /* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Disabled";
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Zakázáno";
 
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Enabled";
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Povoleno";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Zámek registrace";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Zámek registrace";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Verze";
@@ -1853,31 +1853,31 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Loading...";
+"SHARE_EXTENSION_LOADING" = "Načítání...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Spustit aplikaci Signal pro registraci.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Není registrováno";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Spustit aplikaci Signal pro registraci nebo aktualizaci.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Nepřipraveno";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Přílohu nelze odeslat";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Uploading…";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Nahrávám...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Přílohu nelze připravit";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Sdílet do Signalu";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Zobrazit nové bezpečnostní číslo";
@@ -1958,7 +1958,7 @@
 "UNKNOWN_CONTACT_NAME" = "Neznámý kontakt";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "Unknown";
+"UNKNOWN_VALUE" = "Neznámý";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Odpojit";
@@ -2033,7 +2033,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Ahoj bezpečné video hovory!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal bude brzy vyžadovat iOS 9 nebo novější. Prosíme, aktualizujte v aplikaci Nastavení >> Obecné >> Aktualizace softwaru";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Aktualizujte iOS";
@@ -2054,7 +2054,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Znovu odeslat kód pomocí SMS";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Submit";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Potvrdit";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Zadejte ověřovací kód, který jsme odeslali na %@.";

@@ -161,19 +161,19 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "A copia de seguranza non se puido exportar.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Resposta non válida do servizo";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "A copia de seguranza non se puido cargar.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Limpando copia de seguranza";
 
 /* Indicates that the backup export is being configured. */
 "BACKUP_EXPORT_PHASE_CONFIGURATION" = "Iniciando copia de seguranza";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exportando datos";
 
 /* Indicates that the backup export data is being exported. */
 "BACKUP_EXPORT_PHASE_EXPORT" = "Exportando copia de seguranza";
@@ -185,7 +185,7 @@
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "A copia de seguranza non puido ser importada.";
 
 /* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
+"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Comprobando o estado da copia de seguranza";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configurando copia de seguranza";
@@ -194,7 +194,7 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Descargando copia de seguranza";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizando copia de seguranza";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importando copia de seguranza.";
@@ -795,7 +795,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Erro ao obter o GIF solicitado. Comproba que tes conexión.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Produciuse un erro descoñecido.";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Non é posible elixir GIF";
@@ -987,13 +987,13 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Galería de imaxes";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Eliminar %d mensaxes";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Eliminar mensaxe";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "Ti";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Este mes";
@@ -1122,7 +1122,7 @@
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Chamada perdida de %@ por mor de que o seu número de seguranza cambiou.";
 
 /* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Missed call because the caller's safety number changed.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Chamada perdida porque o número de seguranza de quen chama cambiou.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1298,7 +1298,7 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Fax do traballo";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproducir multimedia";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Non marcaches a %@ como verificado.";
@@ -1427,7 +1427,7 @@
 "REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registration Failed";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Erro ao rexistrarse";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Enviar";
@@ -1559,7 +1559,7 @@
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Erro de autenticación.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
@@ -1583,10 +1583,10 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Erro de autenticación";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Desbloquear Signal";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Procurar por nome ou número";
@@ -1724,7 +1724,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Redirixir todas as chamadas a través do servidor de Signal para evitar amosar a túa dirección IP ao teu contacto. Se activas esta opción a calidade da chamada será reducida.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
+"SETTINGS_CLEAR_HISTORY" = "Limpar historial de conversas";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "Copyright de Open Whisper Systems \n Licenza baixo GPLv3";
@@ -1742,7 +1742,7 @@
 "SETTINGS_HELP_HEADER" = "Axuda";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Clear Conversation History";
+"SETTINGS_HISTORYLOG_TITLE" = "Limpar historial de conversas";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Información";
@@ -1769,7 +1769,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificacións";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Amosar nome e número";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Amosar nome e número de quen chama";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Mostrar as chamadas na listaxe Recentes de iOS.";
@@ -1991,7 +1991,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Non permitido";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Responder chamadas dende a pantalla de bloqueo é sinxelo coa integración de chamadas en iOS. As chamadas entrantes son anonimizadas por defecto, así que eso tamén é privado.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Responder chamadas desde a pantalla de bloqueo é sinxelo coa integración de chamadas en iOS. As chamadas entrantes son anonimizadas por defecto, así que iso tamén é privado.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Aprende máis nos teus axustes de privacidade.";
