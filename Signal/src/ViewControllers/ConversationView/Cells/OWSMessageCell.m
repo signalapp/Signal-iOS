@@ -114,15 +114,15 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
 
-    self.bubbleView.userInteractionEnabled = YES;
+    self.contentView.userInteractionEnabled = YES;
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self.bubbleView addGestureRecognizer:tap];
+    [self.contentView addGestureRecognizer:tap];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
-    [self.bubbleView addGestureRecognizer:longPress];
+    [self.contentView addGestureRecognizer:longPress];
 
     PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
         initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self

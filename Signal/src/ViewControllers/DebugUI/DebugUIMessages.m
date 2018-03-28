@@ -1106,35 +1106,66 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Fake Media
 
-+ (NSArray<DebugUIMessagesAction *> *)allFakeMediaActions:(TSThread *)thread
++ (NSArray<DebugUIMessagesAction *> *)allFakeMediaActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
-    NSArray<DebugUIMessagesAction *> *actions = @[
-        // Outgoing
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Jpeg ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Gif ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         // Don't bother with multiple GIF states.
         [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Mp3 ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Mp4 ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Compact Landscape Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingCompactLandscapePngAction:thread
                                        messageState:TSOutgoingMessageStateAttemptingOut
                                          hasCaption:NO],
@@ -1149,7 +1180,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingCompactLandscapePngAction:thread
                                        messageState:TSOutgoingMessageStateSentToService
                                          hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Compact Portrait Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingCompactPortraitPngAction:thread
                                       messageState:TSOutgoingMessageStateAttemptingOut
                                         hasCaption:NO],
@@ -1164,7 +1201,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingCompactPortraitPngAction:thread
                                       messageState:TSOutgoingMessageStateSentToService
                                         hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Wide Landscape Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingWideLandscapePngAction:thread
                                     messageState:TSOutgoingMessageStateAttemptingOut
@@ -1175,97 +1218,211 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingWideLandscapePngAction:thread
                                     messageState:TSOutgoingMessageStateSentToService
                                       hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Tall Portrait Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Large Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Tiny Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Tiny Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
         [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Large Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingLargePdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Missing Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Large Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Oversize Text ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
         [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
         [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+    ]];
 
-        // Incoming
+    // Incoming
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Jpg ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        // Don't bother with multiple GIF states.
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Gif ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingGifAction:thread isAttachmentDownloaded:YES hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Mp3 ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Mp4 ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Compact Landscape Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingCompactLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Compact Portrait Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingCompactPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Wide Landscape Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingWideLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Tall Portrait Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingTallPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Large Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Tiny Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Tiny Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:YES],
         [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Large Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingLargePdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Missing Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Missing Pdf ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
         [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
-        //
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Oversize Text ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:NO hasCaption:NO],
         [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:YES hasCaption:NO],
-    ];
+    ]];
     return actions;
 }
 
@@ -1274,7 +1431,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Media"
-                                                    subactions:[self allFakeMediaActions:thread]];
+                                                    subactions:[self allFakeMediaActions:thread includeLabels:YES]];
 }
 
 + (DebugUIMessagesAction *)fakeRandomMediaAction:(TSThread *)thread
@@ -1282,7 +1439,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Media"
-                                                       subactions:[self allFakeMediaActions:thread]];
+                                                       subactions:[self allFakeMediaActions:thread includeLabels:NO]];
 }
 
 #pragma mark - Send Text Messages
@@ -1439,19 +1596,35 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-+ (NSArray<DebugUIMessagesAction *> *)allFakeTextActions:(TSThread *)thread
++ (NSArray<DebugUIMessagesAction *> *)allFakeTextActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
-    NSArray<DebugUIMessagesAction *> *actions = @[
-        [self fakeShortIncomingTextMessageAction:thread],
-        [self fakeIncomingTextMessageAction:thread text:@"Hi"],
-        [self fakeIncomingTextMessageAction:thread text:@"1️⃣"],
-        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣"],
-        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣3️⃣"],
-        [self fakeIncomingTextMessageAction:thread text:@"落"],
-        [self fakeIncomingTextMessageAction:thread text:@"﷽"],
+    NSArray<NSString *> *messageBodies = @[
+        @"Hi",
+        @"1️⃣",
+        @"1️⃣2️⃣",
+        @"1️⃣2️⃣3️⃣",
+        @"落",
+        @"﷽",
+    ];
 
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Message Bodies ⚠️"]];
+    }
+    [actions addObject:[self fakeShortIncomingTextMessageAction:thread]];
+    for (NSString *messageBody in messageBodies) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread text:messageBody]];
+    }
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Statuses ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateUnsent],
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateAttemptingOut],
         [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService],
@@ -1463,18 +1636,18 @@ NS_ASSUME_NONNULL_BEGIN
                                     messageState:TSOutgoingMessageStateSentToService
                                      isDelivered:YES
                                           isRead:YES],
-        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"Hi"],
-        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
-        [self fakeOutgoingTextMessageAction:thread
-                               messageState:TSOutgoingMessageStateSentToService
-                                       text:@"1️⃣2️⃣"],
-        [self fakeOutgoingTextMessageAction:thread
-                               messageState:TSOutgoingMessageStateSentToService
-                                       text:@"1️⃣2️⃣3️⃣"],
-        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
-        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"落"],
-        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"﷽"],
-    ];
+    ]];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Message Bodies ⚠️"]];
+    }
+    for (NSString *messageBody in messageBodies) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:messageBody]];
+    }
     return actions;
 }
 
@@ -1483,7 +1656,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Text"
-                                                    subactions:[self allFakeTextActions:thread]];
+                                                    subactions:[self allFakeTextActions:thread includeLabels:YES]];
 }
 
 + (DebugUIMessagesAction *)fakeRandomTextAction:(TSThread *)thread
@@ -1491,18 +1664,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Text"
-                                                       subactions:[self allFakeTextActions:thread]];
+                                                       subactions:[self allFakeTextActions:thread includeLabels:NO]];
 }
 
 #pragma mark - Exemplary
 
-+ (NSArray<DebugUIMessagesAction *> *)allExemplaryActions:(TSThread *)thread
++ (NSArray<DebugUIMessagesAction *> *)allExemplaryActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
     NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
-    [actions addObjectsFromArray:[self allFakeMediaActions:thread]];
-    [actions addObjectsFromArray:[self allFakeTextActions:thread]];
+    [actions addObjectsFromArray:[self allFakeMediaActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeTextActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -1511,7 +1684,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations"
-                                                    subactions:[self allExemplaryActions:thread]];
+                                                    subactions:[self allExemplaryActions:thread includeLabels:YES]];
 }
 
 + (void)selectExemplaryAction:(TSThread *)thread
@@ -1520,7 +1693,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Action"
                                                                    message:nil
                                                             preferredStyle:UIAlertControllerStyleActionSheet];
-    for (DebugUIMessagesAction *action in [self allExemplaryActions:thread]) {
+    for (DebugUIMessagesAction *action in [self allExemplaryActions:thread includeLabels:NO]) {
         [alert addAction:[UIAlertAction actionWithTitle:action.label
                                                   style:UIAlertActionStyleDefault
                                                 handler:^(UIAlertAction *ignore) {

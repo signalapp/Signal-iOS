@@ -122,14 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
-    UIImage *image =
-        [self createRandomPngWithSize:imageSize backgroundColor:backgroundColor textColor:textColor label:label];
-    NSData *pngData = UIImagePNGRepresentation(image);
-    [pngData writeToFile:filePath atomically:YES];
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
-    success();
+    @autoreleasepool {
+        NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
+        UIImage *image =
+            [self createRandomPngWithSize:imageSize backgroundColor:backgroundColor textColor:textColor label:label];
+        NSData *pngData = UIImagePNGRepresentation(image);
+        [pngData writeToFile:filePath atomically:YES];
+        self.filePath = filePath;
+        OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+        success();
+    }
 }
 
 - (nullable UIImage *)createRandomPngWithSize:(CGSize)imageSize
@@ -142,31 +144,33 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(textColor);
     OWSAssert(label.length > 0);
 
-    CGRect frame = CGRectZero;
-    frame.size = imageSize;
-    CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
-    UIFont *font = [UIFont boldSystemFontOfSize:smallDimension * 0.5f];
-    NSDictionary *textAttributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
+    @autoreleasepool {
+        CGRect frame = CGRectZero;
+        frame.size = imageSize;
+        CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
+        UIFont *font = [UIFont boldSystemFontOfSize:smallDimension * 0.5f];
+        NSDictionary *textAttributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
 
-    CGRect textFrame =
-        [label boundingRectWithSize:frame.size
-                            options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
-                         attributes:textAttributes
-                            context:nil];
+        CGRect textFrame =
+            [label boundingRectWithSize:frame.size
+                                options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                             attributes:textAttributes
+                                context:nil];
 
-    UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
-    CGContextRef context = UIGraphicsGetCurrentContext();
+        UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
+        CGContextRef context = UIGraphicsGetCurrentContext();
 
-    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
-    CGContextFillRect(context, frame);
-    [label drawAtPoint:CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(textFrame),
-                           CGRectGetMidY(frame) - CGRectGetMidY(textFrame))
-        withAttributes:textAttributes];
+        CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+        CGContextFillRect(context, frame);
+        [label drawAtPoint:CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(textFrame),
+                               CGRectGetMidY(frame) - CGRectGetMidY(textFrame))
+            withAttributes:textAttributes];
 
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
 
-    return image;
+        return image;
+    }
 }
 
 #pragma mark -
@@ -203,15 +207,17 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
-    OWSAssert(fileExtension.length > 0);
-    NSData *data = [Randomness generateRandomBytes:(int)dataLength];
-    OWSAssert(data);
-    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
-    BOOL didWrite = [data writeToFile:filePath atomically:YES];
-    OWSAssert(didWrite);
-    self.filePath = filePath;
-    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+    @autoreleasepool {
+        NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+        OWSAssert(fileExtension.length > 0);
+        NSData *data = [Randomness generateRandomBytes:(int)dataLength];
+        OWSAssert(data);
+        NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+        BOOL didWrite = [data writeToFile:filePath atomically:YES];
+        OWSAssert(didWrite);
+        self.filePath = filePath;
+        OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+    }
 
     success();
 }
@@ -453,7 +459,8 @@ NS_ASSUME_NONNULL_BEGIN
     static DebugUIMessagesAssetLoader *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [DebugUIMessagesAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
+        instance =
+            [DebugUIMessagesAssetLoader fakeRandomAssetLoaderWithLength:4 * 1024 * 1024 mimeType:@"application/pdf"];
     });
     return instance;
 }
