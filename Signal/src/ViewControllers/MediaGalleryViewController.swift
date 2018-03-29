@@ -649,8 +649,13 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                 }
 
                 let unfetchedSet = requestSet.subtracting(self.fetchedIndexSet)
-                guard unfetchedSet.count > (requestSet.count / 2) else {
-                    // For perf we only want to fetch a relatively full batch, unless the requestSet is very small.
+
+                // For perf we only want to fetch a substantially full batch...
+                let isSubstantialRequest = unfetchedSet.count > (requestSet.count / 2)
+                // ...but we always fulfill even small requests if we're getting just the tail end of a gallery.
+                let isFetchingEdgeOfGallery = (self.fetchedIndexSet.count - unfetchedSet.count) < requestSet.count
+
+                guard isSubstantialRequest || isFetchingEdgeOfGallery else {
                     Logger.debug("\(self.logTag) in \(#function) ignoring small fetch request: \(unfetchedSet.count)")
                     return
                 }
