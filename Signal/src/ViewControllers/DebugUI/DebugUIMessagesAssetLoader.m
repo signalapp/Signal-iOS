@@ -1,0 +1,454 @@
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
+
+#import "DebugUIMessagesAssetLoader.h"
+#import <AFNetworking/AFHTTPSessionManager.h>
+#import <AFNetworking/AFNetworking.h>
+#import <Curve25519Kit/Randomness.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSFileSystem.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@implementation DebugUIMessagesAssetLoader
+
++ (DebugUIMessagesAssetLoader *)fakeAssetLoaderWithUrl:(NSString *)fileUrl mimeType:(NSString *)mimeType
+{
+    OWSAssert(fileUrl.length > 0);
+    OWSAssert(mimeType.length > 0);
+
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = mimeType;
+    instance.filename = [NSURL URLWithString:fileUrl].lastPathComponent;
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureURLAssetLoaded:fileUrl success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureURLAssetLoaded:(NSString *)fileUrl success:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    // Use a predictable file path so that we reuse the cache between app launches.
+    NSString *temporaryDirectory = NSTemporaryDirectory();
+    NSString *cacheDirectory = [temporaryDirectory stringByAppendingPathComponent:@"cached_random_files"];
+    [OWSFileSystem ensureDirectoryExists:cacheDirectory];
+    NSString *filePath = [cacheDirectory stringByAppendingPathComponent:self.filename];
+    if ([NSFileManager.defaultManager fileExistsAtPath:filePath]) {
+        self.filePath = filePath;
+        return success();
+    }
+
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    OWSAssert(sessionManager.responseSerializer);
+    [sessionManager GET:fileUrl
+        parameters:nil
+        progress:nil
+        success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
+            if ([responseObject writeToFile:filePath atomically:YES]) {
+                self.filePath = filePath;
+                OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+                success();
+            } else {
+                OWSFail(@"Error write url response [%@]: %@", fileUrl, filePath);
+                failure();
+            }
+        }
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
+            OWSFail(@"Error downloading url[%@]: %@", fileUrl, requestError);
+            failure();
+        }];
+}
+
+#pragma mark -
+
++ (DebugUIMessagesAssetLoader *)fakePngAssetLoaderWithImageSize:(CGSize)imageSize
+                                                backgroundColor:(UIColor *)backgroundColor
+                                                      textColor:(UIColor *)textColor
+                                                          label:(NSString *)label
+{
+    OWSAssert(imageSize.width > 0);
+    OWSAssert(imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
+
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = OWSMimeTypeImagePng;
+    instance.filename = @"image.png";
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensurePngAssetLoaded:imageSize
+                       backgroundColor:backgroundColor
+                             textColor:textColor
+                                 label:label
+                               success:success
+                               failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensurePngAssetLoaded:(CGSize)imageSize
+             backgroundColor:(UIColor *)backgroundColor
+                   textColor:(UIColor *)textColor
+                       label:(NSString *)label
+                     success:(ActionSuccessBlock)success
+                     failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"png"];
+    UIImage *image =
+        [self createRandomPngWithSize:imageSize backgroundColor:backgroundColor textColor:textColor label:label];
+    NSData *pngData = UIImagePNGRepresentation(image);
+    [pngData writeToFile:filePath atomically:YES];
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+    success();
+}
+
+- (nullable UIImage *)createRandomPngWithSize:(CGSize)imageSize
+                              backgroundColor:(UIColor *)backgroundColor
+                                    textColor:(UIColor *)textColor
+                                        label:(NSString *)label
+{
+    OWSAssert(imageSize.width > 0 && imageSize.height > 0);
+    OWSAssert(backgroundColor);
+    OWSAssert(textColor);
+    OWSAssert(label.length > 0);
+
+    CGRect frame = CGRectZero;
+    frame.size = imageSize;
+    CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
+    UIFont *font = [UIFont boldSystemFontOfSize:smallDimension * 0.5f];
+    NSDictionary *textAttributes = @{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor };
+
+    CGRect textFrame =
+        [label boundingRectWithSize:frame.size
+                            options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading)
+                         attributes:textAttributes
+                            context:nil];
+
+    UIGraphicsBeginImageContextWithOptions(frame.size, NO, [UIScreen mainScreen].scale);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    CGContextSetFillColorWithColor(context, backgroundColor.CGColor);
+    CGContextFillRect(context, frame);
+    [label drawAtPoint:CGPointMake(CGRectGetMidX(frame) - CGRectGetMidX(textFrame),
+                           CGRectGetMidY(frame) - CGRectGetMidY(textFrame))
+        withAttributes:textAttributes];
+
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return image;
+}
+
+#pragma mark -
+
++ (DebugUIMessagesAssetLoader *)fakeRandomAssetLoaderWithLength:(NSUInteger)dataLength mimeType:(NSString *)mimeType
+{
+    OWSAssert(dataLength > 0);
+    OWSAssert(mimeType.length > 0);
+
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = mimeType;
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    OWSAssert(fileExtension.length > 0);
+    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureRandomAssetLoaded:dataLength success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureRandomAssetLoaded:(NSUInteger)dataLength
+                        success:(ActionSuccessBlock)success
+                        failure:(ActionFailureBlock)failure
+{
+    OWSAssert(dataLength > 0);
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+    OWSAssert(fileExtension.length > 0);
+    NSData *data = [Randomness generateRandomBytes:(int)dataLength];
+    OWSAssert(data);
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    BOOL didWrite = [data writeToFile:filePath atomically:YES];
+    OWSAssert(didWrite);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
+}
+
+#pragma mark -
+
++ (DebugUIMessagesAssetLoader *)fakeMissingAssetLoaderWithMimeType:(NSString *)mimeType
+{
+    OWSAssert(mimeType.length > 0);
+
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = mimeType;
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:mimeType];
+    OWSAssert(fileExtension.length > 0);
+    instance.filename = [@"attachment" stringByAppendingPathExtension:fileExtension];
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureMissingAssetLoaded:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureMissingAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.mimeType];
+    OWSAssert(fileExtension.length > 0);
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    BOOL didCreate = [NSFileManager.defaultManager createFileAtPath:filePath contents:nil attributes:nil];
+    OWSAssert(didCreate);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
+}
+
+#pragma mark -
+
++ (DebugUIMessagesAssetLoader *)fakeOversizeTextAssetLoader
+{
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = OWSMimeTypeOversizeTextMessage;
+    instance.filename = @"attachment.txt";
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureOversizeTextAssetLoaded:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureOversizeTextAssetLoaded:(ActionSuccessBlock)success failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSMutableString *message = [NSMutableString new];
+    for (NSUInteger i = 0; i < 32; i++) {
+        [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
+                              @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
+                              @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
+                              @"sodales. Aenean ut velit maximus, posuere sem a, accumsan nunc. Donec ullamcorper "
+                              @"turpis lorem. Quisque dignissim purus eu placerat ultricies. Proin at urna eget mi "
+                              @"semper congue. Aenean non elementum ex. Praesent pharetra quam at sem vestibulum, "
+                              @"vestibulum ornare dolor elementum. Vestibulum massa tortor, scelerisque sit amet "
+                              @"pulvinar a, rhoncus vitae nisl. Sed mi nunc, tempus at varius in, malesuada vitae "
+                              @"dui. Vivamus efficitur pulvinar erat vitae congue. Proin vehicula turpis non felis "
+                              @"congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere "
+                              @"lorem, in rhoncus nisi.\n\n"];
+    }
+
+    NSString *fileExtension = @"txt";
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+    OWSAssert(data);
+    BOOL didWrite = [data writeToFile:filePath atomically:YES];
+    OWSAssert(didWrite);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
+}
+
+#pragma mark -
+
++ (instancetype)jpegInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
+                          mimeType:@"image/jpeg"];
+    });
+    return instance;
+}
+
++ (instancetype)gifInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
+                          mimeType:@"image/gif"];
+    });
+    return instance;
+}
+
++ (instancetype)mp3Instance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
+                          mimeType:@"audio/mpeg"];
+    });
+    return instance;
+}
+
++ (instancetype)mp4Instance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader
+            fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
+                          mimeType:@"video/mp4"];
+    });
+    return instance;
+}
+
++ (instancetype)portraitPngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(10, 100)
+                                                               backgroundColor:[UIColor blueColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"P"];
+    });
+    return instance;
+}
+
++ (instancetype)landscapePngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(100, 10)
+                                                               backgroundColor:[UIColor greenColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"L"];
+    });
+    return instance;
+}
+
++ (instancetype)largePngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:CGSizeMake(4000, 4000)
+                                                               backgroundColor:[UIColor redColor]
+                                                                     textColor:[UIColor whiteColor]
+                                                                         label:@"B"];
+    });
+    return instance;
+}
+
++ (instancetype)tinyPdfInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)largePdfInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeRandomAssetLoaderWithLength:256 mimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)missingPngInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeMissingAssetLoaderWithMimeType:OWSMimeTypeImagePng];
+    });
+    return instance;
+}
+
++ (instancetype)missingPdfInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeMissingAssetLoaderWithMimeType:@"application/pdf"];
+    });
+    return instance;
+}
+
++ (instancetype)oversizeTextInstance
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeOversizeTextAssetLoader];
+    });
+    return instance;
+}
+
+@end
+
+NS_ASSUME_NONNULL_END

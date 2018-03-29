@@ -4,34 +4,29 @@
 
 #import "DebugUIMessages.h"
 #import "DebugUIContacts.h"
+#import "DebugUIMessagesAction.h"
+#import "DebugUIMessagesAssetLoader.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
-#import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
 #import <Curve25519Kit/Randomness.h>
-#import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SecurityUtils.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
 - (void)setReceivedAtTimestamp:(uint64_t)value;
 
 @end
+
+#pragma mark -
 
 @implementation DebugUIMessages
 
@@ -46,7 +41,60 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    NSMutableArray<OWSTableItem *> *items = [@[
+    NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
+
+    for (DebugUIMessagesAction *action in @[
+             [DebugUIMessages sendMessageVariationsAction:thread],
+             // Send Media
+             [DebugUIMessages sendJpegAction:thread],
+             [DebugUIMessages sendGifAction:thread],
+             [DebugUIMessages sendMp3Action:thread],
+             [DebugUIMessages sendMp4Action:thread],
+             [DebugUIMessages sendAllMediaAction:thread],
+             [DebugUIMessages sendRandomMediaAction:thread],
+             // Fake Media
+             [DebugUIMessages fakeAllMediaAction:thread],
+             [DebugUIMessages fakeRandomMediaAction:thread],
+             // Fake Text
+             [DebugUIMessages fakeAllTextAction:thread],
+             [DebugUIMessages fakeRandomTextAction:thread],
+             // Exemplary
+             [DebugUIMessages allExemplaryAction:thread],
+         ]) {
+        [items addObject:[OWSTableItem itemWithTitle:action.label
+                                         actionBlock:^{
+                                             // For "all in group" actions, do each subaction in the group
+                                             // exactly once, in a predictable order.
+                                             if ([action isKindOfClass:[DebugUIMessagesGroupAction class]]) {
+                                                 DebugUIMessagesGroupAction *groupAction
+                                                     = (DebugUIMessagesGroupAction *)action;
+                                                 if (groupAction.subactionMode == SubactionMode_Ordered) {
+                                                     [action prepareAndPerformNTimes:groupAction.subactions.count];
+                                                     return;
+                                                 }
+                                             }
+                                             [DebugUIMessages performActionNTimes:action];
+                                         }]];
+    }
+    [items addObjectsFromArray:@[
+
+#pragma mark - Actions
+
+        [OWSTableItem itemWithTitle:@"Send N text messages (1/sec.)"
+                        actionBlock:^{
+                            [DebugUIMessages sendNTextMessagesInThread:thread];
+                        }],
+        //        [OWSTableItem itemWithTitle:@"Send N Random Media (1/sec.)"
+        //                        actionBlock:^{
+        //                            [DebugUIMessages sendSelectedMediaTypeInThread:thread];
+        //                        }],
+        [OWSTableItem itemWithTitle:@"Select Action"
+                        actionBlock:^{
+                            [DebugUIMessages selectExemplaryAction:thread];
+                        }],
+
+#pragma mark - Misc.
+
         [OWSTableItem itemWithTitle:@"Perform 100 random actions"
                         actionBlock:^{
                             [DebugUIMessages performRandomActions:100 thread:thread];
@@ -54,22 +102,6 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Perform 1,000 random actions"
                         actionBlock:^{
                             [DebugUIMessages performRandomActions:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1,000 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:1000 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 3,000 messages (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendTextMessages:3000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Send 10 tiny text messages (1/sec.)"
                         actionBlock:^{
@@ -123,18 +155,6 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages createFakeThreads:1000 withFakeMessages:1];
                         }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 5"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:5 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 100"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"🖼 fake media messages: 1k"
-                        actionBlock:^{
-                            [DebugUIMessages sendFakeMediaMessages:1000 thread:thread];
-                        }],
         [OWSTableItem itemWithTitle:@"Create 1k fake messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
@@ -186,66 +206,6 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Send pdf"
                         actionBlock:^{
                             [DebugUIMessages sendRandomAttachment:thread uti:(NSString *)kUTTypePDF];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random GIF (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random GIF (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random GIF (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomGifs:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random JPEG (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomJpegs:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random Mp3 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp3s:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:1 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 Random Mp4 (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendRandomMp4s:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 10 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:10 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 100 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:100 thread:thread];
-                        }],
-        [OWSTableItem itemWithTitle:@"Send 1,000 media (1/sec.)"
-                        actionBlock:^{
-                            [DebugUIMessages sendMediaAttachments:1000 thread:thread];
                         }],
         [OWSTableItem itemWithTitle:@"Create all system messages"
                         actionBlock:^{
@@ -308,7 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages testDirectionalFilenamesInThread:thread];
                         }],
-    ] mutableCopy];
+    ]];
+
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         NSString *recipientId = contactThread.contactIdentifier;
@@ -335,17 +296,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-+ (void)sendMessages:(int)counter toAllMembersOfGroup:(TSGroupThread *)groupThread
++ (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
         TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        [DebugUIMessages sendTextMessages:counter thread:contactThread];
+        [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
 
-+ (void)sendTextMessageInThread:(TSThread *)thread counter:(int)counter
++ (void)sendTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
-    DDLogInfo(@"%@ sendTextMessageInThread: %d", self.logTag, counter);
+    DDLogInfo(@"%@ sendTextMessageInThread: %zd", self.logTag, counter);
     [DDLog flushLog];
 
     NSString *randomText = [self randomText];
@@ -355,18 +316,29 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogError(@"%@ sendTextMessageInThread timestamp: %llu.", self.logTag, message.timestamp);
 }
 
-+ (void)sendTextMessages:(int)counter thread:(TSThread *)thread
++ (void)sendNTextMessagesInThread:(TSThread *)thread
 {
-    if (counter < 1) {
-        return;
-    }
-    [self sendTextMessageInThread:thread counter:counter];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self sendTextMessages:counter - 1 thread:thread];
-    });
+    [self performActionNTimes:[self sendTextMessagesActionInThread:thread]];
 }
 
-+ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(int)counter
++ (DebugUIMessagesAction *)sendTextMessagesActionInThread:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendTextMessageInThread:thread counter:index];
+                                           // TODO:
+                                           success();
+                                       });
+                                   }];
+}
+
++ (void)sendTinyTextMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     NSString *randomText = [[self randomText] substringToIndex:arc4random_uniform(4)];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -374,7 +346,7 @@ NS_ASSUME_NONNULL_BEGIN
     [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
 }
 
-+ (void)sendTinyTextMessages:(int)counter thread:(TSThread *)thread
++ (void)sendTinyTextMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -383,44 +355,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self sendTinyTextMessages:counter - 1 thread:thread];
     });
-}
-
-+ (void)ensureRandomFileWithURL:(NSString *)url
-                       filename:(NSString *)filename
-                        success:(nullable void (^)(NSString *filePath))success
-                        failure:(nullable void (^)(void))failure
-{
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentDirectoryURL =
-        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    NSString *randomFilesDirectoryPath =
-        [[documentDirectoryURL path] stringByAppendingPathComponent:@"cached_random_files"];
-    [OWSFileSystem ensureDirectoryExists:randomFilesDirectoryPath];
-    NSString *filePath = [randomFilesDirectoryPath stringByAppendingPathComponent:filename];
-    if ([fileManager fileExistsAtPath:filePath]) {
-        success(filePath);
-    } else {
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        AFHTTPSessionManager *sessionManager =
-            [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-        sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-        OWSAssert(sessionManager.responseSerializer);
-        [sessionManager GET:url
-            parameters:nil
-            progress:nil
-            success:^(NSURLSessionDataTask *task, NSData *_Nullable responseObject) {
-                if ([responseObject writeToFile:filePath atomically:YES]) {
-                    success(filePath);
-                } else {
-                    OWSFail(@"Error write url response [%@]: %@", url, filePath);
-                    failure();
-                }
-            }
-            failure:^(NSURLSessionDataTask *_Nullable task, NSError *requestError) {
-                OWSFail(@"Error downloading url[%@]: %@", url, requestError);
-                failure();
-            }];
-    }
 }
 
 + (void)sendAttachment:(NSString *)filePath
@@ -452,244 +386,1027 @@ NS_ASSUME_NONNULL_BEGIN
     success();
 }
 
-+ (void)ensureRandomGifWithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
-{
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
-                         filename:@"random-gif.gif"
-                          success:success
-                          failure:failure];
-}
+#pragma mark - Infrastructure
 
-+ (void)sendRandomGifInThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
++ (void)performActionNTimes:(DebugUIMessagesAction *)action
 {
-    [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
+    OWSAssertIsOnMainThread();
+    OWSAssert(action);
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"How many?"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (NSNumber *countValue in @[
+             @(1),
+             @(10),
+             @(100),
+             @(1 * 1000),
+             @(10 * 1000),
+         ]) {
+        [alert addAction:[UIAlertAction actionWithTitle:countValue.stringValue
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *ignore) {
+                                                    [action prepareAndPerformNTimes:countValue.unsignedIntegerValue];
+                                                }]];
     }
-                             failure:failure];
+
+    [alert addAction:[OWSAlerts cancelAction]];
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
 }
 
-+ (void)sendRandomGifs:(int)count thread:(TSThread *)thread
+#pragma mark - Send Media
+
++ (NSArray<DebugUIMessagesAction *> *)allSendMediaActions:(TSThread *)thread
 {
-    OWSAssert(count > 0);
-    [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomGifs:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                             failure:^{
-                             }];
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self sendJpegAction:thread],
+        [self sendGifAction:thread],
+        [self sendMp3Action:thread],
+        [self sendMp4Action:thread],
+    ];
+    return actions;
 }
 
-+ (void)ensureRandomJpegWithSuccess:(nullable void (^)(NSString *filePath))success
-                            failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)sendJpegAction:(TSThread *)thread
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
-                         filename:@"random-jpg.jpg"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    return [self sendMediaAction:@"Send Jpeg" fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance] thread:thread];
 }
 
-+ (void)sendRandomJpegInThread:(TSThread *)thread
-                       success:(nullable void (^)(void))success
-                       failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)sendGifAction:(TSThread *)thread
 {
-    [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                              failure:failure];
+    OWSAssert(thread);
+
+    return [self sendMediaAction:@"Send Gif" fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance] thread:thread];
 }
 
-+ (void)sendRandomJpegs:(int)count thread:(TSThread *)thread
++ (DebugUIMessagesAction *)sendMp3Action:(TSThread *)thread
 {
-    OWSAssert(count > 0);
-    [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomJpegs:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                              failure:^{
-                              }];
+    OWSAssert(thread);
+
+    return [self sendMediaAction:@"Send Mp3" fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance] thread:thread];
 }
 
-+ (void)ensureRandomMp3WithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)sendMp4Action:(TSThread *)thread
 {
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp3.mp3"
-                         filename:@"random-mp3.mp3"
-                          success:success
-                          failure:failure];
+    OWSAssert(thread);
+
+    return [self sendMediaAction:@"Send Mp4" fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance] thread:thread];
 }
 
-+ (void)sendRandomMp3InThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
++ (DebugUIMessagesAction *)sendMediaAction:(NSString *)label
+                           fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
+                                    thread:(TSThread *)thread
 {
-    [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                             failure:failure];
-}
+    OWSAssert(label.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
 
-+ (void)sendRandomMp3s:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-    [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomMp3s:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                             failure:^{
-                             }];
-}
-
-+ (void)ensureRandomMp4WithSuccess:(nullable void (^)(NSString *filePath))success
-                           failure:(nullable void (^)(void))failure
-{
-    [self ensureRandomFileWithURL:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-mp4.mp4"
-                         filename:@"random-mp4.mp4"
-                          success:success
-                          failure:failure];
-}
-
-+ (void)sendRandomMp4InThread:(TSThread *)thread
-                      success:(nullable void (^)(void))success
-                      failure:(nullable void (^)(void))failure
-{
-    [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-        [self sendAttachment:filePath thread:thread success:success failure:failure];
-    }
-                             failure:failure];
-}
-
-+ (void)sendRandomMp4s:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-    [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-        [self
-            sendAttachment:filePath
-                    thread:thread
-                   success:^{
-                       if (count <= 1) {
-                           return;
-                       }
-                       dispatch_after(
-                           dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                               [self sendRandomMp4s:count - 1 thread:thread];
-                           });
-                   }
-                   failure:^{
-                   }];
-    }
-                             failure:^{
-                             }];
-}
-
-+ (void)sendMediaAttachments:(int)count thread:(TSThread *)thread
-{
-    OWSAssert(count > 0);
-
-    void (^success)(void) = ^{
-        if (count <= 1) {
-            return;
+    return [DebugUIMessagesSingleAction
+             actionWithLabel:label
+        staggeredActionBlock:^(NSUInteger index,
+            YapDatabaseReadWriteTransaction *transaction,
+            ActionSuccessBlock success,
+            ActionFailureBlock failure) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                OWSAssert(fakeAssetLoader.filePath.length > 0);
+                [self sendAttachment:fakeAssetLoader.filePath thread:thread success:success failure:failure];
+            });
         }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self sendMediaAttachments:count - 1 thread:thread];
-        });
-    };
+                prepareBlock:fakeAssetLoader.prepareBlock];
+}
 
-    switch (arc4random_uniform(4)) {
-        case 0: {
-            [self ensureRandomGifWithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
++ (DebugUIMessagesAction *)sendAllMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Media"
+                                                    subactions:[self allSendMediaActions:thread]];
+}
+
++ (DebugUIMessagesAction *)sendRandomMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Send Random Media"
+                                                       subactions:[self allSendMediaActions:thread]];
+}
+
+#pragma mark - Fake Outgoing Media
+
++ (DebugUIMessagesAction *)fakeOutgoingJpegAction:(TSThread *)thread
+                                     messageState:(TSOutgoingMessageState)messageState
+                                       hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Jpeg"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingGifAction:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Gif"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMp3Action:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp3"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMp4Action:(TSThread *)thread
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Mp4"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingPortraitPngAction:(TSThread *)thread
+                                            messageState:(TSOutgoingMessageState)messageState
+                                              hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Portrait Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLandscapePngAction:(TSThread *)thread
+                                             messageState:(TSOutgoingMessageState)messageState
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Landscape Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLargePngAction:(TSThread *)thread
+                                         messageState:(TSOutgoingMessageState)messageState
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingTinyPdfAction:(TSThread *)thread
+                                        messageState:(TSOutgoingMessageState)messageState
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Tiny Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingLargePdfAction:(TSThread *)thread
+                                         messageState:(TSOutgoingMessageState)messageState
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Large Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMissingPngAction:(TSThread *)thread
+                                           messageState:(TSOutgoingMessageState)messageState
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Png"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMissingPdfAction:(TSThread *)thread
+                                           messageState:(TSOutgoingMessageState)messageState
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Missing Pdf"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingOversizeTextAction:(TSThread *)thread
+                                             messageState:(TSOutgoingMessageState)messageState
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:@"Fake Outgoing Oversize Text"
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader oversizeTextInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingMediaAction:(NSString *)labelParam
+                                      messageState:(TSOutgoingMessageState)messageState
+                                        hasCaption:(BOOL)hasCaption
+                                   fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
+                                            thread:(TSThread *)thread
+{
+    OWSAssert(labelParam.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
+
+    NSString *label = labelParam;
+    if (hasCaption) {
+        label = [label stringByAppendingString:@" 🔤"];
+    }
+    if (messageState == TSOutgoingMessageStateUnsent) {
+        label = [label stringByAppendingString:@" (Unsent)"];
+    } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+        label = [label stringByAppendingString:@" (Sending)"];
+    } else if (messageState == TSOutgoingMessageStateSentToService) {
+        label = [label stringByAppendingString:@" (Sent)"];
+    } else {
+        OWSFail(@"%@ unknown message state.", self.logTag)
+    }
+
+    return
+        [DebugUIMessagesSingleAction actionWithLabel:label
+                              unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+                                  OWSAssert(fakeAssetLoader.filePath.length > 0);
+                                  [self createFakeOutgoingMedia:index
+                                                   messageState:messageState
+                                                     hasCaption:hasCaption
+                                                fakeAssetLoader:fakeAssetLoader
+                                                         thread:thread
+                                                    transaction:transaction];
+                              }
+                                        prepareBlock:fakeAssetLoader.prepareBlock];
+}
+
++ (void)createFakeOutgoingMedia:(NSUInteger)index
+                   messageState:(TSOutgoingMessageState)messageState
+                     hasCaption:(BOOL)hasCaption
+                fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
+                         thread:(TSThread *)thread
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(fakeAssetLoader.filePath);
+    OWSAssert(transaction);
+
+    // Random time within last n years. Helpful for filling out a media gallery over time.
+    //    double yearsMillis = 4.0 * kYearsInMs;
+    //    uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
+    //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
+    uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
+
+    NSString *messageBody = nil;
+    if (hasCaption) {
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+
+        if (hasCaption) {
+            messageBody = [messageBody stringByAppendingString:@" 🔤"];
+        }
+        if (messageState == TSOutgoingMessageStateUnsent) {
+            messageBody = [messageBody stringByAppendingString:@" (Unsent)"];
+        } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+            messageBody = [messageBody stringByAppendingString:@" (Sending)"];
+        } else if (messageState == TSOutgoingMessageStateSentToService) {
+            messageBody = [messageBody stringByAppendingString:@" (Sent)"];
+        } else {
+            OWSFail(@"%@ unknown message state.", self.logTag)
+        }
+    }
+
+    NSString *_Nullable randomCaption;
+    if (arc4random() % 2 == 2) {
+        randomCaption = [self randomText];
+    }
+    TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
+                                                                     inThread:thread
+                                                                  messageBody:randomCaption
+                                                               isVoiceMessage:NO
+                                                             expiresInSeconds:0];
+    [message setReceivedAtTimestamp:timestamp];
+
+    DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+    NSString *filename = dataSource.sourceFilename;
+    // To support "fake missing" attachments, we sometimes lie about the
+    // length of the data.
+    UInt32 nominalDataLength = (UInt32)MAX((NSUInteger)1, dataSource.dataLength);
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
+                                                                                 byteCount:nominalDataLength
+                                                                            sourceFilename:filename];
+    NSError *error;
+    BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+    OWSAssert(success && !error);
+
+    [attachmentStream saveWithTransaction:transaction];
+    [message.attachmentIds addObject:attachmentStream.uniqueId];
+    if (filename) {
+        message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
+    }
+    [message saveWithTransaction:transaction];
+    [message updateWithMessageState:messageState transaction:transaction];
+}
+
+#pragma mark - Fake Incoming Media
+
++ (DebugUIMessagesAction *)fakeIncomingJpegAction:(TSThread *)thread
+                           isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                       hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Jpeg"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingGifAction:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Gif"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMp3Action:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Mp3"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMp4Action:(TSThread *)thread
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Mp4"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingPortraitPngAction:(TSThread *)thread
+                                  isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                              hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Portrait Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader portraitPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLandscapePngAction:(TSThread *)thread
+                                   isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Landscape Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader landscapePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLargePngAction:(TSThread *)thread
+                               isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Large Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingTinyPdfAction:(TSThread *)thread
+                              isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                          hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Tiny Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingLargePdfAction:(TSThread *)thread
+                               isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                           hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Large Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader largePdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMissingPngAction:(TSThread *)thread
+                                 isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Missing Png"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMissingPdfAction:(TSThread *)thread
+                                 isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                             hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Missing Pdf"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingOversizeTextAction:(TSThread *)thread
+                                   isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                               hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:@"Fake Incoming Oversize Text"
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader oversizeTextInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingMediaAction:(NSString *)labelParam
+                            isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                        hasCaption:(BOOL)hasCaption
+                                   fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
+                                            thread:(TSThread *)thread
+{
+    OWSAssert(labelParam.length > 0);
+    OWSAssert(fakeAssetLoader);
+    OWSAssert(thread);
+
+    NSString *label = labelParam;
+    if (hasCaption) {
+        label = [label stringByAppendingString:@" 🔤"];
+    }
+
+    if (isAttachmentDownloaded) {
+        label = [label stringByAppendingString:@" 👍"];
+    }
+
+    return
+        [DebugUIMessagesSingleAction actionWithLabel:label
+                              unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+                                  OWSAssert(fakeAssetLoader.filePath.length > 0);
+                                  [self createFakeIncomingMedia:index
+                                         isAttachmentDownloaded:isAttachmentDownloaded
+                                                     hasCaption:hasCaption
+                                                fakeAssetLoader:fakeAssetLoader
+                                                         thread:thread
+                                                    transaction:transaction];
+                              }
+                                        prepareBlock:fakeAssetLoader.prepareBlock];
+}
+
++ (void)createFakeIncomingMedia:(NSUInteger)index
+         isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                     hasCaption:(BOOL)hasCaption
+                fakeAssetLoader:(DebugUIMessagesAssetLoader *)fakeAssetLoader
+                         thread:(TSThread *)thread
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(fakeAssetLoader.filePath);
+    OWSAssert(transaction);
+
+    //    // Random time within last n years. Helpful for filling out a media gallery over time.
+    //    double yearsMillis = 4.0 * kYearsInMs;
+    //    uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
+    //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
+
+    NSString *messageBody = nil;
+    if (hasCaption) {
+        messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+
+        if (hasCaption) {
+            messageBody = [messageBody stringByAppendingString:@" 🔤"];
+        }
+
+        if (isAttachmentDownloaded) {
+            messageBody = [messageBody stringByAppendingString:@" 👍"];
+        }
+    }
+    NSString *attachmentId;
+    if (isAttachmentDownloaded) {
+        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+        NSString *filename = dataSource.sourceFilename;
+        // To support "fake missing" attachments, we sometimes lie about the
+        // length of the data.
+        UInt32 nominalDataLength = (UInt32)MAX((NSUInteger)1, dataSource.dataLength);
+        TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:fakeAssetLoader.mimeType
+                                                                                     byteCount:nominalDataLength
+                                                                                sourceFilename:filename];
+        NSError *error;
+        BOOL success = [attachmentStream writeData:dataSource.data error:&error];
+        OWSAssert(success && !error);
+
+        [attachmentStream saveWithTransaction:transaction];
+        attachmentId = attachmentStream.uniqueId;
+    } else {
+        UInt32 filesize = 64;
+        TSAttachmentPointer *pointer =
+            [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
+                                                      key:[self createRandomNSDataOfSize:filesize]
+                                                   digest:nil
+                                                byteCount:filesize
+                                              contentType:fakeAssetLoader.mimeType
+                                                    relay:@""
+                                           sourceFilename:fakeAssetLoader.filename
+                                           attachmentType:TSAttachmentTypeDefault];
+        pointer.state = TSAttachmentPointerStateFailed;
+        [pointer saveWithTransaction:transaction];
+        attachmentId = pointer.uniqueId;
+    }
+    TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                     inThread:thread
+                                                                     authorId:@"+19174054215"
+                                                               sourceDeviceId:0
+                                                                  messageBody:messageBody
+                                                                attachmentIds:@[
+                                                                    attachmentId,
+                                                                ]
+                                                             expiresInSeconds:0];
+    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+}
+
+#pragma mark - Fake Media
+
++ (NSArray<DebugUIMessagesAction *> *)allFakeMediaActions:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        // Outgoing
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        // Don't bother with multiple GIF states.
+        [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        //
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        //
+        [self fakeOutgoingLargePdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        //
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+
+        // Incoming
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingJpegAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        // Don't bother with multiple GIF states.
+        [self fakeIncomingGifAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        //
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingMp3Action:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingMp4Action:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingLandscapePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingPortraitPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingLargePngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:NO hasCaption:YES],
+        [self fakeIncomingTinyPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingLargePdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        //
+        [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMissingPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+        [self fakeIncomingMissingPdfAction:thread isAttachmentDownloaded:YES hasCaption:YES],
+        //
+        [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:NO hasCaption:NO],
+        [self fakeIncomingOversizeTextAction:thread isAttachmentDownloaded:YES hasCaption:NO],
+    ];
+    return actions;
+}
+
++ (DebugUIMessagesAction *)fakeAllMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Media"
+                                                    subactions:[self allFakeMediaActions:thread]];
+}
+
++ (DebugUIMessagesAction *)fakeRandomMediaAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Media"
+                                                       subactions:[self allFakeMediaActions:thread]];
+}
+
+#pragma mark - Send Text Messages
+
++ (DebugUIMessagesAction *)sendShortTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Short Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendTextMessageInThread:thread counter:index];
+                                       });
+                                   }];
+}
+
++ (DebugUIMessagesAction *)sendOversizeTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction actionWithLabel:@"Send Oversize Text Message"
+                                   staggeredActionBlock:^(NSUInteger index,
+                                       YapDatabaseReadWriteTransaction *transaction,
+                                       ActionSuccessBlock success,
+                                       ActionFailureBlock failure) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self sendOversizeTextMessage:thread];
+                                       });
+                                   }];
+}
+
++ (DebugUIMessagesAction *)sendMessageVariationsAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self sendShortTextMessageAction:thread],
+        [self sendOversizeTextMessageAction:thread],
+    ];
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send Conversation Cell Variations" subactions:actions];
+}
+
+#pragma mark - Fake Text Messages
+
++ (DebugUIMessagesAction *)fakeShortIncomingTextMessageAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:@"Fake Short Incoming Text Message"
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody =
+                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:messageBody];
+            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+        }];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingTextMessageAction:(TSThread *)thread text:(NSString *)text
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                             authorId:@"+19174054215"
+                                                                       sourceDeviceId:0
+                                                                          messageBody:text];
+            [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+        }];
+}
+
++ (DebugUIMessagesAction *)fakeOutgoingTextMessageAction:(TSThread *)thread
+                                            messageState:(TSOutgoingMessageState)messageState
+                                                    text:(NSString *)text
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:text];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageState:messageState transaction:transaction];
+        }];
+}
+
++ (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
+{
+    return [self fakeShortOutgoingTextMessageAction:thread messageState:messageState isDelivered:NO isRead:NO];
+}
+
++ (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
+                                                  isDelivered:(BOOL)isDelivered
+                                                       isRead:(BOOL)isRead
+{
+    OWSAssert(thread);
+
+    NSString *label = @"Fake Short Incoming Text Message";
+    if (messageState == TSOutgoingMessageStateUnsent) {
+        label = [label stringByAppendingString:@" (Unsent)"];
+    } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
+        label = [label stringByAppendingString:@" (Sending)"];
+    } else if (messageState == TSOutgoingMessageStateSentToService) {
+        if (isRead) {
+            label = [label stringByAppendingString:@" (Read)"];
+        } else if (isDelivered) {
+            label = [label stringByAppendingString:@" (Delivered)"];
+        } else {
+            label = [label stringByAppendingString:@" (Sent)"];
+        }
+    } else {
+        OWSFail(@"%@ unknown message state.", self.logTag)
+    }
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:label
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody =
+                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                             inThread:thread
+                                                                          messageBody:messageBody];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageState:messageState transaction:transaction];
+            if (isDelivered) {
+                NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+                OWSAssert(recipientId.length > 0);
+                [message updateWithDeliveredToRecipientId:recipientId
+                                        deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                              transaction:transaction];
             }
-                                     failure:^{
-                                     }];
-            break;
-        }
-        case 1: {
-            [self ensureRandomJpegWithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
+            if (isRead) {
+                NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
+                OWSAssert(recipientId.length > 0);
+                [message updateWithReadRecipientId:recipientId
+                                     readTimestamp:[NSDate ows_millisecondTimeStamp]
+                                       transaction:transaction];
             }
-                                      failure:^{
-                                      }];
-            break;
-        }
-        case 2: {
-            [self ensureRandomMp3WithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                     failure:^{
-                                     }];
-            break;
-        }
-        case 3: {
-            [self ensureRandomMp4WithSuccess:^(NSString *filePath) {
-                [self sendAttachment:filePath
-                              thread:thread
-                             success:success
-                             failure:^{
-                             }];
-            }
-                                     failure:^{
-                                     }];
-            break;
-        }
-    }
+        }];
 }
+
++ (NSArray<DebugUIMessagesAction *> *)allFakeTextActions:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSArray<DebugUIMessagesAction *> *actions = @[
+        [self fakeShortIncomingTextMessageAction:thread],
+        [self fakeIncomingTextMessageAction:thread text:@"Hi"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"1️⃣2️⃣3️⃣"],
+        [self fakeIncomingTextMessageAction:thread text:@"落"],
+        [self fakeIncomingTextMessageAction:thread text:@"﷽"],
+
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateUnsent],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateAttemptingOut],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService],
+        [self fakeShortOutgoingTextMessageAction:thread
+                                    messageState:TSOutgoingMessageStateSentToService
+                                     isDelivered:YES
+                                          isRead:NO],
+        [self fakeShortOutgoingTextMessageAction:thread
+                                    messageState:TSOutgoingMessageStateSentToService
+                                     isDelivered:YES
+                                          isRead:YES],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"Hi"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
+        [self fakeOutgoingTextMessageAction:thread
+                               messageState:TSOutgoingMessageStateSentToService
+                                       text:@"1️⃣2️⃣"],
+        [self fakeOutgoingTextMessageAction:thread
+                               messageState:TSOutgoingMessageStateSentToService
+                                       text:@"1️⃣2️⃣3️⃣"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"1️⃣"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"落"],
+        [self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService text:@"﷽"],
+    ];
+    return actions;
+}
+
++ (DebugUIMessagesAction *)fakeAllTextAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Text"
+                                                    subactions:[self allFakeTextActions:thread]];
+}
+
++ (DebugUIMessagesAction *)fakeRandomTextAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Text"
+                                                       subactions:[self allFakeTextActions:thread]];
+}
+
+#pragma mark - Exemplary
+
++ (NSArray<DebugUIMessagesAction *> *)allExemplaryActions:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+    [actions addObjectsFromArray:[self allFakeMediaActions:thread]];
+    [actions addObjectsFromArray:[self allFakeTextActions:thread]];
+    return actions;
+}
+
++ (DebugUIMessagesAction *)allExemplaryAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Exemplary Permutations"
+                                                    subactions:[self allExemplaryActions:thread]];
+}
+
++ (void)selectExemplaryAction:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread() OWSAssert(thread);
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Select Action"
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+    for (DebugUIMessagesAction *action in [self allExemplaryActions:thread]) {
+        [alert addAction:[UIAlertAction actionWithTitle:action.label
+                                                  style:UIAlertActionStyleDefault
+                                                handler:^(UIAlertAction *ignore) {
+                                                    [self performActionNTimes:action];
+                                                }]];
+    }
+
+    [alert addAction:[OWSAlerts cancelAction]];
+
+    UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
+    [fromViewController presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark -
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSMutableString *message = [NSMutableString new];
-    for (int i = 0; i < 32; i++) {
+    for (NSUInteger i = 0; i < 32; i++) {
         [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
                               @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
                               @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
@@ -713,7 +1430,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(size % 4 == 0);
 
-    return [Randomness generateRandomBytes:size];
+    return [Randomness generateRandomBytes:(int)size];
 }
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti
@@ -745,11 +1462,14 @@ NS_ASSUME_NONNULL_BEGIN
                              ignoreErrors:YES
                                completion:nil];
 }
+
 + (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
 
     OWSSignalServiceProtosEnvelopeBuilder *builder = [OWSSignalServiceProtosEnvelopeBuilder new];
+
+    [builder setTimestamp:[NSDate ows_millisecondTimeStamp]];
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
@@ -925,7 +1645,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)sendTextAndSystemMessages:(int)counter thread:(TSThread *)thread
++ (void)sendTextAndSystemMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -979,10 +1699,10 @@ NS_ASSUME_NONNULL_BEGIN
     return randomText;
 }
 
-+ (void)createFakeUnreadMessages:(int)counter thread:(TSThread *)thread
++ (void)createFakeUnreadMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (int i = 0; i < counter; i++) {
+        for (NSUInteger i = 0; i < counter; i++) {
             NSString *randomText = [self randomText];
             TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
@@ -1128,150 +1848,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)sendFakeMediaMessages:(NSUInteger)counter thread:(TSThread *)thread
-{
-    // Download media
-    void (^failureBlock)(void) = ^void(void) {
-        OWSFail(@"%@ Failed to download example media.", self.logTag);
-        return;
-    };
+#pragma mark -
 
-    [self ensureRandomGifWithSuccess:^(NSString *_Nonnull gifFilePath) {
-        [self ensureRandomJpegWithSuccess:^(NSString *_Nonnull jpegFilePath) {
-            [self ensureRandomMp4WithSuccess:^(NSString *_Nonnull mp4FilePath) {
-                DataSource *gifDataSource = [DataSourcePath dataSourceWithFilePath:gifFilePath];
-                DataSource *jpegDataSource = [DataSourcePath dataSourceWithFilePath:jpegFilePath];
-                DataSource *mp4DataSource = [DataSourcePath dataSourceWithFilePath:mp4FilePath];
-
-                [self sendFakeMediaMessages:counter
-                                     thread:thread
-                              gifDataSource:gifDataSource
-                             jpegDataSource:jpegDataSource
-                              mp4DataSource:mp4DataSource];
-            }
-                                     failure:failureBlock];
-        }
-                                  failure:failureBlock];
-    }
-                             failure:failureBlock];
-}
-
-+ (void)sendFakeMediaMessages:(NSUInteger)counter
-                       thread:(TSThread *)thread
-                gifDataSource:(DataSource *)gifDataSource
-               jpegDataSource:(DataSource *)jpegDataSource
-                mp4DataSource:(DataSource *)mp4DataSource
-{
-    const NSUInteger kMaxBatchSize = 2500;
-    if (counter < kMaxBatchSize) {
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self sendFakeMediaMessages:counter
-                                 thread:thread
-                          gifDataSource:gifDataSource
-                         jpegDataSource:jpegDataSource
-                          mp4DataSource:mp4DataSource
-                            transaction:transaction];
-        }];
-    } else {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSUInteger remainder = counter;
-            while (remainder > 0) {
-                NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                [OWSPrimaryStorage.dbReadWriteConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [self sendFakeMediaMessages:batchSize
-                                             thread:thread
-                                      gifDataSource:gifDataSource
-                                     jpegDataSource:jpegDataSource
-                                      mp4DataSource:mp4DataSource
-                                        transaction:transaction];
-                    }];
-                remainder -= batchSize;
-                DDLogInfo(@"%@ sendFakeMediaMessages %zd / %zd", self.logTag, counter - remainder, counter);
-            }
-        });
-    }
-}
-
-+ (void)sendFakeMediaMessages:(NSUInteger)counter
-                       thread:(TSThread *)thread
-                gifDataSource:(DataSource *)gifDataSource
-               jpegDataSource:(DataSource *)jpegDataSource
-                mp4DataSource:(DataSource *)mp4DataSource
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    DDLogInfo(@"%@ sendFakeMediaMessages: %zd", self.logTag, counter);
-
-    for (NSUInteger i = 0; i < counter; i++) {
-
-        // Random time within last n years. Helpful for filling out a media gallery over time.
-        double yearsMillis = 4.0 * kYearsInMs;
-        uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
-
-        uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
-
-
-        NSString *_Nullable randomCaption;
-        if (arc4random() % 2 == 2) {
-            randomCaption = [self randomText];
-        }
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:timestamp
-                                                                         inThread:thread
-                                                                      messageBody:randomCaption
-                                                                   isVoiceMessage:NO
-                                                                 expiresInSeconds:0];
-        [message setReceivedAtTimestamp:timestamp];
-
-        TSAttachmentStream *attachmentStream;
-        NSString *filename;
-        switch (arc4random_uniform(3)) {
-            case 0: {
-                DataSource *dataSource = gifDataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/gif"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-            case 1: {
-                DataSource *dataSource = jpegDataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-            case 2: {
-                DataSource *dataSource = mp4DataSource;
-                filename = dataSource.sourceFilename;
-                attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"video/mp4"
-                                                                         byteCount:(UInt32)dataSource.dataLength
-                                                                    sourceFilename:filename];
-                NSError *error;
-                BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-                OWSAssert(success && !error);
-                break;
-            }
-        }
-
-        [attachmentStream saveWithTransaction:transaction];
-        [message.attachmentIds addObject:attachmentStream.uniqueId];
-        if (filename) {
-            message.attachmentFilenameMap[attachmentStream.uniqueId] = filename;
-        }
-        [message saveWithTransaction:transaction];
-
-        [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
-    }
-}
-
-+ (void)createFakeLargeOutgoingAttachments:(int)counter thread:(TSThread *)thread
++ (void)createFakeLargeOutgoingAttachments:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -1309,7 +1888,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-+ (void)sendTinyAttachments:(int)counter thread:(TSThread *)thread
++ (void)sendTinyAttachments:(NSUInteger)counter thread:(TSThread *)thread
 {
     if (counter < 1) {
         return;
@@ -1330,7 +1909,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-+ (void)createNewGroups:(int)counter recipientId:(NSString *)recipientId
++ (void)createNewGroups:(NSUInteger)counter recipientId:(NSString *)recipientId
 {
     if (counter < 1) {
         return;
@@ -1373,24 +1952,24 @@ NS_ASSUME_NONNULL_BEGIN
                           }];
 }
 
-+ (void)injectFakeIncomingMessages:(int)counter thread:(TSThread *)thread
++ (void)injectFakeIncomingMessages:(NSUInteger)counter thread:(TSThread *)thread
 {
     // Wait 5 seconds so debug user has time to navigate to another
     // view before message processing occurs.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.f * NSEC_PER_SEC)),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
-            for (int i = 0; i < counter; i++) {
+            for (NSUInteger i = 0; i < counter; i++) {
                 [self injectIncomingMessageInThread:thread counter:counter - i];
             }
         });
 }
 
-+ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(int)counter
++ (void)injectIncomingMessageInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
     OWSAssert(thread);
 
-    DDLogInfo(@"%@ injectIncomingMessageInThread: %d", self.logTag, counter);
+    DDLogInfo(@"%@ injectIncomingMessageInThread: %zd", self.logTag, counter);
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -1436,7 +2015,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (void)performRandomActions:(int)counter thread:(TSThread *)thread
++ (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)),
                    dispatch_get_main_queue(),
@@ -1448,11 +2027,10 @@ NS_ASSUME_NONNULL_BEGIN
                    });
 }
 
-+ (void)performRandomActionInThread:(TSThread *)thread
-                            counter:(int)counter
++ (void)performRandomActionInThread:(TSThread *)thread counter:(NSUInteger)counter
 {
-    typedef void (^ActionBlock)(YapDatabaseReadWriteTransaction *transaction);
-    NSArray<ActionBlock> *actionBlocks = @[
+    typedef void (^TransactionBlock)(YapDatabaseReadWriteTransaction *transaction);
+    NSArray<TransactionBlock> *actionBlocks = @[
         ^(YapDatabaseReadWriteTransaction *transaction) {
             // injectIncomingMessageInThread doesn't take a transaction.
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1495,9 +2073,9 @@ NS_ASSUME_NONNULL_BEGIN
         },
     ];
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        int actionCount = 1 + (int)arc4random_uniform(3);
-        for (int actionIdx = 0; actionIdx < actionCount; actionIdx++) {
-            ActionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
+        NSUInteger actionCount = 1 + (NSUInteger)arc4random_uniform(3);
+        for (NSUInteger actionIdx = 0; actionIdx < actionCount; actionIdx++) {
+            TransactionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
             actionBlock(transaction);
         }
     }];
@@ -1710,21 +2288,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    long long now = (long long)[NSDate ows_millisecondTimeStamp];
     NSArray<NSNumber *> *timestamps = @[
-        @(now + 1 * kHourInMs),
+        @(now + 1 * (long long)kHourInMs),
         @(now),
-        @(now - 1 * kHourInMs),
-        @(now - 12 * kHourInMs),
-        @(now - 1 * kDayInMs),
-        @(now - 2 * kDayInMs),
-        @(now - 3 * kDayInMs),
-        @(now - 6 * kDayInMs),
-        @(now - 7 * kDayInMs),
-        @(now - 8 * kDayInMs),
-        @(now - 2 * kWeekInMs),
-        @(now - 1 * kMonthInMs),
-        @(now - 2 * kMonthInMs),
+        @(now - 1 * (long long)kHourInMs),
+        @(now - 12 * (long long)kHourInMs),
+        @(now - 1 * (long long)kDayInMs),
+        @(now - 2 * (long long)kDayInMs),
+        @(now - 3 * (long long)kDayInMs),
+        @(now - 6 * (long long)kDayInMs),
+        @(now - 7 * (long long)kDayInMs),
+        @(now - 8 * (long long)kDayInMs),
+        @(now - 2 * (long long)kWeekInMs),
+        @(now - 1 * (long long)kMonthInMs),
+        @(now - 2 * (long long)kMonthInMs),
     ];
     NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
     [recipientIds removeObject:[TSAccountManager localNumber]];
