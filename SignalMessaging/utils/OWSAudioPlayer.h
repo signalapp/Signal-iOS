@@ -38,9 +38,6 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 // respects silent switch
 - (void)playWithCurrentAudioCategory;
 
-// respects silent switch, mixes with others
-- (void)playAsForegroundAlert;
-
 // will ensure sound is audible, even if silent switch is enabled
 - (void)playWithPlaybackAudioCategory;
 
