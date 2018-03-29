@@ -21,8 +21,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: Review all comments.
-
 CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
     return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
@@ -308,7 +306,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // TODO: We might not need to hide it.
     self.bubbleView.hidden = NO;
     self.bubbleView.isOutgoing = self.isOutgoing;
-    // TODO: Hide tails/thorns here?
+    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail;
 
     if (self.shouldHaveFailedSendBadge) {
         self.failedSendBadgeView = [UIImageView new];
@@ -343,15 +341,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     [self updateDateHeader];
     [self updateFooter];
-
-    // TODO: Do we need to pin the bubble size?
-    {
-        //        - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
-        //    CGSize mediaSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
-        // TODO:
-        //    [self.viewConstraints addObjectsFromArray:[self.mediaMaskingView
-        //    autoSetDimensionsToSize:mediaSize]];
-    }
 
     UIView *_Nullable lastSubview = nil;
     CGFloat bottomMargin = 0;
@@ -549,8 +538,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     } else {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
-        [mediaView removeFromSuperview];
-        // TODO: We need to hide/remove the media view.
+        // TODO: Do we need to hide/remove the media view?
         [self showAttachmentErrorView:mediaView];
     }
     return cellMedia;
@@ -560,10 +548,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 // * If cell is not visible, eagerly unload view contents.
 - (void)ensureMediaLoadState
 {
-    //    CGSize mediaSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
-    // TODO:
-    //    [self.viewConstraints addObjectsFromArray:[self.mediaMaskingView autoSetDimensionsToSize:mediaSize]];
-
     if (!self.isCellVisible) {
         // Eagerly unload.
         if (self.unloadCellContentBlock) {
@@ -1092,8 +1076,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             OWSAssert(self.mediaSize.height > 0);
 
             // TODO: Adjust this behavior.
-            // TODO: This behavior is a bit different than the old behavior defined
-            //       in JSQMediaItem+OWS.h.  Let's discuss.
 
             CGFloat contentAspectRatio = self.mediaSize.width / self.mediaSize.height;
             // Clamp the aspect ratio so that very thin/wide content is presented
@@ -1187,12 +1169,20 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
 - (CGFloat)textLeadingMargin
 {
-    return (self.isIncoming ? kBubbleTextHInset + kBubbleThornSideInset : kBubbleTextHInset);
+    CGFloat result = kBubbleTextHInset;
+    if (self.isIncoming && !self.viewItem.shouldHideBubbleTail) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
 }
 
 - (CGFloat)textTrailingMargin
 {
-    return (self.isIncoming ? kBubbleTextHInset : kBubbleTextHInset + kBubbleThornSideInset);
+    CGFloat result = kBubbleTextHInset;
+    if (!self.isIncoming && !self.viewItem.shouldHideBubbleTail) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
 }
 
 - (CGFloat)textTopMargin

@@ -134,6 +134,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
+- (void)setShouldHideBubbleTail:(BOOL)shouldHideBubbleTail
+{
+    if (_shouldHideBubbleTail == shouldHideBubbleTail) {
+        return;
+    }
+
+    _shouldHideBubbleTail = shouldHideBubbleTail;
+
+    [self clearCachedLayoutState];
+}
+
 - (void)clearCachedLayoutState
 {
     self.cachedCellSize = nil;

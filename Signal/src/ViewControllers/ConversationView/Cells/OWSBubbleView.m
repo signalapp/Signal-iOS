@@ -40,6 +40,17 @@ const CGFloat kBubbleTextVInset = 10.f;
     }
 }
 
+- (void)setHideTail:(BOOL)hideTail
+{
+    BOOL didChange = _hideTail != hideTail;
+
+    _hideTail = hideTail;
+
+    if (didChange || !self.shapeLayer) {
+        [self updateLayers];
+    }
+}
+
 - (void)setFrame:(CGRect)frame
 {
     BOOL didChange = !CGSizeEqualToSize(self.frame.size, frame.size);
@@ -100,24 +111,25 @@ const CGFloat kBubbleTextVInset = 10.f;
     UIBezierPath *bezierPath = [self maskPath];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
-    //    self.shapeLayer.bounds = self.bounds;
     self.shapeLayer.path = bezierPath.CGPath;
 
-    //    self.maskLayer.bounds = self.bounds;
     self.maskLayer.path = bezierPath.CGPath;
 }
 
 - (UIBezierPath *)maskPath
 {
-    return [self.class maskPathForSize:self.bounds.size isOutgoing:self.isOutgoing isRTL:self.isRTL];
+    return [self.class maskPathForSize:self.bounds.size
+                            isOutgoing:self.isOutgoing
+                              hideTail:self.hideTail
+                                 isRTL:self.isRTL];
 }
 
-+ (UIBezierPath *)maskPathForSize:(CGSize)size isOutgoing:(BOOL)isOutgoing isRTL:(BOOL)isRTL
++ (UIBezierPath *)maskPathForSize:(CGSize)size isOutgoing:(BOOL)isOutgoing hideTail:(BOOL)hideTail isRTL:(BOOL)isRTL
 {
     UIBezierPath *bezierPath = [UIBezierPath new];
 
     CGFloat bubbleLeft = 0.f;
-    CGFloat bubbleRight = size.width - kBubbleThornSideInset;
+    CGFloat bubbleRight = size.width - (hideTail ? 0.f : kBubbleThornSideInset);
     CGFloat bubbleTop = 0.f;
     CGFloat bubbleBottom = size.height - kBubbleThornVInset;
 
@@ -135,15 +147,17 @@ const CGFloat kBubbleTextVInset = 10.f;
     [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)
                        controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
 
-    // Thorn Tip
-    CGPoint thornTip = CGPointMake(size.width + 1, size.height);
-    CGPoint thornA = CGPointMake(bubbleRight - kBubbleHRounding * 0.5f, bubbleBottom - kBubbleVRounding);
-    CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
-    [bezierPath moveToPoint:thornTip];
-    [bezierPath addQuadCurveToPoint:thornA controlPoint:CGPointMake(thornA.x, bubbleBottom)];
-    [bezierPath addLineToPoint:thornB];
-    [bezierPath addQuadCurveToPoint:thornTip controlPoint:CGPointMake(thornB.x, bubbleBottom)];
-    [bezierPath addLineToPoint:thornTip];
+    if (!hideTail) {
+        // Thorn Tip
+        CGPoint thornTip = CGPointMake(size.width + 1, size.height);
+        CGPoint thornA = CGPointMake(bubbleRight - kBubbleHRounding * 0.5f, bubbleBottom - kBubbleVRounding);
+        CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
+        [bezierPath moveToPoint:thornTip];
+        [bezierPath addQuadCurveToPoint:thornA controlPoint:CGPointMake(thornA.x, bubbleBottom)];
+        [bezierPath addLineToPoint:thornB];
+        [bezierPath addQuadCurveToPoint:thornTip controlPoint:CGPointMake(thornB.x, bubbleBottom)];
+        [bezierPath addLineToPoint:thornTip];
+    }
 
     // Horizontal Flip If Necessary
     BOOL shouldFlip = isOutgoing == isRTL;
