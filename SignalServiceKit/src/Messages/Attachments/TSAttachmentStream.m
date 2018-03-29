@@ -572,8 +572,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert([self isAudio]);
 
-    //    return 0;
-
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaURL error:&error];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]

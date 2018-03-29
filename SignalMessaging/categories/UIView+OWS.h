@@ -125,22 +125,4 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @end
 
-//#pragma mark -
-//
-//@interface NSLayoutConstraint (OWS)
-//
-//- (NSLayoutConstraint *)withLowPriority;
-//- (NSLayoutConstraint *)withHighPriority;
-//
-//@end
-//
-//#pragma mark -
-//
-//@interface NSArray (OWSLayout)
-//
-//- (NSArray *)withLowPriorities;
-//- (NSArray *)withHighPriorities;
-//
-//@end
-
 NS_ASSUME_NONNULL_END
