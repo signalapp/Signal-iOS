@@ -3,6 +3,7 @@
 //
 
 #import "OWSBubbleView.h"
+#import "OWSBubbleStrokeView.h"
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +18,15 @@ const CGFloat kBubbleThornVInset = 0;
 const CGFloat kBubbleTextHInset = 10.f;
 const CGFloat kBubbleTextVInset = 10.f;
 
+@interface OWSBubbleView ()
+
+@property (nonatomic) CAShapeLayer *maskLayer;
+@property (nonatomic) CAShapeLayer *shapeLayer;
+
+@end
+
+#pragma mark -
+
 @implementation OWSBubbleView
 
 - (void)setIsOutgoing:(BOOL)isOutgoing
@@ -26,7 +36,7 @@ const CGFloat kBubbleTextVInset = 10.f;
     _isOutgoing = isOutgoing;
 
     if (didChange || !self.shapeLayer) {
-        [self updateMask];
+        [self updateLayers];
     }
 }
 
@@ -37,8 +47,11 @@ const CGFloat kBubbleTextVInset = 10.f;
     [super setFrame:frame];
 
     if (didChange || !self.shapeLayer) {
-        [self updateMask];
+        [self updateLayers];
     }
+
+    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    [self.bubbleStrokeView updateLayers];
 }
 
 - (void)setBounds:(CGRect)bounds
@@ -48,8 +61,19 @@ const CGFloat kBubbleTextVInset = 10.f;
     [super setBounds:bounds];
 
     if (didChange || !self.shapeLayer) {
-        [self updateMask];
+        [self updateLayers];
     }
+
+    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    [self.bubbleStrokeView updateLayers];
+}
+
+- (void)setCenter:(CGPoint)center
+{
+    [super setCenter:center];
+
+    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    [self.bubbleStrokeView updateLayers];
 }
 
 - (void)setBubbleColor:(nullable UIColor *)bubbleColor
@@ -57,12 +81,12 @@ const CGFloat kBubbleTextVInset = 10.f;
     _bubbleColor = bubbleColor;
 
     if (!self.shapeLayer) {
-        [self updateMask];
+        [self updateLayers];
     }
     self.shapeLayer.fillColor = bubbleColor.CGColor;
 }
 
-- (void)updateMask
+- (void)updateLayers
 {
     if (!self.shapeLayer) {
         self.shapeLayer = [CAShapeLayer new];
@@ -73,13 +97,19 @@ const CGFloat kBubbleTextVInset = 10.f;
         self.layer.mask = self.maskLayer;
     }
 
-    UIBezierPath *bezierPath =
-        [self.class maskPathForSize:self.bounds.size isOutgoing:self.isOutgoing isRTL:self.isRTL];
+    UIBezierPath *bezierPath = [self maskPath];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
+    //    self.shapeLayer.bounds = self.bounds;
     self.shapeLayer.path = bezierPath.CGPath;
 
+    //    self.maskLayer.bounds = self.bounds;
     self.maskLayer.path = bezierPath.CGPath;
+}
+
+- (UIBezierPath *)maskPath
+{
+    return [self.class maskPathForSize:self.bounds.size isOutgoing:self.isOutgoing isRTL:self.isRTL];
 }
 
 + (UIBezierPath *)maskPathForSize:(CGSize)size isOutgoing:(BOOL)isOutgoing isRTL:(BOOL)isRTL

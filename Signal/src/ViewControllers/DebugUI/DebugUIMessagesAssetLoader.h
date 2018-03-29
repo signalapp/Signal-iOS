@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)wideLandscapePngInstance;
 + (instancetype)largePngInstance;
 + (instancetype)tinyPngInstance;
++ (instancetype)pngInstanceWithSize:(CGSize)size
+                    backgroundColor:(UIColor *)backgroundColor
+                          textColor:(UIColor *)textColor
+                              label:(NSString *)label;
 + (instancetype)tinyPdfInstance;
 + (instancetype)largePdfInstance;
 + (instancetype)missingPngInstance;

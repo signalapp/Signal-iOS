@@ -8,6 +8,7 @@
 #import "ConversationViewItem.h"
 #import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
+#import "OWSBubbleStrokeView.h"
 #import "OWSBubbleView.h"
 #import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
@@ -426,6 +427,22 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         }
         lastSubview = bodyMediaView;
         bottomMargin = 0;
+
+        BOOL shouldStrokeMediaView = [bodyMediaView isKindOfClass:[UIImageView class]];
+        if (shouldStrokeMediaView) {
+            OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
+            bubbleStrokeView.strokeThickness = 1.f;
+            bubbleStrokeView.strokeColor = [UIColor colorWithWhite:0.f alpha:0.1f];
+            bubbleStrokeView.bubbleView = self.bubbleView;
+
+            [self.bubbleView addSubview:bubbleStrokeView];
+            [bubbleStrokeView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:bodyMediaView];
+            self.bubbleView.bubbleStrokeView = bubbleStrokeView;
+            OWSAssert(self.bubbleView.bubbleStrokeView);
+        }
     }
 
     OWSMessageTextView *_Nullable bodyTextView = nil;
@@ -1233,6 +1250,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     self.bubbleView.hidden = YES;
     self.bubbleView.bubbleColor = nil;
+    self.bubbleView.bubbleStrokeView = nil;
 
     for (UIView *subview in self.bubbleView.subviews) {
         [subview removeFromSuperview];

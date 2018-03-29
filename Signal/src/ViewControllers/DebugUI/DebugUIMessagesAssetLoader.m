@@ -456,6 +456,17 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
++ (instancetype)pngInstanceWithSize:(CGSize)size
+                    backgroundColor:(UIColor *)backgroundColor
+                          textColor:(UIColor *)textColor
+                              label:(NSString *)label
+{
+    return [DebugUIMessagesAssetLoader fakePngAssetLoaderWithImageSize:size
+                                                       backgroundColor:backgroundColor
+                                                             textColor:textColor
+                                                                 label:label];
+}
+
 + (instancetype)tinyPdfInstance
 {
     static DebugUIMessagesAssetLoader *instance = nil;

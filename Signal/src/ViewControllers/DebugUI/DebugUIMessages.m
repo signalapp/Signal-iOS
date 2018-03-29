@@ -703,6 +703,27 @@ NS_ASSUME_NONNULL_BEGIN
                                   thread:thread];
 }
 
++ (DebugUIMessagesAction *)fakeOutgoingPngAction:(TSThread *)thread
+                                     actionLabel:(NSString *)actionLabel
+                                       imageSize:(CGSize)imageSize
+                                 backgroundColor:(UIColor *)backgroundColor
+                                       textColor:(UIColor *)textColor
+                                      imageLabel:(NSString *)imageLabel
+                                    messageState:(TSOutgoingMessageState)messageState
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeOutgoingMediaAction:actionLabel
+                            messageState:messageState
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader pngInstanceWithSize:imageSize
+                                                                         backgroundColor:backgroundColor
+                                                                               textColor:textColor
+                                                                                   label:imageLabel]
+                                  thread:thread];
+}
+
 + (DebugUIMessagesAction *)fakeOutgoingTinyPdfAction:(TSThread *)thread
                                         messageState:(TSOutgoingMessageState)messageState
                                           hasCaption:(BOOL)hasCaption
@@ -1015,6 +1036,27 @@ NS_ASSUME_NONNULL_BEGIN
                   isAttachmentDownloaded:isAttachmentDownloaded
                               hasCaption:hasCaption
                          fakeAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
+                                  thread:thread];
+}
+
++ (DebugUIMessagesAction *)fakeIncomingPngAction:(TSThread *)thread
+                                     actionLabel:(NSString *)actionLabel
+                                       imageSize:(CGSize)imageSize
+                                 backgroundColor:(UIColor *)backgroundColor
+                                       textColor:(UIColor *)textColor
+                                      imageLabel:(NSString *)imageLabel
+                          isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
+                                      hasCaption:(BOOL)hasCaption
+{
+    OWSAssert(thread);
+
+    return [self fakeIncomingMediaAction:actionLabel
+                  isAttachmentDownloaded:isAttachmentDownloaded
+                              hasCaption:hasCaption
+                         fakeAssetLoader:[DebugUIMessagesAssetLoader pngInstanceWithSize:imageSize
+                                                                         backgroundColor:backgroundColor
+                                                                               textColor:textColor
+                                                                                   label:imageLabel]
                                   thread:thread];
 }
 
@@ -1341,6 +1383,112 @@ NS_ASSUME_NONNULL_BEGIN
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
                                                   messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Outgoing Reserved Color Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing White Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[UIColor whiteColor]
+                          textColor:[UIColor ows_signalBrandBlueColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateUnsent
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing White Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[UIColor whiteColor]
+                          textColor:[UIColor ows_signalBrandBlueColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateAttemptingOut
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing White Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[UIColor whiteColor]
+                          textColor:[UIColor ows_signalBrandBlueColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateSentToService
+                         hasCaption:YES],
+
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateUnsent
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateAttemptingOut
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateSentToService
+                         hasCaption:YES],
+
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateUnsent
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateAttemptingOut
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateSentToService
+                         hasCaption:YES],
+
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateUnsent
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateAttemptingOut
+                         hasCaption:YES],
+        [self fakeOutgoingPngAction:thread
+                        actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+                       messageState:TSOutgoingMessageStateSentToService
+                         hasCaption:YES],
+    ]];
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
                                                           text:@"⚠️ Outgoing Tiny Pdf ⚠️"]];
     }
     [actions addObjectsFromArray:@[
@@ -1477,6 +1625,44 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeIncomingTinyPngAction:thread isAttachmentDownloaded:YES hasCaption:YES],
     ]];
     if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Reserved Color Png ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming White Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[UIColor whiteColor]
+                          textColor:[UIColor ows_signalBrandBlueColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:YES
+                         hasCaption:YES],
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming White Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[UIColor whiteColor]
+                          textColor:[UIColor ows_signalBrandBlueColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:NO
+                         hasCaption:YES],
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming 'Incoming' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorIncoming]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:YES
+                         hasCaption:YES],
+        [self fakeIncomingPngAction:thread
+                        actionLabel:@"Fake Incoming 'Incoming' Png"
+                          imageSize:CGSizeMake(200.f, 200.f)
+                    backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorIncoming]
+                          textColor:[UIColor whiteColor]
+                         imageLabel:@"W"
+             isAttachmentDownloaded:NO
+                         hasCaption:YES],
+    ]];
+    if (includeLabels) {
         [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Incoming Tiny Pdf ⚠️"]];
     }
     [actions addObjectsFromArray:@[
@@ -1519,7 +1705,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Media"
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Media"
                                                     subactions:[self allFakeMediaActions:thread includeLabels:YES]];
 }
 
@@ -1527,7 +1713,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Media"
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Random Fake Media"
                                                        subactions:[self allFakeMediaActions:thread includeLabels:NO]];
 }
 
@@ -1744,7 +1930,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Fake All Text"
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Text"
                                                     subactions:[self allFakeTextActions:thread includeLabels:YES]];
 }
 
@@ -1752,7 +1938,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Fake Random Text"
+    return [DebugUIMessagesGroupAction randomGroupActionWithLabel:@"Random Fake Text"
                                                        subactions:[self allFakeTextActions:thread includeLabels:NO]];
 }
 

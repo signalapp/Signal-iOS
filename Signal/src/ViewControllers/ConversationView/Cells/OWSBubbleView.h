@@ -13,15 +13,18 @@ extern const CGFloat kBubbleThornVInset;
 extern const CGFloat kBubbleTextHInset;
 extern const CGFloat kBubbleTextVInset;
 
+@class OWSBubbleStrokeView;
+
 @interface OWSBubbleView : UIView
+
+@property (nonatomic, weak, nullable) OWSBubbleStrokeView *bubbleStrokeView;
 
 @property (nonatomic) BOOL isOutgoing;
 @property (nonatomic) BOOL hideTail;
 
-@property (nonatomic) CAShapeLayer *maskLayer;
-@property (nonatomic) CAShapeLayer *shapeLayer;
-
 @property (nonatomic, nullable) UIColor *bubbleColor;
+
+- (UIBezierPath *)maskPath;
 
 @end
 
