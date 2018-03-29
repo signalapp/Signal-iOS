@@ -59,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
              // Fake Text
              [DebugUIMessages fakeAllTextAction:thread],
              [DebugUIMessages fakeRandomTextAction:thread],
+             // Sequences
+             [DebugUIMessages allFakeSequencesAction:thread],
              // Exemplary
              [DebugUIMessages allFakeAction:thread],
          ]) {
@@ -1788,11 +1790,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [DebugUIMessagesSingleAction
                actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:text];
             TSIncomingMessage *message = [[TSIncomingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
                                                                              authorId:@"+19174054215"
                                                                        sourceDeviceId:0
-                                                                          messageBody:text];
+                                                                          messageBody:messageBody];
             [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
         }];
 }
@@ -1806,9 +1809,10 @@ NS_ASSUME_NONNULL_BEGIN
     return [DebugUIMessagesSingleAction
                actionWithLabel:[NSString stringWithFormat:@"Fake Incoming Text Message (%@)", text]
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:text];
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
-                                                                          messageBody:text];
+                                                                          messageBody:messageBody];
             [message saveWithTransaction:transaction];
             [message updateWithMessageState:messageState transaction:transaction];
         }];
@@ -1821,6 +1825,19 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                 messageState:(TSOutgoingMessageState)messageState
+                                                  isDelivered:(BOOL)isDelivered
+                                                       isRead:(BOOL)isRead
+{
+    return [self fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                               text:[self randomText]
+                                       messageState:messageState
+                                        isDelivered:isDelivered
+                                             isRead:isRead];
+}
+
++ (DebugUIMessagesAction *)fakeShortOutgoingTextMessageAction:(TSThread *)thread
+                                                         text:(NSString *)text
                                                  messageState:(TSOutgoingMessageState)messageState
                                                   isDelivered:(BOOL)isDelivered
                                                        isRead:(BOOL)isRead
@@ -1847,8 +1864,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
-            NSString *messageBody =
-                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:[self randomText]];
+            NSString *messageBody = [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:text];
             TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                              inThread:thread
                                                                           messageBody:messageBody];
@@ -1951,6 +1967,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
     [actions addObjectsFromArray:[self allFakeMediaActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeTextActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -1987,6 +2004,139 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
     [fromViewController presentViewController:alert animated:YES completion:nil];
+}
+
+#pragma mark - Sequences
+
++ (NSArray<DebugUIMessagesAction *> *)allFakeSequenceActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Short Message Sequences ⚠️"]];
+    }
+
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:@"Outgoing"]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 1"]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 2"]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 3"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateUnsent
+                                                      text:@"Outgoing Unsent 1"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateUnsent
+                                                      text:@"Outgoing Unsent 2"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                                      text:@"Outgoing Sending 1"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                                      text:@"Outgoing Sending 2"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:@"Outgoing Sent 1"]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:@"Outgoing Sent 2"]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:@"Outgoing Delivered 1"
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:NO]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:@"Outgoing Delivered 2"
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:NO]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:@"Outgoing Read 1"
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:YES]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:@"Outgoing Read 2"
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:YES]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming"]];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Long Message Sequences ⚠️"]];
+    }
+
+    NSString *longText = @"\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
+                         @"vitae pretium hendrerit, tellus turpis pharetra libero...";
+
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:[@"Outgoing" stringByAppendingString:longText]]];
+    [actions
+        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 1" stringByAppendingString:longText]]];
+    [actions
+        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 2" stringByAppendingString:longText]]];
+    [actions
+        addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 3" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateUnsent
+                                                      text:[@"Outgoing Unsent 1" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateUnsent
+                                                      text:[@"Outgoing Unsent 2" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                                      text:[@"Outgoing Sending 1" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                                      text:[@"Outgoing Sending 2" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:[@"Outgoing Sent 1" stringByAppendingString:longText]]];
+    [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                              messageState:TSOutgoingMessageStateSentToService
+                                                      text:[@"Outgoing Sent 2" stringByAppendingString:longText]]];
+    [actions
+        addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                      text:[@"Outgoing Delivered 1" stringByAppendingString:longText]
+                                              messageState:TSOutgoingMessageStateSentToService
+                                               isDelivered:YES
+                                                    isRead:NO]];
+    [actions
+        addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                      text:[@"Outgoing Delivered 2" stringByAppendingString:longText]
+                                              messageState:TSOutgoingMessageStateSentToService
+                                               isDelivered:YES
+                                                    isRead:NO]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:[@"Outgoing Read 1" stringByAppendingString:longText]
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:YES]];
+    [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
+                                                           text:[@"Outgoing Read 2" stringByAppendingString:longText]
+                                                   messageState:TSOutgoingMessageStateSentToService
+                                                    isDelivered:YES
+                                                         isRead:YES]];
+    [actions addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming" stringByAppendingString:longText]]];
+
+    return actions;
+}
+
++ (DebugUIMessagesAction *)allFakeSequencesAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Sequences"
+                                                    subactions:[self allFakeSequenceActions:thread includeLabels:YES]];
 }
 
 #pragma mark -

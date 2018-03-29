@@ -21,6 +21,7 @@ extern const CGFloat kBubbleTextVInset;
 
 @property (nonatomic) BOOL isOutgoing;
 @property (nonatomic) BOOL hideTail;
+@property (nonatomic) BOOL isTruncated;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
 

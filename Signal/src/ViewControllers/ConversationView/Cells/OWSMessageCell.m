@@ -465,22 +465,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         bottomMargin = self.textBottomMargin;
     }
 
-#ifdef DEBUG
-    DDLogVerbose(
-        @"%@ --- bodyMediaView: %@ [%@].", self.logTag, bodyMediaView, NSStringFromCGSize(bodyMediaContentSize));
-    DDLogVerbose(@"%@ --- bodyTextView: %@ (%zd) [%@].",
-        self.logTag,
-        bodyTextView.text,
-        bodyTextView.text.length,
-        NSStringFromCGSize(bodyTextContentSize));
-    [bodyMediaView logFrameLaterWithLabel:@"bodyMediaView"];
-    [bodyTextView logFrameLaterWithLabel:@"bodyTextView"];
-    [self.bubbleView logFrameLaterWithLabel:@"bubbleView"];
-    [self.contentView logFrameLaterWithLabel:@"contentView"];
-//    [bodyMediaView addRedBorder];
-//    [bodyTextView addRedBorder];
-#endif
-
     UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
     if (tapForMoreLabel) {
         OWSAssert(lastSubview);
@@ -765,12 +749,20 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 }
 
-- (nullable UIView *)createTapForMoreLabelIfNecessary
+- (BOOL)hasTapForMore
 {
     if (!self.hasBodyText) {
-        return nil;
+        return NO;
+    } else if (!self.displayableBodyText.isTextTruncated) {
+        return NO;
+    } else {
+        return YES;
     }
-    if (!self.displayableBodyText.isTextTruncated) {
+}
+
+- (nullable UIView *)createTapForMoreLabelIfNecessary
+{
+    if (!self.hasTapForMore) {
         return nil;
     }
 
@@ -1124,7 +1116,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
-    if (self.hasBodyText && self.displayableBodyText.isTextTruncated) {
+    if (self.hasTapForMore) {
         cellSize.height += self.tapForMoreHeight;
     }
 
@@ -1133,14 +1125,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     cellSize = CGSizeCeil(cellSize);
-
-    DDLogVerbose(@"%@ --- cellSizeForViewWidth: %@ + %@ + %f + %f = %@.",
-        self.logTag,
-        NSStringFromCGSize(mediaContentSize),
-        NSStringFromCGSize(textContentSize),
-        self.dateHeaderHeight,
-        self.footerHeight,
-        NSStringFromCGSize(cellSize));
 
     return cellSize;
 }
@@ -1170,7 +1154,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (CGFloat)textLeadingMargin
 {
     CGFloat result = kBubbleTextHInset;
-    if (self.isIncoming && !self.viewItem.shouldHideBubbleTail) {
+    if (self.isIncoming) {
         result += kBubbleThornSideInset;
     }
     return result;
@@ -1179,7 +1163,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (CGFloat)textTrailingMargin
 {
     CGFloat result = kBubbleTextHInset;
-    if (!self.isIncoming && !self.viewItem.shouldHideBubbleTail) {
+    if (!self.isIncoming) {
         result += kBubbleThornSideInset;
     }
     return result;
@@ -1334,7 +1318,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         }
     }
 
-    if (self.hasBodyText && self.displayableBodyText.isTextTruncated) {
+    if (self.hasTapForMore) {
         [self.delegate didTapTruncatedTextMessage:self.viewItem];
         return;
     }
@@ -1365,7 +1349,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             break;
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            if (self.displayableBodyText.isTextTruncated) {
+            if (self.hasTapForMore) {
                 [self.delegate didTapTruncatedTextMessage:self.viewItem];
                 return;
             }

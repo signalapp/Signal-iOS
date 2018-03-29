@@ -51,6 +51,17 @@ const CGFloat kBubbleTextVInset = 10.f;
     }
 }
 
+- (void)setIsTruncated:(BOOL)isTruncated
+{
+    BOOL didChange = _isTruncated != isTruncated;
+
+    _isTruncated = isTruncated;
+
+    if (didChange || !self.shapeLayer) {
+        [self updateLayers];
+    }
+}
+
 - (void)setFrame:(CGRect)frame
 {
     BOOL didChange = !CGSizeEqualToSize(self.frame.size, frame.size);
@@ -121,15 +132,20 @@ const CGFloat kBubbleTextVInset = 10.f;
     return [self.class maskPathForSize:self.bounds.size
                             isOutgoing:self.isOutgoing
                               hideTail:self.hideTail
+                           isTruncated:self.isTruncated
                                  isRTL:self.isRTL];
 }
 
-+ (UIBezierPath *)maskPathForSize:(CGSize)size isOutgoing:(BOOL)isOutgoing hideTail:(BOOL)hideTail isRTL:(BOOL)isRTL
++ (UIBezierPath *)maskPathForSize:(CGSize)size
+                       isOutgoing:(BOOL)isOutgoing
+                         hideTail:(BOOL)hideTail
+                      isTruncated:(BOOL)isTruncated
+                            isRTL:(BOOL)isRTL
 {
     UIBezierPath *bezierPath = [UIBezierPath new];
 
     CGFloat bubbleLeft = 0.f;
-    CGFloat bubbleRight = size.width - (hideTail ? 0.f : kBubbleThornSideInset);
+    CGFloat bubbleRight = size.width - kBubbleThornSideInset;
     CGFloat bubbleTop = 0.f;
     CGFloat bubbleBottom = size.height - kBubbleThornVInset;
 
