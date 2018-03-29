@@ -59,7 +59,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     @objc
     public var contentView: UIView?
 
-    private let mediaDetailPresenter: MediaDetailPresenter?
+    private weak var mediaDetailPresenter: MediaDetailPresenter?
 
     // MARK: Initializers
 
