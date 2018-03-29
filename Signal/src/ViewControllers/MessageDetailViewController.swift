@@ -307,10 +307,10 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     }
 
     private func displayableTextIfText() -> String? {
-        guard viewItem.hasText else {
+        guard viewItem.hasBodyText else {
                 return nil
         }
-        guard let displayableText = viewItem.displayableText() else {
+        guard let displayableText = viewItem.displayableBodyText() else {
                 return nil
         }
         let messageBody = displayableText.fullText

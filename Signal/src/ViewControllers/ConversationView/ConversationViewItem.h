@@ -43,7 +43,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) TSInteraction *interaction;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
-@property (nonatomic, readonly) BOOL hasText;
+@property (nonatomic, readonly) BOOL hasBodyText;
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldHideRecipientStatus;
 
@@ -79,7 +79,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 // These methods only apply to text & attachment messages.
 - (OWSMessageCellType)messageCellType;
-- (nullable DisplayableText *)displayableText;
+- (nullable DisplayableText *)displayableBodyText;
 - (nullable TSAttachmentStream *)attachmentStream;
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)mediaSize;

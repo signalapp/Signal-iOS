@@ -155,7 +155,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
     CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
-    switch (self.displayableText.jumbomojiCount) {
+    switch (self.displayableBodyText.jumbomojiCount) {
         case 0:
             break;
         case 1:
@@ -167,7 +167,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         case 5:
             return [UIFont ows_regularFontWithSize:basePointSize + 6.f];
         default:
-            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableText.jumbomojiCount);
+            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
             break;
     }
 
@@ -211,20 +211,20 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return self.viewItem.messageCellType;
 }
 
-- (BOOL)hasText
+- (BOOL)hasBodyText
 {
     // This should always be valid for the appropriate cell types.
     OWSAssert(self.viewItem);
 
-    return self.viewItem.hasText;
+    return self.viewItem.hasBodyText;
 }
 
-- (nullable DisplayableText *)displayableText
+- (nullable DisplayableText *)displayableBodyText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.displayableText);
+    OWSAssert(self.viewItem.displayableBodyText);
 
-    return self.viewItem.displayableText;
+    return self.viewItem.displayableBodyText;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
@@ -271,7 +271,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         case OWSMessageCellType_AnimatedImage:
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
-            return self.hasText;
+            return self.hasBodyText;
     }
 }
 
@@ -289,7 +289,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
             // Is there a caption?
-            return self.hasText;
+            return self.hasBodyText;
     }
 }
 
@@ -448,7 +448,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSMessageTextView *_Nullable bodyTextView = nil;
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
-    if (self.hasText || !bodyMediaView) {
+    if (self.hasBodyText || !bodyMediaView) {
         bodyTextView = [self createBodyTextViewIfNecessary];
     }
     if (bodyTextView) {
@@ -754,7 +754,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
     }
     [self.class loadForTextDisplay:self.bodyTextViewCached
-                              text:self.displayableText.displayText
+                              text:self.displayableBodyText.displayText
                          textColor:self.textColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
@@ -783,10 +783,10 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
 - (nullable UIView *)createTapForMoreLabelIfNecessary
 {
-    if (!self.hasText) {
+    if (!self.hasBodyText) {
         return nil;
     }
-    if (!self.displayableText.isTextTruncated) {
+    if (!self.displayableBodyText.isTextTruncated) {
         return nil;
     }
 
@@ -1050,7 +1050,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 // Size of "message body" text, not quoted reply text.
 - (CGSize)bodyTextSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
 {
-    if (!self.hasText) {
+    if (!self.hasBodyText) {
         return CGSizeZero;
     }
 
@@ -1061,7 +1061,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-    self.bodyTextViewCached.text = self.displayableText.displayText;
+    self.bodyTextViewCached.text = self.displayableBodyText.displayText;
     // Honor dynamic type in the message bodies.
     self.bodyTextViewCached.font = [self textMessageFont];
     CGSize textSize = CGSizeCeil([self.bodyTextViewCached sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
@@ -1142,7 +1142,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
-    if (self.hasText && self.displayableText.isTextTruncated) {
+    if (self.hasBodyText && self.displayableBodyText.isTextTruncated) {
         cellSize.height += self.tapForMoreHeight;
     }
 
@@ -1344,7 +1344,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         }
     }
 
-    if (self.hasText && self.displayableText.isTextTruncated) {
+    if (self.hasBodyText && self.displayableBodyText.isTextTruncated) {
         [self.delegate didTapTruncatedTextMessage:self.viewItem];
         return;
     }
@@ -1375,7 +1375,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             break;
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            if (self.displayableText.isTextTruncated) {
+            if (self.displayableBodyText.isTextTruncated) {
                 [self.delegate didTapTruncatedTextMessage:self.viewItem];
                 return;
             }
