@@ -104,15 +104,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self play];
 }
 
-- (void)playAsForegroundAlert
-{
-    OWSAssertIsOnMainThread();
-    [OWSAudioSession.shared startAmbientAudioActivity:self.audioActivity];
-
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
-    [self play];
-}
-
 - (void)play
 {
     OWSAssertIsOnMainThread();

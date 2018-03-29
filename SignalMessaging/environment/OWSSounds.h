@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import <AudioToolbox/AudioServices.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSUInteger, OWSSound) {
@@ -57,6 +59,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 + (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
++ (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet;
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread;
 
 #pragma mark - AudioPlayer

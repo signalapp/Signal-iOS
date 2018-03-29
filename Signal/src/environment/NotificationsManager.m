@@ -239,8 +239,9 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
-                [self.audioPlayer playAsForegroundAlert];
+                SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
+                // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+                AudioServicesPlayAlertSound(soundId);
             }
         }
     });
@@ -345,8 +346,9 @@
         } else {
             if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                 OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                self.audioPlayer = [OWSSounds audioPlayerForSound:sound];
-                [self.audioPlayer playAsForegroundAlert];
+                SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
+                // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+                AudioServicesPlayAlertSound(soundId);
             }
         }
     });

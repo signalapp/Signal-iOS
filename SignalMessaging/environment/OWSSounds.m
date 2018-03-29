@@ -16,6 +16,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 @interface OWSSounds ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *cachedSoundIDs;
 
 @end
 
@@ -51,6 +52,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     OWSAssert(primaryStorage);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
+    _cachedSoundIDs = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -205,6 +207,33 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
                                                    withExtension:filename.pathExtension];
     OWSAssert(url);
     return url;
+}
+
++ (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    return [self.sharedManager systemSoundIDForSound:(OWSSound)sound quiet:quiet];
+}
+
+- (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    NSString *cacheKey = [NSString stringWithFormat:@"%lu:%d", (unsigned long)sound, quiet];
+    NSNumber *cachedSoundId = self.cachedSoundIDs[cacheKey];
+
+    if (cachedSoundId) {
+        return (SystemSoundID)cachedSoundId.intValue;
+    }
+
+    NSURL *soundURL = [self.class soundURLForSound:sound quiet:quiet];
+
+    DDLogVerbose(@"%@ creating system sound for %@", self.logTag, soundURL.lastPathComponent);
+    SystemSoundID newSoundID;
+    OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(soundURL), &newSoundID);
+    OWSAssert(status == 0);
+    OWSAssert(newSoundID);
+
+    self.cachedSoundIDs[cacheKey] = @(newSoundID);
+
+    return newSoundID;
 }
 
 #pragma mark - Notifications
