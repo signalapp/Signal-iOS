@@ -55,13 +55,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) BOOL hasViewState;
 @property (nonatomic) OWSMessageCellType messageCellType;
-// TODO: Rename to displayableBodyText.
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize mediaSize;
-// TODO: Remove in favor of displayableBodyText nil test.
-//@property (nonatomic) BOOL hasBodyText;
 
 @end
 
@@ -374,7 +371,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 self.messageCellType = OWSMessageCellType_OversizeTextMessage;
                 self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:self.attachmentStream
                                                                                 interactionId:message.uniqueId];
-                //                self.hasBodyText = YES;
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
@@ -417,7 +413,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
         }
 
-        //        self.hasBodyText = YES;
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
         // it's a stand-alone text message.
         if (self.messageCellType == OWSMessageCellType_Unknown) {
@@ -433,7 +428,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // are rendered like empty text messages, but without any interactivity.
         DDLogWarn(@"%@ Treating unknown message as empty text message: %@", self.logTag, message.description);
         self.messageCellType = OWSMessageCellType_TextMessage;
-        //        self.hasBodyText = YES;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 }
