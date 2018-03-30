@@ -4,6 +4,7 @@
 
 #import "OWSSounds.h"
 #import "OWSAudioPlayer.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -16,7 +17,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 @interface OWSSounds ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSNumber *> *cachedSoundIDs;
+@property (nonatomic, readonly) AnyLRUCache *cachedSoundIDs;
 
 @end
 
@@ -52,7 +53,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     OWSAssert(primaryStorage);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
-    _cachedSoundIDs = [NSMutableDictionary new];
+
+    // Don't store too many sounds in memory. Most users will only use 1 or 2 sounds anyway.
+    _cachedSoundIDs = [[AnyLRUCache alloc] initWithMaxSize:3];
 
     OWSSingletonAssert();
 
@@ -217,9 +220,10 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 - (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
 {
     NSString *cacheKey = [NSString stringWithFormat:@"%lu:%d", (unsigned long)sound, quiet];
-    NSNumber *cachedSoundId = self.cachedSoundIDs[cacheKey];
+    NSNumber *_Nullable cachedSoundId = (NSNumber * _Nullable)[self.cachedSoundIDs getWithKey:cacheKey];
 
     if (cachedSoundId) {
+        OWSAssert([cachedSoundId isKindOfClass:[NSNumber class]]);
         return (SystemSoundID)cachedSoundId.intValue;
     }
 
@@ -231,7 +235,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     OWSAssert(status == 0);
     OWSAssert(newSoundID);
 
-    self.cachedSoundIDs[cacheKey] = @(newSoundID);
+    [self.cachedSoundIDs setWithKey:cacheKey value:@(newSoundID)];
 
     return newSoundID;
 }

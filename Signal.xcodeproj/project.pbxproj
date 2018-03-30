@@ -275,6 +275,7 @@
 		4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */; };
 		4523149E1F7E916B003A428C /* SlideOffAnimatedTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149D1F7E916B003A428C /* SlideOffAnimatedTransition.swift */; };
 		452314A01F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */; };
+		4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4523D015206EDC2B00A2AB51 /* LRUCache.swift */; };
 		452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452C468E1E427E200087B011 /* OutboundCallInitiator.swift */; };
 		452C7CA72037628B003D51A5 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F170D51E315310003FC1F2 /* Weak.swift */; };
 		452D1EE81DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */; };
@@ -874,6 +875,7 @@
 		4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextFieldHelper.swift; sourceTree = "<group>"; };
 		4523149D1F7E916B003A428C /* SlideOffAnimatedTransition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SlideOffAnimatedTransition.swift; path = UserInterface/SlideOffAnimatedTransition.swift; sourceTree = "<group>"; };
 		4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DirectionalPanGestureRecognizer.swift; sourceTree = "<group>"; };
+		4523D015206EDC2B00A2AB51 /* LRUCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRUCache.swift; sourceTree = "<group>"; };
 		452C468E1E427E200087B011 /* OutboundCallInitiator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutboundCallInitiator.swift; sourceTree = "<group>"; };
 		452D1EE71DCA90D100A57EC4 /* MesssagesBubblesSizeCalculatorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MesssagesBubblesSizeCalculatorTest.swift; path = Models/MesssagesBubblesSizeCalculatorTest.swift; sourceTree = "<group>"; };
 		452EA09D1EA7ABE00078744B /* AttachmentPointerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentPointerView.swift; sourceTree = "<group>"; };
@@ -1356,6 +1358,7 @@
 				348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */,
 				344F248C2007CCD600CFB4F4 /* DisplayableText.swift */,
 				346129AC1FD1F34E00532771 /* ImageCache.swift */,
+				4523D015206EDC2B00A2AB51 /* LRUCache.swift */,
 				34C3C7902040B0DC0000134C /* OWSAudioPlayer.h */,
 				34C3C7912040B0DC0000134C /* OWSAudioPlayer.m */,
 				45666EC41D99483D008FE134 /* OWSAvatarBuilder.h */,
@@ -3037,6 +3040,7 @@
 				45BE4EA22012AD2000935E59 /* DisappearingTimerConfigurationView.swift in Sources */,
 				346129F71FD5F31400532771 /* OWS105AttachmentFilePaths.m in Sources */,
 				45194F931FD7215C00333B2C /* OWSContactOffersInteraction.m in Sources */,
+				4523D016206EDC2B00A2AB51 /* LRUCache.swift in Sources */,
 				344F249A200FD03300CFB4F4 /* MessageApprovalViewController.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
