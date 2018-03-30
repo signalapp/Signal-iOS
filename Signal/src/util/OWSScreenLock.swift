@@ -37,6 +37,9 @@ import LocalAuthentication
     // Passcode-code only authentication process deactivates the app.
     private var ignoreUnlockUntilActive = false
 
+    // We temporarily resign any first responder while the Screen Lock is presented.
+    var firstResponderBeforeLockscreen: UIResponder?
+
     // MARK - Singleton class
 
     @objc(sharedManager)
@@ -169,6 +172,13 @@ import LocalAuthentication
             return
         }
 
+        // A popped keyboard breaks our layout and obscures the unlock button.
+        if let firstResponder = UIResponder.currentFirstResponder() {
+            Logger.debug("\(self.logTag) in \(#function) resigning first responder: \(firstResponder)")
+            firstResponder.resignFirstResponder()
+            self.firstResponderBeforeLockscreen = firstResponder
+        }
+
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                         comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
@@ -180,6 +190,16 @@ import LocalAuthentication
                                         case .unexpectedFailure(let error):
                                             unexpectedFailure(self.authenticationError(errorDescription: error))
                                         case .success:
+                                            // It's important we restore first responder status once the user completes
+                                            // In some cases, (RegistrationLock Reminder) it just puts the keyboard back where
+                                            // the user needs it, saving them a tap.
+                                            // But in the case of an inputAccessoryView, like the ConversationViewController,
+                                            // failing to restore firstResponder could make the input toolbar disappear until
+                                            if let firstResponder = self.firstResponderBeforeLockscreen {
+                                                Logger.debug("\(self.logTag) in \(#function) regaining first responder: \(firstResponder)")
+                                                firstResponder.becomeFirstResponder()
+                                                self.firstResponderBeforeLockscreen = nil
+                                            }
                                             success()
                                         case .cancel:
                                             cancel()
