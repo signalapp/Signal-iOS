@@ -975,7 +975,7 @@
 "LOGGING_SECTION" = "Registro (log)";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Todos los adjuntos";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Adjuntos";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Cámara";
