@@ -11,6 +11,7 @@
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
+#import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -74,117 +75,23 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
+- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(nullable TSThread *)thread
+                                     messageBody:(nullable NSString *)body
+                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                                expiresInSeconds:(uint32_t)expiresInSeconds
+                                 expireStartedAt:(uint64_t)expireStartedAt
+                                  isVoiceMessage:(BOOL)isVoiceMessage
+                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
-    return [self initWithTimestamp:timestamp inThread:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
-{
-    return [self initWithTimestamp:timestamp inThread:thread messageBody:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)messageBody
-                   isVoiceMessage:(BOOL)isVoiceMessage
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-{
-    self = [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:messageBody
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:0];
-    if (self) {
-        _isVoiceMessage = isVoiceMessage;
-    }
-
-    return self;
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-{
-    TSGroupMetaMessage groupMetaMessage
-        = ([thread isKindOfClass:[TSGroupThread class]] ? TSGroupMessageDeliver : TSGroupMessageNone);
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:body
-                     attachmentIds:attachmentIds
-                  expiresInSeconds:expiresInSeconds
-                   expireStartedAt:expireStartedAt
-                  groupMetaMessage:groupMetaMessage];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-{
-    return [self initWithTimestamp:timestamp
-                          inThread:thread
-                       messageBody:@""
-                     attachmentIds:[NSMutableArray new]
-                  expiresInSeconds:0
-                   expireStartedAt:0
-                  groupMetaMessage:groupMetaMessage];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-{
-    self = [super initWithTimestamp:timestamp
-                           inThread:thread
-                        messageBody:body
-                      attachmentIds:attachmentIds
-                   expiresInSeconds:expiresInSeconds
-                    expireStartedAt:expireStartedAt];
+    self = [super initMessageWithTimestamp:timestamp
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:attachmentIds
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:expireStartedAt
+                             quotedMessage:quotedMessage];
     if (!self) {
         return self;
     }
@@ -193,6 +100,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
     _groupMetaMessage = groupMetaMessage;
+    _isVoiceMessage = isVoiceMessage;
 
     _attachmentFilenameMap = [NSMutableDictionary new];
 
@@ -498,6 +406,44 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder setTimestamp:self.timestamp];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
+
+    if (self.quotedMessage) {
+        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder =
+            [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+        [quoteBuilder setId:self.quotedMessage.timestamp];
+        [quoteBuilder setAuthor:self.quotedMessage.authorId];
+
+        BOOL hasQuotedText = NO;
+        BOOL hasQuotedAttachment = NO;
+        if (self.quotedMessage.body.length > 0) {
+            [quoteBuilder setText:self.quotedMessage.body];
+
+            hasQuotedText = YES;
+        }
+
+        if (self.quotedMessage.contentType.length > 0) {
+
+            OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
+                [OWSSignalServiceProtosAttachmentPointerBuilder new];
+            if (self.quotedMessage.thumbnailData.length > 0) {
+                [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
+            }
+            if (self.quotedMessage.sourceFilename.length > 0) {
+                [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
+            }
+            [attachmentBuilder setContentType:self.quotedMessage.contentType];
+            [quoteBuilder setAttachmentBuilder:attachmentBuilder];
+
+            hasQuotedAttachment = YES;
+        }
+
+        if (hasQuotedText || hasQuotedAttachment) {
+            [builder setQuoteBuilder:quoteBuilder];
+        } else {
+            OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+        }
+    }
+
     return [builder build];
 }
 

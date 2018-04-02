@@ -180,6 +180,8 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
         }
     } else if ([MIMETypeUtil isAnimated:self.contentType]) {
         return [NSString stringWithFormat:@"🎡 %@", attachmentString];
+    } else {
+        return [NSString stringWithFormat:@"📎 %@", attachmentString];
     }
 
     return attachmentString;

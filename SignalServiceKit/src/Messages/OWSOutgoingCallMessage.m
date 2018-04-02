@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingCallMessage.h"
@@ -18,13 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
-//@synthesize thread = _thread;
-
 - (instancetype)initWithThread:(TSThread *)thread
 {
     // These records aren't saved, but their timestamp is used in the event
     // of a failing message send to insert the error at the appropriate place.
-    self = [super initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
+    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                          inThread:thread
+                                       messageBody:nil
+                                     attachmentIds:[NSMutableArray new]
+                                  expiresInSeconds:0
+                                   expireStartedAt:0
+                                    isVoiceMessage:NO
+                                  groupMetaMessage:TSGroupMessageNone
+                                     quotedMessage:nil];
     if (!self) {
         return self;
     }

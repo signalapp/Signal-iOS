@@ -5,8 +5,16 @@
 #import "OWSMessageUtils.h"
 #import "AppContext.h"
 #import "OWSPrimaryStorage.h"
+#import "TSAccountManager.h"
+#import "TSAttachment.h"
+#import "TSAttachmentStream.h"
 #import "TSDatabaseView.h"
+#import "TSIncomingMessage.h"
+#import "TSMessage.h"
+#import "TSOutgoingMessage.h"
+#import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import "UIImage+OWS.h"
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -92,6 +100,139 @@ NS_ASSUME_NONNULL_BEGIN
         numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
     }];
     return numberOfItems;
+}
+
++ (nullable TSQuotedMessage *)quotedMessageForIncomingMessage:(TSIncomingMessage *)message
+                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(message);
+    OWSAssert(transaction);
+
+    return [self quotedMessageForMessage:message
+                                authorId:message.authorId
+                                  thread:[message threadWithTransaction:transaction]
+                             transaction:transaction];
+}
+
++ (nullable TSQuotedMessage *)quotedMessageForOutgoingMessage:(TSOutgoingMessage *)message
+                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(message);
+    OWSAssert(transaction);
+
+    return [self quotedMessageForMessage:message
+                                authorId:TSAccountManager.localNumber
+                                  thread:[message threadWithTransaction:transaction]
+                             transaction:transaction];
+}
+
++ (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message
+                                             authorId:(NSString *)authorId
+                                               thread:(TSThread *)thread
+                                          transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(message);
+    OWSAssert(authorId.length > 0);
+    OWSAssert(thread);
+    OWSAssert(transaction);
+
+    uint64_t timestamp = message.timestamp;
+    NSString *_Nullable body = message.body;
+    BOOL hasText = body.length > 0;
+    BOOL hasAttachment = NO;
+    NSString *_Nullable sourceFilename = nil;
+    NSData *_Nullable thumbnailData = nil;
+    NSString *_Nullable contentType = nil;
+
+    if (message.attachmentIds.count > 0) {
+        NSString *attachmentId = message.attachmentIds[0];
+        TSAttachment *_Nullable attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        if (attachment) {
+            sourceFilename = attachment.sourceFilename;
+            contentType = attachment.contentType;
+            // Try to generate a thumbnail, if possible.
+            thumbnailData = [self thumbnailDataForAttachment:attachment];
+            hasAttachment = YES;
+        }
+    }
+
+    if (!hasText && !hasAttachment) {
+        OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
+        return nil;
+    }
+
+    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                                                       authorId:authorId
+                                                                           body:body
+                                                                 sourceFilename:sourceFilename
+                                                                  thumbnailData:thumbnailData
+                                                                    contentType:contentType];
+    return quotedMessage;
+}
+
++ (nullable NSData *)thumbnailDataForAttachment:(TSAttachment *)attachment
+{
+    OWSAssert(attachment);
+
+    // Try to generate a thumbnail, if possible.
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        return nil;
+    }
+
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+    UIImage *_Nullable attachmentImage = [attachmentStream image];
+    if (!attachmentImage) {
+        return nil;
+    }
+
+    CGSize attachmentImageSizePx;
+    attachmentImageSizePx.width = CGImageGetWidth(attachmentImage.CGImage);
+    attachmentImageSizePx.height = CGImageGetHeight(attachmentImage.CGImage);
+    if (attachmentImageSizePx.width <= 0 || attachmentImageSizePx.height <= 0) {
+        DDLogError(@"%@ attachment thumbnail has invalid size.", self.logTag);
+        return nil;
+    }
+
+    // TODO: Revisit this value.
+    const int kMaxThumbnailSizePx = 100;
+
+    // Try to resize image to thumbnail if necessary.
+    if (attachmentImageSizePx.width > kMaxThumbnailSizePx || attachmentImageSizePx.height > kMaxThumbnailSizePx) {
+        const CGFloat widthFactor = kMaxThumbnailSizePx / attachmentImageSizePx.width;
+        const CGFloat heightFactor = kMaxThumbnailSizePx / attachmentImageSizePx.height;
+        const CGFloat scalingFactor = MIN(widthFactor, heightFactor);
+        const CGFloat scaledWidthPx = (CGFloat)round(attachmentImageSizePx.width * scalingFactor);
+        const CGFloat scaledHeightPx = (CGFloat)round(attachmentImageSizePx.height * scalingFactor);
+
+        if (scaledWidthPx <= 0 || scaledHeightPx <= 0) {
+            DDLogError(@"%@ can't determined desired size for attachment thumbnail.", self.logTag);
+            return nil;
+        }
+
+        if (scaledWidthPx > 0 && scaledHeightPx > 0) {
+            attachmentImage = [attachmentImage resizedImageToSize:CGSizeMake(scaledWidthPx, scaledHeightPx)];
+            if (!attachmentImage) {
+                DDLogError(@"%@ attachment thumbnail could not be resized.", self.logTag);
+                return nil;
+            }
+
+            attachmentImageSizePx.width = CGImageGetWidth(attachmentImage.CGImage);
+            attachmentImageSizePx.height = CGImageGetHeight(attachmentImage.CGImage);
+        }
+    }
+
+    if (attachmentImageSizePx.width <= 0 || attachmentImageSizePx.height <= 0) {
+        DDLogError(@"%@ resized attachment thumbnail has invalid size.", self.logTag);
+        return nil;
+    }
+
+    NSData *_Nullable attachmentImageData = UIImagePNGRepresentation(attachmentImage);
+    if (!attachmentImage) {
+        OWSFail(@"%@ attachment thumbnail could not be written to PNG.", self.logTag);
+        return nil;
+    }
+    return attachmentImageData;
 }
 
 @end

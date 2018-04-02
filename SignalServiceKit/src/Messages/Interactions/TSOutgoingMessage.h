@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSMessage.h"
@@ -37,49 +37,23 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @interface TSOutgoingMessage : TSMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp;
+- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
+                                inThread:(nullable TSThread *)thread
+                             messageBody:(nullable NSString *)body
+                           attachmentIds:(NSArray<NSString *> *)attachmentIds
+                        expiresInSeconds:(uint32_t)expiresInSeconds
+                         expireStartedAt:(uint64_t)expireStartedAt
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)messageBody
-                   isVoiceMessage:(BOOL)isVoiceMessage
-                 expiresInSeconds:(uint32_t)expiresInSeconds;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt
-                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(nullable TSThread *)thread
+                                     messageBody:(nullable NSString *)body
+                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
+                                expiresInSeconds:(uint32_t)expiresInSeconds
+                                 expireStartedAt:(uint64_t)expireStartedAt
+                                  isVoiceMessage:(BOOL)isVoiceMessage
+                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

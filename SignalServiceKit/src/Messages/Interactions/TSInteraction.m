@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return @"TSInteraction";
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     OWSAssert(timestamp > 0);
 

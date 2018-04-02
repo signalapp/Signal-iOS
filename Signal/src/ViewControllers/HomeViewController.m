@@ -683,9 +683,16 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                           preferredStyle:UIAlertControllerStyleAlert];
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
-            TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                             inThread:thread
-                                                                     groupMetaMessage:TSGroupMessageQuit];
+            TSOutgoingMessage *message =
+                [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                   inThread:thread
+                                                                messageBody:nil
+                                                              attachmentIds:[NSMutableArray new]
+                                                           expiresInSeconds:0
+                                                            expireStartedAt:0
+                                                             isVoiceMessage:NO
+                                                           groupMetaMessage:TSGroupMessageQuit
+                                                              quotedMessage:nil];
             [self.messageSender enqueueMessage:message
                 success:^{
                     [self dismissViewControllerAnimated:YES
