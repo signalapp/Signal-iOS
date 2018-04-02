@@ -51,7 +51,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
 
                 // Construct the "settings" view & push the "notifications settings" view.
                 let navigationController = AppSettingsViewController.inModalNavigationController()
-                navigationController.pushViewController(NotificationSettingsViewController(), animated:false)
+                navigationController.pushViewController(NotificationSettingsViewController(), animated: false)
 
                 fromViewController.present(navigationController, animated: true)
             }
@@ -96,7 +96,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         button.setTitle(title, for: .normal)
         button.setTitleColor(UIColor.ows_signalBrandBlue, for: .normal)
         button.isUserInteractionEnabled = true
-        button.addTarget(self, action:#selector(didTapButton), for: .touchUpInside)
+        button.addTarget(self, action: #selector(didTapButton), for: .touchUpInside)
         button.contentEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(18))

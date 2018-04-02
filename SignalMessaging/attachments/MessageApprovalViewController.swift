@@ -60,8 +60,8 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             items.append(spacer)
             let sendButton = UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
-                                                                      comment:"Label for the send button in the conversation view."),
-                                             style:.plain,
+                                                                      comment: "Label for the send button in the conversation view."),
+                                             style: .plain,
                                              target: self,
                                              action: #selector(sendPressed))
             items.append(sendButton)
@@ -99,8 +99,8 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.textColor = UIColor.black
         textView.font = UIFont.ows_dynamicTypeBody()
         textView.text = self.initialMessageText
-        textView.contentInset = UIEdgeInsets(top:0.0, left:0.0, bottom:0.0, right:0.0)
-        textView.textContainerInset = UIEdgeInsets(top:10.0, left:10.0, bottom:10.0, right:10.0)
+        textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
+        textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
         view.addSubview(textView)
         textView.autoPinWidthToSuperview()
         textView.autoPinEdge(.top, to: .bottom, of: recipientRow)
@@ -115,7 +115,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
         // Hairline borders should be 1 pixel, not 1 point.
         let borderThickness = 1.0 / UIScreen.main.scale
-        let borderColor = UIColor(white:135 / 255.0, alpha:1.0)
+        let borderColor = UIColor(white: 135 / 255.0, alpha: 1.0)
 
         let topBorder = UIView.container()
         topBorder.backgroundColor = borderColor
@@ -131,7 +131,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         bottomBorder.autoPinBottomToSuperviewMargin()
         bottomBorder.autoSetDimension(.height, toSize: borderThickness)
 
-        let font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0))
+        let font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14.0, 18.0))
         let hSpacing = CGFloat(10)
         let hMargin = CGFloat(15)
         let vSpacing = CGFloat(5)
@@ -154,7 +154,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         toLabel.setContentHuggingHorizontalHigh()
         toLabel.setCompressionResistanceHorizontalHigh()
         toLabel.autoAlignAxis(.horizontal, toSameAxisOf: nameLabel)
-        
+
         nameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
         nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
         nameLabel.setContentHuggingHorizontalLow()
@@ -176,10 +176,10 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        nameLabel.attributedText = contactsManager.formattedFullName(forRecipientId:contactThread.contactIdentifier(), font:font)
+        nameLabel.attributedText = contactsManager.formattedFullName(forRecipientId: contactThread.contactIdentifier(), font: font)
         nameLabel.textColor = UIColor.black
 
-        if let profileName = self.profileName(contactThread:contactThread) {
+        if let profileName = self.profileName(contactThread: contactThread) {
             // If there's a profile name worth showing, add it as a second line below the name.
             let profileNameLabel = UILabel()
             profileNameLabel.textColor = UIColor.ows_darkGray
@@ -203,11 +203,11 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     private func profileName(contactThread: TSContactThread) -> String? {
         let recipientId = contactThread.contactIdentifier()
 
-        if contactsManager.hasNameInSystemContacts(forRecipientId:recipientId) {
+        if contactsManager.hasNameInSystemContacts(forRecipientId: recipientId) {
             // Don't display profile name when we have a veritas name in system Contacts
             return nil
         }
-        return contactsManager.formattedProfileName(forRecipientId:recipientId)
+        return contactsManager.formattedProfileName(forRecipientId: recipientId)
     }
 
     // MARK: - Event Handlers
