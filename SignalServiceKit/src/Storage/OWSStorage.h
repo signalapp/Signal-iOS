@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,26 +29,6 @@ extern NSString *const StorageIsReadyNotification;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
-
-@end
-
-#pragma mark -
-
-@interface OWSDatabase : YapDatabase
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (id)initWithPath:(NSString *)inPath
-        serializer:(nullable YapDatabaseSerializer)inSerializer
-      deserializer:(YapDatabaseDeserializer)inDeserializer
-           options:(YapDatabaseOptions *)inOptions
-          delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
-
-// Starts collecting references to the registration connections.
-- (void)collectRegistrationConnections;
-// Stops collecting references to the registration connections and returns
-// all collected connections.
-- (NSSet<YapDatabaseConnection *> *)clearCollectedRegistrationConnections;
 
 @end
 
