@@ -1220,7 +1220,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "Debido a fallos del sistema de notificationes de Apple, la previsualización de mensajes sólo ocurre si el mensaje se recupera 30 segundos después de haberse enviado. Como resultado, el número mostrado en el globo junto al icono de Signal puede ser incorrecto.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Sin remitente ni contenido";
+"NOTIFICATIONS_NONE" = "Ni remitente ni contenido";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Sonar con aplicación abierta";
