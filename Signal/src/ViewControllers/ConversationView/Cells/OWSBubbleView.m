@@ -41,6 +41,8 @@ const CGFloat kBubbleTextVInset = 10.f;
     self.maskLayer = [CAShapeLayer new];
     self.layer.mask = self.maskLayer;
 
+    [self updateLayers];
+
     return self;
 }
 
@@ -132,8 +134,12 @@ const CGFloat kBubbleTextVInset = 10.f;
 
 - (void)updateLayers
 {
-    OWSAssert(self.maskLayer);
-    OWSAssert(self.shapeLayer);
+    if (!self.maskLayer) {
+        return;
+    }
+    if (!self.shapeLayer) {
+        return;
+    }
 
     UIBezierPath *bezierPath = [self maskPath];
 

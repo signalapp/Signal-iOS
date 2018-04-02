@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.shapeLayer = [CAShapeLayer new];
     [self.layer addSublayer:self.shapeLayer];
 
+    [self updateLayers];
+
     return self;
 }
 
@@ -79,7 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateLayers
 {
-    OWSAssert(self.shapeLayer);
+    if (!self.shapeLayer) {
+        return;
+    }
 
     // Don't fill the shape layer; we just want a stroke around the border.
     self.shapeLayer.fillColor = [UIColor clearColor].CGColor;
