@@ -10,12 +10,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
-    TSErrorMessageWrongTrustedIdentityKey, // DEPRECATED: We no longer create TSErrorMessageWrongTrustedIdentityKey, but
+    // DEPRECATED: We no longer create TSErrorMessageWrongTrustedIdentityKey, but
     // persisted legacy messages could exist indefinitly.
+    TSErrorMessageWrongTrustedIdentityKey,
     TSErrorMessageInvalidKeyException,
-    TSErrorMessageMissingKeyId, // unused
+    // unused
+    TSErrorMessageMissingKeyId,
     TSErrorMessageInvalidMessage,
-    TSErrorMessageDuplicateMessage, // unused
+    // unused
+    TSErrorMessageDuplicateMessage,
     TSErrorMessageInvalidVersion,
     TSErrorMessageNonBlockingIdentityChange,
     TSErrorMessageUnknownContactBlockOffer,

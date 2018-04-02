@@ -194,6 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // TODO: Revisit this value.
     const int kMaxThumbnailSizePx = 100;
 
     // Try to resize image to thumbnail if necessary.
