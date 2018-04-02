@@ -431,7 +431,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 
-    DDLogInfo(@"%@ --- %@ %@", self.logTag, self.interaction.uniqueId, self.displayableBodyText.displayText);
+    DDLogInfo(@"%@ --- %@ %@",
+        self.logTag,
+        self.interaction.uniqueId,
+        (self.hasBodyText ? self.displayableBodyText.displayText : @""));
 }
 
 - (OWSMessageCellType)messageCellType
