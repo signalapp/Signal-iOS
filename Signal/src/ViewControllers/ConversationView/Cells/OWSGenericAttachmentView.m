@@ -113,8 +113,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *contentView = [UIView containerView];
     [self addSubview:contentView];
-    [contentView autoPinLeadingToSuperviewWithMargin:self.isIncoming ? kBubbleTailWidth : 0.f];
-    [contentView autoPinTrailingToSuperviewWithMargin:self.isIncoming ? 0.f : kBubbleTailWidth];
+    [contentView autoPinLeadingToSuperviewMarginWithInset:self.isIncoming ? kBubbleTailWidth : 0.f];
+    [contentView autoPinTrailingToSuperviewMarginWithInset:self.isIncoming ? 0.f : kBubbleTailWidth];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
         layer.fillColor = iconColor.CGColor;
     };
     [contentView addSubview:iconCircleView];
-    [iconCircleView autoPinLeadingToSuperviewWithMargin:self.iconHMargin];
+    [iconCircleView autoPinLeadingToSuperviewMarginWithInset:self.iconHMargin];
     [iconCircleView autoVCenterInSuperview];
     [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
@@ -145,8 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kLabelHSpacing = self.iconHSpacing;
     UIView *labelsView = [UIView containerView];
     [contentView addSubview:labelsView];
-    [labelsView autoPinLeadingToTrailingOfView:imageView margin:kLabelHSpacing];
-    [labelsView autoPinTrailingToSuperviewWithMargin:self.iconHMargin];
+    [labelsView autoPinLeadingToTrailingEdgeOfView:imageView offset:kLabelHSpacing];
+    [labelsView autoPinTrailingToSuperviewMarginWithInset:self.iconHMargin];
     [labelsView autoVCenterInSuperview];
 
     NSString *filename = self.attachmentStream.sourceFilename;

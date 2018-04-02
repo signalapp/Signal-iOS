@@ -71,7 +71,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         // Title label layout
         titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
         titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
-        titleLabel.autoPinTopToSuperview()
+        titleLabel.autoPinTopToSuperviewMargin()
 
         // Body label layout
         bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
@@ -181,7 +181,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         // Title label layout
         titleLabel.autoSetDimension(.height, toSize: ScaleFromIPhone5(40))
         titleLabel.autoPinWidthToSuperview(withMargin: ScaleFromIPhone5To7Plus(16, 24))
-        titleLabel.autoPinTopToSuperview()
+        titleLabel.autoPinTopToSuperviewMargin()
 
         // Body label layout
         bodyLabel.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: ScaleFromIPhone5To7Plus(18, 28))
@@ -574,19 +574,19 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         statusBarBackgroundView.autoPinEdge(.bottom, to: .top, of: headerBackgroundView)
 
         headerBackgroundView.autoPinWidthToSuperview()
-        headerBackgroundView.autoPinTopToSuperview()
+        headerBackgroundView.autoPinTopToSuperviewMargin()
         headerBackgroundView.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
 
         // Dismiss button layout
         dismissButton.autoHCenterInSuperview()
-        dismissButton.autoPinBottomToSuperview(withMargin: ScaleFromIPhone5(10))
+        dismissButton.autoPinBottomToSuperviewMargin(withInset: ScaleFromIPhone5(10))
 
         // Carousel View layout
         carouselView.autoPinWidthToSuperview()
         // negative inset so as to overlay the header text in the carousel view with the header background which
         // lives outside of the carousel. We do this so that the user can't bounce past the page view controllers
         // width limits, exposing the edge of the header.
-        carouselView.autoPinTopToSuperview(withMargin: ScaleFromIPhone5To7Plus(14, 24))
+        carouselView.autoPinTopToSuperviewMargin(withInset: ScaleFromIPhone5To7Plus(14, 24))
         carouselView.autoPinEdge(.bottom, to: .top, of: dismissButton, withOffset: ScaleFromIPhone5(-10))
     }
 

@@ -121,14 +121,14 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         topBorder.backgroundColor = borderColor
         recipientRow.addSubview(topBorder)
         topBorder.autoPinWidthToSuperview()
-        topBorder.autoPinTopToSuperview()
+        topBorder.autoPinTopToSuperviewMargin()
         topBorder.autoSetDimension(.height, toSize: borderThickness)
 
         let bottomBorder = UIView.container()
         bottomBorder.backgroundColor = borderColor
         recipientRow.addSubview(bottomBorder)
         bottomBorder.autoPinWidthToSuperview()
-        bottomBorder.autoPinBottomToSuperview()
+        bottomBorder.autoPinBottomToSuperviewMargin()
         bottomBorder.autoSetDimension(.height, toSize: borderThickness)
 
         let font = UIFont.ows_regularFont(withSize:ScaleFromIPhone5To7Plus(14.0, 18.0))
@@ -150,16 +150,16 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.lineBreakMode = .byTruncatingTail
         recipientRow.addSubview(nameLabel)
 
-        toLabel.autoPinLeadingToSuperview(withMargin: hMargin)
+        toLabel.autoPinLeadingToSuperviewMargin(withInset: hMargin)
         toLabel.setContentHuggingHorizontalHigh()
         toLabel.setCompressionResistanceHorizontalHigh()
         toLabel.autoAlignAxis(.horizontal, toSameAxisOf: nameLabel)
-
-        nameLabel.autoPinLeading(toTrailingOf: toLabel, margin:hSpacing)
-        nameLabel.autoPinTrailingToSuperview(withMargin: hMargin)
+        
+        nameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
+        nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
         nameLabel.setContentHuggingHorizontalLow()
         nameLabel.setCompressionResistanceHorizontalLow()
-        nameLabel.autoPinTopToSuperview(withMargin: vMargin)
+        nameLabel.autoPinTopToSuperviewMargin(withInset: vMargin)
 
         if let groupThread = self.thread as? TSGroupThread {
             let groupName = (groupThread.name().count > 0
@@ -167,7 +167,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
                 : MessageStrings.newGroupDefaultTitle)
 
             nameLabel.text = groupName
-            nameLabel.autoPinBottomToSuperview(withMargin: vMargin)
+            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
 
             return recipientRow
         }
@@ -188,13 +188,13 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             profileNameLabel.lineBreakMode = .byTruncatingTail
             recipientRow.addSubview(profileNameLabel)
             profileNameLabel.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: vSpacing)
-            profileNameLabel.autoPinLeading(toTrailingOf: toLabel, margin:hSpacing)
-            profileNameLabel.autoPinTrailingToSuperview(withMargin: hMargin)
+            profileNameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
+            profileNameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
             profileNameLabel.setContentHuggingHorizontalLow()
             profileNameLabel.setCompressionResistanceHorizontalLow()
-            profileNameLabel.autoPinBottomToSuperview(withMargin: vMargin)
+            profileNameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
         } else {
-            nameLabel.autoPinBottomToSuperview(withMargin: vMargin)
+            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
         }
 
         return recipientRow

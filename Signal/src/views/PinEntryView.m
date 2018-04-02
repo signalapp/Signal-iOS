@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *instructionsLabel = [self createLabelWithText:nil];
     self.instructionsLabel = instructionsLabel;
-    [instructionsLabel autoPinTopToSuperviewWithMargin:kVSpacing];
+    [instructionsLabel autoPinTopToSuperviewMarginWithInset:kVSpacing];
     [instructionsLabel autoPinWidthToSuperview];
 
     UILabel *createForgotLink = [self createForgotLink];

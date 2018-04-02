@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
     [header addSubview:backButton];
-    [backButton autoPinLeadingToSuperviewWithMargin:10.f];
+    [backButton autoPinLeadingToSuperviewMarginWithInset:10.f];
     [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
     [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
 
@@ -183,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_submitCodeSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_submitCodeSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_submitCodeSpinner autoVCenterInSuperview];
-    [_submitCodeSpinner autoPinTrailingToSuperviewWithMargin:kSpinnerSpacing];
+    [_submitCodeSpinner autoPinTrailingToSuperviewMarginWithInset:kSpinnerSpacing];
 
     _sendCodeViaSMSAgainButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaSMSAgainButton.backgroundColor = [UIColor whiteColor];
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCodeAgainSpinner autoVCenterInSuperview];
-    [_requestCodeAgainSpinner autoPinTrailingToSuperviewWithMargin:kSpinnerSpacing];
+    [_requestCodeAgainSpinner autoPinTrailingToSuperviewMarginWithInset:kSpinnerSpacing];
 
     _sendCodeViaVoiceButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _sendCodeViaVoiceButton.backgroundColor = [UIColor whiteColor];
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_requestCallSpinner autoSetDimension:ALDimensionWidth toSize:kSpinnerSize];
     [_requestCallSpinner autoSetDimension:ALDimensionHeight toSize:kSpinnerSize];
     [_requestCallSpinner autoVCenterInSuperview];
-    [_requestCallSpinner autoPinTrailingToSuperviewWithMargin:kSpinnerSpacing];
+    [_requestCallSpinner autoPinTrailingToSuperviewMarginWithInset:kSpinnerSpacing];
 }
 
 - (NSString *)phoneNumberText

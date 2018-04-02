@@ -396,10 +396,10 @@ NS_ASSUME_NONNULL_BEGIN
     [edgesView addSubview:button];
 
     [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-    [button autoPinLeadingToSuperviewWithMargin:50.f];
-    [button autoPinTrailingToSuperviewWithMargin:50.f];
+    [button autoPinLeadingToSuperviewMarginWithInset:50.f];
+    [button autoPinTrailingToSuperviewMarginWithInset:50.f];
     const CGFloat kVMargin = 65.f;
-    [button autoPinBottomToSuperviewWithMargin:kVMargin];
+    [button autoPinBottomToSuperviewMarginWithInset:kVMargin];
 
     window.rootViewController = viewController;
 

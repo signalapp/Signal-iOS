@@ -203,15 +203,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *contentView = [UIView containerView];
     [self addSubview:contentView];
-    [contentView autoPinLeadingToSuperviewWithMargin:self.isIncoming ? kBubbleTailWidth : 0.f];
-    [contentView autoPinTrailingToSuperviewWithMargin:self.isIncoming ? 0.f : kBubbleTailWidth];
+    [contentView autoPinLeadingToSuperviewMarginWithInset:self.isIncoming ? kBubbleTailWidth : 0.f];
+    [contentView autoPinTrailingToSuperviewMarginWithInset:self.isIncoming ? 0.f : kBubbleTailWidth];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.audioIconVMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.audioIconVMargin];
 
     _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.audioPlayPauseButton.enabled = NO;
     [contentView addSubview:self.audioPlayPauseButton];
-    [self.audioPlayPauseButton autoPinLeadingToSuperviewWithMargin:self.audioIconHMargin];
+    [self.audioPlayPauseButton autoPinLeadingToSuperviewMarginWithInset:self.audioIconHMargin];
     [self.audioPlayPauseButton autoVCenterInSuperview];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:self.iconSize];
@@ -220,8 +220,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *labelsView = [UIView containerView];
     [contentView addSubview:labelsView];
-    [labelsView autoPinLeadingToTrailingOfView:self.audioPlayPauseButton margin:kLabelHSpacing];
-    [labelsView autoPinTrailingToSuperviewWithMargin:self.audioIconHMargin];
+    [labelsView autoPinLeadingToTrailingEdgeOfView:self.audioPlayPauseButton offset:kLabelHSpacing];
+    [labelsView autoPinTrailingToSuperviewMarginWithInset:self.audioIconHMargin];
     [labelsView autoVCenterInSuperview];
 
     const CGFloat kLabelVSpacing = 2;

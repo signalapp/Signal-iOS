@@ -415,26 +415,26 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     self.contentContraints = @[
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
         [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.leftButtonWrapper autoPinBottomToSuperviewWithMargin:0],
+        [self.leftButtonWrapper autoPinBottomToSuperviewMarginWithInset:0],
 
         [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [leftButton autoPinLeadingToSuperviewWithMargin:contentHInset],
-        [leftButton autoPinTrailingToSuperviewWithMargin:contentHSpacing],
+        [leftButton autoPinLeadingToSuperviewMarginWithInset:contentHInset],
+        [leftButton autoPinTrailingToSuperviewMarginWithInset:contentHSpacing],
         [leftButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
 
         [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
         [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-        [self.inputTextView autoPinBottomToSuperviewWithMargin:textViewVInset],
+        [self.inputTextView autoPinBottomToSuperviewMarginWithInset:textViewVInset],
         [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
 
         [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.rightButtonWrapper autoPinBottomToSuperviewWithMargin:0],
+        [self.rightButtonWrapper autoPinBottomToSuperviewMarginWithInset:0],
 
         [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [rightButton autoPinLeadingToSuperviewWithMargin:contentHSpacing],
-        [rightButton autoPinTrailingToSuperviewWithMargin:contentHInset],
+        [rightButton autoPinLeadingToSuperviewMarginWithInset:contentHSpacing],
+        [rightButton autoPinTrailingToSuperviewMarginWithInset:contentHInset],
         [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom]
     ];
 
@@ -616,9 +616,9 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinLeadingToSuperviewWithMargin:10.f];
+    [imageView autoPinLeadingToSuperviewMarginWithInset:10.f];
     [self.recordingLabel autoVCenterInSuperview];
-    [self.recordingLabel autoPinLeadingToTrailingOfView:imageView margin:5.f];
+    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
     [self.voiceMemoUI setNeedsLayout];
