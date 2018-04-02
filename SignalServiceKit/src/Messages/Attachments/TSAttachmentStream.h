@@ -3,6 +3,7 @@
 //
 
 #import "DataSource.h"
+#import "OWSBackupFragment.h"
 #import "TSAttachment.h"
 
 #if TARGET_OS_IPHONE
@@ -61,6 +62,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)audioDurationSeconds;
 
 + (nullable NSError *)migrateToSharedData;
+
+// Non-nil for attachments which need "lazy backup restore."
+- (nullable OWSBackupFragment *)lazyRestoreFragment;
+
+#pragma mark - Update With... Methods
+
+// Marks attachment as needing "lazy backup restore."
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
+// Marks attachment as having completed "lazy backup restore."
+- (void)updateWithLazyRestoreComplete;
 
 @end
 

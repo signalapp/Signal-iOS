@@ -295,8 +295,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) OWSBackupExportItem *manifestItem;
 
 // If we are replacing an existing backup, we use some of its contents for continuity.
-@property (nonatomic, nullable) NSDictionary<NSString *, OWSBackupManifestItem *> *lastManifestItemMap;
-@property (nonatomic, nullable) NSSet<NSString *> *lastRecordNames;
+@property (nonatomic, nullable) NSSet<NSString *> *lastValidRecordNames;
 
 @end
 
@@ -346,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.isComplete) {
             return;
         }
-        [self tryToFetchManifestWithCompletion:^(BOOL tryToFetchManifestSuccess) {
+        [self fetchAllRecordsWithCompletion:^(BOOL tryToFetchManifestSuccess) {
             if (!tryToFetchManifestSuccess) {
                 [self failWithErrorDescription:
                           NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
@@ -374,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [weakSelf failWithError:saveError];
                     return;
                 }
-                [self cleanUpCloudWithCompletion:^(NSError *_Nullable cleanUpError) {
+                [self cleanUpWithCompletion:^(NSError *_Nullable cleanUpError) {
                     if (cleanUpError) {
                         [weakSelf failWithError:cleanUpError];
                         return;
@@ -422,69 +421,6 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)tryToFetchManifestWithCompletion:(OWSBackupJobBoolCompletion)completion
-{
-    OWSAssert(completion);
-
-    if (self.isComplete) {
-        return;
-    }
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CHECK_BACKUP",
-                                            @"Indicates that the backup import is checking for an existing backup.")
-                               progress:nil];
-
-    __weak OWSBackupExportJob *weakSelf = self;
-
-    [OWSBackupAPI checkForManifestInCloudWithSuccess:^(BOOL value) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            if (value) {
-                [weakSelf fetchManifestWithCompletion:completion];
-            } else {
-                // There is no existing manifest; continue.
-                completion(YES);
-            }
-        });
-    }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                completion(NO);
-            });
-        }];
-}
-
-- (void)fetchManifestWithCompletion:(OWSBackupJobBoolCompletion)completion
-{
-    OWSAssert(completion);
-
-    if (self.isComplete) {
-        return;
-    }
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
-    __weak OWSBackupExportJob *weakSelf = self;
-    [weakSelf downloadAndProcessManifestWithSuccess:^(OWSBackupManifestContents *manifest) {
-        OWSBackupExportJob *strongSelf = weakSelf;
-        if (!strongSelf) {
-            return;
-        }
-        if (strongSelf.isComplete) {
-            return;
-        }
-        OWSCAssert(manifest.databaseItems.count > 0);
-        OWSCAssert(manifest.attachmentsItems);
-        [strongSelf processLastManifest:manifest];
-        [strongSelf fetchAllRecordsWithCompletion:completion];
-    }
-        failure:^(NSError *manifestError) {
-            completion(NO);
-        }
-        backupIO:self.backupIO];
-}
-
 - (void)fetchAllRecordsWithCompletion:(OWSBackupJobBoolCompletion)completion
 {
     OWSAssert(completion);
@@ -505,7 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (strongSelf.isComplete) {
                 return;
             }
-            strongSelf.lastRecordNames = [NSSet setWithArray:recordNames];
+            strongSelf.lastValidRecordNames = [NSSet setWithArray:recordNames];
             completion(YES);
         });
     }
@@ -514,17 +450,6 @@ NS_ASSUME_NONNULL_BEGIN
                 completion(NO);
             });
         }];
-}
-
-- (void)processLastManifest:(OWSBackupManifestContents *)manifest
-{
-    OWSAssert(manifest);
-
-    NSMutableDictionary<NSString *, OWSBackupManifestItem *> *lastManifestItemMap = [NSMutableDictionary new];
-    for (OWSBackupManifestItem *manifestItem in manifest.attachmentsItems) {
-        lastManifestItemMap[manifestItem.recordName] = manifestItem;
-    }
-    self.lastManifestItemMap = [lastManifestItemMap copy];
 }
 
 - (BOOL)exportDatabase
@@ -806,28 +731,29 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentExport *attachmentExport = self.unsavedAttachmentExports.lastObject;
     [self.unsavedAttachmentExports removeLastObject];
 
-    if (self.lastManifestItemMap && self.lastRecordNames) {
-        // Wherever possible, we do incremental backups and re-use fragments of the last backup.
+    if (self.lastValidRecordNames) {
+        // Wherever possible, we do incremental backups and re-use fragments of the last
+        // backup and/or restore.
         // Recycling fragments doesn't just reduce redundant network activity,
         // it allows us to skip the local export work, i.e. encryption.
         // To do so, we must preserve the metadata for these fragments.
         //
         // We check two things:
         //
-        // * That the "last known backup manifest" contains an item from which we can recover
-        //   this record's metadata.
+        // * That we already know the metadata for this fragment (from a previous backup
+        //   or restore).
         // * That this record does in fact exist in our CloudKit database.
         NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
-        OWSBackupManifestItem *_Nullable lastManifestItem = self.lastManifestItemMap[lastRecordName];
-        if (lastManifestItem && [self.lastRecordNames containsObject:lastRecordName]) {
-            OWSAssert(lastManifestItem.encryptionKey.length > 0);
-            OWSAssert(lastManifestItem.relativeFilePath.length > 0);
+        OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:lastRecordName];
+        if (lastBackupFragment && [self.lastValidRecordNames containsObject:lastRecordName]) {
+            OWSAssert(lastBackupFragment.encryptionKey.length > 0);
+            OWSAssert(lastBackupFragment.relativeFilePath.length > 0);
 
             // Recycle the metadata from the last backup's manifest.
             OWSBackupEncryptedItem *encryptedItem = [OWSBackupEncryptedItem new];
-            encryptedItem.encryptionKey = lastManifestItem.encryptionKey;
+            encryptedItem.encryptionKey = lastBackupFragment.encryptionKey;
             attachmentExport.encryptedItem = encryptedItem;
-            attachmentExport.relativeFilePath = lastManifestItem.relativeFilePath;
+            attachmentExport.relativeFilePath = lastBackupFragment.relativeFilePath;
 
             OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
             exportItem.encryptedItem = attachmentExport.encryptedItem;
@@ -886,6 +812,15 @@ NS_ASSUME_NONNULL_BEGIN
                 exportItem.recordName = recordName;
                 exportItem.attachmentExport = attachmentExport;
                 [strongSelf.savedAttachmentItems addObject:exportItem];
+
+                // Immediately save the record metadata to facilitate export resume.
+                OWSBackupFragment *backupFragment = [OWSBackupFragment new];
+                backupFragment.recordName = recordName;
+                backupFragment.encryptionKey = exportItem.encryptedItem.encryptionKey;
+                backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
+                backupFragment.attachmentId = attachmentExport.attachmentId;
+                backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
+                [backupFragment save];
 
                 DDLogVerbose(@"%@ saved attachment: %@ as %@",
                     self.logTag,
@@ -990,6 +925,10 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(item.attachmentExport.relativeFilePath.length > 0);
             itemJson[kOWSBackup_ManifestKey_RelativeFilePath] = item.attachmentExport.relativeFilePath;
         }
+        if (item.attachmentExport.attachmentId) {
+            OWSAssert(item.attachmentExport.attachmentId.length > 0);
+            itemJson[kOWSBackup_ManifestKey_AttachmentId] = item.attachmentExport.attachmentId;
+        }
         if (item.uncompressedDataLength) {
             itemJson[kOWSBackup_ManifestKey_DataSize] = item.uncompressedDataLength;
         }
@@ -999,9 +938,14 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (void)cleanUpCloudWithCompletion:(OWSBackupJobCompletion)completion
+- (void)cleanUpWithCompletion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(completion);
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return completion(nil);
+    }
 
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -1029,9 +973,47 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(![activeRecordNames containsObject:self.manifestItem.recordName]);
     [activeRecordNames addObject:self.manifestItem.recordName];
 
-    // TODO: If we implement "lazy restores" where attachments (etc.) are
-    // restored lazily, we need to include the record names for all
+    // Because we do "lazy attachment restores", we need to include the record names for all
     // records that haven't been restored yet.
+    NSArray<NSString *> *restoringRecordNames = [OWSBackup.sharedManager attachmentRecordNamesForLazyRestore];
+    [activeRecordNames addObjectsFromArray:restoringRecordNames];
+
+    [self cleanUpMetadataCacheWithActiveRecordNames:activeRecordNames];
+
+    [self cleanUpCloudWithActiveRecordNames:activeRecordNames completion:completion];
+}
+
+- (void)cleanUpMetadataCacheWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames
+{
+    OWSAssert(activeRecordNames.count > 0);
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return;
+    }
+
+    // After every successful backup export, we can (and should) cull metadata
+    // for any backup fragment (i.e. CloudKit record) that wasn't involved in
+    // the latest backup export.
+    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
+        [obsoleteRecordNames addObjectsFromArray:[transaction allKeysInCollection:[OWSBackupFragment collection]]];
+        [obsoleteRecordNames minusSet:activeRecordNames];
+
+        [transaction removeObjectsForKeys:obsoleteRecordNames.allObjects inCollection:[OWSBackupFragment collection]];
+    }];
+}
+
+- (void)cleanUpCloudWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames
+                               completion:(OWSBackupJobCompletion)completion
+{
+    OWSAssert(activeRecordNames.count > 0);
+    OWSAssert(completion);
+
+    if (self.isComplete) {
+        // Job was aborted.
+        return completion(nil);
+    }
 
     __weak OWSBackupExportJob *weakSelf = self;
     [OWSBackupAPI fetchAllRecordNamesWithSuccess:^(NSArray<NSString *> *recordNames) {

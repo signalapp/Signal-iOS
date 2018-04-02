@@ -16,15 +16,10 @@ NSString *const kOWSBackup_ManifestKey_AttachmentFiles = @"attachment_files";
 NSString *const kOWSBackup_ManifestKey_RecordName = @"record_name";
 NSString *const kOWSBackup_ManifestKey_EncryptionKey = @"encryption_key";
 NSString *const kOWSBackup_ManifestKey_RelativeFilePath = @"relative_file_path";
+NSString *const kOWSBackup_ManifestKey_AttachmentId = @"attachment_id";
 NSString *const kOWSBackup_ManifestKey_DataSize = @"data_size";
 
 NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
-
-@implementation OWSBackupManifestItem
-
-@end
-
-#pragma mark -
 
 @implementation OWSBackupManifestContents
 
@@ -86,14 +81,10 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     // might want to use a predictable directory so that repeated
     // import attempts can reuse downloads from previous attempts.
     NSString *temporaryDirectory = NSTemporaryDirectory();
-    self.jobTempDirPath = [temporaryDirectory stringByAppendingString:[NSUUID UUID].UUIDString];
+    self.jobTempDirPath = [temporaryDirectory stringByAppendingPathComponent:[NSUUID UUID].UUIDString];
 
     if (![OWSFileSystem ensureDirectoryExists:self.jobTempDirPath]) {
         OWSProdLogAndFail(@"%@ Could not create jobTempDirPath.", self.logTag);
-        return NO;
-    }
-    if (![OWSFileSystem protectFileOrFolderAtPath:self.jobTempDirPath]) {
-        OWSProdLogAndFail(@"%@ Could not protect jobTempDirPath.", self.logTag);
         return NO;
     }
     return YES;
@@ -226,12 +217,12 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
 
     DDLogVerbose(@"%@ json: %@", self.logTag, json);
 
-    NSArray<OWSBackupManifestItem *> *_Nullable databaseItems =
+    NSArray<OWSBackupFragment *> *_Nullable databaseItems =
         [self parseItems:json key:kOWSBackup_ManifestKey_DatabaseFiles];
     if (!databaseItems) {
         return failure();
     }
-    NSArray<OWSBackupManifestItem *> *_Nullable attachmentsItems =
+    NSArray<OWSBackupFragment *> *_Nullable attachmentsItems =
         [self parseItems:json key:kOWSBackup_ManifestKey_AttachmentFiles];
     if (!attachmentsItems) {
         return failure();
@@ -244,7 +235,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
     return success(contents);
 }
 
-- (nullable NSArray<OWSBackupManifestItem *> *)parseItems:(id)json key:(NSString *)key
+- (nullable NSArray<OWSBackupFragment *> *)parseItems:(id)json key:(NSString *)key
 {
     OWSAssert(json);
     OWSAssert(key.length);
@@ -258,7 +249,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         OWSProdLogAndFail(@"%@ manifest has invalid data: %@.", self.logTag, key);
         return nil;
     }
-    NSMutableArray<OWSBackupManifestItem *> *items = [NSMutableArray new];
+    NSMutableArray<OWSBackupFragment *> *items = [NSMutableArray new];
     for (NSDictionary *itemMap in itemMaps) {
         if (![itemMap isKindOfClass:[NSDictionary class]]) {
             OWSProdLogAndFail(@"%@ manifest has invalid item: %@.", self.logTag, key);
@@ -267,6 +258,7 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
         NSString *_Nullable recordName = itemMap[kOWSBackup_ManifestKey_RecordName];
         NSString *_Nullable encryptionKeyString = itemMap[kOWSBackup_ManifestKey_EncryptionKey];
         NSString *_Nullable relativeFilePath = itemMap[kOWSBackup_ManifestKey_RelativeFilePath];
+        NSString *_Nullable attachmentId = itemMap[kOWSBackup_ManifestKey_AttachmentId];
         NSNumber *_Nullable uncompressedDataLength = itemMap[kOWSBackup_ManifestKey_DataSize];
         if (![recordName isKindOfClass:[NSString class]]) {
             OWSProdLogAndFail(@"%@ manifest has invalid recordName: %@.", self.logTag, key);
@@ -281,6 +273,11 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             OWSProdLogAndFail(@"%@ manifest has invalid relativeFilePath: %@.", self.logTag, key);
             return nil;
         }
+        // attachmentId is an optional field.
+        if (attachmentId && ![attachmentId isKindOfClass:[NSString class]]) {
+            OWSProdLogAndFail(@"%@ manifest has invalid attachmentId: %@.", self.logTag, key);
+            return nil;
+        }
         NSData *_Nullable encryptionKey = [NSData dataFromBase64String:encryptionKeyString];
         if (!encryptionKey) {
             OWSProdLogAndFail(@"%@ manifest has corrupt encryptionKey: %@.", self.logTag, key);
@@ -292,10 +289,11 @@ NSString *const kOWSBackup_KeychainService = @"kOWSBackup_KeychainService";
             return nil;
         }
 
-        OWSBackupManifestItem *item = [OWSBackupManifestItem new];
+        OWSBackupFragment *item = [OWSBackupFragment new];
         item.recordName = recordName;
         item.encryptionKey = encryptionKey;
         item.relativeFilePath = relativeFilePath;
+        item.attachmentId = attachmentId;
         item.uncompressedDataLength = uncompressedDataLength;
         [items addObject:item];
     }

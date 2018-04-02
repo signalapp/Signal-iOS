@@ -48,6 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIBackup clearAllCloudKitRecords];
                                      }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear Backup Metadata Cache"
+                                     actionBlock:^{
+                                         [DebugUIBackup clearBackupMetadataCache];
+                                     }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
@@ -159,6 +163,16 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ clearAllCloudKitRecords.", self.logTag);
 
     [OWSBackup.sharedManager clearAllCloudKitRecords];
+}
+
++ (void)clearBackupMetadataCache
+{
+    DDLogInfo(@"%@ ClearBackupMetadataCache.", self.logTag);
+
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeAllObjectsInCollection:[OWSBackupFragment collection]];
+        }];
 }
 
 @end

@@ -17,6 +17,9 @@ extern NSString *const TSUnreadDatabaseViewExtensionName;
 
 extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
+extern NSString *const TSLazyRestoreAttachmentsGroup;
+extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
+
 @interface TSDatabaseView : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -54,5 +57,7 @@ extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
+
++ (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 
 @end

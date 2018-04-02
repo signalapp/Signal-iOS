@@ -2,6 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "TSYapDatabaseObject.h"
+#import <SignalServiceKit/OWSBackupFragment.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const kOWSBackup_ManifestKey_DatabaseFiles;
@@ -9,6 +12,7 @@ extern NSString *const kOWSBackup_ManifestKey_AttachmentFiles;
 extern NSString *const kOWSBackup_ManifestKey_RecordName;
 extern NSString *const kOWSBackup_ManifestKey_EncryptionKey;
 extern NSString *const kOWSBackup_ManifestKey_RelativeFilePath;
+extern NSString *const kOWSBackup_ManifestKey_AttachmentId;
 extern NSString *const kOWSBackup_ManifestKey_DataSize;
 
 @class OWSBackupIO;
@@ -20,31 +24,10 @@ typedef void (^OWSBackupJobCompletion)(NSError *_Nullable error);
 typedef void (^OWSBackupJobManifestSuccess)(OWSBackupManifestContents *manifest);
 typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
-@interface OWSBackupManifestItem : NSObject
-
-@property (nonatomic) NSString *recordName;
-
-@property (nonatomic) NSData *encryptionKey;
-
-// This property is only set for certain types of manifest item,
-// namely attachments where we need to know where the attachment's
-// file should reside relative to the attachments folder.
-@property (nonatomic, nullable) NSString *relativeFilePath;
-
-// This property is only set if the manifest item is downloaded.
-@property (nonatomic, nullable) NSString *downloadFilePath;
-
-// This property is only set if the manifest item is compressed.
-@property (nonatomic, nullable) NSNumber *uncompressedDataLength;
-
-@end
-
-#pragma mark -
-
 @interface OWSBackupManifestContents : NSObject
 
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
 
 @end
 

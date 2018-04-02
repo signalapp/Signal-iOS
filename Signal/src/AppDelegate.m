@@ -418,8 +418,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Every time we change or add a database view in such a way that
     // might cause a delay on launch, we need to bump this constant.
     //
-    // We upgraded YapDatabase in v2.20.0 and need to regenerate all database views.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.20.0";
+    // We added a database view in v2.23.0.
+    NSString *kLastVersionWithDatabaseViewChange = @"2.23.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
@@ -1134,6 +1134,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self ensureRootViewController];
 
     [OWSBackup.sharedManager setup];
+
+    // Resume lazy restore.
+    [OWSBackupLazyRestoreJob runAsync];
 }
 
 - (void)registrationStateDidChange

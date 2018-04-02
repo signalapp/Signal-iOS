@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property should only be accessed on the main thread.
 @property (nullable, nonatomic) NSNumber *cachedAudioDurationSeconds;
 
+// Optional property.  Only set for attachments which need "lazy backup restore."
+@property (nonatomic, nullable) NSString *lazyRestoreFragmentId;
+
 @end
 
 #pragma mark -
@@ -359,7 +362,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
-        OWSFail(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
+        // If we're not lazy-restoring this message, the attachment should exist on disk.
+        OWSAssert(self.lazyRestoreFragmentId);
         return;
     }
 
@@ -608,6 +613,44 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return audioDurationSeconds;
+}
+
+- (nullable OWSBackupFragment *)lazyRestoreFragment
+{
+    if (!self.lazyRestoreFragmentId) {
+        return nil;
+    }
+    return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+}
+
+#pragma mark - Update With... Methods
+
+- (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(lazyRestoreFragment);
+    OWSAssert(transaction);
+
+    if (!lazyRestoreFragment.uniqueId) {
+        // If metadata hasn't been saved yet, save now.
+        [lazyRestoreFragment saveWithTransaction:transaction];
+
+        OWSAssert(lazyRestoreFragment.uniqueId);
+    }
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSAttachmentStream *attachment) {
+                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                             }];
+}
+
+- (void)updateWithLazyRestoreComplete
+{
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self applyChangeToSelfAndLatestCopy:transaction
+                                 changeBlock:^(TSAttachmentStream *attachment) {
+                                     [attachment setLazyRestoreFragmentId:nil];
+                                 }];
+    }];
 }
 
 @end

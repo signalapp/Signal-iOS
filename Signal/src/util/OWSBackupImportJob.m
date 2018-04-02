@@ -26,8 +26,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
 @property (nonatomic) OWSBackupIO *backupIO;
 
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *databaseItems;
-@property (nonatomic) NSArray<OWSBackupManifestItem *> *attachmentsItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *databaseItems;
+@property (nonatomic) NSArray<OWSBackupFragment *> *attachmentsItems;
 
 @end
 
@@ -105,9 +105,16 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     OWSAssert(self.databaseItems);
     OWSAssert(self.attachmentsItems);
 
-    NSMutableArray<OWSBackupManifestItem *> *allItems = [NSMutableArray new];
+    NSMutableArray<OWSBackupFragment *> *allItems = [NSMutableArray new];
     [allItems addObjectsFromArray:self.databaseItems];
     [allItems addObjectsFromArray:self.attachmentsItems];
+
+    // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
+    [self.primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (OWSBackupFragment *item in allItems) {
+            [item saveWithTransaction:transaction];
+        }
+    }];
 
     __weak OWSBackupImportJob *weakSelf = self;
     [weakSelf
@@ -117,12 +124,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                             [weakSelf failWithError:fileDownloadError];
                             return;
                         }
-
-                        if (weakSelf.isComplete) {
-                            return;
-                        }
-
-                        [weakSelf restoreAttachmentFiles];
 
                         if (weakSelf.isComplete) {
                             return;
@@ -154,6 +155,15 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                     return;
                                 }
 
+                                [weakSelf restoreAttachmentFiles];
+
+                                if (weakSelf.isComplete) {
+                                    return;
+                                }
+
+                                // Kick off lazy restore.
+                                [OWSBackupLazyRestoreJob runAsync];
+
                                 [weakSelf succeed];
                             }];
                         }];
@@ -174,7 +184,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     return YES;
 }
 
-- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
+- (void)downloadFilesFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
                     completion:(OWSBackupJobCompletion)completion
 {
     OWSAssert(items.count > 0);
@@ -185,7 +195,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [self downloadNextItemFromCloud:items recordCount:items.count completion:completion];
 }
 
-- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupManifestItem *> *)items
+- (void)downloadNextItemFromCloud:(NSMutableArray<OWSBackupFragment *> *)items
                       recordCount:(NSUInteger)recordCount
                        completion:(OWSBackupJobCompletion)completion
 {
@@ -201,7 +211,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         // All downloads are complete; exit.
         return completion(nil);
     }
-    OWSBackupManifestItem *item = items.lastObject;
+    OWSBackupFragment *item = items.lastObject;
     [items removeLastObject];
 
     CGFloat progress = (recordCount > 0 ? ((recordCount - items.count) / (CGFloat)recordCount) : 0.f);
@@ -209,7 +219,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                             @"Indicates that the backup import data is being downloaded.")
                                progress:@(progress)];
 
-    // Use a predictable file path so that multiple "import backup" attempts
+    // TODO: Use a predictable file path so that multiple "import backup" attempts
     // will leverage successful file downloads from previous attempts.
     //
     // TODO: This will also require imports using a predictable jobTempDirPath.
@@ -248,53 +258,44 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 {
     DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, self.attachmentsItems.count);
 
-    NSString *attachmentsDirPath = [TSAttachmentStream attachmentsFolder];
-
-    NSUInteger count = 0;
-    for (OWSBackupManifestItem *item in self.attachmentsItems) {
-        if (self.isComplete) {
-            return;
-        }
-        if (item.recordName.length < 1) {
-            DDLogError(@"%@ attachment was not downloaded.", self.logTag);
-            // Attachment-related errors are recoverable and can be ignored.
-            continue;
-        }
-        if (item.relativeFilePath.length < 1) {
-            DDLogError(@"%@ attachment missing relative file path.", self.logTag);
-            // Attachment-related errors are recoverable and can be ignored.
-            continue;
-        }
-
-        count++;
-        [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
-                                                @"Indicates that the backup import data is being restored.")
-                                   progress:@(count / (CGFloat)self.attachmentsItems.count)];
-
-        NSString *dstFilePath = [attachmentsDirPath stringByAppendingPathComponent:item.relativeFilePath];
-        if ([NSFileManager.defaultManager fileExistsAtPath:dstFilePath]) {
-            DDLogError(@"%@ skipping redundant file restore: %@.", self.logTag, dstFilePath);
-            continue;
-        }
-        NSString *dstDirPath = [dstFilePath stringByDeletingLastPathComponent];
-        if (![NSFileManager.defaultManager fileExistsAtPath:dstDirPath]) {
-            if (![OWSFileSystem ensureDirectoryExists:dstDirPath]) {
-                DDLogError(@"%@ couldn't create directory for file restore: %@.", self.logTag, dstFilePath);
-                continue;
+    __block NSUInteger count = 0;
+    YapDatabaseConnection *dbConnection = self.primaryStorage.newDatabaseConnection;
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        for (OWSBackupFragment *item in self.attachmentsItems) {
+            if (self.isComplete) {
+                return;
             }
-        }
-        @autoreleasepool {
-            if (![self.backupIO decryptFileAsFile:item.downloadFilePath
-                                      dstFilePath:dstFilePath
-                                    encryptionKey:item.encryptionKey]) {
-                DDLogError(@"%@ attachment could not be restored.", self.logTag);
+            if (item.recordName.length < 1) {
+                DDLogError(@"%@ attachment was not downloaded.", self.logTag);
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
+            if (item.attachmentId.length < 1) {
+                DDLogError(@"%@ attachment missing attachment id.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            if (item.relativeFilePath.length < 1) {
+                DDLogError(@"%@ attachment missing relative file path.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            TSAttachmentStream *_Nullable attachment =
+                [TSAttachmentStream fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
+            if (!attachment) {
+                DDLogError(@"%@ attachment to restore could not be found.", self.logTag);
+                // Attachment-related errors are recoverable and can be ignored.
+                continue;
+            }
+            [attachment markForLazyRestoreWithFragment:item transaction:transaction];
+            count++;
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
+                                                    @"Indicates that the backup import data is being restored.")
+                                       progress:@(count / (CGFloat)self.attachmentsItems.count)];
         }
+    }];
 
-        DDLogError(@"%@ restored file: %@.", self.logTag, item.relativeFilePath);
-    }
+    DDLogError(@"%@ enqueued lazy restore of %zd files.", self.logTag, count);
 }
 
 - (void)restoreDatabaseWithCompletion:(OWSBackupJobBoolCompletion)completion
@@ -350,7 +351,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         }
 
         NSUInteger count = 0;
-        for (OWSBackupManifestItem *item in self.databaseItems) {
+        for (OWSBackupFragment *item in self.databaseItems) {
             if (self.isComplete) {
                 return;
             }
