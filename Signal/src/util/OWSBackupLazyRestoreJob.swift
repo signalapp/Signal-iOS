@@ -22,15 +22,15 @@ public class OWSBackupLazyRestoreJob: NSObject {
     }
 
     @objc
-    public class func run() {
-        OWSBackupLazyRestoreJob().run()
+    public class func runAsync() {
+        OWSBackupLazyRestoreJob().runAsync()
     }
 
     public override init() {
         self.primaryStorage = OWSPrimaryStorage.shared()
     }
 
-    private func run() {
+    private func runAsync() {
         AssertIsOnMainThread()
 
         DispatchQueue.global().async {

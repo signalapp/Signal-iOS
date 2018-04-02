@@ -379,6 +379,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return NSOrderedSame;
         }
 
+        // Specific ordering doesn't matter; we just need a stable ordering.
         TSAttachmentStream *attachmentStream1 = (TSAttachmentStream *)object1;
         TSAttachmentStream *attachmentStream2 = (TSAttachmentStream *)object2;
         return [attachmentStream2.creationTimestamp compare:attachmentStream1.creationTimestamp];

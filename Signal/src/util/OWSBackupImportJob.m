@@ -162,7 +162,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                 }
 
                                 // Kick off lazy restore.
-                                [OWSBackupLazyRestoreJob run];
+                                [OWSBackupLazyRestoreJob runAsync];
 
                                 [weakSelf succeed];
                             }];

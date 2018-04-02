@@ -732,15 +732,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unsavedAttachmentExports removeLastObject];
 
     if (self.lastValidRecordNames) {
-        // Wherever possible, we do incremental backups and re-use fragments of the last backup.
+        // Wherever possible, we do incremental backups and re-use fragments of the last
+        // backup and/or restore.
         // Recycling fragments doesn't just reduce redundant network activity,
         // it allows us to skip the local export work, i.e. encryption.
         // To do so, we must preserve the metadata for these fragments.
         //
         // We check two things:
         //
-        // * That the "last known backup manifest" contains an item from which we can recover
-        //   this record's metadata.
+        // * That we already know the metadata for this fragment (from a previous backup
+        //   or restore).
         // * That this record does in fact exist in our CloudKit database.
         NSString *lastRecordName = [OWSBackupAPI recordNameForPersistentFileWithFileId:attachmentExport.attachmentId];
         OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:lastRecordName];
