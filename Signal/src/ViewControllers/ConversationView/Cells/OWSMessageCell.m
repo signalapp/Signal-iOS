@@ -42,7 +42,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 @property (nonatomic) OWSBubbleView *bubbleView;
 
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) OWSMessageTextView *bodyTextViewCached;
+@property (nonatomic) OWSMessageTextView *bodyTextView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
@@ -75,7 +75,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
 - (void)commontInit
 {
-    OWSAssert(!self.bodyTextViewCached);
+    OWSAssert(!self.bodyTextView);
 
     _viewConstraints = [NSMutableArray new];
 
@@ -95,7 +95,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
     [self.contentView addSubview:self.dateHeaderLabel];
 
-    self.bodyTextViewCached = [self newTextView];
+    self.bodyTextView = [self newTextView];
 
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -103,7 +103,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [self.footerView addSubview:self.footerLabel];
 
     // Hide these views by default.
-    self.bodyTextViewCached.hidden = YES;
+    self.bodyTextView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
@@ -140,6 +140,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     textView.contentInset = UIEdgeInsetsZero;
     textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
+    // Setting dataDetectorTypes is expensive.  Do it just once.
+    textView.dataDetectorTypes = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
     return textView;
 }
 
@@ -401,6 +403,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             [bodyMediaView autoPinLeadingToSuperviewWithMargin:0],
             [bodyMediaView autoPinTrailingToSuperviewWithMargin:0],
         ]];
+        // We need constraints to control the vertical sizing of media and text views, but we use
+        // lower priority so that when a message only contains media it uses the exact bounds of
+        // the message view.
         [NSLayoutConstraint
             autoSetPriority:UILayoutPriorityDefaultLow
              forConstraints:^{
@@ -446,6 +451,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
             [bodyTextView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
             [bodyTextView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
         ]];
+        // We need constraints to control the vertical sizing of media and text views, but we use
+        // lower priority so that when a message only contains media it uses the exact bounds of
+        // the message view.
         [NSLayoutConstraint
             autoSetPriority:UILayoutPriorityDefaultLow
              forConstraints:^{
@@ -523,7 +531,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
         // TODO: Do we need to hide/remove the media view?
-        [self showAttachmentErrorView:mediaView];
+        [self showAttachmentErrorViewWithMediaView:mediaView];
     }
     return cellMedia;
 }
@@ -721,12 +729,12 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
     }
-    [self.class loadForTextDisplay:self.bodyTextViewCached
+    [self.class loadForTextDisplay:self.bodyTextView
                               text:self.displayableBodyText.displayText
                          textColor:self.textColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
-    return self.bodyTextViewCached;
+    return self.bodyTextView;
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
@@ -745,7 +753,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         NSForegroundColorAttributeName : textColor,
         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
     };
-    textView.dataDetectorTypes = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
 }
 
@@ -797,10 +804,13 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         if (!strongSelf) {
             return;
         }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
         // Don't cache large still images.
+        //
+        // TODO: Don't use full size images in the message cells.
         const NSUInteger kMaxCachableSize = 1024 * 1024;
         BOOL shouldSkipCache =
             [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.filePath].unsignedIntegerValue < kMaxCachableSize;
@@ -813,6 +823,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                                               shouldSkipCache:shouldSkipCache];
     };
     self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -836,6 +851,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         if (!strongSelf) {
             return;
         }
+        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
         if (animatedImageView.image) {
             return;
         }
@@ -854,6 +870,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                                                  shouldSkipCache:NO];
     };
     self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
         animatedImageView.image = nil;
     };
 
@@ -911,6 +932,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         if (!strongSelf) {
             return;
         }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
@@ -924,6 +946,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                                               shouldSkipCache:NO];
     };
     self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -999,26 +1026,25 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     if (self.isOutgoing) {
         if (!self.attachmentStream.isUploaded) {
-            __unused AttachmentUploadView *attachmentUploadView =
-                //            self.attachmentUploadView =
-                // This view will be added to attachmentView which will retain a strong reference to it.
+            AttachmentUploadView *attachmentUploadView =
                 [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
-                                                       superview:attachmentView
                                          attachmentStateCallback:attachmentStateCallback];
+            [attachmentView addSubview:attachmentUploadView];
+            [attachmentUploadView autoPinToSuperviewEdges];
         }
     }
 }
 
-- (void)showAttachmentErrorView:(UIView *)mediaView
+- (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
 {
     OWSAssert(mediaView);
 
     // TODO: We could do a better job of indicating that the media could not be loaded.
-    UIView *customView = [UIView new];
-    customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
-    customView.userInteractionEnabled = NO;
-    [mediaView addSubview:customView];
-    [customView autoPinEdgesToSuperviewEdges];
+    UIView *errorView = [UIView new];
+    errorView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+    errorView.userInteractionEnabled = NO;
+    [mediaView addSubview:errorView];
+    [errorView autoPinEdgesToSuperviewEdges];
 }
 
 #pragma mark - Measurement
@@ -1037,10 +1063,10 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-    self.bodyTextViewCached.text = self.displayableBodyText.displayText;
+    self.bodyTextView.text = self.displayableBodyText.displayText;
     // Honor dynamic type in the message bodies.
-    self.bodyTextViewCached.font = [self textMessageFont];
-    CGSize textSize = CGSizeCeil([self.bodyTextViewCached sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+    self.bodyTextView.font = [self textMessageFont];
+    CGSize textSize = CGSizeCeil([self.bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
     CGSize textViewSize = textSize;
 
     if (includeMargins) {
@@ -1213,10 +1239,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
-    [self.bodyTextViewCached removeFromSuperview];
-    self.bodyTextViewCached.text = nil;
-    self.bodyTextViewCached.hidden = YES;
-    self.bodyTextViewCached.dataDetectorTypes = UIDataDetectorTypeNone;
+    [self.bodyTextView removeFromSuperview];
+    self.bodyTextView.text = nil;
+    self.bodyTextView.hidden = YES;
     [self.failedSendBadgeView removeFromSuperview];
     self.failedSendBadgeView = nil;
     self.footerLabel.text = nil;

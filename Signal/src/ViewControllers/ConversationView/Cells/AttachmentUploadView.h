@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,7 +19,6 @@ typedef void (^AttachmentStateBlock)(BOOL isAttachmentReady);
 @interface AttachmentUploadView : UIView
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
-                         superview:(UIView *)superview
            attachmentStateCallback:(AttachmentStateBlock _Nullable)attachmentStateCallback;
 
 @end

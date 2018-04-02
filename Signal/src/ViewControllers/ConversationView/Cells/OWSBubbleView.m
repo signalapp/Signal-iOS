@@ -8,7 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
 const CGFloat kOWSMessageCellCornerRadius = 17;
 
 const CGFloat kBubbleVRounding = kOWSMessageCellCornerRadius;
@@ -28,6 +27,22 @@ const CGFloat kBubbleTextVInset = 10.f;
 #pragma mark -
 
 @implementation OWSBubbleView
+
+- (instancetype)init
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    self.shapeLayer = [CAShapeLayer new];
+    [self.layer addSublayer:self.shapeLayer];
+
+    self.maskLayer = [CAShapeLayer new];
+    self.layer.mask = self.maskLayer;
+
+    return self;
+}
 
 - (void)setIsOutgoing:(BOOL)isOutgoing
 {
@@ -64,29 +79,35 @@ const CGFloat kBubbleTextVInset = 10.f;
 
 - (void)setFrame:(CGRect)frame
 {
-    BOOL didChange = !CGSizeEqualToSize(self.frame.size, frame.size);
+    // We only need to update our layers if the _size_ of this view
+    // changes since the contents of the layers are in local coordinates.
+    BOOL didChangeSize = !CGSizeEqualToSize(self.frame.size, frame.size);
 
     [super setFrame:frame];
 
-    if (didChange || !self.shapeLayer) {
+    if (didChangeSize || !self.shapeLayer) {
         [self updateLayers];
     }
 
-    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    // We always need to inform the "bubble stroke view" (if any) if our
+    // frame/bounds/center changes. Its contents are not in local coordinates.
     [self.bubbleStrokeView updateLayers];
 }
 
 - (void)setBounds:(CGRect)bounds
 {
-    BOOL didChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
+    // We only need to update our layers if the _size_ of this view
+    // changes since the contents of the layers are in local coordinates.
+    BOOL didChangeSize = !CGSizeEqualToSize(self.bounds.size, bounds.size);
 
     [super setBounds:bounds];
 
-    if (didChange || !self.shapeLayer) {
+    if (didChangeSize || !self.shapeLayer) {
         [self updateLayers];
     }
 
-    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    // We always need to inform the "bubble stroke view" (if any) if our
+    // frame/bounds/center changes. Its contents are not in local coordinates.
     [self.bubbleStrokeView updateLayers];
 }
 
@@ -94,7 +115,8 @@ const CGFloat kBubbleTextVInset = 10.f;
 {
     [super setCenter:center];
 
-    // We need to inform the "bubble stroke view" (if any) any time our frame changes.
+    // We always need to inform the "bubble stroke view" (if any) if our
+    // frame/bounds/center changes. Its contents are not in local coordinates.
     [self.bubbleStrokeView updateLayers];
 }
 
@@ -110,20 +132,13 @@ const CGFloat kBubbleTextVInset = 10.f;
 
 - (void)updateLayers
 {
-    if (!self.shapeLayer) {
-        self.shapeLayer = [CAShapeLayer new];
-        [self.layer addSublayer:self.shapeLayer];
-    }
-    if (!self.maskLayer) {
-        self.maskLayer = [CAShapeLayer new];
-        self.layer.mask = self.maskLayer;
-    }
+    OWSAssert(self.maskLayer);
+    OWSAssert(self.shapeLayer);
 
     UIBezierPath *bezierPath = [self maskPath];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
     self.shapeLayer.path = bezierPath.CGPath;
-
     self.maskLayer.path = bezierPath.CGPath;
 }
 

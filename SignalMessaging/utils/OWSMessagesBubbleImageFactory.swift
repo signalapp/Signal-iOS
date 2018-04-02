@@ -20,22 +20,22 @@ public class OWSMessagesBubbleImageFactory: NSObject {
     }()
 
     public lazy var incoming: JSQMessagesBubbleImage = {
-        let color = UIColor.jsq_messageBubbleLightGray()!
+        let color = bubbleColorIncoming
         return self.incoming(color: color)
     }()
 
     public lazy var outgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_materialBlue
+        let color = bubbleColorOutgoingSent
         return self.outgoing(color: color)
     }()
 
     public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_fadedBlue
+        let color = bubbleColorOutgoingSending
         return self.outgoing(color: color)
     }()
 
     public lazy var outgoingFailed: JSQMessagesBubbleImage = {
-        let color = UIColor.gray
+        let color = bubbleColorOutgoingUnsent
         return self.outgoing(color: color)
     }()
 
