@@ -67,6 +67,8 @@ NS_ASSUME_NONNULL_BEGIN
              [DebugUIMessages fakeRandomTextAction:thread],
              // Sequences
              [DebugUIMessages allFakeSequencesAction:thread],
+             // Quoted Replies
+             [DebugUIMessages allQuotedReplyAction:thread],
              // Exemplary
              [DebugUIMessages allFakeAction:thread],
          ]) {
@@ -1864,7 +1866,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Fake Quoted Replies
 
-//+ (DebugUIMessagesAction *)fakeIncomingQuotedReplyToIncomingAction:(TSThread *)thread
 + (DebugUIMessagesAction *)
               fakeQuotedReplyAction:(TSThread *)thread
                  quotedMessageLabel:(NSString *)quotedMessageLabel
@@ -1887,28 +1888,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                         // Only applies if !isReplyIncoming.
                         replyIsRead:(BOOL)replyIsRead
 {
-    // fakeAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
-
     OWSAssert(thread);
 
     // Only applies if !isQuotedMessageIncoming.
     BOOL quotedMessageIsDelivered = NO;
     BOOL quotedMessageIsRead = NO;
-
-
-    //    NSString *_Nullable quotedMessageBody = [quotedMessageBodyParam ]
-    //    NSString *messageBody = nil;
-    //    if (hasCaption) {
-    //        // We want a message body that is "more than one line on all devices,
-    //        // using all dynamic type sizes."
-    //        NSString *sampleText = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit
-    //        amet, "
-    //        @"consectetur adipiscing elit.";
-    //        messageBody = [[label stringByAppendingString:@" "] stringByAppendingString:sampleText];
-    //
-    //        messageBody = [messageBody stringByAppendingString:@" 🔤"];
-    //    }
-    //    attachment.captionText = messageBody;
 
     NSMutableString *label = [NSMutableString new];
     [label appendString:@"Quoted Reply ("];
@@ -1937,24 +1921,6 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     }
     [label appendString:@")"];
 
-    //    NSString *label = labelParam;
-    //    if (hasCaption) {
-    //        label = [label stringByAppendingString:@" 🔤"];
-    //    }
-    //    if (messageState == TSOutgoingMessageStateUnsent) {
-    //        label = [label stringByAppendingString:@" (Unsent)"];
-    //    } else if (messageState == TSOutgoingMessageStateAttemptingOut) {
-    //        label = [label stringByAppendingString:@" (Sending)"];
-    //    } else if (messageState == TSOutgoingMessageStateSentToService) {
-    //        label = [label stringByAppendingString:@" (Sent)"];
-    //    } else {
-    //        OWSFail(@"%@ unknown message state.", self.logTag)
-    //    }
-    //    replyLabel = [replyLabel stringByAppendingString:[self actionLabelForHasCaption:NO
-    //                                                     outgoingMessageState:messageState
-    //                                                              isDelivered:isDelivered
-    //                                                                   isRead:isRead]];
-
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
@@ -1967,30 +1933,6 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                           isAttachmentDownloaded:isQuotedMessageAttachmentDownloaded
                                                    quotedMessage:nil
                                                      transaction:transaction];
-                //                    if (quotedMessageAssetLoader) {
-                //                        // Attachment, w/ or w/o caption.
-                //                        messageToQuote =
-                //                        [self createFakeIncomingMedia:index
-                //                               isAttachmentDownloaded:isQuotedMessageAttachmentDownloaded
-                //                                              caption:quotedMessageBody
-                //                                      fakeAssetLoader:quotedMessageAssetLoader
-                //                                               thread:thread
-                //                                          transaction:transaction];
-                //                    } else {
-                //                        // Text-only
-                //                        messageToQuote =
-                //                        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate
-                //                        ows_millisecondTimeStamp]
-                //                                                                           inThread:thread
-                //                                                                           authorId:@"+19174054215"
-                //                                                                     sourceDeviceId:0
-                //                                                                        messageBody:quotedMessageBody
-                //                                                                      attachmentIds:@[]
-                //                                                                   expiresInSeconds:0
-                //                                                                      quotedMessage:nil];
-                //                        [messageToQuote markAsReadWithTransaction:transaction sendReadReceipt:NO
-                //                        updateExpiration:NO];
-                //                    }
                 quotedMessage =
                     [OWSMessageUtils quotedMessageForIncomingMessage:messageToQuote transaction:transaction];
             } else {
@@ -2007,14 +1949,6 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
             }
             OWSAssert(quotedMessage);
 
-            //            isReplyIncoming:(BOOL)isReplyIncoming
-            //            replyMessageBody:(NSString *)replyMessageBody
-            //                // Only applies if !isReplyIncoming.
-            //            replyMessageState:(TSOutgoingMessageState)replyMessageState
-            //                // Only applies if !isReplyIncoming.
-            //            replyIsDelivered:(BOOL)replyIsDelivered
-            //                // Only applies if !isReplyIncoming.
-            //            replyIsRead:(BOOL)replyIsRead
             if (isReplyIncoming) {
                 [self createFakeIncomingMessage:thread
                                     messageBody:replyMessageBody
@@ -2032,29 +1966,17 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                   quotedMessage:quotedMessage
                                     transaction:transaction];
             }
-
-
-            //                NSString *replyText = [@"Some reply: " stringByAppendingString:[self randomText]];
-            //                TSOutgoingMessage *replyMessage =
-            //                [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate
-            //                ows_millisecondTimeStamp]
-            //                                                                   inThread:thread
-            //                                                                messageBody:replyText
-            //                                                              attachmentIds:[NSMutableArray new]
-            //                                                           expiresInSeconds:0
-            //                                                            expireStartedAt:0
-            //                                                             isVoiceMessage:NO
-            //                                                           groupMetaMessage:TSGroupMessageNone
-            //                                                              quotedMessage:quotedMessage];
-            //                [replyMessage saveWithTransaction:transaction];
-            //                [replyMessage updateWithMessageState:TSOutgoingMessageStateUnsent
-            //                transaction:transaction];
         }];
 }
 
 + (NSArray<DebugUIMessagesAction *> *)allFakeQuotedReplyActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
+
+    NSString *shortText = @"Lorem ipsum";
+    NSString *mediumText = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, "
+                           @"consectetur adipiscing elit.";
+    NSString *longText = [self randomOversizeText];
 
     //    NSArray<NSString *> *messageBodies = @[
     //                                           @"Hi",
@@ -2069,24 +1991,274 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
 
     if (includeLabels) {
         [actions addObject:[self fakeIncomingTextMessageAction:thread
-                                                          text:@"⚠️ Incoming Quoted Reply To Incoming ⚠️"]];
+                                                          text:@"⚠️ Quoted Replies (Message Lengths) ⚠️"]];
     }
-    //    [actions addObject:[self fakeShortIncomingTextMessageAction:thread]];
     [actions addObjectsFromArray:@[
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Short Text"
-                        isQuotedMessageIncoming:YES
-                              quotedMessageBody:@"lorem"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
                        quotedMessageAssetLoader:nil
             isQuotedMessageAttachmentDownloaded:NO
                       quotedMessageMessageState:TSOutgoingMessageStateUnsent
                                      replyLabel:@"Short Text"
-                                isReplyIncoming:YES
-                               replyMessageBody:@"ipsum"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Medium Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:mediumText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Medium Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:mediumText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Long Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:longText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Long Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:longText
                               replyMessageState:TSOutgoingMessageStateUnsent
                                replyIsDelivered:NO
                                     replyIsRead:NO],
     ]];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Attachment Types) ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Jpg"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Jpg"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+    ]];
+
+    if (includeLabels) {
+        [actions
+            addObject:[self fakeIncomingTextMessageAction:thread text:@"⚠️ Quoted Replies (Attachments) ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Jpg"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Jpg"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent
+                               replyIsDelivered:NO
+                                    replyIsRead:NO],
+    ]];
+
+
+    //    [actions addObject:[self fakeShortIncomingTextMessageAction:thread]];
+    void (^createActions)(BOOL, BOOL) = ^(BOOL isQuotedMessageIncoming, BOOL isReplyIncoming) {
+        [actions addObjectsFromArray:@[
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Short Text"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:shortText
+                           quotedMessageAssetLoader:nil
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Short Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:shortText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Short Text"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:shortText
+                           quotedMessageAssetLoader:nil
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Medium Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:mediumText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Medium Text"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:mediumText
+                           quotedMessageAssetLoader:nil
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Short Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:shortText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Medium Text"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:mediumText
+                           quotedMessageAssetLoader:nil
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Medium Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:mediumText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Long Text"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:longText
+                           quotedMessageAssetLoader:nil
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Long Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:longText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            // Attachments
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Jpg"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:nil
+                           quotedMessageAssetLoader:[DebugUIMessagesAssetLoader compactPortraitPngInstance]
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Short Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:shortText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+
+            [self fakeQuotedReplyAction:thread
+                                 quotedMessageLabel:@"Jpg"
+                            isQuotedMessageIncoming:isQuotedMessageIncoming
+                                  quotedMessageBody:shortText
+                           quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+                isQuotedMessageAttachmentDownloaded:NO
+                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                                         replyLabel:@"Short Text"
+                                    isReplyIncoming:isReplyIncoming
+                                   replyMessageBody:shortText
+                                  replyMessageState:TSOutgoingMessageStateUnsent
+                                   replyIsDelivered:NO
+                                        replyIsRead:NO],
+        ]];
+    };
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Outgoing to Outgoing) ⚠️"]];
+    }
+    createActions(NO, NO);
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Incoming to Outgoing) ⚠️"]];
+    }
+    createActions(YES, NO);
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Outgoing to Incoming) ⚠️"]];
+    }
+    createActions(NO, YES);
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Incoming to Incoming) ⚠️"]];
+    }
+    createActions(YES, YES);
 
     //    for (NSString *messageBody in messageBodies) {
     //        [actions addObject:[self fakeIncomingTextMessageAction:thread text:messageBody]];
@@ -2328,9 +2500,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
 
 #pragma mark -
 
-+ (void)sendOversizeTextMessage:(TSThread *)thread
++ (NSString *)randomOversizeText
 {
-    OWSMessageSender *messageSender = [Environment current].messageSender;
     NSMutableString *message = [NSMutableString new];
     for (NSUInteger i = 0; i < 32; i++) {
         [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
@@ -2345,7 +2516,13 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                               @"congue facilisis. Nullam aliquet dapibus ligula ac mollis. Etiam sit amet posuere "
                               @"lorem, in rhoncus nisi.\n\n"];
     }
+    return message;
+}
 
++ (void)sendOversizeTextMessage:(TSThread *)thread
+{
+    OWSMessageSender *messageSender = [Environment current].messageSender;
+    NSString *message = [self randomOversizeText];
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
@@ -3386,7 +3563,6 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
-    OWSAssert(fakeAssetLoader);
 
     TSAttachment *_Nullable attachment = nil;
     if (fakeAssetLoader) {
@@ -3454,6 +3630,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                              readTimestamp:[NSDate ows_millisecondTimeStamp]
                                transaction:transaction];
     }
+    return message;
 }
 
 + (TSIncomingMessage *)createFakeIncomingMessage:(TSThread *)thread
@@ -3464,7 +3641,6 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
-    OWSAssert(fakeAssetLoader);
 
     TSAttachment *_Nullable attachment = nil;
     if (fakeAssetLoader) {
@@ -3521,6 +3697,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                 isAttachmentDownloaded:(BOOL)isAttachmentDownloaded
                            transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssert(fakeAssetLoader);
     OWSAssert(fakeAssetLoader.filePath);
     OWSAssert(transaction);
 
