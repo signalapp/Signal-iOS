@@ -175,26 +175,31 @@ const CGFloat kBubbleTextVInset = 10.f;
     [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + kBubbleVRounding)
                        controlPoint:CGPointMake(bubbleRight, bubbleTop)];
     [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
-                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
+
+    if (hideTail) {
+        [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
+                           controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
+    } else {
+        // Thorn Tip
+        CGPoint thornTip = CGPointMake(size.width + 1, size.height);
+        CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
+        // Approximate intersection of the thorn and the bubble edge.
+        CGPoint thornPrime
+            = CGPointMake(bubbleRight - kBubbleHRounding * 0.25f, bubbleBottom - kBubbleVRounding * 0.25f);
+        CGPoint thornPrimeA = CGPointMake(thornPrime.x, bubbleBottom - kBubbleVRounding * 0.08f);
+
+        [bezierPath addQuadCurveToPoint:thornTip controlPoint:CGPointMake(thornB.x, bubbleBottom)];
+        [bezierPath addQuadCurveToPoint:thornPrime controlPoint:thornPrimeA];
+        [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
+                           controlPoint:thornPrimeA];
+    }
+
     [bezierPath addLineToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleBottom)];
     [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - kBubbleVRounding)
                        controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
     [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + kBubbleVRounding)];
     [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)
                        controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
-
-    if (!hideTail) {
-        // Thorn Tip
-        CGPoint thornTip = CGPointMake(size.width + 1, size.height);
-        CGPoint thornA = CGPointMake(bubbleRight - kBubbleHRounding * 0.5f, bubbleBottom - kBubbleVRounding);
-        CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
-        [bezierPath moveToPoint:thornTip];
-        [bezierPath addQuadCurveToPoint:thornA controlPoint:CGPointMake(thornA.x, bubbleBottom)];
-        [bezierPath addLineToPoint:thornB];
-        [bezierPath addQuadCurveToPoint:thornTip controlPoint:CGPointMake(thornB.x, bubbleBottom)];
-        [bezierPath addLineToPoint:thornTip];
-    }
 
     // Horizontal Flip If Necessary
     BOOL shouldFlip = isOutgoing == isRTL;
