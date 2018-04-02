@@ -8,10 +8,16 @@
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/TSAttachment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIMessagesAssetLoader
+
+- (NSString *)labelEmoji
+{
+    return [TSAttachment emojiForMimeType:self.mimeType];
+}
 
 + (DebugUIMessagesAssetLoader *)fakeAssetLoaderWithUrl:(NSString *)fileUrl mimeType:(NSString *)mimeType
 {
@@ -318,6 +324,46 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
++ (DebugUIMessagesAssetLoader *)fakeOversizeTextAssetLoaderWithText:(NSString *)text
+{
+    DebugUIMessagesAssetLoader *instance = [DebugUIMessagesAssetLoader new];
+    instance.mimeType = OWSMimeTypeOversizeTextMessage;
+    instance.filename = @"attachment.txt";
+    __weak DebugUIMessagesAssetLoader *weakSelf = instance;
+    instance.prepareBlock = ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [weakSelf ensureOversizeTextAssetLoadedWithText:text success:success failure:failure];
+    };
+    return instance;
+}
+
+- (void)ensureOversizeTextAssetLoadedWithText:(NSString *)text
+                                      success:(ActionSuccessBlock)success
+                                      failure:(ActionFailureBlock)failure
+{
+    OWSAssert(success);
+    OWSAssert(failure);
+    OWSAssert(self.filename.length > 0);
+    OWSAssert(self.mimeType.length > 0);
+
+    if (self.filePath) {
+        success();
+        return;
+    }
+
+    NSString *fileExtension = @"txt";
+    NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:fileExtension];
+    NSData *data = [text dataUsingEncoding:NSUTF8StringEncoding];
+    OWSAssert(data);
+    BOOL didWrite = [data writeToFile:filePath atomically:YES];
+    OWSAssert(didWrite);
+    self.filePath = filePath;
+    OWSAssert([NSFileManager.defaultManager fileExistsAtPath:filePath]);
+
+    success();
+}
+
+#pragma mark -
+
 + (instancetype)jpegInstance
 {
     static DebugUIMessagesAssetLoader *instance = nil;
@@ -514,6 +560,16 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader fakeOversizeTextAssetLoader];
+    });
+    return instance;
+}
+
++ (instancetype)oversizeTextInstanceWithText:(NSString *)text
+{
+    static DebugUIMessagesAssetLoader *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [DebugUIMessagesAssetLoader fakeOversizeTextAssetLoaderWithText:text];
     });
     return instance;
 }

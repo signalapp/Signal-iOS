@@ -1876,23 +1876,33 @@ NS_ASSUME_NONNULL_BEGIN
            quotedMessageAssetLoader:(nullable DebugUIMessagesAssetLoader *)quotedMessageAssetLoader
 // Only applies if quotedMessageAssetLoader is non-nil.
 isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
-          // Only applies if !isQuotedMessageIncoming.
-          quotedMessageMessageState:(TSOutgoingMessageState)quotedMessageMessageState
                          replyLabel:(NSString *)replyLabel
                     isReplyIncoming:(BOOL)isReplyIncoming
                    replyMessageBody:(NSString *)replyMessageBody
                   // Only applies if !isReplyIncoming.
                   replyMessageState:(TSOutgoingMessageState)replyMessageState
-                   // Only applies if !isReplyIncoming.
-                   replyIsDelivered:(BOOL)replyIsDelivered
-                        // Only applies if !isReplyIncoming.
-                        replyIsRead:(BOOL)replyIsRead
 {
     OWSAssert(thread);
 
-    // Only applies if !isQuotedMessageIncoming.
+    // Used fixed values for properties that shouldn't matter much.
     BOOL quotedMessageIsDelivered = NO;
     BOOL quotedMessageIsRead = NO;
+    TSOutgoingMessageState quotedMessageMessageState = TSOutgoingMessageStateSentToService;
+    BOOL replyIsDelivered = NO;
+    BOOL replyIsRead = NO;
+
+    // Seamlessly convert oversize text messages to oversize text attachments.
+    if ([quotedMessageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        OWSAssert(!quotedMessageAssetLoader);
+        quotedMessageAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:quotedMessageBody];
+        quotedMessageBody = nil;
+    }
+    DebugUIMessagesAssetLoader *_Nullable replyAssetLoader = nil;
+    if ([replyMessageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        OWSAssert(!replyAssetLoader);
+        replyAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:replyMessageBody];
+        replyMessageBody = nil;
+    }
 
     NSMutableString *label = [NSMutableString new];
     [label appendString:@"Quoted Reply ("];
@@ -1907,11 +1917,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     [label appendString:@") to ("];
     [label appendString:quotedMessageLabel];
     if (quotedMessageAssetLoader) {
-        [label appendString:@" 📎"];
+        [label appendFormat:@" %@", quotedMessageAssetLoader.labelEmoji];
     }
     if (isQuotedMessageIncoming) {
-        if (quotedMessageAssetLoader && isQuotedMessageAttachmentDownloaded) {
-            [label appendString:@" Downloaded"];
+        if (quotedMessageAssetLoader && !isQuotedMessageAttachmentDownloaded) {
+            [label appendString:@" !Downloaded"];
         }
     } else {
         [label appendString:[self actionLabelForHasCaption:quotedMessageBody.length > 0
@@ -1951,14 +1961,14 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
             if (isReplyIncoming) {
                 [self createFakeIncomingMessage:thread
                                     messageBody:replyMessageBody
-                                fakeAssetLoader:nil
+                                fakeAssetLoader:replyAssetLoader
                          isAttachmentDownloaded:NO
                                   quotedMessage:quotedMessage
                                     transaction:transaction];
             } else {
                 [self createFakeOutgoingMessage:thread
                                     messageBody:replyMessageBody
-                                fakeAssetLoader:nil
+                                fakeAssetLoader:replyAssetLoader
                                    messageState:replyMessageState
                                     isDelivered:replyIsDelivered
                                          isRead:replyIsRead
@@ -1967,6 +1977,18 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
             }
         }
         prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
+            if (replyAssetLoader.prepareBlock) {
+                __block BOOL didSucceed = NO;
+                replyAssetLoader.prepareBlock(
+                    ^{
+                        didSucceed = YES;
+                    },
+                    ^{
+                        OWSFail(@"%@ could not prepare oversize text reply asset.", self.logTag);
+                    });
+                OWSAssert(didSucceed);
+            }
+
             if (quotedMessageAssetLoader.prepareBlock) {
                 quotedMessageAssetLoader.prepareBlock(success, failure);
             } else {
@@ -1996,70 +2018,55 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:nil
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Short Text"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:nil
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Medium Text"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:mediumText
                        quotedMessageAssetLoader:nil
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Medium Text"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:mediumText
                        quotedMessageAssetLoader:nil
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Long Text"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:longText
                        quotedMessageAssetLoader:nil
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Long Text"
                                 isReplyIncoming:NO
                                replyMessageBody:longText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
     if (includeLabels) {
@@ -2072,112 +2079,132 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:nil
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Jpg"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Mp3"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:nil
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Mp3"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Mp4"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:nil
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Mp4"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Gif"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:nil
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
                              quotedMessageLabel:@"Gif"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
                        quotedMessageAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Pdf"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Missing Pdf"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tiny Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Missing Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
     if (includeLabels) {
@@ -2186,32 +2213,92 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     }
     [actions addObjectsFromArray:@[
         [self fakeQuotedReplyAction:thread
-                             quotedMessageLabel:@"Jpg"
+                             quotedMessageLabel:@"Tall Portrait Png"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:nil
-                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
-                             quotedMessageLabel:@"Jpg"
+                             quotedMessageLabel:@"Tall Portrait Png"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tall Portrait Png"
                         isQuotedMessageIncoming:NO
                               quotedMessageBody:shortText
-                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
-            isQuotedMessageAttachmentDownloaded:NO
-                      quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
-                              replyMessageState:TSOutgoingMessageStateUnsent
-                               replyIsDelivered:NO
-                                    replyIsRead:NO],
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Wide Landscape Png"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Wide Landscape Png"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Wide Landscape Png"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tiny Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tiny Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
     void (^directionActions)(BOOL, BOOL) = ^(BOOL isQuotedMessageIncoming, BOOL isReplyIncoming) {
@@ -2221,14 +2308,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                             isQuotedMessageIncoming:isQuotedMessageIncoming
                                   quotedMessageBody:shortText
                            quotedMessageAssetLoader:nil
-                isQuotedMessageAttachmentDownloaded:NO
-                          quotedMessageMessageState:TSOutgoingMessageStateUnsent
+                isQuotedMessageAttachmentDownloaded:YES
                                          replyLabel:@"Short Text"
                                     isReplyIncoming:isReplyIncoming
                                    replyMessageBody:shortText
-                                  replyMessageState:TSOutgoingMessageStateUnsent
-                                   replyIsDelivered:NO
-                                        replyIsRead:NO],
+                                  replyMessageState:TSOutgoingMessageStateSentToService],
         ]];
     };
 
@@ -2240,6 +2324,133 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     directionActions(YES, NO);
     directionActions(NO, YES);
     directionActions(YES, YES);
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Message States) ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Jpg"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader jpegInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Mp3"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp3Instance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Mp4"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader mp4Instance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Gif"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader gifInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Pdf"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPdfInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Missing Pdf"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader missingPdfInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tiny Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tinyPngInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Missing Png"
+                        isQuotedMessageIncoming:YES
+                              quotedMessageBody:nil
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader missingPngInstance]
+            isQuotedMessageAttachmentDownloaded:NO
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateAttemptingOut],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                              replyMessageState:TSOutgoingMessageStateUnsent],
+    ]];
 
     return actions;
 }
@@ -2448,7 +2659,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
 + (NSString *)randomOversizeText
 {
     NSMutableString *message = [NSMutableString new];
-    for (NSUInteger i = 0; i < 32; i++) {
+    while (message.length < kOversizeTextMessageSizeThreshold) {
         [message appendString:@"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse rutrum, nulla "
                               @"vitae pretium hendrerit, tellus turpis pharetra libero, vitae sodales tortor ante vel "
                               @"sem. Fusce sed nisl a lorem gravida tincidunt. Suspendisse efficitur non quam ac "
@@ -3509,6 +3720,13 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
 {
     OWSAssert(thread);
 
+    // Seamlessly convert oversize text messages to oversize text attachments.
+    if ([messageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        OWSAssert(!fakeAssetLoader);
+        fakeAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:messageBody];
+        messageBody = nil;
+    }
+
     TSAttachment *_Nullable attachment = nil;
     if (fakeAssetLoader) {
         attachment = [self createFakeAttachment:fakeAssetLoader isAttachmentDownloaded:YES transaction:transaction];
@@ -3586,6 +3804,13 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
+
+    // Seamlessly convert oversize text messages to oversize text attachments.
+    if ([messageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+        OWSAssert(!fakeAssetLoader);
+        fakeAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:messageBody];
+        messageBody = nil;
+    }
 
     TSAttachment *_Nullable attachment = nil;
     if (fakeAssetLoader) {

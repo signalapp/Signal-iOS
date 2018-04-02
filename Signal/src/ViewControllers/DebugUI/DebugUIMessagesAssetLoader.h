@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *filePath;
 
+- (NSString *)labelEmoji;
+
 #pragma mark -
 
 + (instancetype)jpegInstance;
@@ -37,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)missingPngInstance;
 + (instancetype)missingPdfInstance;
 + (instancetype)oversizeTextInstance;
++ (instancetype)oversizeTextInstanceWithText:(NSString *)text;
 
 @end
 
