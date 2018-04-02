@@ -130,17 +130,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 #pragma mark -
 
-@interface OWSDatabase : YapDatabase
+@interface OWSDatabase ()
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (id)initWithPath:(NSString *)inPath
-        serializer:(nullable YapDatabaseSerializer)inSerializer
-      deserializer:(YapDatabaseDeserializer)inDeserializer
-           options:(YapDatabaseOptions *)inOptions
-          delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, nullable) NSMutableSet<YapDatabaseConnection *> *registrationConnectionSet;
 
 @end
 
@@ -191,7 +185,27 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
 #endif
 
+    [self.registrationConnectionSet addObject:connection];
+
     return connection;
+}
+
+- (void)collectRegistrationConnections
+{
+    OWSAssert(!self.registrationConnectionSet);
+
+    _registrationConnectionSet = [NSMutableSet set];
+}
+
+- (NSSet<YapDatabaseConnection *> *)clearCollectedRegistrationConnections
+{
+    OWSAssert(self.registrationConnectionSet);
+
+    NSSet<YapDatabaseConnection *> *registrationConnectionSetCopy = [self.registrationConnectionSet copy];
+
+    _registrationConnectionSet = nil;
+
+    return registrationConnectionSetCopy;
 }
 
 @end
