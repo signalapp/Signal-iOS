@@ -131,26 +131,42 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSAssert(completion);
 
+    [((OWSDatabase *)self.database)collectRegistrationConnections];
+
     runAsyncRegistrationsForStorage(self);
 
     DDLogVerbose(@"%@ async registrations enqueued.", self.logTag);
 
     // Block until all async registrations are complete.
     //
-    // NOTE: This has to happen on the "registration connection" for this
+    // NOTE: This has to happen on the "registration connections" for this
     //       database.
-    YapDatabaseConnection *dbConnection = self.registrationConnection;
-    OWSAssert(self.registrationConnection);
-    [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
-                                       completionBlock:^{
-                                           OWSAssert(!self.areAsyncRegistrationsComplete);
+    NSMutableSet<YapDatabaseConnection *> *pendingRegistrationConnectionSet =
+        [[((OWSDatabase *)self.database)clearCollectedRegistrationConnections] mutableCopy];
+    DDLogVerbose(@"%@ flushing registration connections: %zd.", self.logTag, pendingRegistrationConnectionSet.count);
 
-                                           DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        for (YapDatabaseConnection *dbConnection in pendingRegistrationConnectionSet) {
+            [dbConnection
+                flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
+                                     completionBlock:^{
+                                         OWSAssertIsOnMainThread();
+                                         OWSAssert(!self.areAsyncRegistrationsComplete);
 
-                                           self.areAsyncRegistrationsComplete = YES;
+                                         [pendingRegistrationConnectionSet removeObject:dbConnection];
+                                         if (pendingRegistrationConnectionSet.count > 0) {
+                                             DDLogVerbose(@"%@ registration connection flushed.", self.logTag);
+                                             return;
+                                         }
 
-                                           completion();
-                                       }];
+                                         DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+
+                                         self.areAsyncRegistrationsComplete = YES;
+
+                                         completion();
+                                     }];
+        }
+    });
 }
 
 + (void)protectFiles
