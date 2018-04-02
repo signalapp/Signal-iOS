@@ -94,7 +94,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [self updateTableContents];
 
