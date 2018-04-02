@@ -1135,8 +1135,10 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     [OWSBackup.sharedManager setup];
 
+#ifdef DEBUG
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
+#endif
 }
 
 - (void)registrationStateDidChange
