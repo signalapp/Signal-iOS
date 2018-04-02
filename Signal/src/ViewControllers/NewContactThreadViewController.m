@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinWidthToSuperview];
 
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contactsPermissionReminderView];
-    [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
+    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
     _noSignalContactsView = [self createNoSignalContactsView];

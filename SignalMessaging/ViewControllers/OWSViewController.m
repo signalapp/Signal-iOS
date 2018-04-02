@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSViewController.h"
 #import "UIView+OWS.h"
-#import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)autoPinViewToBottomGuideOrKeyboard:(UIView *)view
+- (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view
 {
     OWSAssert(view);
     OWSAssert(!self.bottomLayoutConstraint);
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 
     self.bottomLayoutView = view;
-    self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
