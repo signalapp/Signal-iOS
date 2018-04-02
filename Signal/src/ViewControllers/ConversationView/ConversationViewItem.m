@@ -55,11 +55,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 @property (nonatomic) BOOL hasViewState;
 @property (nonatomic) OWSMessageCellType messageCellType;
-@property (nonatomic, nullable) DisplayableText *displayableText;
+@property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize mediaSize;
-@property (nonatomic) BOOL hasText;
 
 @end
 
@@ -95,7 +94,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     self.hasViewState = NO;
     self.messageCellType = OWSMessageCellType_Unknown;
-    self.displayableText = nil;
+    self.displayableBodyText = nil;
     self.attachmentStream = nil;
     self.attachmentPointer = nil;
     self.mediaSize = CGSizeZero;
@@ -103,6 +102,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
+}
+
+- (BOOL)hasBodyText
+{
+    return _displayableBodyText != nil;
 }
 
 - (void)setShouldShowDate:(BOOL)shouldShowDate
@@ -123,6 +127,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _shouldHideRecipientStatus = shouldHideRecipientStatus;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setShouldHideBubbleTail:(BOOL)shouldHideBubbleTail
+{
+    if (_shouldHideBubbleTail == shouldHideBubbleTail) {
+        return;
+    }
+
+    _shouldHideBubbleTail = shouldHideBubbleTail;
 
     [self clearCachedLayoutState];
 }
@@ -264,7 +279,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 // TODO: Now that we're caching the displayable text on the view items,
 //       I don't think we need this cache any more.
-- (NSCache *)displayableTextCache
+- (NSCache *)displayableBodyTextCache
 {
     static NSCache *cache = nil;
     static dispatch_once_t onceToken;
@@ -276,44 +291,45 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return cache;
 }
 
-- (DisplayableText *)displayableTextForText:(NSString *)text interactionId:(NSString *)interactionId
+- (DisplayableText *)displayableBodyTextForText:(NSString *)text interactionId:(NSString *)interactionId
 {
     OWSAssert(text);
     OWSAssert(interactionId.length > 0);
 
-    return [self displayableTextForInteractionId:interactionId
-                                       textBlock:^{
-                                           return text;
-                                       }];
+    return [self displayableBodyTextForInteractionId:interactionId
+                                           textBlock:^{
+                                               return text;
+                                           }];
 }
 
-- (DisplayableText *)displayableTextForAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                          interactionId:(NSString *)interactionId
+- (DisplayableText *)displayableBodyTextForOversizeTextAttachment:(TSAttachmentStream *)attachmentStream
+                                                    interactionId:(NSString *)interactionId
 {
     OWSAssert(attachmentStream);
     OWSAssert(interactionId.length > 0);
 
-    return [self displayableTextForInteractionId:interactionId
-                                       textBlock:^{
-                                           NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
-                                           NSString *text =
-                                               [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-                                           return text;
-                                       }];
+    return
+        [self displayableBodyTextForInteractionId:interactionId
+                                        textBlock:^{
+                                            NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
+                                            NSString *text =
+                                                [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                                            return text;
+                                        }];
 }
 
-- (DisplayableText *)displayableTextForInteractionId:(NSString *)interactionId
-                                           textBlock:(NSString * (^_Nonnull)(void))textBlock
+- (DisplayableText *)displayableBodyTextForInteractionId:(NSString *)interactionId
+                                               textBlock:(NSString * (^_Nonnull)(void))textBlock
 {
     OWSAssert(interactionId.length > 0);
 
-    DisplayableText *_Nullable displayableText = [[self displayableTextCache] objectForKey:interactionId];
-    if (!displayableText) {
+    DisplayableText *_Nullable displayableBodyText = [[self displayableBodyTextCache] objectForKey:interactionId];
+    if (!displayableBodyText) {
         NSString *text = textBlock();
-        displayableText = [DisplayableText displayableText:text];
-        [[self displayableTextCache] setObject:displayableText forKey:interactionId];
+        displayableBodyText = [DisplayableText displayableText:text];
+        [[self displayableBodyTextCache] setObject:displayableBodyText forKey:interactionId];
     }
-    return displayableText;
+    return displayableBodyText;
 }
 
 - (nullable TSAttachment *)firstAttachmentIfAnyOfMessage:(TSMessage *)message
@@ -353,9 +369,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
             if ([attachment.contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
                 self.messageCellType = OWSMessageCellType_OversizeTextMessage;
-                self.displayableText =
-                    [self displayableTextForAttachmentStream:self.attachmentStream interactionId:message.uniqueId];
-                self.hasText = YES;
+                self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:self.attachmentStream
+                                                                                interactionId:message.uniqueId];
             } else if ([self.attachmentStream isAnimated] || [self.attachmentStream isImage] ||
                 [self.attachmentStream isVideo]) {
                 if ([self.attachmentStream isAnimated]) {
@@ -392,16 +407,20 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
 
+    // Ignore message body for oversize text attachments.
     if (message.body.length > 0) {
-        self.hasText = YES;
+        if (self.hasBodyText) {
+            OWSFail(@"%@ oversize text message has unexpected caption.", self.logTag);
+        }
+
         // If we haven't already assigned an attachment type at this point, message.body isn't a caption,
         // it's a stand-alone text message.
         if (self.messageCellType == OWSMessageCellType_Unknown) {
             OWSAssert(message.attachmentIds.count == 0);
             self.messageCellType = OWSMessageCellType_TextMessage;
         }
-        self.displayableText = [self displayableTextForText:message.body interactionId:message.uniqueId];
-            OWSAssert(self.displayableText);
+        self.displayableBodyText = [self displayableBodyTextForText:message.body interactionId:message.uniqueId];
+        OWSAssert(self.displayableBodyText);
     }
 
     if (self.messageCellType == OWSMessageCellType_Unknown) {
@@ -409,8 +428,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         // are rendered like empty text messages, but without any interactivity.
         DDLogWarn(@"%@ Treating unknown message as empty text message: %@", self.logTag, message.description);
         self.messageCellType = OWSMessageCellType_TextMessage;
-        self.hasText = YES;
-        self.displayableText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
+        self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 }
 
@@ -421,16 +439,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return _messageCellType;
 }
 
-- (nullable DisplayableText *)displayableText
+- (nullable DisplayableText *)displayableBodyText
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.hasViewState);
 
-    OWSAssert(_displayableText);
-    OWSAssert(_displayableText.displayText);
-    OWSAssert(_displayableText.fullText);
+    OWSAssert(_displayableBodyText);
+    OWSAssert(_displayableBodyText.displayText);
+    OWSAssert(_displayableBodyText.fullText);
 
-    return _displayableText;
+    return _displayableBodyText;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
@@ -533,13 +551,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)canPerformAction:(SEL)action
 {
     if (action == self.copyTextActionSelector) {
-        return [self hasTextActionContent];
+        return [self hasBodyTextActionContent];
     } else if (action == self.copyMediaActionSelector) {
         return [self hasMediaActionContent];
     } else if (action == self.saveMediaActionSelector) {
         return [self canSaveMedia];
     } else if (action == self.shareTextActionSelector) {
-        return [self hasTextActionContent];
+        return [self hasBodyTextActionContent];
     } else if (action == self.shareMediaActionSelector) {
         return [self hasMediaActionContent];
     } else if (action == self.deleteActionSelector) {
@@ -561,8 +579,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
         case OWSMessageCellType_GenericAttachment: {
-            OWSAssert(self.displayableText);
-            [UIPasteboard.generalPasteboard setString:self.displayableText.fullText];
+            OWSAssert(self.displayableBodyText);
+            [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
@@ -620,8 +638,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Audio:
         case OWSMessageCellType_Video:
         case OWSMessageCellType_GenericAttachment: {
-            OWSAssert(self.displayableText);
-            [AttachmentSharing showShareUIForText:self.displayableText.fullText];
+            OWSAssert(self.displayableBodyText);
+            [AttachmentSharing showShareUIForText:self.displayableBodyText.fullText];
             break;
         }
         case OWSMessageCellType_DownloadingAttachment: {
@@ -728,9 +746,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self.interaction remove];
 }
 
-- (BOOL)hasTextActionContent
+- (BOOL)hasBodyTextActionContent
 {
-    return self.hasText && self.displayableText.fullText.length > 0;
+    return self.hasBodyText && self.displayableBodyText.fullText.length > 0;
 }
 
 - (BOOL)hasMediaActionContent

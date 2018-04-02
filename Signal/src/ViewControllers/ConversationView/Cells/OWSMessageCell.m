@@ -8,178 +8,55 @@
 #import "ConversationViewItem.h"
 #import "NSAttributedString+OWS.h"
 #import "OWSAudioMessageView.h"
+#import "OWSBubbleStrokeView.h"
+#import "OWSBubbleView.h"
 #import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
+#import "OWSMessageTextView.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
 #import <JSQMessagesViewController/UIColor+JSQMessages.h>
+#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-// This approximates the curve of our message bubbles, which makes the animation feel a little smoother.
-const CGFloat OWSMessageCellCornerRadius = 17;
-
-@interface BubbleMaskingView : UIView
-
-@property (nonatomic) BOOL isOutgoing;
-@property (nonatomic) BOOL hideTail;
-@property (nonatomic, nullable, weak) UIView *maskedSubview;
-
-@end
-
-#pragma mark -
-
-@implementation BubbleMaskingView
-
-- (void)setFrame:(CGRect)frame
+CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
-    BOOL didSizeChange = !CGSizeEqualToSize(self.frame.size, frame.size);
-
-    [super setFrame:frame];
-
-    if (didSizeChange) {
-        [self updateMask];
-    }
+    return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
 }
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL didSizeChange = !CGSizeEqualToSize(self.bounds.size, bounds.size);
-
-    [super setBounds:bounds];
-
-    if (didSizeChange) {
-        [self updateMask];
-    }
-}
-
-- (void)updateMask
-{
-    UIView *_Nullable maskedSubview = self.maskedSubview;
-    if (!maskedSubview) {
-        return;
-    }
-    maskedSubview.frame = self.bounds;
-    // The JSQ masks are not RTL-safe, so we need to invert the
-    // mask orientation manually.
-    BOOL hasOutgoingMask = self.isOutgoing ^ self.isRTL;
-
-    // Since the caption has it's own tail, the media bubble just above
-    // it looks better without a tail.
-    if (self.hideTail) {
-        if (hasOutgoingMask) {
-            self.layoutMargins = UIEdgeInsetsMake(0, 0, 2, 8);
-        } else {
-            self.layoutMargins = UIEdgeInsetsMake(0, 8, 2, 0);
-        }
-        maskedSubview.clipsToBounds = YES;
-
-        // I arrived at this cornerRadius by superimposing the generated corner
-        // over that generated from the JSQMessagesMediaViewBubbleImageMasker
-        maskedSubview.layer.cornerRadius = 17;
-    } else {
-        [JSQMessagesMediaViewBubbleImageMasker applyBubbleImageMaskToMediaView:maskedSubview
-                                                                    isOutgoing:hasOutgoingMask];
-    }
-}
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageTextView : UITextView
-
-@property (nonatomic) BOOL shouldIgnoreEvents;
-
-@end
-
-#pragma mark -
-
-@implementation OWSMessageTextView
-
-// Our message text views are never used for editing;
-// suppress their ability to become first responder
-// so that tapping on them doesn't hide keyboard.
-- (BOOL)canBecomeFirstResponder
-{
-    return NO;
-}
-
-// Ignore interactions with the text view _except_ taps on links.
-//
-// We want to disable "partial" selection of text in the message
-// and we want to enable "tap to resend" by tapping on a message.
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *_Nullable)event
-{
-    if (self.shouldIgnoreEvents) {
-        // We ignore all events for failed messages so that users
-        // can tap-to-resend even "all link" messages.
-        return NO;
-    }
-
-    // Find the nearest text position to the event.
-    UITextPosition *_Nullable position = [self closestPositionToPoint:point];
-    if (!position) {
-        return NO;
-    }
-    // Find the range of the character in the text which contains the event.
-    //
-    // Try every layout direction (this might not be necessary).
-    UITextRange *_Nullable range = nil;
-    for (NSNumber *textLayoutDirection in @[
-             @(UITextLayoutDirectionLeft),
-             @(UITextLayoutDirectionRight),
-             @(UITextLayoutDirectionUp),
-             @(UITextLayoutDirectionDown),
-         ]) {
-        range = [self.tokenizer rangeEnclosingPosition:position
-                                       withGranularity:UITextGranularityCharacter
-                                           inDirection:(UITextDirection)textLayoutDirection.intValue];
-        if (range) {
-            break;
-        }
-    }
-    if (!range) {
-        return NO;
-    }
-    // Ignore the event unless it occurred inside a link.
-    NSInteger startIndex = [self offsetFromPosition:self.beginningOfDocument toPosition:range.start];
-    BOOL result =
-        [self.attributedText attribute:NSLinkAttributeName atIndex:(NSUInteger)startIndex effectiveRange:nil] != nil;
-    return result;
-}
-
-@end
-
-#pragma mark -
 
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
-@property (nonatomic) UIView *payloadView;
-@property (nonatomic) BubbleMaskingView *mediaMaskingView;
+
+// The cell's contentView contains:
+//
+// * MessageView (message)
+// * dateHeaderLabel (above message)
+// * footerView (below message)
+// * failedSendBadgeView ("trailing" beside message)
+
+@property (nonatomic) OWSBubbleView *bubbleView;
+
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) OWSMessageTextView *textView;
+@property (nonatomic) OWSMessageTextView *bodyTextView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
-@property (nonatomic, nullable) UILabel *tapForMoreLabel;
-@property (nonatomic, nullable) UIImageView *textBubbleImageView;
-@property (nonatomic, nullable) AttachmentUploadView *attachmentUploadView;
-@property (nonatomic, nullable) UIImageView *stillImageView;
-@property (nonatomic, nullable) YYAnimatedImageView *animatedImageView;
-@property (nonatomic, nullable) UIView *customView;
-@property (nonatomic, nullable) AttachmentPointerView *attachmentPointerView;
-@property (nonatomic, nullable) OWSGenericAttachmentView *attachmentView;
-@property (nonatomic, nullable) OWSAudioMessageView *audioMessageView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *payloadConstraints;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *dateHeaderConstraints;
-@property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *contentConstraints;
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *footerConstraints;
+
+@property (nonatomic, nullable) UIView *lastBodyMediaView;
+
+// Should lazy-load expensive view contents (images, etc.).
+// Should do nothing if view is already loaded.
+@property (nonatomic, nullable) dispatch_block_t loadCellContentBlock;
+// Should unload all expensive view contents (images, etc.).
+@property (nonatomic, nullable) dispatch_block_t unloadCellContentBlock;
+
+@property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;
 
 @end
@@ -198,20 +75,16 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 
 - (void)commontInit
 {
-    OWSAssert(!self.textView);
+    OWSAssert(!self.bodyTextView);
 
-    _contentConstraints = [NSMutableArray new];
+    _viewConstraints = [NSMutableArray new];
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
-    self.payloadView = [UIView new];
-    self.payloadView.layoutMargins = UIEdgeInsetsZero;
-    [self.contentView addSubview:self.payloadView];
-
-    self.mediaMaskingView = [BubbleMaskingView new];
-    self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
-    [self.payloadView addSubview:self.mediaMaskingView];
+    self.bubbleView = [OWSBubbleView new];
+    self.bubbleView.layoutMargins = UIEdgeInsetsZero;
+    [self.contentView addSubview:self.bubbleView];
 
     self.footerView = [UIView containerView];
     [self.contentView addSubview:self.footerView];
@@ -222,25 +95,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
     [self.contentView addSubview:self.dateHeaderLabel];
 
-    self.textBubbleImageView = [UIImageView new];
-    self.textBubbleImageView.layoutMargins = UIEdgeInsetsZero;
-    // Enable userInteractionEnabled so that links in textView work.
-    self.textBubbleImageView.userInteractionEnabled = YES;
-
-    [self.payloadView addSubview:self.textBubbleImageView];
-
-    self.textView = [OWSMessageTextView new];
-    self.textView.backgroundColor = [UIColor clearColor];
-    self.textView.opaque = NO;
-    self.textView.editable = NO;
-    self.textView.selectable = YES;
-    self.textView.textContainerInset = UIEdgeInsetsZero;
-    self.textView.contentInset = UIEdgeInsetsZero;
-    self.textView.scrollEnabled = NO;
-
-    [self.textBubbleImageView addSubview:self.textView];
-
-    OWSAssert(self.textView.superview);
+    self.bodyTextView = [self newTextView];
 
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -248,43 +103,46 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     [self.footerView addSubview:self.footerLabel];
 
     // Hide these views by default.
-    self.textBubbleImageView.hidden = YES;
-    self.textView.hidden = YES;
+    self.bodyTextView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
-    [self.payloadView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.payloadView];
-
-    [self.mediaMaskingView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-
-    [self.textBubbleImageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.mediaMaskingView];
-    [self.textBubbleImageView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.bubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
+    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.bubbleView];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
 
-    UITapGestureRecognizer *mediaTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaTapGesture:)];
-    [self.mediaMaskingView addGestureRecognizer:mediaTap];
+    self.contentView.userInteractionEnabled = YES;
 
-    UITapGestureRecognizer *textTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextTapGesture:)];
-    [self.textBubbleImageView addGestureRecognizer:textTap];
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self.contentView addGestureRecognizer:tap];
 
-    UILongPressGestureRecognizer *mediaLongPress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleMediaLongPressGesture:)];
-    [self.mediaMaskingView addGestureRecognizer:mediaLongPress];
+    UILongPressGestureRecognizer *longPress =
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+    [self.contentView addGestureRecognizer:longPress];
 
-    UILongPressGestureRecognizer *textLongPress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTextLongPressGesture:)];
-    [self.textBubbleImageView addGestureRecognizer:textLongPress];
-
-    PanDirectionGestureRecognizer *panGesture =
-        [[PanDirectionGestureRecognizer alloc] initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)
-                                                          target:self
-                                                          action:@selector(handlePanGesture:)];
+    PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
+        initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
+                   action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
+}
+
+- (OWSMessageTextView *)newTextView
+{
+    OWSMessageTextView *textView = [OWSMessageTextView new];
+    textView.backgroundColor = [UIColor clearColor];
+    textView.opaque = NO;
+    textView.editable = NO;
+    textView.selectable = YES;
+    textView.textContainerInset = UIEdgeInsetsZero;
+    textView.contentInset = UIEdgeInsetsZero;
+    textView.textContainer.lineFragmentPadding = 0;
+    textView.scrollEnabled = NO;
+    // Setting dataDetectorTypes is expensive.  Do it just once.
+    textView.dataDetectorTypes = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+    return textView;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -297,7 +155,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
     CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
-    switch (self.displayableText.jumbomojiCount) {
+    switch (self.displayableBodyText.jumbomojiCount) {
         case 0:
             break;
         case 1:
@@ -309,7 +167,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         case 5:
             return [UIFont ows_regularFontWithSize:basePointSize + 6.f];
         default:
-            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableText.jumbomojiCount);
+            OWSFail(@"%@ Unexpected jumbomoji count: %zd", self.logTag, self.displayableBodyText.jumbomojiCount);
             break;
     }
 
@@ -353,20 +211,20 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     return self.viewItem.messageCellType;
 }
 
-- (BOOL)hasText
+- (BOOL)hasBodyText
 {
     // This should always be valid for the appropriate cell types.
     OWSAssert(self.viewItem);
 
-    return self.viewItem.hasText;
+    return self.viewItem.hasBodyText;
 }
 
-- (nullable DisplayableText *)displayableText
+- (nullable DisplayableText *)displayableBodyText
 {
     // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.displayableText);
+    OWSAssert(self.viewItem.displayableBodyText);
 
-    return self.viewItem.displayableText;
+    return self.viewItem.displayableBodyText;
 }
 
 - (nullable TSAttachmentStream *)attachmentStream
@@ -400,11 +258,57 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     return (TSMessage *)self.viewItem.interaction;
 }
 
+- (BOOL)hasNonImageBodyContent
+{
+    switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
+            return YES;
+        case OWSMessageCellType_StillImage:
+        case OWSMessageCellType_AnimatedImage:
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_Video:
+            return self.hasBodyText;
+    }
+}
+
+- (BOOL)hasBodyTextContent
+{
+    switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+            return YES;
+        case OWSMessageCellType_GenericAttachment:
+        case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_StillImage:
+        case OWSMessageCellType_AnimatedImage:
+        case OWSMessageCellType_Audio:
+        case OWSMessageCellType_Video:
+            // Is there a caption?
+            return self.hasBodyText;
+    }
+}
+
+#pragma mark - Load
+
 - (void)loadForDisplay
 {
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    OWSAssert(self.contentWidth > 0);
+
+    CGSize bodyMediaContentSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
+    CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
+
+    // TODO: We might not need to hide it.
+    self.bubbleView.hidden = NO;
+    self.bubbleView.isOutgoing = self.isOutgoing;
+    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail;
 
     if (self.shouldHaveFailedSendBadge) {
         self.failedSendBadgeView = [UIImageView new];
@@ -413,83 +317,193 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         self.failedSendBadgeView.tintColor = [UIColor ows_destructiveRedColor];
         [self.contentView addSubview:self.failedSendBadgeView];
 
-        self.payloadConstraints = @[
-            [self.payloadView autoPinLeadingToSuperview],
-            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.payloadView],
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.bubbleView autoPinLeadingToSuperview],
+            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.bubbleView],
+            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.bubbleView],
             [self.failedSendBadgeView autoPinTrailingToSuperview],
-            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.payloadView],
             [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
             [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
-        ];
+        ]];
     } else {
-        self.payloadConstraints = [self.payloadView autoPinWidthToSuperview];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.bubbleView autoPinLeadingToSuperview],
+            [self.bubbleView autoPinTrailingToSuperview],
+        ]];
     }
 
-    JSQMessagesBubbleImage *_Nullable bubbleImageData;
-    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]]) {
+    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasNonImageBodyContent) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        bubbleImageData = [self.bubbleFactory bubbleWithMessage:message];
+        self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
+    } else {
+        // Media-only messages should have no background color; they will fill the bubble's bounds
+        // and we don't want artifacts at the edges.
+        self.bubbleView.bubbleColor = nil;
     }
-
-    self.textBubbleImageView.image = bubbleImageData.messageBubbleImage;
 
     [self updateDateHeader];
     [self updateFooter];
 
+    UIView *_Nullable lastSubview = nil;
+    CGFloat bottomMargin = 0;
+    UIView *_Nullable bodyMediaView = nil;
+    BOOL bodyMediaViewHasGreedyWidth = NO;
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
-            OWSFail(@"Unknown cell type for viewItem: %@", self.viewItem);
-            break;
         case OWSMessageCellType_TextMessage:
-            [self loadForTextDisplay];
-            break;
         case OWSMessageCellType_OversizeTextMessage:
-            OWSAssert(self.viewItem.attachmentStream);
-            [self loadForTextDisplay];
             break;
         case OWSMessageCellType_StillImage:
             OWSAssert(self.viewItem.attachmentStream);
-            [self loadForStillImageDisplay];
+            bodyMediaView = [self loadViewForStillImage];
             break;
         case OWSMessageCellType_AnimatedImage:
             OWSAssert(self.viewItem.attachmentStream);
-            [self loadForAnimatedImageDisplay];
-            break;
-        case OWSMessageCellType_Audio:
-            OWSAssert(self.viewItem.attachmentStream);
-            [self loadForAudioDisplay];
+            bodyMediaView = [self loadViewForAnimatedImage];
             break;
         case OWSMessageCellType_Video:
             OWSAssert(self.viewItem.attachmentStream);
-            [self loadForVideoDisplay];
+            bodyMediaView = [self loadViewForVideo];
             break;
-        case OWSMessageCellType_GenericAttachment: {
+        case OWSMessageCellType_Audio:
             OWSAssert(self.viewItem.attachmentStream);
-            self.attachmentView =
-                [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-            [self.attachmentView createContents];
-            [self setMediaView:self.attachmentView];
-            [self addAttachmentUploadViewIfNecessary:self.attachmentView];
-            [self addCaptionIfNecessary];
+            bodyMediaView = [self loadViewForAudio];
+            bodyMediaViewHasGreedyWidth = YES;
             break;
+        case OWSMessageCellType_GenericAttachment:
+            bodyMediaView = [self loadViewForGenericAttachment];
+            bodyMediaViewHasGreedyWidth = YES;
+            break;
+        case OWSMessageCellType_DownloadingAttachment:
+            bodyMediaView = [self loadViewForDownloadingAttachment];
+            bodyMediaViewHasGreedyWidth = YES;
+            break;
+    }
+
+    if (bodyMediaView) {
+        OWSAssert(self.loadCellContentBlock);
+        OWSAssert(self.unloadCellContentBlock);
+        OWSAssert(!lastSubview);
+
+        bodyMediaView.clipsToBounds = YES;
+
+        self.lastBodyMediaView = bodyMediaView;
+        bodyMediaView.userInteractionEnabled = NO;
+        if (self.isMediaBeingSent) {
+            bodyMediaView.layer.opacity = 0.75f;
         }
-        case OWSMessageCellType_DownloadingAttachment: {
-            [self loadForDownloadingAttachment];
-            [self addCaptionIfNecessary];
-            break;
+
+        [self.bubbleView addSubview:bodyMediaView];
+        // This layout can lead to extreme cropping of media content,
+        // e.g. a very tall portrait image + long caption.  The media
+        // view will have "max width", so the image will be cropped to
+        // roughly a square.
+        // TODO: Myles is considering alternatives.
+        [self.viewConstraints addObjectsFromArray:@[
+            [bodyMediaView autoPinLeadingToSuperviewWithMargin:0],
+            [bodyMediaView autoPinTrailingToSuperviewWithMargin:0],
+        ]];
+        // We need constraints to control the vertical sizing of media and text views, but we use
+        // lower priority so that when a message only contains media it uses the exact bounds of
+        // the message view.
+        [NSLayoutConstraint
+            autoSetPriority:UILayoutPriorityDefaultLow
+             forConstraints:^{
+                 [self.viewConstraints
+                     addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaContentSize.height]];
+             }];
+
+        if (lastSubview) {
+            [self.viewConstraints
+                addObject:[bodyMediaView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:0]];
+        } else {
+            [self.viewConstraints addObject:[bodyMediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0]];
+        }
+        lastSubview = bodyMediaView;
+        bottomMargin = 0;
+
+        BOOL shouldStrokeMediaView = [bodyMediaView isKindOfClass:[UIImageView class]];
+        if (shouldStrokeMediaView) {
+            OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
+            bubbleStrokeView.strokeThickness = 1.f;
+            bubbleStrokeView.strokeColor = [UIColor colorWithWhite:0.f alpha:0.1f];
+            bubbleStrokeView.bubbleView = self.bubbleView;
+
+            [self.bubbleView addSubview:bubbleStrokeView];
+            [bubbleStrokeView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:bodyMediaView];
+            [bubbleStrokeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:bodyMediaView];
+            self.bubbleView.bubbleStrokeView = bubbleStrokeView;
+            OWSAssert(self.bubbleView.bubbleStrokeView);
         }
     }
 
-    [self ensureViewMediaState];
+    OWSMessageTextView *_Nullable bodyTextView = nil;
+    // We render malformed messages as "empty text" messages,
+    // so create a text view if there is no body media view.
+    if (self.hasBodyText || !bodyMediaView) {
+        bodyTextView = [self createBodyTextViewIfNecessary];
+    }
+    if (bodyTextView) {
+        [self.bubbleView addSubview:bodyTextView];
+        [self.viewConstraints addObjectsFromArray:@[
+            [bodyTextView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+            [bodyTextView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+        ]];
+        // We need constraints to control the vertical sizing of media and text views, but we use
+        // lower priority so that when a message only contains media it uses the exact bounds of
+        // the message view.
+        [NSLayoutConstraint
+            autoSetPriority:UILayoutPriorityDefaultLow
+             forConstraints:^{
+                 [self.viewConstraints
+                     addObject:[bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height]];
+             }];
+        if (lastSubview) {
+            [self.viewConstraints addObject:[bodyTextView autoPinEdge:ALEdgeTop
+                                                               toEdge:ALEdgeBottom
+                                                               ofView:lastSubview
+                                                           withOffset:self.textTopMargin]];
+        } else {
+            [self.viewConstraints
+                addObject:[bodyTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textTopMargin]];
+        }
+        lastSubview = bodyTextView;
+        bottomMargin = self.textBottomMargin;
+    }
+
+    UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
+    if (tapForMoreLabel) {
+        OWSAssert(lastSubview);
+        OWSAssert(lastSubview == bodyTextView);
+        [self.bubbleView addSubview:tapForMoreLabel];
+        [self.viewConstraints addObjectsFromArray:@[
+            [tapForMoreLabel autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
+            [tapForMoreLabel autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
+            [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+        ]];
+        lastSubview = tapForMoreLabel;
+        bottomMargin = self.textBottomMargin;
+    }
+
+    OWSAssert(lastSubview);
+    [self.viewConstraints addObjectsFromArray:@[
+        [lastSubview autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:bottomMargin],
+    ]];
+
+    [self ensureMediaLoadState];
 }
 
-// We now eagerly create out view hierarchy (to do this exactly once per cell usage)
+// We now eagerly create our view hierarchy (to do this exactly once per cell usage)
 // but lazy-load any expensive media (photo, gif, etc.) used in those views. Note that
 // this lazy-load can fail, in which case we modify the view hierarchy to use an "error"
 // state. The didCellMediaFailToLoad reflects media load fails.
 - (nullable id)tryToLoadCellMedia:(nullable id (^)(void))loadCellMediaBlock
                         mediaView:(UIView *)mediaView
                          cacheKey:(NSString *)cacheKey
+                  shouldSkipCache:(BOOL)shouldSkipCache
 {
     OWSAssert(self.attachmentStream);
     OWSAssert(mediaView);
@@ -510,83 +524,33 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     cellMedia = loadCellMediaBlock();
     if (cellMedia) {
         DDLogVerbose(@"%@ cell media cache miss", self.logTag);
-        [cellMediaCache setObject:cellMedia forKey:cacheKey];
+        if (!shouldSkipCache) {
+            [cellMediaCache setObject:cellMedia forKey:cacheKey];
+        }
     } else {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
-        [mediaView removeFromSuperview];
-        // TODO: We need to hide/remove the media view.
-        [self showAttachmentErrorView];
+        // TODO: Do we need to hide/remove the media view?
+        [self showAttachmentErrorViewWithMediaView:mediaView];
     }
     return cellMedia;
 }
 
-// We want to lazy-load expensive view contents and eagerly unload if the
-// cell is no longer visible.
-- (void)ensureViewMediaState
+// * If cell is visible, lazy-load (expensive) view contents.
+// * If cell is not visible, eagerly unload view contents.
+- (void)ensureMediaLoadState
 {
-    CGSize mediaSize = [self mediaBubbleSizeForContentWidth:self.contentWidth];
-    [self.contentConstraints addObjectsFromArray:[self.mediaMaskingView autoSetDimensionsToSize:mediaSize]];
-
     if (!self.isCellVisible) {
         // Eagerly unload.
-        self.stillImageView.image = nil;
-        self.animatedImageView.image = nil;
+        if (self.unloadCellContentBlock) {
+            self.unloadCellContentBlock();
+        }
         return;
-    }
-
-    switch (self.cellType) {
-        case OWSMessageCellType_StillImage: {
-            if (self.stillImageView.image) {
-                return;
-            }
-            self.stillImageView.image = [self tryToLoadCellMedia:^{
-                OWSAssert([self.attachmentStream isImage]);
-                return self.attachmentStream.image;
-            }
-                                                       mediaView:self.stillImageView
-                                                        cacheKey:self.attachmentStream.uniqueId];
-            break;
+    } else {
+        // Lazy load.
+        if (self.loadCellContentBlock) {
+            self.loadCellContentBlock();
         }
-        case OWSMessageCellType_AnimatedImage: {
-            if (self.animatedImageView.image) {
-                return;
-            }
-            self.animatedImageView.image = [self tryToLoadCellMedia:^{
-                OWSAssert([self.attachmentStream isAnimated]);
-
-                NSString *_Nullable filePath = [self.attachmentStream filePath];
-                YYImage *_Nullable animatedImage = nil;
-                if (filePath && [NSData ows_isValidImageAtPath:filePath]) {
-                    animatedImage = [YYImage imageWithContentsOfFile:filePath];
-                }
-                return animatedImage;
-            }
-                                                          mediaView:self.animatedImageView
-                                                           cacheKey:self.attachmentStream.uniqueId];
-            break;
-        }
-        case OWSMessageCellType_Video: {
-            if (self.stillImageView.image) {
-                return;
-            }
-            self.stillImageView.image = [self tryToLoadCellMedia:^{
-                OWSAssert([self.attachmentStream isVideo]);
-
-                return self.attachmentStream.image;
-            }
-                                                       mediaView:self.stillImageView
-                                                        cacheKey:self.attachmentStream.uniqueId];
-            break;
-        }
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_Unknown:
-            // Inexpensive cell types don't need to lazy-load or eagerly-unload.
-            break;
     }
 }
 
@@ -638,7 +602,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         self.dateHeaderLabel.attributedText = attributedText;
         self.dateHeaderLabel.hidden = NO;
 
-        self.dateHeaderConstraints = @[
+        [self.viewConstraints addObjectsFromArray:@[
             // Date headers should be visually centered within the conversation view,
             // so they need to extend outside the cell's boundaries.
             [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:self.contentWidth],
@@ -646,13 +610,13 @@ const CGFloat OWSMessageCellCornerRadius = 17;
                              : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
-        ];
+        ]];
     } else {
         self.dateHeaderLabel.hidden = YES;
-        self.dateHeaderConstraints = @[
+        [self.viewConstraints addObjectsFromArray:@[
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:0],
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        ];
+        ]];
     }
 }
 
@@ -672,9 +636,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         showFooter = NO;
     }
 
-    return (showFooter ? MAX(kExpirationTimerViewSize,
-                             self.footerLabel.font.lineHeight)
-            : 0.f);
+    return (showFooter ? (CGFloat)ceil(MAX(kExpirationTimerViewSize, self.footerLabel.font.lineHeight)) : 0.f);
 }
 
 - (void)updateFooter
@@ -700,9 +662,9 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     if (!hasExpirationTimer &&
         !attributedText) {
         self.footerLabel.hidden = YES;
-        self.footerConstraints = @[
-                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:0],
-                                   ];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.footerView autoSetDimension:ALDimensionHeight toSize:0],
+        ]];
         return;
     }
 
@@ -720,33 +682,29 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 
     if (hasExpirationTimer &&
         attributedText) {
-        self.footerConstraints = @[
-                                   [self.expirationTimerView autoVCenterInSuperview],
-                                   [self.footerLabel autoVCenterInSuperview],
-                                   (self.isIncoming
-                                    ? [self.expirationTimerView autoPinLeadingToSuperview]
-                                    : [self.expirationTimerView autoPinTrailingToSuperview]),
-                                   (self.isIncoming
-                                    ? [self.footerLabel autoPinLeadingToTrailingOfView:self.expirationTimerView margin:0.f]
-                                    : [self.footerLabel autoPinTrailingToLeadingOfView:self.expirationTimerView margin:0.f]),
-                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-                                   ];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.expirationTimerView autoVCenterInSuperview],
+            [self.footerLabel autoVCenterInSuperview],
+            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperview]
+                             : [self.expirationTimerView autoPinTrailingToSuperview]),
+            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingOfView:self.expirationTimerView margin:0.f]
+                             : [self.footerLabel autoPinTrailingToLeadingOfView:self.expirationTimerView margin:0.f]),
+            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+        ]];
     } else if (hasExpirationTimer) {
-        self.footerConstraints = @[
-                                   [self.expirationTimerView autoVCenterInSuperview],
-                                   (self.isIncoming
-                                    ? [self.expirationTimerView autoPinLeadingToSuperview]
-                                    : [self.expirationTimerView autoPinTrailingToSuperview]),
-                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-                                   ];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.expirationTimerView autoVCenterInSuperview],
+            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperview]
+                             : [self.expirationTimerView autoPinTrailingToSuperview]),
+            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+        ]];
     } else if (attributedText) {
-        self.footerConstraints = @[
-                                   [self.footerLabel autoVCenterInSuperview],
-                                   (self.isIncoming
-                                    ? [self.footerLabel autoPinLeadingToSuperview]
-                                    : [self.footerLabel autoPinTrailingToSuperview]),
-                                   [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
-                                   ];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.footerLabel autoVCenterInSuperview],
+            (self.isIncoming ? [self.footerLabel autoPinLeadingToSuperview]
+                             : [self.footerLabel autoPinTrailingToSuperview]),
+            [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+        ]];
     } else {
         OWSFail(@"%@ Cell unexpectedly has neither expiration timer nor footer text.", self.logTag);
     }
@@ -762,196 +720,294 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     return [UIFont systemFontOfSize:12.0f];
 }
 
-- (void)loadForTextDisplay
+- (OWSMessageTextView *)createBodyTextViewIfNecessary
 {
-    self.textBubbleImageView.hidden = NO;
-    self.textView.hidden = NO;
-    self.textView.text = self.displayableText.displayText;
-    self.textView.textColor = self.textColor;
-
-    // Honor dynamic type in the message bodies.
-    self.textView.font = [self textMessageFont];
-    self.textView.linkTextAttributes = @{
-        NSForegroundColorAttributeName : self.textColor,
-        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
-    };
-    self.textView.dataDetectorTypes
-        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
-
+    BOOL shouldIgnoreEvents = NO;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         // Ignore taps on links in outgoing messages that haven't been sent yet, as
         // this interferes with "tap to retry".
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        self.textView.shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
-    } else {
-        self.textView.shouldIgnoreEvents = NO;
+        shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
     }
+    [self.class loadForTextDisplay:self.bodyTextView
+                              text:self.displayableBodyText.displayText
+                         textColor:self.textColor
+                              font:self.textMessageFont
+                shouldIgnoreEvents:shouldIgnoreEvents];
+    return self.bodyTextView;
+}
 
-    OWSAssert(self.contentWidth);
-    CGSize textBubbleSize = [self textBubbleSizeForContentWidth:self.contentWidth];
++ (void)loadForTextDisplay:(OWSMessageTextView *)textView
+                      text:(NSString *)text
+                 textColor:(UIColor *)textColor
+                      font:(UIFont *)font
+        shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
+{
+    textView.hidden = NO;
+    textView.text = text;
+    textView.textColor = textColor;
 
-    if (self.displayableText.isTextTruncated) {
-        self.tapForMoreLabel = [UILabel new];
-        self.tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
-            @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
-        self.tapForMoreLabel.font = [self tapForMoreFont];
-        self.tapForMoreLabel.textColor = [self.textColor colorWithAlphaComponent:0.85];
-        self.tapForMoreLabel.textAlignment = [self.tapForMoreLabel textAlignmentUnnatural];
-        [self.textBubbleImageView addSubview:self.tapForMoreLabel];
+    // Honor dynamic type in the message bodies.
+    textView.font = font;
+    textView.linkTextAttributes = @{
+        NSForegroundColorAttributeName : textColor,
+        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+    };
+    textView.shouldIgnoreEvents = shouldIgnoreEvents;
+}
 
-        [self.contentConstraints addObjectsFromArray:@[
-            [self.textBubbleImageView autoSetDimension:ALDimensionWidth toSize:textBubbleSize.width],
-            [self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:textBubbleSize.height],
-            [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-            [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
-
-            [self.tapForMoreLabel autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-            [self.tapForMoreLabel autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-            [self.tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.textView],
-            [self.tapForMoreLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
-            [self.tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
-        ]];
+- (BOOL)hasTapForMore
+{
+    if (!self.hasBodyText) {
+        return NO;
+    } else if (!self.displayableBodyText.isTextTruncated) {
+        return NO;
     } else {
-        [self.contentConstraints addObjectsFromArray:@[
-            [self.textBubbleImageView autoSetDimension:ALDimensionWidth toSize:textBubbleSize.width],
-            [self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:textBubbleSize.height],
-            [self.textBubbleImageView autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)],
-            [self.textView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-            [self.textView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
-            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textVMargin],
-            [self.textView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.textVMargin],
-        ]];
+        return YES;
     }
 }
 
-- (void)loadForStillImageDisplay
+- (nullable UIView *)createTapForMoreLabelIfNecessary
+{
+    if (!self.hasTapForMore) {
+        return nil;
+    }
+
+    UILabel *tapForMoreLabel = [UILabel new];
+    tapForMoreLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
+        @"Indicator on truncated text messages that they can be tapped to see the entire text message.");
+    tapForMoreLabel.font = [self tapForMoreFont];
+    tapForMoreLabel.textColor = [self.textColor colorWithAlphaComponent:0.85];
+    tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
+
+    return tapForMoreLabel;
+}
+
+- (UIView *)loadViewForStillImage
 {
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isImage]);
 
-    self.stillImageView = [UIImageView new];
+    UIImageView *stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
-    self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
+    stillImageView.contentMode = UIViewContentModeScaleAspectFill;
     // Use trilinear filters for better scaling quality at
     // some performance cost.
-    self.stillImageView.layer.minificationFilter = kCAFilterTrilinear;
-    self.stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    [self setMediaView:self.stillImageView];
-    [self addAttachmentUploadViewIfNecessary:self.stillImageView];
-    [self addCaptionIfNecessary];
+    stillImageView.layer.minificationFilter = kCAFilterTrilinear;
+    stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
+    [self addAttachmentUploadViewIfNecessary:stillImageView];
+
+    __weak OWSMessageCell *weakSelf = self;
+    self.loadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        if (stillImageView.image) {
+            return;
+        }
+        // Don't cache large still images.
+        //
+        // TODO: Don't use full size images in the message cells.
+        const NSUInteger kMaxCachableSize = 1024 * 1024;
+        BOOL shouldSkipCache =
+            [OWSFileSystem fileSizeOfPath:strongSelf.attachmentStream.filePath].unsignedIntegerValue < kMaxCachableSize;
+        stillImageView.image = [strongSelf tryToLoadCellMedia:^{
+            OWSCAssert([strongSelf.attachmentStream isImage]);
+            return strongSelf.attachmentStream.image;
+        }
+                                                    mediaView:stillImageView
+                                                     cacheKey:strongSelf.attachmentStream.uniqueId
+                                              shouldSkipCache:shouldSkipCache];
+    };
+    self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        stillImageView.image = nil;
+    };
+
+    return stillImageView;
 }
 
-- (void)loadForAnimatedImageDisplay
+- (UIView *)loadViewForAnimatedImage
 {
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isAnimated]);
 
-    self.animatedImageView = [[YYAnimatedImageView alloc] init];
+    YYAnimatedImageView *animatedImageView = [[YYAnimatedImageView alloc] init];
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
-    self.animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
-    [self setMediaView:self.animatedImageView];
-    [self addAttachmentUploadViewIfNecessary:self.animatedImageView];
-    [self addCaptionIfNecessary];
+    animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self addAttachmentUploadViewIfNecessary:animatedImageView];
+
+    __weak OWSMessageCell *weakSelf = self;
+    self.loadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
+        if (animatedImageView.image) {
+            return;
+        }
+        animatedImageView.image = [strongSelf tryToLoadCellMedia:^{
+            OWSCAssert([strongSelf.attachmentStream isAnimated]);
+
+            NSString *_Nullable filePath = [strongSelf.attachmentStream filePath];
+            YYImage *_Nullable animatedImage = nil;
+            if (filePath && [NSData ows_isValidImageAtPath:filePath]) {
+                animatedImage = [YYImage imageWithContentsOfFile:filePath];
+            }
+            return animatedImage;
+        }
+                                                       mediaView:animatedImageView
+                                                        cacheKey:strongSelf.attachmentStream.uniqueId
+                                                 shouldSkipCache:NO];
+    };
+    self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
+        animatedImageView.image = nil;
+    };
+
+    return animatedImageView;
 }
 
-- (void)addCaptionIfNecessary
-{
-    if (self.hasText) {
-        [self loadForTextDisplay];
-    } else {
-        [self.contentConstraints addObject:[self.textBubbleImageView autoSetDimension:ALDimensionHeight toSize:0]];
-    }
-}
-
-- (void)loadForAudioDisplay
+- (UIView *)loadViewForAudio
 {
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isAudio]);
 
-    self.audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
-                                                                 isIncoming:self.isIncoming
-                                                                   viewItem:self.viewItem];
-    self.viewItem.lastAudioMessageView = self.audioMessageView;
-    [self.audioMessageView createContents];
-    [self setMediaView:self.audioMessageView];
-    [self addAttachmentUploadViewIfNecessary:self.audioMessageView];
-    [self addCaptionIfNecessary];
+    OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
+                                                                                 isIncoming:self.isIncoming
+                                                                                   viewItem:self.viewItem];
+    self.viewItem.lastAudioMessageView = audioMessageView;
+    [audioMessageView createContents];
+    [self addAttachmentUploadViewIfNecessary:audioMessageView];
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return audioMessageView;
 }
 
-- (void)loadForVideoDisplay
+- (UIView *)loadViewForVideo
 {
     OWSAssert(self.attachmentStream);
     OWSAssert([self.attachmentStream isVideo]);
 
-    self.stillImageView = [UIImageView new];
+    UIImageView *stillImageView = [UIImageView new];
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
-    self.stillImageView.contentMode = UIViewContentModeScaleAspectFill;
+    stillImageView.contentMode = UIViewContentModeScaleAspectFill;
     // Use trilinear filters for better scaling quality at
     // some performance cost.
-    self.stillImageView.layer.minificationFilter = kCAFilterTrilinear;
-    self.stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
-    [self setMediaView:self.stillImageView];
+    stillImageView.layer.minificationFilter = kCAFilterTrilinear;
+    stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
 
     UIImage *videoPlayIcon = [UIImage imageNamed:@"play_button"];
     UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:videoPlayIcon];
-    [self.stillImageView addSubview:videoPlayButton];
+    [stillImageView addSubview:videoPlayButton];
     [videoPlayButton autoCenterInSuperview];
-    [self addAttachmentUploadViewIfNecessary:self.stillImageView
+    [self addAttachmentUploadViewIfNecessary:stillImageView
                      attachmentStateCallback:^(BOOL isAttachmentReady) {
                          videoPlayButton.hidden = !isAttachmentReady;
                      }];
-    [self addCaptionIfNecessary];
+
+    __weak OWSMessageCell *weakSelf = self;
+    self.loadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        if (stillImageView.image) {
+            return;
+        }
+        stillImageView.image = [strongSelf tryToLoadCellMedia:^{
+            OWSCAssert([strongSelf.attachmentStream isVideo]);
+
+            return strongSelf.attachmentStream.image;
+        }
+                                                    mediaView:stillImageView
+                                                     cacheKey:strongSelf.attachmentStream.uniqueId
+                                              shouldSkipCache:NO];
+    };
+    self.unloadCellContentBlock = ^{
+        OWSMessageCell *strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        stillImageView.image = nil;
+    };
+
+    return stillImageView;
 }
 
-- (void)loadForDownloadingAttachment
+- (UIView *)loadViewForGenericAttachment
+{
+    OWSAssert(self.viewItem.attachmentStream);
+    OWSGenericAttachmentView *attachmentView =
+        [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+    [attachmentView createContents];
+    [self addAttachmentUploadViewIfNecessary:attachmentView];
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return attachmentView;
+}
+
+- (UIView *)loadViewForDownloadingAttachment
 {
     OWSAssert(self.attachmentPointer);
 
-    self.customView = [UIView new];
+    UIView *customView = [UIView new];
     switch (self.attachmentPointer.state) {
         case TSAttachmentPointerStateEnqueued:
-            self.customView.backgroundColor
+            customView.backgroundColor
                 = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
         case TSAttachmentPointerStateDownloading:
-            self.customView.backgroundColor
+            customView.backgroundColor
                 = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
         case TSAttachmentPointerStateFailed:
-            self.customView.backgroundColor = [UIColor grayColor];
+            customView.backgroundColor = [UIColor grayColor];
             break;
     }
-    [self setMediaView:self.customView];
 
-    self.attachmentPointerView =
+    AttachmentPointerView *attachmentPointerView =
         [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer isIncoming:self.isIncoming];
-    [self.customView addSubview:self.attachmentPointerView];
-    [self.attachmentPointerView autoPinWidthToSuperviewWithMargin:20.f];
-    [self.attachmentPointerView autoVCenterInSuperview];
-    [self addCaptionIfNecessary];
-}
+    [customView addSubview:attachmentPointerView];
+    [attachmentPointerView autoPinWidthToSuperviewWithMargin:20.f];
+    [attachmentPointerView autoVCenterInSuperview];
 
-- (void)setMediaView:(UIView *)view
-{
-    OWSAssert(view);
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
 
-    view.userInteractionEnabled = NO;
-    [self.mediaMaskingView addSubview:view];
-
-    [self.contentConstraints
-        addObject:[self.mediaMaskingView
-                      autoPinEdgeToSuperviewEdge:(self.isIncoming ? ALEdgeLeading : ALEdgeTrailing)]];
-
-    [self.contentConstraints addObjectsFromArray:[view autoPinEdgesToSuperviewMargins]];
-
-    [self cropMediaViewToBubbbleShape:view];
-    if (self.isMediaBeingSent) {
-        view.layer.opacity = 0.75f;
-    }
+    return customView;
 }
 
 - (void)addAttachmentUploadViewIfNecessary:(UIView *)attachmentView
@@ -970,63 +1026,58 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 
     if (self.isOutgoing) {
         if (!self.attachmentStream.isUploaded) {
-            self.attachmentUploadView = [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
-                                                                               superview:attachmentView
-                                                                 attachmentStateCallback:attachmentStateCallback];
+            AttachmentUploadView *attachmentUploadView =
+                [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
+                                         attachmentStateCallback:attachmentStateCallback];
+            [attachmentView addSubview:attachmentUploadView];
+            [attachmentUploadView autoPinToSuperviewEdges];
         }
     }
 }
 
-- (void)cropMediaViewToBubbbleShape:(UIView *)view
+- (void)showAttachmentErrorViewWithMediaView:(UIView *)mediaView
 {
-    OWSAssert(view);
-    OWSAssert(view.superview == self.mediaMaskingView);
-
-    self.mediaMaskingView.isOutgoing = self.isOutgoing;
-    // Hide tail on attachments followed by a caption
-    self.mediaMaskingView.hideTail = self.hasText;
-    self.mediaMaskingView.maskedSubview = view;
-    [self.mediaMaskingView updateMask];
-}
-
-- (void)showAttachmentErrorView
-{
-    OWSAssert(!self.customView);
+    OWSAssert(mediaView);
 
     // TODO: We could do a better job of indicating that the media could not be loaded.
-    self.customView = [UIView new];
-    self.customView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
-    self.customView.userInteractionEnabled = NO;
-    [self.payloadView addSubview:self.customView];
-    [self.contentConstraints addObjectsFromArray:[self.customView autoPinToSuperviewEdges]];
+    UIView *errorView = [UIView new];
+    errorView.backgroundColor = [UIColor colorWithWhite:0.85f alpha:1.f];
+    errorView.userInteractionEnabled = NO;
+    [mediaView addSubview:errorView];
+    [errorView autoPinEdgesToSuperviewEdges];
 }
 
-- (CGSize)textBubbleSizeForContentWidth:(int)contentWidth
+#pragma mark - Measurement
+
+// Size of "message body" text, not quoted reply text.
+- (CGSize)bodyTextSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
 {
-    if (!self.hasText) {
+    if (!self.hasBodyText) {
         return CGSizeZero;
     }
 
     BOOL isRTL = self.isRTL;
     CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
     CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
-    CGFloat textVMargin = self.textVMargin;
 
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-    self.textView.text = self.displayableText.displayText;
+    self.bodyTextView.text = self.displayableBodyText.displayText;
     // Honor dynamic type in the message bodies.
-    self.textView.font = [self textMessageFont];
-    CGSize textSize = [self.textView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
-    CGFloat tapForMoreHeight = (self.displayableText.isTextTruncated ? [self tapForMoreHeight] : 0.f);
-    CGSize textViewSize = CGSizeMake((CGFloat)ceil(textSize.width + leftMargin + rightMargin),
-        (CGFloat)ceil(textSize.height + textVMargin * 2 + tapForMoreHeight));
+    self.bodyTextView.font = [self textMessageFont];
+    CGSize textSize = CGSizeCeil([self.bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+    CGSize textViewSize = textSize;
 
-    return textViewSize;
+    if (includeMargins) {
+        textViewSize.width += leftMargin + rightMargin;
+        textViewSize.height += self.textTopMargin + self.textBottomMargin;
+    }
+
+    return CGSizeCeil(textViewSize);
 }
 
-- (CGSize)mediaBubbleSizeForContentWidth:(int)contentWidth
+- (CGSize)bodyMediaSizeForContentWidth:(int)contentWidth
 {
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
 
@@ -1043,13 +1094,11 @@ const CGFloat OWSMessageCellCornerRadius = 17;
             OWSAssert(self.mediaSize.height > 0);
 
             // TODO: Adjust this behavior.
-            // TODO: This behavior is a bit different than the old behavior defined
-            //       in JSQMediaItem+OWS.h.  Let's discuss.
 
             CGFloat contentAspectRatio = self.mediaSize.width / self.mediaSize.height;
             // Clamp the aspect ratio so that very thin/wide content is presented
             // in a reasonable way.
-            const CGFloat minAspectRatio = 0.25f;
+            const CGFloat minAspectRatio = 0.35f;
             const CGFloat maxAspectRatio = 1 / minAspectRatio;
             contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
 
@@ -1082,8 +1131,8 @@ const CGFloat OWSMessageCellCornerRadius = 17;
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    CGSize mediaContentSize = [self mediaBubbleSizeForContentWidth:contentWidth];
-    CGSize textContentSize = [self textBubbleSizeForContentWidth:contentWidth];
+    CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
+    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
 
     CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
     CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
@@ -1093,13 +1142,15 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 
     cellSize.height += self.dateHeaderHeight;
     cellSize.height += self.footerHeight;
+    if (self.hasTapForMore) {
+        cellSize.height += self.tapForMoreHeight;
+    }
 
     if (self.shouldHaveFailedSendBadge) {
         cellSize.width += self.failedSendBadgeSize;
     }
 
-    cellSize.width = ceil(cellSize.width);
-    cellSize.height = ceil(cellSize.height);
+    cellSize = CGSizeCeil(cellSize);
 
     return cellSize;
 }
@@ -1108,11 +1159,13 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 {
     if (self.viewItem.shouldShowDate) {
         // Add 5pt spacing above and below the date header.
-        return MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f;
+        return (CGFloat)ceil(MAX(self.dateHeaderDateFont.lineHeight, self.dateHeaderTimeFont.lineHeight) + 10.f);
     } else {
         return 0.f;
     }
 }
+
+#pragma mark -
 
 - (BOOL)isIncoming
 {
@@ -1126,17 +1179,30 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 
 - (CGFloat)textLeadingMargin
 {
-    return self.isIncoming ? 15 : 10;
+    CGFloat result = kBubbleTextHInset;
+    if (self.isIncoming) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
 }
 
 - (CGFloat)textTrailingMargin
 {
-    return self.isIncoming ? 10 : 15;
+    CGFloat result = kBubbleTextHInset;
+    if (!self.isIncoming) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
 }
 
-- (CGFloat)textVMargin
+- (CGFloat)textTopMargin
 {
-    return 10;
+    return kBubbleTextVInset;
+}
+
+- (CGFloat)textBottomMargin
+{
+    return kBubbleTextVInset + kBubbleThornVInset;
 }
 
 - (UIColor *)textColor
@@ -1168,49 +1234,39 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 {
     [super prepareForReuse];
 
-    [NSLayoutConstraint deactivateConstraints:self.payloadConstraints];
-    self.payloadConstraints = nil;
-    [NSLayoutConstraint deactivateConstraints:self.contentConstraints];
-    self.contentConstraints = [NSMutableArray new];
-    [NSLayoutConstraint deactivateConstraints:self.dateHeaderConstraints];
-    self.dateHeaderConstraints = nil;
-    [NSLayoutConstraint deactivateConstraints:self.footerConstraints];
-    self.footerConstraints = nil;
+    [NSLayoutConstraint deactivateConstraints:self.viewConstraints];
+    self.viewConstraints = [NSMutableArray new];
 
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
-    self.textView.text = nil;
-    self.textView.hidden = YES;
-    self.textView.dataDetectorTypes = UIDataDetectorTypeNone;
+    [self.bodyTextView removeFromSuperview];
+    self.bodyTextView.text = nil;
+    self.bodyTextView.hidden = YES;
     [self.failedSendBadgeView removeFromSuperview];
     self.failedSendBadgeView = nil;
-    [self.tapForMoreLabel removeFromSuperview];
-    self.tapForMoreLabel = nil;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
-    self.textBubbleImageView.image = nil;
-    self.textBubbleImageView.hidden = YES;
-    self.mediaMaskingView.maskedSubview = nil;
-    self.mediaMaskingView.hideTail = NO;
-    self.mediaMaskingView.layoutMargins = UIEdgeInsetsZero;
 
-    [self.stillImageView removeFromSuperview];
-    self.stillImageView = nil;
-    [self.animatedImageView removeFromSuperview];
-    self.animatedImageView = nil;
-    [self.customView removeFromSuperview];
-    self.customView = nil;
-    [self.attachmentPointerView removeFromSuperview];
-    self.attachmentPointerView = nil;
-    [self.attachmentView removeFromSuperview];
-    self.attachmentView = nil;
-    [self.audioMessageView removeFromSuperview];
-    self.audioMessageView = nil;
-    [self.attachmentUploadView removeFromSuperview];
-    self.attachmentUploadView = nil;
+    self.bubbleView.hidden = YES;
+    self.bubbleView.bubbleColor = nil;
+    self.bubbleView.bubbleStrokeView = nil;
+
+    for (UIView *subview in self.bubbleView.subviews) {
+        [subview removeFromSuperview];
+    }
+
+    if (self.unloadCellContentBlock) {
+        self.unloadCellContentBlock();
+    }
+    self.loadCellContentBlock = nil;
+    self.unloadCellContentBlock = nil;
+
     [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
+
+    [self.lastBodyMediaView removeFromSuperview];
+    self.lastBodyMediaView = nil;
 
     [self hideMenuControllerIfNecessary];
 }
@@ -1226,7 +1282,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         return;
     }
 
-    [self ensureViewMediaState];
+    [self ensureMediaLoadState];
 
     if (isCellVisible) {
         if (self.message.shouldStartExpireTimer) {
@@ -1242,6 +1298,30 @@ const CGFloat OWSMessageCellCornerRadius = 17;
 }
 
 #pragma mark - Gesture recognizers
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.lastBodyMediaView) {
+        // Treat this as a "body media" gesture if:
+        //
+        // * There is a "body media" view.
+        // * The gesture occured within or above the "body media" view.
+        CGPoint location = [sender locationInView:self.lastBodyMediaView];
+        if (location.y <= self.lastBodyMediaView.height) {
+            [self handleMediaTapGesture:sender];
+            return;
+        }
+    }
+
+    [self handleTextTapGesture:sender];
+}
 
 - (void)handleTextTapGesture:(UITapGestureRecognizer *)sender
 {
@@ -1263,7 +1343,7 @@ const CGFloat OWSMessageCellCornerRadius = 17;
         }
     }
 
-    if (self.hasText && self.displayableText.isTextTruncated) {
+    if (self.hasTapForMore) {
         [self.delegate didTapTruncatedTextMessage:self.viewItem];
         return;
     }
@@ -1294,28 +1374,31 @@ const CGFloat OWSMessageCellCornerRadius = 17;
             break;
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
-            if (self.displayableText.isTextTruncated) {
+            if (self.hasTapForMore) {
                 [self.delegate didTapTruncatedTextMessage:self.viewItem];
                 return;
             }
             break;
         case OWSMessageCellType_StillImage:
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.stillImageView];
+                                     imageView:self.lastBodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.animatedImageView];
+                                     imageView:self.lastBodyMediaView];
             break;
         case OWSMessageCellType_Audio:
             [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
             return;
         case OWSMessageCellType_Video:
+            OWSAssert(self.lastBodyMediaView);
             [self.delegate didTapVideoViewItem:self.viewItem
                               attachmentStream:self.attachmentStream
-                                     imageView:self.stillImageView];
+                                     imageView:self.lastBodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
             [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
@@ -1328,6 +1411,29 @@ const CGFloat OWSMessageCellCornerRadius = 17;
             break;
         }
     }
+}
+
+- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    if (self.lastBodyMediaView) {
+        // Treat this as a "body media" gesture if:
+        //
+        // * There is a "body media" view.
+        // * The gesture occured within or above the "body media" view.
+        CGPoint location = [sender locationInView:self.lastBodyMediaView];
+        if (location.y <= self.lastBodyMediaView.height) {
+            [self handleMediaLongPressGesture:sender];
+            return;
+        }
+    }
+
+    [self handleTextLongPressGesture:sender];
 }
 
 - (void)handleTextLongPressGesture:(UILongPressGestureRecognizer *)sender

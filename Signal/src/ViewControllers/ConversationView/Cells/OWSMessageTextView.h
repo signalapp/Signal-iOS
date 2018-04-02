@@ -2,11 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "DebugUIPage.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
-@interface DebugUIMessages : DebugUIPage
+@interface OWSMessageTextView : UITextView
+
+@property (nonatomic) BOOL shouldIgnoreEvents;
 
 @end
 

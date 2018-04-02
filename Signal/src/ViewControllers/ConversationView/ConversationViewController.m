@@ -2274,6 +2274,14 @@ typedef enum : NSUInteger {
 
 - (void)scrollDownButtonTapped
 {
+#ifdef DEBUG
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    contentOffset.y += self.collectionView.height
+        - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom);
+    [self.collectionView setContentOffset:contentOffset animated:NO];
+    return;
+#endif
+
     NSIndexPath *indexPathOfUnreadMessagesIndicator = [self indexPathOfUnreadMessagesIndicator];
     if (indexPathOfUnreadMessagesIndicator != nil) {
         NSInteger unreadRow = indexPathOfUnreadMessagesIndicator.row;
@@ -4455,8 +4463,10 @@ typedef enum : NSUInteger {
     // Update the "shouldShowDate" property of the view items.
     OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
     MessageRecipientStatus lastRecipientStatus = MessageRecipientStatusUploading;
+    NSString *_Nullable lastIncomingSenderId = nil;
     for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
         BOOL shouldHideRecipientStatus = NO;
+        BOOL shouldHideBubbleTail = NO;
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
@@ -4465,14 +4475,23 @@ typedef enum : NSUInteger {
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
 
             if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-                // always sow "failed to send" status
+                // always show "failed to send" status
                 shouldHideRecipientStatus = NO;
             } else {
                 shouldHideRecipientStatus
                     = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
             }
 
+            shouldHideBubbleTail = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+
             lastRecipientStatus = recipientStatus;
+        } else if (interactionType == OWSInteractionType_IncomingMessage) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
+            NSString *incomingSenderId = incomingMessage.authorId;
+            OWSAssert(incomingSenderId.length > 0);
+            shouldHideBubbleTail = (interactionType == lastInteractionType &&
+                [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
+            lastIncomingSenderId = incomingSenderId;
         }
         lastInteractionType = interactionType;
 
@@ -4483,6 +4502,7 @@ typedef enum : NSUInteger {
             [rowsThatChangedSize addObject:@(viewItem.previousRow)];
         }
         viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
+        viewItem.shouldHideBubbleTail = shouldHideBubbleTail;
     }
 
     self.viewItems = viewItems;

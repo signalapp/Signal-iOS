@@ -5,7 +5,6 @@
 import Foundation
 import JSQMessagesViewController
 import SignalServiceKit
-import SignalMessaging
 
 @objc
 public class OWSMessagesBubbleImageFactory: NSObject {
@@ -21,22 +20,22 @@ public class OWSMessagesBubbleImageFactory: NSObject {
     }()
 
     public lazy var incoming: JSQMessagesBubbleImage = {
-        let color = UIColor.jsq_messageBubbleLightGray()!
+        let color = bubbleColorIncoming
         return self.incoming(color: color)
     }()
 
     public lazy var outgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_materialBlue
+        let color = bubbleColorOutgoingSent
         return self.outgoing(color: color)
     }()
 
     public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
-        let color = UIColor.ows_fadedBlue
+        let color = bubbleColorOutgoingSending
         return self.outgoing(color: color)
     }()
 
     public lazy var outgoingFailed: JSQMessagesBubbleImage = {
-        let color = UIColor.gray
+        let color = bubbleColorOutgoingUnsent
         return self.outgoing(color: color)
     }()
 
@@ -55,6 +54,32 @@ public class OWSMessagesBubbleImageFactory: NSObject {
         } else {
             owsFail("Unexpected message type: \(message)")
             return outgoing
+        }
+    }
+
+    public static let bubbleColorIncoming = UIColor.jsq_messageBubbleLightGray()!
+
+    public static let bubbleColorOutgoingUnsent = UIColor.gray
+
+    public static let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
+
+    public static let bubbleColorOutgoingSent = UIColor.ows_materialBlue
+
+    public func bubbleColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return OWSMessagesBubbleImageFactory.bubbleColorIncoming
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .unsent:
+                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
+            case .attemptingOut:
+                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
+            default:
+                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
+            }
+        } else {
+            owsFail("Unexpected message type: \(message)")
+            return UIColor.ows_materialBlue
         }
     }
 

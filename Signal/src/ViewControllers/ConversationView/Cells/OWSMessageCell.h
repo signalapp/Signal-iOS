@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const CGFloat OWSMessageCellCornerRadius;
-
 @interface OWSMessageCell : ConversationViewCell
 
 + (NSString *)cellReuseIdentifier;

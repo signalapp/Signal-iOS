@@ -12,7 +12,7 @@ extern const NSTimeInterval kDayInterval;
 extern const NSTimeInterval kWeekInterval;
 extern const NSTimeInterval kMonthInterval;
 
-#define kSecondInMs 1000
+#define kSecondInMs ((uint64_t)1000)
 #define kMinuteInMs (kSecondInMs * 60)
 #define kHourInMs (kMinuteInMs * 60)
 #define kDayInMs (kHourInMs * 24)

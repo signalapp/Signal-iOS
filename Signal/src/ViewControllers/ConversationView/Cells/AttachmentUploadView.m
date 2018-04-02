@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "AttachmentUploadView.h"
@@ -32,20 +32,15 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation AttachmentUploadView
 
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachment
-                         superview:(UIView *)superview
            attachmentStateCallback:(AttachmentStateBlock _Nullable)attachmentStateCallback
 {
     self = [super init];
 
     if (self) {
         OWSAssert(attachment);
-        OWSAssert(superview);
 
         self.attachment = attachment;
         self.attachmentStateCallback = attachmentStateCallback;
-
-        [superview addSubview:self];
-        [self autoPinToSuperviewEdges];
 
         _bezierPathView = [OWSBezierPathView new];
         self.bezierPathView.configureShapeLayerBlock = ^(CAShapeLayer *layer, CGRect bounds) {
