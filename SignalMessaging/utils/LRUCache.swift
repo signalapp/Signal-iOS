@@ -14,7 +14,9 @@ public class AnyLRUCache: NSObject, LRUCacheDelegate {
     public weak var delegate: AnyLRUCacheDelegate?
     
     public init(maxSize: Int) {
-        backingCache = LRUCache(maxSize: maxSize)
+        self.backingCache = LRUCache(maxSize: maxSize)
+        super.init()
+        
         backingCache.delegate = self
     }
 
@@ -27,33 +29,36 @@ public class AnyLRUCache: NSObject, LRUCacheDelegate {
     }
     
     // MARK: LRUCacheDelegate
-    internal func lruCache<K, V>(_ cache: LRUCache<K, V>, didDeleteItem item: V) where K : Hashable {
-        <#code#>
-    }
-    
-    public func lruCache(_ cache: LRUCache<NSObject, NSObject>, didDeleteItem item: NSObject) {
-        delegate?.lruCache(self, didDeleteItem: item)
+    internal func lruCache<K, V>(_ cache: LRUCache<K, V>, didDeleteItem item: V) {
+        Logger.debug("\(self.logTag) in \(#function)")
+        guard let nsItem = item as? NSObject else {
+            owsFail("\(logTag) in \(#function) item had unexpected type: \(type(of: item))")
+            return
+        }
+        delegate?.lruCache(self, didDeleteItem: nsItem)
     }
 }
 
-// A simple LRU cache bounded by the number of entries.
-//
-// TODO: We might want to observe memory pressure notifications.
 internal protocol LRUCacheDelegate: class {
     func lruCache<K, V>(_ cache: LRUCache<K, V>, didDeleteItem item: V)
 }
 
+
+// A simple LRU cache bounded by the number of entries.
+//
+// TODO: We might want to observe memory pressure notifications.
 public class LRUCache<KeyType: Hashable, ValueType> {
 
     private var cacheMap: [KeyType: ValueType] = [:]
     private var cacheOrder: [KeyType] = []
     private let maxSize: Int
+ 
     internal weak var delegate: LRUCacheDelegate?
 
     public init(maxSize: Int) {
         self.maxSize = maxSize
     }
-
+  
     public func get(key: KeyType) -> ValueType? {
         guard let value = cacheMap[key] else {
             return nil

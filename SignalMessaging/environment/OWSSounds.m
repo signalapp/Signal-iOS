@@ -11,10 +11,12 @@
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
 
-@interface OWSSounds ()
+@interface OWSSounds () <AnyLRUCacheDelegate>
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) AnyLRUCache *cachedSoundIDs;
@@ -56,6 +58,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
     // Don't store too many sounds in memory. Most users will only use 1 or 2 sounds anyway.
     _cachedSoundIDs = [[AnyLRUCache alloc] initWithMaxSize:3];
+    _cachedSoundIDs.delegate = self;
 
     OWSSingletonAssert();
 
@@ -224,7 +227,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
     if (cachedSoundId) {
         OWSAssert([cachedSoundId isKindOfClass:[NSNumber class]]);
-        return (SystemSoundID)cachedSoundId.intValue;
+        return (SystemSoundID)cachedSoundId.unsignedIntValue;
     }
 
     NSURL *soundURL = [self.class soundURLForSound:sound quiet:quiet];
@@ -363,4 +366,22 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return player;
 }
 
+#pragma mark - AnyLRUCacheDelegate
+
+- (void)lruCache:(AnyLRUCache *)cache didDeleteItem:(NSObject *)item
+{
+    if (![item isKindOfClass:[NSNumber class]]) {
+        OWSFail(@"%@ unexpected cache item: %@", self.logTag, item);
+        return;
+    }
+    NSNumber *number = (NSNumber *)item;
+    OWSAssert([item isKindOfClass:[NSNumber class]]);
+    
+    SystemSoundID soundId = (SystemSoundID)number.unsignedIntValue;
+    AudioServicesDisposeSystemSoundID(soundId);
+}
+
 @end
+
+NS_ASSUME_NONNULL_END
+
