@@ -2496,6 +2496,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     [actions addObjectsFromArray:[self allFakeMediaActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeTextActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
     return actions;
 }
 

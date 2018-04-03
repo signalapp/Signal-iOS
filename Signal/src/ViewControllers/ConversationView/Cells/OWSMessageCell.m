@@ -396,8 +396,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         CGFloat trailingMargin = self.quotedBubbleTrailingMargin;
 
         [self.viewConstraints addObjectsFromArray:@[
-            [quotedMessageView autoPinLeadingToSuperviewWithMargin:leadingMargin],
-            [quotedMessageView autoPinTrailingToSuperviewWithMargin:trailingMargin],
+            [quotedMessageView autoPinLeadingToSuperviewMarginWithInset:leadingMargin],
+            [quotedMessageView autoPinTrailingToSuperviewMarginWithInset:trailingMargin],
         ]];
 
         if (lastSubview) {
@@ -882,7 +882,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     quoteStripView.userInteractionEnabled = NO;
     [quotedMessageView addSubview:quoteStripView];
     [quoteStripView autoPinHeightToSuperview];
-    [quoteStripView autoPinLeadingToSuperview];
+    [quoteStripView autoPinLeadingToSuperviewMargin];
     [quoteStripView autoSetDimension:ALDimensionWidth toSize:self.quotedReplyStripeThickness];
 
     UIView *_Nullable quotedThumbnailView = nil;
@@ -892,8 +892,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         quotedThumbnailView.userInteractionEnabled = NO;
         quotedThumbnailView.backgroundColor = [UIColor redColor];
         [quotedMessageView addSubview:quotedThumbnailView];
-        [quotedThumbnailView autoPinTopToSuperview];
-        [quotedThumbnailView autoPinTrailingToSuperview];
+        [quotedThumbnailView autoPinTopToSuperviewMargin];
+        [quotedThumbnailView autoPinTrailingToSuperviewMargin];
         [quotedThumbnailView autoSetDimension:ALDimensionWidth toSize:self.quotedThumbnailSize];
         [quotedThumbnailView autoSetDimension:ALDimensionHeight toSize:self.quotedThumbnailSize];
     }
@@ -910,11 +910,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [quotedMessageView addSubview:quotedAuthorLabel];
     [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedContentTopInset];
-    [quotedAuthorLabel autoPinLeadingToView:quoteStripView margin:self.quotedReplyStripeHSpacing];
+    [quotedAuthorLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
     if (quotedThumbnailView) {
-        [quotedAuthorLabel autoPinTrailingToView:quotedThumbnailView margin:self.quotedThumbnailHSpacing];
+        [quotedAuthorLabel autoPinTrailingToEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
     } else {
-        [quotedAuthorLabel autoPinTrailingToSuperviewWithMargin:self.quotedContentTrailingMargin];
+        [quotedAuthorLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
     }
 
     if (self.hasQuotedText) {
@@ -925,13 +925,13 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                              toEdge:ALEdgeBottom
                              ofView:quotedAuthorLabel
                          withOffset:self.quotedAuthorBottomSpacing];
-        [quotedTextView autoPinLeadingToView:quoteStripView margin:self.quotedReplyStripeHSpacing];
+        [quotedTextView autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
         if (quotedThumbnailView) {
-            [quotedTextView autoPinTrailingToView:quotedThumbnailView margin:self.quotedThumbnailHSpacing];
+            [quotedTextView autoPinLeadingToTrailingEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
         } else {
-            [quotedTextView autoPinTrailingToSuperviewWithMargin:self.quotedContentTrailingMargin];
+            [quotedTextView autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
         }
-        [quotedTextView autoPinBottomToSuperviewWithMargin:self.quotedContentBottomInset];
+        [quotedTextView autoPinBottomToSuperviewMarginWithInset:self.quotedContentBottomInset];
     }
 
     return quotedMessageView;
