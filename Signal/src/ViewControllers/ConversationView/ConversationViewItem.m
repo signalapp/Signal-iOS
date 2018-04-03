@@ -56,6 +56,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic) BOOL hasViewState;
 @property (nonatomic) OWSMessageCellType messageCellType;
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
+@property (nonatomic, nullable) DisplayableText *displayableQuotedText;
+@property (nonatomic, nullable) NSString *quotedAttachmentMimetype;
+@property (nonatomic, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize mediaSize;
@@ -99,6 +102,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.attachmentPointer = nil;
     self.mediaSize = CGSizeZero;
 
+    self.displayableQuotedText = nil;
+    self.quotedRecipientId = nil;
+    self.quotedAttachmentMimetype = nil;
+
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
@@ -107,6 +114,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (BOOL)hasBodyText
 {
     return _displayableBodyText != nil;
+}
+
+- (BOOL)hasQuotedText
+{
+    return _displayableQuotedText != nil;
+}
+
+- (BOOL)hasQuotedAttachment
+{
+    return self.quotedAttachmentMimetype.length > 0;
+}
+
+- (BOOL)isQuotedReply
+{
+    return self.hasQuotedAttachment || self.hasQuotedText;
 }
 
 - (void)setShouldShowDate:(BOOL)shouldShowDate
@@ -275,11 +297,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self.lastAudioMessageView updateContents];
 }
 
-#pragma mark - View State
+#pragma mark - Displayable Text
 
 // TODO: Now that we're caching the displayable text on the view items,
 //       I don't think we need this cache any more.
-- (NSCache *)displayableBodyTextCache
+- (NSCache *)displayableTextCache
 {
     static NSCache *cache = nil;
     static dispatch_once_t onceToken;
@@ -296,10 +318,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(text);
     OWSAssert(interactionId.length > 0);
 
-    return [self displayableBodyTextForInteractionId:interactionId
-                                           textBlock:^{
-                                               return text;
-                                           }];
+    NSString *displayableTextCacheKey = [@"body-" stringByAppendingString:interactionId];
+
+    return [self displayableTextForCacheKey:displayableTextCacheKey
+                                  textBlock:^{
+                                      return text;
+                                  }];
 }
 
 - (DisplayableText *)displayableBodyTextForOversizeTextAttachment:(TSAttachmentStream *)attachmentStream
@@ -308,29 +332,45 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(attachmentStream);
     OWSAssert(interactionId.length > 0);
 
-    return
-        [self displayableBodyTextForInteractionId:interactionId
-                                        textBlock:^{
-                                            NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
-                                            NSString *text =
-                                                [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
-                                            return text;
-                                        }];
+    NSString *displayableTextCacheKey = [@"oversize-body-" stringByAppendingString:interactionId];
+
+    return [self displayableTextForCacheKey:displayableTextCacheKey
+                                  textBlock:^{
+                                      NSData *textData = [NSData dataWithContentsOfURL:attachmentStream.mediaURL];
+                                      NSString *text =
+                                          [[NSString alloc] initWithData:textData encoding:NSUTF8StringEncoding];
+                                      return text;
+                                  }];
 }
 
-- (DisplayableText *)displayableBodyTextForInteractionId:(NSString *)interactionId
-                                               textBlock:(NSString * (^_Nonnull)(void))textBlock
+- (DisplayableText *)displayableQuotedTextForText:(NSString *)text interactionId:(NSString *)interactionId
 {
+    OWSAssert(text);
     OWSAssert(interactionId.length > 0);
 
-    DisplayableText *_Nullable displayableBodyText = [[self displayableBodyTextCache] objectForKey:interactionId];
-    if (!displayableBodyText) {
-        NSString *text = textBlock();
-        displayableBodyText = [DisplayableText displayableText:text];
-        [[self displayableBodyTextCache] setObject:displayableBodyText forKey:interactionId];
-    }
-    return displayableBodyText;
+    NSString *displayableTextCacheKey = [@"quoted-" stringByAppendingString:interactionId];
+
+    return [self displayableTextForCacheKey:displayableTextCacheKey
+                                  textBlock:^{
+                                      return text;
+                                  }];
 }
+
+- (DisplayableText *)displayableTextForCacheKey:(NSString *)displayableTextCacheKey
+                                      textBlock:(NSString * (^_Nonnull)(void))textBlock
+{
+    OWSAssert(displayableTextCacheKey.length > 0);
+
+    DisplayableText *_Nullable displayableText = [[self displayableTextCache] objectForKey:displayableTextCacheKey];
+    if (!displayableText) {
+        NSString *text = textBlock();
+        displayableText = [DisplayableText displayableText:text];
+        [[self displayableTextCache] setObject:displayableText forKey:displayableTextCacheKey];
+    }
+    return displayableText;
+}
+
+#pragma mark - View State
 
 - (nullable TSAttachment *)firstAttachmentIfAnyOfMessage:(TSMessage *)message
                                              transaction:(YapDatabaseReadTransaction *)transaction
@@ -430,6 +470,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.messageCellType = OWSMessageCellType_TextMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
+
+    if (message.quotedMessage && message.quotedMessage.authorId.length > 0
+        && (message.quotedMessage.body.length > 0 || message.quotedMessage.contentType.length > 0)) {
+        if (message.quotedMessage.body.length > 0) {
+            self.displayableQuotedText =
+                [self displayableQuotedTextForText:message.quotedMessage.body interactionId:message.uniqueId];
+        }
+        self.quotedAttachmentMimetype = message.quotedMessage.contentType;
+        self.quotedRecipientId = message.quotedMessage.authorId;
+    }
 }
 
 - (OWSMessageCellType)messageCellType
@@ -473,6 +523,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(self.hasViewState);
 
     return _mediaSize;
+}
+
+- (nullable DisplayableText *)displayableQuotedText
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(self.hasViewState);
+
+    OWSAssert(_displayableQuotedText);
+    OWSAssert(_displayableQuotedText.displayText);
+    OWSAssert(_displayableQuotedText.fullText);
+
+    return _displayableQuotedText;
 }
 
 #pragma mark - UIMenuController
@@ -569,6 +631,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+// TODO: Update for quoted text.
 - (void)copyTextAction
 {
     switch (self.messageCellType) {
@@ -628,6 +691,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+// TODO: Update for quoted text.
 - (void)shareTextAction
 {
     switch (self.messageCellType) {

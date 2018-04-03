@@ -43,7 +43,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) TSInteraction *interaction;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
+
 @property (nonatomic, readonly) BOOL hasBodyText;
+
+@property (nonatomic, readonly) BOOL isQuotedReply;
+@property (nonatomic, readonly) BOOL hasQuotedAttachment;
+@property (nonatomic, readonly) BOOL hasQuotedText;
+
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldHideRecipientStatus;
 @property (nonatomic) BOOL shouldHideBubbleTail;
@@ -84,6 +90,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (nullable TSAttachmentStream *)attachmentStream;
 - (nullable TSAttachmentPointer *)attachmentPointer;
 - (CGSize)mediaSize;
+
+- (nullable DisplayableText *)displayableQuotedText;
+- (nullable NSString *)quotedAttachmentMimetype;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
