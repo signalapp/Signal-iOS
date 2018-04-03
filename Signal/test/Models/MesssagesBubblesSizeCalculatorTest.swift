@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -23,7 +23,7 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
     let contactsManager = OWSContactsManager()
 
     func viewItemForText(_ text: String?) -> ConversationViewItem {
-        let interaction = TSOutgoingMessage(timestamp: 0, in: thread, messageBody: text)
+        let interaction = TSOutgoingMessage(in: thread, messageBody: text, attachmentId: nil)
         interaction.save()
 
         var viewItem: ConversationViewItem!
@@ -41,7 +41,7 @@ class MesssagesBubblesSizeCalculatorTest: XCTestCase {
         // These are the expected values on iPhone SE.
         let viewWidth = 320
         let contentWidth = 300
-        return viewItem.cellSize(forViewWidth: Int32(viewWidth), contentWidth:Int32(contentWidth))
+        return viewItem.cellSize(forViewWidth: Int32(viewWidth), contentWidth: Int32(contentWidth))
     }
 
     func testHeightForEmptyMessage() {

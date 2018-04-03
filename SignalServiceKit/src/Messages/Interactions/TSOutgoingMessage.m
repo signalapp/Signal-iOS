@@ -75,6 +75,47 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return self;
 }
 
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId
+{
+    return [self outgoingMessageInThread:thread messageBody:body attachmentId:attachmentId expiresInSeconds:0];
+}
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
+    if (attachmentId) {
+        [attachmentIds addObject:attachmentId];
+    }
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                              inThread:thread
+                                                           messageBody:body
+                                                         attachmentIds:attachmentIds
+                                                      expiresInSeconds:expiresInSeconds
+                                                       expireStartedAt:0
+                                                        isVoiceMessage:NO
+                                                      groupMetaMessage:TSGroupMessageNone
+                                                         quotedMessage:nil];
+}
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+{
+    return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                              inThread:thread
+                                                           messageBody:nil
+                                                         attachmentIds:[NSMutableArray new]
+                                                      expiresInSeconds:0
+                                                       expireStartedAt:0
+                                                        isVoiceMessage:NO
+                                                      groupMetaMessage:groupMetaMessage
+                                                         quotedMessage:nil];
+}
+
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(nullable TSThread *)thread
                                      messageBody:(nullable NSString *)body

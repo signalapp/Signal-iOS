@@ -37,7 +37,7 @@
 - (ConversationViewItem *)textViewItem
 {
     TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:self.fakeTextMessageText];
+        [TSOutgoingMessage outgoingMessageInThread:nil messageBody:self.fakeTextMessageText attachmentId:nil];
     [message save];
     __block ConversationViewItem *viewItem = nil;
     [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -62,11 +62,8 @@
     BOOL success = [attachment writeDataSource:dataSource];
     OWSAssert(success);
     [attachment save];
-    NSMutableArray<NSString *> *attachmentIds = [@[
-        attachment.uniqueId,
-    ] mutableCopy];
     TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initWithTimestamp:1 inThread:nil messageBody:nil attachmentIds:attachmentIds];
+        [TSOutgoingMessage outgoingMessageInThread:nil messageBody:nil attachmentId:attachment.uniqueId];
     [message save];
 
     __block ConversationViewItem *viewItem = nil;

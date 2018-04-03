@@ -85,18 +85,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:text
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:expiresInSeconds
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageNone
-                                                      quotedMessage:quotedMessage];
+        [TSOutgoingMessage outgoingMessageInThread:thread
+                                       messageBody:text
+                                      attachmentId:nil
+                                  expiresInSeconds:expiresInSeconds];
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 

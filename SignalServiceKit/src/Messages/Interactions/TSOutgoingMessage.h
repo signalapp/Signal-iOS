@@ -57,6 +57,18 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId;
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId
+                       expiresInSeconds:(uint32_t)expiresInSeconds;
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
+
 @property (atomic, readonly) TSOutgoingMessageState messageState;
 
 // The message has been sent to the service and received by at least one recipient client.

@@ -800,7 +800,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
                                                      messageBody:messageBody
                                                  fakeAssetLoader:fakeAssetLoader
-                                                    messageState:(TSOutgoingMessageState)messageState
+                                                    messageState:messageState
                                                      isDelivered:YES
                                                           isRead:NO
                                                    quotedMessage:nil
@@ -3115,6 +3115,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                    messageState:TSOutgoingMessageStateUnsent
                                     isDelivered:NO
                                          isRead:NO
+                                 isVoiceMessage:NO
                                   quotedMessage:nil
                                     transaction:transaction];
                 break;
@@ -3147,16 +3148,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
         }];
     OWSAssert(thread);
 
-    TSOutgoingMessage *message =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                        messageBody:nil
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:0
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageNew
-                                                      quotedMessage:nil];
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
@@ -3407,16 +3399,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
         NSString *text = [self randomText];
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    inThread:thread
-                                 messageBody:text
-                               attachmentIds:[NSMutableArray new]
-                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
-                                                                      : 0)expireStartedAt:0
-                              isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageNone
-                               quotedMessage:nil];
+        TSOutgoingMessage *message =
+            [TSOutgoingMessage outgoingMessageInThread:thread
+                                           messageBody:text
+                                          attachmentId:nil
+                                      expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
         DDLogError(@"%@ insertAndDeleteNewOutgoingMessages timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -3441,16 +3428,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
         OWSDisappearingMessagesConfiguration *configuration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId
                                                               transaction:initialTransaction];
-        TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    inThread:thread
-                                 messageBody:text
-                               attachmentIds:[NSMutableArray new]
-                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
-                                                                      : 0)expireStartedAt:0
-                              isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageNone
-                               quotedMessage:nil];
+        TSOutgoingMessage *message =
+            [TSOutgoingMessage outgoingMessageInThread:thread
+                                           messageBody:text
+                                          attachmentId:nil
+                                      expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)];
         DDLogError(@"%@ resurrectNewOutgoingMessages1 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -3774,6 +3756,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                               messageState:messageState
                                isDelivered:isDelivered
                                     isRead:isRead
+                            isVoiceMessage:attachment.isVoiceMessage
                              quotedMessage:quotedMessage
                                transaction:transaction];
 }
@@ -3785,6 +3768,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                     messageState:(TSOutgoingMessageState)messageState
                                      isDelivered:(BOOL)isDelivered
                                           isRead:(BOOL)isRead
+                                  isVoiceMessage:(BOOL)isVoiceMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
