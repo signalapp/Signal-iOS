@@ -38,7 +38,7 @@ import LocalAuthentication
     private var ignoreUnlockUntilActive = false
 
     // We temporarily resign any first responder while the Screen Lock is presented.
-    var firstResponderBeforeLockscreen: UIResponder?
+    weak var firstResponderBeforeLockscreen: UIResponder?
 
     // MARK - Singleton class
 

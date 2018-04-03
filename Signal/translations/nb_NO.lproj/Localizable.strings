@@ -663,7 +663,7 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Bekreft din PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Kunne ikke skru av registreringslås";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Kunne ikke skru av registreringslås.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Kunne ikke skru på registreringslås.";
@@ -777,7 +777,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "Fullfør oppretting av gruppe";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtalen";
+"GALLERY_TILES_EMPTY_GALLERY" = "Du har ingen mediefiler i denne samtalen.";
 
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Laster nyere mediefiler...";
