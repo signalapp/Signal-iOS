@@ -93,6 +93,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 - (nullable DisplayableText *)displayableQuotedText;
 - (nullable NSString *)quotedAttachmentMimetype;
+- (nullable NSString *)quotedRecipientId;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
