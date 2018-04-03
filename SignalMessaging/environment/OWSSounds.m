@@ -4,6 +4,7 @@
 
 #import "OWSSounds.h"
 #import "OWSAudioPlayer.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -13,9 +14,51 @@
 NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
 
+@interface OWSSystemSound : NSObject
+
+@property (nonatomic, readonly) SystemSoundID soundID;
+@property (nonatomic, readonly) NSURL *soundURL;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@implementation OWSSystemSound
+
+- (instancetype)initWithURL:(NSURL *)url
+{
+    self = [super init];
+
+    if (!self) {
+        return self;
+    }
+
+    DDLogDebug(@"%@ creating system sound for %@", self.logTag, url.lastPathComponent);
+    _soundURL = url;
+
+    SystemSoundID newSoundID;
+    OSStatus status = AudioServicesCreateSystemSoundID((__bridge CFURLRef _Nonnull)(url), &newSoundID);
+    OWSAssert(status == kAudioServicesNoError);
+    OWSAssert(newSoundID);
+    _soundID = newSoundID;
+
+    return self;
+}
+
+- (void)dealloc
+{
+    DDLogDebug(@"%@ in dealloc disposing sound: %@", self.logTag, _soundURL.lastPathComponent);
+    OSStatus status = AudioServicesDisposeSystemSoundID(_soundID);
+    OWSAssert(status == kAudioServicesNoError);
+}
+
+@end
+
 @interface OWSSounds ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic, readonly) AnyLRUCache *cachedSystemSounds;
 
 @end
 
@@ -51,6 +94,9 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     OWSAssert(primaryStorage);
 
     _dbConnection = primaryStorage.newDatabaseConnection;
+
+    // Don't store too many sounds in memory. Most users will only use 1 or 2 sounds anyway.
+    _cachedSystemSounds = [[AnyLRUCache alloc] initWithMaxSize:3];
 
     OWSSingletonAssert();
 
@@ -205,6 +251,28 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
                                                    withExtension:filename.pathExtension];
     OWSAssert(url);
     return url;
+}
+
++ (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    return [self.sharedManager systemSoundIDForSound:(OWSSound)sound quiet:quiet];
+}
+
+- (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet
+{
+    NSString *cacheKey = [NSString stringWithFormat:@"%lu:%d", (unsigned long)sound, quiet];
+    OWSSystemSound *_Nullable cachedSound = (OWSSystemSound *)[self.cachedSystemSounds getWithKey:cacheKey];
+
+    if (cachedSound) {
+        OWSAssert([cachedSound isKindOfClass:[OWSSystemSound class]]);
+        return cachedSound.soundID;
+    }
+
+    NSURL *soundURL = [self.class soundURLForSound:sound quiet:quiet];
+    OWSSystemSound *newSound = [[OWSSystemSound alloc] initWithURL:soundURL];
+    [self.cachedSystemSounds setWithKey:cacheKey value:newSound];
+
+    return newSound.soundID;
 }
 
 #pragma mark - Notifications

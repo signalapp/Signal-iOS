@@ -368,49 +368,6 @@ enum GiphyAssetRequestState: UInt {
     }
 }
 
-// A simple LRU cache bounded by the number of entries.
-//
-// TODO: We might want to observe memory pressure notifications.
-class LRUCache<KeyType: Hashable & Equatable, ValueType> {
-
-    private var cacheMap = [KeyType: ValueType]()
-    private var cacheOrder = [KeyType]()
-    private let maxSize: Int
-
-    init(maxSize: Int) {
-        self.maxSize = maxSize
-    }
-
-    public func get(key: KeyType) -> ValueType? {
-        guard let value = cacheMap[key] else {
-            return nil
-        }
-
-        // Update cache order.
-        cacheOrder = cacheOrder.filter { $0 != key }
-        cacheOrder.append(key)
-
-        return value
-    }
-
-    public func set(key: KeyType, value: ValueType) {
-        cacheMap[key] = value
-
-        // Update cache order.
-        cacheOrder = cacheOrder.filter { $0 != key }
-        cacheOrder.append(key)
-
-        while cacheOrder.count > maxSize {
-            guard let staleKey = cacheOrder.first else {
-                owsFail("Cache ordering unexpectedly empty")
-                return
-            }
-            cacheOrder.removeFirst()
-            cacheMap.removeValue(forKey: staleKey)
-        }
-    }
-}
-
 private var URLSessionTaskGiphyAssetRequest: UInt8 = 0
 private var URLSessionTaskGiphyAssetSegment: UInt8 = 0
 
