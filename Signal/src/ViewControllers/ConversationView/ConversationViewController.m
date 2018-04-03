@@ -4423,6 +4423,7 @@ typedef enum : NSUInteger {
 
 - (void)sendButtonPressed
 {
+    [self.inputToolbar acceptAutocorrectSuggestion];
     [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
 }
 
