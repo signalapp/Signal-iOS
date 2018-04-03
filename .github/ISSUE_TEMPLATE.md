@@ -41,15 +41,19 @@ Describe here the issue that you are experiencing.
 
 To get a crash log:
 
-1. On your phone, open the Settings App
-2. Go to Privacy, then Diagnostics & Usage
-3. Select Diagnostics & Usage Data
-4. Locate the log for the crashed app. Crash logs will be named in the
-   format: Signal-(DateTime).ips
-5. Select the desired log. Then, using the text selection UI select the
-   entire text of the log. Once the text is selected, tap Copy
-6. Paste the copied text into an email to support@whispersystems.org
-   with the subject "iOS Crash Log: (your github issue)"
+1. Go to the iOS Settings app.
+2. Go to Privacy.
+3. Go to Analytics or Diagnostics & Usage.
+4. Select Analytics Data or Diagnostics & Usage Data.
+5. Locate the .ips crash log for Signal.
+    The logs will be named in the format: Signal(DateTime).ips
+6. Select the desired Signal log.
+7.a iOS 11 users, tap the Share icon in the top right corner and jump to step 10.
+7.b iOS 9&10 users, long press to see the option to highlight text and select the entire text of the log. It will end in EOF.
+8. Once the text is selected, tap Copy.
+9. Paste the copied text into an email.
+10. Send the email to support@signal.org with a subject like:
+  * "iOS Crash Log: (your github issue)"
   * Example subject: iOS Crash Log: Crash on launch #111
   * Example subject: iOS Crash Log: Crash when sending video #222
 -->
