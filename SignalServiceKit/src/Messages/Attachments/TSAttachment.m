@@ -181,9 +181,9 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
     if ([MIMETypeUtil isImage:contentType]) {
         return @"📷";
     } else if ([MIMETypeUtil isVideo:contentType]) {
-        return @"📽";
+        return @"🎥";
     } else if ([MIMETypeUtil isAudio:contentType]) {
-        return @"📻";
+        return @"🎧";
     } else if ([MIMETypeUtil isAnimated:contentType]) {
         return @"🎡";
     } else {
