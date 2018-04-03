@@ -214,7 +214,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
            forCellReuseIdentifier:InboxTableViewCell.cellReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
 
     UILabel *emptyBoxLabel = [UILabel new];

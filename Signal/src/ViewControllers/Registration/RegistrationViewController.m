@@ -123,7 +123,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     // Country
     UIView *countryRow = [UIView containerView];
     [contentView addSubview:countryRow];
-    [countryRow autoPinLeadingAndTrailingToSuperview];
+    [countryRow autoPinLeadingAndTrailingToSuperviewMargin];
     [countryRow autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [countryRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
     [countryRow
@@ -137,7 +137,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryNameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [countryRow addSubview:countryNameLabel];
     [countryNameLabel autoVCenterInSuperview];
-    [countryNameLabel autoPinLeadingToSuperview];
+    [countryNameLabel autoPinLeadingToSuperviewMargin];
 
     UILabel *countryCodeLabel = [UILabel new];
     self.countryCodeLabel = countryCodeLabel;
@@ -145,7 +145,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2.f];
     [countryRow addSubview:countryCodeLabel];
     [countryCodeLabel autoVCenterInSuperview];
-    [countryCodeLabel autoPinTrailingToSuperview];
+    [countryCodeLabel autoPinTrailingToSuperviewMargin];
 
     UIView *separatorView1 = [UIView new];
     separatorView1.backgroundColor = [UIColor colorWithWhite:0.75f alpha:1.f];
@@ -157,7 +157,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     // Phone Number
     UIView *phoneNumberRow = [UIView containerView];
     [contentView addSubview:phoneNumberRow];
-    [phoneNumberRow autoPinLeadingAndTrailingToSuperview];
+    [phoneNumberRow autoPinLeadingAndTrailingToSuperviewMargin];
     [phoneNumberRow autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView1];
     [phoneNumberRow autoSetDimension:ALDimensionHeight toSize:kRowHeight];
 
@@ -168,7 +168,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [phoneNumberRow addSubview:phoneNumberLabel];
     [phoneNumberLabel autoVCenterInSuperview];
-    [phoneNumberLabel autoPinLeadingToSuperview];
+    [phoneNumberLabel autoPinLeadingToSuperviewMargin];
 
     UITextField *phoneNumberTextField = [UITextField new];
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;
@@ -181,14 +181,14 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     phoneNumberTextField.font = [UIFont ows_mediumFontWithSize:fontSizePoints + 2];
     [phoneNumberRow addSubview:phoneNumberTextField];
     [phoneNumberTextField autoVCenterInSuperview];
-    [phoneNumberTextField autoPinTrailingToSuperview];
+    [phoneNumberTextField autoPinTrailingToSuperviewMargin];
 
     UILabel *examplePhoneNumberLabel = [UILabel new];
     self.examplePhoneNumberLabel = examplePhoneNumberLabel;
     examplePhoneNumberLabel.font = [UIFont ows_regularFontWithSize:fontSizePoints - 2.f];
     examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
     [contentView addSubview:examplePhoneNumberLabel];
-    [examplePhoneNumberLabel autoPinTrailingToSuperview];
+    [examplePhoneNumberLabel autoPinTrailingToSuperviewMargin];
     [examplePhoneNumberLabel autoPinEdge:ALEdgeTop
                                   toEdge:ALEdgeBottom
                                   ofView:phoneNumberTextField
@@ -216,7 +216,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                                                           selector:@selector(sendCodeAction)];
     self.activateButton = activateButton;
     [contentView addSubview:activateButton];
-    [activateButton autoPinLeadingAndTrailingToSuperview];
+    [activateButton autoPinLeadingAndTrailingToSuperviewMargin];
     [activateButton autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:separatorView2 withOffset:15];
     [activateButton autoSetDimension:ALDimensionHeight toSize:kActivateButtonHeight];
 
@@ -227,7 +227,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoVCenterInSuperview];
     [spinnerView autoSetDimension:ALDimensionWidth toSize:20.f];
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
-    [spinnerView autoPinTrailingToSuperviewWithMargin:20.f];
+    [spinnerView autoPinTrailingToSuperviewMarginWithInset:20.f];
     [spinnerView stopAnimating];
 }
 

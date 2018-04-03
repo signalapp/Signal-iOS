@@ -237,7 +237,7 @@
         [cell.contentView addSubview:button];
         [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
         [button autoVCenterInSuperview];
-        [button autoPinLeadingAndTrailingToSuperview];
+        [button autoPinLeadingAndTrailingToSuperviewMargin];
 
         return cell;
     }
@@ -270,7 +270,7 @@
     }
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinLeadingToSuperview];
+    [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
@@ -278,14 +278,14 @@
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
         UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
         [cell.contentView addSubview:cameraImageView];
-        [cameraImageView autoPinTrailingToView:avatarView];
+        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
 
     UIView *nameView = [UIView containerView];
     [cell.contentView addSubview:nameView];
     [nameView autoVCenterInSuperview];
-    [nameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+    [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
@@ -314,7 +314,7 @@
     subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [nameView addSubview:subtitleLabel];
     [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-    [subtitleLabel autoPinLeadingToSuperview];
+    [subtitleLabel autoPinLeadingToSuperviewMargin];
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     UIImage *disclosureImage = [UIImage imageNamed:(self.view.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
@@ -324,8 +324,8 @@
     disclosureButton.tintColor = [UIColor colorWithRGBHex:0xcccccc];
     [cell.contentView addSubview:disclosureButton];
     [disclosureButton autoVCenterInSuperview];
-    [disclosureButton autoPinTrailingToSuperview];
-    [disclosureButton autoPinLeadingToTrailingOfView:nameView margin:16.f];
+    [disclosureButton autoPinTrailingToSuperviewMargin];
+    [disclosureButton autoPinLeadingToTrailingEdgeOfView:nameView offset:16.f];
     [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
                                                       forAxis:UILayoutConstraintAxisHorizontal];
 

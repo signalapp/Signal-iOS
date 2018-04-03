@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIView+OWS.h"
+#import "OWSMath.h"
 #import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,11 +52,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return result;
 }
 
-- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview
+- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperviewMargin
 {
     NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinLeadingToSuperview],
-        [self autoPinTrailingToSuperview],
+        [self autoPinLeadingToSuperviewMargin],
+        [self autoPinTrailingToSuperviewMargin],
     ];
     return result;
 }
@@ -257,128 +257,128 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
         == UIUserInterfaceLayoutDirectionRightToLeft);
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToSuperview
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewMargin
 {
-    return [self autoPinLeadingToSuperviewWithMargin:0];
+    return [self autoPinLeadingToSuperviewMarginWithInset:0];
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin
-{
-    self.translatesAutoresizingMaskIntoConstraints = NO;
-
-    NSLayoutConstraint *constraint =
-        [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor constant:margin];
-    constraint.active = YES;
-    return constraint;
-}
-
-- (NSLayoutConstraint *)autoPinTrailingToSuperview
-{
-    return [self autoPinTrailingToSuperviewWithMargin:0];
-}
-
-- (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewMarginWithInset:(CGFloat)inset
 {
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint =
-        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor constant:-margin];
+        [self.leadingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.leadingAnchor constant:inset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinBottomToSuperview
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewMargin
 {
-    return [self autoPinBottomToSuperviewWithMargin:0.f];
+    return [self autoPinTrailingToSuperviewMarginWithInset:0];
 }
 
-- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewMarginWithInset:(CGFloat)inset
 {
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint =
-        [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-margin];
+        [self.trailingAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.trailingAnchor constant:-inset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinTopToSuperview
+- (NSLayoutConstraint *)autoPinBottomToSuperviewMargin
 {
-    return [self autoPinTopToSuperviewWithMargin:0.f];
+    return [self autoPinBottomToSuperviewMarginWithInset:0.f];
 }
 
-- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinBottomToSuperviewMarginWithInset:(CGFloat)inset
 {
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
     NSLayoutConstraint *constraint =
-        [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:margin];
+        [self.bottomAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.bottomAnchor constant:-inset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view
+- (NSLayoutConstraint *)autoPinTopToSuperviewMargin
+{
+    return [self autoPinTopToSuperviewMarginWithInset:0.f];
+}
+
+- (NSLayoutConstraint *)autoPinTopToSuperviewMarginWithInset:(CGFloat)inset
+{
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSLayoutConstraint *constraint =
+        [self.topAnchor constraintEqualToAnchor:self.superview.layoutMarginsGuide.topAnchor constant:inset];
+    constraint.active = YES;
+    return constraint;
+}
+
+- (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view
 {
     OWSAssert(view);
 
-    return [self autoPinLeadingToTrailingOfView:view margin:0];
+    return [self autoPinLeadingToTrailingEdgeOfView:view offset:0];
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
     OWSAssert(view);
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
-    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:margin];
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.trailingAnchor constant:offset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view
+- (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view
 {
     OWSAssert(view);
 
-    return [self autoPinTrailingToLeadingOfView:view margin:0];
+    return [self autoPinTrailingToLeadingEdgeOfView:view offset:0];
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
     OWSAssert(view);
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
-    NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-margin];
+    NSLayoutConstraint *constraint = [self.trailingAnchor constraintEqualToAnchor:view.leadingAnchor constant:-offset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view
+- (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view
 {
     OWSAssert(view);
 
-    return [self autoPinLeadingToView:view margin:0];
+    return [self autoPinLeadingToEdgeOfView:view offset:0];
 }
 
-- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view offset:(CGFloat)offset
 {
     OWSAssert(view);
 
     self.translatesAutoresizingMaskIntoConstraints = NO;
 
-    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:margin];
+    NSLayoutConstraint *constraint = [self.leadingAnchor constraintEqualToAnchor:view.leadingAnchor constant:offset];
     constraint.active = YES;
     return constraint;
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view
+- (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view
 {
     OWSAssert(view);
 
-    return [self autoPinTrailingToView:view margin:0];
+    return [self autoPinTrailingToEdgeOfView:view offset:0];
 }
 
-- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin
+- (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view offset:(CGFloat)margin
 {
     OWSAssert(view);
 

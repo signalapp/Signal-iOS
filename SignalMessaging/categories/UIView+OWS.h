@@ -78,25 +78,25 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 //
 // NOTE: the margin values are inverted in RTL layouts.
 - (BOOL)isRTL;
-- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperview;
-- (NSLayoutConstraint *)autoPinLeadingToSuperview;
-- (NSLayoutConstraint *)autoPinLeadingToSuperviewWithMargin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinTrailingToSuperview;
-- (NSLayoutConstraint *)autoPinTrailingToSuperviewWithMargin:(CGFloat)margin;
+- (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperviewMargin;
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewMargin;
+- (NSLayoutConstraint *)autoPinLeadingToSuperviewMarginWithInset:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewMargin;
+- (NSLayoutConstraint *)autoPinTrailingToSuperviewMarginWithInset:(CGFloat)margin;
 
-- (NSLayoutConstraint *)autoPinTopToSuperview;
-- (NSLayoutConstraint *)autoPinTopToSuperviewWithMargin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinBottomToSuperview;
-- (NSLayoutConstraint *)autoPinBottomToSuperviewWithMargin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTopToSuperviewMargin;
+- (NSLayoutConstraint *)autoPinTopToSuperviewMarginWithInset:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinBottomToSuperviewMargin;
+- (NSLayoutConstraint *)autoPinBottomToSuperviewMarginWithInset:(CGFloat)margin;
 
-- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view;
-- (NSLayoutConstraint *)autoPinLeadingToTrailingOfView:(UIView *)view margin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view;
-- (NSLayoutConstraint *)autoPinTrailingToLeadingOfView:(UIView *)view margin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view;
-- (NSLayoutConstraint *)autoPinLeadingToView:(UIView *)view margin:(CGFloat)margin;
-- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view;
-- (NSLayoutConstraint *)autoPinTrailingToView:(UIView *)view margin:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToTrailingEdgeOfView:(UIView *)view offset:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinTrailingToLeadingEdgeOfView:(UIView *)view offset:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinLeadingToEdgeOfView:(UIView *)view offset:(CGFloat)margin;
+- (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view;
+- (NSLayoutConstraint *)autoPinTrailingToEdgeOfView:(UIView *)view offset:(CGFloat)margin;
 // Return Right on LTR and Left on RTL.
 - (NSTextAlignment)textAlignmentUnnatural;
 // Leading and trailing anchors honor layout margins.

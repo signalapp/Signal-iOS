@@ -124,7 +124,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomGuideOrKeyboard:self.tableViewController.view];
+    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
 
     [self updateTableContents];
 }
@@ -146,7 +146,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinLeadingToSuperview];
+    [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kNewGroupViewControllerAvatarWidth];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kNewGroupViewControllerAvatarWidth];
     [self updateAvatarView];
@@ -163,8 +163,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                  forControlEvents:UIControlEventEditingChanged];
     [threadInfoView addSubview:groupNameTextField];
     [groupNameTextField autoVCenterInSuperview];
-    [groupNameTextField autoPinTrailingToSuperview];
-    [groupNameTextField autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+    [groupNameTextField autoPinTrailingToSuperviewMargin];
+    [groupNameTextField autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];

@@ -318,17 +318,17 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         [self.contentView addSubview:self.failedSendBadgeView];
 
         [self.viewConstraints addObjectsFromArray:@[
-            [self.bubbleView autoPinLeadingToSuperview],
-            [self.failedSendBadgeView autoPinLeadingToTrailingOfView:self.bubbleView],
+            [self.bubbleView autoPinLeadingToSuperviewMargin],
+            [self.failedSendBadgeView autoPinLeadingToTrailingEdgeOfView:self.bubbleView],
             [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.bubbleView],
-            [self.failedSendBadgeView autoPinTrailingToSuperview],
+            [self.failedSendBadgeView autoPinTrailingToSuperviewMargin],
             [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
             [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.bubbleView autoPinLeadingToSuperview],
-            [self.bubbleView autoPinTrailingToSuperview],
+            [self.bubbleView autoPinLeadingToSuperviewMargin],
+            [self.bubbleView autoPinTrailingToSuperviewMargin],
         ]];
     }
 
@@ -400,8 +400,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         // roughly a square.
         // TODO: Myles is considering alternatives.
         [self.viewConstraints addObjectsFromArray:@[
-            [bodyMediaView autoPinLeadingToSuperviewWithMargin:0],
-            [bodyMediaView autoPinTrailingToSuperviewWithMargin:0],
+            [bodyMediaView autoPinLeadingToSuperviewMarginWithInset:0],
+            [bodyMediaView autoPinTrailingToSuperviewMarginWithInset:0],
         ]];
         // We need constraints to control the vertical sizing of media and text views, but we use
         // lower priority so that when a message only contains media it uses the exact bounds of
@@ -448,8 +448,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     if (bodyTextView) {
         [self.bubbleView addSubview:bodyTextView];
         [self.viewConstraints addObjectsFromArray:@[
-            [bodyTextView autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-            [bodyTextView autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [bodyTextView autoPinLeadingToSuperviewMarginWithInset:self.textLeadingMargin],
+            [bodyTextView autoPinTrailingToSuperviewMarginWithInset:self.textTrailingMargin],
         ]];
         // We need constraints to control the vertical sizing of media and text views, but we use
         // lower priority so that when a message only contains media it uses the exact bounds of
@@ -479,8 +479,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         OWSAssert(lastSubview == bodyTextView);
         [self.bubbleView addSubview:tapForMoreLabel];
         [self.viewConstraints addObjectsFromArray:@[
-            [tapForMoreLabel autoPinLeadingToSuperviewWithMargin:self.textLeadingMargin],
-            [tapForMoreLabel autoPinTrailingToSuperviewWithMargin:self.textTrailingMargin],
+            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:self.textLeadingMargin],
+            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:self.textTrailingMargin],
             [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
             [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
         ]];
@@ -685,24 +685,24 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         [self.viewConstraints addObjectsFromArray:@[
             [self.expirationTimerView autoVCenterInSuperview],
             [self.footerLabel autoVCenterInSuperview],
-            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperview]
-                             : [self.expirationTimerView autoPinTrailingToSuperview]),
-            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingOfView:self.expirationTimerView margin:0.f]
-                             : [self.footerLabel autoPinTrailingToLeadingOfView:self.expirationTimerView margin:0.f]),
+            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperviewMargin]
+                             : [self.expirationTimerView autoPinTrailingToSuperviewMargin]),
+            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingEdgeOfView:self.expirationTimerView offset:0.f]
+                             : [self.footerLabel autoPinTrailingToLeadingEdgeOfView:self.expirationTimerView offset:0.f]),
             [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
         ]];
     } else if (hasExpirationTimer) {
         [self.viewConstraints addObjectsFromArray:@[
             [self.expirationTimerView autoVCenterInSuperview],
-            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperview]
-                             : [self.expirationTimerView autoPinTrailingToSuperview]),
+            (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperviewMargin]
+                             : [self.expirationTimerView autoPinTrailingToSuperviewMargin]),
             [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
         ]];
     } else if (attributedText) {
         [self.viewConstraints addObjectsFromArray:@[
             [self.footerLabel autoVCenterInSuperview],
-            (self.isIncoming ? [self.footerLabel autoPinLeadingToSuperview]
-                             : [self.footerLabel autoPinTrailingToSuperview]),
+            (self.isIncoming ? [self.footerLabel autoPinLeadingToSuperviewMargin]
+                             : [self.footerLabel autoPinTrailingToSuperviewMargin]),
             [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
         ]];
     } else {

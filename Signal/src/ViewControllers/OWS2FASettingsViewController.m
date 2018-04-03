@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self createPinTextfield];
 
-    [instructionsLabel autoPinTopToSuperviewWithMargin:kVSpacing];
+    [instructionsLabel autoPinTopToSuperviewMarginWithInset:kVSpacing];
     [instructionsLabel autoPinWidthToSuperviewWithMargin:self.hMargin];
 
     [self.pinTextfield autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:instructionsLabel withOffset:kVSpacing];

@@ -350,14 +350,14 @@ NS_ASSUME_NONNULL_BEGIN
 
             UIView *topView = [UIView containerView];
             [cell.contentView addSubview:topView];
-            [topView autoPinLeadingAndTrailingToSuperview];
+            [topView autoPinLeadingAndTrailingToSuperviewMargin];
             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
             UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
             [topView addSubview:iconView];
             [iconView autoVCenterInSuperview];
-            [iconView autoPinLeadingToSuperview];
+            [iconView autoPinLeadingToSuperviewMargin];
 
             UILabel *rowLabel = [UILabel new];
             rowLabel.text = NSLocalizedString(@"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [topView addSubview:rowLabel];
             [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
+            [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
             UISwitch *switchView = [UISwitch new];
             switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
@@ -375,8 +375,8 @@ NS_ASSUME_NONNULL_BEGIN
                  forControlEvents:UIControlEventValueChanged];
             [topView addSubview:switchView];
             [switchView autoVCenterInSuperview];
-            [switchView autoPinLeadingToTrailingOfView:rowLabel margin:weakSelf.iconSpacing];
-            [switchView autoPinTrailingToSuperview];
+            [switchView autoPinLeadingToTrailingEdgeOfView:rowLabel offset:weakSelf.iconSpacing];
+            [switchView autoPinTrailingToSuperviewMargin];
 
             UILabel *subtitleLabel = [UILabel new];
             subtitleLabel.text
@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
             [cell.contentView addSubview:subtitleLabel];
             [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
             [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-            [subtitleLabel autoPinTrailingToSuperview];
+            [subtitleLabel autoPinTrailingToSuperviewMargin];
 
             return cell;
         }
@@ -409,14 +409,14 @@ NS_ASSUME_NONNULL_BEGIN
 
                             UIView *topView = [UIView containerView];
                             [cell.contentView addSubview:topView];
-                            [topView autoPinLeadingAndTrailingToSuperview];
+                            [topView autoPinLeadingAndTrailingToSuperviewMargin];
                             [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                             [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
                             UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
                             [topView addSubview:iconView];
                             [iconView autoVCenterInSuperview];
-                            [iconView autoPinLeadingToSuperview];
+                            [iconView autoPinLeadingToSuperviewMargin];
 
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
@@ -425,7 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                             [topView addSubview:rowLabel];
                             [rowLabel autoVCenterInSuperview];
-                            [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
+                            [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
                             UISlider *slider = [UISlider new];
                             slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
@@ -438,7 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
                             [cell.contentView addSubview:slider];
                             [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
                             [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-                            [slider autoPinTrailingToSuperview];
+                            [slider autoPinTrailingToSuperviewMargin];
 
                             return cell;
                         }
@@ -502,7 +502,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
         [cell.contentView addSubview:iconView];
         [iconView autoVCenterInSuperview];
-        [iconView autoPinLeadingToSuperview];
+        [iconView autoPinLeadingToSuperviewMargin];
 
         UILabel *rowLabel = [UILabel new];
         rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
@@ -512,7 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [cell.contentView addSubview:rowLabel];
         [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
+        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
         OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
         cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
@@ -536,7 +536,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
         [cell.contentView addSubview:iconView];
         [iconView autoVCenterInSuperview];
-        [iconView autoPinLeadingToSuperview];
+        [iconView autoPinLeadingToSuperviewMargin];
 
         UILabel *rowLabel = [UILabel new];
         rowLabel.text = NSLocalizedString(
@@ -546,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [cell.contentView addSubview:rowLabel];
         [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinLeadingToTrailingOfView:iconView margin:weakSelf.iconSpacing];
+        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
         NSString *muteStatus = NSLocalizedString(
             @"CONVERSATION_SETTINGS_MUTE_NOT_MUTED", @"Indicates that the current thread is not muted.");
@@ -635,7 +635,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImageView *iconView = [self viewForIconWithName:iconName];
     [cell.contentView addSubview:iconView];
     [iconView autoVCenterInSuperview];
-    [iconView autoPinLeadingToSuperview];
+    [iconView autoPinLeadingToSuperviewMargin];
 
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
@@ -644,8 +644,8 @@ NS_ASSUME_NONNULL_BEGIN
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [cell.contentView addSubview:rowLabel];
     [rowLabel autoVCenterInSuperview];
-    [rowLabel autoPinLeadingToTrailingOfView:iconView margin:self.iconSpacing];
-    [rowLabel autoPinTrailingToSuperview];
+    [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:self.iconSpacing];
+    [rowLabel autoPinTrailingToSuperviewMargin];
 
     return cell;
 }
@@ -681,15 +681,15 @@ NS_ASSUME_NONNULL_BEGIN
     _avatarView = avatarView;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
-    [avatarView autoPinLeadingToSuperview];
+    [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
     UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];
     [threadNameView autoVCenterInSuperview];
-    [threadNameView autoPinTrailingToSuperview];
-    [threadNameView autoPinLeadingToTrailingOfView:avatarView margin:16.f];
+    [threadNameView autoPinTrailingToSuperviewMargin];
+    [threadNameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *threadTitleLabel = [UILabel new];
     threadTitleLabel.text = self.threadName;
@@ -712,7 +712,7 @@ NS_ASSUME_NONNULL_BEGIN
             subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [threadNameView addSubview:subtitleLabel];
             [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinLeadingToSuperview];
+            [subtitleLabel autoPinLeadingToSuperviewMargin];
             lastTitleView = subtitleLabel;
         };
 

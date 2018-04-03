@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -37,13 +37,13 @@ import SignalServiceKit
         subtitleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
         subtitleLabel.autoPinEdge(.top, to: .bottom, of: nameLabel)
 
-        avatarView.autoPinLeadingToSuperview()
+        avatarView.autoPinLeadingToSuperviewMargin()
         avatarView.autoVCenterInSuperview()
         avatarView.autoSetDimension(.width, toSize: CGFloat(kContactTableViewCellAvatarSize))
         avatarView.autoPinToSquareAspectRatio()
 
         textContainer.autoPinEdge(.leading, to: .trailing, of: avatarView, withOffset: kContactTableViewCellAvatarTextMargin)
-        textContainer.autoPinTrailingToSuperview()
+        textContainer.autoPinTrailingToSuperviewMargin()
         textContainer.autoVCenterInSuperview()
     }
 

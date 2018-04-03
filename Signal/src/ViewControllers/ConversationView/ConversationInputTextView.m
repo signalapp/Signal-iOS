@@ -106,8 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat topInset = beginningTextRect.origin.y;
 
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinLeadingToSuperview],
-        [self.placeholderView autoPinTrailingToSuperview],
+        [self.placeholderView autoPinLeadingToSuperviewMargin],
+        [self.placeholderView autoPinTrailingToSuperviewMargin],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }

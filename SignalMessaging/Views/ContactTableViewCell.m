@@ -93,7 +93,7 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     [_nameContainerView addSubview:self.subtitle];
 
     [_avatarView autoVCenterInSuperview];
-    [_avatarView autoPinLeadingToSuperview];
+    [_avatarView autoPinLeadingToSuperviewMargin];
     [_avatarView autoSetDimension:ALDimensionWidth toSize:kContactTableViewCellAvatarSize];
     [_avatarView autoSetDimension:ALDimensionHeight toSize:kContactTableViewCellAvatarSize];
 
@@ -110,8 +110,8 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     [_subtitle autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     [_nameContainerView autoVCenterInSuperview];
-    [_nameContainerView autoPinLeadingToTrailingOfView:_avatarView margin:kContactTableViewCellAvatarTextMargin];
-    [_nameContainerView autoPinTrailingToSuperview];
+    [_nameContainerView autoPinLeadingToTrailingEdgeOfView:_avatarView offset:kContactTableViewCellAvatarTextMargin];
+    [_nameContainerView autoPinTrailingToSuperviewMargin];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

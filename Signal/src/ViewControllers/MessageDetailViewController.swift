@@ -133,8 +133,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         let contentView = UIView.container()
         self.contentView = contentView
         scrollView.addSubview(contentView)
-        contentView.autoPinLeadingToSuperview()
-        contentView.autoPinTrailingToSuperview()
+        contentView.autoPinLeadingToSuperviewMargin()
+        contentView.autoPinTrailingToSuperviewMargin()
         contentView.autoPinEdge(toSuperviewEdge: .top)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         scrollView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
@@ -284,8 +284,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         var lastRow: UIView?
         for row in rows {
             contentView.addSubview(row)
-            row.autoPinLeadingToSuperview()
-            row.autoPinTrailingToSuperview()
+            row.autoPinLeadingToSuperviewMargin()
+            row.autoPinTrailingToSuperviewMargin()
 
             if let lastRow = lastRow {
                 row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 5)
@@ -526,9 +526,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         let valueLabel = self.valueLabel(text: value)
         row.addSubview(nameLabel)
         row.addSubview(valueLabel)
-        nameLabel.autoPinLeadingToSuperview(withMargin: 20)
-        valueLabel.autoPinTrailingToSuperview(withMargin: 20)
-        valueLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
+        nameLabel.autoPinLeadingToSuperviewMargin(withInset: 20)
+        valueLabel.autoPinTrailingToSuperviewMargin(withInset: 20)
+        valueLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
         nameLabel.autoPinEdge(toSuperviewEdge: .top)
         valueLabel.autoPinEdge(toSuperviewEdge: .top)
 
@@ -536,8 +536,8 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             let subtitleLabel = self.valueLabel(text: subtitle)
             subtitleLabel.textColor = UIColor.ows_darkGray
             row.addSubview(subtitleLabel)
-            subtitleLabel.autoPinTrailingToSuperview()
-            subtitleLabel.autoPinLeading(toTrailingOf: nameLabel, margin: 10)
+            subtitleLabel.autoPinTrailingToSuperviewMargin()
+            subtitleLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
             subtitleLabel.autoPinEdge(.top, to: .bottom, of: valueLabel, withOffset: 1)
             subtitleLabel.autoPinEdge(toSuperviewEdge: .bottom)
         } else if value.count > 0 {
