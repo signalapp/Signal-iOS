@@ -392,13 +392,18 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
         [self.bubbleView addSubview:quotedMessageView];
 
-        CGFloat leadingMargin = self.quotedMessageHInset;
-        CGFloat trailingMargin = self.quotedMessageHInset;
-        if (self.isIncoming) {
-            leadingMargin += kBubbleThornSideInset;
-        } else {
-            trailingMargin += kBubbleThornSideInset;
-        }
+        CGFloat leadingMargin = self.quotedBubbleLeadingMargin;
+        CGFloat trailingMargin = self.quotedBubbleTrailingMargin;
+
+        //        CGFloat leadingMargin = self.quotedMessageHInset + self.textLeadingMargin;
+        //        CGFloat trailingMargin = self.quotedMessageHInset + self.textTrailingMargin;
+        //        CGFloat leadingMargin = self.quotedMessageHInset;
+        //        CGFloat trailingMargin = self.quotedMessageHInset;
+        //        if (self.isIncoming) {
+        //            leadingMargin += kBubbleThornSideInset;
+        //        } else {
+        //            trailingMargin += kBubbleThornSideInset;
+        //        }
 
         [self.viewConstraints addObjectsFromArray:@[
             [quotedMessageView autoPinLeadingToSuperviewWithMargin:leadingMargin],
@@ -1285,7 +1290,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return (int)floor(contentWidth * 0.8f);
 }
 
-- (CGSize)quotedMessageSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)quotedMessageSizeForViewWidth:(int)viewWidth
+                           contentWidth:(int)contentWidth
+                         includeMargins:(BOOL)includeMargins
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -1314,9 +1321,14 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     result.width += self.quotedMessageHInset;
 
+    // Once we've determined everything _except_ the size of the text
+    // content (i.e. the quoted author and the quoted text (if any)),
+    // we can determine the size of the text content.
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-    CGFloat maxContentWidth = (maxMessageWidth - (self.textTrailingMargin + self.textLeadingMargin + result.width));
+    CGFloat maxTextWidth = (maxMessageWidth - (self.textTrailingMargin + self.textLeadingMargin + result.width));
     CGFloat textWidth = 0.f;
+
+    DDLogInfo(@"%@ --- maxTextWidth: %f", self.logTag, maxTextWidth);
 
     // Author
     {
@@ -1329,7 +1341,10 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         quotedAuthorLabel.numberOfLines = 1;
 
-        CGSize quotedAuthorSize = [quotedAuthorLabel sizeThatFits:CGSizeMake(maxContentWidth, CGFLOAT_MAX)];
+        CGSize quotedAuthorSize = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+
+        DDLogInfo(@"%@ --- quotedAuthorSize.width: %f", self.logTag, quotedAuthorSize.width);
+
         textWidth = MAX(textWidth, quotedAuthorSize.width);
         result.height += self.quotedContentTopInset;
         result.height += self.quotedAuthorHeight;
@@ -1338,17 +1353,30 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     if (self.hasQuotedText) {
         UILabel *quotedTextView = [self createQuotedTextView];
 
-        CGSize textSize = CGSizeCeil([quotedTextView sizeThatFits:CGSizeMake(maxContentWidth, CGFLOAT_MAX)]);
+        CGSize textSize = CGSizeCeil([quotedTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+
+        DDLogInfo(@"%@ --- textSize.width: %f", self.logTag, textSize.width);
 
         textWidth = MAX(textWidth, textSize.width);
         result.height += self.quotedAuthorBottomSpacing;
         result.height += textSize.height;
     }
 
+    DDLogInfo(@"%@ --- textWidth: %f", self.logTag, textWidth);
+    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 3: %@", self.logTag, NSStringFromCGSize(result));
+
     result.width += textWidth;
     result.height += self.quotedContentBottomInset;
 
     result.height = MAX(result.height, thumbnailHeight);
+
+    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 4: %@", self.logTag, NSStringFromCGSize(result));
+
+    if (includeMargins) {
+        result.width += kBubbleThornSideInset;
+    }
+
+    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 5: %@", self.logTag, NSStringFromCGSize(result));
 
     return result;
 }
@@ -1360,15 +1388,19 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     CGSize cellSize = CGSizeZero;
 
-    CGSize quotedMessageSize = [self quotedMessageSizeForViewWidth:viewWidth contentWidth:contentWidth];
+    CGSize quotedMessageSize =
+        [self quotedMessageSizeForViewWidth:viewWidth contentWidth:contentWidth includeMargins:YES];
+    DDLogInfo(@"%@ --- quotedMessageSize: %@", self.logTag, NSStringFromCGSize(quotedMessageSize));
     cellSize.width = MAX(cellSize.width, quotedMessageSize.width);
     cellSize.height += quotedMessageSize.height;
 
     CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
+    DDLogInfo(@"%@ --- mediaContentSize: %@", self.logTag, NSStringFromCGSize(mediaContentSize));
     cellSize.width = MAX(cellSize.width, mediaContentSize.width);
     cellSize.height += mediaContentSize.height;
 
     CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
+    DDLogInfo(@"%@ --- textContentSize: %@", self.logTag, NSStringFromCGSize(textContentSize));
     cellSize.width = MAX(cellSize.width, textContentSize.width);
     cellSize.height += textContentSize.height;
 
@@ -1385,6 +1417,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     cellSize = CGSizeCeil(cellSize);
+
+    DDLogInfo(@"%@ --- cellSize: %@", self.logTag, NSStringFromCGSize(cellSize));
 
     return cellSize;
 }
@@ -1509,6 +1543,24 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (CGFloat)textTrailingMargin
 {
     CGFloat result = kBubbleTextHInset;
+    if (!self.isIncoming) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
+}
+
+- (CGFloat)quotedBubbleLeadingMargin
+{
+    CGFloat result = self.quotedMessageHInset;
+    if (self.isIncoming) {
+        result += kBubbleThornSideInset;
+    }
+    return result;
+}
+
+- (CGFloat)quotedBubbleTrailingMargin
+{
+    CGFloat result = self.quotedMessageHInset;
     if (!self.isIncoming) {
         result += kBubbleThornSideInset;
     }
