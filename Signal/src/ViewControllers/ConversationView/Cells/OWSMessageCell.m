@@ -395,16 +395,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         CGFloat leadingMargin = self.quotedBubbleLeadingMargin;
         CGFloat trailingMargin = self.quotedBubbleTrailingMargin;
 
-        //        CGFloat leadingMargin = self.quotedMessageHInset + self.textLeadingMargin;
-        //        CGFloat trailingMargin = self.quotedMessageHInset + self.textTrailingMargin;
-        //        CGFloat leadingMargin = self.quotedMessageHInset;
-        //        CGFloat trailingMargin = self.quotedMessageHInset;
-        //        if (self.isIncoming) {
-        //            leadingMargin += kBubbleThornSideInset;
-        //        } else {
-        //            trailingMargin += kBubbleThornSideInset;
-        //        }
-
         [self.viewConstraints addObjectsFromArray:@[
             [quotedMessageView autoPinLeadingToSuperviewWithMargin:leadingMargin],
             [quotedMessageView autoPinTrailingToSuperviewWithMargin:trailingMargin],
@@ -1343,8 +1333,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
         CGSize quotedAuthorSize = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
 
-        DDLogInfo(@"%@ --- quotedAuthorSize.width: %f", self.logTag, quotedAuthorSize.width);
-
         textWidth = MAX(textWidth, quotedAuthorSize.width);
         result.height += self.quotedContentTopInset;
         result.height += self.quotedAuthorHeight;
@@ -1355,28 +1343,19 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
         CGSize textSize = CGSizeCeil([quotedTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
 
-        DDLogInfo(@"%@ --- textSize.width: %f", self.logTag, textSize.width);
-
         textWidth = MAX(textWidth, textSize.width);
         result.height += self.quotedAuthorBottomSpacing;
         result.height += textSize.height;
     }
-
-    DDLogInfo(@"%@ --- textWidth: %f", self.logTag, textWidth);
-    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 3: %@", self.logTag, NSStringFromCGSize(result));
 
     result.width += textWidth;
     result.height += self.quotedContentBottomInset;
 
     result.height = MAX(result.height, thumbnailHeight);
 
-    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 4: %@", self.logTag, NSStringFromCGSize(result));
-
     if (includeMargins) {
         result.width += kBubbleThornSideInset;
     }
-
-    DDLogInfo(@"%@ --- quotedMessageSizeForViewWidth 5: %@", self.logTag, NSStringFromCGSize(result));
 
     return result;
 }
@@ -1390,17 +1369,14 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     CGSize quotedMessageSize =
         [self quotedMessageSizeForViewWidth:viewWidth contentWidth:contentWidth includeMargins:YES];
-    DDLogInfo(@"%@ --- quotedMessageSize: %@", self.logTag, NSStringFromCGSize(quotedMessageSize));
     cellSize.width = MAX(cellSize.width, quotedMessageSize.width);
     cellSize.height += quotedMessageSize.height;
 
     CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
-    DDLogInfo(@"%@ --- mediaContentSize: %@", self.logTag, NSStringFromCGSize(mediaContentSize));
     cellSize.width = MAX(cellSize.width, mediaContentSize.width);
     cellSize.height += mediaContentSize.height;
 
     CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
-    DDLogInfo(@"%@ --- textContentSize: %@", self.logTag, NSStringFromCGSize(textContentSize));
     cellSize.width = MAX(cellSize.width, textContentSize.width);
     cellSize.height += textContentSize.height;
 
@@ -1417,8 +1393,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     cellSize = CGSizeCeil(cellSize);
-
-    DDLogInfo(@"%@ --- cellSize: %@", self.logTag, NSStringFromCGSize(cellSize));
 
     return cellSize;
 }
