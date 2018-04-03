@@ -406,9 +406,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         lastSubview = quotedMessageView;
         bottomMargin = 0;
 
-        [self.bubbleView logFrameLaterWithLabel:@"bubbleView"];
-        [quotedMessageView logFrameLaterWithLabel:@"quotedMessageView"];
-
         // TODO: Consider stroking the quoted thumbnail.
     }
 
@@ -882,6 +879,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [quoteStripView autoPinHeightToSuperview];
     [quoteStripView autoPinLeadingToSuperviewMargin];
     [quoteStripView autoSetDimension:ALDimensionWidth toSize:self.quotedReplyStripeThickness];
+    [quoteStripView setContentHuggingHigh];
+    [quoteStripView setCompressionResistanceHigh];
 
     UIView *_Nullable quotedThumbnailView = nil;
     if (self.hasQuotedAttachmentThumbnail) {
@@ -894,6 +893,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         [quotedThumbnailView autoPinTrailingToSuperviewMargin];
         [quotedThumbnailView autoSetDimension:ALDimensionWidth toSize:self.quotedThumbnailSize];
         [quotedThumbnailView autoSetDimension:ALDimensionHeight toSize:self.quotedThumbnailSize];
+        [quotedThumbnailView setContentHuggingHigh];
+        [quotedThumbnailView setCompressionResistanceHigh];
     }
 
     OWSContactsManager *contactsManager = Environment.current.contactsManager;
@@ -910,10 +911,13 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedContentTopInset];
     [quotedAuthorLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
     if (quotedThumbnailView) {
-        [quotedAuthorLabel autoPinTrailingToEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
+        [quotedAuthorLabel autoPinTrailingToLeadingEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
     } else {
         [quotedAuthorLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
     }
+    [quotedAuthorLabel autoSetDimension:ALDimensionHeight toSize:self.quotedAuthorHeight];
+    [quotedAuthorLabel setContentHuggingLow];
+    [quotedAuthorLabel setCompressionResistanceLow];
 
     if (self.hasQuotedText) {
         UILabel *quotedTextLabel = [self createQuotedTextLabel];
@@ -925,12 +929,14 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
                           withOffset:self.quotedAuthorBottomSpacing];
         [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
         if (quotedThumbnailView) {
-            [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quotedThumbnailView
+            [quotedTextLabel autoPinTrailingToLeadingEdgeOfView:quotedThumbnailView
                                                          offset:self.quotedThumbnailHSpacing];
         } else {
             [quotedTextLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
         }
         [quotedTextLabel autoPinBottomToSuperviewMarginWithInset:self.quotedContentBottomInset];
+        [quotedTextLabel setContentHuggingLow];
+        [quotedTextLabel setCompressionResistanceLow];
     }
 
     return quotedMessageView;
