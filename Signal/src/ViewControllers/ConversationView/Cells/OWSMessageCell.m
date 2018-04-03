@@ -43,6 +43,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) OWSMessageTextView *bodyTextView;
+@property (nonatomic) OWSMessageTextView *quotedTextView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
@@ -96,6 +97,11 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [self.contentView addSubview:self.dateHeaderLabel];
 
     self.bodyTextView = [self newTextView];
+    // Setting dataDetectorTypes is expensive.  Do it just once.
+    self.bodyTextView.dataDetectorTypes
+        = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
+
+    self.quotedTextView = [self newTextView];
 
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
@@ -104,6 +110,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     // Hide these views by default.
     self.bodyTextView.hidden = YES;
+    self.quotedTextView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
@@ -140,8 +147,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     textView.contentInset = UIEdgeInsetsZero;
     textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
-    // Setting dataDetectorTypes is expensive.  Do it just once.
-    textView.dataDetectorTypes = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
     return textView;
 }
 
@@ -172,16 +177,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     return [UIFont ows_dynamicTypeBodyFont];
-}
-
-- (UIFont *)tapForMoreFont
-{
-    return [UIFont ows_regularFontWithSize:12.f];
-}
-
-- (CGFloat)tapForMoreHeight
-{
-    return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
 }
 
 - (BOOL)shouldHaveFailedSendBadge
@@ -249,6 +244,47 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSAssert(self.viewItem.mediaSize.width > 0 && self.viewItem.mediaSize.height > 0);
 
     return self.viewItem.mediaSize;
+}
+
+- (BOOL)isQuotedReply
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem);
+
+    return self.viewItem.isQuotedReply;
+}
+
+- (BOOL)hasQuotedText
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem);
+
+    return self.viewItem.hasQuotedText;
+}
+
+- (BOOL)hasQuotedAttachment
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem);
+
+    return self.viewItem.hasQuotedAttachment;
+}
+
+- (BOOL)hasQuotedAttachmentThumbnail
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem);
+
+    return (self.viewItem.hasQuotedAttachment &&
+        [TSAttachmentStream hasThumbnailForMimeType:self.viewItem.quotedAttachmentMimetype]);
+}
+
+- (nullable DisplayableText *)displayableQuotedText
+{
+    // This should always be valid for the appropriate cell types.
+    OWSAssert(self.viewItem.displayableQuotedText);
+
+    return self.viewItem.displayableQuotedText;
 }
 
 - (TSMessage *)message
@@ -346,6 +382,60 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     UIView *_Nullable lastSubview = nil;
     CGFloat bottomMargin = 0;
+
+    if (self.isQuotedReply) {
+        OWSAssert(!lastSubview);
+
+        UIView *quotedMessageView = [self createQuotedMessageView];
+
+        [self.bubbleView addSubview:quotedMessageView];
+
+        CGFloat leadingMargin = self.quotedMessageHInset;
+        CGFloat trailingMargin = self.quotedMessageHInset;
+        if (self.isIncoming) {
+            leadingMargin += kBubbleThornSideInset;
+        } else {
+            trailingMargin += kBubbleThornSideInset;
+        }
+
+        [self.viewConstraints addObjectsFromArray:@[
+            [quotedMessageView autoPinLeadingToSuperviewWithMargin:leadingMargin],
+            [quotedMessageView autoPinTrailingToSuperviewWithMargin:trailingMargin],
+        ]];
+
+        if (lastSubview) {
+            [self.viewConstraints addObject:[quotedMessageView autoPinEdge:ALEdgeTop
+                                                                    toEdge:ALEdgeBottom
+                                                                    ofView:lastSubview
+                                                                withOffset:self.quotedMessageTopInset]];
+        } else {
+            [self.viewConstraints addObject:[quotedMessageView autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                                                                withInset:self.quotedMessageTopInset]];
+        }
+        lastSubview = quotedMessageView;
+        bottomMargin = 0;
+
+        [self.bubbleView logFrameLaterWithLabel:@"bubbleView"];
+        [quotedMessageView logFrameLaterWithLabel:@"quotedMessageView"];
+
+
+        //        BOOL shouldStrokeMediaView = [bodyMediaView isKindOfClass:[UIImageView class]];
+        //        if (shouldStrokeMediaView) {
+        //            OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
+        //            bubbleStrokeView.strokeThickness = 1.f;
+        //            bubbleStrokeView.strokeColor = [UIColor colorWithWhite:0.f alpha:0.1f];
+        //            bubbleStrokeView.bubbleView = self.bubbleView;
+        //
+        //            [self.bubbleView addSubview:bubbleStrokeView];
+        //            [bubbleStrokeView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyMediaView];
+        //            [bubbleStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyMediaView];
+        //            [bubbleStrokeView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:bodyMediaView];
+        //            [bubbleStrokeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:bodyMediaView];
+        //            self.bubbleView.bubbleStrokeView = bubbleStrokeView;
+        //            OWSAssert(self.bubbleView.bubbleStrokeView);
+        //        }
+    }
+
     UIView *_Nullable bodyMediaView = nil;
     BOOL bodyMediaViewHasGreedyWidth = NO;
     switch (self.cellType) {
@@ -720,6 +810,16 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return [UIFont systemFontOfSize:12.0f];
 }
 
+- (OWSMessageTextView *)createQuotedTextViewIfNecessary
+{
+    [self.class loadForTextDisplay:self.quotedTextView
+                              text:self.displayableQuotedText.displayText
+                         textColor:self.textColor
+                              font:self.textMessageFont
+                shouldIgnoreEvents:YES];
+    return self.quotedTextView;
+}
+
 - (OWSMessageTextView *)createBodyTextViewIfNecessary
 {
     BOOL shouldIgnoreEvents = NO;
@@ -781,6 +881,63 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
 
     return tapForMoreLabel;
+}
+
+- (UIView *)createQuotedMessageView
+{
+    OWSAssert(self.isQuotedReply);
+
+    UIView *quotedMessageView = [UIView containerView];
+    quotedMessageView.userInteractionEnabled = NO;
+    quotedMessageView.clipsToBounds = YES;
+    // TODO:
+    quotedMessageView.layer.cornerRadius = 3.f;
+    quotedMessageView.backgroundColor = [UIColor colorWithRGBHex:0xe2f7fa];
+
+    UIView *quoteStripView = [UIView containerView];
+    quoteStripView.backgroundColor = (self.isIncoming ? [UIColor whiteColor] : [UIColor colorWithRGBHex:0x007884]);
+    quoteStripView.userInteractionEnabled = NO;
+    [quotedMessageView addSubview:quoteStripView];
+    [quoteStripView autoPinHeightToSuperview];
+    [quoteStripView autoPinLeadingToSuperview];
+    [quoteStripView autoSetDimension:ALDimensionWidth toSize:self.quotedReplyStripeThickness];
+
+    UIView *_Nullable quotedThumbnailView = nil;
+    if (self.hasQuotedAttachmentThumbnail) {
+        // TODO:
+        quotedThumbnailView = [UIView containerView];
+        quotedThumbnailView.userInteractionEnabled = NO;
+        quotedThumbnailView.backgroundColor = [UIColor redColor];
+        [quotedMessageView addSubview:quotedThumbnailView];
+        [quotedThumbnailView autoPinTopToSuperview];
+        [quotedThumbnailView autoPinTrailingToSuperview];
+        [quotedThumbnailView autoSetDimension:ALDimensionWidth toSize:self.quotedThumbnailSize];
+        [quotedThumbnailView autoSetDimension:ALDimensionHeight toSize:self.quotedThumbnailSize];
+    }
+
+    UILabel *quotedAuthorLabel = [UILabel new];
+    quotedAuthorLabel.font = self.quotedAuthorFont;
+    quotedAuthorLabel.textColor
+        = (self.isIncoming ? [UIColor colorWithRGBHex:0xd84315] : [UIColor colorWithRGBHex:0x007884]);
+    quotedAuthorLabel.numberOfLines = 1;
+    quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [quotedMessageView addSubview:quotedAuthorLabel];
+    [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedAuthorTopInset];
+    [quotedAuthorLabel autoPinLeadingToView:quoteStripView margin:self.quotedReplyStripeHSpacing];
+    if (quotedThumbnailView) {
+        [quotedAuthorLabel autoPinTrailingToView:quotedThumbnailView margin:self.quotedThumbnailHSpacing];
+    } else {
+        [quotedAuthorLabel autoPinTrailingToSuperviewWithMargin:self.quotedContentTrailingMargin];
+    }
+
+    //    - (CGFloat)quotedAuthorTopInset
+    //    {
+    //        return 2.f;
+    //    }
+    //
+    //    - (CGFloat)quotedAuthorBottomSpacing
+
+    return quotedMessageView;
 }
 
 - (UIView *)loadViewForStillImage
@@ -1077,6 +1234,37 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return CGSizeCeil(textViewSize);
 }
 
+// Size of "quoted reply" text.
+- (CGSize)quotedTextSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
+{
+    if (!self.hasBodyText) {
+        return CGSizeZero;
+    }
+
+    CGFloat hMarginTotal = (self.textTrailingMargin + self.textLeadingMargin + self.quotedReplyStripeThickness
+        + self.quotedReplyStripeHSpacing);
+    //    BOOL isRTL = self.isRTL;
+    //    CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
+    //    CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
+
+    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
+    const int maxTextWidth = (int)floor(maxMessageWidth - hMarginTotal);
+
+    self.quotedTextView.text = self.displayableBodyText.displayText;
+    // Honor dynamic type in the message bodies.
+    self.quotedTextView.font = [self textMessageFont];
+    CGSize textSize = CGSizeCeil([self.quotedTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+    CGSize textViewSize = textSize;
+
+    if (includeMargins) {
+        // TODO:
+        textViewSize.width += hMarginTotal;
+        textViewSize.height += self.textTopMargin + self.textBottomMargin;
+    }
+
+    return CGSizeCeil(textViewSize);
+}
+
 - (CGSize)bodyMediaSizeForContentWidth:(int)contentWidth
 {
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
@@ -1126,17 +1314,68 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return (int)floor(contentWidth * 0.8f);
 }
 
+- (CGSize)quotedMessageSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+{
+    OWSAssert(self.viewItem);
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    //    CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
+    //    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
+    //
+    //    CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
+    //    CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
+    //    CGSize cellSize = CGSizeMake(cellContentWidth, cellContentHeight);
+    //
+    //    OWSAssert(cellSize.width > 0 && cellSize.height > 0);
+
+    CGSize result = CGSizeZero;
+
+    if (!self.isQuotedReply) {
+        return result;
+    }
+
+    result.width += self.quotedMessageHInset;
+    result.width += self.quotedReplyStripeThickness;
+    result.width += self.quotedReplyStripeHSpacing;
+    // TODO: Content width.
+
+    result.height += self.quotedMessageTopInset;
+    result.height += self.quotedAuthorHeight;
+    result.height += self.quotedAuthorBottomSpacing;
+    // TODO: Content height.
+
+    if (self.hasQuotedAttachmentThumbnail) {
+        result.width = MAX(result.width, self.quotedThumbnailHSpacing);
+        result.width = MAX(result.width, self.quotedThumbnailSize);
+
+        result.height = MAX(result.height, self.quotedThumbnailSize);
+    } else {
+        result.width = MAX(result.width, self.quotedContentTrailingMargin);
+    }
+
+    result.width += self.quotedMessageHInset;
+
+    return result;
+}
+
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
-    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
+    CGSize cellSize = CGSizeZero;
 
-    CGFloat cellContentWidth = fmax(mediaContentSize.width, textContentSize.width);
-    CGFloat cellContentHeight = mediaContentSize.height + textContentSize.height;
-    CGSize cellSize = CGSizeMake(cellContentWidth, cellContentHeight);
+    CGSize quotedMessageSize = [self quotedMessageSizeForViewWidth:viewWidth contentWidth:contentWidth];
+    cellSize.width = MAX(cellSize.width, quotedMessageSize.width);
+    cellSize.height += quotedMessageSize.height;
+
+    CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
+    cellSize.width = MAX(cellSize.width, mediaContentSize.width);
+    cellSize.height += mediaContentSize.height;
+
+    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
+    cellSize.width = MAX(cellSize.width, textContentSize.width);
+    cellSize.height += textContentSize.height;
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
@@ -1163,6 +1402,111 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     } else {
         return 0.f;
     }
+}
+
+- (UIFont *)tapForMoreFont
+{
+    return [UIFont ows_regularFontWithSize:12.f];
+}
+
+- (CGFloat)tapForMoreHeight
+{
+    return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
+}
+
+- (UIFont *)quotedAuthorFont
+{
+    return [UIFont ows_regularFontWithSize:10.f];
+}
+
+- (CGFloat)quotedAuthorHeight
+{
+    return (CGFloat)ceil([self quotedAuthorFont].lineHeight * 1.25);
+}
+
+- (CGFloat)quotedAuthorTopInset
+{
+    return 2.f;
+}
+
+- (CGFloat)quotedAuthorBottomSpacing
+{
+    return 2.f;
+}
+
+//- (UIFont *)quoteIndicatorFont
+//{
+//    return [UIFont ows_regularFontWithSize:10.f];
+//}
+//
+//- (CGFloat)quoteIndicatorHeight
+//{
+//    return (CGFloat)ceil([self quoteIndicatorFont].lineHeight * 1.25);
+//}
+
+//- (CGFloat)quotedMessageHMargin
+//{
+//    return 10.f;
+//}
+
+//- (CGFloat)quotedMessageTopMargin
+//{
+//    return 10.f;
+//}
+//
+//- (CGFloat)quotedMessageBottomMargin
+//{
+//    return 10.f;
+//}
+//
+//- (CGFloat)quotedMessageHMargin
+//{
+//    return 10.f;
+//}
+
+// Distance from top edge of "quoted message" bubble to top of message bubble.
+- (CGFloat)quotedMessageTopInset
+{
+    return 3.f;
+}
+
+//// Distance from bottom edge of "quoted message" bubble to other bubble content.
+//- (CGFloat)quotedMessageBottomInset
+//{
+//    return 3.f;
+//}
+
+// Distance from side of "quoted message" bubble to side of message bubble.
+- (CGFloat)quotedMessageHInset
+{
+    return 3.f;
+}
+
+- (CGFloat)quotedReplyStripeThickness
+{
+    return 3.f;
+}
+
+// The spacing between the vertical "quoted reply stripe"
+// and the quoted message content.
+- (CGFloat)quotedReplyStripeHSpacing
+{
+    return 10.f;
+}
+
+- (CGFloat)quotedThumbnailSize
+{
+    return 30.f;
+}
+
+- (CGFloat)quotedThumbnailHSpacing
+{
+    return 10.f;
+}
+
+- (CGFloat)quotedContentTrailingMargin
+{
+    return 10.f;
 }
 
 #pragma mark -
@@ -1240,6 +1584,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
     [self.bodyTextView removeFromSuperview];
+    self.quotedTextView.text = nil;
+    self.quotedTextView.hidden = YES;
+    [self.quotedTextView removeFromSuperview];
     self.bodyTextView.text = nil;
     self.bodyTextView.hidden = YES;
     [self.failedSendBadgeView removeFromSuperview];

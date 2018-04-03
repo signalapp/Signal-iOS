@@ -284,6 +284,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     [self updateBarButtonItems];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        TSThread *thread = [self threadForIndexPath:indexPath];
+        if (!thread) {
+            return;
+        }
+        [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated
