@@ -1318,8 +1318,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     CGFloat maxTextWidth = (maxMessageWidth - (self.textTrailingMargin + self.textLeadingMargin + result.width));
     CGFloat textWidth = 0.f;
 
-    DDLogInfo(@"%@ --- maxTextWidth: %f", self.logTag, maxTextWidth);
-
     // Author
     {
         OWSContactsManager *contactsManager = Environment.current.contactsManager;
