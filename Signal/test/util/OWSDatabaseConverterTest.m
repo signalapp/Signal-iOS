@@ -32,15 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface YapDatabase (OWSDatabaseConverterTest)
-
-- (void)flushInternalQueue;
-- (void)flushCheckpointQueue;
-
-@end
-
-#pragma mark -
-
 @implementation OWSDatabaseConverterTest
 
 - (NSData *)randomDatabasePassword
@@ -150,6 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
             [expectation fulfill];
         });
 
+        // YapDatabase can retain references to the registration
+        // connections for up to 5 seconds.
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
