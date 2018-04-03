@@ -163,28 +163,32 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
 - (NSString *)description {
     NSString *attachmentString = NSLocalizedString(@"ATTACHMENT", nil);
 
-    if ([MIMETypeUtil isImage:self.contentType]) {
-        return [NSString stringWithFormat:@"📷 %@", attachmentString];
-    } else if ([MIMETypeUtil isVideo:self.contentType]) {
-        return [NSString stringWithFormat:@"📽 %@", attachmentString];
-    } else if ([MIMETypeUtil isAudio:self.contentType]) {
-
+    if ([MIMETypeUtil isAudio:self.contentType]) {
         // a missing filename is the legacy way to determine if an audio attachment is
         // a voice note vs. other arbitrary audio attachments.
         if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
             attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
             return [NSString stringWithFormat:@"🎤 %@", attachmentString];
-        } else {
-            return [NSString stringWithFormat:@"📻 %@", attachmentString];
         }
-    } else if ([MIMETypeUtil isAnimated:self.contentType]) {
-        return [NSString stringWithFormat:@"🎡 %@", attachmentString];
-    } else {
-        return [NSString stringWithFormat:@"📎 %@", attachmentString];
     }
 
-    return attachmentString;
+    return [NSString stringWithFormat:@"%@ %@", [TSAttachment emojiForMimeType:self.contentType], attachmentString];
+}
+
++ (NSString *)emojiForMimeType:(NSString *)contentType
+{
+    if ([MIMETypeUtil isImage:contentType]) {
+        return @"📷";
+    } else if ([MIMETypeUtil isVideo:contentType]) {
+        return @"📽";
+    } else if ([MIMETypeUtil isAudio:contentType]) {
+        return @"📻";
+    } else if ([MIMETypeUtil isAnimated:contentType]) {
+        return @"🎡";
+    } else {
+        return @"📎";
+    }
 }
 
 - (BOOL)isVoiceMessage

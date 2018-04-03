@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
 - (BOOL)isVoiceMessage;
+
++ (NSString *)emojiForMimeType:(NSString *)contentType;
 
 @end
 
