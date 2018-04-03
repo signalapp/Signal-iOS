@@ -106,7 +106,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     [self.timeLabel setCompressionResistanceHigh];
 
     const int kunreadBadgeSize = 24;
-    self.unreadBadge = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kunreadBadgeSize, kunreadBadgeSize)];
+    self.unreadBadge = [[NeverClearView alloc] initWithFrame:CGRectMake(0, 0, kunreadBadgeSize, kunreadBadgeSize)];
     self.unreadBadge.layer.cornerRadius = kunreadBadgeSize / 2;
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
     [self.contentView addSubview:self.unreadBadge];
