@@ -60,6 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
+/// Makes the text field accept the current autocorrect suggestion from the keyboard.
+/// For instance, accept it when there is a suggestion when the send button is pressed.
+- (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)clearStickerKeyboard;
 - (void)toggleDefaultKeyboard;

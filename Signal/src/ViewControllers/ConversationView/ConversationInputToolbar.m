@@ -440,6 +440,13 @@ const CGFloat kMaxTextViewHeight = 98;
     [self updateHeightWithTextView:self.inputTextView];
 }
 
+- (void)acceptAutocorrectSuggestion
+{
+    // https://stackoverflow.com/a/27865136/4509555
+    [self.inputTextView.inputDelegate selectionWillChange:self.inputTextView];
+    [self.inputTextView.inputDelegate selectionDidChange:self.inputTextView];
+}
+
 - (void)clearTextMessageAnimated:(BOOL)isAnimated
 {
     [self setMessageText:nil animated:isAnimated];
