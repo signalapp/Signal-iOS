@@ -4,6 +4,8 @@
 
 #import "OWSMessageUtils.h"
 #import "AppContext.h"
+#import "MIMETypeUtil.h"
+#import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
@@ -136,8 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
 
     uint64_t timestamp = message.timestamp;
-    NSString *_Nullable body = message.body;
-    BOOL hasText = body.length > 0;
+    NSString *_Nullable quotedText = message.body;
+    BOOL hasText = quotedText.length > 0;
     BOOL hasAttachment = NO;
     NSString *_Nullable sourceFilename = nil;
     NSData *_Nullable thumbnailData = nil;
@@ -148,11 +150,46 @@ NS_ASSUME_NONNULL_BEGIN
         TSAttachment *_Nullable attachment =
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
-            sourceFilename = attachment.sourceFilename;
-            contentType = attachment.contentType;
-            // Try to generate a thumbnail, if possible.
-            thumbnailData = [self thumbnailDataForAttachment:attachment];
-            hasAttachment = YES;
+            // If the attachment is "oversize text", try to treat it appropriately.
+            if (!hasText && [NSObject isNullableObject:attachment.contentType equalTo:OWSMimeTypeOversizeTextMessage] &&
+                [attachment isKindOfClass:[TSAttachmentStream class]]) {
+
+                hasText = YES;
+                quotedText = @"";
+
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+                if (oversizeTextData) {
+                    NSString *_Nullable oversizeText =
+                        [[NSString alloc] initWithData:oversizeTextData encoding:NSUTF8StringEncoding];
+                    // First, truncate to the rough max characters.
+                    NSString *_Nullable truncatedText =
+                        [oversizeText substringToIndex:kOversizeTextMessageSizeThreshold - 1];
+                    // But kOversizeTextMessageSizeThreshold is in _bytes_, not characters,
+                    // so we need to continue to trim the string until it fits.
+                    while (truncatedText && truncatedText.length > 0 &&
+                        [truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
+                            >= kOversizeTextMessageSizeThreshold) {
+                        // A very coarse binomial search by halving is acceptable, since
+                        // kOversizeTextMessageSizeThreshold is much longer than our target
+                        // length of "three short lines of text on any device we might
+                        // display this on.
+                        //
+                        // We don't worry much about the search converging because
+                        truncatedText = [truncatedText substringToIndex:oversizeText.length / 2];
+                    }
+                    if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
+                        < kOversizeTextMessageSizeThreshold) {
+                        quotedText = truncatedText;
+                    }
+                }
+            } else {
+                sourceFilename = attachment.sourceFilename;
+                contentType = attachment.contentType;
+                // Try to generate a thumbnail, if possible.
+                thumbnailData = [self thumbnailDataForAttachment:attachment];
+                hasAttachment = YES;
+            }
         }
     }
 
@@ -161,9 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // It's conceivable that the logic above will find neither valid text
+    // or an attachment to quote.
     TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                                                        authorId:authorId
-                                                                           body:body
+                                                                           body:quotedText
                                                                  sourceFilename:sourceFilename
                                                                   thumbnailData:thumbnailData
                                                                     contentType:contentType];
