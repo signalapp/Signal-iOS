@@ -2,8 +2,8 @@
 
 PROTOC=protoc \
 		--plugin=/usr/local/bin/protoc-gen-objc \
-		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/" \
-		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/google/protobuf/" \
+		--proto_path="${HOME}/src/signal/protobuf-objc/src/compiler/" \
+		--proto_path="${HOME}/src/signal/protobuf-objc/src/compiler/google/protobuf/" \
 		--proto_path='./'
 
 all: signal_service_proto provisioning_protos fingerprint_protos

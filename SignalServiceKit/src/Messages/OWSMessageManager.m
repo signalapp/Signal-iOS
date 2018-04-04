@@ -1097,8 +1097,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable thumbnailData = nil;
     NSString *_Nullable contentType = nil;
 
-    if ([quoteProto hasAttachment]) {
-        OWSSignalServiceProtosAttachmentPointer *attachmentProto = [quoteProto attachment];
+    if (quoteProto.attachments.count > 0) {
+        OWSSignalServiceProtosAttachmentPointer *attachmentProto = quoteProto.attachments.firstObject;
         if ([attachmentProto hasContentType] && attachmentProto.contentType.length > 0) {
             contentType = attachmentProto.contentType;
 
