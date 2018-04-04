@@ -13,20 +13,6 @@ protocol QuotedReplyPreviewDelegate: class {
 class QuotedReplyPreview: UIView {
     public weak var delegate: QuotedReplyPreviewDelegate?
 
-    private class func iconView(message: TSQuotedMessage) -> UIView? {
-        guard let contentType = message.contentType else {
-            return nil
-        }
-
-        let iconText = TSAttachmentStream.emoji(forMimeType: contentType)
-
-        let label = UILabel()
-        label.setContentHuggingHigh()
-        label.text = iconText
-
-        return label
-    }
-
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -55,9 +41,16 @@ class QuotedReplyPreview: UIView {
         let bodyLabel: UILabel = UILabel()
         bodyLabel.textColor = foregroundColor
         bodyLabel.font = .ows_footnote
-        bodyLabel.text = quotedMessage.body
 
-        let iconView: UIView? = QuotedReplyPreview.iconView(message: quotedMessage)
+        bodyLabel.text = {
+            if let contentType = quotedMessage.contentType {
+                let emoji = TSAttachmentStream.emoji(forMimeType: contentType)
+                return "\(emoji) \(quotedMessage.body ?? "")"
+            } else {
+                return quotedMessage.body
+            }
+        }()
+
         let thumbnailView: UIView? = {
             if let image = quotedMessage.thumbnailImage() {
                 let imageView = UIImageView(image: image)
@@ -81,20 +74,13 @@ class QuotedReplyPreview: UIView {
         let quoteStripe: UIView = UIView()
         quoteStripe.backgroundColor = authorColor
 
-        let bodyContentViews: [UIView] = iconView == nil ? [bodyLabel] : [iconView!, bodyLabel]
-        let bodyContentView: UIStackView = UIStackView(arrangedSubviews: bodyContentViews)
-        bodyContentView.axis = .horizontal
-        bodyContentView.spacing = 4.0
-
         let textColumn = UIView.container()
         textColumn.addSubview(authorLabel)
-        textColumn.addSubview(bodyContentView)
+        textColumn.addSubview(bodyLabel)
 
-        authorLabel.setCompressionResistanceHigh()
         authorLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-        authorLabel.autoPinEdge(.bottom, to: .top, of: bodyContentView)
-        bodyContentView.setCompressionResistanceHigh()
-        bodyContentView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+        authorLabel.autoPinEdge(.bottom, to: .top, of: bodyLabel)
+        bodyLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 
         let contentViews: [UIView] = [textColumn, thumbnailView, cancelButton].flatMap { return $0 }
         let contentRow = UIStackView(arrangedSubviews: contentViews)
