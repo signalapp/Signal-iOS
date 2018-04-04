@@ -65,13 +65,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssert(quotedMessage);
-    OWSAssert(displayableQuotedText);
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
     _textMessageFont = OWSMessageCell.defaultTextMessageFont;
 
     return self;
+}
+
+- (BOOL)hasQuotedAttachment
+{
+    return self.quotedMessage.contentType.length > 0;
 }
 
 - (BOOL)hasQuotedAttachmentThumbnail
@@ -99,8 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *_Nullable quotedAttachmentView = nil;
     // TODO:
-    //    if (self.hasQuotedAttachmentThumbnail)
-    {
+    if (self.hasQuotedAttachment) {
         // TODO:
         quotedAttachmentView = [UIView containerView];
         quotedAttachmentView.userInteractionEnabled = NO;
@@ -162,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [stripeAndTextContainer autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
         }
-        [stripeAndTextContainer autoPinBottomToSuperviewMarginWithInset:self.quotedContentHInset];
+        [stripeAndTextContainer autoPinBottomToSuperviewMarginWithInset:self.quotedTextBottomInset];
         [stripeAndTextContainer setContentHuggingLow];
         [stripeAndTextContainer setCompressionResistanceLow];
 
@@ -204,7 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     result.width += self.quotedContentHInset;
 
     CGFloat thumbnailHeight = 0.f;
-    if (self.hasQuotedAttachmentThumbnail) {
+    if (self.hasQuotedAttachment) {
         result.width += self.quotedAttachmentHSpacing;
         result.width += self.quotedAttachmentSize;
 
@@ -249,7 +252,6 @@ NS_ASSUME_NONNULL_BEGIN
         CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxQuotedTextWidth, CGFLOAT_MAX)]);
 
         quotedTextWidth = textSize.width + self.quotedReplyStripeThickness + self.quotedReplyStripeHSpacing;
-        result.height += self.quotedAuthorBottomSpacing;
         result.height += textSize.height + self.quotedReplyStripeVExtension * 2;
     }
 
@@ -369,6 +371,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)quotedContentHInset
 {
     return 8.f;
+}
+
+#pragma mark -
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    return [self sizeForMaxWidth:CGFLOAT_MAX];
 }
 
 @end

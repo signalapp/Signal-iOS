@@ -367,9 +367,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(!lastSubview);
 
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        OWSQuotedMessageView *quotedMessageView =
-            [OWSQuotedMessageView quotedMessageViewForConversation:message.quotedMessage
-                                             displayableQuotedText:self.viewItem.displayableQuotedText];
+        OWSQuotedMessageView *quotedMessageView = [OWSQuotedMessageView
+            quotedMessageViewForConversation:message.quotedMessage
+                       displayableQuotedText:(self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
 
@@ -1178,7 +1178,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    if (!self.isQuotedReply) {
+    if (!self.isQuotedReply || !self.hasQuotedText) {
         return CGSizeZero;
     }
 
