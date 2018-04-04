@@ -75,13 +75,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasQuotedAttachment
 {
-    return self.quotedMessage.contentType.length > 0;
+    return (self.quotedMessage.contentType.length > 0
+        && ![NSObject isNullableObject:self.quotedMessage.contentType equalTo:OWSMimeTypeOversizeTextMessage]);
 }
 
 - (BOOL)hasQuotedAttachmentThumbnail
 {
-    return (self.quotedMessage.contentType.length > 0 &&
+    return (self.quotedMessage.contentType.length > 0
+        && ![NSObject isNullableObject:self.quotedMessage.contentType equalTo:OWSMimeTypeOversizeTextMessage] &&
         [TSAttachmentStream hasThumbnailForMimeType:self.quotedMessage.contentType]);
+}
+
+- (NSString *)quotedSnippet
+{
+    if (self.displayableQuotedText.displayText.length > 0) {
+        return self.displayableQuotedText.displayText;
+    } else {
+        NSString *mimeType = self.quotedMessage.contentType;
+
+        if (mimeType.length > 0) {
+            return [TSAttachment emojiForMimeType:mimeType];
+        }
+    }
+
+    return @"";
 }
 
 #pragma mark -
@@ -280,21 +297,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)quotedTextColor
 {
     return [UIColor blackColor];
-}
-
-- (NSString *)quotedSnippet
-{
-    if (self.displayableQuotedText.displayText.length > 0) {
-        return self.displayableQuotedText.displayText;
-    } else {
-        NSString *mimeType = self.quotedMessage.contentType;
-
-        if (mimeType.length > 0) {
-            return [TSAttachment emojiForMimeType:mimeType];
-        }
-    }
-
-    return @"";
 }
 
 // TODO:
