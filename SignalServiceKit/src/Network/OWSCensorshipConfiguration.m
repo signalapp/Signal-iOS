@@ -169,16 +169,17 @@ NSString *const OWSCensorshipConfiguration_DefaultFrontingHost = OWSCensorshipCo
 + (nullable NSData *)certificateDataWithName:(NSString *)name error:(NSError **)error
 {
     if (!name.length) {
-        OWSFail(@"%@ expected name with length > 0", self.logTag);
-        *error = OWSErrorMakeAssertionError();
+        NSString *failureDescription = [NSString stringWithFormat:@"%@ expected name with length > 0", self.logTag];
+        *error = OWSErrorMakeAssertionError(failureDescription);
         return nil;
     }
 
     NSBundle *bundle = [NSBundle bundleForClass:self.class];
     NSString *path = [bundle pathForResource:name ofType:@"crt"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
-        OWSFail(@"%@ Missing certificate for name: %@", self.logTag, name);
-        *error = OWSErrorMakeAssertionError();
+        NSString *failureDescription =
+            [NSString stringWithFormat:@"%@ Missing certificate for name: %@", self.logTag, name];
+        *error = OWSErrorMakeAssertionError(failureDescription);
         return nil;
     }
 

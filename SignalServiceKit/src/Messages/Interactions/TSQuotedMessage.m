@@ -3,6 +3,7 @@
 //
 
 #import "TSQuotedMessage.h"
+#import "TSAttachment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,23 +27,50 @@ NS_ASSUME_NONNULL_BEGIN
     _timestamp = timestamp;
     _authorId = authorId;
     _body = body;
-    _sourceFilename = sourceFilename;
-    _thumbnailData = thumbnailData;
+    // TODO get source filename from attachment
+//    _sourceFilename = sourceFilename;
+//    _thumbnailData = thumbnailData;
     _contentType = contentType;
 
     return self;
 }
 
+// TODO maybe this should live closer to the view
 - (nullable UIImage *)thumbnailImage
 {
-    if (self.thumbnailData.length == 0) {
-        return nil;
-    }
-
-    // PERF TODO cache
-    return [UIImage imageWithData:self.thumbnailData];
+//    if (self.thumbnailData.length == 0) {
+//        return nil;
+//    }
+//
+//    // PERF TODO cache
+//    return [UIImage imageWithData:self.thumbnailData];
+    return nil;
 }
 
+//- (void)setThumbnailAttachmentId:(NSString *)thumbnailAttachmentId
+//{
+//     _thumbnailAttachmentId = thumbnailAttachmentId;
+//}
+//
+//- (BOOL)hasThumbnailAttachment
+//{
+//    return self.thumbnailAttachmentId.length > 0;
+//}
+//
+
+- (BOOL)hasThumbnailAttachments
+{
+    return self.thumbnailAttachmentIds.count > 0;
+}
+
+- (nullable TSAttachment *)firstThumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+{
+    if (!self.hasThumbnailAttachments) {
+        return nil;
+    }
+    
+    return [TSAttachment fetchObjectWithUniqueID:self.thumbnailAttachmentIds.firstObject transaction:transaction];
+}
 
 @end
 

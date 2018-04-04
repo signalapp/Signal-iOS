@@ -5,9 +5,9 @@
 #import "AttachmentUploadView.h"
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
-#import "OWSUploadingService.h"
-#import "TSAttachmentStream.h"
-#import "UIView+OWS.h"
+#import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSUploadOperation.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

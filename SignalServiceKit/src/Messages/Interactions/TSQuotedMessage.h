@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSAttachment;
+
 @interface TSQuotedMessage : TSYapDatabaseObject
 
 @property (nonatomic, readonly) uint64_t timestamp;
@@ -15,10 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 // or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
 
-// This property should be set IFF we are quoting an attachment message.
-@property (nullable, nonatomic, readonly) NSString *sourceFilename;
-// This property can be set IFF we are quoting an attachment message, but it is optional.
-@property (nullable, nonatomic, readonly) NSData *thumbnailData;
+//// This property can be set IFF we are quoting an attachment message, but it is optional.
+//@property (nullable, nonatomic, readonly) NSData *thumbnailData;
+
 // This is a MIME type.
 //
 // This property should be set IFF we are quoting an attachment message.
@@ -33,7 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
                     thumbnailData:(NSData *_Nullable)thumbnailData
                       contentType:(NSString *_Nullable)contentType;
 
-- (nullable UIImage *)thumbnailImage;
+#pragma mark - Attachments
+
+@property (nonatomic, readonly) NSArray<NSString *> *thumbnailAttachmentIds;
+// A map of attachment id-to-"source" filename.
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *thumbnailAttachmentFilenameMap;
+
+- (BOOL)hasThumbnailAttachments;
+- (nullable TSAttachment *)firstThumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

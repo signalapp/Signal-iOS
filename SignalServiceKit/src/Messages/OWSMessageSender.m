@@ -5,8 +5,12 @@
 #import "OWSMessageSender.h"
 #import "AppContext.h"
 #import "ContactsUpdater.h"
+#import "Cryptography.h"
+#import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
+#import "NSError+MessageSending.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
 #import "OWSDevice.h"
@@ -14,6 +18,7 @@
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageServiceParams.h"
+#import "OWSOperation.h"
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
@@ -21,7 +26,7 @@
 #import "OWSPrimaryStorage+sessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
-#import "OWSUploadingService.h"
+#import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -34,7 +39,9 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSPreKeyManager.h"
+#import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
@@ -42,7 +49,6 @@
 #import <AxolotlKit/SessionBuilder.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <TwistedOakCollapsingFutures/CollapsingFutures.h>
-#import <objc/runtime.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,58 +63,6 @@ void AssertIsOnSendingQueue()
 #endif
 }
 
-static void *kNSError_MessageSender_IsRetryable = &kNSError_MessageSender_IsRetryable;
-static void *kNSError_MessageSender_ShouldBeIgnoredForGroups = &kNSError_MessageSender_ShouldBeIgnoredForGroups;
-static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
-
-// isRetryable and isFatal are opposites but not redundant.
-//
-// If a group message send fails, the send will be retried if any of the errors were retryable UNLESS
-// any of the errors were fatal.  Fatal errors trump retryable errors.
-@implementation NSError (OWSMessageSender)
-
-- (BOOL)isRetryable
-{
-    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_IsRetryable);
-    // This value should always be set for all errors by the time OWSSendMessageOperation
-    // queries it's value.  If not, default to retrying in production.
-    OWSAssert(value);
-    return value ? [value boolValue] : YES;
-}
-
-- (void)setIsRetryable:(BOOL)value
-{
-    objc_setAssociatedObject(self, kNSError_MessageSender_IsRetryable, @(value), OBJC_ASSOCIATION_COPY);
-}
-
-- (BOOL)shouldBeIgnoredForGroups
-{
-    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_ShouldBeIgnoredForGroups);
-    // This value will NOT always be set for all errors by the time we query it's value.
-    // Default to NOT ignoring.
-    return value ? [value boolValue] : NO;
-}
-
-- (void)setShouldBeIgnoredForGroups:(BOOL)value
-{
-    objc_setAssociatedObject(self, kNSError_MessageSender_ShouldBeIgnoredForGroups, @(value), OBJC_ASSOCIATION_COPY);
-}
-
-- (BOOL)isFatal
-{
-    NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_IsFatal);
-    // This value will NOT always be set for all errors by the time we query it's value.
-    // Default to NOT fatal.
-    return value ? [value boolValue] : NO;
-}
-
-- (void)setIsFatal:(BOOL)value
-{
-    objc_setAssociatedObject(self, kNSError_MessageSender_IsFatal, @(value), OBJC_ASSOCIATION_COPY);
-}
-
-@end
-
 #pragma mark -
 
 /**
@@ -118,27 +72,22 @@ static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
  * Used by `OWSMessageSender` to serialize message sending, ensuring that messages are emitted in the order they
  * were sent.
  */
-@interface OWSSendMessageOperation : NSOperation
+@interface OWSSendMessageOperation : OWSOperation
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(OWSMessageSender *)messageSender
-                        success:(void (^)(void))successHandler
-                        failure:(void (^)(NSError *_Nonnull error))failureHandler NS_DESIGNATED_INITIALIZER;
+                   dbConnection:(YapDatabaseConnection *)dbConnection
+                        success:(void (^)(void))aSuccessHandler
+                        failure:(void (^)(NSError *_Nonnull error))aFailureHandler NS_DESIGNATED_INITIALIZER;
 
 @end
 
 #pragma mark -
 
-typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
-    OWSSendMessageOperationStateNew,
-    OWSSendMessageOperationStateExecuting,
-    OWSSendMessageOperationStateFinished
-};
-
 @interface OWSMessageSender (OWSSendMessageOperation)
 
-- (void)attemptToSendMessage:(TSOutgoingMessage *)message
+- (void)sendMessageToService:(TSOutgoingMessage *)message
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
@@ -146,19 +95,13 @@ typedef NS_ENUM(NSInteger, OWSSendMessageOperationState) {
 
 #pragma mark -
 
-NSString *const OWSSendMessageOperationKeyIsExecuting = @"isExecuting";
-NSString *const OWSSendMessageOperationKeyIsFinished = @"isFinished";
-
-NSUInteger const OWSSendMessageOperationMaxRetries = 4;
-
 @interface OWSSendMessageOperation ()
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
+@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) void (^successHandler)(void);
 @property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
-@property (nonatomic) OWSSendMessageOperationState operationState;
-@property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 @end
 
@@ -168,143 +111,97 @@ NSUInteger const OWSSendMessageOperationMaxRetries = 4;
 
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(OWSMessageSender *)messageSender
-                        success:(void (^)(void))aSuccessHandler
-                        failure:(void (^)(NSError *_Nonnull error))aFailureHandler
+                   dbConnection:(YapDatabaseConnection *)dbConnection
+                        success:(void (^)(void))successHandler
+                        failure:(void (^)(NSError *_Nonnull error))failureHandler
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _operationState = OWSSendMessageOperationStateNew;
-    self.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
+    self.remainingRetries = 6;
     _message = message;
     _messageSender = messageSender;
-
-    __weak typeof(self) weakSelf = self;
-    _successHandler = ^{
-        typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            OWSProdCFail([OWSAnalyticsEvents messageSenderErrorSendOperationDidNotComplete]);
-            return;
-        }
-
-        [message updateWithMessageState:TSOutgoingMessageStateSentToService];
-
-        aSuccessHandler();
-
-        [strongSelf markAsComplete];
-    };
-
-    _failureHandler = ^(NSError *_Nonnull error) {
-        typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-            OWSProdCFail([OWSAnalyticsEvents messageSenderErrorSendOperationDidNotComplete]);
-            return;
-        }
-
-        [strongSelf.message updateWithSendingError:error];
-
-        DDLogDebug(@"%@ failed with error.", strongSelf.logTag);
-        aFailureHandler(error);
-
-        [strongSelf markAsComplete];
-    };
+    _dbConnection = dbConnection;
+    _successHandler = successHandler;
+    _failureHandler = failureHandler;
 
     return self;
 }
 
-#pragma mark - NSOperation overrides
+#pragma mark - OWSOperation overrides
 
-- (BOOL)isExecuting
+- (nullable NSError *)checkForPreconditionError
 {
-    return self.operationState == OWSSendMessageOperationStateExecuting;
+    for (NSOperation *dependency in self.dependencies) {
+        if (![dependency isKindOfClass:[OWSOperation class]]) {
+            NSString *errorDescription =
+                [NSString stringWithFormat:@"%@ unknown dependency: %@", self.logTag, dependency.class];
+            NSError *assertionError = OWSErrorMakeAssertionError(errorDescription);
+            return assertionError;
+        }
+
+        OWSOperation *upload = (OWSOperation *)dependency;
+
+        // Cannot proceed if dependency failed - surface the dependency's error.
+        NSError *_Nullable dependencyError = upload.failingError;
+        if (dependencyError) {
+            return dependencyError;
+        }
+    }
+
+    // Sanity check preconditions
+    if (self.message.hasAttachments) {
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            TSAttachmentStream *attachmentStream
+                = (TSAttachmentStream *)[self.message attachmentWithTransaction:transaction];
+            OWSAssert(attachmentStream);
+            OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+            OWSAssert(attachmentStream.serverId);
+            OWSAssert(attachmentStream.isUploaded);
+        }];
+    }
+
+    return nil;
 }
 
-- (BOOL)isFinished
-{
-    return self.operationState == OWSSendMessageOperationStateFinished;
-}
-
-- (void)start
-{
-    [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
-    self.operationState = OWSSendMessageOperationStateExecuting;
-    [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
-    [self main];
-}
-
-- (void)main
-{
-    [self tryWithRemainingRetries:OWSSendMessageOperationMaxRetries];
-}
-
-#pragma mark - methods
-
-- (void)tryWithRemainingRetries:(NSUInteger)remainingRetries
+- (void)run
 {
     // If the message has been deleted, abort send.
     if (self.message.shouldBeSaved && ![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
         DDLogInfo(@"%@ aborting message send; message deleted.", self.logTag);
         NSError *error = OWSErrorWithCodeDescription(
             OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
-        self.failureHandler(error);
+        error.isFatal = YES;
+        [self reportError:error];
         return;
     }
 
-    // Use this flag to ensure a given operation only succeeds or fails once.
-    __block BOOL onceFlag = NO;
-    RetryableFailureHandler retryableFailureHandler = ^(NSError *_Nonnull error) {
-        DDLogInfo(@"%@ Sending failed. Remaining retries: %lu", self.logTag, (unsigned long)remainingRetries);
-
-        OWSAssert(!onceFlag);
-        onceFlag = YES;
-
-        if (![error isRetryable] || [error isFatal]) {
-            DDLogInfo(@"%@ Skipping retry due to terminal error.", self.logTag);
-            self.failureHandler(error);
-            return;
+    [self.messageSender sendMessageToService:self.message
+        success:^{
+            [self reportSuccess];
         }
-
-        if (remainingRetries > 0) {
-            [self tryWithRemainingRetries:remainingRetries - 1];
-        } else {
-            DDLogWarn(@"%@ Too many failures. Giving up sending.", self.logTag);
-
-            self.failureHandler(error);
-        }
-    };
-
-    [self.messageSender attemptToSendMessage:self.message
-                                     success:^{
-                                         OWSAssert(!onceFlag);
-                                         onceFlag = YES;
-
-                                         self.successHandler();
-                                     }
-                                     failure:retryableFailureHandler];
+        failure:^(NSError *error) {
+            [self reportError:error];
+        }];
 }
 
-- (void)markAsComplete
+- (void)didSucceed
 {
-    [self willChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
-    [self willChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
+    [self.message updateWithMessageState:TSOutgoingMessageStateSentToService];
+    self.successHandler();
+}
 
-    // Ensure we call the success or failure handler exactly once.
-    @synchronized(self)
-    {
-        OWSAssert(self.operationState != OWSSendMessageOperationStateFinished);
-
-        self.operationState = OWSSendMessageOperationStateFinished;
-    }
-
-    [self didChangeValueForKey:OWSSendMessageOperationKeyIsExecuting];
-    [self didChangeValueForKey:OWSSendMessageOperationKeyIsFinished];
+- (void)didFailWithError:(NSError *)error
+{
+    [self.message updateWithSendingError:error];
+    
+    DDLogDebug(@"%@ failed with error: %@", self.logTag, error);
+    self.failureHandler(error);
 }
 
 @end
-
 
 int const OWSMessageSenderRetryAttempts = 3;
 NSString *const OWSMessageSenderInvalidDeviceException = @"InvalidDeviceException";
@@ -315,7 +212,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-@property (nonatomic, readonly) OWSUploadingService *uploadingService;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
@@ -340,8 +236,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     _contactsManager = contactsManager;
     _contactsUpdater = contactsUpdater;
     _sendingQueueMap = [NSMutableDictionary new];
-
-    _uploadingService = [[OWSUploadingService alloc] initWithNetworkManager:networkManager];
     _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
@@ -361,9 +255,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssert(message);
 
+
     NSString *kDefaultQueueKey = @"kDefaultQueueKey";
     NSString *queueKey = message.uniqueThreadId ?: kDefaultQueueKey;
     OWSAssert(queueKey.length > 0);
+
+    if ([kDefaultQueueKey isEqualToString:queueKey]) {
+        // when do we get here?
+        DDLogDebug(@"%@ using default message queue", self.logTag);
+    }
 
     @synchronized(self)
     {
@@ -409,63 +309,133 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
         }];
 
+        NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
         OWSSendMessageOperation *sendMessageOperation =
             [[OWSSendMessageOperation alloc] initWithMessage:message
                                                messageSender:self
+                                                dbConnection:self.dbConnection
                                                      success:successHandler
                                                      failure:failureHandler];
+        if (message.hasAttachments) {
+            OWSUploadOperation *uploadAttachmentOperation =
+                [[OWSUploadOperation alloc] initWithAttachmentId:message.attachmentIds.firstObject
+                                                         message:message
+                                                    dbConnection:self.dbConnection];
+            [sendMessageOperation addDependency:uploadAttachmentOperation];
+            [sendingQueue addOperation:uploadAttachmentOperation];
+        }
 
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
-            [sendingQueue addOperation:sendMessageOperation];
-        });
+        //        if (message.quotedMessage.hasThumbnailAttachments) {
+        //            OWSUploadOperation *uploadQuoteThumbnailOperation = [[OWSUploadOperation alloc]
+        //            initWithAttachmentId:message.attachmentIds.firstObject
+        //                                                                                                         message:message
+        //                                                                                                    dbConnection:self.dbConnection];
+        //            [sendMessageOperation addDependency:uploadAttachmentOperation];
+        //            [sendingQueue addOperation:uploadQuoteThumbnailOperation];
+        //        }
+
+        [sendingQueue addOperation:sendMessageOperation];
     });
 }
 
-- (void)attemptToSendMessage:(TSOutgoingMessage *)message
-                     success:(void (^)(void))successHandler
-                     failure:(RetryableFailureHandler)failureHandler
-{
-    [self ensureAnyAttachmentsUploaded:message
-        success:^() {
-            [self sendMessageToService:message
-                               success:successHandler
-                               failure:^(NSError *error) {
-                                   DDLogDebug(
-                                       @"%@ Message send attempt failed: %@", self.logTag, message.debugDescription);
-                                   failureHandler(error);
-                               }];
-        }
-        failure:^(NSError *error) {
-            DDLogDebug(@"%@ Attachment upload attempt failed: %@", self.logTag, message.debugDescription);
-            failureHandler(error);
-        }];
-}
+//- (void)attemptToSendMessage:(TSOutgoingMessage *)message
+//                     success:(void (^)(void))successHandler
+//                     failure:(RetryableFailureHandler)failureHandler
+//{
+//    [self ensureAnyAttachmentsUploaded:message
+//        success:^() {
+//            [self sendMessageToService:message
+//                               success:successHandler
+//                               failure:^(NSError *error) {
+//                                   DDLogDebug(
+//                                       @"%@ Message send attempt failed: %@", self.logTag, message.debugDescription);
+//                                   failureHandler(error);
+//                               }];
+//        }
+//        failure:^(NSError *error) {
+//            DDLogDebug(@"%@ Attachment upload attempt failed: %@", self.logTag, message.debugDescription);
+//            failureHandler(error);
+//        }];
+//}
+//- (void)ensureAnyAttachmentsUploaded:(TSOutgoingMessage *)message
+//                             success:(void (^)(void))successHandler
+//                             failure:(RetryableFailureHandler)failureHandler
+//{
+//    if (!message.hasAttachments) {
+//        return successHandler();
+//    }
+//
+//    TSAttachmentStream *attachmentStream =
+//        [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
+//
+//    if (!attachmentStream) {
+//        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
+//        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+//        // Not finding local attachment is a terminal failure.
+//        [error setIsRetryable:NO];
+//        return failureHandler(error);
+//    }
+//
+//    [OWSUploadingService uploadAttachmentStream:attachmentStream
+//                                        message:message
+//                                 networkManager:self.networkManager
+//                                        success:successHandler
+//                                        failure:failureHandler];
+//}
 
-- (void)ensureAnyAttachmentsUploaded:(TSOutgoingMessage *)message
-                             success:(void (^)(void))successHandler
-                             failure:(RetryableFailureHandler)failureHandler
-{
-    if (!message.hasAttachments) {
-        return successHandler();
-    }
-
-    TSAttachmentStream *attachmentStream =
-        [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
-
-    if (!attachmentStream) {
-        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
-        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-        // Not finding local attachment is a terminal failure.
-        [error setIsRetryable:NO];
-        return failureHandler(error);
-    }
-
-    [self.uploadingService uploadAttachmentStream:attachmentStream
-                                          message:message
-                                          success:successHandler
-                                          failure:failureHandler];
-}
+//- (void)ensureAnyQuotedThumbnailUploaded:(TSOutgoingMessage *)message
+//                                 success:(void (^)(void))successHandler
+//                                 failure:(RetryableFailureHandler)failureHandler
+//{
+//    if (!message.hasAttachments) {
+//        return successHandler();
+//    }
+//
+//    TSAttachmentStream *attachmentStream =
+//    [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
+//
+//    if (!attachmentStream) {
+//        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
+//        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+//        // Not finding local attachment is a terminal failure.
+//        [error setIsRetryable:NO];
+//        return failureHandler(error);
+//    }
+//
+//    if (message.quotedMessage.hasThumbnailAttachment) {
+//        DDLogDebug(@"%@ uploading thumbnail for message: %llu", self.logTag, message.timestamp);
+//
+//        __block TSAttachmentStream *thumbnailAttachmentStream;
+//        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+//            thumbnailAttachmentStream = [message.quotedMessage thumbnailAttachmentWithTransaction:transaction];
+//        }];
+//
+//        if (!thumbnailAttachmentStream) {
+//            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
+//            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+//            // Not finding local attachment is a terminal failure.
+//            [error setIsRetryable:NO];
+//            return failureHandler(error);
+//        }
+//
+//        [self.uploadingService uploadAttachmentStream:attachmentStream
+//                                              message:message
+//                                              success:^() {
+//                                                  [self.uploadingService uploadAttachmentStream:attachmentStream
+//                                                                                        message:message
+//                                                                                        success:successHandler
+//                                                                                        failure:failureHandler];
+//                                              }
+//                                              failure:failureHandler];
+//
+//    }
+//    [self.uploadingService uploadAttachmentStream:attachmentStream
+//                                          message:message
+//                                          success:successHandler
+//                                          failure:failureHandler];
+//
+//
+//}
 
 - (void)enqueueTemporaryAttachment:(DataSource *)dataSource
                        contentType:(NSString *)contentType

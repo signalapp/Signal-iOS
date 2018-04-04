@@ -35,10 +35,11 @@ NSError *OWSErrorMakeNoSuchSignalRecipientError()
             @"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT", @"Error message when attempting to send message"));
 }
 
-NSError *OWSErrorMakeAssertionError()
+NSError *OWSErrorMakeAssertionError(NSString *description)
 {
-    return OWSErrorWithCodeDescription(OWSErrorCodeFailedToSendOutgoingMessage,
-                                       NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
+    OWSCFail(@"Assertion failed: %@", description);
+    return OWSErrorWithCodeDescription(OWSErrorCodeAssertionFailure,
+        NSLocalizedString(@"ERROR_DESCRIPTION_UNKNOWN_ERROR", @"Worst case generic error message"));
 }
 
 NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSString *recipientId)

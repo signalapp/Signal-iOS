@@ -394,9 +394,14 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 - (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
 {
     TSThread *thread = self.thread;
+    OWSAssert(thread);
+    
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
     [builder setBody:self.body];
+    [builder setExpireTimer:self.expiresInSeconds];
+    
+    // Group Messages
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
@@ -426,66 +431,59 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         [groupBuilder setId:gThread.groupModel.groupId];
         [builder setGroup:groupBuilder.build];
     }
+    
+    // Message Attachments
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            NSString *sourceFilename = self.attachmentFilenameMap[attachmentId];
+            NSString *_Nullable sourceFilename = self.attachmentFilenameMap[attachmentId];
             [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:sourceFilename]];
         }
         [builder setAttachmentsArray:attachments];
     }
-    [builder setExpireTimer:self.expiresInSeconds];
-    return builder;
-}
-
-// recipientId is nil when building "sent" sync messages for messages
-// sent to groups.
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
-{
-    OWSAssert(self.thread);
-
-    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
-    [builder setTimestamp:self.timestamp];
-    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
-
-    if (self.quotedMessage) {
-        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder =
-            [OWSSignalServiceProtosDataMessageQuoteBuilder new];
-        [quoteBuilder setId:self.quotedMessage.timestamp];
-        [quoteBuilder setAuthor:self.quotedMessage.authorId];
-
+    
+    // Quoted Attachment
+    TSQuotedMessage *quotedMessage = self.quotedMessage;
+    if (quotedMessage) {
+        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+        [quoteBuilder setId:quotedMessage.timestamp];
+        [quoteBuilder setAuthor:quotedMessage.authorId];
+        
         BOOL hasQuotedText = NO;
         BOOL hasQuotedAttachment = NO;
         if (self.quotedMessage.body.length > 0) {
-            [quoteBuilder setText:self.quotedMessage.body];
-
             hasQuotedText = YES;
+            [quoteBuilder setText:quotedMessage.body];
         }
 
-        if (self.quotedMessage.contentType.length > 0) {
-
-            OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
-                [OWSSignalServiceProtosAttachmentPointerBuilder new];
-            if (self.quotedMessage.thumbnailData.length > 0) {
-                [attachmentBuilder setThumbnail:self.quotedMessage.thumbnailData];
+        if (quotedMessage.thumbnailAttachmentIds.count > 0) {
+            NSMutableArray *thumbnailAttachments = [NSMutableArray new];
+            for (NSString *attachmentId in quotedMessage.thumbnailAttachmentIds) {
+                hasQuotedAttachment = YES;
+                NSString *_Nullable sourceFilename = quotedMessage.thumbnailAttachmentFilenameMap[attachmentId];
+                [thumbnailAttachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:sourceFilename]];
             }
-            if (self.quotedMessage.sourceFilename.length > 0) {
-                [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
-            }
-            [attachmentBuilder setContentType:self.quotedMessage.contentType];
-            [quoteBuilder.attachments addObject:[attachmentBuilder build]];
-
-            hasQuotedAttachment = YES;
+            [quoteBuilder setAttachmentsArray:thumbnailAttachments];
         }
-
+        
         if (hasQuotedText || hasQuotedAttachment) {
             [builder setQuoteBuilder:quoteBuilder];
         } else {
             OWSFail(@"%@ Invalid quoted message data.", self.logTag);
         }
     }
+    
+    return builder;
+}
 
-    return [builder build];
+// recipientId is nil when building "sent" sync messages for messages sent to groups.
+- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+{
+    OWSAssert(self.thread);
+    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
+    
+    return [[self dataMessageBuilder] build];
 }
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient

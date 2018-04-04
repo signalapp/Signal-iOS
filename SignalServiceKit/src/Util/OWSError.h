@@ -15,6 +15,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodePrivacyVerificationFailure = 20,
     OWSErrorCodeUntrustedIdentity = 25,
     OWSErrorCodeFailedToSendOutgoingMessage = 30,
+    OWSErrorCodeAssertionFailure = 31,
     OWSErrorCodeFailedToDecryptMessage = 100,
     OWSErrorCodeFailedToEncryptMessage = 110,
     OWSErrorCodeSignalServiceFailure = 1001,
@@ -51,7 +52,7 @@ extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSStri
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
-extern NSError *OWSErrorMakeAssertionError(void);
+extern NSError *OWSErrorMakeAssertionError(NSString *description);
 extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
 extern NSError *OWSErrorMakeMessageSendFailedToBlockListError(void);
 extern NSError *OWSErrorMakeWriteAttachmentDataError(void);

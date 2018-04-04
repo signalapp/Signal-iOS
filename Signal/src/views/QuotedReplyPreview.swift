@@ -52,15 +52,16 @@ class QuotedReplyPreview: UIView {
         }()
 
         let thumbnailView: UIView? = {
-            if let image = quotedMessage.thumbnailImage() {
-                let imageView = UIImageView(image: image)
-                imageView.contentMode = .scaleAspectFill
-                imageView.autoPinToSquareAspectRatio()
-                imageView.layer.cornerRadius = 3.0
-                imageView.clipsToBounds = true
-
-                return imageView
-            }
+            // FIXME TODO
+//            if let image = quotedMessage.thumbnailImage() {
+//                let imageView = UIImageView(image: image)
+//                imageView.contentMode = .scaleAspectFill
+//                imageView.autoPinToSquareAspectRatio()
+//                imageView.layer.cornerRadius = 3.0
+//                imageView.clipsToBounds = true
+//
+//                return imageView
+//            }
             return nil
         }()
 
