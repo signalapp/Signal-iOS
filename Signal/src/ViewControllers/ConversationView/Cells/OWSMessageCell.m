@@ -1178,14 +1178,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    if (!self.isQuotedReply || !self.hasQuotedText) {
+    if (!self.isQuotedReply) {
         return CGSizeZero;
     }
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    OWSQuotedMessageView *quotedMessageView =
-        [OWSQuotedMessageView quotedMessageViewForConversation:message.quotedMessage
-                                         displayableQuotedText:self.viewItem.displayableQuotedText];
+    OWSQuotedMessageView *quotedMessageView = [OWSQuotedMessageView
+        quotedMessageViewForConversation:message.quotedMessage
+                   displayableQuotedText:(self.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
     result.width += kBubbleThornSideInset;
