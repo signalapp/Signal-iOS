@@ -43,7 +43,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) OWSMessageTextView *bodyTextView;
-@property (nonatomic) UILabel *quotedTextView;
 @property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
@@ -101,10 +100,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.bodyTextView.dataDetectorTypes
         = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
 
-    self.quotedTextView = [UILabel new];
-    self.quotedTextView.numberOfLines = 3;
-    self.quotedTextView.lineBreakMode = NSLineBreakByWordWrapping;
-
     self.footerLabel = [UILabel new];
     self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
     self.footerLabel.textColor = [UIColor lightGrayColor];
@@ -112,7 +107,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 
     // Hide these views by default.
     self.bodyTextView.hidden = YES;
-    self.quotedTextView.hidden = YES;
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
 
@@ -515,7 +509,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
     if (self.hasBodyText || !bodyMediaView) {
-        bodyTextView = [self createBodyTextViewIfNecessary];
+        bodyTextView = [self configureBodyTextView];
     }
     if (bodyTextView) {
         [self.bubbleView addSubview:bodyTextView];
@@ -792,19 +786,23 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return [UIFont systemFontOfSize:12.0f];
 }
 
-- (UILabel *)createQuotedTextView
+- (UILabel *)createQuotedTextLabel
 {
-    self.quotedTextView.hidden = NO;
-    self.quotedTextView.text = self.displayableQuotedText.displayText;
-    self.quotedTextView.textColor = self.quotedTextColor;
+    UILabel *quotedTextLabel = [UILabel new];
+    quotedTextLabel.numberOfLines = 3;
+    quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    quotedTextLabel.text = self.displayableQuotedText.displayText;
+    quotedTextLabel.textColor = self.quotedTextColor;
 
     // Honor dynamic type in the message bodies.
-    self.quotedTextView.font = self.textMessageFont;
-    return self.quotedTextView;
+    quotedTextLabel.font = self.textMessageFont;
+    return quotedTextLabel;
 }
 
-- (OWSMessageTextView *)createBodyTextViewIfNecessary
+- (OWSMessageTextView *)configureBodyTextView
 {
+    OWSAssert(self.hasBodyText);
+
     BOOL shouldIgnoreEvents = NO;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         // Ignore taps on links in outgoing messages that haven't been sent yet, as
@@ -918,20 +916,21 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     if (self.hasQuotedText) {
-        UILabel *quotedTextView = [self createQuotedTextView];
+        UILabel *quotedTextLabel = [self createQuotedTextLabel];
 
-        [quotedMessageView addSubview:quotedTextView];
-        [quotedTextView autoPinEdge:ALEdgeTop
-                             toEdge:ALEdgeBottom
-                             ofView:quotedAuthorLabel
-                         withOffset:self.quotedAuthorBottomSpacing];
-        [quotedTextView autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
+        [quotedMessageView addSubview:quotedTextLabel];
+        [quotedTextLabel autoPinEdge:ALEdgeTop
+                              toEdge:ALEdgeBottom
+                              ofView:quotedAuthorLabel
+                          withOffset:self.quotedAuthorBottomSpacing];
+        [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
         if (quotedThumbnailView) {
-            [quotedTextView autoPinLeadingToTrailingEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
+            [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quotedThumbnailView
+                                                         offset:self.quotedThumbnailHSpacing];
         } else {
-            [quotedTextView autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
+            [quotedTextLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
         }
-        [quotedTextView autoPinBottomToSuperviewMarginWithInset:self.quotedContentBottomInset];
+        [quotedTextLabel autoPinBottomToSuperviewMarginWithInset:self.quotedContentBottomInset];
     }
 
     return quotedMessageView;
@@ -1217,10 +1216,8 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
 
-    self.bodyTextView.text = self.displayableBodyText.displayText;
-    // Honor dynamic type in the message bodies.
-    self.bodyTextView.font = [self textMessageFont];
-    CGSize textSize = CGSizeCeil([self.bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+    OWSMessageTextView *bodyTextView = [self configureBodyTextView];
+    CGSize textSize = CGSizeCeil([bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
     CGSize textViewSize = textSize;
 
     if (includeMargins) {
@@ -1337,9 +1334,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     }
 
     if (self.hasQuotedText) {
-        UILabel *quotedTextView = [self createQuotedTextView];
+        UILabel *quotedTextLabel = [self createQuotedTextLabel];
 
-        CGSize textSize = CGSizeCeil([quotedTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+        CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
 
         textWidth = MAX(textWidth, textSize.width);
         result.height += self.quotedAuthorBottomSpacing;
@@ -1589,9 +1586,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
     [self.bodyTextView removeFromSuperview];
-    self.quotedTextView.text = nil;
-    self.quotedTextView.hidden = YES;
-    [self.quotedTextView removeFromSuperview];
     self.bodyTextView.text = nil;
     self.bodyTextView.hidden = YES;
     [self.failedSendBadgeView removeFromSuperview];
