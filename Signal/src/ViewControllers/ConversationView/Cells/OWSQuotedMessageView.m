@@ -133,7 +133,6 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
 
-        // TODO: Consider stroking the quoted thumbnail.
         if (quotedAttachmentView) {
             quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
             quotedAttachmentView.layer.borderWidth = 1.f;
@@ -150,7 +149,6 @@ NS_ASSUME_NONNULL_BEGIN
         quotedAuthorLabel.font = self.quotedAuthorFont;
         // TODO:
         quotedAuthorLabel.textColor = [UIColor ows_darkGrayColor];
-        //            = (self.isIncoming ? [UIColor colorWithRGBHex:0xd84315] : [UIColor colorWithRGBHex:0x007884]);
         quotedAuthorLabel.numberOfLines = 1;
         quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self addSubview:quotedAuthorLabel];
@@ -216,7 +214,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-// TODO: Class method?
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth
 {
     CGSize result = CGSizeZero;
