@@ -239,7 +239,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
                     // We use the "short" status message to avoid being redundant with the section title.
                     statusLabel.text = shortStatusMessage
                     statusLabel.textColor = UIColor.ows_darkGray
-                    statusLabel.font = UIFont.ows_footnote()
+                    statusLabel.font = UIFont.ows_footnote
                     statusLabel.adjustsFontSizeToFitWidth = true
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
@@ -345,7 +345,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             // See comments on updateTextLayout.
             let messageTextView = UITextView()
             self.messageTextView = messageTextView
-            messageTextView.font = UIFont.ows_dynamicTypeBody()
+            messageTextView.font = UIFont.ows_dynamicTypeBody
             messageTextView.backgroundColor = UIColor.clear
             messageTextView.isOpaque = false
             messageTextView.isEditable = false

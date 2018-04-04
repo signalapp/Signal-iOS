@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
                     thumbnailData:(NSData *_Nullable)thumbnailData
                       contentType:(NSString *_Nullable)contentType;
 
+- (nullable UIImage *)thumbnailImage;
+
 @end
 
 #pragma mark -

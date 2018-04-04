@@ -58,8 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cancelVoiceMemoIfNecessary;
 
-- (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage;
-- (void)clearQuotedMessage;
+@property (nonatomic, nullable) TSQuotedMessage *quotedMessage;
 
 @end
 

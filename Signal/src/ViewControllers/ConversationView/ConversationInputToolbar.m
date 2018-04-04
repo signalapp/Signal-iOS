@@ -21,101 +21,15 @@ NS_ASSUME_NONNULL_BEGIN
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
-@interface QuotedMessagePreviewView : UIView
-
-@property (nonatomic, readonly) UILabel *titleLabel;
-@property (nonatomic, readonly) UILabel *bodyLabel;
-@property (nonatomic, readonly) UIImageView *iconView;
-@property (nonatomic, readonly) UIButton *cancelButton;
-@property (nonatomic, readonly) UIView *quoteStripe;
-
-@end
-
-@implementation QuotedMessagePreviewView
-
-- (nullable UIImageView *)iconForMessage:(TSQuotedMessage *)message
-{
-    // FIXME TODO
-    return nil;
-}
-
-- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)message
-{
-    self = [super initWithFrame:CGRectZero];
-    if (!self) {
-        return self;
-    }
-
-    _titleLabel = [UILabel new];
-    _titleLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.authorId];
-
-    _bodyLabel = [UILabel new];
-    _bodyLabel.text = message.body;
-
-    _iconView = [self iconForMessage:message];
-    if (_iconView) {
-        [self addSubview:_iconView];
-    }
-
-    _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *buttonImage =
-        [[UIImage imageNamed:@"quoted-message-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [_cancelButton setImage:buttonImage forState:UIControlStateNormal];
-    _cancelButton.imageView.tintColor = [UIColor ows_blackColor];
-
-    _quoteStripe = [UIView new];
-    BOOL isQuotingSelf = [message.authorId isEqualToString:[TSAccountManager localNumber]];
-
-    // FIXME actual colors TBD
-    _quoteStripe.backgroundColor = isQuotingSelf ? [UIColor orangeColor] : [UIColor blackColor];
-
-    UIView *contentContainer = [UIView containerView];
-
-    [self addSubview:_titleLabel];
-    [self addSubview:contentContainer];
-    [contentContainer addSubview:_bodyLabel];
-    [self addSubview:_cancelButton];
-    [self addSubview:_quoteStripe];
-
-    // Layout
-
-    CGFloat kLeadingMargin = 4;
-
-    [_quoteStripe autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeRight];
-    [_titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [_titleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
-    [_titleLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
-
-    if (_iconView) {
-        [contentContainer addSubview:_iconView];
-        [_iconView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-        [_iconView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:_bodyLabel];
-        [_iconView autoPinHeightToSuperview];
-    } else {
-        [_bodyLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
-    }
-
-    [_bodyLabel autoPinHeightToSuperview];
-    [_bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-
-    [contentContainer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_titleLabel];
-    [contentContainer autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
-    [contentContainer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-
-    [_cancelButton autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [_cancelButton autoVCenterInSuperview];
-
-    return self;
-}
-
-@end
-
 #pragma mark -
 
-@interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
+@interface ConversationInputToolbar () <UIGestureRecognizerDelegate,
+    ConversationTextViewToolbarDelegate,
+    QuotedReplyPreviewDelegate>
 
-@property (nonatomic, readonly) UIView *contentView;
+@property (nonatomic, readonly) UIView *composeContainer;
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
+@property (nonatomic, readonly) UIStackView *contentStackView;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
@@ -131,7 +45,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 #pragma mark -
 
-@property (nonatomic, nullable) QuotedMessagePreviewView *quotedMessageView;
+@property (nonatomic, nullable) QuotedReplyPreview *quotedMessagePreview;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -171,7 +85,12 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
     // to determine the height of the rendered inputAccessoryView.
-    CGSize newSize = CGSizeMake(self.bounds.size.width, self.toolbarHeight + ConversationInputToolbarBorderViewHeight);
+    CGFloat height = self.toolbarHeight + ConversationInputToolbarBorderViewHeight;
+    if (self.quotedMessagePreview) {
+        height += self.quotedMessagePreview.intrinsicContentSize.height;
+    }
+    CGSize newSize = CGSizeMake(self.bounds.size.width, height);
+
     return newSize;
 }
 
@@ -189,14 +108,17 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [borderView autoSetDimension:ALDimensionHeight toSize:ConversationInputToolbarBorderViewHeight];
 
-    _contentView = [UIView containerView];
-    [self addSubview:self.contentView];
-    [self.contentView autoPinEdgesToSuperviewEdges];
+    _composeContainer = [UIView containerView];
+    _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
+    _contentStackView.axis = UILayoutConstraintAxisVertical;
+
+    [self addSubview:_contentStackView];
+    [_contentStackView autoPinEdgesToSuperviewEdges];
 
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    [self.contentView addSubview:self.inputTextView];
+    [self.composeContainer addSubview:self.inputTextView];
 
     // We want to be permissive about taps on the send and attachment buttons,
     // so we use wrapper views that capture nearby taps.  This is a lot easier
@@ -206,11 +128,11 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _leftButtonWrapper = [UIView containerView];
     [self.leftButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
-    [self.contentView addSubview:self.leftButtonWrapper];
+    [self.composeContainer addSubview:self.leftButtonWrapper];
     _rightButtonWrapper = [UIView containerView];
     [self.rightButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
-    [self.contentView addSubview:self.rightButtonWrapper];
+    [self.composeContainer addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -328,16 +250,39 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self ensureContentConstraints];
 }
 
-- (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage
+- (void)setQuotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
-    QuotedMessagePreviewView *quotedMessageView =
-        [[QuotedMessagePreviewView alloc] initWithQuotedMessage:quotedMessage];
+    if (quotedMessage == _quotedMessage) {
+        return;
+    }
 
-    [self ensureContentConstraints];
+    if (self.quotedMessagePreview) {
+        [self clearQuotedMessagePreview];
+    }
+    OWSAssert(self.quotedMessagePreview == nil);
+
+    _quotedMessage = quotedMessage;
+
+    if (!quotedMessage) {
+        [self clearQuotedMessagePreview];
+        return;
+    }
+
+    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedMessage:quotedMessage];
+    self.quotedMessagePreview.delegate = self;
+
+    // TODO animate
+    [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];
 }
 
-- (void)clearQuotedMessage
+- (void)clearQuotedMessagePreview
 {
+    // TODO animate
+    if (self.quotedMessagePreview) {
+        [self.contentStackView removeArrangedSubview:self.quotedMessagePreview];
+        [self.quotedMessagePreview removeFromSuperview];
+        self.quotedMessagePreview = nil;
+    }
 }
 
 - (void)beginEditingTextMessage
@@ -808,6 +753,13 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
             }
         }
     }
+}
+
+#pragma mark QuotedReplyPreviewViewDelegate
+
+- (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
+{
+    self.quotedMessage = nil;
 }
 
 @end

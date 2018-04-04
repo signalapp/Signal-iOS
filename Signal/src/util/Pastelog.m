@@ -516,7 +516,10 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
         }];
-        [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
+        [ThreadUtil sendMessageWithText:url.absoluteString
+                               inThread:thread
+                          quotedMessage:nil
+                          messageSender:messageSender];
     });
 
     // Also copy to pasteboard.
@@ -536,7 +539,10 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     DispatchMainThreadSafe(^{
         if (thread) {
             OWSMessageSender *messageSender = Environment.current.messageSender;
-            [ThreadUtil sendMessageWithText:url.absoluteString inThread:thread messageSender:messageSender];
+            [ThreadUtil sendMessageWithText:url.absoluteString
+                                   inThread:thread
+                              quotedMessage:nil
+                              messageSender:messageSender];
         } else {
             [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
         }

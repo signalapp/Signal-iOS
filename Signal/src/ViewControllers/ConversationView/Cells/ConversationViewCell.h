@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
                            viewItem:(ConversationViewItem *)conversationItem;
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem;
+- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem;
 
 #pragma mark - System Cell
 

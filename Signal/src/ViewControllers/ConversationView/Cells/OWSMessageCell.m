@@ -1899,6 +1899,13 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     [self.delegate showMetadataViewForViewItem:self.viewItem];
 }
 
+- (void)replyAction:(nullable id)sender
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    [self.delegate conversationCell:self didTapReplyForViewItem:self.viewItem];
+}
+
 - (BOOL)canBecomeFirstResponder
 {
     return self.isPresentingMenuController;

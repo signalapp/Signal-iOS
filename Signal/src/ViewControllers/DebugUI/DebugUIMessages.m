@@ -280,7 +280,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     OWSMessageSender *messageSender = [Environment current].messageSender;
-    TSOutgoingMessage *message = [ThreadUtil sendMessageWithText:text inThread:thread messageSender:messageSender];
+    TSOutgoingMessage *message =
+        [ThreadUtil sendMessageWithText:text inThread:thread quotedMessage:nil messageSender:messageSender];
     DDLogError(@"%@ sendTextMessageInThread timestamp: %llu.", self.logTag, message.timestamp);
 }
 
@@ -342,7 +343,11 @@ NS_ASSUME_NONNULL_BEGIN
         [DDLog flushLog];
     }
     OWSAssert(![attachment hasError]);
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            quotedMessage:nil
+                            messageSender:messageSender
+                               completion:nil];
     success();
 }
 
@@ -1709,7 +1714,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalAttachment *attachment = [self signalAttachmentForFilePath:filePath];
     OWSMessageSender *messageSender = [Environment current].messageSender;
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            quotedMessage:nil
+                            messageSender:messageSender
+                               completion:nil];
     success();
 }
 
@@ -1947,8 +1956,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                           isAttachmentDownloaded:isQuotedMessageAttachmentDownloaded
                                                    quotedMessage:nil
                                                      transaction:transaction];
-                quotedMessage =
-                    [OWSMessageUtils quotedMessageForIncomingMessage:messageToQuote transaction:transaction];
+                OWSAssert(messageToQuote);
+                quotedMessage = [OWSMessageUtils quotedMessageForMessage:messageToQuote transaction:transaction];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBody
@@ -1958,8 +1967,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                                                        isRead:quotedMessageIsRead
                                                                                 quotedMessage:nil
                                                                                   transaction:transaction];
-                quotedMessage = [OWSMessageUtils quotedMessageForOutgoingMessage:(TSOutgoingMessage *)messageToQuote
-                                                                     transaction:transaction];
+                OWSAssert(messageToQuote);
+                quotedMessage = [OWSMessageUtils quotedMessageForMessage:messageToQuote transaction:transaction];
             }
             OWSAssert(quotedMessage);
 
@@ -2696,7 +2705,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            quotedMessage:nil
+                            messageSender:messageSender
+                               completion:nil];
 }
 
 + (NSData *)createRandomNSDataOfSize:(size_t)size
@@ -2731,6 +2744,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     }
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
+                            quotedMessage:nil
                             messageSender:messageSender
                              ignoreErrors:YES
                                completion:nil];
@@ -3148,7 +3162,10 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     OWSMessageSender *messageSender = [Environment current].messageSender;
     void (^completion)(void) = ^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [ThreadUtil sendMessageWithText:[@(counter) description] inThread:thread messageSender:messageSender];
+            [ThreadUtil sendMessageWithText:[@(counter) description]
+                                   inThread:thread
+                              quotedMessage:nil
+                              messageSender:messageSender];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self createNewGroups:counter - 1 recipientId:recipientId];
             });
@@ -3678,7 +3695,11 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
             [DDLog flushLog];
         }
         OWSAssert(![attachment hasError]);
-        [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+        [ThreadUtil sendMessageWithAttachment:attachment
+                                     inThread:thread
+                                quotedMessage:nil
+                                messageSender:messageSender
+                                   completion:nil];
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             sendUnsafeFile();

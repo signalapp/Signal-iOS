@@ -97,7 +97,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.delegate = self
         textView.backgroundColor = UIColor.white
         textView.textColor = UIColor.black
-        textView.font = UIFont.ows_dynamicTypeBody()
+        textView.font = UIFont.ows_dynamicTypeBody
         textView.text = self.initialMessageText
         textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
         textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)

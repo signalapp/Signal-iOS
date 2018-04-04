@@ -87,6 +87,7 @@
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -2142,6 +2143,30 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem
+{
+    DDLogDebug(@"%@ user did tap reply", self.logTag);
+
+    TSMessage *message = (TSMessage *)conversationItem.interaction;
+    if (![message isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"%@ unexpected reply message: %@", self.logTag, message);
+        return;
+    }
+
+    __block TSQuotedMessage *quotedMessage;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        quotedMessage = [OWSMessageUtils quotedMessageForMessage:message transaction:transaction];
+    }];
+
+    if (![quotedMessage isKindOfClass:[TSQuotedMessage class]]) {
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedMessage);
+        return;
+    }
+
+    [self.inputToolbar setQuotedMessage:quotedMessage];
+    [self.inputToolbar beginEditingTextMessage];
+}
+
 #pragma mark - System Messages
 
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
@@ -2409,6 +2434,7 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
+    self.inputToolbar.quotedMessage = nil;
 
     if ([Environment.preferences soundInForeground]) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
@@ -2745,6 +2771,7 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
+                                                         quotedMessage:self.inputToolbar.quotedMessage
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4015,10 +4042,14 @@ typedef enum : NSUInteger {
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
+                                          quotedMessage:self.inputToolbar.quotedMessage
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
-        message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+        message = [ThreadUtil sendMessageWithText:text
+                                         inThread:self.thread
+                                    quotedMessage:self.inputToolbar.quotedMessage
+                                    messageSender:self.messageSender];
     }
 
     [self messageWasSent:message];

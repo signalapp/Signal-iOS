@@ -44,27 +44,32 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @class TSOutgoingMessage;
+@class TSQuotedMessage;
 
 @interface ThreadUtil : NSObject
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
+                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                              messageSender:(OWSMessageSender *)messageSender
                                    success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler;
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
+                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                              messageSender:(OWSMessageSender *)messageSender;
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                    messageSender:(OWSMessageSender *)messageSender
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
 // We only should set ignoreErrors in debug or test code.
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;
