@@ -45,7 +45,11 @@ class QuotedReplyPreview: UIView {
 
         let authorLabel: UILabel = UILabel()
         authorLabel.textColor = authorColor
-        authorLabel.text = Environment.current().contactsManager.displayName(forPhoneIdentifier: quotedMessage.authorId)
+        if isQuotingSelf {
+            authorLabel.text = NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "")
+        } else {
+            authorLabel.text = Environment.current().contactsManager.displayName(forPhoneIdentifier: quotedMessage.authorId)
+        }
         authorLabel.font = .ows_dynamicTypeHeadline
 
         let bodyLabel: UILabel = UILabel()
