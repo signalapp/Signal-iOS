@@ -90,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.displayableQuotedText.displayText.length > 0) {
         return self.displayableQuotedText.displayText;
     } else {
+        // TODO: Are we going to use the filename?  For all mimetypes?
         NSString *mimeType = self.quotedMessage.contentType;
 
         if (mimeType.length > 0) {
@@ -98,6 +99,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return @"";
+}
+
+- (UIColor *)highlightColor
+{
+    BOOL isIncomingQuote
+        = ![NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+    return (isIncomingQuote ? OWSMessagesBubbleImageFactory.bubbleColorIncoming
+                            : OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent);
 }
 
 #pragma mark -
@@ -118,12 +127,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self.boundsStrokeView setCompressionResistanceLow];
 
     UIView *_Nullable quotedAttachmentView = nil;
-    // TODO:
     if (self.hasQuotedAttachment) {
-        // TODO:
-        quotedAttachmentView = [UIView containerView];
+        UIImage *_Nullable thumbnailImage = [self tryToLoadThumbnailImage];
+        if (thumbnailImage) {
+            quotedAttachmentView = [self imageViewForImage:thumbnailImage];
+
+            // Stroke the edge softly.
+            quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
+            quotedAttachmentView.layer.borderWidth = 1.f;
+            quotedAttachmentView.layer.cornerRadius = 2.f;
+        } else {
+            // TODO: This asset is wrong.
+            // TODO: There's a special asset for audio files.
+            UIImage *contentIcon = [UIImage imageNamed:@"file-thin-black-filled-large"];
+            UIImageView *contentImageView = [self imageViewForImage:contentIcon];
+            quotedAttachmentView = [UIView containerView];
+            [quotedAttachmentView addSubview:contentImageView];
+            quotedAttachmentView.backgroundColor = self.highlightColor;
+            quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
+            [contentImageView autoCenterInSuperview];
+            [contentImageView
+                autoSetDimensionsToSize:CGSizeMake(self.quotedAttachmentSize * 0.5f, self.quotedAttachmentSize * 0.5f)];
+        }
+
         quotedAttachmentView.userInteractionEnabled = NO;
-        quotedAttachmentView.backgroundColor = [UIColor redColor];
         [self addSubview:quotedAttachmentView];
         [quotedAttachmentView autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
         [quotedAttachmentView autoVCenterInSuperview];
@@ -133,9 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAttachmentView setCompressionResistanceHigh];
 
         if (quotedAttachmentView) {
-            quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
-            quotedAttachmentView.layer.borderWidth = 1.f;
-            quotedAttachmentView.layer.cornerRadius = 2.f;
         }
     }
 
@@ -184,12 +208,8 @@ NS_ASSUME_NONNULL_BEGIN
         [stripeAndTextContainer setCompressionResistanceLow];
 
         // Stripe.
-        BOOL isIncomingQuote
-            = ![NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-        UIColor *stripeColor = (isIncomingQuote ? OWSMessagesBubbleImageFactory.bubbleColorIncoming
-                                                : OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent);
         UIView *quoteStripView = [UIView containerView];
-        quoteStripView.backgroundColor = stripeColor;
+        quoteStripView.backgroundColor = self.highlightColor;
         quoteStripView.userInteractionEnabled = NO;
         [stripeAndTextContainer addSubview:quoteStripView];
         [quoteStripView autoPinHeightToSuperview];
@@ -209,6 +229,36 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedTextLabel setContentHuggingLow];
         [quotedTextLabel setCompressionResistanceLow];
     }
+}
+
+- (nullable UIImage *)tryToLoadThumbnailImage
+{
+    if (!self.hasQuotedAttachmentThumbnail) {
+        return nil;
+    }
+    if (!self.quotedMessage.thumbnailData) {
+        return nil;
+    }
+    // TODO: Possibly ignore data that is too large.
+    UIImage *_Nullable image = [UIImage imageWithData:self.quotedMessage.thumbnailData];
+    // TODO: Possibly ignore images that are too large.
+    return image;
+}
+
+- (UIImageView *)imageViewForImage:(UIImage *)image
+{
+    OWSAssert(image);
+
+    UIImageView *imageView = [UIImageView new];
+    imageView.image = image;
+    // We need to specify a contentMode since the size of the image
+    // might not match the aspect ratio of the view.
+    imageView.contentMode = UIViewContentModeScaleAspectFill;
+    // Use trilinear filters for better scaling quality at
+    // some performance cost.
+    imageView.layer.minificationFilter = kCAFilterTrilinear;
+    imageView.layer.magnificationFilter = kCAFilterTrilinear;
+    return imageView;
 }
 
 #pragma mark - Measurement
