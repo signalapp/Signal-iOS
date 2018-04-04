@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
-                                   quotedMessage:quotedMessage
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                    messageSender:(OWSMessageSender *)messageSender
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
