@@ -250,13 +250,24 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self ensureContentConstraints];
 }
 
-- (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage
+- (void)setQuotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
+    if (quotedMessage == _quotedMessage) {
+        return;
+    }
+
     // TODO update existing preview with message in case we switch which message we're quoting.
     if (self.quotedMessagePreview) {
-        [self clearQuotedMessage];
+        [self clearQuotedMessagePreview];
     }
     OWSAssert(self.quotedMessagePreview == nil);
+
+    _quotedMessage = quotedMessage;
+
+    if (!quotedMessage) {
+        [self clearQuotedMessagePreview];
+        return;
+    }
 
     self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedMessage:quotedMessage];
     self.quotedMessagePreview.delegate = self;
@@ -265,7 +276,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];
 }
 
-- (void)clearQuotedMessage
+- (void)clearQuotedMessagePreview
 {
     // TODO animate
     if (self.quotedMessagePreview) {
@@ -749,7 +760,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
 {
-    [self clearQuotedMessage];
+    self.quotedMessage = nil;
 }
 
 @end

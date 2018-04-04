@@ -1052,21 +1052,6 @@ typedef enum : NSUInteger {
             [self becomeFirstResponder];
         }
     }
-
-    // FIXME DO NOT COMMIT. Just for developing.
-    TSInteraction *lastInteraction = self.viewItems.lastObject.interaction;
-    if ([lastInteraction isKindOfClass:[TSMessage class]]) {
-        TSMessage *lastMessage = (TSMessage *)lastInteraction;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            DDLogDebug(@"%@ setting quoted message: %llu", self.logTag, (unsigned long long)lastMessage.timestamp);
-            TSQuotedMessage *_Nullable quotedMessage =
-                [OWSMessageUtils quotedMessageForMessage:lastMessage transaction:transaction];
-            [self.inputToolbar setQuotedMessage:quotedMessage];
-        }];
-        [self reloadInputViews];
-    } else {
-        DDLogDebug(@"%@ not setting quoted message for message: %@", self.logTag, lastInteraction.class);
-    }
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -2449,6 +2434,7 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
+    self.inputToolbar.quotedMessage = nil;
 
     if ([Environment.preferences soundInForeground]) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
@@ -2785,6 +2771,7 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
+                                                         quotedMessage:self.inputToolbar.quotedMessage
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4055,10 +4042,14 @@ typedef enum : NSUInteger {
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
+                                          quotedMessage:self.inputToolbar.quotedMessage
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
-        message = [ThreadUtil sendMessageWithText:text inThread:self.thread messageSender:self.messageSender];
+        message = [ThreadUtil sendMessageWithText:text
+                                         inThread:self.thread
+                                    quotedMessage:self.inputToolbar.quotedMessage
+                                    messageSender:self.messageSender];
     }
 
     [self messageWasSent:message];

@@ -219,7 +219,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            quotedMessage:nil
+                            messageSender:messageSender
+                               completion:nil];
 }
 
 + (void)sendUnencryptedDatabase:(TSThread *)thread
@@ -242,7 +246,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ attachment[%@]: %@", self.logTag, [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [ThreadUtil sendMessageWithAttachment:attachment inThread:thread messageSender:messageSender completion:nil];
+    [ThreadUtil sendMessageWithAttachment:attachment
+                                 inThread:thread
+                            quotedMessage:nil
+                            messageSender:messageSender
+                               completion:nil];
 }
 
 @end

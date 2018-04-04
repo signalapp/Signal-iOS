@@ -55,10 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
+                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                              messageSender:(OWSMessageSender *)messageSender
 {
     return [self sendMessageWithText:text
         inThread:thread
+        quotedMessage:quotedMessage
         messageSender:messageSender
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.logTag);
@@ -71,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
+                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                              messageSender:(OWSMessageSender *)messageSender
                                    success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
@@ -87,11 +90,10 @@ NS_ASSUME_NONNULL_BEGIN
                                 inThread:thread
                              messageBody:text
                            attachmentIds:[NSMutableArray new]
-                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)
-                                  expireStartedAt:0
+                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)expireStartedAt:0
                           isVoiceMessage:NO
                         groupMetaMessage:TSGroupMessageNone
-                           quotedMessage:nil];
+                           quotedMessage:quotedMessage];
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
@@ -100,11 +102,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                    messageSender:(OWSMessageSender *)messageSender
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     return [self sendMessageWithAttachment:attachment
                                   inThread:thread
+                             quotedMessage:quotedMessage
                              messageSender:messageSender
                               ignoreErrors:NO
                                 completion:completion];
@@ -112,6 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion

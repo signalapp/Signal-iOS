@@ -193,6 +193,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 
             [ThreadUtil sendMessageWithText:replyText
                 inThread:thread
+                quotedMessage:nil // TODO we could do an actual quoted reply here, but most apps don't.
                 messageSender:self.messageSender
                 success:^{
                     // TODO do we really want to mark them all as read?
