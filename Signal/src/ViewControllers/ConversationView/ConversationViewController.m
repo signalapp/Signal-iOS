@@ -2158,6 +2158,30 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem
+{
+    DDLogDebug(@"%@ user did tap reply", self.logTag);
+
+    TSMessage *message = (TSMessage *)conversationItem.interaction;
+    if (![message isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"%@ unexpected reply message: %@", self.logTag, message);
+        return;
+    }
+
+    __block TSQuotedMessage *quotedMessage;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        quotedMessage = [OWSMessageUtils quotedMessageForMessage:message transaction:transaction];
+    }];
+
+    if (![quotedMessage isKindOfClass:[TSQuotedMessage class]]) {
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedMessage);
+        return;
+    }
+
+    [self.inputToolbar setQuotedMessage:quotedMessage];
+    [self.inputToolbar beginEditingTextMessage];
+}
+
 #pragma mark - System Messages
 
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction

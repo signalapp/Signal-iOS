@@ -252,13 +252,14 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage
 {
+    // TODO update existing preview with message in case we switch which message we're quoting.
+    if (self.quotedMessagePreview) {
+        [self clearQuotedMessage];
+    }
     OWSAssert(self.quotedMessagePreview == nil);
 
-    // TODO update preview view with message in case we switch which message we're quoting.
-    if (quotedMessage) {
-        self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedMessage:quotedMessage];
-        self.quotedMessagePreview.delegate = self;
-    }
+    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedMessage:quotedMessage];
+    self.quotedMessagePreview.delegate = self;
 
     // TODO animate
     [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];

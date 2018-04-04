@@ -542,18 +542,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (NSArray<UIMenuItem *> *)textMenuControllerItems
 {
     return @[
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
-                                              @"Short name for edit menu item to copy contents of media message.")
-                                   action:self.copyTextActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
                                               @"Short name for edit menu item to show message metadata.")
                                    action:self.metadataActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
+                                              @"Short name for edit menu item to copy contents of media message.")
+                                   action:self.copyTextActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+                                              @"Short name for edit menu item to reply to a message.")
+                                   action:self.replyActionSelector],
         // FIXME: when deleting a caption, users will be surprised that it also deletes the attachment.
         // We either need to implement a way to remove the caption separate from the attachment
         // or make a design change which clarifies that the whole message is getting deleted.
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-                                                            @"Short name for edit menu item to delete contents of media message.")
-                                                            action:self.deleteActionSelector]
+                                              @"Short name for edit menu item to delete contents of media message.")
+                                   action:self.deleteActionSelector]
     ];
 }
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems
@@ -565,6 +568,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
                                               @"Short name for edit menu item to copy contents of media message.")
                                    action:self.copyMediaActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+                                              @"Short name for edit menu item to reply to a message.")
+                                   action:self.replyActionSelector],
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
                                               @"Short name for edit menu item to delete contents of media message.")
                                    action:self.deleteActionSelector],
@@ -604,6 +610,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return NSSelectorFromString(@"deleteAction:");
 }
 
+- (SEL)replyActionSelector
+{
+    return NSSelectorFromString(@"replyAction:");
+}
+
 - (SEL)metadataActionSelector
 {
     return NSSelectorFromString(@"metadataAction:");
@@ -625,6 +636,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     } else if (action == self.deleteActionSelector) {
         return YES;
     } else if (action == self.metadataActionSelector) {
+        return YES;
+    } else if (action == self.replyActionSelector) {
         return YES;
     } else {
         return NO;

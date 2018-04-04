@@ -184,9 +184,6 @@
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
 
-/* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Checking Backup State";
-
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
 
@@ -1518,6 +1515,9 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+
+/* Short name for edit menu item to reply to a message. */
+"REPLY_ITEM_ACTION" = "Reply";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Re-register for push notifications";
