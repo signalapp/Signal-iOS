@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSQuotedMessage *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 
-@property (nonatomic, readonly) UIFont *textMessageFont;
-
 @property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
 
 @end
@@ -67,7 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
-    _textMessageFont = [UIFont ows_dynamicTypeBodyFont];
 
     return self;
 }
@@ -83,22 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.quotedMessage.contentType.length > 0
         && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType] &&
         [TSAttachmentStream hasThumbnailForMimeType:self.quotedMessage.contentType]);
-}
-
-- (NSString *)quotedSnippet
-{
-    if (self.displayableQuotedText.displayText.length > 0) {
-        return self.displayableQuotedText.displayText;
-    } else {
-        // TODO: Are we going to use the filename?  For all mimetypes?
-        NSString *mimeType = self.quotedMessage.contentType;
-
-        if (mimeType.length > 0) {
-            return [TSAttachment emojiForMimeType:mimeType];
-        }
-    }
-
-    return @"";
 }
 
 - (UIColor *)highlightColor
@@ -136,6 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
             quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
             quotedAttachmentView.layer.borderWidth = 1.f;
             quotedAttachmentView.layer.cornerRadius = 2.f;
+            quotedAttachmentView.clipsToBounds = YES;
         } else {
             // TODO: This asset is wrong.
             // TODO: There's a special asset for audio files.
@@ -163,17 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSContactsManager *contactsManager = Environment.current.contactsManager;
-    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
-
-    UILabel *quotedAuthorLabel = [UILabel new];
+    UILabel *quotedAuthorLabel = [self createQuotedAuthorLabel];
     {
-        quotedAuthorLabel.text = quotedAuthor;
-        quotedAuthorLabel.font = self.quotedAuthorFont;
-        // TODO:
-        quotedAuthorLabel.textColor = [UIColor ows_darkGrayColor];
-        quotedAuthorLabel.numberOfLines = 1;
-        quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self addSubview:quotedAuthorLabel];
         [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedAuthorTopInset];
         [quotedAuthorLabel autoPinLeadingToSuperviewMarginWithInset:self.quotedContentHInset];
@@ -261,6 +234,77 @@ NS_ASSUME_NONNULL_BEGIN
     return imageView;
 }
 
+- (UILabel *)createQuotedTextLabel
+{
+    UIColor *textColor = self.quotedTextColor;
+    UIFont *font = self.quotedTextFont;
+    NSString *text = @"";
+
+    NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];
+    NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
+
+    if (self.displayableQuotedText.displayText.length > 0) {
+        text = self.displayableQuotedText.displayText;
+        textColor = self.quotedTextColor;
+        font = self.quotedTextFont;
+    } else if (fileTypeForSnippet) {
+        text = fileTypeForSnippet;
+        textColor = self.fileTypeTextColor;
+        font = self.fileTypeFont;
+    } else if (sourceFilename) {
+        text = sourceFilename;
+        textColor = self.filenameTextColor;
+        font = self.filenameFont;
+    }
+
+    UILabel *quotedTextLabel = [UILabel new];
+    quotedTextLabel.numberOfLines = 3;
+    quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    quotedTextLabel.text = text;
+    quotedTextLabel.textColor = textColor;
+    quotedTextLabel.font = font;
+
+    return quotedTextLabel;
+}
+
+- (nullable NSString *)fileTypeForSnippet
+{
+    // TODO: Are we going to use the filename?  For all mimetypes?
+    NSString *_Nullable contentType = self.quotedMessage.contentType;
+    if (contentType.length > 0) {
+        if ([MIMETypeUtil isAudio:contentType]) {
+            return NSLocalizedString(
+                @"QUOTED_REPLY_TYPE_AUDIO", @"Indicates this message is a quoted reply to an audio file.");
+        } else if ([MIMETypeUtil isVideo:contentType]) {
+            return NSLocalizedString(
+                @"QUOTED_REPLY_TYPE_VIDEO", @"Indicates this message is a quoted reply to a video file.");
+        }
+    } else if ([MIMETypeUtil isImage:contentType] || [MIMETypeUtil isAnimated:contentType]) {
+        return NSLocalizedString(
+            @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
+    }
+    return nil;
+}
+
+- (UILabel *)createQuotedAuthorLabel
+{
+    OWSContactsManager *contactsManager = Environment.current.contactsManager;
+    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
+    NSString *quotedAuthorText =
+        [NSString stringWithFormat:
+                      NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
+                          @"Indicates the author of a quoted message. Embeds {{the author's name or phone number}}."),
+                  quotedAuthor];
+
+    UILabel *quotedAuthorLabel = [UILabel new];
+    quotedAuthorLabel.text = quotedAuthorText;
+    quotedAuthorLabel.font = self.quotedAuthorFont;
+    quotedAuthorLabel.textColor = [self quotedAuthorColor];
+    quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    quotedAuthorLabel.numberOfLines = 1;
+    return quotedAuthorLabel;
+}
+
 #pragma mark - Measurement
 
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth
@@ -286,14 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
     {
         CGFloat maxQuotedAuthorWidth = maxWidth - result.width;
 
-        OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
-
-        UILabel *quotedAuthorLabel = [UILabel new];
-        quotedAuthorLabel.text = quotedAuthor;
-        quotedAuthorLabel.font = self.quotedAuthorFont;
-        quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        quotedAuthorLabel.numberOfLines = 1;
+        UILabel *quotedAuthorLabel = [self createQuotedAuthorLabel];
 
         CGSize quotedAuthorSize
             = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxQuotedAuthorWidth, CGFLOAT_MAX)]);
@@ -327,17 +364,14 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (UILabel *)createQuotedTextLabel
+- (UIFont *)quotedAuthorFont
 {
-    UILabel *quotedTextLabel = [UILabel new];
-    quotedTextLabel.numberOfLines = 3;
-    quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    quotedTextLabel.text = self.quotedSnippet;
-    quotedTextLabel.textColor = self.quotedTextColor;
+    return [UIFont ows_mediumFontWithSize:11.f];
+}
 
-    // Honor dynamic type in the message bodies.
-    quotedTextLabel.font = self.textMessageFont;
-    return quotedTextLabel;
+- (UIColor *)quotedAuthorColor
+{
+    return [UIColor colorWithRGBHex:0x8E8E93];
 }
 
 - (UIColor *)quotedTextColor
@@ -345,77 +379,92 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor blackColor];
 }
 
-// TODO:
-- (UIFont *)quotedAuthorFont
+- (UIFont *)quotedTextFont
 {
-    return [UIFont ows_regularFontWithSize:10.f];
+    // Honor dynamic type in the text.
+    // TODO: ?
+    return [UIFont ows_dynamicTypeBodyFont];
 }
 
-// TODO:
+- (UIColor *)fileTypeTextColor
+{
+    return [UIColor colorWithWhite:0.5f alpha:1.f];
+}
+
+- (UIFont *)fileTypeFont
+{
+    UIFontDescriptor *fontD =
+        [self.quotedTextFont.fontDescriptor fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+    UIFont *font = [UIFont fontWithDescriptor:fontD size:0];
+    OWSAssert(font);
+    return font ?: self.quotedTextFont;
+}
+
+- (UIColor *)filenameTextColor
+{
+    return [UIColor colorWithWhite:0.5f alpha:1.f];
+}
+
+- (UIFont *)filenameFont
+{
+    return self.quotedTextFont;
+}
+
 - (CGFloat)quotedAuthorHeight
 {
     return (CGFloat)ceil([self quotedAuthorFont].lineHeight * 1.f);
 }
 
-// TODO:
 - (CGFloat)quotedAuthorTopInset
 {
-    return 4.f;
+    return 8.f;
 }
 
 // TODO:
 - (CGFloat)quotedAuthorBottomSpacing
 {
-    return 2.f;
+    return 3.f;
 }
 
-// TODO:
 - (CGFloat)quotedTextBottomInset
 {
-    return 5.f;
+    return 4.f;
 }
 
-// TODO:
 - (CGFloat)quotedReplyStripeThickness
 {
     return 2.f;
 }
 
-// TODO:
 - (CGFloat)quotedReplyStripeVExtension
-{
-    return 5.f;
-}
-
-// The spacing between the vertical "quoted reply stripe"
-// and the quoted message content.
-// TODO:
-- (CGFloat)quotedReplyStripeHSpacing
 {
     return 8.f;
 }
 
+// The spacing between the vertical "quoted reply stripe"
+// and the quoted message content.
+- (CGFloat)quotedReplyStripeHSpacing
+{
+    return 4.f;
+}
+
 // Distance from top edge of "quoted message" bubble to top of message bubble.
-// TODO:
 - (CGFloat)quotedAttachmentMinVInset
 {
-    return 10.f;
+    return 12.f;
 }
 
-// TODO:
 - (CGFloat)quotedAttachmentSize
 {
-    return 30.f;
+    return 44.f;
 }
 
-// TODO:
 - (CGFloat)quotedAttachmentHSpacing
 {
-    return 10.f;
+    return 8.f;
 }
 
 // Distance from sides of the quoted content to the sides of the message bubble.
-// TODO:
 - (CGFloat)quotedContentHInset
 {
     return 8.f;

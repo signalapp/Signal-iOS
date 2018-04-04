@@ -1144,13 +1144,24 @@ NS_ASSUME_NONNULL_BEGIN
 
             const CGFloat maxMediaWidth = maxMessageWidth;
             const CGFloat maxMediaHeight = maxMessageWidth;
-            CGFloat mediaWidth = (CGFloat)round(maxMediaHeight * contentAspectRatio);
-            CGFloat mediaHeight = (CGFloat)round(maxMediaHeight);
+            CGFloat mediaWidth = maxMediaHeight * contentAspectRatio;
+            CGFloat mediaHeight = maxMediaHeight;
             if (mediaWidth > maxMediaWidth) {
-                mediaWidth = (CGFloat)round(maxMediaWidth);
-                mediaHeight = (CGFloat)round(maxMediaWidth / contentAspectRatio);
+                mediaWidth = maxMediaWidth;
+                mediaHeight = maxMediaWidth / contentAspectRatio;
             }
-            return CGSizeMake(mediaWidth, mediaHeight);
+
+            // We don't want to blow up small images unnecessarily.
+            const CGFloat kMinimumSize = 150.f;
+            CGFloat shortSrcDimension = MIN(self.mediaSize.width, self.mediaSize.height);
+            CGFloat shortDstDimension = MIN(mediaWidth, mediaHeight);
+            if (shortDstDimension > kMinimumSize && shortDstDimension > shortSrcDimension) {
+                CGFloat factor = kMinimumSize / shortDstDimension;
+                mediaWidth *= factor;
+                mediaHeight *= factor;
+            }
+
+            return CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
         }
         case OWSMessageCellType_Audio:
             return CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
