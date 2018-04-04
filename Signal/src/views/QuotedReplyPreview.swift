@@ -43,7 +43,7 @@ class QuotedReplyPreview: UIView {
         // used for text and cancel
         let foregroundColor: UIColor = .darkGray
 
-        let  authorLabel: UILabel = UILabel()
+        let authorLabel: UILabel = UILabel()
         authorLabel.textColor = authorColor
         authorLabel.text = Environment.current().contactsManager.displayName(forPhoneIdentifier: quotedMessage.authorId)
         authorLabel.font = .ows_dynamicTypeHeadline
@@ -54,6 +54,18 @@ class QuotedReplyPreview: UIView {
         bodyLabel.text = quotedMessage.body
 
         let iconView: UIView? = QuotedReplyPreview.iconView(message: quotedMessage)
+        let thumbnailView: UIView? = {
+            if let image = quotedMessage.thumbnailImage() {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFill
+                imageView.autoPinToSquareAspectRatio()
+                imageView.layer.cornerRadius = 3.0
+                imageView.clipsToBounds = true
+
+                return imageView
+            }
+            return nil
+        }()
 
         let cancelButton: UIButton = UIButton(type: .custom)
         // FIXME proper image asset/size
@@ -65,44 +77,40 @@ class QuotedReplyPreview: UIView {
         let quoteStripe: UIView = UIView()
         quoteStripe.backgroundColor = authorColor
 
-        let contentViews: [UIView] = iconView == nil ? [bodyLabel] : [iconView!, bodyLabel]
-        let contentContainer: UIStackView = UIStackView(arrangedSubviews: contentViews)
-        contentContainer.axis = .horizontal
-        contentContainer.spacing = 4.0
+        let bodyContentViews: [UIView] = iconView == nil ? [bodyLabel] : [iconView!, bodyLabel]
+        let bodyContentView: UIStackView = UIStackView(arrangedSubviews: bodyContentViews)
+        bodyContentView.axis = .horizontal
+        bodyContentView.spacing = 4.0
 
-        self.addSubview(authorLabel)
-        self.addSubview(contentContainer)
-        self.addSubview(cancelButton)
+        let textColumn = UIView.container()
+        textColumn.addSubview(authorLabel)
+        textColumn.addSubview(bodyContentView)
+
+        authorLabel.setCompressionResistanceHigh()
+        authorLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+        authorLabel.autoPinEdge(.bottom, to: .top, of: bodyContentView)
+        bodyContentView.setCompressionResistanceHigh()
+        bodyContentView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+
+        let contentViews: [UIView] = [textColumn, thumbnailView, cancelButton].flatMap { return $0 }
+        let contentRow = UIStackView(arrangedSubviews: contentViews)
+        contentRow.axis = .horizontal
+        self.addSubview(contentRow)
         self.addSubview(quoteStripe)
 
         // Layout
 
-        let kCancelButtonMargin: CGFloat = 4
         let kQuoteStripeWidth: CGFloat = 4
-        let leadingMargin: CGFloat = kQuoteStripeWidth + 8
-        let vMargin: CGFloat = 6
-        let trailingMargin: CGFloat = 8
-
-        self.layoutMargins = UIEdgeInsets(top: vMargin, left: leadingMargin, bottom: vMargin, right: trailingMargin)
+        self.layoutMargins = UIEdgeInsets(top: 6,
+                                          left: kQuoteStripeWidth + 8,
+                                          bottom: 2,
+                                          right: 4)
 
         quoteStripe.autoPinEdge(toSuperviewEdge: .leading)
         quoteStripe.autoPinHeightToSuperview()
         quoteStripe.autoSetDimension(.width, toSize: kQuoteStripeWidth)
 
-        authorLabel.autoPinTopToSuperviewMargin()
-        authorLabel.autoPinLeadingToSuperviewMargin()
-
-        authorLabel.autoPinEdge(.trailing, to: .leading, of: cancelButton, withOffset: -kCancelButtonMargin)
-        authorLabel.setCompressionResistanceHigh()
-
-        contentContainer.autoPinLeadingToSuperviewMargin()
-        contentContainer.autoPinBottomToSuperviewMargin()
-        contentContainer.autoPinEdge(.top, to: .bottom, of: authorLabel)
-        contentContainer.autoPinEdge(.trailing, to: .leading, of: cancelButton, withOffset: -kCancelButtonMargin)
-
-        cancelButton.autoPinTrailingToSuperviewMargin()
-        cancelButton.autoVCenterInSuperview()
-        cancelButton.setContentHuggingHigh()
+        contentRow.autoPinEdgesToSuperviewMargins()
 
         cancelButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
     }

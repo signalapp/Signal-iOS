@@ -33,6 +33,17 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable UIImage *)thumbnailImage
+{
+    if (self.thumbnailData.length == 0) {
+        return nil;
+    }
+
+    // PERF TODO cache
+    return [UIImage imageWithData:self.thumbnailData];
+}
+
+
 @end
 
 NS_ASSUME_NONNULL_END
