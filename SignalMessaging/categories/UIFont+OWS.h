@@ -26,11 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dynamic Type
 
-+ (UIFont *)ows_dynamicTypeBodyFont;
-+ (UIFont *)ows_dynamicTypeTitle2Font;
-+ (UIFont *)ows_dynamicTypeHeadlineFont;
-+ (UIFont *)ows_infoMessageFont;
-+ (UIFont *)ows_footnoteFont;
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBodyFont;
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle2Font;
+@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeHeadlineFont;
+@property (class, readonly, nonatomic) UIFont *ows_infoMessageFont;
+@property (class, readonly, nonatomic) UIFont *ows_footnoteFont;
 
 @end
 

@@ -536,7 +536,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         textView.backgroundColor = UIColor.white
         textView.layer.cornerRadius = 4.0
         textView.addBorder(with: UIColor.lightGray)
-        textView.font = UIFont.ows_dynamicTypeBody()
+        textView.font = UIFont.ows_dynamicTypeBody
         textView.returnKeyType = .done
 
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")

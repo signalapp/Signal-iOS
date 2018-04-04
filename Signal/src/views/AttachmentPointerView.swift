@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,9 +42,9 @@ class AttachmentPointerView: UIView {
 
         if attachmentPointer.state == .downloading {
             NotificationCenter.default.addObserver(self,
-                                                   selector:#selector(attachmentDownloadProgress(_:)),
-                                                   name:NSNotification.Name.attachmentDownloadProgress,
-                                                   object:nil)
+                                                   selector: #selector(attachmentDownloadProgress(_:)),
+                                                   name: NSNotification.Name.attachmentDownloadProgress,
+                                                   object: nil)
         }
     }
 
@@ -103,7 +103,7 @@ class AttachmentPointerView: UIView {
         nameLabel.textAlignment = .center
 
         nameLabel.textColor = self.textColor
-        nameLabel.font = UIFont.ows_dynamicTypeBody()
+        nameLabel.font = UIFont.ows_dynamicTypeBody
 
         nameLabel.autoPinWidthToSuperview()
         nameLabel.autoPinEdge(toSuperviewEdge: .top)
@@ -118,7 +118,7 @@ class AttachmentPointerView: UIView {
         statusLabel.numberOfLines = 2
 
         statusLabel.textColor = self.textColor
-        statusLabel.font = UIFont.ows_footnote()
+        statusLabel.font = UIFont.ows_footnote
 
         statusLabel.autoPinWidthToSuperview()
         statusLabel.autoPinEdge(.top, to: .bottom, of: progressView, withOffset: 4)

@@ -24,8 +24,8 @@ import SignalServiceKit
         self.contentView.addSubview(textContainer)
 
         // Font config
-        nameLabel.font = UIFont.ows_dynamicTypeBody()
-        subtitleLabel.font = UIFont.ows_footnote()
+        nameLabel.font = UIFont.ows_dynamicTypeBody
+        subtitleLabel.font = UIFont.ows_footnote
         subtitleLabel.textColor = UIColor.ows_darkGray
 
         // Listen to notifications...
