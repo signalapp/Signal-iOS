@@ -102,28 +102,27 @@ NS_ASSUME_NONNULL_BEGIN
     return numberOfItems;
 }
 
-+ (nullable TSQuotedMessage *)quotedMessageForIncomingMessage:(TSIncomingMessage *)message
-                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message
+                                          transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(message);
     OWSAssert(transaction);
 
-    return [self quotedMessageForMessage:message
-                                authorId:message.authorId
-                                  thread:[message threadWithTransaction:transaction]
-                             transaction:transaction];
-}
+    TSThread *thread = [message threadWithTransaction:transaction];
 
-+ (nullable TSQuotedMessage *)quotedMessageForOutgoingMessage:(TSOutgoingMessage *)message
-                                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(message);
-    OWSAssert(transaction);
+    NSString *_Nullable authorId = ^{
+        if ([message isKindOfClass:[TSOutgoingMessage class]]) {
+            return [TSAccountManager localNumber];
+        } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
+            return [(TSIncomingMessage *)message authorId];
+        } else {
+            OWSFail(@"%@ Unexpected message type: %@", self.logTag, message.class);
+            return (NSString * _Nullable) nil;
+        }
+    }();
+    OWSAssert(authorId.length > 0);
 
-    return [self quotedMessageForMessage:message
-                                authorId:TSAccountManager.localNumber
-                                  thread:[message threadWithTransaction:transaction]
-                             transaction:transaction];
+    return [self quotedMessageForMessage:message authorId:authorId thread:thread transaction:transaction];
 }
 
 + (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message

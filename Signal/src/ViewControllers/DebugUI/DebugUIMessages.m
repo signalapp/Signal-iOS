@@ -1947,8 +1947,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                           isAttachmentDownloaded:isQuotedMessageAttachmentDownloaded
                                                    quotedMessage:nil
                                                      transaction:transaction];
-                quotedMessage =
-                    [OWSMessageUtils quotedMessageForIncomingMessage:messageToQuote transaction:transaction];
+                OWSAssert(messageToQuote);
+                quotedMessage = [OWSMessageUtils quotedMessageForMessage:messageToQuote transaction:transaction];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBody
@@ -1958,8 +1958,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                                                        isRead:quotedMessageIsRead
                                                                                 quotedMessage:nil
                                                                                   transaction:transaction];
-                quotedMessage = [OWSMessageUtils quotedMessageForOutgoingMessage:(TSOutgoingMessage *)messageToQuote
-                                                                     transaction:transaction];
+                OWSAssert(messageToQuote);
+                quotedMessage = [OWSMessageUtils quotedMessageForMessage:messageToQuote transaction:transaction];
             }
             OWSAssert(quotedMessage);
 

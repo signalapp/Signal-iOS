@@ -21,22 +21,34 @@ NS_ASSUME_NONNULL_BEGIN
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
+@class QuotedMessagePreviewView;
+
+@protocol QuotedMessagePreviewViewDelegate
+
+- (void)quoteMessagePreviewViewDidPressCancel:(QuotedMessagePreviewView *)view;
+
+@end
+
 @interface QuotedMessagePreviewView : UIView
 
-@property (nonatomic, readonly) UILabel *titleLabel;
-@property (nonatomic, readonly) UILabel *bodyLabel;
-@property (nonatomic, readonly) UIImageView *iconView;
-@property (nonatomic, readonly) UIButton *cancelButton;
-@property (nonatomic, readonly) UIView *quoteStripe;
+@property (nonatomic, weak) id<QuotedMessagePreviewViewDelegate> delegate;
 
 @end
 
 @implementation QuotedMessagePreviewView
 
-- (nullable UIImageView *)iconForMessage:(TSQuotedMessage *)message
++ (nullable UIView *)iconViewForMessage:(TSQuotedMessage *)message
 {
-    // FIXME TODO
-    return nil;
+    NSString *iconText = [TSAttachmentStream emojiForMimeType:message.contentType];
+    if (!iconText) {
+        return nil;
+    }
+
+    UILabel *iconLabel = [UILabel new];
+    [iconLabel setContentHuggingHigh];
+    iconLabel.text = iconText;
+
+    return iconLabel;
 }
 
 - (instancetype)initWithQuotedMessage:(TSQuotedMessage *)message
@@ -46,76 +58,112 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         return self;
     }
 
-    _titleLabel = [UILabel new];
-    _titleLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.authorId];
-
-    _bodyLabel = [UILabel new];
-    _bodyLabel.text = message.body;
-
-    _iconView = [self iconForMessage:message];
-    if (_iconView) {
-        [self addSubview:_iconView];
-    }
-
-    _cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *buttonImage =
-        [[UIImage imageNamed:@"quoted-message-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    [_cancelButton setImage:buttonImage forState:UIControlStateNormal];
-    _cancelButton.imageView.tintColor = [UIColor ows_blackColor];
-
-    _quoteStripe = [UIView new];
     BOOL isQuotingSelf = [message.authorId isEqualToString:[TSAccountManager localNumber]];
 
+    // used for stripe and author
     // FIXME actual colors TBD
-    _quoteStripe.backgroundColor = isQuotingSelf ? [UIColor orangeColor] : [UIColor blackColor];
+    UIColor *authorColor = isQuotingSelf ? [UIColor ows_materialBlueColor] : [UIColor blackColor];
 
-    UIView *contentContainer = [UIView containerView];
+    // used for text and cancel
+    UIColor *foregroundColor = UIColor.darkGrayColor;
 
-    [self addSubview:_titleLabel];
+    UILabel *authorLabel = [UILabel new];
+    authorLabel.textColor = authorColor;
+    authorLabel.text = [[Environment current].contactsManager displayNameForPhoneIdentifier:message.authorId];
+    authorLabel.font = UIFont.ows_dynamicTypeHeadlineFont;
+
+    UILabel *bodyLabel = [UILabel new];
+    bodyLabel.textColor = foregroundColor;
+    bodyLabel.font = UIFont.ows_footnoteFont;
+    bodyLabel.text = message.body;
+
+    UIView *iconView = [self.class iconViewForMessage:message];
+
+    UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    // FIXME proper image asset/size
+    UIImage *buttonImage =
+        [[UIImage imageNamed:@"quoted-message-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [cancelButton setImage:buttonImage forState:UIControlStateNormal];
+    cancelButton.imageView.tintColor = foregroundColor;
+    [cancelButton addTarget:self action:@selector(didTapCancel:) forControlEvents:UIControlEventTouchUpInside];
+
+    UIView *quoteStripe = [UIView new];
+
+    quoteStripe.backgroundColor = authorColor;
+
+    NSArray<__kindof UIView *> *contentViews = iconView ? @[ iconView, bodyLabel ] : @[ bodyLabel ];
+    UIStackView *contentContainer = [[UIStackView alloc] initWithArrangedSubviews:contentViews];
+    contentContainer.axis = UILayoutConstraintAxisHorizontal;
+    contentContainer.spacing = 4.0;
+
+    [self addSubview:authorLabel];
     [self addSubview:contentContainer];
-    [contentContainer addSubview:_bodyLabel];
-    [self addSubview:_cancelButton];
-    [self addSubview:_quoteStripe];
+    [self addSubview:cancelButton];
+    [self addSubview:quoteStripe];
 
     // Layout
 
-    CGFloat kLeadingMargin = 4;
+    CGFloat kCancelButtonMargin = 4;
+    CGFloat kQuoteStripeWidth = 4;
+    CGFloat leadingMargin = kQuoteStripeWidth + 8;
+    CGFloat vMargin = 6;
+    CGFloat trailingMargin = 8;
 
-    [_quoteStripe autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeRight];
-    [_titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [_titleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
-    [_titleLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
+    self.layoutMargins = UIEdgeInsetsMake(vMargin, leadingMargin, vMargin, trailingMargin);
 
-    if (_iconView) {
-        [contentContainer addSubview:_iconView];
-        [_iconView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-        [_iconView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:_bodyLabel];
-        [_iconView autoPinHeightToSuperview];
-    } else {
-        [_bodyLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:_quoteStripe withOffset:kLeadingMargin];
-    }
+    [quoteStripe autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [quoteStripe autoPinHeightToSuperview];
+    [quoteStripe autoSetDimension:ALDimensionWidth toSize:kQuoteStripeWidth];
 
-    [_bodyLabel autoPinHeightToSuperview];
-    [_bodyLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [authorLabel autoPinTopToSuperviewMargin];
+    [authorLabel autoPinLeadingToSuperviewMargin];
 
-    [contentContainer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:_titleLabel];
-    [contentContainer autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:_cancelButton];
-    [contentContainer autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [authorLabel autoPinEdge:ALEdgeTrailing toEdge:ALEdgeLeading ofView:cancelButton withOffset:-kCancelButtonMargin];
+    [authorLabel setCompressionResistanceHigh];
 
-    [_cancelButton autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [_cancelButton autoVCenterInSuperview];
+    [contentContainer autoPinLeadingToSuperviewMargin];
+    [contentContainer autoPinBottomToSuperviewMargin];
+    [contentContainer autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:authorLabel];
+    [contentContainer autoPinEdge:ALEdgeTrailing
+                           toEdge:ALEdgeLeading
+                           ofView:cancelButton
+                       withOffset:-kCancelButtonMargin];
+
+    [cancelButton autoPinTrailingToSuperviewMargin];
+    [cancelButton autoVCenterInSuperview];
+    [cancelButton setContentHuggingHigh];
+
+    [cancelButton autoSetDimensionsToSize:CGSizeMake(40, 40)];
 
     return self;
+}
+
+// MARK: UIViewOverrides
+
+// Used by stack view to determin size.
+- (CGSize)intrinsicContentSize
+{
+    return CGSizeMake(0, 30);
+}
+
+// MARK: Actions
+
+- (void)didTapCancel:(id)sender
+{
+    [self.delegate quoteMessagePreviewViewDidPressCancel:self];
 }
 
 @end
 
 #pragma mark -
 
-@interface ConversationInputToolbar () <UIGestureRecognizerDelegate, ConversationTextViewToolbarDelegate>
+@interface ConversationInputToolbar () <UIGestureRecognizerDelegate,
+    ConversationTextViewToolbarDelegate,
+    QuotedMessagePreviewViewDelegate>
 
-@property (nonatomic, readonly) UIView *contentView;
+@property (nonatomic, readonly) UIView *composeContainer;
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
+@property (nonatomic, readonly) UIStackView *contentStackView;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
@@ -171,7 +219,12 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
     // to determine the height of the rendered inputAccessoryView.
-    CGSize newSize = CGSizeMake(self.bounds.size.width, self.toolbarHeight + ConversationInputToolbarBorderViewHeight);
+    CGFloat height = self.toolbarHeight + ConversationInputToolbarBorderViewHeight;
+    if (self.quotedMessageView) {
+        height += self.quotedMessageView.intrinsicContentSize.height;
+    }
+    CGSize newSize = CGSizeMake(self.bounds.size.width, height);
+
     return newSize;
 }
 
@@ -189,14 +242,17 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [borderView autoSetDimension:ALDimensionHeight toSize:ConversationInputToolbarBorderViewHeight];
 
-    _contentView = [UIView containerView];
-    [self addSubview:self.contentView];
-    [self.contentView autoPinEdgesToSuperviewEdges];
+    _composeContainer = [UIView containerView];
+    _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
+    _contentStackView.axis = UILayoutConstraintAxisVertical;
+
+    [self addSubview:_contentStackView];
+    [_contentStackView autoPinEdgesToSuperviewEdges];
 
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    [self.contentView addSubview:self.inputTextView];
+    [self.composeContainer addSubview:self.inputTextView];
 
     // We want to be permissive about taps on the send and attachment buttons,
     // so we use wrapper views that capture nearby taps.  This is a lot easier
@@ -206,11 +262,11 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _leftButtonWrapper = [UIView containerView];
     [self.leftButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
-    [self.contentView addSubview:self.leftButtonWrapper];
+    [self.composeContainer addSubview:self.leftButtonWrapper];
     _rightButtonWrapper = [UIView containerView];
     [self.rightButtonWrapper
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
-    [self.contentView addSubview:self.rightButtonWrapper];
+    [self.composeContainer addSubview:self.rightButtonWrapper];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -330,14 +386,26 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (void)setQuotedMessage:(TSQuotedMessage *)quotedMessage
 {
-    QuotedMessagePreviewView *quotedMessageView =
-        [[QuotedMessagePreviewView alloc] initWithQuotedMessage:quotedMessage];
+    OWSAssert(self.quotedMessageView == nil);
 
-    [self ensureContentConstraints];
+    // TODO update preview view with message in case we switch which message we're quoting.
+    if (quotedMessage) {
+        self.quotedMessageView = [[QuotedMessagePreviewView alloc] initWithQuotedMessage:quotedMessage];
+        self.quotedMessageView.delegate = self;
+    }
+
+    // TODO animate
+    [self.contentStackView insertArrangedSubview:self.quotedMessageView atIndex:0];
 }
 
 - (void)clearQuotedMessage
 {
+    // TODO animate
+    if (self.quotedMessageView) {
+        [self.contentStackView removeArrangedSubview:self.quotedMessageView];
+        [self.quotedMessageView removeFromSuperview];
+        self.quotedMessageView = nil;
+    }
 }
 
 - (void)beginEditingTextMessage
@@ -808,6 +876,13 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
             }
         }
     }
+}
+
+#pragma mark QuotedMessagePreviewViewDelegate
+
+- (void)quoteMessagePreviewViewDidPressCancel:(QuotedMessagePreviewView *)view
+{
+    [self clearQuotedMessage];
 }
 
 @end

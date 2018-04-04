@@ -87,6 +87,7 @@
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -1050,6 +1051,21 @@ typedef enum : NSUInteger {
             DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
             [self becomeFirstResponder];
         }
+    }
+
+    // FIXME DO NOT COMMIT. Just for developing.
+    TSInteraction *lastInteraction = self.viewItems.lastObject.interaction;
+    if ([lastInteraction isKindOfClass:[TSMessage class]]) {
+        TSMessage *lastMessage = (TSMessage *)lastInteraction;
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+            DDLogDebug(@"%@ setting quoted message: %llu", self.logTag, (unsigned long long)lastMessage.timestamp);
+            TSQuotedMessage *_Nullable quotedMessage =
+                [OWSMessageUtils quotedMessageForMessage:lastMessage transaction:transaction];
+            [self.inputToolbar setQuotedMessage:quotedMessage];
+        }];
+        [self reloadInputViews];
+    } else {
+        DDLogDebug(@"%@ not setting quoted message for message: %@", self.logTag, lastInteraction.class);
     }
 }
 
