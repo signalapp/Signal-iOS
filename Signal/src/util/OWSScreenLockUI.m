@@ -33,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSDate *appEnteredBackgroundDate;
 @property (nonatomic, nullable) NSDate *appEnteredForegroundDate;
-@property (nonatomic, nullable) NSDate *lastUnlockAttemptDate;
 @property (nonatomic, nullable) NSDate *lastUnlockSuccessDate;
 
 @property (nonatomic, nullable) NSTimer *inactiveTimer;
@@ -158,7 +157,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAppAsInBackground
 {
     // Record the time when app entered background.
-    self.appEnteredBackgroundDate = [NSDate new];
+    BOOL shouldResetEnteredBackgroundDate = NO;
+    if (!self.appEnteredBackgroundDate) {
+        // If this is the first time we're entering the
+        // background, record the date.
+        shouldResetEnteredBackgroundDate = YES;
+    }
+    if (self.hasUnlockedScreenLock) {
+        // If we've unlocked the screen lock, record the date.
+        shouldResetEnteredBackgroundDate = YES;
+    } else {
+        // If we're returning to the background _without_
+        // having unlocked the screen lock, DO NOT update this
+        // value as that would reset the unlock timeout.
+    }
+    if (shouldResetEnteredBackgroundDate) {
+        self.appEnteredBackgroundDate = [NSDate new];
+    }
 
     self.didLastUnlockAttemptFail = NO;
 
@@ -214,7 +229,6 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@, try to unlock screen lock", self.logTag);
 
     self.isShowingScreenLockUI = YES;
-    self.lastUnlockAttemptDate = [NSDate new];
 
     [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
         DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
@@ -531,7 +545,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Clear the "delay Screen Lock UI" state; we don't want any
     // delays when presenting the "unlock screen lock UI" after
     // returning from background.
-    self.lastUnlockAttemptDate = nil;
     self.lastUnlockSuccessDate = nil;
 
     self.appIsInBackground = NO;

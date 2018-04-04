@@ -53,7 +53,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ في المجموعة %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "مشكلة في ارسال الاشارة.  الرجاء ارسال سجلات ازالة بقة البرمجة  الي فريق العمل لكي نحاول حل المشكلة.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "سجنال لايستطيع البدء . الرجاء ارسال سجلات التصحيح لفريقنا لحل هذه المشكلة. ";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "خطأ";
