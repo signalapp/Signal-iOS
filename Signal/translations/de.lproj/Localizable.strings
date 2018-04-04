@@ -1790,7 +1790,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Sehen und teilen, wann Nachrichten gelesen wurden. Diese Funktion ist optional and betrifft alle Unterhaltungen.";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Verzögerung für Bildschirmsperre";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Autom. Sperre bei Inaktivität";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signals Bildschirm entsperren unter Verwendung von Touch ID, Face ID oder deinem iOS-Gerätepasscode.";
