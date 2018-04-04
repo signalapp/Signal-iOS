@@ -389,7 +389,7 @@ NS_ASSUME_NONNULL_BEGIN
         lastSubview = quotedMessageView;
         bottomMargin = 0;
 
-        [self.bubbleView addPartnerView:quotedMessageView];
+        [self.bubbleView addPartnerView:quotedMessageView.boundsStrokeView];
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -473,7 +473,6 @@ NS_ASSUME_NONNULL_BEGIN
             OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
             bubbleStrokeView.strokeThickness = 1.f;
             bubbleStrokeView.strokeColor = [UIColor colorWithWhite:0.f alpha:0.1f];
-            bubbleStrokeView.bubbleView = self.bubbleView;
 
             [self.bubbleView addSubview:bubbleStrokeView];
             [bubbleStrokeView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyMediaView];

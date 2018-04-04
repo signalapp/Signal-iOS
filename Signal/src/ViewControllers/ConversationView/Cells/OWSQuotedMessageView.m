@@ -5,6 +5,7 @@
 #import "OWSQuotedMessageView.h"
 #import "ConversationViewItem.h"
 #import "Environment.h"
+#import "OWSBubbleStrokeView.h"
 #import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
@@ -24,15 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UIFont *textMessageFont;
 
-@property (nonatomic, readonly) UIColor *strokeColor;
-@property (nonatomic, readonly) CGFloat strokeThickness;
-
-// TODO: Replace with a bubble stroke view.
-@property (nonatomic) CAShapeLayer *shapeLayer;
-
-@property (nonatomic, weak) OWSBubbleView *bubbleView;
+@property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
 
 @end
+
+#pragma mark -
 
 @implementation OWSQuotedMessageView
 
@@ -73,11 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
     _textMessageFont = OWSMessageCell.defaultTextMessageFont;
-    _strokeColor = OWSMessagesBubbleImageFactory.bubbleColorIncoming;
-    _strokeThickness = 1.f;
-
-    self.shapeLayer = [CAShapeLayer new];
-    [self.layer addSublayer:self.shapeLayer];
 
     return self;
 }
@@ -97,6 +89,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
     self.clipsToBounds = YES;
 
+    self.boundsStrokeView = [OWSBubbleStrokeView new];
+    self.boundsStrokeView.strokeColor = OWSMessagesBubbleImageFactory.bubbleColorIncoming;
+    self.boundsStrokeView.strokeThickness = 1.f;
+    [self addSubview:self.boundsStrokeView];
+    [self.boundsStrokeView autoPinToSuperviewEdges];
+    [self.boundsStrokeView setContentHuggingLow];
+    [self.boundsStrokeView setCompressionResistanceLow];
+
     UIView *_Nullable quotedAttachmentView = nil;
     // TODO:
     //    if (self.hasQuotedAttachmentThumbnail)
@@ -114,6 +114,11 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAttachmentView setCompressionResistanceHigh];
 
         // TODO: Consider stroking the quoted thumbnail.
+        if (quotedAttachmentView) {
+            quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
+            quotedAttachmentView.layer.borderWidth = 1.f;
+            quotedAttachmentView.layer.cornerRadius = 2.f;
+        }
     }
 
     OWSContactsManager *contactsManager = Environment.current.contactsManager;
@@ -364,101 +369,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)quotedContentHInset
 {
     return 8.f;
-}
-
-#pragma mark - Stroke
-
-//- (instancetype)init
-//{
-//    self = [super init];
-//    if (!self) {
-//        return self;
-//    }
-//
-//    self.opaque = NO;
-//    self.backgroundColor = [UIColor clearColor];
-//
-//
-//    [self updateLayers];
-//
-//    return self;
-//}
-
-- (void)setStrokeColor:(UIColor *)strokeColor
-{
-    _strokeColor = strokeColor;
-
-    [self updateLayers];
-}
-
-- (void)setStrokeThickness:(CGFloat)strokeThickness
-{
-    _strokeThickness = strokeThickness;
-
-    [self updateLayers];
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    BOOL didChange = !CGRectEqualToRect(self.frame, frame);
-
-    [super setFrame:frame];
-
-    if (didChange) {
-        [self updateLayers];
-    }
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL didChange = !CGRectEqualToRect(self.bounds, bounds);
-
-    [super setBounds:bounds];
-
-    if (didChange) {
-        [self updateLayers];
-    }
-}
-
-- (void)setCenter:(CGPoint)center
-{
-    [super setCenter:center];
-
-    [self updateLayers];
-}
-
-- (void)updateLayers
-{
-    if (!self.shapeLayer) {
-        return;
-    }
-
-    // Don't fill the shape layer; we just want a stroke around the border.
-    self.shapeLayer.fillColor = [UIColor clearColor].CGColor;
-
-    self.clipsToBounds = YES;
-
-    if (!self.bubbleView) {
-        return;
-    }
-
-    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
-    self.shapeLayer.lineWidth = self.strokeThickness;
-    self.shapeLayer.zPosition = 100.f;
-
-    UIBezierPath *bezierPath = [UIBezierPath new];
-
-    UIBezierPath *boundsBezierPath = [UIBezierPath bezierPathWithRect:self.bounds];
-    [bezierPath appendPath:boundsBezierPath];
-
-    UIBezierPath *bubbleBezierPath = [self.bubbleView maskPath];
-    // We need to convert between coordinate systems using layers, not views.
-    CGPoint bubbleOffset = [self.layer convertPoint:CGPointZero fromLayer:self.bubbleView.layer];
-    CGAffineTransform transform = CGAffineTransformMakeTranslation(bubbleOffset.x, bubbleOffset.y);
-    [bubbleBezierPath applyTransform:transform];
-    [bezierPath appendPath:bubbleBezierPath];
-
-    self.shapeLayer.path = bezierPath.CGPath;
 }
 
 @end

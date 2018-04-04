@@ -2,14 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSBubbleView.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
 @class DisplayableText;
+@class OWSBubbleStrokeView;
 @class TSQuotedMessage;
 
-@interface OWSQuotedMessageView : UIView <OWSBubbleViewPartner>
+@interface OWSQuotedMessageView : UIView
+
+@property (nonatomic, nullable, readonly) OWSBubbleStrokeView *boundsStrokeView;
 
 - (instancetype)init NS_UNAVAILABLE;
 
