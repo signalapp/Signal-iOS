@@ -331,6 +331,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (BOOL)hasThumbnailForMimeType:(NSString *)contentType
+{
+    return ([MIMETypeUtil isVideo:contentType] || [MIMETypeUtil isImage:contentType] ||
+        [MIMETypeUtil isAnimated:contentType]);
+}
+
 - (nullable UIImage *)thumbnailImage
 {
     NSString *thumbnailPath = self.thumbnailPath;

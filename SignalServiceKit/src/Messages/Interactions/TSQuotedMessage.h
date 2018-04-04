@@ -11,16 +11,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
 
-// This property should be set IFF we are quoting a text message.
+// This property should be set IFF we are quoting a text message
+// or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
 
-// This property should be set IFF we are quoting a attachment message.
+// This property should be set IFF we are quoting an attachment message.
 @property (nullable, nonatomic, readonly) NSString *sourceFilename;
-// This property can be set IFF we are quoting a attachment message, but it is optional.
+// This property can be set IFF we are quoting an attachment message, but it is optional.
 @property (nullable, nonatomic, readonly) NSData *thumbnailData;
 // This is a MIME type.
 //
-// This property should be set IFF we are quoting a attachment message.
+// This property should be set IFF we are quoting an attachment message.
 @property (nullable, nonatomic, readonly) NSString *contentType;
 
 - (instancetype)init NS_UNAVAILABLE;

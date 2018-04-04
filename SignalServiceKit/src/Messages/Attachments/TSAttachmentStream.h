@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isAudio;
 - (nullable NSURL *)mediaURL;
 
++ (BOOL)hasThumbnailForMimeType:(NSString *)contentType;
+
 - (nullable NSString *)filePath;
 - (nullable NSString *)thumbnailPath;
 

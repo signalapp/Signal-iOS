@@ -87,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages performActionNTimes:action];
                                          }]];
     }
+
     [items addObjectsFromArray:@[
 
 #pragma mark - Actions
@@ -102,6 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Select Send Media"
                         actionBlock:^{
                             [DebugUIMessages selectSendMediaAction:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Select Quoted Reply"
+                        actionBlock:^{
+                            [DebugUIMessages selectQuotedReplyAction:thread];
                         }],
 
 #pragma mark - Misc.
@@ -2464,6 +2469,14 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                  subactions:[self allFakeQuotedReplyActions:thread includeLabels:YES]];
 }
 
++ (void)selectQuotedReplyAction:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(thread);
+
+    [self selectActionUI:[self allFakeQuotedReplyActions:thread includeLabels:NO] label:@"Select QuotedReply"];
+}
+
 + (DebugUIMessagesAction *)randomQuotedReplyAction:(TSThread *)thread
 {
     OWSAssert(thread);
@@ -2483,6 +2496,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     [actions addObjectsFromArray:[self allFakeMediaActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeTextActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
