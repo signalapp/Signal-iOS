@@ -256,7 +256,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         return;
     }
 
-    // TODO update existing preview with message in case we switch which message we're quoting.
     if (self.quotedMessagePreview) {
         [self clearQuotedMessagePreview];
     }
