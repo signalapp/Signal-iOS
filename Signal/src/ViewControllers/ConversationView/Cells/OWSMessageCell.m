@@ -13,6 +13,7 @@
 #import "OWSExpirationTimerView.h"
 #import "OWSGenericAttachmentView.h"
 #import "OWSMessageTextView.h"
+#import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
@@ -20,11 +21,6 @@
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-CG_INLINE CGSize CGSizeCeil(CGSize size)
-{
-    return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
-}
 
 @interface OWSMessageCell ()
 
@@ -266,23 +262,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return self.viewItem.hasQuotedAttachment;
 }
 
-- (BOOL)hasQuotedAttachmentThumbnail
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return (self.viewItem.hasQuotedAttachment &&
-        [TSAttachmentStream hasThumbnailForMimeType:self.viewItem.quotedAttachmentMimetype]);
-}
-
-- (nullable DisplayableText *)displayableQuotedText
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.displayableQuotedText);
-
-    return self.viewItem.displayableQuotedText;
-}
-
 - (TSMessage *)message
 {
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -382,31 +361,26 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     if (self.isQuotedReply) {
         OWSAssert(!lastSubview);
 
-        UIView *quotedMessageView = [self createQuotedMessageView];
-
+        OWSQuotedMessageView *quotedMessageView =
+            [[OWSQuotedMessageView alloc] initWithViewItem:self.viewItem textMessageFont:self.textMessageFont];
+        [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
 
-        CGFloat leadingMargin = self.quotedBubbleLeadingMargin;
-        CGFloat trailingMargin = self.quotedBubbleTrailingMargin;
-
+        CGFloat bubbleLeadingMargin = (self.isIncoming ? kBubbleThornSideInset : 0.f);
+        CGFloat bubbleTrailingMargin = (self.isIncoming ? 0.f : kBubbleThornSideInset);
         [self.viewConstraints addObjectsFromArray:@[
-            [quotedMessageView autoPinLeadingToSuperviewMarginWithInset:leadingMargin],
-            [quotedMessageView autoPinTrailingToSuperviewMarginWithInset:trailingMargin],
+            [quotedMessageView autoPinLeadingToSuperviewMarginWithInset:bubbleLeadingMargin],
+            [quotedMessageView autoPinTrailingToSuperviewMarginWithInset:bubbleTrailingMargin],
         ]];
 
         if (lastSubview) {
-            [self.viewConstraints addObject:[quotedMessageView autoPinEdge:ALEdgeTop
-                                                                    toEdge:ALEdgeBottom
-                                                                    ofView:lastSubview
-                                                                withOffset:self.quotedMessageTopInset]];
+            [self.viewConstraints
+                addObject:[quotedMessageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview]];
         } else {
-            [self.viewConstraints addObject:[quotedMessageView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                                                                withInset:self.quotedMessageTopInset]];
+            [self.viewConstraints addObject:[quotedMessageView autoPinEdgeToSuperviewEdge:ALEdgeTop]];
         }
         lastSubview = quotedMessageView;
         bottomMargin = 0;
-
-        // TODO: Consider stroking the quoted thumbnail.
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -783,19 +757,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return [UIFont systemFontOfSize:12.0f];
 }
 
-- (UILabel *)createQuotedTextLabel
-{
-    UILabel *quotedTextLabel = [UILabel new];
-    quotedTextLabel.numberOfLines = 3;
-    quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    quotedTextLabel.text = self.displayableQuotedText.displayText;
-    quotedTextLabel.textColor = self.quotedTextColor;
-
-    // Honor dynamic type in the message bodies.
-    quotedTextLabel.font = self.textMessageFont;
-    return quotedTextLabel;
-}
-
 - (OWSMessageTextView *)configureBodyTextView
 {
     OWSAssert(self.hasBodyText);
@@ -859,87 +820,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     tapForMoreLabel.textAlignment = [tapForMoreLabel textAlignmentUnnatural];
 
     return tapForMoreLabel;
-}
-
-- (UIView *)createQuotedMessageView
-{
-    OWSAssert(self.isQuotedReply);
-
-    UIView *quotedMessageView = [UIView containerView];
-    quotedMessageView.userInteractionEnabled = NO;
-    quotedMessageView.clipsToBounds = YES;
-    // TODO:
-    quotedMessageView.layer.cornerRadius = 3.f;
-    quotedMessageView.backgroundColor = [UIColor colorWithRGBHex:0xe2f7fa];
-
-    UIView *quoteStripView = [UIView containerView];
-    quoteStripView.backgroundColor = (self.isIncoming ? [UIColor whiteColor] : [UIColor colorWithRGBHex:0x007884]);
-    quoteStripView.userInteractionEnabled = NO;
-    [quotedMessageView addSubview:quoteStripView];
-    [quoteStripView autoPinHeightToSuperview];
-    [quoteStripView autoPinLeadingToSuperviewMargin];
-    [quoteStripView autoSetDimension:ALDimensionWidth toSize:self.quotedReplyStripeThickness];
-    [quoteStripView setContentHuggingHigh];
-    [quoteStripView setCompressionResistanceHigh];
-
-    UIView *_Nullable quotedThumbnailView = nil;
-    if (self.hasQuotedAttachmentThumbnail) {
-        // TODO:
-        quotedThumbnailView = [UIView containerView];
-        quotedThumbnailView.userInteractionEnabled = NO;
-        quotedThumbnailView.backgroundColor = [UIColor redColor];
-        [quotedMessageView addSubview:quotedThumbnailView];
-        [quotedThumbnailView autoPinTopToSuperviewMargin];
-        [quotedThumbnailView autoPinTrailingToSuperviewMargin];
-        [quotedThumbnailView autoSetDimension:ALDimensionWidth toSize:self.quotedThumbnailSize];
-        [quotedThumbnailView autoSetDimension:ALDimensionHeight toSize:self.quotedThumbnailSize];
-        [quotedThumbnailView setContentHuggingHigh];
-        [quotedThumbnailView setCompressionResistanceHigh];
-    }
-
-    OWSContactsManager *contactsManager = Environment.current.contactsManager;
-    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.viewItem.quotedRecipientId];
-
-    UILabel *quotedAuthorLabel = [UILabel new];
-    quotedAuthorLabel.text = quotedAuthor;
-    quotedAuthorLabel.font = self.quotedAuthorFont;
-    quotedAuthorLabel.textColor
-        = (self.isIncoming ? [UIColor colorWithRGBHex:0xd84315] : [UIColor colorWithRGBHex:0x007884]);
-    quotedAuthorLabel.numberOfLines = 1;
-    quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [quotedMessageView addSubview:quotedAuthorLabel];
-    [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedContentTopInset];
-    [quotedAuthorLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
-    if (quotedThumbnailView) {
-        [quotedAuthorLabel autoPinTrailingToLeadingEdgeOfView:quotedThumbnailView offset:self.quotedThumbnailHSpacing];
-    } else {
-        [quotedAuthorLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
-    }
-    [quotedAuthorLabel autoSetDimension:ALDimensionHeight toSize:self.quotedAuthorHeight];
-    [quotedAuthorLabel setContentHuggingLow];
-    [quotedAuthorLabel setCompressionResistanceLow];
-
-    if (self.hasQuotedText) {
-        UILabel *quotedTextLabel = [self createQuotedTextLabel];
-
-        [quotedMessageView addSubview:quotedTextLabel];
-        [quotedTextLabel autoPinEdge:ALEdgeTop
-                              toEdge:ALEdgeBottom
-                              ofView:quotedAuthorLabel
-                          withOffset:self.quotedAuthorBottomSpacing];
-        [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
-        if (quotedThumbnailView) {
-            [quotedTextLabel autoPinTrailingToLeadingEdgeOfView:quotedThumbnailView
-                                                         offset:self.quotedThumbnailHSpacing];
-        } else {
-            [quotedTextLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentTrailingMargin];
-        }
-        [quotedTextLabel autoPinBottomToSuperviewMarginWithInset:self.quotedContentBottomInset];
-        [quotedTextLabel setContentHuggingLow];
-        [quotedTextLabel setCompressionResistanceLow];
-    }
-
-    return quotedMessageView;
 }
 
 - (UIView *)loadViewForStillImage
@@ -1290,73 +1170,15 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    CGSize result = CGSizeZero;
-
     if (!self.isQuotedReply) {
-        return result;
+        return CGSizeZero;
     }
 
-    result.width += self.quotedMessageHInset;
-    result.width += self.quotedReplyStripeThickness;
-    result.width += self.quotedReplyStripeHSpacing;
-
-    result.height += self.quotedMessageTopInset;
-
-    CGFloat thumbnailHeight = 0.f;
-    if (self.hasQuotedAttachmentThumbnail) {
-        result.width += self.quotedThumbnailHSpacing;
-        result.width += self.quotedThumbnailSize;
-
-        thumbnailHeight = self.quotedThumbnailSize;
-    } else {
-        result.width += self.quotedContentTrailingMargin;
-    }
-
-    result.width += self.quotedMessageHInset;
-
-    // Once we've determined everything _except_ the size of the text
-    // content (i.e. the quoted author and the quoted text (if any)),
-    // we can determine the size of the text content.
+    OWSQuotedMessageView *quotedMessageView =
+        [[OWSQuotedMessageView alloc] initWithViewItem:self.viewItem textMessageFont:self.textMessageFont];
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-    CGFloat maxTextWidth = (maxMessageWidth - (self.textTrailingMargin + self.textLeadingMargin + result.width));
-    CGFloat textWidth = 0.f;
-
-    // Author
-    {
-        OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.viewItem.quotedRecipientId];
-
-        UILabel *quotedAuthorLabel = [UILabel new];
-        quotedAuthorLabel.text = quotedAuthor;
-        quotedAuthorLabel.font = self.quotedAuthorFont;
-        quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        quotedAuthorLabel.numberOfLines = 1;
-
-        CGSize quotedAuthorSize = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-
-        textWidth = MAX(textWidth, quotedAuthorSize.width);
-        result.height += self.quotedContentTopInset;
-        result.height += self.quotedAuthorHeight;
-    }
-
-    if (self.hasQuotedText) {
-        UILabel *quotedTextLabel = [self createQuotedTextLabel];
-
-        CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-
-        textWidth = MAX(textWidth, textSize.width);
-        result.height += self.quotedAuthorBottomSpacing;
-        result.height += textSize.height;
-    }
-
-    result.width += textWidth;
-    result.height += self.quotedContentBottomInset;
-
-    result.height = MAX(result.height, thumbnailHeight);
-
-    if (includeMargins) {
-        result.width += kBubbleThornSideInset;
-    }
+    CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
+    result.width += kBubbleThornSideInset;
 
     return result;
 }
@@ -1418,82 +1240,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
 }
 
-// TODO:
-- (UIFont *)quotedAuthorFont
-{
-    return [UIFont ows_regularFontWithSize:10.f];
-}
-
-// TODO:
-- (CGFloat)quotedAuthorHeight
-{
-    return (CGFloat)ceil([self quotedAuthorFont].lineHeight * 1.25);
-}
-
-// TODO:
-- (CGFloat)quotedAuthorBottomSpacing
-{
-    return 2.f;
-}
-
-// TODO:
-- (CGFloat)quotedContentTopInset
-{
-    return 3.f;
-}
-
-// TODO:
-- (CGFloat)quotedContentBottomInset
-{
-    return 3.f;
-}
-
-// Distance from top edge of "quoted message" bubble to top of message bubble.
-// TODO:
-- (CGFloat)quotedMessageTopInset
-{
-    return 3.f;
-}
-
-// Distance from side of "quoted message" bubble to side of message bubble.
-// TODO:
-- (CGFloat)quotedMessageHInset
-{
-    return 3.f;
-}
-
-// TODO:
-- (CGFloat)quotedReplyStripeThickness
-{
-    return 3.f;
-}
-
-// The spacing between the vertical "quoted reply stripe"
-// and the quoted message content.
-// TODO:
-- (CGFloat)quotedReplyStripeHSpacing
-{
-    return 10.f;
-}
-
-// TODO:
-- (CGFloat)quotedThumbnailSize
-{
-    return 30.f;
-}
-
-// TODO:
-- (CGFloat)quotedThumbnailHSpacing
-{
-    return 10.f;
-}
-
-// TODO:
-- (CGFloat)quotedContentTrailingMargin
-{
-    return 10.f;
-}
-
 #pragma mark -
 
 - (BOOL)isIncoming
@@ -1524,24 +1270,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return result;
 }
 
-- (CGFloat)quotedBubbleLeadingMargin
-{
-    CGFloat result = self.quotedMessageHInset;
-    if (self.isIncoming) {
-        result += kBubbleThornSideInset;
-    }
-    return result;
-}
-
-- (CGFloat)quotedBubbleTrailingMargin
-{
-    CGFloat result = self.quotedMessageHInset;
-    if (!self.isIncoming) {
-        result += kBubbleThornSideInset;
-    }
-    return result;
-}
-
 - (CGFloat)textTopMargin
 {
     return kBubbleTextVInset;
@@ -1555,11 +1283,6 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
 - (UIColor *)bodyTextColor
 {
     return self.isIncoming ? [UIColor blackColor] : [UIColor whiteColor];
-}
-
-- (UIColor *)quotedTextColor
-{
-    return [UIColor blackColor];
 }
 
 - (BOOL)isMediaBeingSent
