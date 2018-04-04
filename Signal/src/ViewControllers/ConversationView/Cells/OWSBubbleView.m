@@ -3,7 +3,6 @@
 //
 
 #import "OWSBubbleView.h"
-#import "OWSBubbleStrokeView.h"
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +20,8 @@ const CGFloat kBubbleTextVInset = 10.f;
 
 @property (nonatomic) CAShapeLayer *maskLayer;
 @property (nonatomic) CAShapeLayer *shapeLayer;
+
+@property (nonatomic, readonly) NSMutableArray<id<OWSBubbleViewPartner>> *partnerViews;
 
 @end
 
@@ -41,7 +42,7 @@ const CGFloat kBubbleTextVInset = 10.f;
     self.maskLayer = [CAShapeLayer new];
     self.layer.mask = self.maskLayer;
 
-    [self updateLayers];
+    _partnerViews = [NSMutableArray new];
 
     return self;
 }
@@ -52,7 +53,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     _isOutgoing = isOutgoing;
 
-    if (didChange || !self.shapeLayer) {
+    if (didChange) {
         [self updateLayers];
     }
 }
@@ -63,7 +64,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     _hideTail = hideTail;
 
-    if (didChange || !self.shapeLayer) {
+    if (didChange) {
         [self updateLayers];
     }
 }
@@ -74,7 +75,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     _isTruncated = isTruncated;
 
-    if (didChange || !self.shapeLayer) {
+    if (didChange) {
         [self updateLayers];
     }
 }
@@ -87,13 +88,13 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     [super setFrame:frame];
 
-    if (didChangeSize || !self.shapeLayer) {
+    if (didChangeSize) {
         [self updateLayers];
     }
 
     // We always need to inform the "bubble stroke view" (if any) if our
     // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self.bubbleStrokeView updateLayers];
+    [self updatePartnerViews];
 }
 
 - (void)setBounds:(CGRect)bounds
@@ -104,13 +105,13 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     [super setBounds:bounds];
 
-    if (didChangeSize || !self.shapeLayer) {
+    if (didChangeSize) {
         [self updateLayers];
     }
 
     // We always need to inform the "bubble stroke view" (if any) if our
     // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self.bubbleStrokeView updateLayers];
+    [self updatePartnerViews];
 }
 
 - (void)setCenter:(CGPoint)center
@@ -119,7 +120,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     // We always need to inform the "bubble stroke view" (if any) if our
     // frame/bounds/center changes. Its contents are not in local coordinates.
-    [self.bubbleStrokeView updateLayers];
+    [self updatePartnerViews];
 }
 
 - (void)setBubbleColor:(nullable UIColor *)bubbleColor
@@ -209,6 +210,33 @@ const CGFloat kBubbleTextVInset = 10.f;
         [bezierPath applyTransform:flipTransform];
     }
     return bezierPath;
+}
+
+#pragma mark - Coordination
+
+- (void)addPartnerView:(id<OWSBubbleViewPartner>)partnerView
+{
+    OWSAssert(self.partnerViews);
+
+    [partnerView setBubbleView:self];
+
+    [self.partnerViews addObject:partnerView];
+}
+
+- (void)clearPartnerViews
+{
+    OWSAssert(self.partnerViews);
+
+    [self.partnerViews removeAllObjects];
+}
+
+- (void)updatePartnerViews
+{
+    [self layoutIfNeeded];
+
+    for (id<OWSBubbleViewPartner> partnerView in self.partnerViews) {
+        [partnerView updateLayers];
+    }
 }
 
 @end

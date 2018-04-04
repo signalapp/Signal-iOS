@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSBubbleView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 extern const CGFloat kOWSMessageCellCornerRadius;
@@ -13,11 +15,19 @@ extern const CGFloat kBubbleThornVInset;
 extern const CGFloat kBubbleTextHInset;
 extern const CGFloat kBubbleTextVInset;
 
-@class OWSBubbleStrokeView;
+@class OWSBubbleView;
+
+@protocol OWSBubbleViewPartner <NSObject>
+
+- (void)updateLayers;
+
+- (void)setBubbleView:(OWSBubbleView *)bubbleView;
+
+@end
+
+#pragma mark -
 
 @interface OWSBubbleView : UIView
-
-@property (nonatomic, weak, nullable) OWSBubbleStrokeView *bubbleStrokeView;
 
 @property (nonatomic) BOOL isOutgoing;
 @property (nonatomic) BOOL hideTail;
@@ -26,6 +36,14 @@ extern const CGFloat kBubbleTextVInset;
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
 - (UIBezierPath *)maskPath;
+
+#pragma mark - Coordination
+
+- (void)addPartnerView:(id<OWSBubbleViewPartner>)view;
+
+- (void)clearPartnerViews;
+
+- (void)updatePartnerViews;
 
 @end
 

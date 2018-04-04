@@ -5,6 +5,7 @@
 #import "OWSQuotedMessageView.h"
 #import "ConversationViewItem.h"
 #import "Environment.h"
+#import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -18,16 +19,47 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSQuotedMessageView ()
 
-@property (nonatomic, readonly) ConversationViewItem *viewItem;
+@property (nonatomic, readonly) TSQuotedMessage *quotedMessage;
+@property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
+
 @property (nonatomic, readonly) UIFont *textMessageFont;
+
+@property (nonatomic, readonly) UIColor *strokeColor;
+@property (nonatomic, readonly) CGFloat strokeThickness;
+
+// TODO: Replace with a bubble stroke view.
+@property (nonatomic) CAShapeLayer *shapeLayer;
+
+@property (nonatomic, weak) OWSBubbleView *bubbleView;
 
 @end
 
 @implementation OWSQuotedMessageView
 
-- (instancetype)initWithViewItem:(ConversationViewItem *)viewItem
-                 //                   quotedMessage:(TSQuotedMessage *)quotedMessage
-                 textMessageFont:(UIFont *)textMessageFont
++ (OWSQuotedMessageView *)quotedMessageViewForConversation:(TSQuotedMessage *)quotedMessage
+                                     displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+{
+    OWSAssert(quotedMessage);
+
+    return
+        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
+}
+
++ (OWSQuotedMessageView *)quotedMessageViewForPreview:(TSQuotedMessage *)quotedMessage
+{
+    OWSAssert(quotedMessage);
+
+    DisplayableText *_Nullable displayableQuotedText = nil;
+    if (quotedMessage.body.length > 0) {
+        displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
+    }
+
+    return
+        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
+}
+
+- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
 {
     self = [super init];
 
@@ -35,37 +67,31 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    OWSAssert(viewItem);
-    //    OWSAssert(quotedMessage);
-    OWSAssert(textMessageFont);
+    OWSAssert(quotedMessage);
+    OWSAssert(displayableQuotedText);
 
-    _viewItem = viewItem;
-    //    _quotedMessage = quotedMessage;
-    _textMessageFont = textMessageFont;
+    _quotedMessage = quotedMessage;
+    _displayableQuotedText = displayableQuotedText;
+    _textMessageFont = OWSMessageCell.defaultTextMessageFont;
+    _strokeColor = OWSMessagesBubbleImageFactory.bubbleColorIncoming;
+    _strokeThickness = 1.f;
+
+    self.shapeLayer = [CAShapeLayer new];
+    [self.layer addSublayer:self.shapeLayer];
 
     return self;
 }
 
-- (BOOL)isIncoming
-{
-    return self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage;
-}
-
 - (BOOL)hasQuotedAttachmentThumbnail
 {
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return (self.viewItem.hasQuotedAttachment &&
-        [TSAttachmentStream hasThumbnailForMimeType:self.viewItem.quotedAttachmentMimetype]);
+    return (self.quotedMessage.contentType.length > 0 &&
+        [TSAttachmentStream hasThumbnailForMimeType:self.quotedMessage.contentType]);
 }
 
 #pragma mark -
 
 - (void)createContents
 {
-    OWSAssert(self.viewItem.isQuotedReply);
-
     self.backgroundColor = [UIColor whiteColor];
     self.userInteractionEnabled = NO;
     self.layoutMargins = UIEdgeInsetsZero;
@@ -91,14 +117,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSContactsManager *contactsManager = Environment.current.contactsManager;
-    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.viewItem.quotedRecipientId];
+    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
 
     UILabel *quotedAuthorLabel = [UILabel new];
     {
         quotedAuthorLabel.text = quotedAuthor;
         quotedAuthorLabel.font = self.quotedAuthorFont;
-        quotedAuthorLabel.textColor
-            = (self.isIncoming ? [UIColor colorWithRGBHex:0xd84315] : [UIColor colorWithRGBHex:0x007884]);
+        // TODO:
+        quotedAuthorLabel.textColor = [UIColor ows_darkGrayColor];
+        //            = (self.isIncoming ? [UIColor colorWithRGBHex:0xd84315] : [UIColor colorWithRGBHex:0x007884]);
         quotedAuthorLabel.numberOfLines = 1;
         quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self addSubview:quotedAuthorLabel];
@@ -135,8 +162,12 @@ NS_ASSUME_NONNULL_BEGIN
         [stripeAndTextContainer setCompressionResistanceLow];
 
         // Stripe.
+        BOOL isIncomingQuote
+            = ![NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+        UIColor *stripeColor = (isIncomingQuote ? OWSMessagesBubbleImageFactory.bubbleColorIncoming
+                                                : OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent);
         UIView *quoteStripView = [UIView containerView];
-        quoteStripView.backgroundColor = (self.isIncoming ? [UIColor whiteColor] : [UIColor colorWithRGBHex:0x007884]);
+        quoteStripView.backgroundColor = stripeColor;
         quoteStripView.userInteractionEnabled = NO;
         [stripeAndTextContainer addSubview:quoteStripView];
         [quoteStripView autoPinHeightToSuperview];
@@ -163,14 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Class method?
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth
 {
-    OWSAssert(self.viewItem);
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
     CGSize result = CGSizeZero;
-
-    if (!self.viewItem.isQuotedReply) {
-        return result;
-    }
 
     result.width += self.quotedContentHInset;
 
@@ -192,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat maxQuotedAuthorWidth = maxWidth - result.width;
 
         OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.viewItem.quotedRecipientId];
+        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
 
         UILabel *quotedAuthorLabel = [UILabel new];
         quotedAuthorLabel.text = quotedAuthor;
@@ -253,10 +277,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)quotedSnippet
 {
-    if (self.viewItem.hasQuotedText && self.viewItem.displayableQuotedText.displayText.length > 0) {
-        return self.viewItem.displayableQuotedText.displayText;
+    if (self.displayableQuotedText.displayText.length > 0) {
+        return self.displayableQuotedText.displayText;
     } else {
-        NSString *mimeType = self.viewItem.quotedAttachmentMimetype;
+        NSString *mimeType = self.quotedMessage.contentType;
 
         if (mimeType.length > 0) {
             return [TSAttachment emojiForMimeType:mimeType];
@@ -299,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO:
 - (CGFloat)quotedReplyStripeThickness
 {
-    return 3.f;
+    return 2.f;
 }
 
 // TODO:
@@ -340,6 +364,101 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)quotedContentHInset
 {
     return 8.f;
+}
+
+#pragma mark - Stroke
+
+//- (instancetype)init
+//{
+//    self = [super init];
+//    if (!self) {
+//        return self;
+//    }
+//
+//    self.opaque = NO;
+//    self.backgroundColor = [UIColor clearColor];
+//
+//
+//    [self updateLayers];
+//
+//    return self;
+//}
+
+- (void)setStrokeColor:(UIColor *)strokeColor
+{
+    _strokeColor = strokeColor;
+
+    [self updateLayers];
+}
+
+- (void)setStrokeThickness:(CGFloat)strokeThickness
+{
+    _strokeThickness = strokeThickness;
+
+    [self updateLayers];
+}
+
+- (void)setFrame:(CGRect)frame
+{
+    BOOL didChange = !CGRectEqualToRect(self.frame, frame);
+
+    [super setFrame:frame];
+
+    if (didChange) {
+        [self updateLayers];
+    }
+}
+
+- (void)setBounds:(CGRect)bounds
+{
+    BOOL didChange = !CGRectEqualToRect(self.bounds, bounds);
+
+    [super setBounds:bounds];
+
+    if (didChange) {
+        [self updateLayers];
+    }
+}
+
+- (void)setCenter:(CGPoint)center
+{
+    [super setCenter:center];
+
+    [self updateLayers];
+}
+
+- (void)updateLayers
+{
+    if (!self.shapeLayer) {
+        return;
+    }
+
+    // Don't fill the shape layer; we just want a stroke around the border.
+    self.shapeLayer.fillColor = [UIColor clearColor].CGColor;
+
+    self.clipsToBounds = YES;
+
+    if (!self.bubbleView) {
+        return;
+    }
+
+    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
+    self.shapeLayer.lineWidth = self.strokeThickness;
+    self.shapeLayer.zPosition = 100.f;
+
+    UIBezierPath *bezierPath = [UIBezierPath new];
+
+    UIBezierPath *boundsBezierPath = [UIBezierPath bezierPathWithRect:self.bounds];
+    [bezierPath appendPath:boundsBezierPath];
+
+    UIBezierPath *bubbleBezierPath = [self.bubbleView maskPath];
+    // We need to convert between coordinate systems using layers, not views.
+    CGPoint bubbleOffset = [self.layer convertPoint:CGPointZero fromLayer:self.bubbleView.layer];
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(bubbleOffset.x, bubbleOffset.y);
+    [bubbleBezierPath applyTransform:transform];
+    [bezierPath appendPath:bubbleBezierPath];
+
+    self.shapeLayer.path = bezierPath.CGPath;
 }
 
 @end

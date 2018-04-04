@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) CAShapeLayer *shapeLayer;
 
+@property (nonatomic, weak) OWSBubbleView *bubbleView;
+
 @end
 
 #pragma mark -
@@ -30,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.shapeLayer = [CAShapeLayer new];
     [self.layer addSublayer:self.shapeLayer];
-
-    [self updateLayers];
 
     return self;
 }
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super setFrame:frame];
 
-    if (didChange || !self.shapeLayer) {
+    if (didChange) {
         [self updateLayers];
     }
 }
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super setBounds:bounds];
 
-    if (didChange || !self.shapeLayer) {
+    if (didChange) {
         [self updateLayers];
     }
 }

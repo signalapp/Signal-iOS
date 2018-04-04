@@ -147,11 +147,16 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
++ (UIFont *)defaultTextMessageFont
+{
+    return [UIFont ows_dynamicTypeBodyFont];
+}
+
 - (UIFont *)textMessageFont
 {
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
-    CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
+    CGFloat basePointSize = self.class.defaultTextMessageFont.pointSize;
     switch (self.displayableBodyText.jumbomojiCount) {
         case 0:
             break;
@@ -361,8 +366,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isQuotedReply) {
         OWSAssert(!lastSubview);
 
+        TSMessage *message = (TSMessage *)self.viewItem.interaction;
         OWSQuotedMessageView *quotedMessageView =
-            [[OWSQuotedMessageView alloc] initWithViewItem:self.viewItem textMessageFont:self.textMessageFont];
+            [OWSQuotedMessageView quotedMessageViewForConversation:message.quotedMessage
+                                             displayableQuotedText:self.viewItem.displayableQuotedText];
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
 
@@ -381,6 +388,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
         lastSubview = quotedMessageView;
         bottomMargin = 0;
+
+        [self.bubbleView addPartnerView:quotedMessageView];
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -471,8 +480,8 @@ NS_ASSUME_NONNULL_BEGIN
             [bubbleStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyMediaView];
             [bubbleStrokeView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:bodyMediaView];
             [bubbleStrokeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:bodyMediaView];
-            self.bubbleView.bubbleStrokeView = bubbleStrokeView;
-            OWSAssert(self.bubbleView.bubbleStrokeView);
+
+            [self.bubbleView addPartnerView:bubbleStrokeView];
         }
     }
 
@@ -1174,8 +1183,10 @@ NS_ASSUME_NONNULL_BEGIN
         return CGSizeZero;
     }
 
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
     OWSQuotedMessageView *quotedMessageView =
-        [[OWSQuotedMessageView alloc] initWithViewItem:self.viewItem textMessageFont:self.textMessageFont];
+        [OWSQuotedMessageView quotedMessageViewForConversation:message.quotedMessage
+                                         displayableQuotedText:self.viewItem.displayableQuotedText];
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
     result.width += kBubbleThornSideInset;
@@ -1324,7 +1335,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.bubbleView.hidden = YES;
     self.bubbleView.bubbleColor = nil;
-    self.bubbleView.bubbleStrokeView = nil;
+    [self.bubbleView clearPartnerViews];
 
     for (UIView *subview in self.bubbleView.subviews) {
         [subview removeFromSuperview];
