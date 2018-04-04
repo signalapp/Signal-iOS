@@ -30,7 +30,7 @@ def shared_pods
   pod 'PureLayout', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'SocketRocket', :git => 'https://github.com/facebook/SocketRocket.git', :inhibit_warnings => true
-  pod 'YYImage'
+  pod 'YYImage', :inhibit_warnings => true
 end
 
 target 'Signal' do
