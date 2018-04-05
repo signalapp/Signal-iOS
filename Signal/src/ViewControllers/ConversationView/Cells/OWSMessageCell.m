@@ -486,7 +486,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
-            [self.delegate didTapTruncatedTextMessage:self.viewItem];
+            // Do nothing.
             return;
         case OWSMessageGestureLocation_OversizeText:
             [self.delegate didTapTruncatedTextMessage:self.viewItem];
