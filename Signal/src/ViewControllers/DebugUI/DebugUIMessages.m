@@ -3788,7 +3788,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
                                                     expireStartedAt:0
-                                                     isVoiceMessage:NO
+                                                     isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMessageNone
                                                       quotedMessage:quotedMessage];
 

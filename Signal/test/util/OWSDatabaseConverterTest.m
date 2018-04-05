@@ -141,8 +141,11 @@ NS_ASSUME_NONNULL_BEGIN
             [expectation fulfill];
         });
 
-        // YapDatabase can retain references to the registration
-        // connections for up to 5 seconds.
+        // YapDatabase can retain cached references to the registration
+        // connections for up to 5 seconds.  This can block deallocation
+        // of the YapDatabase instance.  Since we're trying to block on
+        // closing of the database (so that we can examine its contents
+        // on disk), we wait for the worst case duration.
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
