@@ -153,6 +153,7 @@
 		3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
 		34A910601FFEB114000C4745 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9105F1FFEB114000C4745 /* OWSBackup.m */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
@@ -726,6 +727,8 @@
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
+		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
+		3496744C2076768700080B5F /* OWSMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageBubbleView.m; sourceTree = "<group>"; };
 		34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FARegistrationViewController.m; sourceTree = "<group>"; };
 		34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FARegistrationViewController.h; sourceTree = "<group>"; };
 		34A9105E1FFEB113000C4745 /* OWSBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackup.h; sourceTree = "<group>"; };
@@ -1664,6 +1667,8 @@
 				34D1F09E1F867BFC0066283D /* OWSExpirationTimerView.m */,
 				34D1F0B51F87F8850066283D /* OWSGenericAttachmentView.h */,
 				34D1F0B61F87F8850066283D /* OWSGenericAttachmentView.m */,
+				3496744B2076768600080B5F /* OWSMessageBubbleView.h */,
+				3496744C2076768700080B5F /* OWSMessageBubbleView.m */,
 				34D1F0A11F867BFC0066283D /* OWSMessageCell.h */,
 				34D1F0A21F867BFC0066283D /* OWSMessageCell.m */,
 				34DBF000206BD5A400025978 /* OWSMessageTextView.h */,
@@ -3222,6 +3227,7 @@
 				458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
+				3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */,
 				34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */,
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
