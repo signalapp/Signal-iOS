@@ -3,26 +3,9 @@
 //
 
 #import "OWSMessageCell.h"
-#import "OWSMessageBubbleView.h"
-
-//#import "AttachmentSharing.h"
-//#import "AttachmentUploadView.h"
-//#import "ConversationViewItem.h"
-//#import "NSAttributedString+OWS.h"
-//#import "OWSAudioMessageView.h"
-//#import "OWSBubbleStrokeView.h"
-//#import "OWSBubbleView.h"
 #import "OWSExpirationTimerView.h"
-
-//#import "OWSGenericAttachmentView.h"
-//#import "OWSMessageTextView.h"
-//#import "OWSQuotedMessageView.h"
+#import "OWSMessageBubbleView.h"
 #import "Signal-Swift.h"
-
-//#import "UIColor+OWS.h"
-//#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
-//#import <JSQMessagesViewController/UIColor+JSQMessages.h>
-//#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -142,96 +125,11 @@ NS_ASSUME_NONNULL_BEGIN
     return 20.f;
 }
 
-//#pragma mark - Accessors
-//
-//- (void)setViewItem:(nullable ConversationViewItem *)viewItem
-//{
-//    OWSAssert(self.messageBubbleView);
-//
-//    _viewItem = viewItem;
-//
-//    self.messageBubbleView.viewItem = viewItem;
-//}
-//
-//- (void)setContentWidth:(int)contentWidth {
-//    OWSAssert(self.messageBubbleView);
-//
-//    _contentWidth = contentWidth;
-//
-//    self.messageBubbleView.contentWidth = contentWidth;
-//}
-
 #pragma mark - Convenience Accessors
-
-// TODO: Remove as many of these convenience methods as possible.
 
 - (OWSMessageCellType)cellType
 {
     return self.viewItem.messageCellType;
-}
-
-- (BOOL)hasBodyText
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return self.viewItem.hasBodyText;
-}
-
-- (nullable DisplayableText *)displayableBodyText
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.displayableBodyText);
-
-    return self.viewItem.displayableBodyText;
-}
-
-- (nullable TSAttachmentStream *)attachmentStream
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.attachmentStream);
-
-    return self.viewItem.attachmentStream;
-}
-
-- (nullable TSAttachmentPointer *)attachmentPointer
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.attachmentPointer);
-
-    return self.viewItem.attachmentPointer;
-}
-
-- (CGSize)mediaSize
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem.mediaSize.width > 0 && self.viewItem.mediaSize.height > 0);
-
-    return self.viewItem.mediaSize;
-}
-
-- (BOOL)isQuotedReply
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return self.viewItem.isQuotedReply;
-}
-
-- (BOOL)hasQuotedText
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return self.viewItem.hasQuotedText;
-}
-
-- (BOOL)hasQuotedAttachment
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return self.viewItem.hasQuotedAttachment;
 }
 
 - (TSMessage *)message
@@ -239,41 +137,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     return (TSMessage *)self.viewItem.interaction;
-}
-
-- (BOOL)hasNonImageBodyContent
-{
-    switch (self.cellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
-            return YES;
-        case OWSMessageCellType_StillImage:
-        case OWSMessageCellType_AnimatedImage:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_Video:
-            return self.hasBodyText;
-    }
-}
-
-- (BOOL)hasBodyTextContent
-{
-    switch (self.cellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-            return YES;
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_StillImage:
-        case OWSMessageCellType_AnimatedImage:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_Video:
-            // Is there a caption?
-            return self.hasBodyText;
-    }
 }
 
 - (BOOL)isIncoming
@@ -509,11 +372,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-//- (int)maxMessageWidthForContentWidth:(int)contentWidth
-//{
-//    return (int)floor(contentWidth * 0.8f);
-//}
-
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
@@ -552,59 +410,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-//- (CGFloat)textLeadingMargin
-//{
-//    CGFloat result = kBubbleTextHInset;
-//    if (self.isIncoming) {
-//        result += kBubbleThornSideInset;
-//    }
-//    return result;
-//}
-//
-//- (CGFloat)textTrailingMargin
-//{
-//    CGFloat result = kBubbleTextHInset;
-//    if (!self.isIncoming) {
-//        result += kBubbleThornSideInset;
-//    }
-//    return result;
-//}
-//
-//- (CGFloat)textTopMargin
-//{
-//    return kBubbleTextVInset;
-//}
-//
-//- (CGFloat)textBottomMargin
-//{
-//    return kBubbleTextVInset + kBubbleThornVInset;
-//}
-//
-//- (UIColor *)bodyTextColor
-//{
-//    return self.isIncoming ? [UIColor blackColor] : [UIColor whiteColor];
-//}
-//
-//- (BOOL)isMediaBeingSent
-//{
-//    if (self.isIncoming) {
-//        return NO;
-//    }
-//    if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
-//        return NO;
-//    }
-//    if (!self.attachmentStream) {
-//        return NO;
-//    }
-//    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-//    return outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut;
-//}
-//
-//- (OWSMessagesBubbleImageFactory *)bubbleFactory
-//{
-//    return [OWSMessagesBubbleImageFactory shared];
-//}
 
 - (void)prepareForReuse
 {
@@ -699,6 +504,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.delegate);
 
+    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
+
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
@@ -706,32 +513,44 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWSMessageCellType_StillImage:
             OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(attachmentStream);
+
             [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:self.attachmentStream
+                              attachmentStream:attachmentStream
                                      imageView:self.messageBubbleView.lastBodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
             OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(attachmentStream);
+
             [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:self.attachmentStream
+                              attachmentStream:attachmentStream
                                      imageView:self.messageBubbleView.lastBodyMediaView];
             break;
         case OWSMessageCellType_Audio:
-            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:self.attachmentStream];
+            OWSAssert(attachmentStream);
+
+            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
             return;
         case OWSMessageCellType_Video:
             OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(attachmentStream);
+
             [self.delegate didTapVideoViewItem:self.viewItem
-                              attachmentStream:self.attachmentStream
+                              attachmentStream:attachmentStream
                                      imageView:self.messageBubbleView.lastBodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
-            [AttachmentSharing showShareUIForAttachment:self.attachmentStream];
+            OWSAssert(attachmentStream);
+
+            [AttachmentSharing showShareUIForAttachment:attachmentStream];
             break;
         case OWSMessageCellType_DownloadingAttachment: {
-            OWSAssert(self.attachmentPointer);
-            if (self.attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:self.attachmentPointer];
+            TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
+            OWSAssert(attachmentPointer);
+
+            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
             }
             break;
         }

@@ -113,8 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Convenience Accessors
 
-// TODO: Remove as many of these convenience methods as possible.
-
 - (OWSMessageCellType)cellType
 {
     return self.viewItem.messageCellType;
@@ -174,21 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
 
     return self.viewItem.hasQuotedText;
-}
-
-- (BOOL)hasQuotedAttachment
-{
-    // This should always be valid for the appropriate cell types.
-    OWSAssert(self.viewItem);
-
-    return self.viewItem.hasQuotedAttachment;
-}
-
-- (TSMessage *)message
-{
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
-    return (TSMessage *)self.viewItem.interaction;
 }
 
 - (BOOL)isIncoming
@@ -474,7 +457,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         DDLogError(@"%@ Failed to load cell media: %@", [self logTag], [self.attachmentStream mediaURL]);
         self.viewItem.didCellMediaFailToLoad = YES;
-        // TODO: Do we need to hide/remove the media view?
         [self showAttachmentErrorViewWithMediaView:mediaView];
     }
     return cellMedia;
