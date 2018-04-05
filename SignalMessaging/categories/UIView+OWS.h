@@ -132,4 +132,9 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
     return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
 }
 
+CG_INLINE CGSize CGSizeRound(CGSize size)
+{
+    return CGSizeMake((CGFloat)round(size.width), (CGFloat)round(size.height));
+}
+
 NS_ASSUME_NONNULL_END

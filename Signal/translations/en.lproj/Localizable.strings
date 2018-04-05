@@ -1405,6 +1405,21 @@
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
 /* No comment provided by engineer. */
 "RATING_MSG" = "If you enjoy using Signal to have private conversations, you can support our project by rating it. It won't take more than a minute, and will help others find some privacy.";
 
