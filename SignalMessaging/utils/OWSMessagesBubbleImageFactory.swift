@@ -9,7 +9,8 @@ import SignalServiceKit
 @objc
 public class OWSMessagesBubbleImageFactory: NSObject {
 
-    static let shared = OWSMessagesBubbleImageFactory()
+    @objc
+    public static let shared = OWSMessagesBubbleImageFactory()
 
     private let jsqFactory = JSQMessagesBubbleImageFactory()!
 
@@ -57,12 +58,16 @@ public class OWSMessagesBubbleImageFactory: NSObject {
         }
     }
 
+    @objc
     public static let bubbleColorIncoming = UIColor.jsq_messageBubbleLightGray()!
 
+    @objc
     public static let bubbleColorOutgoingUnsent = UIColor.gray
 
+    @objc
     public static let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
 
+    @objc
     public static let bubbleColorOutgoingSent = UIColor.ows_materialBlue
 
     public func bubbleColor(message: TSMessage) -> UIColor {

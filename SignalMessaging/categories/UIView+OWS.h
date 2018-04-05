@@ -125,4 +125,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @end
 
+#pragma mark - Macros
+
+CG_INLINE CGSize CGSizeCeil(CGSize size)
+{
+    return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
+}
+
 NS_ASSUME_NONNULL_END

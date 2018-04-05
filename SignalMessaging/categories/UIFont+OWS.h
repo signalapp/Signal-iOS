@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_boldFontWithSize:(CGFloat)size;
 
++ (UIFont *)ows_dynamicTypeBodyFont:(CGFloat)size;
+
 #pragma mark - Icon Fonts
 
 + (UIFont *)ows_fontAwesomeFont:(CGFloat)size;

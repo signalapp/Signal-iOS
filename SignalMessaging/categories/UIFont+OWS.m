@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont boldSystemFontOfSize:size];
 }
 
++ (UIFont *)ows_dynamicTypeBodyFont:(CGFloat)size
+{
+    return [UIFont ows_dynamicTypeBodyFont];
+}
+
 #pragma mark - Icon Fonts
 
 + (UIFont *)ows_fontAwesomeFont:(CGFloat)size
