@@ -255,6 +255,11 @@ NS_ASSUME_NONNULL_BEGIN
         text = sourceFilename;
         textColor = self.filenameTextColor;
         font = self.filenameFont;
+    } else {
+        text = NSLocalizedString(
+                                 @"QUOTED_REPLY_TYPE_ATTACHMENT", @"Indicates this message is a quoted reply to an attachment of unknown type.");
+        textColor = self.fileTypeTextColor;
+        font = self.fileTypeFont;
     }
 
     UILabel *quotedTextLabel = [UILabel new];
@@ -271,14 +276,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // TODO: Are we going to use the filename?  For all mimetypes?
     NSString *_Nullable contentType = self.quotedMessage.contentType;
-    if (contentType.length > 0) {
-        if ([MIMETypeUtil isAudio:contentType]) {
-            return NSLocalizedString(
-                @"QUOTED_REPLY_TYPE_AUDIO", @"Indicates this message is a quoted reply to an audio file.");
-        } else if ([MIMETypeUtil isVideo:contentType]) {
-            return NSLocalizedString(
-                @"QUOTED_REPLY_TYPE_VIDEO", @"Indicates this message is a quoted reply to a video file.");
-        }
+    if (contentType.length < 1) {
+        return nil;
+    }
+
+    if ([MIMETypeUtil isAudio:contentType]) {
+        return NSLocalizedString(
+            @"QUOTED_REPLY_TYPE_AUDIO", @"Indicates this message is a quoted reply to an audio file.");
+    } else if ([MIMETypeUtil isVideo:contentType]) {
+        return NSLocalizedString(
+            @"QUOTED_REPLY_TYPE_VIDEO", @"Indicates this message is a quoted reply to a video file.");
     } else if ([MIMETypeUtil isImage:contentType] || [MIMETypeUtil isAnimated:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
