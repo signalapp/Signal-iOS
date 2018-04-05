@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     OWSAssert(thread);
-    
+
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
@@ -406,7 +406,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           return [[contentBuilder build] data];
                                                       }];
                                   }]];
-    
+
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [items addObject:[OWSTableItem itemWithTitle:@"Hallucinate twin group"

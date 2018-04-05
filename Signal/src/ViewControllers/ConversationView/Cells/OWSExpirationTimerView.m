@@ -54,13 +54,13 @@ const CGFloat kExpirationTimerViewSize = 16.f;
 - (void)commonInit
 {
     self.clipsToBounds = YES;
-    
+
     UIImage *hourglassEmptyImage = [[UIImage imageNamed:@"ic_hourglass_empty"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     UIImage *hourglassFullImage = [[UIImage imageNamed:@"ic_hourglass_full"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _emptyHourglassImageView = [[UIImageView alloc] initWithImage:hourglassEmptyImage];
     self.emptyHourglassImageView.tintColor = [UIColor lightGrayColor];
     [self addSubview:self.emptyHourglassImageView];
-    
+
     _fullHourglassImageView = [[UIImageView alloc] initWithImage:hourglassFullImage];
     self.fullHourglassImageView.tintColor = [UIColor lightGrayColor];
     [self addSubview:self.fullHourglassImageView];
@@ -113,7 +113,7 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     CGFloat secondsLeft = MAX(0, (self.expirationTimestamp - [NSDate ows_millisecondTimeStamp]) / 1000.f);
 
     [self clearAnimations];
-    
+
     const NSTimeInterval kBlinkAnimationDurationSeconds = 2;
 
     if (self.expirationTimestamp == 0) {
@@ -123,7 +123,7 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     } else if (secondsLeft <= kBlinkAnimationDurationSeconds + 0.1f) {
         // If message has expired, just show the blinking empty hourglass.
         self.emptyHourglassImageView.hidden = NO;
-        
+
         // Flashing animation.
         [UIView animateWithDuration:0.5f
             delay:0.f
@@ -145,25 +145,25 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     maskLayer.frame = self.fullHourglassImageView.bounds;
     self.maskLayer = maskLayer;
     self.fullHourglassImageView.layer.mask = maskLayer;
-    
+
     // Blur the top of the mask a bit with gradient
     maskLayer.colors = @[ (id)[UIColor clearColor].CGColor, (id)[UIColor blackColor].CGColor ];
     maskLayer.startPoint = CGPointMake(0.5f, 0.f);
     // Use a mask that is 20% tall to soften the edge of the animation.
     const CGFloat kMaskEdgeFraction = 0.2f;
     maskLayer.endPoint = CGPointMake(0.5f, kMaskEdgeFraction);
-    
+
     NSTimeInterval timeUntilFlashing = MAX(0, secondsLeft - kBlinkAnimationDurationSeconds);
-    
+
     if (self.initialDurationSeconds == 0) {
         OWSFail(@"initialDurationSeconds was unexpectedly 0");
         return;
     }
-    
+
     CGFloat ratioRemaining = (CGFloat)timeUntilFlashing / (CGFloat)self.initialDurationSeconds;
     CGFloat ratioComplete = Clamp((CGFloat)1.0 - ratioRemaining, 0, 1.0);
     CGPoint startPosition = CGPointMake(0, self.fullHourglassImageView.height * ratioComplete);
-    
+
     // We offset the bottom slightly to make sure the duration of the perceived animation is correct.
     // We're accounting for:
     // - the bottom pixel of the two images is the outline of the hourglass. Because the outline is identical in the full vs empty hourglass this wouldn't be perceptible.
@@ -179,7 +179,7 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     [maskLayer addAnimation:animation forKey:@"slideAnimation"];
     maskLayer.position = endPosition; // don't snap back
     [CATransaction commit];
-    
+
     self.animationTimer = [NSTimer weakScheduledTimerWithTimeInterval:timeUntilFlashing
                                                                target:self
                                                              selector:@selector(ensureAnimations)

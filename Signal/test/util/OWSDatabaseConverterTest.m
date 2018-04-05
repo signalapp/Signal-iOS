@@ -345,7 +345,7 @@ NS_ASSUME_NONNULL_BEGIN
     YapRecordDatabaseSaltBlock recordSaltBlock = ^(NSData *saltData) {
         OWSAssert(!databaseSalt);
         OWSAssert(saltData);
-        
+
         databaseSalt = saltData;
         databaseKeySpec = [YapDatabaseCryptoUtils deriveDatabaseKeySpecForPassword:databasePassword saltData:saltData];
         XCTAssert(databaseKeySpec.length == kSQLCipherKeySpecLength);

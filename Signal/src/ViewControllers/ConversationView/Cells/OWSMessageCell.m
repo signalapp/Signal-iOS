@@ -633,7 +633,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         [dateHeaderDateFormatter setDoesRelativeDateFormatting:YES];
         [dateHeaderDateFormatter setDateStyle:NSDateFormatterMediumStyle];
         [dateHeaderDateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        
+
         dateHeaderTimeFormatter = [NSDateFormatter new];
         [dateHeaderTimeFormatter setLocale:[NSLocale currentLocale]];
         [dateHeaderTimeFormatter setDoesRelativeDateFormatting:YES];
@@ -724,7 +724,7 @@ CG_INLINE CGSize CGSizeCeil(CGSize size)
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
         attributedText = [self.delegate attributedContactOrProfileNameForPhoneIdentifier:incomingMessage.authorId];
     }
-    
+
     if (!hasExpirationTimer &&
         !attributedText) {
         self.footerLabel.hidden = YES;

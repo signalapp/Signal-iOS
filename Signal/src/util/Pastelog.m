@@ -117,13 +117,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
-            
+
             // Add a file extension to the upload's key.
             NSString *fileExtension = weakSelf.fileUrl.lastPathComponent.pathExtension;
             uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
             NSMutableDictionary *updatedFields = [fields mutableCopy];
             updatedFields[@"key"] = uploadKey;
-            
+
             [weakSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {

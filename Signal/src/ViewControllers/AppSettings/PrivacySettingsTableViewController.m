@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              target:weakSelf
                                                            selector:@selector(didToggleScreenSecuritySwitch:)]];
     [contents addSection:screenSecuritySection];
-    
+
     // Allow calls to connect directly vs. using TURN exclusively
     OWSTableSection *callingSection = [OWSTableSection new];
     callingSection.headerTitle

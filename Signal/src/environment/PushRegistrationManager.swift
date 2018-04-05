@@ -92,7 +92,7 @@ public enum PushRegistrationError: Error {
         fulfillVanillaTokenPromise(tokenData)
     }
 
-    // Vanilla push token is obtained from the system via AppDelegate    
+    // Vanilla push token is obtained from the system via AppDelegate
     @objc
     public func didFailToReceiveVanillaPushToken(error: Error) {
         guard let rejectVanillaTokenPromise = self.rejectVanillaTokenPromise else {

@@ -403,13 +403,13 @@ NS_ASSUME_NONNULL_BEGIN
                 [contactsSection addItem:loadingItem];
             }
         }
-        
+
         return @[ contactsSection ];
     }
     __weak NewContactThreadViewController *weakSelf = self;
-    
+
     NSMutableArray<OWSTableSection *> *contactSections = [NSMutableArray new];
-    
+
     NSMutableArray<NSMutableArray<SignalAccount *> *> *collatedSignalAccounts = [NSMutableArray new];
     for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
         collatedSignalAccounts[i] = [NSMutableArray new];
@@ -426,7 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [collatedSignalAccounts[sectionIndex] addObject:signalAccount];
     }
-    
+
     for (NSUInteger i = 0; i < collatedSignalAccounts.count; i++) {
         NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
         NSMutableArray <OWSTableItem *> *contactItems = [NSMutableArray new];
@@ -438,9 +438,9 @@ NS_ASSUME_NONNULL_BEGIN
                     cell.accessoryMessage
                     = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                 }
-                
+
                 [cell configureWithSignalAccount:signalAccount contactsManager:self.contactsViewHelper.contactsManager];
-                
+
                 return cell;
             }
                                         customRowHeight:[ContactTableViewCell rowHeight]
@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
         [contactSections addObject:[OWSTableSection sectionWithTitle:sectionTitle items:contactItems]];
     }
-    
+
     return [contactSections copy];
 }
 

@@ -162,13 +162,13 @@ const NSUInteger kAvatarViewDiameter = 52;
 
     self.thread = thread;
     self.contactsManager = contactsManager;
-    
+
     BOOL isBlocked = NO;
     if (!thread.isGroupThread) {
         NSString *contactIdentifier = thread.contactIdentifier;
         isBlocked = [blockedPhoneNumberSet containsObject:contactIdentifier];
     }
-    
+
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
@@ -302,7 +302,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     if (recipientId.length == 0) {
         return;
     }
-    
+
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
         return;
     }
@@ -310,7 +310,7 @@ const NSUInteger kAvatarViewDiameter = 52;
     if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
         return;
     }
-    
+
     [self updateNameLabel];
     [self updateAvatarView];
 }
@@ -325,14 +325,14 @@ const NSUInteger kAvatarViewDiameter = 52;
         self.nameLabel.attributedText = nil;
         return;
     }
-    
+
     OWSContactsManager *contactsManager = self.contactsManager;
     if (contactsManager == nil) {
         OWSFail(@"%@ contacts manager should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;
         return;
     }
-    
+
     NSAttributedString *name;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
@@ -345,7 +345,7 @@ const NSUInteger kAvatarViewDiameter = 52;
                                                                             primaryFont:self.nameLabel.font
                                                                           secondaryFont:[UIFont ows_footnoteFont]];
     }
-    
+
     self.nameLabel.attributedText = name;
 }
 

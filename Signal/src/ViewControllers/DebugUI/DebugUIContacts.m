@@ -1103,7 +1103,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"Noel",
         @"Vang",
     ];
-    
+
     uint32_t index = arc4random_uniform((uint32_t)values.count);
     return values[index];
 }

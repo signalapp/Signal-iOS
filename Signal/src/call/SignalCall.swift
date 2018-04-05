@@ -238,7 +238,7 @@ protocol CallObserver: class {
 fileprivate extension UInt64 {
     static func ows_random() -> UInt64 {
         var random: UInt64 = 0
-        arc4random_buf(&random, MemoryLayout.size(ofValue: random))
+        arc4random_buf(&random, MemoryLayout<UInt64>.size)
         return random
     }
 }

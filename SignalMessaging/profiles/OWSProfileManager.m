@@ -1122,7 +1122,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         profileAvatarsDirPath = OWSProfileManager.sharedDataProfileAvatarsDirPath;
-        
+
         [OWSFileSystem ensureDirectoryExists:profileAvatarsDirPath];
     });
     return profileAvatarsDirPath;
