@@ -217,20 +217,20 @@ extension String {
     @objc
     public class func displayableText(_ rawText: String) -> DisplayableText {
         // Only show up to N characters of text.
-        let kMaxTextDisplayLength = 1024
+        let kMaxTextDisplayLength = 512
         let fullText = rawText.filterStringForDisplay()
         var isTextTruncated = false
         var displayText = fullText
         if displayText.count > kMaxTextDisplayLength {
             // Trim whitespace before _AND_ after slicing the snipper from the string.
             let snippet = String(displayText.prefix(kMaxTextDisplayLength)).ows_stripped()
-            displayText = String(format:NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
+            displayText = String(format: NSLocalizedString("OVERSIZE_TEXT_DISPLAY_FORMAT", comment:
                 "A display format for oversize text messages."),
                 snippet)
             isTextTruncated = true
         }
 
-        let displayableText = DisplayableText(fullText: fullText, displayText: displayText, isTextTruncated:isTextTruncated)
+        let displayableText = DisplayableText(fullText: fullText, displayText: displayText, isTextTruncated: isTextTruncated)
         return displayableText
     }
 }

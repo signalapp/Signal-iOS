@@ -493,28 +493,6 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
     }
 
-    func copyToPasteboard() {
-        if let messageBody = messageBody {
-            UIPasteboard.general.string = messageBody
-            return
-        }
-
-        guard let attachmentStream = attachmentStream else {
-            Logger.error("\(logTag) Message has neither attachment nor message body.")
-            return
-        }
-        guard let utiType = MIMETypeUtil.utiType(forMIMEType: attachmentStream.contentType) else {
-            Logger.error("\(logTag) Attachment has invalid MIME type: \(attachmentStream.contentType).")
-            return
-        }
-        guard let dataSource = dataSource else {
-            Logger.error("\(logTag) Attachment missing data source.")
-            return
-        }
-        let data = dataSource.data()
-        UIPasteboard.general.setData(data, forPasteboardType: utiType)
-    }
-
     // MARK: - Actions
 
     // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
@@ -633,6 +611,8 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
         case .default:
             break
         case .oversizeText:
+            let viewController = LongTextViewController(viewItem: viewItem)
+            self.navigationController?.pushViewController(viewController, animated: true)
             break
         case .media:
             // TODO: Show/play media.

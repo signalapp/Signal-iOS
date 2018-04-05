@@ -2101,11 +2101,7 @@ typedef enum : NSUInteger {
     OWSAssert(conversationItem);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    TSMessage *message = (TSMessage *)conversationItem.interaction;
-    MessageDetailViewController *view =
-        [[MessageDetailViewController alloc] initWithViewItem:conversationItem
-                                                      message:message
-                                                         mode:MessageMetadataViewModeFocusOnMessage];
+    LongTextViewController *view = [[LongTextViewController alloc] initWithViewItem:conversationItem];
     [self.navigationController pushViewController:view animated:YES];
 }
 
