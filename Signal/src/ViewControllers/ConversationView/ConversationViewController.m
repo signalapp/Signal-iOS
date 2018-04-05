@@ -2299,14 +2299,6 @@ typedef enum : NSUInteger {
 
 - (void)scrollDownButtonTapped
 {
-#ifdef DEBUG
-    CGPoint contentOffset = self.collectionView.contentOffset;
-    contentOffset.y += self.collectionView.height
-        - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom);
-    [self.collectionView setContentOffset:contentOffset animated:NO];
-    return;
-#endif
-
     NSIndexPath *indexPathOfUnreadMessagesIndicator = [self indexPathOfUnreadMessagesIndicator];
     if (indexPathOfUnreadMessagesIndicator != nil) {
         NSInteger unreadRow = indexPathOfUnreadMessagesIndicator.row;
