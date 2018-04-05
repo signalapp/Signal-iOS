@@ -6,7 +6,6 @@
 #import "ConversationViewItem.h"
 #import "Environment.h"
 #import "OWSBubbleStrokeView.h"
-#import "OWSMessageCell.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -68,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
-    _textMessageFont = OWSMessageCell.defaultTextMessageFont;
+    _textMessageFont = [UIFont ows_dynamicTypeBodyFont];
 
     return self;
 }
@@ -76,13 +75,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasQuotedAttachment
 {
     return (self.quotedMessage.contentType.length > 0
-        && ![NSObject isNullableObject:self.quotedMessage.contentType equalTo:OWSMimeTypeOversizeTextMessage]);
+        && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType]);
 }
 
 - (BOOL)hasQuotedAttachmentThumbnail
 {
     return (self.quotedMessage.contentType.length > 0
-        && ![NSObject isNullableObject:self.quotedMessage.contentType equalTo:OWSMimeTypeOversizeTextMessage] &&
+        && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType] &&
         [TSAttachmentStream hasThumbnailForMimeType:self.quotedMessage.contentType]);
 }
 

@@ -20,9 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 // Measurement
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth;
 
+// Factory method for "message bubble" views.
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(TSQuotedMessage *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText;
 
+// Factory method for "message compose" views.
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(TSQuotedMessage *)quotedMessage;
 
 @end

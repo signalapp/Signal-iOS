@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)cellReuseIdentifier;
 
-+ (UIFont *)defaultTextMessageFont;
-
 @end
 
 NS_ASSUME_NONNULL_END

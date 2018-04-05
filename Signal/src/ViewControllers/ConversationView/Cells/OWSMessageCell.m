@@ -147,16 +147,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-+ (UIFont *)defaultTextMessageFont
-{
-    return [UIFont ows_dynamicTypeBodyFont];
-}
-
 - (UIFont *)textMessageFont
 {
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
-    CGFloat basePointSize = self.class.defaultTextMessageFont.pointSize;
+    CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
     switch (self.displayableBodyText.jumbomojiCount) {
         case 0:
             break;
