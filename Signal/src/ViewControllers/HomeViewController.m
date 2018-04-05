@@ -684,15 +684,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
             TSOutgoingMessage *message =
-                [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                   inThread:thread
-                                                                messageBody:nil
-                                                              attachmentIds:[NSMutableArray new]
-                                                           expiresInSeconds:0
-                                                            expireStartedAt:0
-                                                             isVoiceMessage:NO
-                                                           groupMetaMessage:TSGroupMessageQuit
-                                                              quotedMessage:nil];
+                [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageQuit];
             [self.messageSender enqueueMessage:message
                 success:^{
                     [self dismissViewControllerAnimated:YES
