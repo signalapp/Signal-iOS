@@ -319,123 +319,36 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (message.hasAttachments) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:message.attachmentIds.firstObject
-                                                         message:message
                                                     dbConnection:self.dbConnection];
             [sendMessageOperation addDependency:uploadAttachmentOperation];
             [sendingQueue addOperation:uploadAttachmentOperation];
         }
 
-        //        if (message.quotedMessage.hasThumbnailAttachments) {
-        //            OWSUploadOperation *uploadQuoteThumbnailOperation = [[OWSUploadOperation alloc]
-        //            initWithAttachmentId:message.attachmentIds.firstObject
-        //                                                                                                         message:message
-        //                                                                                                    dbConnection:self.dbConnection];
-        //            [sendMessageOperation addDependency:uploadAttachmentOperation];
-        //            [sendingQueue addOperation:uploadQuoteThumbnailOperation];
-        //        }
+        
+        if (message.quotedMessage) {
+            
+            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
+            // and has the advantage of already having been generated.
+            __block TSAttachmentStream *attachment;
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [message.quotedMessage createThumbnailAttachmentIfNecessaryWithTransaction:transaction];
+                attachment = (TSAttachmentStream *)[message.quotedMessage thumbnailAttachmentWithTransaction:transaction];
+            }];
+            
+            if (attachment) {
+                OWSUploadOperation *uploadQuoteThumbnailOperation =
+                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
+                                                    dbConnection:self.dbConnection];
+                
+                // TODO put attachment uploads on a (lowly) concurrent queue
+                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
+                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
+            }
+        }
 
         [sendingQueue addOperation:sendMessageOperation];
     });
 }
-
-//- (void)attemptToSendMessage:(TSOutgoingMessage *)message
-//                     success:(void (^)(void))successHandler
-//                     failure:(RetryableFailureHandler)failureHandler
-//{
-//    [self ensureAnyAttachmentsUploaded:message
-//        success:^() {
-//            [self sendMessageToService:message
-//                               success:successHandler
-//                               failure:^(NSError *error) {
-//                                   DDLogDebug(
-//                                       @"%@ Message send attempt failed: %@", self.logTag, message.debugDescription);
-//                                   failureHandler(error);
-//                               }];
-//        }
-//        failure:^(NSError *error) {
-//            DDLogDebug(@"%@ Attachment upload attempt failed: %@", self.logTag, message.debugDescription);
-//            failureHandler(error);
-//        }];
-//}
-//- (void)ensureAnyAttachmentsUploaded:(TSOutgoingMessage *)message
-//                             success:(void (^)(void))successHandler
-//                             failure:(RetryableFailureHandler)failureHandler
-//{
-//    if (!message.hasAttachments) {
-//        return successHandler();
-//    }
-//
-//    TSAttachmentStream *attachmentStream =
-//        [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
-//
-//    if (!attachmentStream) {
-//        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
-//        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-//        // Not finding local attachment is a terminal failure.
-//        [error setIsRetryable:NO];
-//        return failureHandler(error);
-//    }
-//
-//    [OWSUploadingService uploadAttachmentStream:attachmentStream
-//                                        message:message
-//                                 networkManager:self.networkManager
-//                                        success:successHandler
-//                                        failure:failureHandler];
-//}
-
-//- (void)ensureAnyQuotedThumbnailUploaded:(TSOutgoingMessage *)message
-//                                 success:(void (^)(void))successHandler
-//                                 failure:(RetryableFailureHandler)failureHandler
-//{
-//    if (!message.hasAttachments) {
-//        return successHandler();
-//    }
-//
-//    TSAttachmentStream *attachmentStream =
-//    [TSAttachmentStream fetchObjectWithUniqueID:message.attachmentIds.firstObject];
-//
-//    if (!attachmentStream) {
-//        OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
-//        NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-//        // Not finding local attachment is a terminal failure.
-//        [error setIsRetryable:NO];
-//        return failureHandler(error);
-//    }
-//
-//    if (message.quotedMessage.hasThumbnailAttachment) {
-//        DDLogDebug(@"%@ uploading thumbnail for message: %llu", self.logTag, message.timestamp);
-//
-//        __block TSAttachmentStream *thumbnailAttachmentStream;
-//        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-//            thumbnailAttachmentStream = [message.quotedMessage thumbnailAttachmentWithTransaction:transaction];
-//        }];
-//
-//        if (!thumbnailAttachmentStream) {
-//            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotLoadAttachment]);
-//            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
-//            // Not finding local attachment is a terminal failure.
-//            [error setIsRetryable:NO];
-//            return failureHandler(error);
-//        }
-//
-//        [self.uploadingService uploadAttachmentStream:attachmentStream
-//                                              message:message
-//                                              success:^() {
-//                                                  [self.uploadingService uploadAttachmentStream:attachmentStream
-//                                                                                        message:message
-//                                                                                        success:successHandler
-//                                                                                        failure:failureHandler];
-//                                              }
-//                                              failure:failureHandler];
-//
-//    }
-//    [self.uploadingService uploadAttachmentStream:attachmentStream
-//                                          message:message
-//                                          success:successHandler
-//                                          failure:failureHandler];
-//
-//
-//}
 
 - (void)enqueueTemporaryAttachment:(DataSource *)dataSource
                        contentType:(NSString *)contentType

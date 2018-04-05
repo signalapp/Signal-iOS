@@ -132,8 +132,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  * @return
  *      An attachment pointer protobuf suitable for including in various container protobuf builders
  */
-- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
-                                                                        filename:(nullable NSString *)filename;
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
+                                                              filename:(nullable NSString *)filename;
 
 - (BOOL)shouldBeSaved;
 

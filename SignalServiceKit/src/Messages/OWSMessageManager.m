@@ -33,6 +33,8 @@
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "TSAccountManager.h"
+#import "TSAttachment.h"
+#import "TSAttachmentPointer.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSGroupModel.h"
@@ -512,9 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(groupThread);
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
-                                                        timestamp:envelope.timestamp
                                                             relay:envelope.relay
-                                                           thread:groupThread
                                                    networkManager:self.networkManager
                                                    primaryStorage:self.primaryStorage
                                                       transaction:transaction];
@@ -552,9 +552,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
-                                                        timestamp:envelope.timestamp
                                                             relay:envelope.relay
-                                                           thread:thread
                                                    networkManager:self.networkManager
                                                    primaryStorage:self.primaryStorage
                                                       transaction:transaction];
@@ -993,7 +991,8 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+                TSQuotedMessage *_Nullable quotedMessage =
+                    [self quotedMessageForDataMessage:dataMessage envelope:envelope transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1041,7 +1040,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       transaction:transaction
                                                                             relay:envelope.relay];
 
-        TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+        TSQuotedMessage *_Nullable quotedMessage =
+            [self quotedMessageForDataMessage:dataMessage envelope:envelope transaction:transaction];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1063,6 +1063,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                                 envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
 
@@ -1093,22 +1095,39 @@ NS_ASSUME_NONNULL_BEGIN
         hasText = YES;
     }
 
-    NSString *_Nullable sourceFilename = nil;
-    NSData *_Nullable thumbnailData = nil;
-    NSString *_Nullable contentType = nil;
+    NSArray<TSAttachment *> *attachments;
 
-    if (quoteProto.attachments.count > 0) {
-        OWSSignalServiceProtosAttachmentPointer *attachmentProto = quoteProto.attachments.firstObject;
-        if ([attachmentProto hasContentType] && attachmentProto.contentType.length > 0) {
-            contentType = attachmentProto.contentType;
+    if (quoteProto.attachments.count == 0) {
+        attachments = @[];
+    } else {
+        OWSAttachmentsProcessor *attachmentsProcessor =
+            [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:quoteProto.attachments
+                                                                relay:envelope.relay
+                                                       networkManager:self.networkManager
+                                                       primaryStorage:self.primaryStorage
+                                                          transaction:transaction];
 
-            if ([attachmentProto hasFileName] && attachmentProto.fileName.length > 0) {
-                sourceFilename = attachmentProto.fileName;
-            }
-            if ([attachmentProto hasThumbnail] && attachmentProto.thumbnail.length > 0) {
-                thumbnailData = [attachmentProto thumbnail];
-            }
+        if (!attachmentsProcessor.hasSupportedAttachments) {
+            attachments = @[];
+        } else {
+            attachments = attachmentsProcessor.supportedAttachmentPointers;
         }
+
+        // TODO
+        //        [attachmentsProcessor fetchAttachmentsForMessage:nil
+        //                                             transaction:transaction
+        //                                                 success:^(TSAttachmentStream *attachmentStream) {
+        //                                                     [groupThread
+        //                                                     updateAvatarWithAttachmentStream:attachmentStream];
+        //                                                 }
+        //                                                 failure:^(NSError *error) {
+        //                                                     DDLogError(@"%@ failed to fetch attachments for group
+        //                                                     avatar sent at: %llu. with error: %@",
+        //                                                                self.logTag,
+        //                                                                envelope.timestamp,
+        //                                                                error);
+        //                                                 }];
+
         hasAttachment = YES;
     }
 
@@ -1117,12 +1136,17 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                                       authorId:authorId
-                                                                           body:body
-                                                                 sourceFilename:sourceFilename
-                                                                  thumbnailData:thumbnailData
-                                                                    contentType:contentType];
+    //    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initIncomingWithTimestamp:timestamp
+    //                                                                               authorId:authorId
+    //                                                                                   body:body
+    //                                                                         sourceFilename:sourceFilename
+    //                                                                          thumbnailData:thumbnailData
+    //                                                                            contentType:contentType];
+    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initIncomingWithTimestamp:timestamp
+                                                                               authorId:authorId
+                                                                                   body:body
+                                                                            attachments:attachments];
+
     return quotedMessage;
 }
 

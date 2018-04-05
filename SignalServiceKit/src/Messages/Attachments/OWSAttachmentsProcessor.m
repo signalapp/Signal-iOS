@@ -36,7 +36,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
 
 @end
 
@@ -61,9 +60,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 }
 
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                               timestamp:(uint64_t)timestamp
                                    relay:(nullable NSString *)relay
-                                  thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -120,6 +117,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     return self;
 }
 
+
+// Remove this?
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler

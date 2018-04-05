@@ -25,14 +25,13 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 @property (nullable, nonatomic, readonly) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly) NSArray<NSString *> *supportedAttachmentIds;
+@property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
 @property (nonatomic, readonly) BOOL hasSupportedAttachments;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                               timestamp:(uint64_t)timestamp
                                    relay:(nullable NSString *)relay
-                                  thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;

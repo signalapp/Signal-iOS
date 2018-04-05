@@ -3,10 +3,23 @@
 //
 
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <Mantle/MTLModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachment;
+@class TSAttachmentStream;
+
+@interface OWSAttachmentInfo: MTLModel
+
+@property (nonatomic, readonly, nullable) NSString *contentType;
+@property (nonatomic, readonly, nullable) NSString *sourceFilename;
+@property (nonatomic, readonly, nullable) NSString *attachmentId;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithAttachment:(TSAttachment *)attachment;
+
+@end
 
 @interface TSQuotedMessage : TSYapDatabaseObject
 
@@ -17,31 +30,32 @@ NS_ASSUME_NONNULL_BEGIN
 // or attachment with caption.
 @property (nullable, nonatomic, readonly) NSString *body;
 
-//// This property can be set IFF we are quoting an attachment message, but it is optional.
-//@property (nullable, nonatomic, readonly) NSData *thumbnailData;
+#pragma mark - Attachments
 
 // This is a MIME type.
 //
 // This property should be set IFF we are quoting an attachment message.
-@property (nullable, nonatomic, readonly) NSString *contentType;
+- (nullable NSString *)contentType;
+- (nullable NSString *)sourceFilename;
+
+@property (atomic, readonly) NSArray<OWSAttachmentInfo *> *attachmentInfos;
+- (void)addAttachment:(TSAttachmentStream *)attachment;
+- (BOOL)hasAttachments;
+
+- (nullable TSAttachment *)firstAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (nullable UIImage *)thumbnailImageWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
-                             body:(NSString *_Nullable)body
-                   sourceFilename:(NSString *_Nullable)sourceFilename
-                    thumbnailData:(NSData *_Nullable)thumbnailData
-                      contentType:(NSString *_Nullable)contentType;
+- (instancetype)initOutgoingWithTimestamp:(uint64_t)timestamp
+                                 authorId:(NSString *)authorId
+                                     body:(NSString *_Nullable)body
+                               attachment:(TSAttachmentStream *_Nullable)attachmentStream;
 
-#pragma mark - Attachments
-
-@property (nonatomic, readonly) NSArray<NSString *> *thumbnailAttachmentIds;
-// A map of attachment id-to-"source" filename.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *thumbnailAttachmentFilenameMap;
-
-- (BOOL)hasThumbnailAttachments;
-- (nullable TSAttachment *)firstThumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (instancetype)initIncomingWithTimestamp:(uint64_t)timestamp
+                                 authorId:(NSString *)authorId
+                                     body:(NSString *_Nullable)body
+                              attachments:(NSArray<TSAttachment *> *)attachments;
 
 @end
 

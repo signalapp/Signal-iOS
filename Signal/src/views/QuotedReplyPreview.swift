@@ -43,7 +43,7 @@ class QuotedReplyPreview: UIView {
         bodyLabel.font = .ows_footnote
 
         bodyLabel.text = {
-            if let contentType = quotedMessage.contentType {
+            if let contentType = quotedMessage.contentType() {
                 let emoji = TSAttachmentStream.emoji(forMimeType: contentType)
                 return "\(emoji) \(quotedMessage.body ?? "")"
             } else {
@@ -52,16 +52,15 @@ class QuotedReplyPreview: UIView {
         }()
 
         let thumbnailView: UIView? = {
-            // FIXME TODO
-//            if let image = quotedMessage.thumbnailImage() {
-//                let imageView = UIImageView(image: image)
-//                imageView.contentMode = .scaleAspectFill
-//                imageView.autoPinToSquareAspectRatio()
-//                imageView.layer.cornerRadius = 3.0
-//                imageView.clipsToBounds = true
-//
-//                return imageView
-//            }
+            if let image = quotedMessage.thumbnailImage() {
+                let imageView = UIImageView(image: image)
+                imageView.contentMode = .scaleAspectFill
+                imageView.autoPinToSquareAspectRatio()
+                imageView.layer.cornerRadius = 3.0
+                imageView.clipsToBounds = true
+
+                return imageView
+            }
             return nil
         }()
 

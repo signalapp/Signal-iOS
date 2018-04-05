@@ -415,8 +415,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             case TSGroupMessageNew: {
                 if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                     attachmentWasGroupAvatar = YES;
-                    [groupBuilder
-                        setAvatar:[self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil]];
+                    [groupBuilder setAvatar:[self buildProtoForAttachmentId:self.attachmentIds[0] filename:nil]];
                 }
 
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
@@ -437,7 +436,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
             NSString *_Nullable sourceFilename = self.attachmentFilenameMap[attachmentId];
-            [attachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:sourceFilename]];
+            [attachments addObject:[self buildProtoForAttachmentId:attachmentId filename:sourceFilename]];
         }
         [builder setAttachmentsArray:attachments];
     }
@@ -456,14 +455,15 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             [quoteBuilder setText:quotedMessage.body];
         }
 
-        if (quotedMessage.thumbnailAttachmentIds.count > 0) {
+        if (quotedMessage.attachmentInfos) {
             NSMutableArray *thumbnailAttachments = [NSMutableArray new];
-            for (NSString *attachmentId in quotedMessage.thumbnailAttachmentIds) {
-                hasQuotedAttachment = YES;
-                NSString *_Nullable sourceFilename = quotedMessage.thumbnailAttachmentFilenameMap[attachmentId];
-                [thumbnailAttachments addObject:[self buildAttachmentProtoForAttachmentId:attachmentId filename:sourceFilename]];
-            }
-            [quoteBuilder setAttachmentsArray:thumbnailAttachments];
+            // FIXME TODO if has thumbnail build proto for attachment stream
+            // but if no thumbnail we only set contentType/filename
+//            for (TSAttachmentStream *attachment in quotedMessage.thumbnailAttachments) {
+//                OWSAssert([attachment isKindOfClass:[TSAttachmentStream class]]);
+//
+//                [quoteBuilder addAttachments:[self buildProtoForAttachmentStream:attachment filename:attachment.sourceFilename]];]
+//            }
         }
         
         if (hasQuotedText || hasQuotedAttachment) {
@@ -498,8 +498,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     return !self.hasSyncedTranscript;
 }
 
-- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
-                                                                        filename:(nullable NSString *)filename
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
+                                                              filename:(nullable NSString *)filename
 {
     OWSAssert(attachmentId.length > 0);
 
@@ -509,7 +509,12 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         return nil;
     }
     TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+    return [self buildProtoForAttachmentStream:attachmentStream filename:filename];
+}
 
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentStream:(TSAttachmentStream *)attachmentStream
+                                                                  filename:(nullable NSString *)filename
+{
     OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
     [builder setId:attachmentStream.serverId];
     OWSAssert(attachmentStream.contentType.length > 0);

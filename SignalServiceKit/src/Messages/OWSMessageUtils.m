@@ -141,63 +141,55 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
     BOOL hasAttachment = NO;
-    NSString *_Nullable sourceFilename = nil;
-    NSData *_Nullable thumbnailData = nil;
-    NSString *_Nullable contentType = nil;
 
-    if (message.attachmentIds.count > 0) {
-        NSString *attachmentId = message.attachmentIds[0];
-        TSAttachment *_Nullable attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        if (attachment) {
-            // If the attachment is "oversize text", try to treat it appropriately.
-            if (!hasText && [OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType] &&
-                [attachment isKindOfClass:[TSAttachmentStream class]]) {
-
-                hasText = YES;
-                quotedText = @"";
-
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.filePath];
-                if (oversizeTextData) {
-                    // We don't need to include the entire text body of the message, just
-                    // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
-                    // limit on how long text should be in protos since they'll be stored in
-                    // the database. We apply this constant here for the same reasons.
-                    NSString *_Nullable oversizeText =
-                        [[NSString alloc] initWithData:oversizeTextData encoding:NSUTF8StringEncoding];
-                    // First, truncate to the rough max characters.
-                    NSString *_Nullable truncatedText =
-                        [oversizeText substringToIndex:kOversizeTextMessageSizeThreshold - 1];
-                    // But kOversizeTextMessageSizeThreshold is in _bytes_, not characters,
-                    // so we need to continue to trim the string until it fits.
-                    while (truncatedText && truncatedText.length > 0 &&
-                        [truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
-                            >= kOversizeTextMessageSizeThreshold) {
-                        // A very coarse binary search by halving is acceptable, since
-                        // kOversizeTextMessageSizeThreshold is much longer than our target
-                        // length of "three short lines of text on any device we might
-                        // display this on.
-                        //
-                        // The search will always converge since in the worst case (namely
-                        // a single character which in utf-8 is >= 1024 bytes) the loop will
-                        // exit when the string is empty.
-                        truncatedText = [truncatedText substringToIndex:oversizeText.length / 2];
-                    }
-                    if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
-                        < kOversizeTextMessageSizeThreshold) {
-                        quotedText = truncatedText;
-                    } else {
-                        OWSFail(@"%@ Missing valid text snippet.", self.logTag);
-                    }
+    TSAttachment *_Nullable attachment = [message attachmentWithTransaction:transaction];
+    TSAttachmentStream *quotedAttachment;
+    if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
+        
+        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+        
+        // If the attachment is "oversize text", try the quote as a reply to text, not as
+        // a reply to an attachment.
+        if (!hasText && [OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]) {
+            hasText = YES;
+            quotedText = @"";
+            
+            NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+            if (oversizeTextData) {
+                // We don't need to include the entire text body of the message, just
+                // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
+                // limit on how long text should be in protos since they'll be stored in
+                // the database. We apply this constant here for the same reasons.
+                NSString *_Nullable oversizeText =
+                [[NSString alloc] initWithData:oversizeTextData encoding:NSUTF8StringEncoding];
+                // First, truncate to the rough max characters.
+                NSString *_Nullable truncatedText =
+                [oversizeText substringToIndex:kOversizeTextMessageSizeThreshold - 1];
+                // But kOversizeTextMessageSizeThreshold is in _bytes_, not characters,
+                // so we need to continue to trim the string until it fits.
+                while (truncatedText && truncatedText.length > 0 &&
+                       [truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
+                       >= kOversizeTextMessageSizeThreshold) {
+                    // A very coarse binary search by halving is acceptable, since
+                    // kOversizeTextMessageSizeThreshold is much longer than our target
+                    // length of "three short lines of text on any device we might
+                    // display this on.
+                    //
+                    // The search will always converge since in the worst case (namely
+                    // a single character which in utf-8 is >= 1024 bytes) the loop will
+                    // exit when the string is empty.
+                    truncatedText = [truncatedText substringToIndex:oversizeText.length / 2];
                 }
-            } else {
-                sourceFilename = attachment.sourceFilename;
-                contentType = attachment.contentType;
-                // Try to generate a thumbnail, if possible.
-                thumbnailData = [self thumbnailDataForAttachment:attachment];
-                hasAttachment = YES;
+                if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
+                    < kOversizeTextMessageSizeThreshold) {
+                    quotedText = truncatedText;
+                } else {
+                    OWSFail(@"%@ Missing valid text snippet.", self.logTag);
+                }
             }
+        } else {
+            quotedAttachment = attachmentStream;
+            hasAttachment = YES;
         }
     }
 
@@ -206,14 +198,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // It's conceivable that the logic above will find neither valid text
-    // or an attachment to quote.
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                                       authorId:authorId
-                                                                           body:quotedText
-                                                                 sourceFilename:sourceFilename
-                                                                  thumbnailData:thumbnailData
-                                                                    contentType:contentType];
+    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initOutgoingWithTimestamp:timestamp
+                                                                               authorId:authorId
+                                                                                   body:quotedText
+                                                                             attachment:quotedAttachment];
     return quotedMessage;
 }
 

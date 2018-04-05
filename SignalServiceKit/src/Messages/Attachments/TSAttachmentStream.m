@@ -370,7 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![[NSFileManager defaultManager] fileExistsAtPath:self.mediaURL.path]) {
         DDLogError(@"%@ while generating thumbnail, source file doesn't exist: %@", self.logTag, self.mediaURL);
         // If we're not lazy-restoring this message, the attachment should exist on disk.
-        OWSAssert(self.lazyRestoreFragmentId);
+//        OWSAssert(self.lazyRestoreFragmentId);
         return;
     }
 

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-// A protocol that abstracts away a source of NSData
+// A base class that abstracts away a source of NSData
 // and allows us to:
 //
 // * Lazy-load if possible.

@@ -27,7 +27,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
-@property (readonly, nonatomic) TSOutgoingMessage *outgoingMessage;
 @property (readonly, nonatomic) YapDatabaseConnection *dbConnection;
 
 @end
@@ -35,7 +34,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @implementation OWSUploadOperation
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                             message:(TSOutgoingMessage *)outgoingMessage
                         dbConnection:(YapDatabaseConnection *)dbConnection
 {
     self = [super init];
@@ -45,7 +43,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     self.remainingRetries = 4;
     _attachmentId = attachmentId;
-    _outgoingMessage = outgoingMessage;
     _dbConnection = dbConnection;
 
     return self;

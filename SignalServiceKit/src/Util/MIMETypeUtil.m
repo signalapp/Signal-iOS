@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
+NSString *const OWSMimeTypeImageJpeg = @"image/jpeg";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
