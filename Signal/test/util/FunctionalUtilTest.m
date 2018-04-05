@@ -8,7 +8,7 @@
     test(![@[] any:^(id x) { return true; }]);
     test(![@[@1] any:^(id x) { return false; }]);
     test([@[@1] any:^(id x) { return true; }]);
-    
+
     test([(@[@2, @3, @5]) any:^(NSNumber* x) { return x.intValue == 3; }]);
     test(![(@[@2, @4, @5]) any:^(NSNumber* x) { return x.intValue == 3; }]);
 }
@@ -32,7 +32,7 @@
     test([(@[@1]) sumDouble] == 1);
     test([(@[@2]) sumNSUInteger] == 2);
     test([(@[@3]) sumNSInteger] == 3);
-    
+
     test([(@[@1.5, @2.75]) sumDouble] == 4.25);
     test([(@[@1, @3]) sumNSUInteger] == 4);
     test([(@[@-1, @4]) sumNSInteger] == 3);

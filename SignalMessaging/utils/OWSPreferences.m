@@ -274,7 +274,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
                  toValue:@(shouldLogCallsInRecents)
              transaction:transaction];
-    
+
     // We need to reload the callService.callUIAdapter here, but SignalMessaging doesn't know about CallService, so we use
     // notifications to decouple the code. This is admittedly awkward, but it only happens once, and the alternative would
     // be importing all the call related classes into SignalMessaging.

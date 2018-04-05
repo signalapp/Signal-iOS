@@ -1043,7 +1043,7 @@ typedef enum : NSUInteger {
     // - Begin presenting another view, e.g. swipe-left for details or swipe-right to go back, but quit part way, so that you remain on the conversation view
     // - toolbar will be not be visible unless we reaquire first responder.
     if (!self.isFirstResponder) {
-        
+
         // We don't have to worry about the input toolbar being visible if the inputToolbar.textView is first responder
         // In fact doing so would unnecessarily dismiss the keyboard which is probably not desirable and at least
         // a distracting animation.
@@ -1593,7 +1593,7 @@ typedef enum : NSUInteger {
 - (void)updateMessageMappingRangeOptions
 {
     NSUInteger rangeLength = 0;
-    
+
     if (self.lastRangeLength == 0) {
         // If this is the first time we're configuring the range length,
         // try to take into account the position of the unread indicator.
@@ -1602,7 +1602,7 @@ typedef enum : NSUInteger {
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
                 = (NSUInteger)[self.dynamicInteractions.unreadIndicatorPosition longValue];
-            
+
             // If there is an unread indicator, increase the initial load window
             // to include it.
             OWSAssert(unreadIndicatorPosition > 0);
@@ -1625,7 +1625,7 @@ typedef enum : NSUInteger {
     rangeLength = MIN(rangeLength, kYapDatabaseRangeMaxLength);
 
     self.lastRangeLength = rangeLength;
-    
+
     YapDatabaseViewRangeOptions *rangeOptions =
         [YapDatabaseViewRangeOptions flexibleRangeWithLength:rangeLength offset:0 from:YapDatabaseViewEnd];
 
@@ -4189,7 +4189,7 @@ typedef enum : NSUInteger {
         //
         // TODO: have a more fine-grained cache expiration based on rows modified.
         [self.viewItemCache removeAllObjects];
-        
+
         // Snapshot the "previousLastTimestamp" value; it will be cleared by resetMappings.
         NSNumber *_Nullable previousLastTimestamp = self.previousLastTimestamp;
 
@@ -4330,18 +4330,18 @@ typedef enum : NSUInteger {
                       id metadata,
                       NSUInteger index,
                       BOOL *stop) {
-             
+
              if (![object isKindOfClass:[TSInteraction class]]) {
                  OWSFail(@"Expected a TSInteraction: %@", [object class]);
                  return;
              }
-             
+
              TSInteraction *interaction = (TSInteraction *)object;
              if (interaction.timestamp <= previousLastTimestamp) {
                  *stop = YES;
                  return;
              }
-             
+
              addedItemCount++;
          }];
     }];

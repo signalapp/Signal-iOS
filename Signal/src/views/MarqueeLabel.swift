@@ -16,7 +16,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      An enum that defines the types of `MarqueeLabel` scrolling
-     
+
      - Left: Scrolls left after the specified delay, and does not return to the original position.
      - LeftRight: Scrolls left first, then back right to the original position.
      - Right: Scrolls right after the specified delay, and does not return to the original position.
@@ -40,17 +40,17 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     /**
      Defines the direction and method in which the `MarqueeLabel` instance scrolls.
      `MarqueeLabel` supports six default types of scrolling: `Left`, `LeftRight`, `Right`, `RightLeft`, `Continuous`, and `ContinuousReverse`.
-     
+
      Given the nature of how text direction works, the options for the `type` property require specific text alignments
      and will set the textAlignment property accordingly.
-     
+
      - `LeftRight` and `Left` types are ONLY compatible with a label text alignment of `NSTextAlignmentLeft`.
      - `RightLeft` and `Right` types are ONLY compatible with a label text alignment of `NSTextAlignmentRight`.
      - `Continuous` does not require a text alignment (it is effectively centered).
      - `ContinuousReverse` does not require a text alignment (it is effectively centered).
-     
+
      Defaults to `Continuous`.
-     
+
      - SeeAlso: textAlignment
      */
     open var type: MarqueeType = .continuous {
@@ -65,21 +65,21 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     /**
      An optional custom scroll "sequence", defined by an array of `ScrollStep` or `FadeStep` instances. A sequence
      defines a single scroll/animation loop, which will continue to be automatically repeated like the default types.
-     
+
      A `type` value is still required when using a custom sequence. The `type` value defines the `home` and `away`
      values used in the `ScrollStep` instances, and the `type` value determines which way the label will scroll.
-     
+
      When a custom sequence is not supplied, the default sequences are used per the defined `type`.
-     
+
      `ScrollStep` steps are the primary step types, and define the position of the label at a given time in the sequence.
      `FadeStep` steps are secondary steps that define the edge fade state (leading, trailing, or both) around the `ScrollStep`
      steps.
-     
+
      Defaults to nil.
-     
+
      - Attention: Use of the `scrollSequence` property requires understanding of how MarqueeLabel works for effective
      use. As a reference, it is suggested to review the methodology used to build the sequences for the default types.
-     
+
      - SeeAlso: type
      - SeeAlso: ScrollStep
      - SeeAlso: FadeStep
@@ -89,27 +89,27 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     /**
      Specifies the animation curve used in the scrolling motion of the labels.
      Allowable options:
-     
+
      - `UIViewAnimationOptionCurveEaseInOut`
      - `UIViewAnimationOptionCurveEaseIn`
      - `UIViewAnimationOptionCurveEaseOut`
      - `UIViewAnimationOptionCurveLinear`
-     
+
      Defaults to `UIViewAnimationOptionCurveEaseInOut`.
      */
     open var animationCurve: UIViewAnimationCurve = .linear
 
     /**
      A boolean property that sets whether the `MarqueeLabel` should behave like a normal `UILabel`.
-     
+
      When set to `true` the `MarqueeLabel` will behave and look like a normal `UILabel`, and  will not begin any scrolling animations.
      Changes to this property take effect immediately, removing any in-flight animation as well as any edge fade. Note that `MarqueeLabel`
      will respect the current values of the `lineBreakMode` and `textAlignment`properties while labelized.
-     
+
      To simply prevent automatic scrolling, use the `holdScrolling` property.
-     
+
      Defaults to `false`.
-     
+
      - SeeAlso: holdScrolling
      - SeeAlso: lineBreakMode
      - Note: The label will not automatically scroll when this property is set to `true`.
@@ -127,14 +127,14 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A boolean property that sets whether the `MarqueeLabel` should hold (prevent) automatic label scrolling.
-     
+
      When set to `true`, `MarqueeLabel` will not automatically scroll even its text is larger than the specified frame,
      although the specified edge fades will remain.
-     
+
      To set `MarqueeLabel` to act like a normal UILabel, use the `labelize` property.
-     
+
      Defaults to `false`.
-     
+
      - Note: The label will not automatically scroll when this property is set to `true`.
      - SeeAlso: labelize
      */
@@ -150,12 +150,12 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A boolean property that sets whether the `MarqueeLabel` should only begin a scroll when tapped.
-     
+
      If this property is set to `true`, the `MarqueeLabel` will only begin a scroll animation cycle when tapped. The label will
      not automatically being a scroll. This setting overrides the setting of the `holdScrolling` property.
-     
+
      Defaults to `false`.
-     
+
      - Note: The label will not automatically scroll when this property is set to `false`.
      - SeeAlso: holdScrolling
      */
@@ -178,7 +178,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A read-only boolean property that indicates if the label's scroll animation has been paused.
-     
+
      - SeeAlso: pauseLabel
      - SeeAlso: unpauseLabel
      */
@@ -188,7 +188,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A boolean property that indicates if the label is currently away from the home location.
-     
+
      The "home" location is the traditional location of `UILabel` text. This property essentially reflects if a scroll animation is underway.
      */
     open var awayFromHome: Bool {
@@ -203,7 +203,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
      The `MarqueeLabel` scrolling speed may be defined by one of two ways:
      - Rate(CGFloat): The speed is defined by a rate of motion, in units of points per second.
      - Duration(CGFloat): The speed is defined by the time to complete a scrolling animation cycle, in units of seconds.
-     
+
      Each case takes an associated `CGFloat` value, which is the rate/duration desired.
      */
     public enum SpeedLimit {
@@ -222,17 +222,17 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Defines the speed of the `MarqueeLabel` scrolling animation.
-     
+
      The speed is set by specifying a case of the `SpeedLimit` enum along with an associated value.
-     
+
      - SeeAlso: SpeedLimit
      */
     open var speed: SpeedLimit = .duration(7.0) {
         didSet {
             switch (speed, oldValue) {
-            case (.rate(let a), .rate(let b)) where a == b:
+            case let (.rate(a), .rate(b)) where a == b:
                 return
-            case (.duration(let a), .duration(let b)) where a == b:
+            case let (.duration(a), .duration(b)) where a == b:
                 return
             default:
                 updateAndScroll()
@@ -257,7 +257,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     @IBInspectable open var scrollRate: CGFloat {
         get {
             switch speed {
-            case .duration(_): return 0.0
+            case .duration: return 0.0
             case .rate(let rate): return rate
             }
         }
@@ -268,18 +268,18 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A buffer (offset) between the leading edge of the label text and the label frame.
-     
+
      This property adds additional space between the leading edge of the label text and the label frame. The
      leading edge is the edge of the label text facing the direction of scroll (i.e. the edge that animates
      offscreen first during scrolling).
-     
+
      Defaults to `0`.
-     
+
      - Note: The value set to this property affects label positioning at all times (including when `labelize` is set to `true`),
      including when the text string length is short enough that the label does not need to scroll.
      - Note: For Continuous-type labels, the smallest value of `leadingBuffer`, `trailingBuffer`, and `fadeLength`
      is used as spacing between the two label instances. Zero is an allowable value for all three properties.
-     
+
      - SeeAlso: trailingBuffer
      */
     @IBInspectable open var leadingBuffer: CGFloat = 0.0 {
@@ -292,18 +292,18 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      A buffer (offset) between the trailing edge of the label text and the label frame.
-     
+
      This property adds additional space (buffer) between the trailing edge of the label text and the label frame. The
      trailing edge is the edge of the label text facing away from the direction of scroll (i.e. the edge that animates
      offscreen last during scrolling).
-     
+
      Defaults to `0`.
-     
+
      - Note: The value set to this property has no effect when the `labelize` property is set to `true`.
-     
+
      - Note: For Continuous-type labels, the smallest value of `leadingBuffer`, `trailingBuffer`, and `fadeLength`
      is used as spacing between the two label instances. Zero is an allowable value for all three properties.
-     
+
      - SeeAlso: leadingBuffer
      */
     @IBInspectable open var trailingBuffer: CGFloat = 0.0 {
@@ -316,11 +316,11 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      The length of transparency fade at the left and right edges of the frame.
-     
+
      This propery sets the size (in points) of the view edge transparency fades on the left and right edges of a `MarqueeLabel`. The
      transparency fades from an alpha of 1.0 (fully visible) to 0.0 (fully transparent) over this distance. Values set to this property
      will be sanitized to prevent a fade length greater than 1/2 of the frame width.
-     
+
      Defaults to `0`.
      */
     @IBInspectable open var fadeLength: CGFloat = 0.0 {
@@ -338,7 +338,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     @IBInspectable open var animationDelay: CGFloat = 1.0
 
     /** The read-only duration of the scroll animation (not including delay).
-     
+
      The value of this property is calculated from the value set to the `speed` property. If a .duration value is
      used to set the label animation speed, this value will be equivalent.
      */
@@ -350,15 +350,15 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Convenience method to restart all `MarqueeLabel` instances that have the specified view controller in their next responder chain.
-    
+
      - Parameter controller: The view controller for which to restart all `MarqueeLabel` instances.
-    
+
      - Warning: View controllers that appear with animation (such as from underneath a modal-style controller) can cause some `MarqueeLabel` text
      position "jumping" when this method is used in `viewDidAppear` if scroll animations are already underway. Use this method inside `viewWillAppear:`
      instead to avoid this problem.
-    
+
      - Warning: This method may not function properly if passed the parent view controller when using view controller containment.
-    
+
      - SeeAlso: restartLabel
      - SeeAlso: controllerViewDidAppear:
      - SeeAlso: controllerViewWillAppear:
@@ -369,9 +369,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Convenience method to restart all `MarqueeLabel` instances that have the specified view controller in their next responder chain.
-     
+
      Alternative to `restartLabelsOfController`. This method is retained for backwards compatibility and future enhancements.
-     
+
      - Parameter controller: The view controller that will appear.
      - SeeAlso: restartLabel
      - SeeAlso: controllerViewDidAppear
@@ -382,9 +382,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Convenience method to restart all `MarqueeLabel` instances that have the specified view controller in their next responder chain.
-     
+
      Alternative to `restartLabelsOfController`. This method is retained for backwards compatibility and future enhancements.
-     
+
      - Parameter controller: The view controller that did appear.
      - SeeAlso: restartLabel
      - SeeAlso: controllerViewWillAppear
@@ -395,9 +395,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Labelizes all `MarqueeLabel` instances that have the specified view controller in their next responder chain.
-    
+
      The `labelize` property of all recognized `MarqueeLabel` instances will be set to `true`.
-     
+
      - Parameter controller: The view controller for which all `MarqueeLabel` instances should be labelized.
      - SeeAlso: labelize
      */
@@ -407,9 +407,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      De-labelizes all `MarqueeLabel` instances that have the specified view controller in their next responder chain.
-     
+
      The `labelize` property of all recognized `MarqueeLabel` instances will be set to `false`.
-     
+
      - Parameter controller: The view controller for which all `MarqueeLabel` instances should be de-labelized.
      - SeeAlso: labelize
      */
@@ -423,7 +423,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Returns a newly initialized `MarqueeLabel` instance with the specified scroll rate and edge transparency fade length.
-    
+
      - Parameter frame: A rectangle specifying the initial location and size of the view in its superview's coordinates. Text (for the given font, font size, etc.) that does not fit in this frame will automatically scroll.
      - Parameter pixelsPerSec: A rate of scroll for the label scroll animation. Must be non-zero. Note that this will be the peak (mid-transition) rate for ease-type animation.
      - Parameter fadeLength: A length of transparency fade at the left and right edges of the `MarqueeLabel` instance's frame.
@@ -439,7 +439,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Returns a newly initialized `MarqueeLabel` instance with the specified scroll rate and edge transparency fade length.
-     
+
      - Parameter frame: A rectangle specifying the initial location and size of the view in its superview's coordinates. Text (for the given font, font size, etc.) that does not fit in this frame will automatically scroll.
      - Parameter scrollDuration: A scroll duration the label scroll animation. Must be non-zero. This will be the duration that the animation takes for one-half of the scroll cycle in the case of left-right and right-left marquee types, and for one loop of a continuous marquee type.
      - Parameter fadeLength: A length of transparency fade at the left and right edges of the `MarqueeLabel` instance's frame.
@@ -460,9 +460,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Returns a newly initialized `MarqueeLabel` instance.
-     
+
      The default scroll duration of 7.0 seconds and fade length of 0.0 are used.
-     
+
      - Parameter frame: A rectangle specifying the initial location and size of the view in its superview's coordinates. Text (for the given font, font size, etc.) that does not fit in this frame will automatically scroll.
      - Returns: An initialized `MarqueeLabel` object or nil if the object couldn't be created.
     */
@@ -1201,16 +1201,16 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Overrides any non-size condition which is preventing the receiver from automatically scrolling, and begins a scroll animation.
-    
+
      Currently the only non-size conditions which can prevent a label from scrolling are the `tapToScroll` and `holdScrolling` properties. This
      method will not force a label with a string that fits inside the label bounds (i.e. that would not automatically scroll) to begin a scroll
      animation.
-    
+
      Upon the completion of the first forced scroll animation, the receiver will not automatically continue to scroll unless the conditions
      preventing scrolling have been removed.
-    
+
      - Note: This method has no effect if called during an already in-flight scroll animation.
-    
+
      - SeeAlso: restartLabel
     */
     public func triggerScrollStart() {
@@ -1221,7 +1221,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Immediately resets the label to the home position, cancelling any in-flight scroll animation, and restarts the scroll animation if the appropriate conditions are met.
-     
+
      - SeeAlso: resetLabel
      - SeeAlso: triggerScrollStart
      */
@@ -1236,11 +1236,11 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Resets the label text, recalculating the scroll animation.
-     
+
      The text is immediately returned to the home position, and the scroll animation positions are cleared. Scrolling will not resume automatically after
      a call to this method. To re-initiate scrolling, use either a call to `restartLabel` or make a change to a UILabel property such as text, bounds/frame,
      font, font size, etc.
-     
+
      - SeeAlso: restartLabel
      */
     public func resetLabel() {
@@ -1251,11 +1251,11 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Immediately resets the label to the home position, cancelling any in-flight scroll animation.
-     
+
      The text is immediately returned to the home position. Scrolling will not resume automatically after a call to this method.
      To re-initiate scrolling use a call to `restartLabel` or `triggerScrollStart`, or make a change to a UILabel property such as text, bounds/frame,
      font, font size, etc.
-     
+
      - SeeAlso: restartLabel
      - SeeAlso: triggerScrollStart
      */
@@ -1268,9 +1268,9 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Pauses the text scrolling animation, at any point during an in-progress animation.
-     
+
      - Note: This method has no effect if a scroll animation is NOT already in progress. To prevent automatic scrolling on a newly-initialized label prior to its presentation onscreen, see the `holdScrolling` property.
-     
+
      - SeeAlso: holdScrolling
      - SeeAlso: unpauseLabel
      */
@@ -1293,7 +1293,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Un-pauses a previously paused text scrolling animation. This method has no effect if the label was not previously paused using `pauseLabel`.
-     
+
      - SeeAlso: pauseLabel
      */
     public func unpauseLabel() {
@@ -1325,7 +1325,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Called when the label animation is about to begin.
-     
+
      The default implementation of this method does nothing. Subclasses may override this method in order to perform any custom actions just as
      the label animation begins. This is only called in the event that the conditions for scrolling to begin are met.
      */
@@ -1336,12 +1336,12 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     /**
      Called when the label animation has finished, and the label is at the home position.
-     
+
      The default implementation of this method does nothing. Subclasses may override this method in order to perform any custom actions jas as
      the label animation completes, and before the next animation would begin (assuming the scroll conditions are met).
-     
+
      - Parameter finished: A Boolean that indicates whether or not the scroll animation actually finished before the completion handler was called.
-     
+
      - Warning: This method will be called, and the `finished` parameter will be `NO`, when any property changes are made that would cause the label
      scrolling to be automatically reset. This includes changes to label text and font/font size changes.
      */
@@ -1602,7 +1602,7 @@ public struct ScrollStep: MarqueeStep {
      - `home`: The starting, default position of the label
      - `away`: The calculated position that results in the entirety of the label scrolling past.
      - `partial(CGFloat)`: A fractional value, specified by the associated CGFloat value, between the `home` and `away` positions (must be between 0.0 and 1.0).
-     
+
      The `away` position depends on the MarqueeLabel `type` value.
      - For `left`, `leftRight`, `right`, and `rightLeft` types, the `away` position means the trailing edge of the label
         is visible. For `leftRight` and `rightLeft` default types, the scroll animation reverses direction after reaching
@@ -1623,7 +1623,7 @@ public struct ScrollStep: MarqueeStep {
 
     /**
      The animation curve to utilize between the previous `ScrollStep` in a sequence and this step.
-     
+
      - Note: The animation curve value for the first `ScrollStep` in a sequence has no effect.
      */
     public let timingFunction: UIViewAnimationCurve
@@ -1636,7 +1636,7 @@ public struct ScrollStep: MarqueeStep {
 
     /**
      The option set defining the edge fade state for this scroll step.
-     
+
      Possible options include `.leading` and `.trailing`, corresponding to the leading edge of the label scrolling (i.e. 
      the direction of scroll) and trailing edge of the label.
     */
@@ -1660,13 +1660,13 @@ public struct ScrollStep: MarqueeStep {
 public struct FadeStep: MarqueeStep {
     /**
      The desired time between this `FadeStep` and the preceding or subsequent `ScrollStep` in a sequence.
-     
+
      `FadeSteps` with a negative `timeStep` value will be associated _only_ with an immediately-subsequent `ScrollStep` step
      in the sequence.
-     
+
      `FadeSteps` with a positive `timeStep` value will be associated _only_ with an immediately-prior `ScrollStep` step in the
      sequence.
-     
+
      - Note: A `FadeStep` with a `timeStep` value of 0.0 will have no effect, and is the same as defining the fade state with
      a `ScrollStep`.
      */
@@ -1679,10 +1679,10 @@ public struct FadeStep: MarqueeStep {
 
     /**
      The option set defining the edge fade state for this fade step.
-     
+
      Possible options include `.leading` and `.trailing`, corresponding to the leading edge of the label scrolling (i.e.
      the direction of scroll) and trailing edge of the label.
-     
+
      As an Option Set type, both edge fade states may be defined using an array literal: `[.leading, .trailing]`.
      */
     public let edgeFades: EdgeFade

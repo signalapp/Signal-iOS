@@ -122,9 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
+
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    
+
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];
 }
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapDatabaseModified:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
+
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];
 }
@@ -199,14 +199,14 @@ NS_ASSUME_NONNULL_BEGIN
             // To be consistent with the threads (above), we use ContactTableViewCell
             // instead of InboxTableViewCell to present contacts and threads.
             ContactTableViewCell *cell = [ContactTableViewCell new];
-            
+
             if ([thread isKindOfClass:[TSContactThread class]]) {
                 BOOL isBlocked = [helper isRecipientIdBlocked:thread.contactIdentifier];
                 if (isBlocked) {
                     cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                 }
             }
-            
+
             [cell configureWithThread:thread contactsManager:helper.contactsManager];
 
             if (cell.accessoryView == nil) {
