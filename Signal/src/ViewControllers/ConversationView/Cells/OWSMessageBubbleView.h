@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)loadContent;
 - (void)unloadContent;
 
-- (CGSize)sizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
+- (CGSize)sizeForContentWidth:(int)contentWidth;
 
 - (void)prepareForReuse;
 

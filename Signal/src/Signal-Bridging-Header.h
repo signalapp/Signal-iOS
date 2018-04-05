@@ -25,6 +25,7 @@
 #import "OWSBubbleView.h"
 #import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"
+#import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"

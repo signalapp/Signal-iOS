@@ -12,7 +12,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
+class MessageDetailViewController: OWSViewController, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
 
     // MARK: Properties
 
@@ -28,15 +28,9 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     var message: TSMessage
     var wasDeleted: Bool = false
 
-    var mediaMessageView: MediaMessageView?
-
-    // See comments on updateTextLayout.
-    var messageTextView: UITextView?
-    var messageTextProxyView: UIView?
-    var messageTextTopConstraint: NSLayoutConstraint?
-    var messageTextHeightLayoutConstraint: NSLayoutConstraint?
-    var messageTextProxyViewHeightConstraint: NSLayoutConstraint?
-    var bubbleViewWidthConstraint: NSLayoutConstraint?
+    var messageBubbleView: OWSMessageBubbleView?
+    var messageBubbleViewWidthLayoutConstraint: NSLayoutConstraint?
+    var messageBubbleViewHeightLayoutConstraint: NSLayoutConstraint?
 
     var scrollView: UIScrollView!
     var contentView: UIView?
@@ -87,7 +81,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        updateTextLayout()
+        updateMessageBubbleViewLayout()
 
         if mode == .focusOnMetadata {
             if let bubbleView = self.bubbleView {
@@ -121,7 +115,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         view.backgroundColor = UIColor.white
 
         let scrollView = UIScrollView()
-        scrollView.delegate = self
         self.scrollView = scrollView
         view.addSubview(scrollView)
         scrollView.autoPinWidthToSuperview(withMargin: 0)
@@ -218,7 +211,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
                 }
 
                 for recipientId in thread.recipientIdentifiers {
-                    let (recipientStatus, shortStatusMessage, longStatusMessage) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
+                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -299,11 +292,7 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             lastRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: 20)
         }
 
-        if let mediaMessageView = mediaMessageView {
-            mediaMessageView.autoMatch(.height, to: .width, of: mediaMessageView, withOffset: 0, relation: .lessThanOrEqual)
-        }
-
-        updateTextLayout()
+        updateMessageBubbleViewLayout()
     }
 
     private func displayableTextIfText() -> String? {
@@ -321,8 +310,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
     }
 
     let bubbleViewHMargin: CGFloat = 10
-    let messageTailEdgeMargin: CGFloat = 15
-    let messageNoTailEdgeMargin: CGFloat = 10
 
     private func contentRows() -> [UIView] {
         var rows = [UIView]()
@@ -331,60 +318,27 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
             rows += addAttachmentRows()
         }
 
-        if let messageBody = displayableTextIfText() {
+        if true {
+            let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
+            self.messageBubbleView = messageBubbleView
+            messageBubbleView.viewItem = viewItem
+            messageBubbleView.cellMediaCache = NSCache()
+            messageBubbleView.contentWidth = contentWidth()
+            messageBubbleView.configureViews()
+            messageBubbleView.loadContent()
 
-            self.messageBody = messageBody
-
-            let isIncoming = self.message as? TSIncomingMessage != nil
-
-            // UITextView can't render extremely long text due to constraints
-            // on the size of its backing buffer, especially when we're
-            // embedding it "full-size' within a UIScrollView as we do in this view.
-            //
-            // Therefore we're doing something unusual here.
-            // See comments on updateTextLayout.
-            let messageTextView = UITextView()
-            self.messageTextView = messageTextView
-            messageTextView.font = UIFont.ows_dynamicTypeBody
-            messageTextView.backgroundColor = UIColor.clear
-            messageTextView.isOpaque = false
-            messageTextView.isEditable = false
-            messageTextView.isSelectable = true
-            messageTextView.textContainerInset = UIEdgeInsets.zero
-            messageTextView.contentInset = UIEdgeInsets.zero
-            messageTextView.isScrollEnabled = true
-            messageTextView.showsHorizontalScrollIndicator = false
-            messageTextView.showsVerticalScrollIndicator = false
-            messageTextView.isUserInteractionEnabled = false
-            messageTextView.textColor = isIncoming ? UIColor.black : UIColor.white
-            messageTextView.text = messageBody
-
-            let bubbleImageData = bubbleFactory.bubble(message: message)
-
-            let messageTextProxyView = UIView()
-            messageTextProxyView.layoutMargins = UIEdgeInsets.zero
-            self.messageTextProxyView = messageTextProxyView
-            messageTextProxyView.addSubview(messageTextView)
-            messageTextView.autoPinWidthToSuperview()
-            self.messageTextTopConstraint = messageTextView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            self.messageTextHeightLayoutConstraint = messageTextView.autoSetDimension(.height, toSize: 0)
-
-            let bubbleView = UIImageView(image: bubbleImageData.messageBubbleImage)
-            self.bubbleView = bubbleView
-
-            bubbleView.layer.cornerRadius = 10
-            bubbleView.addSubview(messageTextProxyView)
-
-            messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: messageTailEdgeMargin)
-            messageTextProxyView.autoPinEdge(toSuperviewEdge: isIncoming ? .trailing : .leading, withInset: messageNoTailEdgeMargin)
-            messageTextProxyView.autoPinHeightToSuperview(withMargin: 10)
-            self.messageTextProxyViewHeightConstraint = messageTextProxyView.autoSetDimension(.height, toSize: 0)
+            messageBubbleView.isUserInteractionEnabled = true
+            messageBubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(messageBubbleTapped)))
 
             let row = UIView()
-            row.addSubview(bubbleView)
-            bubbleView.autoPinHeightToSuperview()
-            bubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
-            self.bubbleViewWidthConstraint = bubbleView.autoSetDimension(.width, toSize: 0)
+            row.addSubview(messageBubbleView)
+            messageBubbleView.autoPinHeightToSuperview()
+
+            let isIncoming = self.message as? TSIncomingMessage != nil
+            messageBubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
+
+            self.messageBubbleViewWidthLayoutConstraint = messageBubbleView.autoSetDimension(.width, toSize: 0)
+            self.messageBubbleViewHeightLayoutConstraint = messageBubbleView.autoSetDimension(.height, toSize: 0)
             rows.append(row)
         }
 
@@ -432,26 +386,6 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
         self.attachmentStream = attachmentStream
 
-        if let filePath = attachmentStream.filePath() {
-            dataSource = DataSourcePath.dataSource(withFilePath: filePath)
-        }
-
-        guard let dataSource = dataSource else {
-            rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE",
-                                                         comment: "Label for 'missing' attachments in the 'message metadata' view."),
-                                 value: ""))
-            return rows
-        }
-
-        let contentType = attachment.contentType
-        if let dataUTI = MIMETypeUtil.utiType(forMIMEType: contentType) {
-            let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
-            let mediaMessageView = MediaMessageView(attachment: attachment, mode: .small, mediaDetailPresenter: self)
-
-            mediaMessageView.backgroundColor = UIColor.white
-            self.mediaMessageView = mediaMessageView
-            rows.append(mediaMessageView)
-        }
         return rows
     }
 
@@ -650,111 +584,121 @@ class MessageDetailViewController: OWSViewController, UIScrollViewDelegate, Medi
         }
     }
 
-    // MARK: - Text Layout
+    // MARK: - Message Bubble Layout
 
-    // UITextView can't render extremely long text due to constraints on the size
-    // of its backing buffer, especially when we're embedding it "full-size' 
-    // within a UIScrollView as we do in this view.  Therefore if we do the naive
-    // thing and embed a full-size UITextView inside our UIScrollView, it will 
-    // fail to render any text if the text message is sufficiently long.
-    //
-    // Therefore we're doing something unusual.  
-    //
-    // * We use an empty UIView "messageTextProxyView" as a placeholder for the
-    //   the UITextView.  It has the size and position of where the UITextView
-    //   would be normally.
-    // * We use a UITextView inside that proxy that is just large enough to
-    //   render the content onscreen. We then move it around within the proxy
-    //   bounds to render the parts of the proxy which are onscreen.
-    private func updateTextLayout() {
-        guard let messageTextView = messageTextView else {
-            return
-        }
-        guard let messageTextProxyView = messageTextProxyView else {
-            owsFail("\(logTag) Missing messageTextProxyView")
-            return
-        }
-        guard let scrollView = scrollView else {
-            owsFail("\(logTag) Missing scrollView")
-            return
-        }
-        guard let contentView = contentView else {
-            owsFail("\(logTag) Missing contentView")
-            return
-        }
-        guard let bubbleView = bubbleView else {
-            owsFail("\(logTag) Missing bubbleView")
-            return
-        }
-        guard let bubbleSuperview = bubbleView.superview else {
-            owsFail("\(logTag) Missing bubbleSuperview")
-            return
-        }
-        guard let messageTextTopConstraint = messageTextTopConstraint else {
-            owsFail("\(logTag) Missing messageTextTopConstraint")
-            return
-        }
-        guard let messageTextHeightLayoutConstraint = messageTextHeightLayoutConstraint else {
-            owsFail("\(logTag) Missing messageTextHeightLayoutConstraint")
-            return
-        }
-        guard let messageTextProxyViewHeightConstraint = messageTextProxyViewHeightConstraint else {
-            owsFail("\(logTag) Missing messageTextProxyViewHeightConstraint")
-            return
-        }
-        guard let bubbleViewWidthConstraint = bubbleViewWidthConstraint else {
-            owsFail("\(logTag) Missing bubbleViewWidthConstraint")
-            return
-        }
-
-        if messageTextView.width() != messageTextProxyView.width() {
-            owsFail("\(logTag) messageTextView.width \(messageTextView.width) != messageTextProxyView.width \(messageTextProxyView.width)")
-        }
-
-        let maxBubbleWidth = bubbleSuperview.width() - (bubbleViewHMargin * 2)
-        let maxTextWidth = maxBubbleWidth - (messageTailEdgeMargin + messageNoTailEdgeMargin)
-        // Measure the total text size.
-        let textSize = messageTextView.sizeThatFits(CGSize(width: maxTextWidth, height: CGFloat.greatestFiniteMagnitude))
-        // Measure the size of the scroll view viewport.
-        let scrollViewSize = scrollView.frame.size
-        // Obtain the current scroll view content offset (scroll state).
-        let scrollViewContentOffset = scrollView.contentOffset
-        // Obtain the location of the text view proxy relative to the content view.
-        let textProxyOffset = contentView.convert(CGPoint.zero, from: messageTextProxyView)
-
-        // 1. The bubble view's width should fit the text content.
-        let bubbleViewWidth = ceil(textSize.width + messageTailEdgeMargin + messageNoTailEdgeMargin)
-        bubbleViewWidthConstraint.constant = bubbleViewWidth
-
-        // 2. The text proxy's height should reflect the entire text content.
-        let messageTextProxyViewHeight = ceil(textSize.height)
-        messageTextProxyViewHeightConstraint.constant = messageTextProxyViewHeight
-
-        // 3. We only want to render a single screenful of text content at a time.
-        //    The height of the text view should reflect the height of the scrollview's
-        //    viewport.
-        let messageTextViewHeight = ceil(min(textSize.height, scrollViewSize.height))
-        messageTextHeightLayoutConstraint.constant = messageTextViewHeight
-
-        // 4. We want to move the text view around within the proxy in response to
-        //    scroll state changes so that it can render the part of the proxy which
-        //    is on screen.
-        let minMessageTextViewY = CGFloat(0)
-        let maxMessageTextViewY = messageTextProxyViewHeight - messageTextViewHeight
-        let rawMessageTextViewY = -textProxyOffset.y + scrollViewContentOffset.y
-        let messageTextViewY = max(minMessageTextViewY, min(maxMessageTextViewY, rawMessageTextViewY))
-        messageTextTopConstraint.constant = messageTextViewY
-
-        // 5. We want to scroll the text view's content so that the text view
-        //    renders the appropriate content for the scrollview's scroll state.
-        messageTextView.contentOffset = CGPoint(x: 0, y: messageTextViewY)
+    private func contentWidth() -> Int32 {
+        return Int32(round(self.view.width() - (2 * bubbleViewHMargin)))
     }
 
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        Logger.verbose("\(logTag) scrollViewDidScroll")
+    private func updateMessageBubbleViewLayout() {
+        guard let messageBubbleView = messageBubbleView else {
+            return
+        }
+        guard let messageBubbleViewWidthLayoutConstraint = messageBubbleViewWidthLayoutConstraint else {
+            return
+        }
+        guard let messageBubbleViewHeightLayoutConstraint = messageBubbleViewHeightLayoutConstraint else {
+            return
+        }
 
-        updateTextLayout()
+        messageBubbleView.contentWidth = contentWidth()
+
+        let messageBubbleSize = messageBubbleView.size(forContentWidth: contentWidth())
+        messageBubbleViewWidthLayoutConstraint.constant = messageBubbleSize.width
+        messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }
+
+    // MARK: - Event Handlers
+
+    func messageBubbleTapped(sender: UIGestureRecognizer) {
+        guard let messageBubbleView = messageBubbleView else {
+            return
+        }
+        guard sender.state == .recognized else {
+            return
+        }
+        if let outgoingMessage = viewItem.interaction as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .attemptingOut,
+                 .unsent:
+                // Ignore taps on "unsent" and "sending" messages.
+                return
+            default:
+                break
+            }
+        }
+
+    let locationInMessageBubble = sender.location(in: messageBubbleView)
+        switch messageBubbleView.gestureLocation(forLocation: locationInMessageBubble) {
+        case .default:
+            break
+        case .oversizeText:
+            break
+        case .media:
+            // TODO: Show/play media.
+            break
+        case .quotedReply:
+            break
+        }
+    }
+
+//
+//    - (void)handleMediaTapGesture
+//    {
+//    OWSAssert(self.delegate);
+//
+//    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
+//
+//    switch (self.cellType) {
+//    case OWSMessageCellType_Unknown:
+//    case OWSMessageCellType_TextMessage:
+//    case OWSMessageCellType_OversizeTextMessage:
+//    break;
+//    case OWSMessageCellType_StillImage:
+//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
+//    OWSAssert(attachmentStream);
+//
+//    [self.delegate didTapImageViewItem:self.viewItem
+//    attachmentStream:attachmentStream
+//    imageView:self.messageBubbleView.lastBodyMediaView];
+//    break;
+//    case OWSMessageCellType_AnimatedImage:
+//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
+//    OWSAssert(attachmentStream);
+//
+//    [self.delegate didTapImageViewItem:self.viewItem
+//    attachmentStream:attachmentStream
+//    imageView:self.messageBubbleView.lastBodyMediaView];
+//    break;
+//    case OWSMessageCellType_Audio:
+//    OWSAssert(attachmentStream);
+//
+//    [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
+//    return;
+//    case OWSMessageCellType_Video:
+//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
+//    OWSAssert(attachmentStream);
+//
+//    [self.delegate didTapVideoViewItem:self.viewItem
+//    attachmentStream:attachmentStream
+//    imageView:self.messageBubbleView.lastBodyMediaView];
+//    return;
+//    case OWSMessageCellType_GenericAttachment:
+//    OWSAssert(attachmentStream);
+//
+//    [AttachmentSharing showShareUIForAttachment:attachmentStream];
+//    break;
+//    case OWSMessageCellType_DownloadingAttachment: {
+//    TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
+//    OWSAssert(attachmentPointer);
+//
+//    if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+//    [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
+//    }
+//    break;
+//    }
+//    }
+//    }
 
     // MediaGalleryDataSourceDelegate
 

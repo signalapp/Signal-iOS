@@ -381,7 +381,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.messageBubbleView.viewItem = self.viewItem;
     self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView sizeForViewWidth:viewWidth contentWidth:contentWidth];
+    CGSize messageBubbleSize = [self.messageBubbleView sizeForContentWidth:contentWidth];
 
     CGSize cellSize = messageBubbleSize;
 
