@@ -473,7 +473,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                 [attachmentBuilder setFileName:self.quotedMessage.sourceFilename];
             }
             [attachmentBuilder setContentType:self.quotedMessage.contentType];
-            [quoteBuilder setAttachmentBuilder:attachmentBuilder];
+            [quoteBuilder.attachments addObject:[attachmentBuilder build]];
 
             hasQuotedAttachment = YES;
         }
