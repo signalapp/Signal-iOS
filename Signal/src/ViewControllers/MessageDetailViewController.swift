@@ -615,70 +615,12 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
             self.navigationController?.pushViewController(viewController, animated: true)
             break
         case .media:
-            // TODO: Show/play media.
+            // TODO: We could show MediaGalleryViewController?
             break
         case .quotedReply:
             break
         }
     }
-
-//
-//    - (void)handleMediaTapGesture
-//    {
-//    OWSAssert(self.delegate);
-//
-//    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
-//
-//    switch (self.cellType) {
-//    case OWSMessageCellType_Unknown:
-//    case OWSMessageCellType_TextMessage:
-//    case OWSMessageCellType_OversizeTextMessage:
-//    break;
-//    case OWSMessageCellType_StillImage:
-//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
-//    OWSAssert(attachmentStream);
-//
-//    [self.delegate didTapImageViewItem:self.viewItem
-//    attachmentStream:attachmentStream
-//    imageView:self.messageBubbleView.lastBodyMediaView];
-//    break;
-//    case OWSMessageCellType_AnimatedImage:
-//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
-//    OWSAssert(attachmentStream);
-//
-//    [self.delegate didTapImageViewItem:self.viewItem
-//    attachmentStream:attachmentStream
-//    imageView:self.messageBubbleView.lastBodyMediaView];
-//    break;
-//    case OWSMessageCellType_Audio:
-//    OWSAssert(attachmentStream);
-//
-//    [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
-//    return;
-//    case OWSMessageCellType_Video:
-//    OWSAssert(self.messageBubbleView.lastBodyMediaView);
-//    OWSAssert(attachmentStream);
-//
-//    [self.delegate didTapVideoViewItem:self.viewItem
-//    attachmentStream:attachmentStream
-//    imageView:self.messageBubbleView.lastBodyMediaView];
-//    return;
-//    case OWSMessageCellType_GenericAttachment:
-//    OWSAssert(attachmentStream);
-//
-//    [AttachmentSharing showShareUIForAttachment:attachmentStream];
-//    break;
-//    case OWSMessageCellType_DownloadingAttachment: {
-//    TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
-//    OWSAssert(attachmentPointer);
-//
-//    if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-//    [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
-//    }
-//    break;
-//    }
-//    }
-//    }
 
     // MediaGalleryDataSourceDelegate
 
