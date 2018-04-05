@@ -588,7 +588,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!error) {
         return (CGFloat)[audioPlayer duration];
     } else {
-        OWSFail(@"Could not find audio duration: %@", self.mediaURL);
+        DDLogError(@"Could not find audio duration: %@", self.mediaURL);
         return 0;
     }
 }

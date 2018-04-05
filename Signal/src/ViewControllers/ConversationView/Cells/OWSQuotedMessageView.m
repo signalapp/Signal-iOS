@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType]);
 }
 
-- (BOOL)hasQuotedAttachmentThumbnail
+- (BOOL)hasQuotedAttachmentThumbnailImage
 {
     return (self.quotedMessage.contentType.length > 0
         && ![OWSMimeTypeOversizeTextMessage isEqualToString:self.quotedMessage.contentType] &&
@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)tryToLoadThumbnailImage
 {
-    if (!self.hasQuotedAttachmentThumbnail) {
+    if (!self.hasQuotedAttachmentThumbnailImage) {
         return nil;
     }
     if (!self.quotedMessage.thumbnailData) {

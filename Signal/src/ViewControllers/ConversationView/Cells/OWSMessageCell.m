@@ -1107,14 +1107,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageTextView *bodyTextView = [self configureBodyTextView];
     CGSize textSize = CGSizeCeil([bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-    CGSize textViewSize = textSize;
+    textSize.width = MIN(textSize.width, maxTextWidth);
+    CGSize result = textSize;
 
     if (includeMargins) {
-        textViewSize.width += leftMargin + rightMargin;
-        textViewSize.height += self.textTopMargin + self.textBottomMargin;
+        result.width += leftMargin + rightMargin;
+        result.height += self.textTopMargin + self.textBottomMargin;
     }
 
-    return CGSizeCeil(textViewSize);
+    return CGSizeCeil(result);
 }
 
 - (CGSize)bodyMediaSizeForContentWidth:(int)contentWidth
