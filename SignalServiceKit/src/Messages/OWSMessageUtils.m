@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
             [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
         if (attachment) {
             // If the attachment is "oversize text", try to treat it appropriately.
-            if (!hasText && [NSObject isNullableObject:attachment.contentType equalTo:OWSMimeTypeOversizeTextMessage] &&
+            if (!hasText && [OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType] &&
                 [attachment isKindOfClass:[TSAttachmentStream class]]) {
 
                 hasText = YES;
@@ -160,6 +160,10 @@ NS_ASSUME_NONNULL_BEGIN
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                 NSData *_Nullable oversizeTextData = [NSData dataWithContentsOfFile:attachmentStream.filePath];
                 if (oversizeTextData) {
+                    // We don't need to include the entire text body of the message, just
+                    // enough to render a snippet.  kOversizeTextMessageSizeThreshold is our
+                    // limit on how long text should be in protos since they'll be stored in
+                    // the database. We apply this constant here for the same reasons.
                     NSString *_Nullable oversizeText =
                         [[NSString alloc] initWithData:oversizeTextData encoding:NSUTF8StringEncoding];
                     // First, truncate to the rough max characters.
@@ -170,17 +174,21 @@ NS_ASSUME_NONNULL_BEGIN
                     while (truncatedText && truncatedText.length > 0 &&
                         [truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
                             >= kOversizeTextMessageSizeThreshold) {
-                        // A very coarse binomial search by halving is acceptable, since
+                        // A very coarse binary search by halving is acceptable, since
                         // kOversizeTextMessageSizeThreshold is much longer than our target
                         // length of "three short lines of text on any device we might
                         // display this on.
                         //
-                        // We don't worry much about the search converging because
+                        // The search will always converge since in the worst case (namely
+                        // a single character which in utf-8 is >= 1024 bytes) the loop will
+                        // exit when the string is empty.
                         truncatedText = [truncatedText substringToIndex:oversizeText.length / 2];
                     }
                     if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length
                         < kOversizeTextMessageSizeThreshold) {
                         quotedText = truncatedText;
+                    } else {
+                        OWSFail(@"%@ Missing valid text snippet.", self.logTag);
                     }
                 }
             } else {
