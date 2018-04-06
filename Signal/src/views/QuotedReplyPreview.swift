@@ -17,7 +17,7 @@ class QuotedReplyPreview: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(quotedReplyDraft: OWSQuotedReplyDraft) {
+    init(quotedReplyDraft: OWSQuotedReplyModel) {
         super.init(frame: .zero)
 
         let isQuotingSelf = quotedReplyDraft.authorId == TSAccountManager.localNumber()

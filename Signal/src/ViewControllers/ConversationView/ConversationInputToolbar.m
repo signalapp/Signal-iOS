@@ -250,7 +250,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self ensureContentConstraints];
 }
 
-- (void)setQuotedReplyDraft:(nullable OWSQuotedReplyDraft *)quotedReplyDraft
+- (void)setQuotedReplyDraft:(nullable OWSQuotedReplyModel *)quotedReplyDraft
 {
     if (quotedReplyDraft == _quotedReplyDraft) {
         return;

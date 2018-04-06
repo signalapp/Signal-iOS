@@ -2149,12 +2149,12 @@ typedef enum : NSUInteger {
         return;
     }
 
-    __block OWSQuotedReplyDraft *quotedReplyDraft;
+    __block OWSQuotedReplyModel *quotedReplyDraft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         quotedReplyDraft = [OWSMessageUtils quotedReplyDraftForMessage:message transaction:transaction];
     }];
 
-    if (![quotedReplyDraft isKindOfClass:[OWSQuotedReplyDraft class]]) {
+    if (![quotedReplyDraft isKindOfClass:[OWSQuotedReplyModel class]]) {
         OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReplyDraft.class);
         return;
     }

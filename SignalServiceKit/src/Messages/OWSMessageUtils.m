@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     return numberOfItems;
 }
 
-+ (nullable OWSQuotedReplyDraft *)quotedReplyDraftForMessage:(TSMessage *)message
++ (nullable OWSQuotedReplyModel *)quotedReplyDraftForMessage:(TSMessage *)message
                                                  transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(message);
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self quotedReplyDraftForMessage:message authorId:authorId thread:thread transaction:transaction];
 }
 
-+ (nullable OWSQuotedReplyDraft *)quotedReplyDraftForMessage:(TSMessage *)message
++ (nullable OWSQuotedReplyModel *)quotedReplyDraftForMessage:(TSMessage *)message
                                                     authorId:(NSString *)authorId
                                                       thread:(TSThread *)thread
                                                  transaction:(YapDatabaseReadTransaction *)transaction
@@ -198,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    return [[OWSQuotedReplyDraft alloc] initWithTimestamp:timestamp
+    return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
                                                  authorId:authorId
                                                      body:quotedText
                                          attachmentStream:quotedAttachment];

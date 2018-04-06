@@ -324,28 +324,32 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [sendingQueue addOperation:uploadAttachmentOperation];
         }
 
-        //
-        //        if (message.quotedMessage) {
-        //
-        //            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
-        //            // and has the advantage of already having been generated.
-        //            __block TSAttachmentStream *attachment;
-        //            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        //                [message.quotedMessage createThumbnailAttachmentIfNecessaryWithTransaction:transaction];
-        //                attachment = (TSAttachmentStream *)[message.quotedMessage
-        //                thumbnailAttachmentWithTransaction:transaction];
-        //            }];
-        //
-        //            if (attachment) {
-        //                OWSUploadOperation *uploadQuoteThumbnailOperation =
-        //                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
-        //                                                    dbConnection:self.dbConnection];
-        //
-        //                // TODO put attachment uploads on a (lowly) concurrent queue
-        //                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
-        //                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
-        //            }
-        //        }
+
+        if (message.quotedMessage) {
+
+            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
+            // and has the advantage of already having been generated.
+            __block NSArray<TSAttachmentStream *> *thumbnailAttachments;
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                thumbnailAttachments =
+                    [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+            }];
+
+            // Though we currently only ever expect at most one thumbnail, the proto data model
+            // suggests this could change. The logic is intended to work with multiple, but
+            // if we ever actually want to send multiple, we should do more testing.
+            OWSAssert(thumbnailAttachments.count <= 1);
+
+            for (TSAttachmentStream *thumbnailAttachment in thumbnailAttachments) {
+                OWSUploadOperation *uploadQuoteThumbnailOperation =
+                    [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
+                                                        dbConnection:self.dbConnection];
+
+                // TODO put attachment uploads on a (lowly) concurrent queue
+                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
+                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
+            }
+        }
 
         [sendingQueue addOperation:sendMessageOperation];
     });

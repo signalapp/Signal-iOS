@@ -57,8 +57,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic) OWSMessageCellType messageCellType;
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) DisplayableText *displayableQuotedText;
-@property (nonatomic, nullable) NSString *quotedAttachmentMimetype;
-@property (nonatomic, nullable) NSString *quotedRecipientId;
+@property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
+@property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
+@property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic) CGSize mediaSize;
@@ -101,10 +102,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.attachmentStream = nil;
     self.attachmentPointer = nil;
     self.mediaSize = CGSizeZero;
-
     self.displayableQuotedText = nil;
-    self.quotedRecipientId = nil;
-    self.quotedAttachmentMimetype = nil;
+    self.quotedReply = nil;
 
     [self clearCachedLayoutState];
 
@@ -471,15 +470,27 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
 
-    if (message.quotedMessage && message.quotedMessage.authorId.length > 0
-        && (message.quotedMessage.body.length > 0 || message.quotedMessage.contentType.length > 0)) {
-        if (message.quotedMessage.body.length > 0) {
+    if (message.quotedMessage) {
+        self.quotedReply =
+            [[OWSQuotedReplyModel alloc] initWithQuotedMessage:message.quotedMessage transaction:transaction];
+
+        // TODO move this to OWSQuotedReplyModel?
+        if (self.quotedReply.body.length > 0) {
             self.displayableQuotedText =
-                [self displayableQuotedTextForText:message.quotedMessage.body interactionId:message.uniqueId];
+                [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
         }
-        self.quotedAttachmentMimetype = message.quotedMessage.contentType;
-        self.quotedRecipientId = message.quotedMessage.authorId;
     }
+}
+
+// TODO converge naming
+- (nullable NSString *)quotedAttachmentMimetype
+{
+    return self.quotedReply.contentType;
+}
+
+- (nullable NSString *)quotedRecipientId
+{
+    return self.quotedReply.authorId;
 }
 
 - (OWSMessageCellType)messageCellType

@@ -480,12 +480,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                 
                 quotedAttachmentBuilder.contentType = attachment.contentType;
                 quotedAttachmentBuilder.fileName = attachment.sourceFilename;
+                if (attachment.thumbnailAttachmentId) {
+                    quotedAttachmentBuilder.thumbnail =
+                        [self buildProtoForAttachmentId:attachment.thumbnailAttachmentId];
+                }
 
-                // FIXME handle thumbnail uploading. The proto changes for this are up in the air.
-//                if (attachment.thumbnailAttachmentId) {
-//                    quotedAttachmentBuilder.thumbnail = [self buildProtoForAttachmentId:attachment.attachmentThumbnailId];
-//                }
-                
                 [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
             }
         }
@@ -520,6 +519,19 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 - (BOOL)shouldSyncTranscript
 {
     return !self.hasSyncedTranscript;
+}
+
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
+{
+    OWSAssert(attachmentId.length > 0);
+
+    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
+        return nil;
+    }
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+    return [self buildProtoForAttachmentStream:attachmentStream filename:attachmentStream.sourceFilename];
 }
 
 - (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId

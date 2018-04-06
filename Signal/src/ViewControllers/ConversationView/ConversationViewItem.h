@@ -26,6 +26,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ConversationViewCell;
 @class DisplayableText;
 @class OWSAudioMessageView;
+@class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
@@ -41,11 +42,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @interface ConversationViewItem : NSObject <ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
 @property (nonatomic, readonly) TSInteraction *interaction;
+@property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
 
 @property (nonatomic, readonly) BOOL isGroupThread;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
 
+// TODO drive these off of the quotedReply?
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;

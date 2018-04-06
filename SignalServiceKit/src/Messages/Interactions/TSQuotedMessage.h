@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class TSQuotedMessage;
 
-@interface OWSQuotedReplyDraft : NSObject
+// View model which has already fetched any attachments.
+@interface OWSQuotedReplyModel : NSObject
 
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
@@ -35,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
                              body:(NSString *_Nullable)body
                  attachmentStream:(nullable TSAttachmentStream *)attachment;
 
+- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                          transaction:(YapDatabaseReadTransaction *)transaction;
+
 - (TSQuotedMessage *)buildQuotedMessage;
 
 @end
@@ -43,7 +47,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
+
+// This is only set when sending a new attachment so we have a way
+// to reference the original attachment when generating a thumbnail.
+// We don't want to do this until the message is saved, when the user sends
+// the message so as not to end up with an orphaned file.
+//
+// TODO: rename to pendingAttachmentId or maybe pendingAttachmentStream?
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
+
+// This is set once we've persisted a thumbnail
+@property (atomic, nullable) NSString *thumbnailAttachmentId;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -73,11 +87,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)sourceFilename;
 
 @property (atomic, readonly) NSArray<OWSAttachmentInfo *> *quotedAttachments;
-//- (void)addAttachment:(TSAttachmentStream *)attachment;
-- (BOOL)hasAttachments;
 
-- (nullable TSAttachment *)firstAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (nullable UIImage *)thumbnailImageWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+- (NSArray<TSAttachment *> *)fetchAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+// Before sending, persist a thumbnail attachment derived from the quoted attachment
+- (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
+    (YapDatabaseReadWriteTransaction *)transaction;
 
 - (instancetype)init NS_UNAVAILABLE;
 

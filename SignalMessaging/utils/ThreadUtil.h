@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ThreadUtil : NSObject
 
+// TODO should these all take the quotedMessageViewModel?
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
                              quotedMessage:(nullable TSQuotedMessage *)quotedMessage
