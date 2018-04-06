@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersCell.h"
@@ -100,12 +100,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)titleFont
 {
-    return [UIFont ows_mediumFontWithSize:16.f];
+    return UIFont.ows_dynamicTypeBodyFont.ows_medium;
 }
 
 - (UIFont *)buttonFont
 {
-    return [UIFont ows_regularFontWithSize:14.f];
+    return UIFont.ows_dynamicTypeBodyFont;
 }
 
 - (CGFloat)hMargin

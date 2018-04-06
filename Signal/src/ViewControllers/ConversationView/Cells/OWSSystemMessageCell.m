@@ -25,17 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
 
-// override from JSQMessagesCollectionViewCell
-@property (nonatomic) UILabel *cellTopLabel;
-
 @end
 
 #pragma mark -
 
 @implementation OWSSystemMessageCell
-
-// override from JSQMessagesCollectionViewCell
-@synthesize cellTopLabel = _cellTopLabel;
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
@@ -54,12 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
     self.backgroundColor = [UIColor whiteColor];
-
-    self.cellTopLabel = [UILabel new];
-    self.cellTopLabel.textAlignment = NSTextAlignmentCenter;
-    self.cellTopLabel.font = self.topLabelFont;
-    self.cellTopLabel.textColor = [UIColor lightGrayColor];
-    [self.contentView addSubview:self.cellTopLabel];
 
     self.imageView = [UIImageView new];
     [self.contentView addSubview:self.imageView];
@@ -98,11 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyTitleForInteraction:interaction label:self.titleLabel];
 
     [self setNeedsLayout];
-}
-
-- (UIFont *)topLabelFont
-{
-    return [UIFont boldSystemFontOfSize:12.0f];
 }
 
 - (UIColor *)textColor
@@ -223,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)titleFont
 {
-    return [UIFont ows_regularFontWithSize:13.f];
+    return UIFont.ows_dynamicTypeFootnoteFont;
 }
 
 - (CGFloat)hMargin
@@ -260,22 +243,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat contentWidth = ([self iconSize] + [self hSpacing] + titleSize.width);
 
-    CGSize topLabelSize = [self.cellTopLabel sizeThatFits:CGSizeMake(self.contentView.width, CGFLOAT_MAX)];
-    self.cellTopLabel.frame = CGRectMake(0, 0, self.contentView.frame.size.width, topLabelSize.height);
-
-    CGFloat topLabelSpacing = topLabelSize.height;
-
     CGFloat contentLeft = round((self.contentView.width - contentWidth) * 0.5f);
     CGFloat imageLeft = ([self isRTL] ? round(contentLeft + contentWidth - [self iconSize]) : contentLeft);
     CGFloat titleLeft = ([self isRTL] ? contentLeft : round(imageLeft + [self iconSize] + [self hSpacing]));
 
-    self.imageView.frame = CGRectMake(imageLeft,
-        round((self.contentView.height - [self iconSize] + topLabelSpacing) * 0.5f),
-        [self iconSize],
-        [self iconSize]);
+    self.imageView.frame = CGRectMake(
+        imageLeft, round((self.contentView.height - [self iconSize]) * 0.5f), [self iconSize], [self iconSize]);
 
     self.titleLabel.frame = CGRectMake(titleLeft,
-        round((self.contentView.height - titleSize.height + topLabelSpacing) * 0.5f),
+        round((self.contentView.height - titleSize.height) * 0.5f),
         ceil(titleSize.width + 1.f),
         ceil(titleSize.height + 1.f));
 }
