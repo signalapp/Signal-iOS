@@ -31,10 +31,22 @@ NS_ASSUME_NONNULL_BEGIN
 // UI is dismissing.
 @property (nonatomic) BOOL shouldClearAuthUIWhenActive;
 
-@property (nonatomic, nullable) NSTimer *inactiveTimer;
+// Indicates whether or not the user is currently locked out of
+// the app.  Only applies if OWSScreenLock.isScreenLockEnabled.
+//
+// * The user is locked out out by default on app launch.
+// * The user is also locked out if they spend more than
+//   "timeout" seconds outside the app.  When the user leaves
+//   the app, a "countdown" begins.
+@property (nonatomic) BOOL isScreenLockUnlocked;
 
 @property (nonatomic, nullable) NSDate *screenLockCountdownDate;
-@property (nonatomic) BOOL isScreenLockUnlocked;
+
+// We normally start the "countdown" when the app enters the background,
+// But we also want to start the "countdown" if the app is inactive for
+// more than N seconds.
+@property (nonatomic, nullable) NSTimer *inactiveTimer;
+
 
 @end
 
