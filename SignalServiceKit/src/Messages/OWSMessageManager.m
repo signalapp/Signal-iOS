@@ -1113,7 +1113,7 @@ NS_ASSUME_NONNULL_BEGIN
             attachments = attachmentsProcessor.supportedAttachmentPointers;
         }
 
-        // TODO
+        // TODO - but only if the attachment can't be found locally.
         //        [attachmentsProcessor fetchAttachmentsForMessage:nil
         //                                             transaction:transaction
         //                                                 success:^(TSAttachmentStream *attachmentStream) {
@@ -1142,10 +1142,8 @@ NS_ASSUME_NONNULL_BEGIN
     //                                                                         sourceFilename:sourceFilename
     //                                                                          thumbnailData:thumbnailData
     //                                                                            contentType:contentType];
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initIncomingWithTimestamp:timestamp
-                                                                               authorId:authorId
-                                                                                   body:body
-                                                                            attachments:attachments];
+    TSQuotedMessage *quotedMessage =
+        [[TSQuotedMessage alloc] initWithTimestamp:timestamp authorId:authorId body:body attachments:attachments];
 
     return quotedMessage;
 }

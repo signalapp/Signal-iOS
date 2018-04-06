@@ -17,10 +17,10 @@ class QuotedReplyPreview: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(quotedMessage: TSQuotedMessage) {
+    init(quotedReplyDraft: OWSQuotedReplyDraft) {
         super.init(frame: .zero)
 
-        let isQuotingSelf = quotedMessage.authorId == TSAccountManager.localNumber()
+        let isQuotingSelf = quotedReplyDraft.authorId == TSAccountManager.localNumber()
 
         // used for stripe and author
         // FIXME actual colors TBD
@@ -34,7 +34,7 @@ class QuotedReplyPreview: UIView {
         if isQuotingSelf {
             authorLabel.text = NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "")
         } else {
-            authorLabel.text = Environment.current().contactsManager.displayName(forPhoneIdentifier: quotedMessage.authorId)
+            authorLabel.text = Environment.current().contactsManager.displayName(forPhoneIdentifier: quotedReplyDraft.authorId)
         }
         authorLabel.font = .ows_dynamicTypeHeadline
 
@@ -43,16 +43,16 @@ class QuotedReplyPreview: UIView {
         bodyLabel.font = .ows_footnote
 
         bodyLabel.text = {
-            if let contentType = quotedMessage.contentType() {
+            if let contentType = quotedReplyDraft.contentType() {
                 let emoji = TSAttachmentStream.emoji(forMimeType: contentType)
-                return "\(emoji) \(quotedMessage.body ?? "")"
+                return "\(emoji) \(quotedReplyDraft.body ?? "")"
             } else {
-                return quotedMessage.body
+                return quotedReplyDraft.body
             }
         }()
 
         let thumbnailView: UIView? = {
-            if let image = quotedMessage.thumbnailImage() {
+            if let image = quotedReplyDraft.thumbnailImage() {
                 let imageView = UIImageView(image: image)
                 imageView.contentMode = .scaleAspectFill
                 imageView.autoPinToSquareAspectRatio()

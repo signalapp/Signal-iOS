@@ -324,27 +324,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [sendingQueue addOperation:uploadAttachmentOperation];
         }
 
-        
-        if (message.quotedMessage) {
-            
-            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
-            // and has the advantage of already having been generated.
-            __block TSAttachmentStream *attachment;
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [message.quotedMessage createThumbnailAttachmentIfNecessaryWithTransaction:transaction];
-                attachment = (TSAttachmentStream *)[message.quotedMessage thumbnailAttachmentWithTransaction:transaction];
-            }];
-            
-            if (attachment) {
-                OWSUploadOperation *uploadQuoteThumbnailOperation =
-                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
-                                                    dbConnection:self.dbConnection];
-                
-                // TODO put attachment uploads on a (lowly) concurrent queue
-                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
-                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
-            }
-        }
+        //
+        //        if (message.quotedMessage) {
+        //
+        //            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
+        //            // and has the advantage of already having been generated.
+        //            __block TSAttachmentStream *attachment;
+        //            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        //                [message.quotedMessage createThumbnailAttachmentIfNecessaryWithTransaction:transaction];
+        //                attachment = (TSAttachmentStream *)[message.quotedMessage
+        //                thumbnailAttachmentWithTransaction:transaction];
+        //            }];
+        //
+        //            if (attachment) {
+        //                OWSUploadOperation *uploadQuoteThumbnailOperation =
+        //                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
+        //                                                    dbConnection:self.dbConnection];
+        //
+        //                // TODO put attachment uploads on a (lowly) concurrent queue
+        //                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
+        //                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
+        //            }
+        //        }
 
         [sendingQueue addOperation:sendMessageOperation];
     });

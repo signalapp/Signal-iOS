@@ -4,8 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSQuotedReplyDraft;
 @class SignalAttachment;
-@class TSQuotedMessage;
 
 @protocol ConversationInputToolbarDelegate <NSObject>
 
@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cancelVoiceMemoIfNecessary;
 
-@property (nonatomic, nullable) TSQuotedMessage *quotedMessage;
+@property (nonatomic, nullable) OWSQuotedReplyDraft *quotedReplyDraft;
 
 @end
 

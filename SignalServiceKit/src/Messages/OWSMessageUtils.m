@@ -104,8 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
     return numberOfItems;
 }
 
-+ (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message
-                                          transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable OWSQuotedReplyDraft *)quotedReplyDraftForMessage:(TSMessage *)message
+                                                 transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(message);
     OWSAssert(transaction);
@@ -124,13 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
     }();
     OWSAssert(authorId.length > 0);
 
-    return [self quotedMessageForMessage:message authorId:authorId thread:thread transaction:transaction];
+    return [self quotedReplyDraftForMessage:message authorId:authorId thread:thread transaction:transaction];
 }
 
-+ (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message
-                                             authorId:(NSString *)authorId
-                                               thread:(TSThread *)thread
-                                          transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable OWSQuotedReplyDraft *)quotedReplyDraftForMessage:(TSMessage *)message
+                                                    authorId:(NSString *)authorId
+                                                      thread:(TSThread *)thread
+                                                 transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(authorId.length > 0);
@@ -198,11 +198,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initOutgoingWithTimestamp:timestamp
-                                                                               authorId:authorId
-                                                                                   body:quotedText
-                                                                             attachment:quotedAttachment];
-    return quotedMessage;
+    return [[OWSQuotedReplyDraft alloc] initWithTimestamp:timestamp
+                                                 authorId:authorId
+                                                     body:quotedText
+                                         attachmentStream:quotedAttachment];
 }
 
 + (nullable NSData *)thumbnailDataForAttachment:(TSAttachment *)attachment

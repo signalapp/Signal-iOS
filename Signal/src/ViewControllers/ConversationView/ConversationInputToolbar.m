@@ -250,9 +250,9 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self ensureContentConstraints];
 }
 
-- (void)setQuotedMessage:(nullable TSQuotedMessage *)quotedMessage
+- (void)setQuotedMessage:(nullable OWSQuotedReplyDraft *)quotedReplyDraft
 {
-    if (quotedMessage == _quotedMessage) {
+    if (quotedReplyDraft == _quotedReplyDraft) {
         return;
     }
 
@@ -261,14 +261,14 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     }
     OWSAssert(self.quotedMessagePreview == nil);
 
-    _quotedMessage = quotedMessage;
+    _quotedReplyDraft = quotedReplyDraft;
 
-    if (!quotedMessage) {
+    if (!quotedReplyDraft) {
         [self clearQuotedMessagePreview];
         return;
     }
 
-    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedMessage:quotedMessage];
+    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedReplyDraft:quotedReplyDraft];
     self.quotedMessagePreview.delegate = self;
 
     // TODO animate
@@ -759,7 +759,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
 {
-    self.quotedMessage = nil;
+    self.quotedReplyDraft = nil;
 }
 
 @end

@@ -79,13 +79,30 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
 {
-    return [self outgoingMessageInThread:thread messageBody:body attachmentId:attachmentId expiresInSeconds:0];
+    return [self outgoingMessageInThread:thread
+                             messageBody:body
+                            attachmentId:attachmentId
+                        expiresInSeconds:0
+                           quotedMessage:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
+{
+    return [self outgoingMessageInThread:thread
+                             messageBody:body
+                            attachmentId:attachmentId
+                        expiresInSeconds:expiresInSeconds
+                           quotedMessage:nil];
+}
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -99,7 +116,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMessageNone
-                                                         quotedMessage:nil];
+                                                         quotedMessage:quotedMessage];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread

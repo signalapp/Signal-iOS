@@ -209,11 +209,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.hasQuotedAttachmentThumbnailImage) {
         return nil;
     }
-    
-    // TODO: Possibly ignore data that is too large.
-    UIImage *_Nullable image = self.quotedMessage.thumbnailImage;
-    // TODO: Possibly ignore images that are too large.
-    return image;
+
+    // FIXME
+    return nil;
+
+    //
+    //    // TODO: Possibly ignore data that is too large.
+    //    UIImage *_Nullable image = self.quotedMessage.thumbnailImage;
+    //    // TODO: Possibly ignore images that are too large.
+    //    return image;
 }
 
 - (UIImageView *)imageViewForImage:(UIImage *)image
@@ -239,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = @"";
 
     NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];
-    NSString *_Nullable sourceFilename = [self.quotedMessage.firstThumbnailAttachment.sourceFilename filterStringForDisplay];
+    NSString *_Nullable sourceFilename = [self.quotedMessage.sourceFilename filterStringForDisplay];
 
     if (self.displayableQuotedText.displayText.length > 0) {
         text = self.displayableQuotedText.displayText;

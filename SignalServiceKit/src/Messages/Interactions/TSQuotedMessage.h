@@ -2,13 +2,42 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <Mantle/MTLModel.h>
+#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachment;
 @class TSAttachmentStream;
+@class TSQuotedMessage;
+
+@interface OWSQuotedReplyDraft : NSObject
+
+@property (nonatomic, readonly) uint64_t timestamp;
+@property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
+
+// This property should be set IFF we are quoting a text message
+// or attachment with caption.
+@property (nullable, nonatomic, readonly) NSString *body;
+
+#pragma mark - Attachments
+
+// This is a MIME type.
+//
+// This property should be set IFF we are quoting an attachment message.
+- (nullable NSString *)contentType;
+- (nullable NSString *)sourceFilename;
+- (nullable UIImage *)thumbnailImage;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                 attachmentStream:(nullable TSAttachmentStream *)attachment;
+
+- (TSQuotedMessage *)buildQuotedMessage;
+
+@end
 
 @interface OWSAttachmentInfo: MTLModel
 
@@ -47,15 +76,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initOutgoingWithTimestamp:(uint64_t)timestamp
-                                 authorId:(NSString *)authorId
-                                     body:(NSString *_Nullable)body
-                               attachment:(TSAttachmentStream *_Nullable)attachmentStream;
-
-- (instancetype)initIncomingWithTimestamp:(uint64_t)timestamp
-                                 authorId:(NSString *)authorId
-                                     body:(NSString *_Nullable)body
-                              attachments:(NSArray<TSAttachment *> *)attachments;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                      attachments:(NSArray<TSAttachment *> *)attachments;
 
 @end
 

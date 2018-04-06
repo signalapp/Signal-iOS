@@ -2149,17 +2149,17 @@ typedef enum : NSUInteger {
         return;
     }
 
-    __block TSQuotedMessage *quotedMessage;
+    __block OWSQuotedReplyDraft *quotedReplyDraft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        quotedMessage = [OWSMessageUtils quotedMessageForMessage:message transaction:transaction];
+        quotedReplyDraft = [OWSMessageUtils quotedReplyDraftForMessage:message transaction:transaction];
     }];
 
-    if (![quotedMessage isKindOfClass:[TSQuotedMessage class]]) {
-        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedMessage);
+    if (![quotedReplyDraft isKindOfClass:[OWSQuotedReplyDraft class]]) {
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReplyDraft.class);
         return;
     }
 
-    [self.inputToolbar setQuotedMessage:quotedMessage];
+    self.inputToolbar.quotedReplyDraft = quotedReplyDraft;
     [self.inputToolbar beginEditingTextMessage];
 }
 
@@ -2430,7 +2430,7 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
-    self.inputToolbar.quotedMessage = nil;
+    self.inputToolbar.quotedReplyDraft = nil;
 
     if ([Environment.preferences soundInForeground]) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
@@ -2764,10 +2764,12 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
+
+    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReplyDraft buildQuotedMessage];
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
-                                                         quotedMessage:self.inputToolbar.quotedMessage
+                                                         quotedMessage:quotedMessage
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4024,19 +4026,21 @@ typedef enum : NSUInteger {
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
+
+    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReplyDraft buildQuotedMessage];
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
-                                          quotedMessage:self.inputToolbar.quotedMessage
+                                          quotedMessage:quotedMessage
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text
                                          inThread:self.thread
-                                    quotedMessage:self.inputToolbar.quotedMessage
+                                    quotedMessage:quotedMessage
                                     messageSender:self.messageSender];
     }
 

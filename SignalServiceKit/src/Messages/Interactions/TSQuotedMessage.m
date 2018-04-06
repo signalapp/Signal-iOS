@@ -31,10 +31,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+@implementation OWSQuotedReplyDraft
+
+// This is a MIME type.
+//
+// This property should be set IFF we are quoting an attachment message.
+- (nullable NSString *)contentType
+{
+    return self.attachmentStream.contentType;
+}
+
+- (nullable NSString *)sourceFilename
+{
+    return self.attachmentStream.sourceFilename;
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _timestamp = timestamp;
+    _authorId = authorId;
+    _body = body;
+    _attachmentStream = attachmentStream;
+
+    return self;
+}
+
+@end
+
 @interface TSQuotedMessage ()
 
 @property (atomic) NSArray<OWSAttachmentInfo *> *thumbnailAttachments;
-
 
 @end
 
@@ -134,10 +169,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self.thumbnailAttachments.firstObject;
 }
 
-- (TSAttachmentStream *)thumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    
-}
+//- (TSAttachmentStream *)thumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+//{
+//
+//}
 
 - (void)createThumbnailAttachmentIfNecessaryWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
