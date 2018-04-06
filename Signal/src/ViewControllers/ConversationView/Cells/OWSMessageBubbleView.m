@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
 
     self.bubbleView.isOutgoing = self.isOutgoing;
-    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail;
+    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail && !self.alwaysShowBubbleTail;
 
     if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasNonImageBodyContent) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;

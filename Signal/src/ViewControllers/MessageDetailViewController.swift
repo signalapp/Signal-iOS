@@ -324,6 +324,7 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
             messageBubbleView.viewItem = viewItem
             messageBubbleView.cellMediaCache = NSCache()
             messageBubbleView.contentWidth = contentWidth()
+            messageBubbleView.alwaysShowBubbleTail = true
             messageBubbleView.configureViews()
             messageBubbleView.loadContent()
 
