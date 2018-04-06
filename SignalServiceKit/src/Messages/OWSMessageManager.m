@@ -1096,12 +1096,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-    for (OWSSignalServiceProtosAttachmentPointer *attachmentPointer in quoteProto.attachments) {
+    for (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
         hasAttachment = YES;
         OWSAttachmentInfo *attachmentInfo =
             [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
-                                                contentType:attachmentPointer.contentType
-                                             sourceFilename:attachmentPointer.fileName];
+                                                contentType:quotedAttachment.contentType
+                                             sourceFilename:quotedAttachment.fileName];
         [attachmentInfos addObject:attachmentInfo];
     }
     // TODO - but only if the attachment can't be found locally.
@@ -1137,19 +1137,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    //    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initIncomingWithTimestamp:timestamp
-    //                                                                               authorId:authorId
-    //                                                                                   body:body
-    //                                                                         sourceFilename:sourceFilename
-    //                                                                          thumbnailData:thumbnailData
-    //                                                                            contentType:contentType];
-
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                                       authorId:authorId
-                                                                           body:body
-                                                          quotedAttachmentInfos:attachmentInfos];
-
-    return quotedMessage;
+    return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                             authorId:authorId
+                                                 body:body
+                                quotedAttachmentInfos:attachmentInfos];
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage

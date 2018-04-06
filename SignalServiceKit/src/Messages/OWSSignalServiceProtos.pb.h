@@ -28,6 +28,8 @@
 @class OWSSignalServiceProtosDataMessageBuilder;
 @class OWSSignalServiceProtosDataMessageQuote;
 @class OWSSignalServiceProtosDataMessageQuoteBuilder;
+@class OWSSignalServiceProtosDataMessageQuoteQuotedAttachment;
+@class OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder;
 @class OWSSignalServiceProtosEnvelope;
 @class OWSSignalServiceProtosEnvelopeBuilder;
 @class OWSSignalServiceProtosGroupContext;
@@ -808,14 +810,14 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasTimestamp_:1;
   BOOL hasBody_:1;
   BOOL hasGroup_:1;
-  BOOL hasQuote_ : 1;
+  BOOL hasQuote_:1;
   BOOL hasProfileKey_:1;
   BOOL hasFlags_:1;
   BOOL hasExpireTimer_:1;
   UInt64 timestamp;
   NSString* body;
   OWSSignalServiceProtosGroupContext* group;
-  OWSSignalServiceProtosDataMessageQuote *quote;
+  OWSSignalServiceProtosDataMessageQuote* quote;
   NSData* profileKey;
   UInt32 flags;
   UInt32 expireTimer;
@@ -827,7 +829,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasExpireTimer;
 - (BOOL) hasProfileKey;
 - (BOOL) hasTimestamp;
-- (BOOL)hasQuote;
+- (BOOL) hasQuote;
 @property (readonly, strong) NSString* body;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosAttachmentPointer*> * attachments;
 @property (readonly, strong) OWSSignalServiceProtosGroupContext* group;
@@ -835,7 +837,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly) UInt32 expireTimer;
 @property (readonly, strong) NSData* profileKey;
 @property (readonly) UInt64 timestamp;
-@property (readonly, strong) OWSSignalServiceProtosDataMessageQuote *quote;
+@property (readonly, strong) OWSSignalServiceProtosDataMessageQuote* quote;
 - (OWSSignalServiceProtosAttachmentPointer*)attachmentsAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -860,85 +862,151 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Quote_author @"author"
 #define Quote_text @"text"
 #define Quote_attachments @"attachments"
-@interface OWSSignalServiceProtosDataMessageQuote : PBGeneratedMessage <GeneratedMessageProtocol> {
+@interface OWSSignalServiceProtosDataMessageQuote : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-    BOOL hasId_ : 1;
-    BOOL hasAuthor_ : 1;
-    BOOL hasText_ : 1;
-    UInt64 id;
-    NSString *author;
-    NSString *text;
-    NSMutableArray *attachmentsArray;
+  BOOL hasId_:1;
+  BOOL hasAuthor_:1;
+  BOOL hasText_:1;
+  UInt64 id;
+  NSString* author;
+  NSString* text;
+  NSMutableArray * attachmentsArray;
 }
-- (BOOL)hasId;
-- (BOOL)hasAuthor;
-- (BOOL)hasText;
+- (BOOL) hasId;
+- (BOOL) hasAuthor;
+- (BOOL) hasText;
 @property (readonly) UInt64 id;
-@property (readonly, strong) NSString *author;
-@property (readonly, strong) NSString *text;
-@property (readonly, strong) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachments;
-- (OWSSignalServiceProtosAttachmentPointer *)attachmentsAtIndex:(NSUInteger)index;
+@property (readonly, strong) NSString* author;
+@property (readonly, strong) NSString* text;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> * attachments;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)attachmentsAtIndex:(NSUInteger)index;
 
-+ (instancetype)defaultInstance;
-- (instancetype)defaultInstance;
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
 
-- (BOOL)isInitialized;
-- (void)writeToCodedOutputStream:(PBCodedOutputStream *)output;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)builder;
-+ (OWSSignalServiceProtosDataMessageQuoteBuilder *)builder;
-+ (OWSSignalServiceProtosDataMessageQuoteBuilder *)builderWithPrototype:
-    (OWSSignalServiceProtosDataMessageQuote *)prototype;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)toBuilder;
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageQuoteBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageQuoteBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageQuote*) prototype;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) toBuilder;
 
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromData:(NSData *)data;
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromData:(NSData *)data
-                                        extensionRegistry:(PBExtensionRegistry *)extensionRegistry;
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromInputStream:(NSInputStream *)input;
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromInputStream:(NSInputStream *)input
-                                               extensionRegistry:(PBExtensionRegistry *)extensionRegistry;
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromCodedInputStream:(PBCodedInputStream *)input;
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromCodedInputStream:(PBCodedInputStream *)input
-                                                    extensionRegistry:(PBExtensionRegistry *)extensionRegistry;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+#define QuotedAttachment_contentType @"contentType"
+#define QuotedAttachment_fileName @"fileName"
+#define QuotedAttachment_thumbnail @"thumbnail"
+@interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachment : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasContentType_:1;
+  BOOL hasFileName_:1;
+  BOOL hasThumbnail_:1;
+  NSString* contentType;
+  NSString* fileName;
+  OWSSignalServiceProtosAttachmentPointer* thumbnail;
+}
+- (BOOL) hasContentType;
+- (BOOL) hasFileName;
+- (BOOL) hasThumbnail;
+@property (readonly, strong) NSString* contentType;
+@property (readonly, strong) NSString* fileName;
+@property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* thumbnail;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) prototype;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* resultQuotedAttachment;
+}
+
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) build;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) other;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasContentType;
+- (NSString*) contentType;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setContentType:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearContentType;
+
+- (BOOL) hasFileName;
+- (NSString*) fileName;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFileName:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFileName;
+
+- (BOOL) hasThumbnail;
+- (OWSSignalServiceProtosAttachmentPointer*) thumbnail;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnailBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearThumbnail;
 @end
 
 @interface OWSSignalServiceProtosDataMessageQuoteBuilder : PBGeneratedMessageBuilder {
 @private
-    OWSSignalServiceProtosDataMessageQuote *resultQuote;
+  OWSSignalServiceProtosDataMessageQuote* resultQuote;
 }
 
-- (OWSSignalServiceProtosDataMessageQuote *)defaultInstance;
+- (OWSSignalServiceProtosDataMessageQuote*) defaultInstance;
 
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clear;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clone;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clone;
 
-- (OWSSignalServiceProtosDataMessageQuote *)build;
-- (OWSSignalServiceProtosDataMessageQuote *)buildPartial;
+- (OWSSignalServiceProtosDataMessageQuote*) build;
+- (OWSSignalServiceProtosDataMessageQuote*) buildPartial;
 
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFrom:(OWSSignalServiceProtosDataMessageQuote *)other;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFromCodedInputStream:(PBCodedInputStream *)input;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFromCodedInputStream:(PBCodedInputStream *)input
-                                                           extensionRegistry:(PBExtensionRegistry *)extensionRegistry;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageQuote*) other;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
-- (BOOL)hasId;
-- (UInt64)id;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setId:(UInt64)value;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearId;
+- (BOOL) hasId;
+- (UInt64) id;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setId:(UInt64) value;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearId;
 
-- (BOOL)hasAuthor;
-- (NSString *)author;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAuthor:(NSString *)value;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAuthor;
+- (BOOL) hasAuthor;
+- (NSString*) author;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setAuthor:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearAuthor;
 
-- (BOOL)hasText;
-- (NSString *)text;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setText:(NSString *)value;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearText;
+- (BOOL) hasText;
+- (NSString*) text;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setText:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearText;
 
-- (NSMutableArray<OWSSignalServiceProtosAttachmentPointer *> *)attachments;
-- (OWSSignalServiceProtosAttachmentPointer *)attachmentsAtIndex:(NSUInteger)index;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)addAttachments:(OWSSignalServiceProtosAttachmentPointer *)value;
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAttachmentsArray:
-    (NSArray<OWSSignalServiceProtosAttachmentPointer *> *)array;
+- (NSMutableArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> *)attachments;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)attachmentsAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder *)addAttachments:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)value;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAttachmentsArray:(NSArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> *)array;
 - (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAttachments;
 @end
 
@@ -997,13 +1065,12 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageBuilder*) setTimestamp:(UInt64) value;
 - (OWSSignalServiceProtosDataMessageBuilder*) clearTimestamp;
 
-- (BOOL)hasQuote;
-- (OWSSignalServiceProtosDataMessageQuote *)quote;
-- (OWSSignalServiceProtosDataMessageBuilder *)setQuote:(OWSSignalServiceProtosDataMessageQuote *)value;
-- (OWSSignalServiceProtosDataMessageBuilder *)setQuoteBuilder:
-    (OWSSignalServiceProtosDataMessageQuoteBuilder *)builderForValue;
-- (OWSSignalServiceProtosDataMessageBuilder *)mergeQuote:(OWSSignalServiceProtosDataMessageQuote *)value;
-- (OWSSignalServiceProtosDataMessageBuilder *)clearQuote;
+- (BOOL) hasQuote;
+- (OWSSignalServiceProtosDataMessageQuote*) quote;
+- (OWSSignalServiceProtosDataMessageBuilder*) setQuote:(OWSSignalServiceProtosDataMessageQuote*) value;
+- (OWSSignalServiceProtosDataMessageBuilder*) setQuoteBuilder:(OWSSignalServiceProtosDataMessageQuoteBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageBuilder*) mergeQuote:(OWSSignalServiceProtosDataMessageQuote*) value;
+- (OWSSignalServiceProtosDataMessageBuilder*) clearQuote;
 @end
 
 #define NullMessage_padding @"padding"

@@ -214,38 +214,38 @@ NS_ASSUME_NONNULL_BEGIN
 //
 - (void)createThumbnailAttachmentIfNecessaryWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    for (OWSAttachmentInfo *info in self.quotedAttachments) {
-        // TODO should we just cach an optional TSAttachment on the info?
-        OWSAssert(info.attachmentId);
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:info.attachmentId transaction:transaction];
-        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-            return;
-        }
-
-        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachmentStream;
-        NSData *thumbnailData = attachmentStream.thumbnailData;
-        //  Only some media types have thumbnails
-        if (thumbnailData) {
-            // Copy the thumbnail to a new attachment.
-            NSString *thumbnailName =
-                [NSString stringWithFormat:@"quoted-thumbnail-%@", attachmentStream.sourceFilename];
-            TSAttachmentStream *thumbnailAttachment =
-                [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeJpeg
-                                                      byteCount:attachmentStream.byteCount
-                                                 sourceFilename:thumbnailName];
-
-            NSError *error;
-            [thumbnailAttachment writeData:thumbnailData error:&error];
-            if (error) {
-                DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
-            } else {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [thumbnailAttachment saveWithTransaction:transaction];
-                    quotedMessage.attachments = [message saveWithTransaction:transaction];
-                }];
-            }
-        }
-    }
+//    for (OWSAttachmentInfo *info in self.quotedAttachments) {
+//        // TODO should we just cach an optional TSAttachment on the info?
+//        OWSAssert(info.attachmentId);
+//        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:info.attachmentId transaction:transaction];
+//        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+//            return;
+//        }
+//
+//        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachmentStream;
+//        NSData *thumbnailData = attachmentStream.thumbnailData;
+//        //  Only some media types have thumbnails
+//        if (thumbnailData) {
+//            // Copy the thumbnail to a new attachment.
+//            NSString *thumbnailName =
+//                [NSString stringWithFormat:@"quoted-thumbnail-%@", attachmentStream.sourceFilename];
+//            TSAttachmentStream *thumbnailAttachment =
+//                [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeJpeg
+//                                                      byteCount:attachmentStream.byteCount
+//                                                 sourceFilename:thumbnailName];
+//
+//            NSError *error;
+//            [thumbnailAttachment writeData:thumbnailData error:&error];
+//            if (error) {
+//                DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+//            } else {
+//                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+//                    [thumbnailAttachment saveWithTransaction:transaction];
+//                    quotedMessage.attachments = [message saveWithTransaction:transaction];
+//                }];
+//            }
+//        }
+//    }
 }
 @end
 
