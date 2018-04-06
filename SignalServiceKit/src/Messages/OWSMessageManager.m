@@ -1013,8 +1013,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
                                      envelope:envelope
-                                  dataMessage:dataMessage
-                                attachmentIds:attachmentIds
                                   transaction:transaction];
                 return incomingMessage;
             }
@@ -1055,8 +1053,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                              envelope:envelope
-                          dataMessage:dataMessage
-                        attachmentIds:attachmentIds
                           transaction:transaction];
         return incomingMessage;
     }
@@ -1146,15 +1142,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
                        envelope:(OWSSignalServiceProtosEnvelope *)envelope
-                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                  attachmentIds:(NSArray<NSString *> *)attachmentIds
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
     OWSAssert(incomingMessage);
     OWSAssert(envelope);
-    OWSAssert(dataMessage);
-    OWSAssert(attachmentIds);
     OWSAssert(transaction);
 
     OWSAssert([TSAccountManager isRegistered]);
