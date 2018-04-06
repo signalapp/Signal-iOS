@@ -23,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageTextView *bodyTextView;
 
-@property (nonatomic, nullable) UIView *lastQuotedMessageView;
+@property (nonatomic, nullable) UIView *quotedMessageView;
 
-@property (nonatomic, nullable) UIView *lastBodyMediaView;
+@property (nonatomic, nullable) UIView *bodyMediaView;
 
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSQuotedMessageView *quotedMessageView = [OWSQuotedMessageView
             quotedMessageViewForConversation:message.quotedMessage
                        displayableQuotedText:(self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
-        self.lastQuotedMessageView = quotedMessageView;
+        self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
 
@@ -319,7 +319,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         bodyMediaView.clipsToBounds = YES;
 
-        self.lastBodyMediaView = bodyMediaView;
+        self.bodyMediaView = bodyMediaView;
         bodyMediaView.userInteractionEnabled = NO;
         if (self.isMediaBeingSent) {
             bodyMediaView.layer.opacity = 0.75f;
@@ -566,7 +566,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
@@ -589,7 +589,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -613,7 +613,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
+        OWSCAssert(strongSelf.bodyMediaView == animatedImageView);
         if (animatedImageView.image) {
             return;
         }
@@ -636,7 +636,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == animatedImageView);
+        OWSCAssert(strongSelf.bodyMediaView == animatedImageView);
         animatedImageView.image = nil;
     };
 
@@ -694,7 +694,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
         if (stillImageView.image) {
             return;
         }
@@ -712,7 +712,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!strongSelf) {
             return;
         }
-        OWSCAssert(strongSelf.lastBodyMediaView == stillImageView);
+        OWSCAssert(strongSelf.bodyMediaView == stillImageView);
         stillImageView.image = nil;
     };
 
@@ -1038,35 +1038,35 @@ NS_ASSUME_NONNULL_BEGIN
     self.loadCellContentBlock = nil;
     self.unloadCellContentBlock = nil;
 
-    [self.lastBodyMediaView removeFromSuperview];
-    self.lastBodyMediaView = nil;
+    [self.bodyMediaView removeFromSuperview];
+    self.bodyMediaView = nil;
 
-    [self.lastQuotedMessageView removeFromSuperview];
-    self.lastQuotedMessageView = nil;
+    [self.quotedMessageView removeFromSuperview];
+    self.quotedMessageView = nil;
 }
 
 #pragma mark - Gestures
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
-    if (self.lastQuotedMessageView) {
+    if (self.quotedMessageView) {
         // Treat this as a "quoted reply" gesture if:
         //
         // * There is a "quoted reply" view.
         // * The gesture occured within or above the "quoted reply" view.
-        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.lastQuotedMessageView];
-        if (location.y <= self.lastQuotedMessageView.height) {
+        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.quotedMessageView];
+        if (location.y <= self.quotedMessageView.height) {
             return OWSMessageGestureLocation_QuotedReply;
         }
     }
 
-    if (self.lastBodyMediaView) {
+    if (self.bodyMediaView) {
         // Treat this as a "body media" gesture if:
         //
         // * There is a "body media" view.
         // * The gesture occured within or above the "body media" view.
-        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.lastBodyMediaView];
-        if (location.y <= self.lastBodyMediaView.height) {
+        CGPoint location = [self convertPoint:locationInMessageBubble toView:self.bodyMediaView];
+        if (location.y <= self.bodyMediaView.height) {
             return OWSMessageGestureLocation_Media;
         }
     }

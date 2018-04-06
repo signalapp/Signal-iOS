@@ -22,7 +22,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic) NSCache *cellMediaCache;
 
-@property (nonatomic, nullable, readonly) UIView *lastBodyMediaView;
+@property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
 - (instancetype)init NS_UNAVAILABLE;
 

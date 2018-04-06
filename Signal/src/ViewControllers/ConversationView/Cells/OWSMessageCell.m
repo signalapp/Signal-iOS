@@ -512,20 +512,20 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextMessage:
             break;
         case OWSMessageCellType_StillImage:
-            OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(self.messageBubbleView.bodyMediaView);
             OWSAssert(attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.lastBodyMediaView];
+                                     imageView:self.messageBubbleView.bodyMediaView];
             break;
         case OWSMessageCellType_AnimatedImage:
-            OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(self.messageBubbleView.bodyMediaView);
             OWSAssert(attachmentStream);
 
             [self.delegate didTapImageViewItem:self.viewItem
                               attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.lastBodyMediaView];
+                                     imageView:self.messageBubbleView.bodyMediaView];
             break;
         case OWSMessageCellType_Audio:
             OWSAssert(attachmentStream);
@@ -533,12 +533,12 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
             return;
         case OWSMessageCellType_Video:
-            OWSAssert(self.messageBubbleView.lastBodyMediaView);
+            OWSAssert(self.messageBubbleView.bodyMediaView);
             OWSAssert(attachmentStream);
 
             [self.delegate didTapVideoViewItem:self.viewItem
                               attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.lastBodyMediaView];
+                                     imageView:self.messageBubbleView.bodyMediaView];
             return;
         case OWSMessageCellType_GenericAttachment:
             OWSAssert(attachmentStream);
