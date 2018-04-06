@@ -472,15 +472,23 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
             [quoteBuilder setText:quotedMessage.body];
         }
 
-        if (quotedMessage.attachmentInfos) {
-            NSMutableArray *thumbnailAttachments = [NSMutableArray new];
-            // FIXME TODO if has thumbnail build proto for attachment stream
-            // but if no thumbnail we only set contentType/filename
-//            for (TSAttachmentStream *attachment in quotedMessage.thumbnailAttachments) {
-//                OWSAssert([attachment isKindOfClass:[TSAttachmentStream class]]);
-//
-//                [quoteBuilder addAttachments:[self buildProtoForAttachmentStream:attachment filename:attachment.sourceFilename]];]
-//            }
+        if (quotedMessage.quotedAttachments) {
+            for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
+                hasQuotedAttachment = YES;
+
+                // Add non-thumbnail quoted attachment
+                OWSSignalServiceProtosAttachmentPointerBuilder *attachmentBuilder =
+                    [OWSSignalServiceProtosAttachmentPointerBuilder new];
+                attachmentBuilder.contentType = attachment.contentType;
+                attachmentBuilder.fileName = attachment.sourceFilename;
+
+                [quoteBuilder addAttachments:[attachmentBuilder build]];
+
+                // FIXME handle thumbnail uploading. The proto changes for this are up in the air.
+                // OWSAssert([attachment isKindOfClass:[TSAttachmentStream class]]);
+                // [quoteBuilder addAttachments:[self buildProtoForAttachmentStream:attachment
+                // filename:attachment.sourceFilename]];]
+            }
         }
         
         if (hasQuotedText || hasQuotedAttachment) {

@@ -5,6 +5,7 @@
 #import "TSQuotedMessage.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,26 +13,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachment:(TSAttachment *)attachment
 {
+    OWSAssert(attachment.uniqueId);
+    OWSAssert(attachment.contentType);
+
+    return [self initWithAttachmentId:attachment.uniqueId
+                          contentType:attachment.contentType
+                       sourceFilename:attachment.sourceFilename];
+}
+
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename
+{
     self = [super init];
     if (!self) {
         return self;
     }
-    
-    OWSAssert(attachment.uniqueId);
-    OWSAssert(attachment.contentType);
-    
-    _attachmentId = attachment.uniqueId;
-    _contentType = attachment.contentType;
-    
-    // maybe nil
-    _sourceFilename = attachment.sourceFilename;
-    
+
+    _attachmentId = attachmentId;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+
     return self;
 }
 
 @end
 
-
+// View Model which has already fetched any thumbnail attachment.
 @implementation OWSQuotedReplyDraft
 
 // This is a MIME type.
@@ -47,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.attachmentStream.sourceFilename;
 }
 
-- (nullable NSString *)thumbnailImage
+- (nullable UIImage *)thumbnailImage
 {
     return self.attachmentStream.thumbnailImage;
 }
@@ -70,36 +78,52 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (TSQuotedMessage *)buildQuotedMessage
+{
+    NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
+
+    return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
+                                             authorId:self.authorId
+                                                 body:self.body
+                          quotedAttachmentsForSending:attachments];
+}
+
 @end
 
 @interface TSQuotedMessage ()
 
-@property (atomic) NSArray<OWSAttachmentInfo *> *thumbnailAttachments;
+@property (atomic) NSArray<OWSAttachmentInfo *> *quotedAttachments;
+@property (atomic) NSArray<TSAttachmentStream *> *quotedAttachmentsForSending;
 
 @end
 
 @implementation TSQuotedMessage
 
-- (instancetype)initOutgoingWithTimestamp:(uint64_t)timestamp
-                                 authorId:(NSString *)authorId
-                                     body:(NSString *_Nullable)body
-                               attachment:(TSAttachmentStream *_Nullable)attachmentStream
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+            quotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
 {
-    return [self initWithTimestamp:timestamp authorId:authorId body:body attachments:@[ attachmentStream ]];
-}
+    OWSAssert(timestamp > 0);
+    OWSAssert(authorId.length > 0);
 
-- (instancetype)initIncomingWithTimestamp:(uint64_t)timestamp
-                                 authorId:(NSString *)authorId
-                                     body:(NSString *_Nullable)body
-                              attachments:(NSArray<TSAttachment *> *)attachments
-{
-    return [self initWithTimestamp:timestamp authorId:authorId body:body attachments:attachments];
+    self = [super init];
+    if (!self) {
+        return nil;
+    }
+
+    _timestamp = timestamp;
+    _authorId = authorId;
+    _body = body;
+    _quotedAttachments = attachmentInfos;
+
+    return self;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
-                      attachments:(NSArray<TSAttachment *> *)attachments
+      quotedAttachmentsForSending:(NSArray<TSAttachmentStream *> *)attachments
 {
     OWSAssert(timestamp > 0);
     OWSAssert(authorId.length > 0);
@@ -117,104 +141,111 @@ NS_ASSUME_NONNULL_BEGIN
     for (TSAttachment *attachment in attachments) {
         [attachmentInfos addObject:[[OWSAttachmentInfo alloc] initWithAttachment:attachment]];
     }
-    _thumbnailAttachments = [attachmentInfos copy];
+    _quotedAttachments = [attachmentInfos copy];
 
     return self;
 }
 
-- (nullable TSAttachment *)firstAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAttachmentInfo *attachmentInfo = self.firstAttachmentInfo;
-    if (!attachmentInfo) {
-        return nil;
-    }
-    
-    return [TSAttachment fetchObjectWithUniqueID:attachmentInfo.attachmentId];
-}
+#pragma mark - Attachment (not necessarily with a thumbnail)
 
 - (nullable OWSAttachmentInfo *)firstAttachmentInfo
 {
-    return self.attachmentInfos.firstObject;
-}
-
-- (nullable UIImage *)thumbnailImageWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    TSAttachmentStream *firstAttachment = (TSAttachmentStream *)self.firstThumbnailAttachment;
-    if (![firstAttachment isKindOfClass:[TSAttachmentStream class]]) {
-        return nil;
-    }
-
-    return firstAttachment.thumbnailImage;
+    return self.quotedAttachments.firstObject;
 }
 
 - (nullable NSString *)contentType
 {
-    OWSAttachmentInfo *firstAttachment = self.firstThumbnailAttachment;
+    OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
 
     return firstAttachment.contentType;
 }
 
 - (nullable NSString *)sourceFilename
 {
-    OWSAttachmentInfo *firstAttachment = self.firstThumbnailAttachment;
+    OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
 
     return firstAttachment.sourceFilename;
 }
 
-- (BOOL)hasThumbnailAttachments
-{
-    return self.thumbnailAttachments.count > 0;
-}
+#pragma mark - Thumbnail
 
-- (void)addThumbnailAttachment:(TSAttachmentStream *)attachment
-{
-    NSMutableArray<OWSAttachmentInfo *> *existingAttachments = [self.thumbnailAttachments mutableCopy];
-    
-    OWSAttachmentInfo *attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachment:attachment];
-    [existingAttachments addObject:attachmentInfo];
-
-    self.thumbnailAttachments = [existingAttachments copy];
-}
-
-- (nullable OWSAttachmentInfo *)firstThumbnailAttachment
-{
-    return self.thumbnailAttachments.firstObject;
-}
-
+//- (nullable TSAttachment *)firstAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+//{
+//    OWSAttachmentInfo *attachmentInfo = self.firstAttachmentInfo;
+//    if (!attachmentInfo) {
+//        return nil;
+//    }
+//
+//    return [TSAttachment fetchObjectWithUniqueID:attachmentInfo.attachmentId];
+//}
+//- (nullable UIImage *)thumbnailImageWithTransaction:(YapDatabaseReadTransaction *)transaction
+//{
+//    TSAttachmentStream *firstAttachment = (TSAttachmentStream *)self.firstAttachmentIn;
+//    if (![firstAttachment isKindOfClass:[TSAttachmentStream class]]) {
+//        return nil;
+//    }
+//
+//    return firstAttachment.thumbnailImage;
+//}
+//- (BOOL)hasThumbnailAttachments
+//{
+//    return self.thumbnailAttachments.count > 0;
+//}
+//
+//- (void)addThumbnailAttachment:(TSAttachmentStream *)attachment
+//{
+//    NSMutableArray<OWSAttachmentInfo *> *existingAttachments = [self.thumbnailAttachments mutableCopy];
+//
+//    OWSAttachmentInfo *attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachment:attachment];
+//    [existingAttachments addObject:attachmentInfo];
+//
+//    self.thumbnailAttachments = [existingAttachments copy];
+//}
+//
+//- (nullable OWSAttachmentInfo *)firstThumbnailAttachment
+//{
+//    return self.thumbnailAttachments.firstObject;
+//}
+//
 //- (TSAttachmentStream *)thumbnailAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
 //{
 //
 //}
-
+//
 - (void)createThumbnailAttachmentIfNecessaryWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-//                OWSAssert([attachment isKindOfClass:[TSAttachmentStream class]]);
-//                UIImage *thumbnailImage = attachment.thumbnailImage;
-//                //  Only some media types have thumbnails
-//                if (thumbnailImage) {
-//                    // Copy the thumbnail to a new attachment.
-//                    TSAttachmentStream *thumbnailAttachment =
-//                    [[TSAttachmentStream alloc] initWithContentType:attachment.contentType
-//                                                          byteCount:attachment.byteCount
-//                                                     sourceFilename:attachment.sourceFilename];
-//
-//                    NSError *error;
-//                    NSData *_Nullable data = [attachment readDataFromFileWithError:&error];
-//                    if (!data || error) {
-//                        DDLogError(@"%@ Couldn't load attachment data for message sent to self: %@.", self.logTag, error);
-//                    } else {
-//                        [thumbnailAttachment writeData:data error:&error];
-//                        if (error) {
-//                            DDLogError(
-//                                       @"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
-//                        } else {
-//                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-//                                [thumbnailAttachment saveWithTransaction:transaction];
-//                                quotedMessage.attachments =
-//                                [message saveWithTransaction:transaction];
-//                            }];
-//                        }
-//                    }
+    for (OWSAttachmentInfo *info in self.quotedAttachments) {
+        // TODO should we just cach an optional TSAttachment on the info?
+        OWSAssert(info.attachmentId);
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:info.attachmentId transaction:transaction];
+        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            return;
+        }
+
+        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachmentStream;
+        NSData *thumbnailData = attachmentStream.thumbnailData;
+        //  Only some media types have thumbnails
+        if (thumbnailData) {
+            // Copy the thumbnail to a new attachment.
+            NSString *thumbnailName =
+                [NSString stringWithFormat:@"quoted-thumbnail-%@", attachmentStream.sourceFilename];
+            TSAttachmentStream *thumbnailAttachment =
+                [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeJpeg
+                                                      byteCount:attachmentStream.byteCount
+                                                 sourceFilename:thumbnailName];
+
+            NSError *error;
+            [thumbnailAttachment writeData:thumbnailData error:&error];
+            if (error) {
+                DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+            } else {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                    [thumbnailAttachment saveWithTransaction:transaction];
+                    quotedMessage.attachments = [message saveWithTransaction:transaction];
+                }];
+            }
+        }
+    }
 }
 @end
 

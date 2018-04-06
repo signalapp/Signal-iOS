@@ -36,6 +36,12 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithQuotedAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
+                                         relay:(nullable NSString *)relay
+                                networkManager:(TSNetworkManager *)networkManager
+                                primaryStorage:(OWSPrimaryStorage *)primaryStorage
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
+
 /*
  * Retry fetching failed attachment download
  */

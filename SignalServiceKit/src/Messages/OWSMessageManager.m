@@ -1095,41 +1095,42 @@ NS_ASSUME_NONNULL_BEGIN
         hasText = YES;
     }
 
-    NSArray<TSAttachment *> *attachments;
-
-    if (quoteProto.attachments.count == 0) {
-        attachments = @[];
-    } else {
-        OWSAttachmentsProcessor *attachmentsProcessor =
-            [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:quoteProto.attachments
-                                                                relay:envelope.relay
-                                                       networkManager:self.networkManager
-                                                       primaryStorage:self.primaryStorage
-                                                          transaction:transaction];
-
-        if (!attachmentsProcessor.hasSupportedAttachments) {
-            attachments = @[];
-        } else {
-            attachments = attachmentsProcessor.supportedAttachmentPointers;
-        }
-
-        // TODO - but only if the attachment can't be found locally.
-        //        [attachmentsProcessor fetchAttachmentsForMessage:nil
-        //                                             transaction:transaction
-        //                                                 success:^(TSAttachmentStream *attachmentStream) {
-        //                                                     [groupThread
-        //                                                     updateAvatarWithAttachmentStream:attachmentStream];
-        //                                                 }
-        //                                                 failure:^(NSError *error) {
-        //                                                     DDLogError(@"%@ failed to fetch attachments for group
-        //                                                     avatar sent at: %llu. with error: %@",
-        //                                                                self.logTag,
-        //                                                                envelope.timestamp,
-        //                                                                error);
-        //                                                 }];
-
+    NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+    for (OWSSignalServiceProtosAttachmentPointer *attachmentPointer in quoteProto.attachments) {
         hasAttachment = YES;
+        OWSAttachmentInfo *attachmentInfo =
+            [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
+                                                contentType:attachmentPointer.contentType
+                                             sourceFilename:attachmentPointer.fileName];
+        [attachmentInfos addObject:attachmentInfo];
     }
+    // TODO - but only if the attachment can't be found locally.
+    //        OWSAttachmentsProcessor *attachmentsProcessor =
+    //            [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:quoteProto.attachments
+    //                                                                relay:envelope.relay
+    //                                                       networkManager:self.networkManager
+    //                                                       primaryStorage:self.primaryStorage
+    //                                                          transaction:transaction];
+    //
+    //        if (!attachmentsProcessor.hasSupportedAttachments) {
+    //            attachments = @[];
+    //        } else {
+    //            attachments = attachmentsProcessor.supportedAttachmentPointers;
+    //        }
+    //
+    //        [attachmentsProcessor fetchAttachmentsForMessage:nil
+    //                                             transaction:transaction
+    //                                                 success:^(TSAttachmentStream *attachmentStream) {
+    //                                                     [groupThread
+    //                                                     updateAvatarWithAttachmentStream:attachmentStream];
+    //                                                 }
+    //                                                 failure:^(NSError *error) {
+    //                                                     DDLogError(@"%@ failed to fetch attachments for group
+    //                                                     avatar sent at: %llu. with error: %@",
+    //                                                                self.logTag,
+    //                                                                envelope.timestamp,
+    //                                                                error);
+    //                                                 }];
 
     if (!hasText && !hasAttachment) {
         OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
@@ -1142,8 +1143,11 @@ NS_ASSUME_NONNULL_BEGIN
     //                                                                         sourceFilename:sourceFilename
     //                                                                          thumbnailData:thumbnailData
     //                                                                            contentType:contentType];
-    TSQuotedMessage *quotedMessage =
-        [[TSQuotedMessage alloc] initWithTimestamp:timestamp authorId:authorId body:body attachments:attachments];
+
+    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                                                       authorId:authorId
+                                                                           body:body
+                                                          quotedAttachmentInfos:attachmentInfos];
 
     return quotedMessage;
 }

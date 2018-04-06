@@ -355,6 +355,24 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIImage imageWithContentsOfFile:self.thumbnailPath];
 }
 
+- (nullable NSData *)thumbnailData
+{
+    NSString *thumbnailPath = self.thumbnailPath;
+    if (!thumbnailPath) {
+        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
+
+        return nil;
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+
+        return nil;
+    }
+
+    return [NSData dataWithContentsOfFile:self.thumbnailPath];
+}
+
 - (void)ensureThumbnail
 {
     NSString *thumbnailPath = self.thumbnailPath;

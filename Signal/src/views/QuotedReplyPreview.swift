@@ -43,7 +43,7 @@ class QuotedReplyPreview: UIView {
         bodyLabel.font = .ows_footnote
 
         bodyLabel.text = {
-            if let contentType = quotedReplyDraft.contentType() {
+            if let contentType = quotedReplyDraft.contentType {
                 let emoji = TSAttachmentStream.emoji(forMimeType: contentType)
                 return "\(emoji) \(quotedReplyDraft.body ?? "")"
             } else {
@@ -52,7 +52,7 @@ class QuotedReplyPreview: UIView {
         }()
 
         let thumbnailView: UIView? = {
-            if let image = quotedReplyDraft.thumbnailImage() {
+            if let image = quotedReplyDraft.thumbnailImage {
                 let imageView = UIImageView(image: image)
                 imageView.contentMode = .scaleAspectFill
                 imageView.autoPinToSquareAspectRatio()

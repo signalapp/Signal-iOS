@@ -117,7 +117,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     return self;
 }
 
-
 // Remove this?
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage

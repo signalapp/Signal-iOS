@@ -26,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This is a MIME type.
 //
 // This property should be set IFF we are quoting an attachment message.
-- (nullable NSString *)contentType;
-- (nullable NSString *)sourceFilename;
-- (nullable UIImage *)thumbnailImage;
+@property (nonatomic, readonly, nullable) NSString *contentType;
+@property (nonatomic, readonly, nullable) NSString *sourceFilename;
+@property (nonatomic, readonly, nullable) UIImage *thumbnailImage;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initWithAttachment:(TSAttachment *)attachment;
 
 @end
@@ -67,8 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)contentType;
 - (nullable NSString *)sourceFilename;
 
-@property (atomic, readonly) NSArray<OWSAttachmentInfo *> *attachmentInfos;
-- (void)addAttachment:(TSAttachmentStream *)attachment;
+@property (atomic, readonly) NSArray<OWSAttachmentInfo *> *quotedAttachments;
+//- (void)addAttachment:(TSAttachmentStream *)attachment;
 - (BOOL)hasAttachments;
 
 - (nullable TSAttachment *)firstAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
@@ -76,10 +81,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// used in message manager
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
-                      attachments:(NSArray<TSAttachment *> *)attachments;
+            quotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
+
+// used by OWSAttachmentInfo#buildQuotedMessage
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+      quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
+
 
 @end
 
