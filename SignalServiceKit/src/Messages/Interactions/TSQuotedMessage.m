@@ -47,6 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.attachmentStream.sourceFilename;
 }
 
+- (nullable NSString *)thumbnailImage
+{
+    return self.attachmentStream.thumbnailImage;
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
@@ -147,6 +152,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentInfo *firstAttachment = self.firstThumbnailAttachment;
 
     return firstAttachment.contentType;
+}
+
+- (nullable NSString *)sourceFilename
+{
+    OWSAttachmentInfo *firstAttachment = self.firstThumbnailAttachment;
+
+    return firstAttachment.sourceFilename;
 }
 
 - (BOOL)hasThumbnailAttachments
