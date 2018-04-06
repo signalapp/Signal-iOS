@@ -31,11 +31,22 @@ NS_ASSUME_NONNULL_BEGIN
 // UI is dismissing.
 @property (nonatomic) BOOL shouldClearAuthUIWhenActive;
 
-@property (nonatomic, nullable) NSDate *appEnteredBackgroundDate;
-@property (nonatomic, nullable) NSDate *appEnteredForegroundDate;
-@property (nonatomic, nullable) NSDate *lastUnlockSuccessDate;
+// Indicates whether or not the user is currently locked out of
+// the app.  Only applies if OWSScreenLock.isScreenLockEnabled.
+//
+// * The user is locked out out by default on app launch.
+// * The user is also locked out if they spend more than
+//   "timeout" seconds outside the app.  When the user leaves
+//   the app, a "countdown" begins.
+@property (nonatomic) BOOL isScreenLockUnlocked;
 
+@property (nonatomic, nullable) NSDate *screenLockCountdownDate;
+
+// We normally start the "countdown" when the app enters the background,
+// But we also want to start the "countdown" if the app is inactive for
+// more than N seconds.
 @property (nonatomic, nullable) NSTimer *inactiveTimer;
+
 
 @end
 
@@ -99,6 +110,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(screenLockDidChange:)
                                                  name:OWSScreenLock.ScreenLockDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(screenLockWasEnabled:)
+                                                 name:OWSScreenLock.ScreenLockWasEnabled
+                                               object:nil];
 }
 
 - (void)setupWithRootWindow:(UIWindow *)rootWindow
@@ -115,38 +130,57 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Methods
 
+- (void)tryToActivateScreenLockUponBecomingActive
+{
+    OWSAssert(!self.appIsInactive);
+
+    if (!self.isScreenLockUnlocked) {
+        // Screen lock is already activated.
+        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 0", self.logTag);
+        return;
+    }
+    if (!self.screenLockCountdownDate) {
+        // We became inactive, but never started a countdown.
+        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 1", self.logTag);
+        return;
+    }
+    NSTimeInterval countdownInterval = fabs([self.screenLockCountdownDate timeIntervalSinceNow]);
+    OWSAssert(countdownInterval >= 0);
+    NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
+    OWSAssert(screenLockTimeout >= 0);
+    if (countdownInterval >= screenLockTimeout) {
+        self.isScreenLockUnlocked = NO;
+        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive YES 1 (%0.3f >= %0.3f)",
+            self.logTag,
+            countdownInterval,
+            screenLockTimeout);
+    } else {
+        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 2 (%0.3f < %0.3f)",
+            self.logTag,
+            countdownInterval,
+            screenLockTimeout);
+    }
+}
+
 - (void)setAppIsInactive:(BOOL)appIsInactive
 {
-    BOOL didChange = _appIsInactive != appIsInactive;
-
     _appIsInactive = appIsInactive;
 
-    if (didChange) {
-        // If app is inactive for more than N seconds,
-        // treat this as "entering the background" for the purposes
-        // of Screen Lock.
-        if (!appIsInactive) {
-            [self.inactiveTimer invalidate];
-            self.inactiveTimer = nil;
-        } else if (!self.isShowingScreenLockUI) {
-            [self.inactiveTimer invalidate];
-            self.inactiveTimer = [NSTimer weakScheduledTimerWithTimeInterval:45.f
-                                                                      target:self
-                                                                    selector:@selector(inactiveTimerDidFire)
-                                                                    userInfo:nil
-                                                                     repeats:NO];
-        }
+    if (!appIsInactive) {
+        [self tryToActivateScreenLockUponBecomingActive];
+
+        self.screenLockCountdownDate = nil;
     }
+
+    [self startInactiveTimerIfNecessary];
 
     [self ensureScreenProtection];
 }
 
 - (void)setAppIsInBackground:(BOOL)appIsInBackground
 {
-    if (appIsInBackground) {
-        if (!_appIsInBackground) {
-            [self markAppAsInBackground];
-        }
+    if (appIsInBackground && !_appIsInBackground) {
+        [self startScreenLockCountdownIfNecessary];
     }
 
     _appIsInBackground = appIsInBackground;
@@ -154,31 +188,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureScreenProtection];
 }
 
-- (void)markAppAsInBackground
+- (void)startScreenLockCountdownIfNecessary
 {
-    // Record the time when app entered background.
-    BOOL shouldResetEnteredBackgroundDate = NO;
-    if (!self.appEnteredBackgroundDate) {
-        // If this is the first time we're entering the
-        // background, record the date.
-        shouldResetEnteredBackgroundDate = YES;
-    }
-    if (self.hasUnlockedScreenLock) {
-        // If we've unlocked the screen lock, record the date.
-        shouldResetEnteredBackgroundDate = YES;
-    } else {
-        // If we're returning to the background _without_
-        // having unlocked the screen lock, DO NOT update this
-        // value as that would reset the unlock timeout.
-    }
-    if (shouldResetEnteredBackgroundDate) {
-        self.appEnteredBackgroundDate = [NSDate new];
+    if (!self.screenLockCountdownDate) {
+        DDLogVerbose(@"%@ startScreenLockCountdownIfNecessary.", self.logTag);
+        self.screenLockCountdownDate = [NSDate new];
     }
 
     self.didLastUnlockAttemptFail = NO;
 
-    [self.inactiveTimer invalidate];
-    self.inactiveTimer = nil;
+    [self clearInactiveTimer];
 }
 
 - (void)ensureScreenProtection
@@ -232,8 +251,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSScreenLock.sharedManager tryToUnlockScreenLockWithSuccess:^{
         DDLogInfo(@"%@ unlock screen lock succeeded.", self.logTag);
+
         self.isShowingScreenLockUI = NO;
-        self.lastUnlockSuccessDate = [NSDate new];
+
+        self.isScreenLockUnlocked = YES;
+
         [self ensureScreenProtection];
     }
         failure:^(NSError *error) {
@@ -284,17 +306,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)hasUnlockedScreenLock
-{
-    if (!self.lastUnlockSuccessDate) {
-        return NO;
-    } else if (!self.appEnteredBackgroundDate) {
-        return YES;
-    } else {
-        return [self.lastUnlockSuccessDate isAfterDate:self.appEnteredBackgroundDate];
-    }
-}
-
 - (BOOL)shouldHaveScreenLock
 {
     if (![TSAccountManager isRegistered]) {
@@ -304,10 +315,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
         // Don't show 'Screen Lock' if 'Screen Lock' isn't enabled.
         DDLogVerbose(@"%@ shouldHaveScreenLock NO 2.", self.logTag);
-        return NO;
-    } else if (self.hasUnlockedScreenLock) {
-        // Don't show 'Screen Lock' if 'Screen Lock' has been unlocked.
-        DDLogVerbose(@"%@ shouldHaveScreenLock NO 3.", self.logTag);
         return NO;
     } else if (self.appIsInBackground) {
         // Don't show 'Screen Lock' if app is in background.
@@ -322,26 +329,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Don't show 'Screen Lock' if app is inactive.
         DDLogVerbose(@"%@ shouldHaveScreenLock NO 5.", self.logTag);
         return NO;
-    } else if (!self.appEnteredBackgroundDate) {
-        // Show 'Screen Lock' if app has just launched.
-        DDLogVerbose(@"%@ shouldHaveScreenLock YES 1.", self.logTag);
-        return YES;
     } else {
-        OWSAssert(self.appEnteredBackgroundDate);
-
-        NSTimeInterval screenLockInterval = fabs([self.appEnteredBackgroundDate timeIntervalSinceNow]);
-        NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
-        OWSAssert(screenLockInterval >= 0);
-        OWSAssert(screenLockTimeout >= 0);
-        if (screenLockInterval < screenLockTimeout) {
-            // Don't show 'Screen Lock' if 'Screen Lock' timeout hasn't elapsed.
-            DDLogVerbose(@"%@ shouldHaveScreenLock NO 6.", self.logTag);
-            return NO;
-        } else {
-            // Otherwise, show 'Screen Lock'.
-            DDLogVerbose(@"%@ shouldHaveScreenLock YES 2.", self.logTag);
-            return YES;
-        }
+        BOOL shouldHaveScreenLock = !self.isScreenLockUnlocked;
+        DDLogVerbose(@"%@ shouldHaveScreenLock ? %d.", self.logTag, shouldHaveScreenLock);
+        return shouldHaveScreenLock;
     }
 }
 
@@ -504,6 +495,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self ensureScreenProtection];
 }
 
+- (void)screenLockWasEnabled:(NSNotification *)notification
+{
+    // When we enable screen lock, consider that an unlock.
+    self.isScreenLockUnlocked = YES;
+
+    DDLogVerbose(@"%@ screenLockWasEnabled", self.logTag);
+
+    [self ensureScreenProtection];
+}
+
 - (void)registrationStateDidChange
 {
     OWSAssertIsOnMainThread();
@@ -542,13 +543,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    // Clear the "delay Screen Lock UI" state; we don't want any
-    // delays when presenting the "unlock screen lock UI" after
-    // returning from background.
-    self.lastUnlockSuccessDate = nil;
-
     self.appIsInBackground = NO;
-    self.appEnteredForegroundDate = [NSDate new];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -556,9 +551,29 @@ NS_ASSUME_NONNULL_BEGIN
     self.appIsInBackground = YES;
 }
 
+#pragma mark - Inactive Timer
+
 - (void)inactiveTimerDidFire
 {
-    [self markAppAsInBackground];
+    [self startScreenLockCountdownIfNecessary];
+}
+
+- (void)startInactiveTimerIfNecessary
+{
+    if (self.appIsInactive && !self.isShowingScreenLockUI && !self.inactiveTimer) {
+        [self.inactiveTimer invalidate];
+        self.inactiveTimer = [NSTimer weakScheduledTimerWithTimeInterval:45.f
+                                                                  target:self
+                                                                selector:@selector(inactiveTimerDidFire)
+                                                                userInfo:nil
+                                                                 repeats:NO];
+    }
+}
+
+- (void)clearInactiveTimer
+{
+    [self.inactiveTimer invalidate];
+    self.inactiveTimer = nil;
 }
 
 @end
