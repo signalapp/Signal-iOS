@@ -315,7 +315,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (bodyMediaView) {
         OWSAssert(self.loadCellContentBlock);
         OWSAssert(self.unloadCellContentBlock);
-        OWSAssert(!lastSubview);
 
         bodyMediaView.clipsToBounds = YES;
 
