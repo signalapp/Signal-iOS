@@ -24,6 +24,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
+@property (nonatomic) BOOL alwaysShowBubbleTail;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
@@ -35,7 +37,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)loadContent;
 - (void)unloadContent;
 
-- (CGSize)sizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
+- (CGSize)sizeForContentWidth:(int)contentWidth;
 
 - (void)prepareForReuse;
 

@@ -234,7 +234,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
 
     self.bubbleView.isOutgoing = self.isOutgoing;
-    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail;
+    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail && !self.alwaysShowBubbleTail;
 
     if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasNonImageBodyContent) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
@@ -315,7 +315,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (bodyMediaView) {
         OWSAssert(self.loadCellContentBlock);
         OWSAssert(self.unloadCellContentBlock);
-        OWSAssert(!lastSubview);
 
         bodyMediaView.clipsToBounds = YES;
 
@@ -898,9 +897,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (int)floor(contentWidth * 0.8f);
 }
 
-- (CGSize)quotedMessageSizeForViewWidth:(int)viewWidth
-                           contentWidth:(int)contentWidth
-                         includeMargins:(BOOL)includeMargins
+- (CGSize)quotedMessageSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -920,15 +917,14 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (CGSize)sizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)sizeForContentWidth:(int)contentWidth
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     CGSize cellSize = CGSizeZero;
 
-    CGSize quotedMessageSize =
-        [self quotedMessageSizeForViewWidth:viewWidth contentWidth:contentWidth includeMargins:YES];
+    CGSize quotedMessageSize = [self quotedMessageSizeForContentWidth:contentWidth includeMargins:YES];
     cellSize.width = MAX(cellSize.width, quotedMessageSize.width);
     cellSize.height += quotedMessageSize.height;
 

@@ -971,6 +971,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Message";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
 
@@ -1009,9 +1012,6 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
-
-/* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Missing Attachment";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Not yet downloaded";

@@ -154,6 +154,7 @@
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
+		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
 		34A910601FFEB114000C4745 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9105F1FFEB114000C4745 /* OWSBackup.m */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
@@ -729,6 +730,7 @@
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
 		3496744C2076768700080B5F /* OWSMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageBubbleView.m; sourceTree = "<group>"; };
+		3496744E2076ACCE00080B5F /* LongTextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LongTextViewController.swift; sourceTree = "<group>"; };
 		34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS2FARegistrationViewController.m; sourceTree = "<group>"; };
 		34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FARegistrationViewController.h; sourceTree = "<group>"; };
 		34A9105E1FFEB113000C4745 /* OWSBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackup.h; sourceTree = "<group>"; };
@@ -1590,8 +1592,10 @@
 				34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */,
 				34B3F8541E8DF1700035BE1A /* NewGroupViewController.h */,
 				34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */,
+				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
 				34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */,
 				34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */,
+				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
 				34C42D591F45F7A80072EC04 /* OWSNavigationController.h */,
@@ -1604,7 +1608,6 @@
 				34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
-				45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -3183,6 +3186,7 @@
 				34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
+				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */,
 				34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */,
 				34D1F0AC1F867BFC0066283D /* OWSExpirationTimerView.m in Sources */,
