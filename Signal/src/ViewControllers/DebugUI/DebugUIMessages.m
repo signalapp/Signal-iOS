@@ -1892,7 +1892,8 @@ NS_ASSUME_NONNULL_BEGIN
 isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                          replyLabel:(NSString *)replyLabel
                     isReplyIncoming:(BOOL)isReplyIncoming
-                   replyMessageBody:(NSString *)replyMessageBody
+                   replyMessageBody:(nullable NSString *)replyMessageBody
+                   replyAssetLoader:(nullable DebugUIMessagesAssetLoader *)replyAssetLoader
                   // Only applies if !isReplyIncoming.
                   replyMessageState:(TSOutgoingMessageState)replyMessageState
 {
@@ -1911,8 +1912,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
         quotedMessageAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:quotedMessageBody];
         quotedMessageBody = nil;
     }
-    DebugUIMessagesAssetLoader *_Nullable replyAssetLoader = nil;
-    if ([replyMessageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
+    if (replyMessageBody &&
+        [replyMessageBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         OWSAssert(!replyAssetLoader);
         replyAssetLoader = [DebugUIMessagesAssetLoader oversizeTextInstanceWithText:replyMessageBody];
         replyMessageBody = nil;
@@ -1945,13 +1946,24 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
     }
     [label appendString:@")"];
 
-    return [DebugUIMessagesSingleAction actionWithLabel:label
+    NSMutableArray<ActionPrepareBlock> *prepareBlocks = [NSMutableArray new];
+    if (quotedMessageAssetLoader.prepareBlock) {
+        [prepareBlocks addObject:quotedMessageAssetLoader.prepareBlock];
+    }
+    if (replyAssetLoader.prepareBlock) {
+        [prepareBlocks addObject:replyAssetLoader.prepareBlock];
+    }
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *_Nullable quotedMessageBodyWIndex
+                = (quotedMessageBody ? [NSString stringWithFormat:@"%zd %@", index, quotedMessageBody] : nil);
             TSQuotedMessage *_Nullable quotedMessage = nil;
             if (isQuotedMessageIncoming) {
                 TSIncomingMessage *_Nullable messageToQuote = nil;
                 messageToQuote = [self createFakeIncomingMessage:thread
-                                                     messageBody:quotedMessageBody
+                                                     messageBody:quotedMessageBodyWIndex
                                                  fakeAssetLoader:quotedMessageAssetLoader
                                           isAttachmentDownloaded:isQuotedMessageAttachmentDownloaded
                                                    quotedMessage:nil
@@ -1960,7 +1972,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                 quotedMessage = [OWSMessageUtils quotedMessageForMessage:messageToQuote transaction:transaction];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
-                                                                                  messageBody:quotedMessageBody
+                                                                                  messageBody:quotedMessageBodyWIndex
                                                                               fakeAssetLoader:quotedMessageAssetLoader
                                                                                  messageState:quotedMessageMessageState
                                                                                   isDelivered:quotedMessageIsDelivered
@@ -1972,16 +1984,18 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
             }
             OWSAssert(quotedMessage);
 
+            NSString *_Nullable replyMessageBodyWIndex
+                = (replyMessageBody ? [NSString stringWithFormat:@"%zd %@", index, replyMessageBody] : nil);
             if (isReplyIncoming) {
                 [self createFakeIncomingMessage:thread
-                                    messageBody:replyMessageBody
+                                    messageBody:replyMessageBodyWIndex
                                 fakeAssetLoader:replyAssetLoader
                          isAttachmentDownloaded:NO
                                   quotedMessage:quotedMessage
                                     transaction:transaction];
             } else {
                 [self createFakeOutgoingMessage:thread
-                                    messageBody:replyMessageBody
+                                    messageBody:replyMessageBodyWIndex
                                 fakeAssetLoader:replyAssetLoader
                                    messageState:replyMessageState
                                     isDelivered:replyIsDelivered
@@ -1990,25 +2004,34 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                     transaction:transaction];
             }
         }
-        prepareBlock:^(ActionSuccessBlock success, ActionFailureBlock failure) {
-            if (replyAssetLoader.prepareBlock) {
-                __block BOOL didSucceed = NO;
-                replyAssetLoader.prepareBlock(
-                    ^{
-                        didSucceed = YES;
-                    },
-                    ^{
-                        OWSFail(@"%@ could not prepare oversize text reply asset.", self.logTag);
-                    });
-                OWSAssert(didSucceed);
-            }
+                  prepareBlock:[self groupPrepareBlockWithPrepareBlocks:prepareBlocks]];
+}
 
-            if (quotedMessageAssetLoader.prepareBlock) {
-                quotedMessageAssetLoader.prepareBlock(success, failure);
-            } else {
-                success();
-            }
-        }];
+// Recursively perform a group of "prepare blocks" in sequence, aborting
+// if any fail.
++ (ActionPrepareBlock)groupPrepareBlockWithPrepareBlocks:(NSArray<ActionPrepareBlock> *)prepareBlocks
+{
+    return ^(ActionSuccessBlock success, ActionFailureBlock failure) {
+        [self groupPrepareBlockStepWithPrepareBlocks:[prepareBlocks mutableCopy] success:success failure:failure];
+    };
+}
+
++ (void)groupPrepareBlockStepWithPrepareBlocks:(NSMutableArray<ActionPrepareBlock> *)prepareBlocks
+                                       success:(ActionSuccessBlock)success
+                                       failure:(ActionFailureBlock)failure
+{
+    if (prepareBlocks.count < 1) {
+        success();
+        return;
+    }
+    ActionPrepareBlock nextPrepareBlock = [prepareBlocks lastObject];
+    [prepareBlocks removeLastObject];
+
+    nextPrepareBlock(
+        ^{
+            [self groupPrepareBlockStepWithPrepareBlocks:prepareBlocks success:success failure:failure];
+        },
+        failure);
 }
 
 + (NSArray<DebugUIMessagesAction *> *)allFakeQuotedReplyActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
@@ -2036,6 +2059,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2047,6 +2071,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2058,6 +2083,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2069,6 +2095,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2080,6 +2107,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Long Text"
                                 isReplyIncoming:NO
                                replyMessageBody:longText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
@@ -2097,6 +2125,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2108,6 +2137,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2119,6 +2149,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2130,6 +2161,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2141,6 +2173,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2152,6 +2185,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2163,6 +2197,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2174,6 +2209,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2185,6 +2221,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2196,6 +2233,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2207,6 +2245,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2218,6 +2257,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
@@ -2235,6 +2275,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2246,6 +2287,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2257,6 +2299,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2268,6 +2311,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2279,6 +2323,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2290,6 +2335,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2301,6 +2347,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2312,6 +2359,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Medium Text"
                                 isReplyIncoming:NO
                                replyMessageBody:mediumText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
@@ -2326,6 +2374,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                          replyLabel:@"Short Text"
                                     isReplyIncoming:isReplyIncoming
                                    replyMessageBody:shortText
+                                   replyAssetLoader:nil
                                   replyMessageState:TSOutgoingMessageStateSentToService],
         ]];
     };
@@ -2353,6 +2402,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2364,6 +2414,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2375,6 +2426,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2386,6 +2438,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2397,6 +2450,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2408,6 +2462,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2419,6 +2474,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2430,6 +2486,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2441,6 +2498,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateAttemptingOut],
 
         [self fakeQuotedReplyAction:thread
@@ -2452,6 +2510,7 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateSentToService],
 
         [self fakeQuotedReplyAction:thread
@@ -2463,7 +2522,146 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                      replyLabel:@"Short Text"
                                 isReplyIncoming:NO
                                replyMessageBody:shortText
+                               replyAssetLoader:nil
                               replyMessageState:TSOutgoingMessageStateUnsent],
+    ]];
+
+
+    if (includeLabels) {
+        [actions addObject:[self fakeIncomingTextMessageAction:thread
+                                                          text:@"⚠️ Quoted Replies (Reply W. Attachment) ⚠️"]];
+    }
+    [actions addObjectsFromArray:@[
+        // Png + Text -> Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Tall Portrait Png"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Tall Portrait Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Text -> Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Tall Portrait Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:nil
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Text -> Png
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Tall Portrait Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:nil
+                               replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Tall Portrait Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Portrait Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Tall Portrait Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Landscape Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Wide Landscape Png"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+
+        // Png -> Landscape Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Wide Landscape Png + Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Landscape Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Wide Landscape Png + Short Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:shortText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Landscape Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Wide Landscape Png + Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
+
+        // Png -> Landscape Png + Text
+        [self fakeQuotedReplyAction:thread
+                             quotedMessageLabel:@"Short Text"
+                        isQuotedMessageIncoming:NO
+                              quotedMessageBody:shortText
+                       quotedMessageAssetLoader:nil
+            isQuotedMessageAttachmentDownloaded:YES
+                                     replyLabel:@"Wide Landscape Png + Medium Text"
+                                isReplyIncoming:NO
+                               replyMessageBody:mediumText
+                               replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
+                              replyMessageState:TSOutgoingMessageStateSentToService],
     ]];
 
     return actions;

@@ -230,6 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssert(self.contentWidth > 0);
 
+    CGSize quotedMessageContentSize = [self quotedMessageSizeForContentWidth:self.contentWidth includeMargins:NO];
     CGSize bodyMediaContentSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
     CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
 
@@ -265,6 +266,15 @@ NS_ASSUME_NONNULL_BEGIN
             [quotedMessageView autoPinLeadingToSuperviewMarginWithInset:bubbleLeadingMargin],
             [quotedMessageView autoPinTrailingToSuperviewMarginWithInset:bubbleTrailingMargin],
         ]];
+        // We need constraints to control the vertical sizing of bubble content views, but we use
+        // lower priority so that when a message only contains media it uses the exact bounds of
+        // the message view.
+        [NSLayoutConstraint
+            autoSetPriority:UILayoutPriorityDefaultLow
+             forConstraints:^{
+                 [self.viewConstraints addObject:[quotedMessageView autoSetDimension:ALDimensionHeight
+                                                                              toSize:quotedMessageContentSize.height]];
+             }];
 
         if (lastSubview) {
             [self.viewConstraints
@@ -334,7 +344,7 @@ NS_ASSUME_NONNULL_BEGIN
             [bodyMediaView autoPinLeadingToSuperviewMarginWithInset:0],
             [bodyMediaView autoPinTrailingToSuperviewMarginWithInset:0],
         ]];
-        // We need constraints to control the vertical sizing of media and text views, but we use
+        // We need constraints to control the vertical sizing of bubble content views, but we use
         // lower priority so that when a message only contains media it uses the exact bounds of
         // the message view.
         [NSLayoutConstraint
@@ -381,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
             [bodyTextView autoPinLeadingToSuperviewMarginWithInset:self.textLeadingMargin],
             [bodyTextView autoPinTrailingToSuperviewMarginWithInset:self.textTrailingMargin],
         ]];
-        // We need constraints to control the vertical sizing of media and text views, but we use
+        // We need constraints to control the vertical sizing of bubble content views, but we use
         // lower priority so that when a message only contains media it uses the exact bounds of
         // the message view.
         [NSLayoutConstraint
@@ -912,7 +922,9 @@ NS_ASSUME_NONNULL_BEGIN
                    displayableQuotedText:(self.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
-    result.width += kBubbleThornSideInset;
+    if (includeMargins) {
+        result.width += kBubbleThornSideInset;
+    }
 
     return result;
 }
