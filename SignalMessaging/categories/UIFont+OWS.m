@@ -33,11 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont boldSystemFontOfSize:size];
 }
 
-+ (UIFont *)ows_dynamicTypeBodyFont:(CGFloat)size
-{
-    return [UIFont ows_dynamicTypeBodyFont];
-}
-
 #pragma mark - Icon Fonts
 
 + (UIFont *)ows_fontAwesomeFont:(CGFloat)size
@@ -57,19 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dynamic Type
 
-+ (UIFont *)ows_dynamicTypeBodyFont
++ (UIFont *)ows_dynamicTypeTitle1Font
 {
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-}
-
-+ (UIFont *)ows_infoMessageFont
-{
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-}
-
-+ (UIFont *)ows_footnoteFont
-{
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle1];
 }
 
 + (UIFont *)ows_dynamicTypeTitle2Font
@@ -77,9 +62,75 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
 }
 
++ (UIFont *)ows_dynamicTypeTitle3Font
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+}
+
 + (UIFont *)ows_dynamicTypeHeadlineFont
 {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+}
+
++ (UIFont *)ows_dynamicTypeSubheadlineFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+}
+
++ (UIFont *)ows_dynamicTypeBodyFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+}
+
++ (UIFont *)ows_dynamicTypeFootnoteFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+}
+
++ (UIFont *)ows_dynamicTypeCaption1Font
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+}
+
++ (UIFont *)ows_dynamicTypeCaption2Font
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+}
+
+#pragma mark - Styles
+
+- (UIFont *)ows_italic
+{
+    return [self styleWithSymbolicTraits:UIFontDescriptorTraitItalic];
+}
+
+- (UIFont *)styleWithSymbolicTraits:(UIFontDescriptorSymbolicTraits)symbolicTraits
+{
+    UIFontDescriptor *fontDescriptor = [self.fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
+    UIFont *font = [UIFont fontWithDescriptor:fontDescriptor size:0];
+    OWSAssert(font);
+    return font ?: self;
+}
+
+- (UIFont *)ows_medium
+{
+    // The recommended approach of deriving "medium" weight fonts for dynamic
+    // type fonts is:
+    //
+    // [UIFontDescriptor fontDescriptorByAddingAttributes:...]
+    //
+    // But this doesn't seem to work in practice on iOS 11 using UIFontWeightMedium.
+
+    UIFont *derivedFont = [UIFont systemFontOfSize:self.pointSize weight:UIFontWeightMedium];
+
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+        return [[UIFontMetrics defaultMetrics] scaledFontForFont:derivedFont];
+#pragma clang diagnostic pop
+    } else {
+        return derivedFont;
+    }
 }
 
 @end

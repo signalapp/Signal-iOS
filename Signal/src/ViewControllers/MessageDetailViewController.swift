@@ -232,7 +232,7 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
                     // We use the "short" status message to avoid being redundant with the section title.
                     statusLabel.text = shortStatusMessage
                     statusLabel.textColor = UIColor.ows_darkGray
-                    statusLabel.font = UIFont.ows_footnote
+                    statusLabel.font = .ows_dynamicTypeFootnote
                     statusLabel.adjustsFontSizeToFitWidth = true
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel

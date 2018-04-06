@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(DisplayableText.kMaxJumbomojiCount == 5);
 
-    CGFloat basePointSize = [UIFont ows_dynamicTypeBodyFont].pointSize;
+    CGFloat basePointSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
     switch (self.displayableBodyText.jumbomojiCount) {
         case 0:
             break;
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    return [UIFont ows_dynamicTypeBodyFont];
+    return UIFont.ows_dynamicTypeBodyFont;
 }
 
 #pragma mark - Convenience Accessors
@@ -946,7 +946,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)tapForMoreFont
 {
-    return [UIFont ows_regularFontWithSize:12.f];
+    return UIFont.ows_dynamicTypeCaption1Font;
 }
 
 - (CGFloat)tapForMoreHeight

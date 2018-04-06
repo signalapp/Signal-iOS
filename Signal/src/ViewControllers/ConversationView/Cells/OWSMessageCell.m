@@ -62,13 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.footerView];
 
     self.dateHeaderLabel = [UILabel new];
-    self.dateHeaderLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.dateHeaderLabel.font = self.dateHeaderDateFont;
     self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
     self.dateHeaderLabel.textColor = [UIColor lightGrayColor];
     [self.contentView addSubview:self.dateHeaderLabel];
 
     self.footerLabel = [UILabel new];
-    self.footerLabel.font = [UIFont ows_regularFontWithSize:12.f];
+    self.footerLabel.font = UIFont.ows_dynamicTypeCaption1Font;
     self.footerLabel.textColor = [UIColor lightGrayColor];
     [self.footerView addSubview:self.footerLabel];
 
@@ -362,12 +362,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)dateHeaderDateFont
 {
-    return [UIFont boldSystemFontOfSize:12.0f];
+    return UIFont.ows_dynamicTypeCaption1Font.ows_medium;
 }
 
 - (UIFont *)dateHeaderTimeFont
 {
-    return [UIFont systemFontOfSize:12.0f];
+    return UIFont.ows_dynamicTypeCaption1Font;
 }
 
 #pragma mark - Measurement
