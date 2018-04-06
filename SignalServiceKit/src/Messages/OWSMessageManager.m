@@ -561,11 +561,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSIncomingMessage *_Nullable createdMessage =
-        [self handleReceivedEnvelope:envelope
-                     withDataMessage:dataMessage
-                       attachmentIds:attachmentsProcessor.supportedAttachmentIds
-                         transaction:transaction];
+    TSIncomingMessage *_Nullable createdMessage = [self handleReceivedEnvelope:envelope
+                                                               withDataMessage:dataMessage
+                                                                 attachmentIds:attachmentsProcessor.attachmentIds
+                                                                   transaction:transaction];
 
     if (!createdMessage) {
         return;
@@ -1111,7 +1110,7 @@ NS_ASSUME_NONNULL_BEGIN
     //        if (!attachmentsProcessor.hasSupportedAttachments) {
     //            attachments = @[];
     //        } else {
-    //            attachments = attachmentsProcessor.supportedAttachmentPointers;
+    //            attachments = attachmentsProcessor.attachmentPointers;
     //        }
     //
     //        [attachmentsProcessor fetchAttachmentsForMessage:nil

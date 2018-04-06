@@ -53,8 +53,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     _networkManager = networkManager;
     _primaryStorage = primaryStorage;
 
-    _supportedAttachmentPointers = @[ attachmentPointer ];
-    _supportedAttachmentIds = @[ attachmentPointer.uniqueId ];
+    _attachmentPointers = @[ attachmentPointer ];
+    _attachmentIds = @[ attachmentPointer.uniqueId ];
 
     return self;
 }
@@ -74,11 +74,9 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     _primaryStorage = primaryStorage;
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    NSMutableArray<TSAttachmentPointer *> *supportedAttachmentPointers = [NSMutableArray new];
-    NSMutableArray<NSString *> *supportedAttachmentIds = [NSMutableArray new];
+    NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
-
         OWSAssert(attachmentProto.id != 0);
         OWSAssert(attachmentProto.key != nil);
         OWSAssert(attachmentProto.contentType != nil);
@@ -104,15 +102,12 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                                                                       attachmentType:attachmentType];
 
         [attachmentIds addObject:pointer.uniqueId];
-
         [pointer saveWithTransaction:transaction];
-        [supportedAttachmentPointers addObject:pointer];
-        [supportedAttachmentIds addObject:pointer.uniqueId];
+        [attachmentPointers addObject:pointer];
     }
 
     _attachmentIds = [attachmentIds copy];
-    _supportedAttachmentPointers = [supportedAttachmentPointers copy];
-    _supportedAttachmentIds = [supportedAttachmentIds copy];
+    _attachmentPointers = [attachmentPointers copy];
 
     return self;
 }
@@ -138,7 +133,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
-    for (TSAttachmentPointer *attachmentPointer in self.supportedAttachmentPointers) {
+    for (TSAttachmentPointer *attachmentPointer in self.attachmentPointers) {
         [self retrieveAttachment:attachmentPointer
                          message:message
                      transaction:transaction
@@ -434,7 +429,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (BOOL)hasSupportedAttachments
 {
-    return self.supportedAttachmentPointers.count > 0;
+    return self.attachmentPointers.count > 0;
 }
 
 @end

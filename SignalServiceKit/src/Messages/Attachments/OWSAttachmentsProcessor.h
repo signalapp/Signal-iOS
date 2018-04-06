@@ -23,9 +23,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
  */
 @interface OWSAttachmentsProcessor : NSObject
 
-@property (nullable, nonatomic, readonly) NSArray<NSString *> *attachmentIds;
-@property (nonatomic, readonly) NSArray<NSString *> *supportedAttachmentIds;
-@property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
+@property (nonatomic, readonly) NSArray<NSString *> *attachmentIds;
+@property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *attachmentPointers;
 @property (nonatomic, readonly) BOOL hasSupportedAttachments;
 
 - (instancetype)init NS_UNAVAILABLE;
