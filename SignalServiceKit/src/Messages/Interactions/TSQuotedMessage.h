@@ -98,6 +98,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)thumbnailAttachmentStreamId;
 - (void)setThumbnailAttachmentStream:(TSAttachment *)thumbnailAttachmentStream;
 
+// currently only used by orphan attachment cleaner
+- (NSArray<NSString *> *)thumbnailAttachmentStreamIds;
+
 @property (atomic, readonly) NSArray<OWSAttachmentInfo *> *quotedAttachments;
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment

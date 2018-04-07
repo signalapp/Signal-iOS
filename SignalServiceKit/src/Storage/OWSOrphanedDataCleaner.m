@@ -8,6 +8,7 @@
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
 #import "TSMessage.h"
+#import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 
@@ -104,6 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *messageAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *quotedReplyThumbnailAttachmentIds = [NSMutableSet new];
+
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         [transaction enumerateKeysAndObjectsInCollection:TSMessage.collection
                                               usingBlock:^(NSString *key, TSInteraction *interaction, BOOL *stop) {
@@ -114,18 +117,28 @@ NS_ASSUME_NONNULL_BEGIN
                                                   if (![interaction isKindOfClass:[TSMessage class]]) {
                                                       return;
                                                   }
+
                                                   TSMessage *message = (TSMessage *)interaction;
                                                   if (message.attachmentIds.count > 0) {
                                                       [messageAttachmentIds addObjectsFromArray:message.attachmentIds];
+                                                  }
+
+                                                  TSQuotedMessage *_Nullable quotedMessage = message.quotedMessage;
+                                                  if (quotedMessage) {
+                                                      [quotedReplyThumbnailAttachmentIds
+                                                          addObjectsFromArray:quotedMessage
+                                                                                  .thumbnailAttachmentStreamIds];
                                                   }
                                               }];
     }];
 
     CleanupLogDebug(@"%@ attachmentIds: %zd", self.logTag, attachmentIds.count);
     CleanupLogDebug(@"%@ messageAttachmentIds: %zd", self.logTag, messageAttachmentIds.count);
+    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %zd", self.logTag, quotedReplyThumbnailAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:messageAttachmentIds];
+    [orphanAttachmentIds minusSet:quotedReplyThumbnailAttachmentIds];
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:attachmentIds];
 

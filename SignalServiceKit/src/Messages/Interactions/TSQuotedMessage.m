@@ -200,18 +200,18 @@ NS_ASSUME_NONNULL_BEGIN
     return firstAttachment.sourceFilename;
 }
 
-- (nullable NSString *)thumbnailAttachmentStreamId
-{
-    OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
-
-    return firstAttachment.thumbnailAttachmentStreamId;
-}
-
 - (nullable NSString *)thumbnailAttachmentPointerId
 {
     OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
 
     return firstAttachment.thumbnailAttachmentPointerId;
+}
+
+- (nullable NSString *)thumbnailAttachmentStreamId
+{
+    OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
+
+    return firstAttachment.thumbnailAttachmentStreamId;
 }
 
 - (void)setThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
@@ -221,6 +221,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAttachmentInfo *firstAttachment = self.firstAttachmentInfo;
     firstAttachment.thumbnailAttachmentStreamId = attachmentStream.uniqueId;
+}
+
+- (NSArray<NSString *> *)thumbnailAttachmentStreamIds
+{
+    NSMutableArray *streamIds = [NSMutableArray new];
+    for (OWSAttachmentInfo *info in self.quotedAttachments) {
+        if (info.thumbnailAttachmentStreamId) {
+            [streamIds addObject:info.thumbnailAttachmentStreamId];
+        }
+    }
+
+    return [streamIds copy];
 }
 
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
