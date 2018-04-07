@@ -77,6 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Marks attachment as having completed "lazy backup restore."
 - (void)updateWithLazyRestoreComplete;
 
+- (nullable TSAttachmentStream *)cloneAsThumbnail;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -42,27 +42,27 @@ NS_ASSUME_NONNULL_BEGIN
 // View Model which has already fetched any thumbnail attachment.
 @implementation OWSQuotedReplyModel
 
-// This is a MIME type.
-//
-// This property should be set IFF we are quoting an attachment message.
-- (nullable NSString *)contentType
-{
-    return self.attachmentStream.contentType;
-}
-
-- (nullable NSString *)sourceFilename
-{
-    return self.attachmentStream.sourceFilename;
-}
-
-- (nullable UIImage *)thumbnailImage
-{
-    return self.attachmentStream.thumbnailImage;
-}
-
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
+                 attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+{
+    return [self initWithTimestamp:timestamp
+                          authorId:authorId
+                              body:body
+                    thumbnailImage:attachmentStream.thumbnailImage
+                       contentType:attachmentStream.contentType
+                    sourceFilename:attachmentStream.sourceFilename
+                  attachmentStream:attachmentStream];
+}
+
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(nullable NSString *)body
+                   thumbnailImage:(nullable UIImage *)thumbnailImage
+                      contentType:(nullable NSString *)contentType
+                   sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
 {
     self = [super init];
@@ -73,6 +73,11 @@ NS_ASSUME_NONNULL_BEGIN
     _timestamp = timestamp;
     _authorId = authorId;
     _body = body;
+    _thumbnailImage = thumbnailImage;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+
+    // rename to originalAttachmentStream?
     _attachmentStream = attachmentStream;
 
     return self;
@@ -81,19 +86,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                           transaction:(YapDatabaseReadTransaction *)transaction
 {
-    TSAttachment *attachment =
-        [TSAttachment fetchObjectWithUniqueID:quotedMessage.quotedAttachments.firstObject.attachmentId
-                                  transaction:transaction];
+    OWSAssert(quotedMessage.quotedAttachments.count <= 1);
+    OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
 
-    TSAttachmentStream *attachmentStream;
-    if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-        attachmentStream = (TSAttachmentStream *)attachment;
+    UIImage *_Nullable thumbnailImage;
+    if (attachmentInfo.thumbnailAttachmentId) {
+        TSAttachment *attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentId transaction:transaction];
+
+        TSAttachmentStream *attachmentStream;
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            attachmentStream = (TSAttachmentStream *)attachment;
+            thumbnailImage = attachmentStream.image;
+        }
     }
 
     return [self initWithTimestamp:quotedMessage.timestamp
                           authorId:quotedMessage.authorId
                               body:quotedMessage.body
-                  attachmentStream:attachmentStream];
+                    thumbnailImage:thumbnailImage
+                       contentType:attachmentInfo.contentType
+                    sourceFilename:attachmentInfo.sourceFilename
+                  attachmentStream:nil];
 }
 
 - (TSQuotedMessage *)buildQuotedMessage
@@ -253,38 +267,21 @@ NS_ASSUME_NONNULL_BEGIN
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
             continue;
         }
+        TSAttachmentStream *sourceStream = (TSAttachmentStream *)attachment;
 
-        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-        NSData *thumbnailData = attachmentStream.thumbnailData;
-        //  Only some media types have thumbnails
-        if (thumbnailData) {
-            // Copy the thumbnail to a new attachment.
-            NSString *thumbnailName =
-                [NSString stringWithFormat:@"quoted-thumbnail-%@", attachmentStream.sourceFilename];
-            TSAttachmentStream *thumbnailAttachment =
-                [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
-                                                      byteCount:attachmentStream.byteCount
-                                                 sourceFilename:thumbnailName];
-
-            NSError *error;
-            [thumbnailAttachment writeData:thumbnailData error:&error];
-            if (error) {
-                DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
-            } else {
-                [thumbnailAttachment saveWithTransaction:transaction];
-                info.thumbnailAttachmentId = thumbnailAttachment.uniqueId;
-                [thumbnailAttachments addObject:thumbnailAttachment];
-            }
+        TSAttachmentStream *_Nullable thumbnailStream = [sourceStream cloneAsThumbnail];
+        if (!thumbnailStream) {
+            continue;
         }
-    }
 
-    if (thumbnailAttachments.count > 0) {
-        // Save to record any self.quotedAttachments[].thumbnailAttachmentId
-        [self saveWithTransaction:transaction];
+        [thumbnailStream saveWithTransaction:transaction];
+        info.thumbnailAttachmentId = thumbnailStream.uniqueId;
+        [thumbnailAttachments addObject:thumbnailStream];
     }
 
     return [thumbnailAttachments copy];
 }
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -35,6 +35,7 @@
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
+#import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSGroupModel.h"
@@ -990,8 +991,10 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                TSQuotedMessage *_Nullable quotedMessage =
-                    [self quotedMessageForDataMessage:dataMessage envelope:envelope transaction:transaction];
+                TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage
+                                                                                    envelope:envelope
+                                                                                      thread:oldGroupThread
+                                                                                 transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1038,7 +1041,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             relay:envelope.relay];
 
         TSQuotedMessage *_Nullable quotedMessage =
-            [self quotedMessageForDataMessage:dataMessage envelope:envelope transaction:transaction];
+            [self quotedMessageForDataMessage:dataMessage envelope:envelope thread:thread transaction:transaction];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1059,6 +1062,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                                  envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                                   thread:(TSThread *)thread
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
@@ -1097,8 +1101,46 @@ NS_ASSUME_NONNULL_BEGIN
             [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
                                                 contentType:quotedAttachment.contentType
                                              sourceFilename:quotedAttachment.fileName];
+
+        TSMessage *_Nullable quotedMessage = (TSMessage *)[TSInteraction
+            interactionsWithTimestamp:timestamp
+                               filter:^BOOL(TSInteraction *interaction) {
+
+                                   if (![thread.uniqueId isEqual:interaction.uniqueThreadId]) {
+                                       return NO;
+                                   }
+
+                                   if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                       TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                       return [authorId isEqual:incomingMessage.messageAuthorId];
+                                   } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                       return [authorId isEqual:[TSAccountManager localNumber]];
+                                   } else {
+                                       // ignore other interaction types
+                                       return NO;
+                                   }
+
+                               }
+                      withTransaction:transaction]
+                                                 .firstObject;
+
+        // We still have the existing quoted message locally.
+        // Derive any thumbnail locally rather than fetching one over the network.
+        if (quotedMessage) {
+            TSAttachment *attachment = [quotedMessage attachmentWithTransaction:transaction];
+            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *sourceStream = (TSAttachmentStream *)attachment;
+
+                TSAttachmentStream *thumbnailStream = [sourceStream cloneAsThumbnail];
+                [thumbnailStream saveWithTransaction:transaction];
+                attachmentInfo.thumbnailAttachmentId = thumbnailStream.uniqueId;
+            }
+        }
+
         [attachmentInfos addObject:attachmentInfo];
     }
+
+
     // TODO - but only if the attachment can't be found locally.
     //        OWSAttachmentsProcessor *attachmentsProcessor =
     //            [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:quoteProto.attachments

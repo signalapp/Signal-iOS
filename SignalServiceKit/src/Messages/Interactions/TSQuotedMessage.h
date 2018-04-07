@@ -69,7 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface TSQuotedMessage : TSYapDatabaseObject
+// TODO make this a MantleModel not a YapDatabaseObject.
+
+@interface TSQuotedMessage : MTLModel
 
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
@@ -108,7 +110,6 @@ NS_ASSUME_NONNULL_BEGIN
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
-
 
 @end
 

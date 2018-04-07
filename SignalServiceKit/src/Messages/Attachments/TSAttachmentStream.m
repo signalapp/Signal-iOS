@@ -677,6 +677,31 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
+- (nullable TSAttachmentStream *)cloneAsThumbnail
+{
+    NSData *thumbnailData = self.thumbnailData;
+    //  Only some media types have thumbnails
+    if (!thumbnailData) {
+        return nil;
+    }
+
+    // Copy the thumbnail to a new attachment.
+    NSString *thumbnailName = [NSString stringWithFormat:@"quoted-thumbnail-%@", self.sourceFilename];
+    TSAttachmentStream *thumbnailAttachment =
+        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
+                                              byteCount:(uint32_t)thumbnailData.length
+                                         sourceFilename:thumbnailName];
+
+    NSError *error;
+    BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
+    if (!success || error) {
+        DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+        return nil;
+    }
+
+    return thumbnailAttachment;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -333,7 +333,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thumbnailAttachments =
                     [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+                if (thumbnailAttachments.count > 0) {
+                    [message touchWithTransaction:transaction];
+                }
             }];
+
 
             // Though we currently only ever expect at most one thumbnail, the proto data model
             // suggests this could change. The logic is intended to work with multiple, but
