@@ -326,7 +326,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 
         if (message.quotedMessage) {
-
             // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
             // and has the advantage of already having been generated.
             __block NSArray<TSAttachmentStream *> *thumbnailAttachments;
@@ -337,7 +336,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [message touchWithTransaction:transaction];
                 }
             }];
-
 
             // Though we currently only ever expect at most one thumbnail, the proto data model
             // suggests this could change. The logic is intended to work with multiple, but

@@ -35,7 +35,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 @interface OWSAttachmentsProcessor ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 @end
 
@@ -43,7 +42,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager
-                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
@@ -51,7 +49,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _primaryStorage = primaryStorage;
 
     _attachmentPointers = @[ attachmentPointer ];
     _attachmentIds = @[ attachmentPointer.uniqueId ];
@@ -62,7 +59,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
                                    relay:(nullable NSString *)relay
                           networkManager:(TSNetworkManager *)networkManager
-                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
@@ -71,35 +67,12 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _primaryStorage = primaryStorage;
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
-        OWSAssert(attachmentProto.id != 0);
-        OWSAssert(attachmentProto.key != nil);
-        OWSAssert(attachmentProto.contentType != nil);
-
-        // digest will be empty for old clients.
-        NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
-
-        TSAttachmentType attachmentType = TSAttachmentTypeDefault;
-        if ([attachmentProto hasFlags]) {
-            UInt32 flags = attachmentProto.flags;
-            if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
-                attachmentType = TSAttachmentTypeVoiceMessage;
-            }
-        }
-
-        TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
-                                                                                 key:attachmentProto.key
-                                                                              digest:digest
-                                                                           byteCount:attachmentProto.size
-                                                                         contentType:attachmentProto.contentType
-                                                                               relay:relay
-                                                                      sourceFilename:attachmentProto.fileName
-                                                                      attachmentType:attachmentType];
+        TSAttachmentPointer *pointer = [self.class buildPointerFromProto:attachmentProto relay:relay];
 
         [attachmentIds addObject:pointer.uniqueId];
         [pointer saveWithTransaction:transaction];
@@ -112,7 +85,36 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     return self;
 }
 
-// Remove this?
++ (TSAttachmentPointer *)buildPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
+                                         relay:(NSString *_Nullable)relay
+{
+    OWSAssert(attachmentProto.id != 0);
+    OWSAssert(attachmentProto.key != nil);
+    OWSAssert(attachmentProto.contentType != nil);
+
+    // digest will be empty for old clients.
+    NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
+
+    TSAttachmentType attachmentType = TSAttachmentTypeDefault;
+    if ([attachmentProto hasFlags]) {
+        UInt32 flags = attachmentProto.flags;
+        if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
+            attachmentType = TSAttachmentTypeVoiceMessage;
+        }
+    }
+
+    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
+                                                                             key:attachmentProto.key
+                                                                          digest:digest
+                                                                       byteCount:attachmentProto.size
+                                                                     contentType:attachmentProto.contentType
+                                                                           relay:relay
+                                                                  sourceFilename:attachmentProto.fileName
+                                                                  attachmentType:attachmentType];
+    return pointer;
+}
+
+// PERF: Remove this and use a pre-existing dbConnection
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler

@@ -517,7 +517,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
                                                             relay:envelope.relay
                                                    networkManager:self.networkManager
-                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
 
     if (!attachmentsProcessor.hasSupportedAttachments) {
@@ -555,7 +554,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
                                                             relay:envelope.relay
                                                    networkManager:self.networkManager
-                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
         DDLogWarn(@"%@ received unsupported media envelope", self.logTag);
@@ -1052,6 +1050,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage];
+
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                              envelope:envelope
@@ -1102,72 +1101,41 @@ NS_ASSUME_NONNULL_BEGIN
                                                 contentType:quotedAttachment.contentType
                                              sourceFilename:quotedAttachment.fileName];
 
-        TSMessage *_Nullable quotedMessage = (TSMessage *)[TSInteraction
-            interactionsWithTimestamp:timestamp
-                               filter:^BOOL(TSInteraction *interaction) {
+        // We prefer deriving any thumbnail locally rather than fetching one from the network.
+        TSAttachmentStream *_Nullable thumbnailStream =
+            [self tryToDeriveLocalThumbnailWithAttachmentInfo:attachmentInfo
+                                                    timestamp:timestamp
+                                                     threadId:thread.uniqueId
+                                                     authorId:authorId
+                                                  transaction:transaction];
 
-                                   if (![thread.uniqueId isEqual:interaction.uniqueThreadId]) {
-                                       return NO;
-                                   }
+        if (thumbnailStream) {
+            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%zu",
+                self.logTag,
+                thread.uniqueId,
+                timestamp);
 
-                                   if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                       TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                       return [authorId isEqual:incomingMessage.messageAuthorId];
-                                   } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                       return [authorId isEqual:[TSAccountManager localNumber]];
-                                   } else {
-                                       // ignore other interaction types
-                                       return NO;
-                                   }
+            [thumbnailStream saveWithTransaction:transaction];
 
-                               }
-                      withTransaction:transaction]
-                                                 .firstObject;
+            attachmentInfo.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
+        } else if (quotedAttachment.hasThumbnail) {
+            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%zu",
+                self.logTag,
+                thread.uniqueId,
+                timestamp);
 
-        // We still have the existing quoted message locally.
-        // Derive any thumbnail locally rather than fetching one over the network.
-        if (quotedMessage) {
-            TSAttachment *attachment = [quotedMessage attachmentWithTransaction:transaction];
-            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *sourceStream = (TSAttachmentStream *)attachment;
+            OWSSignalServiceProtosAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
+            TSAttachmentPointer *thumbnailPointer =
+                [OWSAttachmentsProcessor buildPointerFromProto:thumbnailAttachmentProto relay:envelope.relay];
+            [thumbnailPointer saveWithTransaction:transaction];
 
-                TSAttachmentStream *thumbnailStream = [sourceStream cloneAsThumbnail];
-                [thumbnailStream saveWithTransaction:transaction];
-                attachmentInfo.thumbnailAttachmentId = thumbnailStream.uniqueId;
-            }
+            attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
+        } else {
+            DDLogDebug(@"%@ No thumbnail for quoted message: %@:%zu", self.logTag, thread.uniqueId, timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];
     }
-
-
-    // TODO - but only if the attachment can't be found locally.
-    //        OWSAttachmentsProcessor *attachmentsProcessor =
-    //            [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:quoteProto.attachments
-    //                                                                relay:envelope.relay
-    //                                                       networkManager:self.networkManager
-    //                                                       primaryStorage:self.primaryStorage
-    //                                                          transaction:transaction];
-    //
-    //        if (!attachmentsProcessor.hasSupportedAttachments) {
-    //            attachments = @[];
-    //        } else {
-    //            attachments = attachmentsProcessor.attachmentPointers;
-    //        }
-    //
-    //        [attachmentsProcessor fetchAttachmentsForMessage:nil
-    //                                             transaction:transaction
-    //                                                 success:^(TSAttachmentStream *attachmentStream) {
-    //                                                     [groupThread
-    //                                                     updateAvatarWithAttachmentStream:attachmentStream];
-    //                                                 }
-    //                                                 failure:^(NSError *error) {
-    //                                                     DDLogError(@"%@ failed to fetch attachments for group
-    //                                                     avatar sent at: %llu. with error: %@",
-    //                                                                self.logTag,
-    //                                                                envelope.timestamp,
-    //                                                                error);
-    //                                                 }];
 
     if (!hasText && !hasAttachment) {
         OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
@@ -1178,6 +1146,58 @@ NS_ASSUME_NONNULL_BEGIN
                                              authorId:authorId
                                                  body:body
                                 quotedAttachmentInfos:attachmentInfos];
+}
+
+- (nullable TSAttachmentStream *)tryToDeriveLocalThumbnailWithAttachmentInfo:(OWSAttachmentInfo *)attachmentInfo
+                                                                   timestamp:(uint64_t)timestamp
+                                                                    threadId:(NSString *)threadId
+                                                                    authorId:(NSString *)authorId
+                                                                 transaction:
+                                                                     (YapDatabaseReadWriteTransaction *)transaction
+{
+    if (![TSAttachmentStream hasThumbnailForMimeType:attachmentInfo.contentType]) {
+        return nil;
+    }
+
+    NSArray<TSMessage *> *quotedMessages = (NSArray<TSMessage *> *)[TSInteraction
+        interactionsWithTimestamp:timestamp
+                           filter:^BOOL(TSInteraction *interaction) {
+
+                               if (![threadId isEqual:interaction.uniqueThreadId]) {
+                                   return NO;
+                               }
+
+                               if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                   TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                   return [authorId isEqual:incomingMessage.messageAuthorId];
+                               } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                   return [authorId isEqual:[TSAccountManager localNumber]];
+                               } else {
+                                   // ignore other interaction types
+                                   return NO;
+                               }
+
+                           }
+                  withTransaction:transaction];
+
+    TSMessage *_Nullable quotedMessage = quotedMessages.firstObject;
+
+    if (!quotedMessage) {
+        return nil;
+    }
+
+    TSAttachment *attachment = [quotedMessage attachmentWithTransaction:transaction];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        return nil;
+    }
+    TSAttachmentStream *sourceStream = (TSAttachmentStream *)attachment;
+
+    TSAttachmentStream *_Nullable thumbnailStream = [sourceStream cloneAsThumbnail];
+    if (!thumbnailStream) {
+        return nil;
+    }
+
+    return thumbnailStream;
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
@@ -1212,7 +1232,36 @@ NS_ASSUME_NONNULL_BEGIN
         [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
     }
 
-    DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.logTag, shouldMarkMessageAsRead, envelope.source);
+    TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
+    if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
+        // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
+        TSAttachmentPointer *attachmentPointer =
+            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
+                                             transaction:transaction];
+
+        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+            OWSAttachmentsProcessor *attachmentProcessor =
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                            networkManager:self.networkManager];
+
+            DDLogDebug(@"%@ downloading thumbnail for message: %tu", self.logTag, incomingMessage.timestamp);
+            [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
+                transaction:transaction
+                success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                    [self.dbConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                            [incomingMessage saveWithTransaction:transaction];
+                        }];
+                }
+                failure:^(NSError *_Nonnull error) {
+                    DDLogWarn(@"%@ failed to fetch thumbnail for message: %tu with error: %@",
+                        self.logTag,
+                        incomingMessage.timestamp,
+                        error);
+                }];
+        }
+    }
 
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage

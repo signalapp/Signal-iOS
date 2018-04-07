@@ -56,8 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: rename to pendingAttachmentId or maybe pendingAttachmentStream?
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
-// This is set once we've persisted a thumbnail
-@property (atomic, nullable) NSString *thumbnailAttachmentId;
+// References a yet-to-be downloaded thumbnail file
+@property (atomic, nullable) NSString *thumbnailAttachmentPointerId;
+
+// References an already downloaded or locally generated thumbnail file
+@property (atomic, nullable) NSString *thumbnailAttachmentStreamId;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -88,10 +91,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)contentType;
 - (nullable NSString *)sourceFilename;
 
+// References a yet-to-be downloaded thumbnail file
+- (nullable NSString *)thumbnailAttachmentPointerId;
+
+// References an already downloaded or locally generated thumbnail file
+- (nullable NSString *)thumbnailAttachmentStreamId;
+- (void)setThumbnailAttachmentStream:(TSAttachment *)thumbnailAttachmentStream;
+
 @property (atomic, readonly) NSArray<OWSAttachmentInfo *> *quotedAttachments;
-
-
-- (NSArray<TSAttachment *> *)fetchAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:

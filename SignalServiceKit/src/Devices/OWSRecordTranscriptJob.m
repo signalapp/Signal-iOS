@@ -81,7 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
                                                             relay:transcript.relay
                                                    networkManager:self.networkManager
-                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
 
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
@@ -96,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMessageNone
                                                       quotedMessage:nil];
 
+    // TODO synced quoted replies
     if (transcript.isExpirationTimerUpdate) {
         [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
                                                                 contactsManager:self.contactsManager];

@@ -29,24 +29,22 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// TODO make this take one and loop over?
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
                                    relay:(nullable NSString *)relay
                           networkManager:(TSNetworkManager *)networkManager
-                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithQuotedAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                                         relay:(nullable NSString *)relay
-                                networkManager:(TSNetworkManager *)networkManager
-                                primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 /*
  * Retry fetching failed attachment download
  */
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                           networkManager:(TSNetworkManager *)networkManager
-                           primaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+                           networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
+
+
++ (TSAttachmentPointer *)buildPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
+                                         relay:(NSString *_Nullable)relay;
+
 
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage

@@ -1657,14 +1657,13 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
+    UIAlertAction *retryAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *_Nonnull action) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                                    networkManager:self.networkManager
-                                                                    primaryStorage:self.primaryStorage];
+                                                                    networkManager:self.networkManager];
                     [processor fetchAttachmentsForMessage:message
                         primaryStorage:self.primaryStorage
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1676,7 +1675,7 @@ typedef enum : NSUInteger {
                         }];
                 }];
 
-    [actionSheetController addAction:resendMessageAction];
+    [actionSheetController addAction:retryAction];
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];

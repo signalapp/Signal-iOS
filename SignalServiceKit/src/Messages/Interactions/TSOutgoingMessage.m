@@ -480,9 +480,9 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                 
                 quotedAttachmentBuilder.contentType = attachment.contentType;
                 quotedAttachmentBuilder.fileName = attachment.sourceFilename;
-                if (attachment.thumbnailAttachmentId) {
+                if (attachment.thumbnailAttachmentStreamId) {
                     quotedAttachmentBuilder.thumbnail =
-                        [self buildProtoForAttachmentId:attachment.thumbnailAttachmentId];
+                        [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
                 }
 
                 [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
