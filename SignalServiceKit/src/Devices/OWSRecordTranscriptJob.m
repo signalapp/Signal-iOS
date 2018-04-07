@@ -8,9 +8,11 @@
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSReadReceiptManager.h"
+#import "TSAttachmentPointer.h"
 #import "TSInfoMessage.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
+#import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -65,12 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIncomingSentMessageTranscript *transcript = self.incomingSentMessageTranscript;
     DDLogDebug(@"%@ Recording transcript: %@", self.logTag, transcript);
 
-    TSThread *thread = [transcript threadWithTransaction:transaction];
     if (transcript.isEndSessionMessage) {
         DDLogInfo(@"%@ EndSession was sent to recipient: %@.", self.logTag, transcript.recipientId);
         [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                         inThread:thread
+                                         inThread:transcript.thread
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
@@ -83,19 +84,50 @@ NS_ASSUME_NONNULL_BEGIN
                                                    networkManager:self.networkManager
                                                       transaction:transaction];
 
+
     // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:transcript.timestamp
-                                                           inThread:thread
+                                                           inThread:transcript.thread
                                                         messageBody:transcript.body
                                                       attachmentIds:[attachmentsProcessor.attachmentIds mutableCopy]
                                                    expiresInSeconds:transcript.expirationDuration
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMessageNone
-                                                      quotedMessage:nil];
+                                                      quotedMessage:transcript.quotedMessage];
 
-    // TODO synced quoted replies
+    TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
+    if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
+        // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
+        TSAttachmentPointer *attachmentPointer =
+            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
+                                             transaction:transaction];
+
+        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+            OWSAttachmentsProcessor *attachmentProcessor =
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                            networkManager:self.networkManager];
+
+            DDLogDebug(@"%@ downloading thumbnail for transcript: %tu", self.logTag, transcript.timestamp);
+            [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
+                transaction:transaction
+                success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                    [self.primaryStorage.newDatabaseConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                            [outgoingMessage saveWithTransaction:transaction];
+                        }];
+                }
+                failure:^(NSError *_Nonnull error) {
+                    DDLogWarn(@"%@ failed to fetch thumbnail for transcript: %tu with error: %@",
+                        self.logTag,
+                        transcript.timestamp,
+                        error);
+                }];
+        }
+    }
+
     if (transcript.isExpirationTimerUpdate) {
         [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
                                                                 contactsManager:self.contactsManager];

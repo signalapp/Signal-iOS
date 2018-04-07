@@ -72,7 +72,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
-        TSAttachmentPointer *pointer = [self.class buildPointerFromProto:attachmentProto relay:relay];
+        TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto relay:relay];
 
         [attachmentIds addObject:pointer.uniqueId];
         [pointer saveWithTransaction:transaction];
@@ -83,35 +83,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     _attachmentPointers = [attachmentPointers copy];
 
     return self;
-}
-
-+ (TSAttachmentPointer *)buildPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
-                                         relay:(NSString *_Nullable)relay
-{
-    OWSAssert(attachmentProto.id != 0);
-    OWSAssert(attachmentProto.key != nil);
-    OWSAssert(attachmentProto.contentType != nil);
-
-    // digest will be empty for old clients.
-    NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
-
-    TSAttachmentType attachmentType = TSAttachmentTypeDefault;
-    if ([attachmentProto hasFlags]) {
-        UInt32 flags = attachmentProto.flags;
-        if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
-            attachmentType = TSAttachmentTypeVoiceMessage;
-        }
-    }
-
-    TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
-                                                                             key:attachmentProto.key
-                                                                          digest:digest
-                                                                       byteCount:attachmentProto.size
-                                                                     contentType:attachmentProto.contentType
-                                                                           relay:relay
-                                                                  sourceFilename:attachmentProto.fileName
-                                                                  attachmentType:attachmentType];
-    return pointer;
 }
 
 // PERF: Remove this and use a pre-existing dbConnection

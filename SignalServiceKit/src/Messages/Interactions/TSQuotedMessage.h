@@ -7,9 +7,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosEnvelope;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
+@class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 // View model which has already fetched any attachments.
 @interface OWSQuotedReplyModel : NSObject
@@ -120,6 +124,12 @@ NS_ASSUME_NONNULL_BEGIN
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
+
+
++ (nullable instancetype)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                              thread:(TSThread *)thread
+                                               relay:(nullable NSString *)relay
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

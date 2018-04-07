@@ -10,13 +10,16 @@
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import "TSOutgoingMessage.h"
+#import "TSQuotedMessage.h"
 #import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-- (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto relay:(NSString *)relay
+- (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto
+                        relay:(nullable NSString *)relay
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
@@ -35,6 +38,15 @@ NS_ASSUME_NONNULL_BEGIN
     _isExpirationTimerUpdate = (_dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & OWSSignalServiceProtosDataMessageFlagsEndSession) != 0;
 
+    if (self.dataMessage.hasGroup) {
+        _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+    } else {
+        _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
+    }
+
+    _quotedMessage =
+        [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread relay:relay transaction:transaction];
+
     return self;
 }
 
@@ -44,15 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
         return @[ self.dataMessage.group.avatar ];
     } else {
         return self.dataMessage.attachments;
-    }
-}
-
-- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (self.dataMessage.hasGroup) {
-        return [TSGroupThread getOrCreateThreadWithGroupId:self.dataMessage.group.id transaction:transaction];
-    } else {
-        return [TSContactThread getOrCreateThreadWithContactId:self.recipientId transaction:transaction];
     }
 }
 

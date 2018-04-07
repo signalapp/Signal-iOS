@@ -41,11 +41,6 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager NS_DESIGNATED_INITIALIZER;
 
-
-+ (TSAttachmentPointer *)buildPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
-                                         relay:(NSString *_Nullable)relay;
-
-
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
