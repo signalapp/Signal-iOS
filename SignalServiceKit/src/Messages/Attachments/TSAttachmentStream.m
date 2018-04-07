@@ -688,7 +688,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Copy the thumbnail to a new attachment.
     NSString *thumbnailName = [NSString stringWithFormat:@"quoted-thumbnail-%@", self.sourceFilename];
     TSAttachmentStream *thumbnailAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg"
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName];
 

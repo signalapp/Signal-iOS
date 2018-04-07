@@ -181,7 +181,6 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                          }];
 }
 
-
 @end
 
 NS_ASSUME_NONNULL_END

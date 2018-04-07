@@ -45,17 +45,18 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 
 // Complete the operation successfully.
 // Should be called at most once per operation instance.
+// You must ensure that `run` cannot fail after calling `reportSuccess`.
 - (void)reportSuccess;
 
-// To avoid retry, report an error with `error.isFatal = YES`
-// otherwise the operation will retry if possible.
-// Should be called at most once per `run`, and you should
-// ensure that `run` cannot succeed after calling `reportError`
-// e.g. generally:
+// Should be called at most once per `run`.
+// You must ensure that `run` cannot succeed after calling `reportError`, e.g. generally you'll write something like
+// this:
 //
 //     [self reportError:someError];
 //     return;
 //
+// If the error is terminal, and you want to avoid retry, report an error with `error.isFatal = YES` otherwise the
+// operation will retry if possible.
 - (void)reportError:(NSError *)error;
 
 @end

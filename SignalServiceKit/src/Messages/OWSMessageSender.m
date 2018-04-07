@@ -5,12 +5,9 @@
 #import "OWSMessageSender.h"
 #import "AppContext.h"
 #import "ContactsUpdater.h"
-#import "Cryptography.h"
-#import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
 #import "NSError+MessageSending.h"
-#import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
 #import "OWSDevice.h"
@@ -41,7 +38,6 @@
 #import "TSPreKeyManager.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
-#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>

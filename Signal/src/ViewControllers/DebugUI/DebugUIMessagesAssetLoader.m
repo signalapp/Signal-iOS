@@ -371,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader
             fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-jpg.JPG"
-                          mimeType:@"image/jpeg"];
+                          mimeType:OWSMimeTypeImageJpeg];
     });
     return instance;
 }
