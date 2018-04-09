@@ -25,7 +25,7 @@ import SignalServiceKit
 
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
-        subtitleLabel.font = .ows_dynamicTypeFootnote
+        subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
         subtitleLabel.textColor = UIColor.ows_darkGray
 
         // Listen to notifications...

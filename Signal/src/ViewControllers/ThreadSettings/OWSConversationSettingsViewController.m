@@ -382,7 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
             subtitleLabel.text
                 = NSLocalizedString(@"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
             subtitleLabel.textColor = [UIColor blackColor];
-            subtitleLabel.font = [UIFont ows_dynamicTypeFootnoteFont];
+            subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
             subtitleLabel.numberOfLines = 0;
             subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
             [cell.contentView addSubview:subtitleLabel];
@@ -421,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
                             rowLabel.textColor = [UIColor blackColor];
-                            rowLabel.font = [UIFont ows_dynamicTypeFootnoteFont];
+                            rowLabel.font = [UIFont ows_regularFontWithSize:11.f];
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                             [topView addSubview:rowLabel];
                             [rowLabel autoVCenterInSuperview];

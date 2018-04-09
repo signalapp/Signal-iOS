@@ -179,7 +179,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     UILabel *infoLabel = [UILabel new];
     infoLabel.textColor = [UIColor ows_darkGrayColor];
-    infoLabel.font = [UIFont ows_dynamicTypeFootnoteFont];
+    infoLabel.font = [UIFont ows_regularFontWithSize:11.f];
     infoLabel.textAlignment = NSTextAlignmentCenter;
     NSMutableAttributedString *text = [NSMutableAttributedString new];
     [text appendAttributedString:[[NSAttributedString alloc]
