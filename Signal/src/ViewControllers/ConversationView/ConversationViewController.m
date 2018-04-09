@@ -2148,17 +2148,17 @@ typedef enum : NSUInteger {
         return;
     }
 
-    __block OWSQuotedReplyModel *quotedReplyDraft;
+    __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        quotedReplyDraft = [OWSMessageUtils quotedReplyDraftForMessage:message transaction:transaction];
+        quotedReply = [OWSMessageUtils quotedReplyForMessage:message transaction:transaction];
     }];
 
-    if (![quotedReplyDraft isKindOfClass:[OWSQuotedReplyModel class]]) {
-        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReplyDraft.class);
+    if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReply.class);
         return;
     }
 
-    self.inputToolbar.quotedReplyDraft = quotedReplyDraft;
+    self.inputToolbar.quotedReply = quotedReply;
     [self.inputToolbar beginEditingTextMessage];
 }
 
@@ -2429,7 +2429,7 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
-    self.inputToolbar.quotedReplyDraft = nil;
+    self.inputToolbar.quotedReply = nil;
 
     if ([Environment.preferences soundInForeground]) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
@@ -2764,7 +2764,7 @@ typedef enum : NSUInteger {
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
 
-    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReplyDraft buildQuotedMessage];
+    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReply buildQuotedMessage];
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
@@ -4026,7 +4026,7 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
 
-    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReplyDraft buildQuotedMessage];
+    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReply buildQuotedMessage];
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =

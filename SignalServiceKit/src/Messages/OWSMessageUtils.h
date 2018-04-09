@@ -20,8 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateApplicationBadgeCount;
 
-+ (nullable OWSQuotedReplyModel *)quotedReplyDraftForMessage:(TSMessage *)message
-                                                 transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
+                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

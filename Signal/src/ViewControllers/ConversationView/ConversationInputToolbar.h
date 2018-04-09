@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)cancelVoiceMemoIfNecessary;
 
-@property (nonatomic, nullable) OWSQuotedReplyModel *quotedReplyDraft;
+@property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
 
 @end
 

@@ -1969,8 +1969,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                    quotedMessage:nil
                                                      transaction:transaction];
                 OWSAssert(messageToQuote);
-                quotedMessage = [[OWSMessageUtils quotedReplyDraftForMessage:messageToQuote transaction:transaction]
-                    buildQuotedMessage];
+                quotedMessage =
+                    [[OWSMessageUtils quotedReplyForMessage:messageToQuote transaction:transaction] buildQuotedMessage];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBodyWIndex
@@ -1981,8 +1981,8 @@ isQuotedMessageAttachmentDownloaded:(BOOL)isQuotedMessageAttachmentDownloaded
                                                                                 quotedMessage:nil
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
-                quotedMessage = [[OWSMessageUtils quotedReplyDraftForMessage:messageToQuote transaction:transaction]
-                    buildQuotedMessage];
+                quotedMessage =
+                    [[OWSMessageUtils quotedReplyForMessage:messageToQuote transaction:transaction] buildQuotedMessage];
             }
             OWSAssert(quotedMessage);
 

@@ -104,8 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
     return numberOfItems;
 }
 
-+ (nullable OWSQuotedReplyModel *)quotedReplyDraftForMessage:(TSMessage *)message
-                                                 transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
+                                            transaction:(YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(message);
     OWSAssert(transaction);
@@ -124,13 +124,13 @@ NS_ASSUME_NONNULL_BEGIN
     }();
     OWSAssert(authorId.length > 0);
 
-    return [self quotedReplyDraftForMessage:message authorId:authorId thread:thread transaction:transaction];
+    return [self quotedReplyForMessage:message authorId:authorId thread:thread transaction:transaction];
 }
 
-+ (nullable OWSQuotedReplyModel *)quotedReplyDraftForMessage:(TSMessage *)message
-                                                    authorId:(NSString *)authorId
-                                                      thread:(TSThread *)thread
-                                                 transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
+                                               authorId:(NSString *)authorId
+                                                 thread:(TSThread *)thread
+                                            transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(authorId.length > 0);
