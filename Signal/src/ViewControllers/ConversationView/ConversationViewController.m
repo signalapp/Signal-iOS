@@ -1101,7 +1101,7 @@ typedef enum : NSUInteger {
         name = [self.contactsManager
             attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
                                                         primaryFont:[self navigationBarTitleLabelFont]
-                                                      secondaryFont:[UIFont ows_dynamicTypeFootnoteFont]];
+                                                      secondaryFont:[UIFont ows_regularFontWithSize:11.f]];
     }
     self.title = nil;
 
