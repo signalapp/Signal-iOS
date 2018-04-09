@@ -50,8 +50,6 @@
     _thumbnailImage = thumbnailImage;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
-
-    // rename to originalAttachmentStream?
     _attachmentStream = attachmentStream;
 
     return self;
@@ -101,6 +99,7 @@
     OWSAssert(transaction);
 
     TSThread *thread = [message threadWithTransaction:transaction];
+    OWSAssert(thread);
 
     NSString *_Nullable authorId = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
@@ -113,19 +112,6 @@
         }
     }();
     OWSAssert(authorId.length > 0);
-
-    return [self quotedReplyForMessage:message authorId:authorId thread:thread transaction:transaction];
-}
-
-+ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
-                                               authorId:(NSString *)authorId
-                                                 thread:(TSThread *)thread
-                                            transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssert(message);
-    OWSAssert(authorId.length > 0);
-    OWSAssert(thread);
-    OWSAssert(transaction);
 
     uint64_t timestamp = message.timestamp;
     NSString *_Nullable quotedText = message.body;

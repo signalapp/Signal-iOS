@@ -29,7 +29,6 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// TODO make this take one and loop over?
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
                                    relay:(nullable NSString *)relay
                           networkManager:(TSNetworkManager *)networkManager
