@@ -300,6 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [streamIds copy];
 }
 
+// Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
     (YapDatabaseReadWriteTransaction *)transaction
 {

@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                           transaction:(YapDatabaseReadTransaction *)transaction;
 
+// Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForMessage:(TSMessage *)message
                                    transaction:(YapDatabaseReadTransaction *)transaction;
 
