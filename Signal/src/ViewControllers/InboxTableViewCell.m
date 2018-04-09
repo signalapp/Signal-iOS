@@ -341,9 +341,10 @@ const NSUInteger kAvatarViewDiameter = 52;
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
-                                                                            primaryFont:self.nameLabel.font
-                                                                          secondaryFont:[UIFont ows_footnoteFont]];
+        name = [contactsManager
+            attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
+                                                        primaryFont:self.nameLabel.font
+                                                      secondaryFont:[UIFont ows_dynamicTypeFootnoteFont]];
     }
     
     self.nameLabel.attributedText = name;

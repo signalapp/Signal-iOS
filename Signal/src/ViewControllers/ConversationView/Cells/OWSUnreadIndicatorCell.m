@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUnreadIndicatorCell.h"
@@ -101,12 +101,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)titleFont
 {
-    return [UIFont ows_regularFontWithSize:16.f];
+    return UIFont.ows_dynamicTypeBodyFont;
 }
 
 - (UIFont *)subtitleFont
 {
-    return [UIFont ows_regularFontWithSize:12.f];
+    return UIFont.ows_dynamicTypeCaption1Font;
 }
 
 - (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction

@@ -40,7 +40,7 @@ class QuotedReplyPreview: UIView {
 
         let bodyLabel: UILabel = UILabel()
         bodyLabel.textColor = foregroundColor
-        bodyLabel.font = .ows_footnote
+        bodyLabel.font = .ows_dynamicTypeFootnote
 
         bodyLabel.text = {
             if let contentType = quotedReply.contentType {

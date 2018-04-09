@@ -118,7 +118,7 @@ class AttachmentPointerView: UIView {
         statusLabel.numberOfLines = 2
 
         statusLabel.textColor = self.textColor
-        statusLabel.font = UIFont.ows_footnote
+        statusLabel.font = .ows_dynamicTypeFootnote
 
         statusLabel.autoPinWidthToSuperview()
         statusLabel.autoPinEdge(.top, to: .bottom, of: progressView, withOffset: 4)
