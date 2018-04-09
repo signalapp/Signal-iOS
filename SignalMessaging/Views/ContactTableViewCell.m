@@ -83,12 +83,12 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
     _profileNameLabel = [UILabel new];
     _profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    _profileNameLabel.font = [UIFont ows_dynamicTypeFootnoteFont];
+    _profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     _profileNameLabel.textColor = [UIColor grayColor];
     [_nameContainerView addSubview:_profileNameLabel];
 
     _subtitle = [UILabel new];
-    _subtitle.font = [UIFont ows_dynamicTypeFootnoteFont];
+    _subtitle.font = [UIFont ows_regularFontWithSize:11.f];
     _subtitle.textColor = [UIColor ows_darkGrayColor];
     [_nameContainerView addSubview:self.subtitle];
 
