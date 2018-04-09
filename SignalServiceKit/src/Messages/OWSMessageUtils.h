@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSQuotedReplyModel;
 @class TSMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
@@ -19,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread;
 
 - (void)updateApplicationBadgeCount;
-
-+ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
-                                            transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

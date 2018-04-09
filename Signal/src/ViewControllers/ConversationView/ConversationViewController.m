@@ -2150,7 +2150,7 @@ typedef enum : NSUInteger {
 
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        quotedReply = [OWSMessageUtils quotedReplyForMessage:message transaction:transaction];
+        quotedReply = [OWSQuotedReplyModel quotedReplyForMessage:message transaction:transaction];
     }];
 
     if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {

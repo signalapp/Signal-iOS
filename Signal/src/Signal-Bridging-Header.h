@@ -57,6 +57,7 @@
 #import <SignalMessaging/OWSLogger.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
+#import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSViewController.h>
 #import <SignalMessaging/Release.h>

@@ -327,6 +327,8 @@
 		459311FC1D75C948008DD4F0 /* OWSDeviceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 459311FB1D75C948008DD4F0 /* OWSDeviceTableViewCell.m */; };
 		4598198E204E2F28009414F2 /* OWS108CallLoggingPreference.h in Headers */ = {isa = PBXBuildFile; fileRef = 4598198C204E2F28009414F2 /* OWS108CallLoggingPreference.h */; };
 		4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */ = {isa = PBXBuildFile; fileRef = 4598198D204E2F28009414F2 /* OWS108CallLoggingPreference.m */; };
+		459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 459B775A207BA3A80071D0AB /* OWSQuotedReplyModel.m */; };
+		459B775D207BA4810071D0AB /* OWSQuotedReplyModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 459B7759207BA3A80071D0AB /* OWSQuotedReplyModel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		45A2F005204473A3002E978A /* NewMessage.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 45A2F004204473A3002E978A /* NewMessage.aifc */; };
 		45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A663C41F92EC760027B59E /* GroupTableViewCell.swift */; };
 		45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45A6DAD51EBBF85500893231 /* ReminderView.swift */; };
@@ -945,6 +947,8 @@
 		4597E94F1D8313CB00040CDE /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = translations/bg.lproj/Localizable.strings; sourceTree = "<group>"; };
 		4598198C204E2F28009414F2 /* OWS108CallLoggingPreference.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWS108CallLoggingPreference.h; sourceTree = "<group>"; };
 		4598198D204E2F28009414F2 /* OWS108CallLoggingPreference.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWS108CallLoggingPreference.m; sourceTree = "<group>"; };
+		459B7759207BA3A80071D0AB /* OWSQuotedReplyModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSQuotedReplyModel.h; sourceTree = "<group>"; };
+		459B775A207BA3A80071D0AB /* OWSQuotedReplyModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedReplyModel.m; sourceTree = "<group>"; };
 		45A2F004204473A3002E978A /* NewMessage.aifc */ = {isa = PBXFileReference; lastKnownFileType = file; name = NewMessage.aifc; path = Signal/AudioFiles/NewMessage.aifc; sourceTree = SOURCE_ROOT; };
 		45A663C41F92EC760027B59E /* GroupTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupTableViewCell.swift; sourceTree = "<group>"; };
 		45A6DAD51EBBF85500893231 /* ReminderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReminderView.swift; sourceTree = "<group>"; };
@@ -1763,6 +1767,8 @@
 		45194F911FD7214600333B2C /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				459B7759207BA3A80071D0AB /* OWSQuotedReplyModel.h */,
+				459B775A207BA3A80071D0AB /* OWSQuotedReplyModel.m */,
 				34C42D621F4734ED0072EC04 /* OWSContactOffersInteraction.h */,
 				34C42D631F4734ED0072EC04 /* OWSContactOffersInteraction.m */,
 				34C42D641F4734ED0072EC04 /* TSUnreadIndicatorInteraction.h */,
@@ -2305,6 +2311,7 @@
 				346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */,
 				344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */,
 				34480B521FD0A7A400BC14EF /* OWSLogger.h in Headers */,
+				459B775D207BA4810071D0AB /* OWSQuotedReplyModel.h in Headers */,
 				34612A001FD5F31400532771 /* OWS105AttachmentFilePaths.h in Headers */,
 				346129F61FD5F31400532771 /* OWS103EnableVideoCalling.h in Headers */,
 				344F248A20069F0600CFB4F4 /* ViewControllerUtils.h in Headers */,
@@ -3130,6 +3137,7 @@
 				451F8A381FD7117E005CB9DA /* OWSViewController.m in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
+				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				3461293C1FD1D46A00532771 /* OWSMath.m in Sources */,
 				451F8A391FD711D6005CB9DA /* ContactsViewHelper.m in Sources */,

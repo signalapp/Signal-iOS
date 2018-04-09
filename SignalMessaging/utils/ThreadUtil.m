@@ -5,6 +5,7 @@
 #import "ThreadUtil.h"
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
+#import "OWSQuotedReplyModel.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
