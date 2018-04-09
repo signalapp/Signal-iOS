@@ -3456,6 +3456,7 @@ static OWSSignalServiceProtosDataMessageQuote* defaultOWSSignalServiceProtosData
 @interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachment ()
 @property (strong) NSString* contentType;
 @property (strong) NSString* fileName;
+@property UInt32 flags;
 @property (strong) OWSSignalServiceProtosAttachmentPointer* thumbnail;
 @end
 
@@ -3475,6 +3476,13 @@ static OWSSignalServiceProtosDataMessageQuote* defaultOWSSignalServiceProtosData
   hasFileName_ = !!_value_;
 }
 @synthesize fileName;
+- (BOOL) hasFlags {
+  return !!hasFlags_;
+}
+- (void) setHasFlags:(BOOL) _value_ {
+  hasFlags_ = !!_value_;
+}
+@synthesize flags;
 - (BOOL) hasThumbnail {
   return !!hasThumbnail_;
 }
@@ -3486,6 +3494,7 @@ static OWSSignalServiceProtosDataMessageQuote* defaultOWSSignalServiceProtosData
   if ((self = [super init])) {
     self.contentType = @"";
     self.fileName = @"";
+    self.flags = 0;
     self.thumbnail = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
   }
   return self;
@@ -3512,8 +3521,11 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   if (self.hasFileName) {
     [output writeString:2 value:self.fileName];
   }
+  if (self.hasFlags) {
+    [output writeUInt32:3 value:self.flags];
+  }
   if (self.hasThumbnail) {
-    [output writeMessage:3 value:self.thumbnail];
+    [output writeMessage:4 value:self.thumbnail];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -3530,8 +3542,11 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   if (self.hasFileName) {
     size_ += computeStringSize(2, self.fileName);
   }
+  if (self.hasFlags) {
+    size_ += computeUInt32Size(3, self.flags);
+  }
   if (self.hasThumbnail) {
-    size_ += computeMessageSize(3, self.thumbnail);
+    size_ += computeMessageSize(4, self.thumbnail);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3574,6 +3589,9 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   if (self.hasFileName) {
     [output appendFormat:@"%@%@: %@\n", indent, @"fileName", self.fileName];
   }
+  if (self.hasFlags) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"flags", [NSNumber numberWithInteger:self.flags]];
+  }
   if (self.hasThumbnail) {
     [output appendFormat:@"%@%@ {\n", indent, @"thumbnail"];
     [self.thumbnail writeDescriptionTo:output
@@ -3588,6 +3606,9 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   }
   if (self.hasFileName) {
     [dictionary setObject: self.fileName forKey: @"fileName"];
+  }
+  if (self.hasFlags) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.flags] forKey: @"flags"];
   }
   if (self.hasThumbnail) {
    NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
@@ -3609,6 +3630,8 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
       (!self.hasContentType || [self.contentType isEqual:otherMessage.contentType]) &&
       self.hasFileName == otherMessage.hasFileName &&
       (!self.hasFileName || [self.fileName isEqual:otherMessage.fileName]) &&
+      self.hasFlags == otherMessage.hasFlags &&
+      (!self.hasFlags || self.flags == otherMessage.flags) &&
       self.hasThumbnail == otherMessage.hasThumbnail &&
       (!self.hasThumbnail || [self.thumbnail isEqual:otherMessage.thumbnail]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
@@ -3621,6 +3644,9 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   if (self.hasFileName) {
     hashCode = hashCode * 31 + [self.fileName hash];
   }
+  if (self.hasFlags) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.flags] hash];
+  }
   if (self.hasThumbnail) {
     hashCode = hashCode * 31 + [self.thumbnail hash];
   }
@@ -3628,6 +3654,23 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   return hashCode;
 }
 @end
+
+BOOL OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsIsValidValue(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value) {
+  switch (value) {
+    case OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value) {
+  switch (value) {
+    case OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage:
+      return @"OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage";
+    default:
+      return nil;
+  }
+}
 
 @interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder()
 @property (strong) OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* resultQuotedAttachment;
@@ -3673,6 +3716,9 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
   if (other.hasFileName) {
     [self setFileName:other.fileName];
   }
+  if (other.hasFlags) {
+    [self setFlags:other.flags];
+  }
   if (other.hasThumbnail) {
     [self mergeThumbnail:other.thumbnail];
   }
@@ -3705,7 +3751,11 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
         [self setFileName:[input readString]];
         break;
       }
-      case 26: {
+      case 24: {
+        [self setFlags:[input readUInt32]];
+        break;
+      }
+      case 34: {
         OWSSignalServiceProtosAttachmentPointerBuilder* subBuilder = [OWSSignalServiceProtosAttachmentPointer builder];
         if (self.hasThumbnail) {
           [subBuilder mergeFrom:self.thumbnail];
@@ -3747,6 +3797,22 @@ static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalS
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFileName {
   resultQuotedAttachment.hasFileName = NO;
   resultQuotedAttachment.fileName = @"";
+  return self;
+}
+- (BOOL) hasFlags {
+  return resultQuotedAttachment.hasFlags;
+}
+- (UInt32) flags {
+  return resultQuotedAttachment.flags;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFlags:(UInt32) value {
+  resultQuotedAttachment.hasFlags = YES;
+  resultQuotedAttachment.flags = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFlags {
+  resultQuotedAttachment.hasFlags = NO;
+  resultQuotedAttachment.flags = 0;
   return self;
 }
 - (BOOL) hasThumbnail {

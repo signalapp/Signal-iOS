@@ -126,6 +126,13 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageFlags) {
 BOOL OWSSignalServiceProtosDataMessageFlagsIsValidValue(OWSSignalServiceProtosDataMessageFlags value);
 NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServiceProtosDataMessageFlags value);
 
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags) {
+  OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage = 1,
+};
+
+BOOL OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsIsValidValue(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value);
+NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value);
+
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosReceiptMessageType) {
   OWSSignalServiceProtosReceiptMessageTypeDelivery = 0,
   OWSSignalServiceProtosReceiptMessageTypeRead = 1,
@@ -901,21 +908,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 #define QuotedAttachment_contentType @"contentType"
 #define QuotedAttachment_fileName @"fileName"
+#define QuotedAttachment_flags @"flags"
 #define QuotedAttachment_thumbnail @"thumbnail"
 @interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachment : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasContentType_:1;
   BOOL hasFileName_:1;
   BOOL hasThumbnail_:1;
+  BOOL hasFlags_:1;
   NSString* contentType;
   NSString* fileName;
   OWSSignalServiceProtosAttachmentPointer* thumbnail;
+  UInt32 flags;
 }
 - (BOOL) hasContentType;
 - (BOOL) hasFileName;
+- (BOOL) hasFlags;
 - (BOOL) hasThumbnail;
 @property (readonly, strong) NSString* contentType;
 @property (readonly, strong) NSString* fileName;
+@property (readonly) UInt32 flags;
 @property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* thumbnail;
 
 + (instancetype) defaultInstance;
@@ -962,6 +974,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSString*) fileName;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFileName:(NSString*) value;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFileName;
+
+- (BOOL) hasFlags;
+- (UInt32) flags;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFlags:(UInt32) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFlags;
 
 - (BOOL) hasThumbnail;
 - (OWSSignalServiceProtosAttachmentPointer*) thumbnail;
