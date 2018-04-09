@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class DisplayableText;
 @class OWSBubbleStrokeView;
-@class TSQuotedMessage;
+@class OWSQuotedReplyModel;
 
 @interface OWSQuotedMessageView : UIView
 
@@ -21,11 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth;
 
 // Factory method for "message bubble" views.
-+ (OWSQuotedMessageView *)quotedMessageViewForConversation:(TSQuotedMessage *)quotedMessage
++ (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText;
 
 // Factory method for "message compose" views.
-+ (OWSQuotedMessageView *)quotedMessageViewForPreview:(TSQuotedMessage *)quotedMessage;
++ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage;
 
 @end
 

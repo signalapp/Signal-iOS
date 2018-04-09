@@ -355,6 +355,24 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIImage imageWithContentsOfFile:self.thumbnailPath];
 }
 
+- (nullable NSData *)thumbnailData
+{
+    NSString *thumbnailPath = self.thumbnailPath;
+    if (!thumbnailPath) {
+        OWSAssert(!self.isImage && !self.isVideo && !self.isAnimated);
+
+        return nil;
+    }
+
+    if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
+        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+
+        return nil;
+    }
+
+    return [NSData dataWithContentsOfFile:self.thumbnailPath];
+}
+
 - (void)ensureThumbnail
 {
     NSString *thumbnailPath = self.thumbnailPath;
@@ -657,6 +675,31 @@ NS_ASSUME_NONNULL_BEGIN
                                      [attachment setLazyRestoreFragmentId:nil];
                                  }];
     }];
+}
+
+- (nullable TSAttachmentStream *)cloneAsThumbnail
+{
+    NSData *thumbnailData = self.thumbnailData;
+    //  Only some media types have thumbnails
+    if (!thumbnailData) {
+        return nil;
+    }
+
+    // Copy the thumbnail to a new attachment.
+    NSString *thumbnailName = [NSString stringWithFormat:@"quoted-thumbnail-%@", self.sourceFilename];
+    TSAttachmentStream *thumbnailAttachment =
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
+                                              byteCount:(uint32_t)thumbnailData.length
+                                         sourceFilename:thumbnailName];
+
+    NSError *error;
+    BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
+    if (!success || error) {
+        DDLogError(@"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
+        return nil;
+    }
+
+    return thumbnailAttachment;
 }
 
 @end

@@ -1,7 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,6 +28,9 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                            relay:(NSString *)relay
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
+
++ (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
+                                              relay:(NSString *_Nullable)relay;
 
 @property (nonatomic, readonly) NSString *relay;
 @property (atomic) TSAttachmentPointerState state;

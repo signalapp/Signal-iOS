@@ -93,6 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     return foundMessage;
 }
 
+// TODO get rid of this method and instead populate authorId in initWithCoder:
 - (NSString *)messageAuthorId
 {
     // authorId isn't set on all legacy messages, so we take

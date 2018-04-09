@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 #if TARGET_OS_IPHONE
 - (nullable UIImage *)image;
 - (nullable UIImage *)thumbnailImage;
+- (nullable NSData *)thumbnailData;
 #endif
 
 - (BOOL)isAnimated;
@@ -75,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
 // Marks attachment as having completed "lazy backup restore."
 - (void)updateWithLazyRestoreComplete;
+
+- (nullable TSAttachmentStream *)cloneAsThumbnail;
 
 @end
 

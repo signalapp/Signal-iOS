@@ -5,7 +5,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSMessage;
-@class TSQuotedMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
 
@@ -19,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesInThread:(TSThread *)thread;
 
 - (void)updateApplicationBadgeCount;
-
-+ (nullable TSQuotedMessage *)quotedMessageForMessage:(TSMessage *)message
-                                          transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSQuotedMessageView ()
 
-@property (nonatomic, readonly) TSQuotedMessage *quotedMessage;
+@property (nonatomic, readonly) OWSQuotedReplyModel *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 
 @property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSQuotedMessageView
 
-+ (OWSQuotedMessageView *)quotedMessageViewForConversation:(TSQuotedMessage *)quotedMessage
++ (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
 {
     OWSAssert(quotedMessage);
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
 }
 
-+ (OWSQuotedMessageView *)quotedMessageViewForPreview:(TSQuotedMessage *)quotedMessage
++ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
 {
     OWSAssert(quotedMessage);
 
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
 }
 
-- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+- (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
 {
     self = [super init];
@@ -140,9 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAttachmentView autoSetDimension:ALDimensionHeight toSize:self.quotedAttachmentSize];
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
-
-        if (quotedAttachmentView) {
-        }
     }
 
     UILabel *quotedAuthorLabel = [self createQuotedAuthorLabel];
@@ -209,11 +206,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self.hasQuotedAttachmentThumbnailImage) {
         return nil;
     }
-    if (!self.quotedMessage.thumbnailData) {
-        return nil;
-    }
+
     // TODO: Possibly ignore data that is too large.
-    UIImage *_Nullable image = [UIImage imageWithData:self.quotedMessage.thumbnailData];
+    UIImage *_Nullable image = self.quotedMessage.thumbnailImage;
     // TODO: Possibly ignore images that are too large.
     return image;
 }

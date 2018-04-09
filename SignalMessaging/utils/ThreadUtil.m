@@ -5,6 +5,7 @@
 #import "ThreadUtil.h"
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
+#import "OWSQuotedReplyModel.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -55,12 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
-                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              messageSender:(OWSMessageSender *)messageSender
 {
     return [self sendMessageWithText:text
         inThread:thread
-        quotedMessage:quotedMessage
+        quotedReplyModel:quotedReplyModel
         messageSender:messageSender
         success:^{
             DDLogInfo(@"%@ Successfully sent message.", self.logTag);
@@ -73,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
                                   inThread:(TSThread *)thread
-                             quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                          quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              messageSender:(OWSMessageSender *)messageSender
                                    success:(void (^)(void))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
@@ -86,11 +87,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:thread
-                                       messageBody:text
-                                      attachmentId:nil
-                                  expiresInSeconds:expiresInSeconds];
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
+                                                                messageBody:text
+                                                               attachmentId:nil
+                                                           expiresInSeconds:expiresInSeconds
+                                                              quotedMessage:[quotedReplyModel buildQuotedMessage]];
 
     [messageSender enqueueMessage:message success:successHandler failure:failureHandler];
 
@@ -99,13 +100,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                    messageSender:(OWSMessageSender *)messageSender
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     return [self sendMessageWithAttachment:attachment
                                   inThread:thread
-                             quotedMessage:quotedMessage
+                          quotedReplyModel:quotedReplyModel
                              messageSender:messageSender
                               ignoreErrors:NO
                                 completion:completion];
@@ -113,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion
@@ -127,16 +128,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDisappearingMessagesConfiguration *configuration =
         [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
-    TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-        initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                inThread:thread
-                             messageBody:attachment.captionText
-                           attachmentIds:[NSMutableArray new]
-                        expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds : 0)
-                                  expireStartedAt:0
-                          isVoiceMessage:[attachment isVoiceMessage]
-                        groupMetaMessage:TSGroupMessageNone
-                           quotedMessage:nil];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:attachment.captionText
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:expiresInSeconds
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:[attachment isVoiceMessage]
+                                                   groupMetaMessage:TSGroupMessageNone
+                                                      quotedMessage:[quotedReplyModel buildQuotedMessage]];
 
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType

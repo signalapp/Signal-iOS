@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
             (unsigned long)self.attachmentIds.count);
     }
     OWSSignalServiceProtosAttachmentPointer *attachmentProto =
-        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil];
+        [self buildProtoForAttachmentId:self.attachmentIds[0] filename:nil];
 
     OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
         [OWSSignalServiceProtosSyncMessageGroupsBuilder new];

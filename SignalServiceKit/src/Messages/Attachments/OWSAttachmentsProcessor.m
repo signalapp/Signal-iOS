@@ -35,8 +35,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 @interface OWSAttachmentsProcessor ()
 
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-@property (nonatomic, readonly) NSArray<TSAttachmentPointer *> *supportedAttachmentPointers;
 
 @end
 
@@ -44,7 +42,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
                            networkManager:(TSNetworkManager *)networkManager
-                           primaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
@@ -52,20 +49,16 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _primaryStorage = primaryStorage;
 
-    _supportedAttachmentPointers = @[ attachmentPointer ];
-    _supportedAttachmentIds = @[ attachmentPointer.uniqueId ];
+    _attachmentPointers = @[ attachmentPointer ];
+    _attachmentIds = @[ attachmentPointer.uniqueId ];
 
     return self;
 }
 
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                               timestamp:(uint64_t)timestamp
                                    relay:(nullable NSString *)relay
-                                  thread:(TSThread *)thread
                           networkManager:(TSNetworkManager *)networkManager
-                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
@@ -74,52 +67,25 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     }
 
     _networkManager = networkManager;
-    _primaryStorage = primaryStorage;
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-    NSMutableArray<TSAttachmentPointer *> *supportedAttachmentPointers = [NSMutableArray new];
-    NSMutableArray<NSString *> *supportedAttachmentIds = [NSMutableArray new];
+    NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
-
-        OWSAssert(attachmentProto.id != 0);
-        OWSAssert(attachmentProto.key != nil);
-        OWSAssert(attachmentProto.contentType != nil);
-
-        // digest will be empty for old clients.
-        NSData *digest = attachmentProto.hasDigest ? attachmentProto.digest : nil;
-
-        TSAttachmentType attachmentType = TSAttachmentTypeDefault;
-        if ([attachmentProto hasFlags]) {
-            UInt32 flags = attachmentProto.flags;
-            if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
-                attachmentType = TSAttachmentTypeVoiceMessage;
-            }
-        }
-
-        TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:attachmentProto.id
-                                                                                 key:attachmentProto.key
-                                                                              digest:digest
-                                                                           byteCount:attachmentProto.size
-                                                                         contentType:attachmentProto.contentType
-                                                                               relay:relay
-                                                                      sourceFilename:attachmentProto.fileName
-                                                                      attachmentType:attachmentType];
+        TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto relay:relay];
 
         [attachmentIds addObject:pointer.uniqueId];
-
         [pointer saveWithTransaction:transaction];
-        [supportedAttachmentPointers addObject:pointer];
-        [supportedAttachmentIds addObject:pointer.uniqueId];
+        [attachmentPointers addObject:pointer];
     }
 
     _attachmentIds = [attachmentIds copy];
-    _supportedAttachmentPointers = [supportedAttachmentPointers copy];
-    _supportedAttachmentIds = [supportedAttachmentIds copy];
+    _attachmentPointers = [attachmentPointers copy];
 
     return self;
 }
 
+// PERF: Remove this and use a pre-existing dbConnection
 - (void)fetchAttachmentsForMessage:(nullable TSMessage *)message
                     primaryStorage:(OWSPrimaryStorage *)primaryStorage
                            success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
@@ -140,7 +106,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 {
     OWSAssert(transaction);
 
-    for (TSAttachmentPointer *attachmentPointer in self.supportedAttachmentPointers) {
+    for (TSAttachmentPointer *attachmentPointer in self.attachmentPointers) {
         [self retrieveAttachment:attachmentPointer
                          message:message
                      transaction:transaction
@@ -436,7 +402,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 
 - (BOOL)hasSupportedAttachments
 {
-    return self.supportedAttachmentPointers.count > 0;
+    return self.attachmentPointers.count > 0;
 }
 
 @end

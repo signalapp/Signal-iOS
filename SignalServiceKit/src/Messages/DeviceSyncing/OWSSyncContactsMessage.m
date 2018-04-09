@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSSignalServiceProtosAttachmentPointer *attachmentProto =
-        [self buildAttachmentProtoForAttachmentId:self.attachmentIds[0] filename:nil];
+        [self buildProtoForAttachmentId:self.attachmentIds[0] filename:nil];
 
     OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
         [OWSSignalServiceProtosSyncMessageContactsBuilder new];

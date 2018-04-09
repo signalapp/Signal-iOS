@@ -33,6 +33,9 @@
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
 #import "TSAccountManager.h"
+#import "TSAttachment.h"
+#import "TSAttachmentPointer.h"
+#import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSGroupModel.h"
@@ -512,11 +515,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(groupThread);
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
-                                                        timestamp:envelope.timestamp
                                                             relay:envelope.relay
-                                                           thread:groupThread
                                                    networkManager:self.networkManager
-                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
 
     if (!attachmentsProcessor.hasSupportedAttachments) {
@@ -552,22 +552,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
-                                                        timestamp:envelope.timestamp
                                                             relay:envelope.relay
-                                                           thread:thread
                                                    networkManager:self.networkManager
-                                                   primaryStorage:self.primaryStorage
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
         DDLogWarn(@"%@ received unsupported media envelope", self.logTag);
         return;
     }
 
-    TSIncomingMessage *_Nullable createdMessage =
-        [self handleReceivedEnvelope:envelope
-                     withDataMessage:dataMessage
-                       attachmentIds:attachmentsProcessor.supportedAttachmentIds
-                         transaction:transaction];
+    TSIncomingMessage *_Nullable createdMessage = [self handleReceivedEnvelope:envelope
+                                                               withDataMessage:dataMessage
+                                                                 attachmentIds:attachmentsProcessor.attachmentIds
+                                                                   transaction:transaction];
 
     if (!createdMessage) {
         return;
@@ -607,7 +603,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (syncMessage.hasSent) {
         OWSIncomingSentMessageTranscript *transcript =
-            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent relay:envelope.relay];
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
+                                                              relay:envelope.relay
+                                                        transaction:transaction];
 
         OWSRecordTranscriptJob *recordJob =
             [[OWSRecordTranscriptJob alloc] initWithIncomingSentMessageTranscript:transcript];
@@ -993,7 +991,10 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+                TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
+                                                                                                 thread:oldGroupThread
+                                                                                                  relay:envelope.relay
+                                                                                            transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1014,8 +1015,6 @@ NS_ASSUME_NONNULL_BEGIN
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
                                      envelope:envelope
-                                  dataMessage:dataMessage
-                                attachmentIds:attachmentIds
                                   transaction:transaction];
                 return incomingMessage;
             }
@@ -1041,7 +1040,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       transaction:transaction
                                                                             relay:envelope.relay];
 
-        TSQuotedMessage *_Nullable quotedMessage = [self quotedMessageForDataMessage:dataMessage];
+        TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
+                                                                                         thread:thread
+                                                                                          relay:envelope.relay
+                                                                                    transaction:transaction];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1052,92 +1054,23 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage];
+
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
                              envelope:envelope
-                          dataMessage:dataMessage
-                        attachmentIds:attachmentIds
                           transaction:transaction];
         return incomingMessage;
     }
 }
 
-- (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-{
-    OWSAssert(dataMessage);
-
-    if (!dataMessage.hasQuote) {
-        return nil;
-    }
-
-    OWSSignalServiceProtosDataMessageQuote *quoteProto = [dataMessage quote];
-
-    if (![quoteProto hasId] || [quoteProto id] == 0) {
-        OWSFail(@"%@ quoted message missing id", self.logTag);
-        return nil;
-    }
-    uint64_t timestamp = [quoteProto id];
-
-    if (![quoteProto hasAuthor] || [quoteProto author].length == 0) {
-        OWSFail(@"%@ quoted message missing author", self.logTag);
-        return nil;
-    }
-    // TODO: We could verify that this is a valid e164 value.
-    NSString *authorId = [quoteProto author];
-
-    NSString *_Nullable body = nil;
-    BOOL hasText = NO;
-    BOOL hasAttachment = NO;
-    if ([quoteProto hasText] && [quoteProto text].length > 0) {
-        body = [quoteProto text];
-        hasText = YES;
-    }
-
-    NSString *_Nullable sourceFilename = nil;
-    NSData *_Nullable thumbnailData = nil;
-    NSString *_Nullable contentType = nil;
-
-    if (quoteProto.attachments.count > 0) {
-        OWSSignalServiceProtosAttachmentPointer *attachmentProto = quoteProto.attachments.firstObject;
-        if ([attachmentProto hasContentType] && attachmentProto.contentType.length > 0) {
-            contentType = attachmentProto.contentType;
-
-            if ([attachmentProto hasFileName] && attachmentProto.fileName.length > 0) {
-                sourceFilename = attachmentProto.fileName;
-            }
-            if ([attachmentProto hasThumbnail] && attachmentProto.thumbnail.length > 0) {
-                thumbnailData = [attachmentProto thumbnail];
-            }
-        }
-        hasAttachment = YES;
-    }
-
-    if (!hasText && !hasAttachment) {
-        OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
-        return nil;
-    }
-
-    TSQuotedMessage *quotedMessage = [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                                       authorId:authorId
-                                                                           body:body
-                                                                 sourceFilename:sourceFilename
-                                                                  thumbnailData:thumbnailData
-                                                                    contentType:contentType];
-    return quotedMessage;
-}
-
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
                          thread:(TSThread *)thread
                        envelope:(OWSSignalServiceProtosEnvelope *)envelope
-                    dataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                  attachmentIds:(NSArray<NSString *> *)attachmentIds
                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
     OWSAssert(incomingMessage);
     OWSAssert(envelope);
-    OWSAssert(dataMessage);
-    OWSAssert(attachmentIds);
     OWSAssert(transaction);
 
     OWSAssert([TSAccountManager isRegistered]);
@@ -1162,7 +1095,36 @@ NS_ASSUME_NONNULL_BEGIN
         [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
     }
 
-    DDLogDebug(@"%@ shouldMarkMessageAsRead: %d (%@)", self.logTag, shouldMarkMessageAsRead, envelope.source);
+    TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
+    if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
+        // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
+        TSAttachmentPointer *attachmentPointer =
+            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
+                                             transaction:transaction];
+
+        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+            OWSAttachmentsProcessor *attachmentProcessor =
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                            networkManager:self.networkManager];
+
+            DDLogDebug(@"%@ downloading thumbnail for message: %tu", self.logTag, incomingMessage.timestamp);
+            [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
+                transaction:transaction
+                success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                    [self.dbConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                            [incomingMessage saveWithTransaction:transaction];
+                        }];
+                }
+                failure:^(NSError *_Nonnull error) {
+                    DDLogWarn(@"%@ failed to fetch thumbnail for message: %tu with error: %@",
+                        self.logTag,
+                        incomingMessage.timestamp,
+                        error);
+                }];
+        }
+    }
 
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage

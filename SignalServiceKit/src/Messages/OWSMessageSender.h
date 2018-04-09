@@ -32,15 +32,6 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 //
 // For example, If one member of a group deletes their account, the group should
 // ignore errors when trying to send messages to this ex-member.
-@interface NSError (OWSMessageSender)
-
-- (BOOL)isRetryable;
-- (void)setIsRetryable:(BOOL)value;
-
-- (BOOL)shouldBeIgnoredForGroups;
-- (void)setShouldBeIgnoredForGroups:(BOOL)value;
-
-@end
 
 #pragma mark -
 

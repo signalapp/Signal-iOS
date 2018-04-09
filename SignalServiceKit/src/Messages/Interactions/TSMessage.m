@@ -7,7 +7,8 @@
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
 #import "TSAttachment.h"
-#import "TSAttachmentPointer.h"
+#import "TSAttachmentStream.h"
+#import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -49,8 +50,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // We typically want to order messages locally by when
 // they were received & decrypted, not by when they were sent.
 @property (nonatomic) uint64_t receivedAtTimestamp;
-
-@property (nonatomic, nullable) TSQuotedMessage *quotedMessage;
 
 @end
 
@@ -309,6 +308,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (nullable NSString *)body
 {
     return _body.filterStringForDisplay;
+}
+
+- (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssert(self.quotedMessage);
+    OWSAssert(self.quotedMessage.quotedAttachments.count == 1);
+
+    [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
 }
 
 #pragma mark - Update With... Methods

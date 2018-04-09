@@ -1657,14 +1657,13 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
+    UIAlertAction *retryAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
                   style:UIAlertActionStyleDefault
                 handler:^(UIAlertAction *_Nonnull action) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
-                                                                    networkManager:self.networkManager
-                                                                    primaryStorage:self.primaryStorage];
+                                                                    networkManager:self.networkManager];
                     [processor fetchAttachmentsForMessage:message
                         primaryStorage:self.primaryStorage
                         success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1676,7 +1675,7 @@ typedef enum : NSUInteger {
                         }];
                 }];
 
-    [actionSheetController addAction:resendMessageAction];
+    [actionSheetController addAction:retryAction];
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:YES completion:nil];
@@ -2149,17 +2148,17 @@ typedef enum : NSUInteger {
         return;
     }
 
-    __block TSQuotedMessage *quotedMessage;
+    __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        quotedMessage = [OWSMessageUtils quotedMessageForMessage:message transaction:transaction];
+        quotedReply = [OWSQuotedReplyModel quotedReplyForMessage:message transaction:transaction];
     }];
 
-    if (![quotedMessage isKindOfClass:[TSQuotedMessage class]]) {
-        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedMessage);
+    if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {
+        OWSFail(@"%@ unexpected quotedMessage: %@", self.logTag, quotedReply.class);
         return;
     }
 
-    [self.inputToolbar setQuotedMessage:quotedMessage];
+    self.inputToolbar.quotedReply = quotedReply;
     [self.inputToolbar beginEditingTextMessage];
 }
 
@@ -2430,7 +2429,7 @@ typedef enum : NSUInteger {
     [self updateLastVisibleTimestamp:message.timestampForSorting];
     self.lastMessageSentDate = [NSDate new];
     [self clearUnreadMessagesIndicator];
-    self.inputToolbar.quotedMessage = nil;
+    self.inputToolbar.quotedReply = nil;
 
     if ([Environment.preferences soundInForeground]) {
         [JSQSystemSoundPlayer jsq_playMessageSentSound];
@@ -2764,10 +2763,11 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"Sending attachment. Size in bytes: %lu, contentType: %@",
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
+
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
-                                                         quotedMessage:self.inputToolbar.quotedMessage
+                                                      quotedReplyModel:self.inputToolbar.quotedReply
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4024,19 +4024,20 @@ typedef enum : NSUInteger {
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
+
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
-                                          quotedMessage:self.inputToolbar.quotedMessage
+                                       quotedReplyModel:self.inputToolbar.quotedReply
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text
                                          inThread:self.thread
-                                    quotedMessage:self.inputToolbar.quotedMessage
+                                 quotedReplyModel:self.inputToolbar.quotedReply
                                     messageSender:self.messageSender];
     }
 

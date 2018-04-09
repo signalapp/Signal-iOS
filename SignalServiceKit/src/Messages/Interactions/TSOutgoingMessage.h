@@ -67,6 +67,12 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
+                            messageBody:(nullable NSString *)body
+                           attachmentId:(nullable NSString *)attachmentId
+                       expiresInSeconds:(uint32_t)expiresInSeconds
+                          quotedMessage:(nullable TSQuotedMessage *)quotedMessage;
+
++ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
 
 @property (atomic, readonly) TSOutgoingMessageState messageState;
@@ -132,8 +138,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  * @return
  *      An attachment pointer protobuf suitable for including in various container protobuf builders
  */
-- (OWSSignalServiceProtosAttachmentPointer *)buildAttachmentProtoForAttachmentId:(NSString *)attachmentId
-                                                                        filename:(nullable NSString *)filename;
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
+                                                              filename:(nullable NSString *)filename;
 
 - (BOOL)shouldBeSaved;
 

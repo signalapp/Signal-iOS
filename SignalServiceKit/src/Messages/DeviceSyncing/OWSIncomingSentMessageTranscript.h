@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosSyncMessageSent;
-@class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosAttachmentPointer;
+@class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosSyncMessageSent;
+@class TSQuotedMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
@@ -16,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSIncomingSentMessageTranscript : NSObject
 
-- (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto relay:(NSString *)relay;
+- (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto
+                        relay:(nullable NSString *)relay
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *relay;
 @property (nonatomic, readonly) OWSSignalServiceProtosDataMessage *dataMessage;
@@ -30,8 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, readonly) NSData *groupId;
 @property (nonatomic, readonly) NSString *body;
 @property (nonatomic, readonly) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
-
-- (TSThread *)threadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+@property (nonatomic, readonly) TSThread *thread;
+@property (nonatomic, readonly) TSQuotedMessage *quotedMessage;
 
 @end
 

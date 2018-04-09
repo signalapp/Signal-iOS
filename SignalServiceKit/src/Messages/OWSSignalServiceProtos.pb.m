@@ -2922,7 +2922,7 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
 @property UInt32 expireTimer;
 @property (strong) NSData* profileKey;
 @property UInt64 timestamp;
-@property (strong) OWSSignalServiceProtosDataMessageQuote *quote;
+@property (strong) OWSSignalServiceProtosDataMessageQuote* quote;
 @end
 
 @implementation OWSSignalServiceProtosDataMessage
@@ -2971,13 +2971,11 @@ static OWSSignalServiceProtosCallMessageHangup* defaultOWSSignalServiceProtosCal
   hasTimestamp_ = !!_value_;
 }
 @synthesize timestamp;
-- (BOOL)hasQuote
-{
-    return !!hasQuote_;
+- (BOOL) hasQuote {
+  return !!hasQuote_;
 }
-- (void)setHasQuote:(BOOL)_value_
-{
-    hasQuote_ = !!_value_;
+- (void) setHasQuote:(BOOL) _value_ {
+  hasQuote_ = !!_value_;
 }
 @synthesize quote;
 - (instancetype) init {
@@ -3036,7 +3034,7 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     [output writeUInt64:7 value:self.timestamp];
   }
   if (self.hasQuote) {
-      [output writeMessage:8 value:self.quote];
+    [output writeMessage:8 value:self.quote];
   }
   [self.unknownFields writeToCodedOutputStream:output];
 }
@@ -3069,7 +3067,7 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     size_ += computeUInt64Size(7, self.timestamp);
   }
   if (self.hasQuote) {
-      size_ += computeMessageSize(8, self.quote);
+    size_ += computeMessageSize(8, self.quote);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -3134,9 +3132,10 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     [output appendFormat:@"%@%@: %@\n", indent, @"timestamp", [NSNumber numberWithLongLong:self.timestamp]];
   }
   if (self.hasQuote) {
-      [output appendFormat:@"%@%@ {\n", indent, @"quote"];
-      [self.quote writeDescriptionTo:output withIndent:[NSString stringWithFormat:@"%@  ", indent]];
-      [output appendFormat:@"%@}\n", indent];
+    [output appendFormat:@"%@%@ {\n", indent, @"quote"];
+    [self.quote writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
   }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
@@ -3167,9 +3166,9 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     [dictionary setObject: [NSNumber numberWithLongLong:self.timestamp] forKey: @"timestamp"];
   }
   if (self.hasQuote) {
-      NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary];
-      [self.quote storeInDictionary:messageDictionary];
-      [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"quote"];
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.quote storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"quote"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -3181,18 +3180,23 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     return NO;
   }
   OWSSignalServiceProtosDataMessage *otherMessage = other;
-  return self.hasBody == otherMessage.hasBody && (!self.hasBody || [self.body isEqual:otherMessage.body]) &&
-      [self.attachmentsArray isEqualToArray:otherMessage.attachmentsArray] && self.hasGroup == otherMessage.hasGroup
-      && (!self.hasGroup || [self.group isEqual:otherMessage.group]) && self.hasFlags == otherMessage.hasFlags
-      && (!self.hasFlags || self.flags == otherMessage.flags) && self.hasExpireTimer == otherMessage.hasExpireTimer
-      && (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer)
-      && self.hasProfileKey == otherMessage.hasProfileKey
-      && (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey])
-      && self.hasTimestamp == otherMessage.hasTimestamp
-      && (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) && self.hasQuote == otherMessage.hasQuote
-      && (!self.hasQuote || [self.quote isEqual:otherMessage.quote])
-      && (self.unknownFields == otherMessage.unknownFields
-             || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+  return
+      self.hasBody == otherMessage.hasBody &&
+      (!self.hasBody || [self.body isEqual:otherMessage.body]) &&
+      [self.attachmentsArray isEqualToArray:otherMessage.attachmentsArray] &&
+      self.hasGroup == otherMessage.hasGroup &&
+      (!self.hasGroup || [self.group isEqual:otherMessage.group]) &&
+      self.hasFlags == otherMessage.hasFlags &&
+      (!self.hasFlags || self.flags == otherMessage.flags) &&
+      self.hasExpireTimer == otherMessage.hasExpireTimer &&
+      (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
+      self.hasProfileKey == otherMessage.hasProfileKey &&
+      (!self.hasProfileKey || [self.profileKey isEqual:otherMessage.profileKey]) &&
+      self.hasTimestamp == otherMessage.hasTimestamp &&
+      (!self.hasTimestamp || self.timestamp == otherMessage.timestamp) &&
+      self.hasQuote == otherMessage.hasQuote &&
+      (!self.hasQuote || [self.quote isEqual:otherMessage.quote]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
@@ -3218,7 +3222,7 @@ static OWSSignalServiceProtosDataMessage* defaultOWSSignalServiceProtosDataMessa
     hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.timestamp] hash];
   }
   if (self.hasQuote) {
-      hashCode = hashCode * 31 + [self.quote hash];
+    hashCode = hashCode * 31 + [self.quote hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -3250,444 +3254,763 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageFlags(OWSSignalServicePro
 
 @interface OWSSignalServiceProtosDataMessageQuote ()
 @property UInt64 id;
-@property (strong) NSString *author;
-@property (strong) NSString *text;
-@property (strong) NSMutableArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentsArray;
+@property (strong) NSString* author;
+@property (strong) NSString* text;
+@property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> * attachmentsArray;
 @end
 
 @implementation OWSSignalServiceProtosDataMessageQuote
 
-- (BOOL)hasId
-{
-    return !!hasId_;
+- (BOOL) hasId {
+  return !!hasId_;
 }
-- (void)setHasId:(BOOL)_value_
-{
-    hasId_ = !!_value_;
+- (void) setHasId:(BOOL) _value_ {
+  hasId_ = !!_value_;
 }
 @synthesize id;
-- (BOOL)hasAuthor
-{
-    return !!hasAuthor_;
+- (BOOL) hasAuthor {
+  return !!hasAuthor_;
 }
-- (void)setHasAuthor:(BOOL)_value_
-{
-    hasAuthor_ = !!_value_;
+- (void) setHasAuthor:(BOOL) _value_ {
+  hasAuthor_ = !!_value_;
 }
 @synthesize author;
-- (BOOL)hasText
-{
-    return !!hasText_;
+- (BOOL) hasText {
+  return !!hasText_;
 }
-- (void)setHasText:(BOOL)_value_
-{
-    hasText_ = !!_value_;
+- (void) setHasText:(BOOL) _value_ {
+  hasText_ = !!_value_;
 }
 @synthesize text;
 @synthesize attachmentsArray;
 @dynamic attachments;
-- (instancetype)init
-{
-    if ((self = [super init])) {
-        self.id = 0L;
-        self.author = @"";
-        self.text = @"";
-    }
-    return self;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.id = 0L;
+    self.author = @"";
+    self.text = @"";
+  }
+  return self;
 }
-static OWSSignalServiceProtosDataMessageQuote *defaultOWSSignalServiceProtosDataMessageQuoteInstance = nil;
-+ (void)initialize
-{
-    if (self == [OWSSignalServiceProtosDataMessageQuote class]) {
-        defaultOWSSignalServiceProtosDataMessageQuoteInstance = [[OWSSignalServiceProtosDataMessageQuote alloc] init];
-    }
+static OWSSignalServiceProtosDataMessageQuote* defaultOWSSignalServiceProtosDataMessageQuoteInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosDataMessageQuote class]) {
+    defaultOWSSignalServiceProtosDataMessageQuoteInstance = [[OWSSignalServiceProtosDataMessageQuote alloc] init];
+  }
 }
-+ (instancetype)defaultInstance
-{
-    return defaultOWSSignalServiceProtosDataMessageQuoteInstance;
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageQuoteInstance;
 }
-- (instancetype)defaultInstance
-{
-    return defaultOWSSignalServiceProtosDataMessageQuoteInstance;
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageQuoteInstance;
 }
-- (NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachments
-{
-    return attachmentsArray;
+- (NSArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> *)attachments {
+  return attachmentsArray;
 }
-- (OWSSignalServiceProtosAttachmentPointer *)attachmentsAtIndex:(NSUInteger)index
-{
-    return [attachmentsArray objectAtIndex:index];
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)attachmentsAtIndex:(NSUInteger)index {
+  return [attachmentsArray objectAtIndex:index];
 }
-- (BOOL)isInitialized
-{
-    return YES;
+- (BOOL) isInitialized {
+  return YES;
 }
-- (void)writeToCodedOutputStream:(PBCodedOutputStream *)output
-{
-    if (self.hasId) {
-        [output writeUInt64:1 value:self.id];
-    }
-    if (self.hasAuthor) {
-        [output writeString:2 value:self.author];
-    }
-    if (self.hasText) {
-        [output writeString:3 value:self.text];
-    }
-    [self.attachmentsArray
-        enumerateObjectsUsingBlock:^(OWSSignalServiceProtosAttachmentPointer *element, NSUInteger idx, BOOL *stop) {
-            [output writeMessage:4 value:element];
-        }];
-    [self.unknownFields writeToCodedOutputStream:output];
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasId) {
+    [output writeUInt64:1 value:self.id];
+  }
+  if (self.hasAuthor) {
+    [output writeString:2 value:self.author];
+  }
+  if (self.hasText) {
+    [output writeString:3 value:self.text];
+  }
+  [self.attachmentsArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *element, NSUInteger idx, BOOL *stop) {
+    [output writeMessage:4 value:element];
+  }];
+  [self.unknownFields writeToCodedOutputStream:output];
 }
-- (SInt32)serializedSize
-{
-    __block SInt32 size_ = memoizedSerializedSize;
-    if (size_ != -1) {
-        return size_;
-    }
-
-    size_ = 0;
-    if (self.hasId) {
-        size_ += computeUInt64Size(1, self.id);
-    }
-    if (self.hasAuthor) {
-        size_ += computeStringSize(2, self.author);
-    }
-    if (self.hasText) {
-        size_ += computeStringSize(3, self.text);
-    }
-    [self.attachmentsArray
-        enumerateObjectsUsingBlock:^(OWSSignalServiceProtosAttachmentPointer *element, NSUInteger idx, BOOL *stop) {
-            size_ += computeMessageSize(4, element);
-        }];
-    size_ += self.unknownFields.serializedSize;
-    memoizedSerializedSize = size_;
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
     return size_;
+  }
+
+  size_ = 0;
+  if (self.hasId) {
+    size_ += computeUInt64Size(1, self.id);
+  }
+  if (self.hasAuthor) {
+    size_ += computeStringSize(2, self.author);
+  }
+  if (self.hasText) {
+    size_ += computeStringSize(3, self.text);
+  }
+  [self.attachmentsArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *element, NSUInteger idx, BOOL *stop) {
+    size_ += computeMessageSize(4, element);
+  }];
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromData:(NSData *)data
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromData:data] build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromData:data] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromData:(NSData *)data
-                                        extensionRegistry:(PBExtensionRegistry *)extensionRegistry
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromData:data extensionRegistry:extensionRegistry]
-        build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromInputStream:(NSInputStream *)input
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromInputStream:input] build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromInputStream:input] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromInputStream:(NSInputStream *)input
-                                               extensionRegistry:(PBExtensionRegistry *)extensionRegistry
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromInputStream:input
-                                                             extensionRegistry:extensionRegistry] build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromCodedInputStream:(PBCodedInputStream *)input
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromCodedInputStream:input] build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromCodedInputStream:input] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuote *)parseFromCodedInputStream:(PBCodedInputStream *)input
-                                                    extensionRegistry:(PBExtensionRegistry *)extensionRegistry
-{
-    return (OWSSignalServiceProtosDataMessageQuote *)[
-        [[OWSSignalServiceProtosDataMessageQuote builder] mergeFromCodedInputStream:input
-                                                                  extensionRegistry:extensionRegistry] build];
++ (OWSSignalServiceProtosDataMessageQuote*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuote*)[[[OWSSignalServiceProtosDataMessageQuote builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
 }
-+ (OWSSignalServiceProtosDataMessageQuoteBuilder *)builder
-{
-    return [[OWSSignalServiceProtosDataMessageQuoteBuilder alloc] init];
++ (OWSSignalServiceProtosDataMessageQuoteBuilder*) builder {
+  return [[OWSSignalServiceProtosDataMessageQuoteBuilder alloc] init];
 }
-+ (OWSSignalServiceProtosDataMessageQuoteBuilder *)builderWithPrototype:
-    (OWSSignalServiceProtosDataMessageQuote *)prototype
-{
-    return [[OWSSignalServiceProtosDataMessageQuote builder] mergeFrom:prototype];
++ (OWSSignalServiceProtosDataMessageQuoteBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageQuote*) prototype {
+  return [[OWSSignalServiceProtosDataMessageQuote builder] mergeFrom:prototype];
 }
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)builder
-{
-    return [OWSSignalServiceProtosDataMessageQuote builder];
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) builder {
+  return [OWSSignalServiceProtosDataMessageQuote builder];
 }
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)toBuilder
-{
-    return [OWSSignalServiceProtosDataMessageQuote builderWithPrototype:self];
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) toBuilder {
+  return [OWSSignalServiceProtosDataMessageQuote builderWithPrototype:self];
 }
-- (void)writeDescriptionTo:(NSMutableString *)output withIndent:(NSString *)indent
-{
-    if (self.hasId) {
-        [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
-    }
-    if (self.hasAuthor) {
-        [output appendFormat:@"%@%@: %@\n", indent, @"author", self.author];
-    }
-    if (self.hasText) {
-        [output appendFormat:@"%@%@: %@\n", indent, @"text", self.text];
-    }
-    [self.attachmentsArray
-        enumerateObjectsUsingBlock:^(OWSSignalServiceProtosAttachmentPointer *element, NSUInteger idx, BOOL *stop) {
-            [output appendFormat:@"%@%@ {\n", indent, @"attachments"];
-            [element writeDescriptionTo:output withIndent:[NSString stringWithFormat:@"%@  ", indent]];
-            [output appendFormat:@"%@}\n", indent];
-        }];
-    [self.unknownFields writeDescriptionTo:output withIndent:indent];
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  }
+  if (self.hasAuthor) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"author", self.author];
+  }
+  if (self.hasText) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"text", self.text];
+  }
+  [self.attachmentsArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *element, NSUInteger idx, BOOL *stop) {
+    [output appendFormat:@"%@%@ {\n", indent, @"attachments"];
+    [element writeDescriptionTo:output
+                     withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }];
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
-- (void)storeInDictionary:(NSMutableDictionary *)dictionary
-{
-    if (self.hasId) {
-        [dictionary setObject:[NSNumber numberWithLongLong:self.id] forKey:@"id"];
-    }
-    if (self.hasAuthor) {
-        [dictionary setObject:self.author forKey:@"author"];
-    }
-    if (self.hasText) {
-        [dictionary setObject:self.text forKey:@"text"];
-    }
-    for (OWSSignalServiceProtosAttachmentPointer *element in self.attachmentsArray) {
-        NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
-        [element storeInDictionary:elementDictionary];
-        [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"attachments"];
-    }
-    [self.unknownFields storeInDictionary:dictionary];
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  }
+  if (self.hasAuthor) {
+    [dictionary setObject: self.author forKey: @"author"];
+  }
+  if (self.hasText) {
+    [dictionary setObject: self.text forKey: @"text"];
+  }
+  for (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* element in self.attachmentsArray) {
+    NSMutableDictionary *elementDictionary = [NSMutableDictionary dictionary];
+    [element storeInDictionary:elementDictionary];
+    [dictionary setObject:[NSDictionary dictionaryWithDictionary:elementDictionary] forKey:@"attachments"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
 }
-- (BOOL)isEqual:(id)other
-{
-    if (other == self) {
-        return YES;
-    }
-    if (![other isKindOfClass:[OWSSignalServiceProtosDataMessageQuote class]]) {
-        return NO;
-    }
-    OWSSignalServiceProtosDataMessageQuote *otherMessage = other;
-    return self.hasId == otherMessage.hasId && (!self.hasId || self.id == otherMessage.id)
-        && self.hasAuthor == otherMessage.hasAuthor && (!self.hasAuthor || [self.author isEqual:otherMessage.author])
-        && self.hasText == otherMessage.hasText && (!self.hasText || [self.text isEqual:otherMessage.text]) &&
-        [self.attachmentsArray isEqualToArray:otherMessage.attachmentsArray]
-        && (self.unknownFields == otherMessage.unknownFields
-               || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosDataMessageQuote class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosDataMessageQuote *otherMessage = other;
+  return
+      self.hasId == otherMessage.hasId &&
+      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasAuthor == otherMessage.hasAuthor &&
+      (!self.hasAuthor || [self.author isEqual:otherMessage.author]) &&
+      self.hasText == otherMessage.hasText &&
+      (!self.hasText || [self.text isEqual:otherMessage.text]) &&
+      [self.attachmentsArray isEqualToArray:otherMessage.attachmentsArray] &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
-- (NSUInteger)hash
-{
-    __block NSUInteger hashCode = 7;
-    if (self.hasId) {
-        hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
-    }
-    if (self.hasAuthor) {
-        hashCode = hashCode * 31 + [self.author hash];
-    }
-    if (self.hasText) {
-        hashCode = hashCode * 31 + [self.text hash];
-    }
-    [self.attachmentsArray
-        enumerateObjectsUsingBlock:^(OWSSignalServiceProtosAttachmentPointer *element, NSUInteger idx, BOOL *stop) {
-            hashCode = hashCode * 31 + [element hash];
-        }];
-    hashCode = hashCode * 31 + [self.unknownFields hash];
-    return hashCode;
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  }
+  if (self.hasAuthor) {
+    hashCode = hashCode * 31 + [self.author hash];
+  }
+  if (self.hasText) {
+    hashCode = hashCode * 31 + [self.text hash];
+  }
+  [self.attachmentsArray enumerateObjectsUsingBlock:^(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *element, NSUInteger idx, BOOL *stop) {
+    hashCode = hashCode * 31 + [element hash];
+  }];
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
 }
 @end
 
-@interface OWSSignalServiceProtosDataMessageQuoteBuilder ()
-@property (strong) OWSSignalServiceProtosDataMessageQuote *resultQuote;
+@interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachment ()
+@property (strong) NSString* contentType;
+@property (strong) NSString* fileName;
+@property UInt32 flags;
+@property (strong) OWSSignalServiceProtosAttachmentPointer* thumbnail;
+@end
+
+@implementation OWSSignalServiceProtosDataMessageQuoteQuotedAttachment
+
+- (BOOL) hasContentType {
+  return !!hasContentType_;
+}
+- (void) setHasContentType:(BOOL) _value_ {
+  hasContentType_ = !!_value_;
+}
+@synthesize contentType;
+- (BOOL) hasFileName {
+  return !!hasFileName_;
+}
+- (void) setHasFileName:(BOOL) _value_ {
+  hasFileName_ = !!_value_;
+}
+@synthesize fileName;
+- (BOOL) hasFlags {
+  return !!hasFlags_;
+}
+- (void) setHasFlags:(BOOL) _value_ {
+  hasFlags_ = !!_value_;
+}
+@synthesize flags;
+- (BOOL) hasThumbnail {
+  return !!hasThumbnail_;
+}
+- (void) setHasThumbnail:(BOOL) _value_ {
+  hasThumbnail_ = !!_value_;
+}
+@synthesize thumbnail;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.contentType = @"";
+    self.fileName = @"";
+    self.flags = 0;
+    self.thumbnail = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+  }
+  return self;
+}
+static OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* defaultOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment class]) {
+    defaultOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentInstance = [[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasContentType) {
+    [output writeString:1 value:self.contentType];
+  }
+  if (self.hasFileName) {
+    [output writeString:2 value:self.fileName];
+  }
+  if (self.hasFlags) {
+    [output writeUInt32:3 value:self.flags];
+  }
+  if (self.hasThumbnail) {
+    [output writeMessage:4 value:self.thumbnail];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasContentType) {
+    size_ += computeStringSize(1, self.contentType);
+  }
+  if (self.hasFileName) {
+    size_ += computeStringSize(2, self.fileName);
+  }
+  if (self.hasFlags) {
+    size_ += computeUInt32Size(3, self.flags);
+  }
+  if (self.hasThumbnail) {
+    size_ += computeMessageSize(4, self.thumbnail);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)[[[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builder {
+  return [[OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder alloc] init];
+}
++ (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) prototype {
+  return [[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) builder {
+  return [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) toBuilder {
+  return [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasContentType) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"contentType", self.contentType];
+  }
+  if (self.hasFileName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"fileName", self.fileName];
+  }
+  if (self.hasFlags) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"flags", [NSNumber numberWithInteger:self.flags]];
+  }
+  if (self.hasThumbnail) {
+    [output appendFormat:@"%@%@ {\n", indent, @"thumbnail"];
+    [self.thumbnail writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasContentType) {
+    [dictionary setObject: self.contentType forKey: @"contentType"];
+  }
+  if (self.hasFileName) {
+    [dictionary setObject: self.fileName forKey: @"fileName"];
+  }
+  if (self.hasFlags) {
+    [dictionary setObject: [NSNumber numberWithInteger:self.flags] forKey: @"flags"];
+  }
+  if (self.hasThumbnail) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.thumbnail storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"thumbnail"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *otherMessage = other;
+  return
+      self.hasContentType == otherMessage.hasContentType &&
+      (!self.hasContentType || [self.contentType isEqual:otherMessage.contentType]) &&
+      self.hasFileName == otherMessage.hasFileName &&
+      (!self.hasFileName || [self.fileName isEqual:otherMessage.fileName]) &&
+      self.hasFlags == otherMessage.hasFlags &&
+      (!self.hasFlags || self.flags == otherMessage.flags) &&
+      self.hasThumbnail == otherMessage.hasThumbnail &&
+      (!self.hasThumbnail || [self.thumbnail isEqual:otherMessage.thumbnail]) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasContentType) {
+    hashCode = hashCode * 31 + [self.contentType hash];
+  }
+  if (self.hasFileName) {
+    hashCode = hashCode * 31 + [self.fileName hash];
+  }
+  if (self.hasFlags) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.flags] hash];
+  }
+  if (self.hasThumbnail) {
+    hashCode = hashCode * 31 + [self.thumbnail hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+BOOL OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsIsValidValue(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value) {
+  switch (value) {
+    case OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage:
+      return YES;
+    default:
+      return NO;
+  }
+}
+NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value) {
+  switch (value) {
+    case OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage:
+      return @"OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsVoiceMessage";
+    default:
+      return nil;
+  }
+}
+
+@interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder()
+@property (strong) OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* resultQuotedAttachment;
+@end
+
+@implementation OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder
+@synthesize resultQuotedAttachment;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultQuotedAttachment = [[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultQuotedAttachment;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clear {
+  self.resultQuotedAttachment = [[OWSSignalServiceProtosDataMessageQuoteQuotedAttachment alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clone {
+  return [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builderWithPrototype:resultQuotedAttachment];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) defaultInstance {
+  return [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment defaultInstance];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) buildPartial {
+  OWSSignalServiceProtosDataMessageQuoteQuotedAttachment* returnMe = resultQuotedAttachment;
+  self.resultQuotedAttachment = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*) other {
+  if (other == [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment defaultInstance]) {
+    return self;
+  }
+  if (other.hasContentType) {
+    [self setContentType:other.contentType];
+  }
+  if (other.hasFileName) {
+    [self setFileName:other.fileName];
+  }
+  if (other.hasFlags) {
+    [self setFlags:other.flags];
+  }
+  if (other.hasThumbnail) {
+    [self mergeThumbnail:other.thumbnail];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        [self setContentType:[input readString]];
+        break;
+      }
+      case 18: {
+        [self setFileName:[input readString]];
+        break;
+      }
+      case 24: {
+        [self setFlags:[input readUInt32]];
+        break;
+      }
+      case 34: {
+        OWSSignalServiceProtosAttachmentPointerBuilder* subBuilder = [OWSSignalServiceProtosAttachmentPointer builder];
+        if (self.hasThumbnail) {
+          [subBuilder mergeFrom:self.thumbnail];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setThumbnail:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasContentType {
+  return resultQuotedAttachment.hasContentType;
+}
+- (NSString*) contentType {
+  return resultQuotedAttachment.contentType;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setContentType:(NSString*) value {
+  resultQuotedAttachment.hasContentType = YES;
+  resultQuotedAttachment.contentType = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearContentType {
+  resultQuotedAttachment.hasContentType = NO;
+  resultQuotedAttachment.contentType = @"";
+  return self;
+}
+- (BOOL) hasFileName {
+  return resultQuotedAttachment.hasFileName;
+}
+- (NSString*) fileName {
+  return resultQuotedAttachment.fileName;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFileName:(NSString*) value {
+  resultQuotedAttachment.hasFileName = YES;
+  resultQuotedAttachment.fileName = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFileName {
+  resultQuotedAttachment.hasFileName = NO;
+  resultQuotedAttachment.fileName = @"";
+  return self;
+}
+- (BOOL) hasFlags {
+  return resultQuotedAttachment.hasFlags;
+}
+- (UInt32) flags {
+  return resultQuotedAttachment.flags;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFlags:(UInt32) value {
+  resultQuotedAttachment.hasFlags = YES;
+  resultQuotedAttachment.flags = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFlags {
+  resultQuotedAttachment.hasFlags = NO;
+  resultQuotedAttachment.flags = 0;
+  return self;
+}
+- (BOOL) hasThumbnail {
+  return resultQuotedAttachment.hasThumbnail;
+}
+- (OWSSignalServiceProtosAttachmentPointer*) thumbnail {
+  return resultQuotedAttachment.thumbnail;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value {
+  resultQuotedAttachment.hasThumbnail = YES;
+  resultQuotedAttachment.thumbnail = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnailBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue {
+  return [self setThumbnail:[builderForValue build]];
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value {
+  if (resultQuotedAttachment.hasThumbnail &&
+      resultQuotedAttachment.thumbnail != [OWSSignalServiceProtosAttachmentPointer defaultInstance]) {
+    resultQuotedAttachment.thumbnail =
+      [[[OWSSignalServiceProtosAttachmentPointer builderWithPrototype:resultQuotedAttachment.thumbnail] mergeFrom:value] buildPartial];
+  } else {
+    resultQuotedAttachment.thumbnail = value;
+  }
+  resultQuotedAttachment.hasThumbnail = YES;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearThumbnail {
+  resultQuotedAttachment.hasThumbnail = NO;
+  resultQuotedAttachment.thumbnail = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+  return self;
+}
+@end
+
+@interface OWSSignalServiceProtosDataMessageQuoteBuilder()
+@property (strong) OWSSignalServiceProtosDataMessageQuote* resultQuote;
 @end
 
 @implementation OWSSignalServiceProtosDataMessageQuoteBuilder
 @synthesize resultQuote;
-- (instancetype)init
-{
-    if ((self = [super init])) {
-        self.resultQuote = [[OWSSignalServiceProtosDataMessageQuote alloc] init];
-    }
-    return self;
-}
-- (PBGeneratedMessage *)internalGetResult
-{
-    return resultQuote;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clear
-{
+- (instancetype) init {
+  if ((self = [super init])) {
     self.resultQuote = [[OWSSignalServiceProtosDataMessageQuote alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultQuote;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clear {
+  self.resultQuote = [[OWSSignalServiceProtosDataMessageQuote alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clone {
+  return [OWSSignalServiceProtosDataMessageQuote builderWithPrototype:resultQuote];
+}
+- (OWSSignalServiceProtosDataMessageQuote*) defaultInstance {
+  return [OWSSignalServiceProtosDataMessageQuote defaultInstance];
+}
+- (OWSSignalServiceProtosDataMessageQuote*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosDataMessageQuote*) buildPartial {
+  OWSSignalServiceProtosDataMessageQuote* returnMe = resultQuote;
+  self.resultQuote = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageQuote*) other {
+  if (other == [OWSSignalServiceProtosDataMessageQuote defaultInstance]) {
     return self;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clone
-{
-    return [OWSSignalServiceProtosDataMessageQuote builderWithPrototype:resultQuote];
-}
-- (OWSSignalServiceProtosDataMessageQuote *)defaultInstance
-{
-    return [OWSSignalServiceProtosDataMessageQuote defaultInstance];
-}
-- (OWSSignalServiceProtosDataMessageQuote *)build
-{
-    [self checkInitialized];
-    return [self buildPartial];
-}
-- (OWSSignalServiceProtosDataMessageQuote *)buildPartial
-{
-    OWSSignalServiceProtosDataMessageQuote *returnMe = resultQuote;
-    self.resultQuote = nil;
-    return returnMe;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFrom:(OWSSignalServiceProtosDataMessageQuote *)other
-{
-    if (other == [OWSSignalServiceProtosDataMessageQuote defaultInstance]) {
-        return self;
-    }
-    if (other.hasId) {
-        [self setId:other.id];
-    }
-    if (other.hasAuthor) {
-        [self setAuthor:other.author];
-    }
-    if (other.hasText) {
-        [self setText:other.text];
-    }
-    if (other.attachmentsArray.count > 0) {
-        if (resultQuote.attachmentsArray == nil) {
-            resultQuote.attachmentsArray = [[NSMutableArray alloc] initWithArray:other.attachmentsArray];
-        } else {
-            [resultQuote.attachmentsArray addObjectsFromArray:other.attachmentsArray];
-        }
-    }
-    [self mergeUnknownFields:other.unknownFields];
-    return self;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFromCodedInputStream:(PBCodedInputStream *)input
-{
-    return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)mergeFromCodedInputStream:(PBCodedInputStream *)input
-                                                           extensionRegistry:(PBExtensionRegistry *)extensionRegistry
-{
-    PBUnknownFieldSetBuilder *unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
-    while (YES) {
-        SInt32 tag = [input readTag];
-        switch (tag) {
-            case 0:
-                [self setUnknownFields:[unknownFields build]];
-                return self;
-            default: {
-                if (![self parseUnknownField:input
-                               unknownFields:unknownFields
-                           extensionRegistry:extensionRegistry
-                                         tag:tag]) {
-                    [self setUnknownFields:[unknownFields build]];
-                    return self;
-                }
-                break;
-            }
-            case 8: {
-                [self setId:[input readUInt64]];
-                break;
-            }
-            case 18: {
-                [self setAuthor:[input readString]];
-                break;
-            }
-            case 26: {
-                [self setText:[input readString]];
-                break;
-            }
-            case 34: {
-                OWSSignalServiceProtosAttachmentPointerBuilder *subBuilder =
-                    [OWSSignalServiceProtosAttachmentPointer builder];
-                [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-                [self addAttachments:[subBuilder buildPartial]];
-                break;
-            }
-        }
-    }
-}
-- (BOOL)hasId
-{
-    return resultQuote.hasId;
-}
-- (UInt64)id
-{
-    return resultQuote.id;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setId:(UInt64)value
-{
-    resultQuote.hasId = YES;
-    resultQuote.id = value;
-    return self;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearId
-{
-    resultQuote.hasId = NO;
-    resultQuote.id = 0L;
-    return self;
-}
-- (BOOL)hasAuthor
-{
-    return resultQuote.hasAuthor;
-}
-- (NSString *)author
-{
-    return resultQuote.author;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAuthor:(NSString *)value
-{
-    resultQuote.hasAuthor = YES;
-    resultQuote.author = value;
-    return self;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAuthor
-{
-    resultQuote.hasAuthor = NO;
-    resultQuote.author = @"";
-    return self;
-}
-- (BOOL)hasText
-{
-    return resultQuote.hasText;
-}
-- (NSString *)text
-{
-    return resultQuote.text;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setText:(NSString *)value
-{
-    resultQuote.hasText = YES;
-    resultQuote.text = value;
-    return self;
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearText
-{
-    resultQuote.hasText = NO;
-    resultQuote.text = @"";
-    return self;
-}
-- (NSMutableArray<OWSSignalServiceProtosAttachmentPointer *> *)attachments
-{
-    return resultQuote.attachmentsArray;
-}
-- (OWSSignalServiceProtosAttachmentPointer *)attachmentsAtIndex:(NSUInteger)index
-{
-    return [resultQuote attachmentsAtIndex:index];
-}
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)addAttachments:(OWSSignalServiceProtosAttachmentPointer *)value
-{
+  }
+  if (other.hasId) {
+    [self setId:other.id];
+  }
+  if (other.hasAuthor) {
+    [self setAuthor:other.author];
+  }
+  if (other.hasText) {
+    [self setText:other.text];
+  }
+  if (other.attachmentsArray.count > 0) {
     if (resultQuote.attachmentsArray == nil) {
-        resultQuote.attachmentsArray = [[NSMutableArray alloc] init];
+      resultQuote.attachmentsArray = [[NSMutableArray alloc] initWithArray:other.attachmentsArray];
+    } else {
+      [resultQuote.attachmentsArray addObjectsFromArray:other.attachmentsArray];
     }
-    [resultQuote.attachmentsArray addObject:value];
-    return self;
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
 }
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAttachmentsArray:
-    (NSArray<OWSSignalServiceProtosAttachmentPointer *> *)array
-{
-    resultQuote.attachmentsArray = [[NSMutableArray alloc] initWithArray:array];
-    return self;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
 }
-- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAttachments
-{
-    resultQuote.attachmentsArray = nil;
-    return self;
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 8: {
+        [self setId:[input readUInt64]];
+        break;
+      }
+      case 18: {
+        [self setAuthor:[input readString]];
+        break;
+      }
+      case 26: {
+        [self setText:[input readString]];
+        break;
+      }
+      case 34: {
+        OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder* subBuilder = [OWSSignalServiceProtosDataMessageQuoteQuotedAttachment builder];
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self addAttachments:[subBuilder buildPartial]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasId {
+  return resultQuote.hasId;
+}
+- (UInt64) id {
+  return resultQuote.id;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setId:(UInt64) value {
+  resultQuote.hasId = YES;
+  resultQuote.id = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearId {
+  resultQuote.hasId = NO;
+  resultQuote.id = 0L;
+  return self;
+}
+- (BOOL) hasAuthor {
+  return resultQuote.hasAuthor;
+}
+- (NSString*) author {
+  return resultQuote.author;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setAuthor:(NSString*) value {
+  resultQuote.hasAuthor = YES;
+  resultQuote.author = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearAuthor {
+  resultQuote.hasAuthor = NO;
+  resultQuote.author = @"";
+  return self;
+}
+- (BOOL) hasText {
+  return resultQuote.hasText;
+}
+- (NSString*) text {
+  return resultQuote.text;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) setText:(NSString*) value {
+  resultQuote.hasText = YES;
+  resultQuote.text = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder*) clearText {
+  resultQuote.hasText = NO;
+  resultQuote.text = @"";
+  return self;
+}
+- (NSMutableArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> *)attachments {
+  return resultQuote.attachmentsArray;
+}
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)attachmentsAtIndex:(NSUInteger)index {
+  return [resultQuote attachmentsAtIndex:index];
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder *)addAttachments:(OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*)value {
+  if (resultQuote.attachmentsArray == nil) {
+    resultQuote.attachmentsArray = [[NSMutableArray alloc]init];
+  }
+  [resultQuote.attachmentsArray addObject:value];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder *)setAttachmentsArray:(NSArray<OWSSignalServiceProtosDataMessageQuoteQuotedAttachment*> *)array {
+  resultQuote.attachmentsArray = [[NSMutableArray alloc]initWithArray:array];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAttachments {
+  resultQuote.attachmentsArray = nil;
+  return self;
 }
 @end
 
@@ -3755,7 +4078,7 @@ static OWSSignalServiceProtosDataMessageQuote *defaultOWSSignalServiceProtosData
     [self setTimestamp:other.timestamp];
   }
   if (other.hasQuote) {
-      [self mergeQuote:other.quote];
+    [self mergeQuote:other.quote];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -3814,13 +4137,13 @@ static OWSSignalServiceProtosDataMessageQuote *defaultOWSSignalServiceProtosData
         break;
       }
       case 66: {
-          OWSSignalServiceProtosDataMessageQuoteBuilder *subBuilder = [OWSSignalServiceProtosDataMessageQuote builder];
-          if (self.hasQuote) {
-              [subBuilder mergeFrom:self.quote];
-          }
-          [input readMessage:subBuilder extensionRegistry:extensionRegistry];
-          [self setQuote:[subBuilder buildPartial]];
-          break;
+        OWSSignalServiceProtosDataMessageQuoteBuilder* subBuilder = [OWSSignalServiceProtosDataMessageQuote builder];
+        if (self.hasQuote) {
+          [subBuilder mergeFrom:self.quote];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setQuote:[subBuilder buildPartial]];
+        break;
       }
     }
   }
@@ -3956,43 +4279,35 @@ static OWSSignalServiceProtosDataMessageQuote *defaultOWSSignalServiceProtosData
   resultDataMessage.timestamp = 0L;
   return self;
 }
-- (BOOL)hasQuote
-{
-    return resultDataMessage.hasQuote;
+- (BOOL) hasQuote {
+  return resultDataMessage.hasQuote;
 }
-- (OWSSignalServiceProtosDataMessageQuote *)quote
-{
-    return resultDataMessage.quote;
+- (OWSSignalServiceProtosDataMessageQuote*) quote {
+  return resultDataMessage.quote;
 }
-- (OWSSignalServiceProtosDataMessageBuilder *)setQuote:(OWSSignalServiceProtosDataMessageQuote *)value
-{
-    resultDataMessage.hasQuote = YES;
+- (OWSSignalServiceProtosDataMessageBuilder*) setQuote:(OWSSignalServiceProtosDataMessageQuote*) value {
+  resultDataMessage.hasQuote = YES;
+  resultDataMessage.quote = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) setQuoteBuilder:(OWSSignalServiceProtosDataMessageQuoteBuilder*) builderForValue {
+  return [self setQuote:[builderForValue build]];
+}
+- (OWSSignalServiceProtosDataMessageBuilder*) mergeQuote:(OWSSignalServiceProtosDataMessageQuote*) value {
+  if (resultDataMessage.hasQuote &&
+      resultDataMessage.quote != [OWSSignalServiceProtosDataMessageQuote defaultInstance]) {
+    resultDataMessage.quote =
+      [[[OWSSignalServiceProtosDataMessageQuote builderWithPrototype:resultDataMessage.quote] mergeFrom:value] buildPartial];
+  } else {
     resultDataMessage.quote = value;
-    return self;
+  }
+  resultDataMessage.hasQuote = YES;
+  return self;
 }
-- (OWSSignalServiceProtosDataMessageBuilder *)setQuoteBuilder:
-    (OWSSignalServiceProtosDataMessageQuoteBuilder *)builderForValue
-{
-    return [self setQuote:[builderForValue build]];
-}
-- (OWSSignalServiceProtosDataMessageBuilder *)mergeQuote:(OWSSignalServiceProtosDataMessageQuote *)value
-{
-    if (resultDataMessage.hasQuote
-        && resultDataMessage.quote != [OWSSignalServiceProtosDataMessageQuote defaultInstance]) {
-        resultDataMessage.quote =
-            [[[OWSSignalServiceProtosDataMessageQuote builderWithPrototype:resultDataMessage.quote] mergeFrom:value]
-                buildPartial];
-    } else {
-        resultDataMessage.quote = value;
-    }
-    resultDataMessage.hasQuote = YES;
-    return self;
-}
-- (OWSSignalServiceProtosDataMessageBuilder *)clearQuote
-{
-    resultDataMessage.hasQuote = NO;
-    resultDataMessage.quote = [OWSSignalServiceProtosDataMessageQuote defaultInstance];
-    return self;
+- (OWSSignalServiceProtosDataMessageBuilder*) clearQuote {
+  resultDataMessage.hasQuote = NO;
+  resultDataMessage.quote = [OWSSignalServiceProtosDataMessageQuote defaultInstance];
+  return self;
 }
 @end
 
