@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
-            quotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
+    receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos
 {
     OWSAssert(timestamp > 0);
     OWSAssert(authorId.length > 0);
@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
                                              authorId:authorId
                                                  body:body
-                                quotedAttachmentInfos:attachmentInfos];
+                        receivedQuotedAttachmentInfos:attachmentInfos];
 }
 
 + (nullable TSAttachmentStream *)tryToDeriveLocalThumbnailWithAttachmentInfo:(OWSAttachmentInfo *)attachmentInfo

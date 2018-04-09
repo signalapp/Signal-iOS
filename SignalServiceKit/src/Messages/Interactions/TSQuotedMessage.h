@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// used in message manager
+// used when receiving quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
-            quotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
+    receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
-// used by OWSAttachmentInfo#buildQuotedMessage
+// used when sending quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body

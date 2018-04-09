@@ -48,7 +48,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly) BOOL hasBodyText;
 
-// TODO drive these off of the quotedReply?
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;
