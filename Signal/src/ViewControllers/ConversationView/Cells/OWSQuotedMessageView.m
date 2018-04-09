@@ -281,9 +281,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([MIMETypeUtil isVideo:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_VIDEO", @"Indicates this message is a quoted reply to a video file.");
-    } else if ([MIMETypeUtil isImage:contentType] || [MIMETypeUtil isAnimated:contentType]) {
+    } else if ([MIMETypeUtil isImage:contentType]) {
         return NSLocalizedString(
             @"QUOTED_REPLY_TYPE_IMAGE", @"Indicates this message is a quoted reply to an image file.");
+    } else if ([MIMETypeUtil isAnimated:contentType]) {
+        return NSLocalizedString(
+            @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
     }
     return nil;
 }
