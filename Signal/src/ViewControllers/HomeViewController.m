@@ -742,9 +742,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         unreadString = [unreadString stringByAppendingFormat:@" (%@)", [OWSFormat formatInt:(int)numberOfItems]];
     }
 
-    [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
-    [_segmentedControl.superview setNeedsLayout];
-    [_segmentedControl reloadInputViews];
+    [self.segmentedControl setTitle:unreadString forSegmentAtIndex:0];
+    [self.segmentedControl sizeToFit];
+    [self.segmentedControl.superview setNeedsLayout];
+    [self.segmentedControl reloadInputViews];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
