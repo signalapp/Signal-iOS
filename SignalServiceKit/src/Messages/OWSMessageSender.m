@@ -287,6 +287,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        __block NSArray<TSAttachmentStream *> *quotedThumbnailAttachments = @[];
+
         // This method will use a read/write transaction. This transaction
         // will block until any open read/write transactions are complete.
         //
@@ -300,6 +303,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            if (message.quotedMessage) {
+                quotedThumbnailAttachments =
+                    [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+            }
+
             // All outgoing messages should be saved at the time they are enqueued.
             [message saveWithTransaction:transaction];
             [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
@@ -320,33 +328,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [sendingQueue addOperation:uploadAttachmentOperation];
         }
 
+        // Though we currently only ever expect at most one thumbnail, the proto data model
+        // suggests this could change. The logic is intended to work with multiple, but
+        // if we ever actually want to send multiple, we should do more testing.
+        OWSAssert(quotedThumbnailAttachments.count <= 1);
+        for (TSAttachmentStream *thumbnailAttachment in quotedThumbnailAttachments) {
+            OWSAssert(message.quotedMessage);
 
-        if (message.quotedMessage) {
-            // TODO do we want a different thumbnail size for quotes vs the gallery? This seems reasonable,
-            // and has the advantage of already having been generated.
-            __block NSArray<TSAttachmentStream *> *thumbnailAttachments;
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                thumbnailAttachments =
-                    [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
-                if (thumbnailAttachments.count > 0) {
-                    [message touchWithTransaction:transaction];
-                }
-            }];
+            OWSUploadOperation *uploadQuoteThumbnailOperation =
+                [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
+                                                    dbConnection:self.dbConnection];
 
-            // Though we currently only ever expect at most one thumbnail, the proto data model
-            // suggests this could change. The logic is intended to work with multiple, but
-            // if we ever actually want to send multiple, we should do more testing.
-            OWSAssert(thumbnailAttachments.count <= 1);
-
-            for (TSAttachmentStream *thumbnailAttachment in thumbnailAttachments) {
-                OWSUploadOperation *uploadQuoteThumbnailOperation =
-                    [[OWSUploadOperation alloc] initWithAttachmentId:thumbnailAttachment.uniqueId
-                                                        dbConnection:self.dbConnection];
-
-                // TODO put attachment uploads on a (lowly) concurrent queue
-                [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
-                [sendingQueue addOperation:uploadQuoteThumbnailOperation];
-            }
+            // TODO put attachment uploads on a (lowly) concurrent queue
+            [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
+            [sendingQueue addOperation:uploadQuoteThumbnailOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];
