@@ -73,38 +73,47 @@ class QuotedReplyPreview: UIView {
         cancelButton.imageView?.tintColor = foregroundColor
         cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
 
-//        let quoteStripe: UIView = UIView()
-//        quoteStripe.backgroundColor = authorColor
+////        let quoteStripe: UIView = UIView()
+////        quoteStripe.backgroundColor = authorColor
+////
+////        let textColumn = UIView.container()
+////        textColumn.addSubview(authorLabel)
+////        textColumn.addSubview(bodyLabel)
+////
+////        authorLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
+////        authorLabel.autoPinEdge(.bottom, to: .top, of: bodyLabel)
+////        bodyLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
+////
+////        let contentViews: [UIView] = [textColumn, thumbnailView, cancelButton].flatMap { return $0 }
 //
-//        let textColumn = UIView.container()
-//        textColumn.addSubview(authorLabel)
-//        textColumn.addSubview(bodyLabel)
-//
-//        authorLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
-//        authorLabel.autoPinEdge(.bottom, to: .top, of: bodyLabel)
-//        bodyLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
-//
-//        let contentViews: [UIView] = [textColumn, thumbnailView, cancelButton].flatMap { return $0 }
+//        let contentViews: [UIView] = [quotedMessageView, cancelButton]
+//        let contentRow = UIStackView(arrangedSubviews: contentViews)
+//        contentRow.axis = .horizontal
+//        self.addSubview(contentRow)
+////        self.addSubview(quoteStripe)
+////
+////        // Layout
+////
+////        let kQuoteStripeWidth: CGFloat = 4
+////        self.layoutMargins = UIEdgeInsets(top: 6,
+////                                          left: kQuoteStripeWidth + 8,
+////                                          bottom: 2,
+////                                          right: 4)
+////
+////        quoteStripe.autoPinEdge(toSuperviewEdge: .leading)
+////        quoteStripe.autoPinHeightToSuperview()
+////        quoteStripe.autoSetDimension(.width, toSize: kQuoteStripeWidth)
+////
+//        contentRow.autoPinEdgesToSuperviewMargins()
 
-        let contentViews: [UIView] = [quotedMessageView, cancelButton]
-        let contentRow = UIStackView(arrangedSubviews: contentViews)
-        contentRow.axis = .horizontal
-        self.addSubview(contentRow)
-//        self.addSubview(quoteStripe)
-//
-//        // Layout
-//
-//        let kQuoteStripeWidth: CGFloat = 4
-//        self.layoutMargins = UIEdgeInsets(top: 6,
-//                                          left: kQuoteStripeWidth + 8,
-//                                          bottom: 2,
-//                                          right: 4)
-//
-//        quoteStripe.autoPinEdge(toSuperviewEdge: .leading)
-//        quoteStripe.autoPinHeightToSuperview()
-//        quoteStripe.autoSetDimension(.width, toSize: kQuoteStripeWidth)
-//
-        contentRow.autoPinEdgesToSuperviewMargins()
+        self.layoutMargins = .zero
+
+        self.addSubview(quotedMessageView)
+        self.addSubview(cancelButton)
+
+        quotedMessageView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
+        cancelButton.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
+        cancelButton.autoPinEdge(.leading, to: .trailing, of: quotedMessageView)
 
         cancelButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
     }
@@ -113,7 +122,7 @@ class QuotedReplyPreview: UIView {
 
     // Used by stack view to determin size.
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: 0, height: 30)
+        return CGSize(width: 0, height: 50)
     }
 
     // MARK: Actions

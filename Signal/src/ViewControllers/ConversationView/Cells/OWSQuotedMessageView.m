@@ -66,6 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
 
+    [self createContents];
+
     return self;
 }
 
