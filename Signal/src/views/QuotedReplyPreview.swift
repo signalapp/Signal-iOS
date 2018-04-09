@@ -21,6 +21,7 @@ class QuotedReplyPreview: UIView {
         super.init(frame: .zero)
 
         let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply)
+        quotedMessageView.backgroundColor = .clear
 
         let isQuotingSelf = quotedReply.authorId == TSAccountManager.localNumber()
 
@@ -116,6 +117,9 @@ class QuotedReplyPreview: UIView {
         cancelButton.autoPinEdge(.leading, to: .trailing, of: quotedMessageView)
 
         cancelButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+
+        // TODO this is arbitrary and breaks with dynamic type
+        self.autoSetDimension(.height, toSize: 70)
     }
 
     // MARK: UIViewOverrides
