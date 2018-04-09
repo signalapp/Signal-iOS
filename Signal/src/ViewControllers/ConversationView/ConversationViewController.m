@@ -2138,9 +2138,96 @@ typedef enum : NSUInteger {
     OWSAssert(quotedMessage.timestamp > 0);
     OWSAssert(quotedMessage.authorId.length > 0);
 
+    // We try to range of items within the current thread's interactions
+    // that includs the "quoted interaction".
+    // NOTE: Since the range _IS NOT_ filtered by author,
+    // and timestamp collisions are possible, it's possible
+    // for:
+    //
+    // * The range to include more than the "quoted interaction".
+    // * The range to be non-empty but NOT include the "quoted interaction",
+    //   although this would be a bug.
+    NSUInteger threadInteractionCount = 0;
+    NSRange itemRange = [self findRangeOfQuotedMessage:quotedMessage threadInteractionCount:&threadInteractionCount];
+
+    if (itemRange.location == NSNotFound) {
+        OWSFail(@"%@ Couldn't find range of quoted reply.", self.logTag);
+        return;
+    }
+
+    NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - (NSInteger)itemRange.location);
+    NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
+
+    NSInteger dstIndex = 0;
+    if (additionalItemsToLoad > 0) {
+        // Try to load more messages so that the quoted message
+        // is in the load window.
+        //
+        // This may fail if the quoted message is very old, in which
+        // case we'll load the max number of messages.
+        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
+        
+        // Scroll to the first item, which should be the quoted message,
+        // or if we couldn't load it, the oldest loadable message.
+        //
+        // We use `indexPathRowOfQuotedMessage` instead of doing
+        // some index math because:
+        //
+        // * Resetting the mapping may integrate other pending changes.
+        // * Dynamic interactions may change.
+        dstIndex = (NSInteger)[self indexPathRowOfQuotedMessage:quotedMessage];
+    } else {
+        // Scroll to the quoted message, which is already in the load window.
+        dstIndex = 1 + (NSInteger)oldLoadWindowSize - desiredWindowSize;
+    }
+
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:dstIndex inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:indexPath
+                                atScrollPosition:UICollectionViewScrollPositionTop
+                                        animated:YES];
+
+    // TODO: Highlight the quoted message?
+}
+
+// This method makes a best effort to determine the best scroll position
+// after loading more interactions when trying to scroll to a quoted
+// message.
+//
+// It prefers to be simple than to correctly handle edge cases like multiple
+// interactions with the same timestamp.
+- (NSUInteger)indexPathRowOfQuotedMessage:(TSQuotedMessage *)quotedMessage
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(quotedMessage);
+    OWSAssert(quotedMessage.timestamp > 0);
+    OWSAssert(quotedMessage.authorId.length > 0);
+
+    NSUInteger result = 0;
+    for (NSUInteger row = 0; row < self.viewItems.count; row++) {
+        ConversationViewItem *viewItem = self.viewItems[row];
+        if (viewItem.interaction.timestamp > quotedMessage.timestamp) {
+            break;
+        }
+        result = row;
+    }
+    return result;
+}
+
+// If result range is valid, then threadInteractionCount will have a valid value too.
+- (NSRange)findRangeOfQuotedMessage:(TSQuotedMessage *)quotedMessage
+             threadInteractionCount:(NSUInteger *)threadInteractionCount
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(quotedMessage);
+    OWSAssert(quotedMessage.timestamp > 0);
+    OWSAssert(quotedMessage.authorId.length > 0);
+    OWSAssert(threadInteractionCount);
+
+    *threadInteractionCount = 0;
+
     // We try to find the "quoted interaction" AND
     // the range within the mapping that includes it.
-    __block TSInteraction *_Nullable quotedInteraction = nil;
     // NOTE: Since the range _IS NOT_ filtered by author,
     // and timestamp collisions are possible, it's possible
     // for:
@@ -2150,12 +2237,11 @@ typedef enum : NSUInteger {
     //   although this would be a bug.
     __block NSRange itemRange;
     itemRange.location = NSNotFound;
-    __block NSUInteger threadInteractionCount = 0;
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        quotedInteraction = [self findInteractionInThreadByTimestamp:quotedMessage.timestamp
-                                                            authorId:quotedMessage.authorId
-                                                         transaction:transaction];
+        TSInteraction *_Nullable quotedInteraction = [self findInteractionInThreadByTimestamp:quotedMessage.timestamp
+                                                                                     authorId:quotedMessage.authorId
+                                                                                  transaction:transaction];
         if (!quotedInteraction) {
             return;
         }
@@ -2167,7 +2253,7 @@ typedef enum : NSUInteger {
             return;
         }
 
-        threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
+        *threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
 
         // See comments on YapDatabaseViewFind.
         //
@@ -2197,37 +2283,7 @@ typedef enum : NSUInteger {
         itemRange = [extension findRangeInGroup:self.thread.uniqueId using:viewFind];
     }];
 
-    if (itemRange.location == NSNotFound) {
-        OWSFail(@"%@ Couldn't find range of quoted reply.", self.logTag);
-        return;
-    }
-
-    NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - (NSInteger)itemRange.location);
-    NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
-
-    NSInteger dstIndex = 0;
-    if (additionalItemsToLoad > 0) {
-        // Try to load more messages so that the quoted messages
-        // is in the load window.
-        //
-        // This may fail if the quoted message is very old, in which
-        // case we'll load the max number of messages.
-        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
-        // Scroll to the first item, which should be the quoted message,
-        // or if we couldn't load it, the oldest loadable message.
-        dstIndex = 0;
-    } else {
-        // Scroll to the quoted message, which is already in the load window.
-        dstIndex = 1 + (NSInteger)oldLoadWindowSize - desiredWindowSize;
-    }
-
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:dstIndex inSection:0];
-    [self.collectionView scrollToItemAtIndexPath:indexPath
-                                atScrollPosition:UICollectionViewScrollPositionTop
-                                        animated:YES];
-
-    // TODO: Highlight the quoted message?
+    return itemRange;
 }
 
 - (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
