@@ -518,7 +518,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         }];
         [ThreadUtil sendMessageWithText:url.absoluteString
                                inThread:thread
-                          quotedMessage:nil
+                       quotedReplyModel:nil
                           messageSender:messageSender];
     });
 
@@ -541,7 +541,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             OWSMessageSender *messageSender = Environment.current.messageSender;
             [ThreadUtil sendMessageWithText:url.absoluteString
                                    inThread:thread
-                              quotedMessage:nil
+                           quotedReplyModel:nil
                               messageSender:messageSender];
         } else {
             [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];

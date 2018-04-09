@@ -201,7 +201,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         __block TSOutgoingMessage *outgoingMessage = nil;
         outgoingMessage = [ThreadUtil sendMessageWithAttachment:attachment
                                                        inThread:self.thread
-                                                  quotedMessage:nil
+                                               quotedReplyModel:nil
                                                   messageSender:self.messageSender
                                                      completion:^(NSError *_Nullable error) {
                                                          sendCompletion(error, outgoingMessage);
@@ -233,7 +233,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         __block TSOutgoingMessage *outgoingMessage = nil;
         outgoingMessage = [ThreadUtil sendMessageWithText:messageText
             inThread:self.thread
-            quotedMessage:nil
+            quotedReplyModel:nil
             messageSender:self.messageSender
             success:^{
                 sendCompletion(nil, outgoingMessage);

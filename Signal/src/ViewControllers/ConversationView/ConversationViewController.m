@@ -2764,11 +2764,10 @@ typedef enum : NSUInteger {
         (unsigned long)[attachment dataLength],
         [attachment mimeType]);
 
-    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReply buildQuotedMessage];
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message = [ThreadUtil sendMessageWithAttachment:attachment
                                                               inThread:self.thread
-                                                         quotedMessage:quotedMessage
+                                                      quotedReplyModel:self.inputToolbar.quotedReply
                                                          messageSender:self.messageSender
                                                             completion:nil];
 
@@ -4026,20 +4025,19 @@ typedef enum : NSUInteger {
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     TSOutgoingMessage *message;
 
-    TSQuotedMessage *_Nullable quotedMessage = [self.inputToolbar.quotedReply buildQuotedMessage];
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
-                                          quotedMessage:quotedMessage
+                                       quotedReplyModel:self.inputToolbar.quotedReply
                                           messageSender:self.messageSender
                                              completion:nil];
     } else {
         message = [ThreadUtil sendMessageWithText:text
                                          inThread:self.thread
-                                    quotedMessage:quotedMessage
+                                 quotedReplyModel:self.inputToolbar.quotedReply
                                     messageSender:self.messageSender];
     }
 

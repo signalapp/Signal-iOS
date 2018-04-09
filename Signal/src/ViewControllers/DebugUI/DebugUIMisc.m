@@ -221,7 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
-                            quotedMessage:nil
+                         quotedReplyModel:nil
                             messageSender:messageSender
                                completion:nil];
 }
@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
-                            quotedMessage:nil
+                         quotedReplyModel:nil
                             messageSender:messageSender
                                completion:nil];
 }

@@ -474,7 +474,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.quotedReply =
             [[OWSQuotedReplyModel alloc] initWithQuotedMessage:message.quotedMessage transaction:transaction];
 
-        // TODO move this to OWSQuotedReplyModel?
         if (self.quotedReply.body.length > 0) {
             self.displayableQuotedText =
                 [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
@@ -482,7 +481,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
-// TODO converge naming
 - (nullable NSString *)quotedAttachmentMimetype
 {
     return self.quotedReply.contentType;
