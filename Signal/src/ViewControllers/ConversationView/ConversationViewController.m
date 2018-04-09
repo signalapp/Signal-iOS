@@ -90,6 +90,7 @@
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -1511,25 +1512,15 @@ typedef enum : NSUInteger {
     }
     static const CGFloat kThreshold = 50.f;
     if (self.collectionView.contentOffset.y < kThreshold) {
-        [self loadMoreMessages];
+        [self loadAnotherPageOfMessages];
     }
 }
 
-- (void)loadMoreMessages
+- (void)loadAnotherPageOfMessages
 {
     BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
 
-    // We want to restore the current scroll state after we update the range, update
-    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
-    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-
-    self.lastRangeLength = MIN(self.lastRangeLength + kYapDatabasePageSize, (NSUInteger) kYapDatabaseRangeMaxLength);
-
-    [self resetMappings];
-
-    [self.layout prepareLayout];
-
-    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
+    [self loadNMoreMessages:kYapDatabasePageSize];
 
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
@@ -1537,6 +1528,21 @@ typedef enum : NSUInteger {
     if (hasEarlierUnseenMessages) {
         [self scrollToUnreadIndicatorAnimated];
     }
+}
+
+- (void)loadNMoreMessages:(NSUInteger)numberOfMessagesToLoad
+{
+    // We want to restore the current scroll state after we update the range, update
+    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
+    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+
+    self.lastRangeLength = MIN(self.lastRangeLength + numberOfMessagesToLoad, (NSUInteger)kYapDatabaseRangeMaxLength);
+
+    [self resetMappings];
+
+    [self.layout prepareLayout];
+
+    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
 }
 
 - (void)updateShowLoadMoreHeader
@@ -2122,6 +2128,150 @@ typedef enum : NSUInteger {
     OWSAssert(message);
 
     [self handleUnsentMessageTap:message];
+}
+
+- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(viewItem);
+    OWSAssert(quotedMessage);
+    OWSAssert(quotedMessage.timestamp > 0);
+    OWSAssert(quotedMessage.authorId.length > 0);
+
+    // We try to find the "quoted interaction" AND
+    // the range within the mapping that includes it.
+    __block TSInteraction *_Nullable quotedInteraction = nil;
+    // NOTE: Since the range _IS NOT_ filtered by author,
+    // and timestamp collisions are possible, it's possible
+    // for:
+    //
+    // * The range to include more than the "quoted interaction".
+    // * The range to be non-empty but NOT include the "quoted interaction",
+    //   although this would be a bug.
+    __block NSRange itemRange;
+    itemRange.location = NSNotFound;
+    __block NSUInteger threadInteractionCount = 0;
+
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        quotedInteraction = [self findInteractionInThreadByTimestamp:quotedMessage.timestamp
+                                                            authorId:quotedMessage.authorId
+                                                         transaction:transaction];
+        if (!quotedInteraction) {
+            return;
+        }
+
+        YapDatabaseAutoViewTransaction *_Nullable extension =
+            [transaction extension:TSMessageDatabaseViewExtensionName];
+        if (!extension) {
+            OWSFail(@"%@ Couldn't load view.", self.logTag);
+            return;
+        }
+
+        threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
+
+        // See comments on YapDatabaseViewFind.
+        //
+        // Essentially we define a comparator/sort on timestamp.
+        YapDatabaseViewFind *viewFind =
+            [YapDatabaseViewFind withObjectBlock:^NSComparisonResult(NSString *collection, NSString *key, id object) {
+                if (![object isKindOfClass:[TSInteraction class]]) {
+                    OWSFail(@"%@ Unexpected type in database view.", self.logTag);
+                    return NSOrderedSame;
+                }
+
+                TSInteraction *interaction = object;
+
+                // For the findBlock, the "left operand" is the row that is passed,
+                // and the "right operand" is the desired range.
+                if (interaction.timestamp == quotedMessage.timestamp) {
+
+                    return NSOrderedSame;
+                } else if (interaction.timestamp < quotedMessage.timestamp) {
+                    // NSOrderedAscending  : The left operand is smaller than the right operand.
+                    return NSOrderedAscending;
+                } else {
+                    // NSOrderedDescending : The left operand is greater than the right operand.
+                    return NSOrderedDescending;
+                }
+            }];
+        itemRange = [extension findRangeInGroup:self.thread.uniqueId using:viewFind];
+    }];
+
+    if (itemRange.location == NSNotFound) {
+        OWSFail(@"%@ Couldn't find range of quoted reply.", self.logTag);
+        return;
+    }
+
+    NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - (NSInteger)itemRange.location);
+    NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+    NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
+
+    NSInteger dstIndex = 0;
+    if (additionalItemsToLoad > 0) {
+        // Try to load more messages so that the quoted messages
+        // is in the load window.
+        //
+        // This may fail if the quoted message is very old, in which
+        // case we'll load the max number of messages.
+        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
+        // Scroll to the first item, which should be the quoted message,
+        // or if we couldn't load it, the oldest loadable message.
+        dstIndex = 0;
+    } else {
+        // Scroll to the quoted message, which is already in the load window.
+        dstIndex = 1 + (NSInteger)oldLoadWindowSize - desiredWindowSize;
+    }
+
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:dstIndex inSection:0];
+    [self.collectionView scrollToItemAtIndexPath:indexPath
+                                atScrollPosition:UICollectionViewScrollPositionTop
+                                        animated:YES];
+
+    // TODO: Highlight the quoted message?
+}
+
+- (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
+                                                      authorId:(NSString *)authorId
+                                                   transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(timestamp > 0);
+    OWSAssert(authorId.length > 0);
+
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (localNumber.length < 1) {
+        return nil;
+    }
+
+    NSArray<TSInteraction *> *interactions =
+        [TSInteraction interactionsWithTimestamp:timestamp ofClass:[TSMessage class] withTransaction:transaction];
+
+    TSInteraction *_Nullable result = nil;
+    for (TSInteraction *interaction in interactions) {
+        NSString *_Nullable messageAuthorId = nil;
+        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+            messageAuthorId = incomingMessage.authorId;
+        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            messageAuthorId = localNumber;
+        }
+        if (messageAuthorId.length < 1) {
+            OWSFail(@"%@ Message missing author id.", self.logTag);
+            continue;
+        }
+        if (![authorId isEqualToString:messageAuthorId]) {
+            continue;
+        }
+        if (![interaction.uniqueThreadId isEqualToString:self.thread.uniqueId]) {
+            continue;
+        }
+        if (result) {
+            // In case of collision, take the first.
+            DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
+            continue;
+        }
+        result = interaction;
+    }
+    return result;
 }
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem

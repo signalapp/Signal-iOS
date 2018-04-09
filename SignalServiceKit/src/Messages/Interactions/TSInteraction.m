@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                 ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                        withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(timestamp > 0);
 
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                        withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(timestamp > 0);
 

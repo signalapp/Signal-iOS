@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                 ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
                                                  filter:(BOOL (^_Nonnull)(TSInteraction *))filter

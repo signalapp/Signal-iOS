@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSDatabaseSecondaryIndexes.h"
-
 #import "TSInteraction.h"
 
 #define TSTimeStampSQLiteIndex @"messagesTimeStamp"
@@ -34,7 +33,8 @@
 
 + (void)enumerateMessagesWithTimestamp:(uint64_t)timestamp
                              withBlock:(void (^)(NSString *collection, NSString *key, BOOL *stop))block
-                      usingTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+                      usingTransaction:(YapDatabaseReadTransaction *)transaction
+{
     NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ = %lld", TSTimeStampSQLiteIndex, timestamp];
     YapDatabaseQuery *query   = [YapDatabaseQuery queryWithFormat:formattedString];
     [[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:block];

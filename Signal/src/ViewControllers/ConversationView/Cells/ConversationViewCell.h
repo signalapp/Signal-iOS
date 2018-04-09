@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSMessage;
 @class TSOutgoingMessage;
+@class TSQuotedMessage;
 
 @protocol ConversationViewCellDelegate <NSObject>
 
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
+- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage;
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
 

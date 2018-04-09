@@ -515,7 +515,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleMediaTapGesture];
             break;
         case OWSMessageGestureLocation_QuotedReply:
-            // TODO:
+            if (self.message.quotedMessage) {
+                [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
+            } else {
+                OWSFail(@"%@ Missing quoted message.", self.logTag)
+            }
             break;
     }
 }
