@@ -4500,7 +4500,7 @@ typedef enum : NSUInteger {
                     = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
             }
 
-            shouldHideBubbleTail = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+            shouldHideBubbleTail = interactionType == lastInteractionType;
 
             lastRecipientStatus = recipientStatus;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
