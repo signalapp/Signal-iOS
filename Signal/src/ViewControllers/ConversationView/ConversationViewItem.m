@@ -647,6 +647,25 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     } else if (action == self.metadataActionSelector) {
         return YES;
     } else if (action == self.replyActionSelector) {
+        if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
+            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent
+                || outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+                // Don't let users reply to messages which aren't yet delivered to the service.
+                return NO;
+            }
+        } else if ([self.interaction isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+            if (incomingMessage.hasAttachments) {
+                NSString *attachmentId = incomingMessage.attachmentIds.firstObject;
+                TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                    // Don't let users reply to attachments which aren't yet downloaded
+                    // (or otherwise missing on disk).
+                    return NO;
+                }
+            }
+        }
         return YES;
     } else {
         return NO;
