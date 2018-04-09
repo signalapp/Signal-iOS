@@ -146,7 +146,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
             ]
         } else {
-            scrollView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            scrollView.autoPinEdge(toSuperviewEdge: .bottom)
         }
 
         updateContent()
