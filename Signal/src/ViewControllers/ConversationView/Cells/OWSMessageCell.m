@@ -269,26 +269,26 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)showFooter
+- (BOOL)shouldShowFooter
 {
-    BOOL showFooter = NO;
+    BOOL shouldShowFooter = NO;
 
     if (self.message.shouldStartExpireTimer) {
-        showFooter = YES;
+        shouldShowFooter = YES;
     } else if (self.isOutgoing) {
-        showFooter = !self.viewItem.shouldHideRecipientStatus;
+        shouldShowFooter = !self.viewItem.shouldHideRecipientStatus;
     } else if (self.viewItem.isGroupThread) {
-        showFooter = YES;
+        shouldShowFooter = YES;
     } else {
-        showFooter = NO;
+        shouldShowFooter = NO;
     }
 
-    return showFooter;
+    return shouldShowFooter;
 }
 
 - (CGFloat)footerHeight
 {
-    if (!self.showFooter) {
+    if (!self.shouldShowFooter) {
         return 0.f;
     }
 
@@ -330,10 +330,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self.footerView autoPinEdge:ALEdgeTop
-                          toEdge:ALEdgeBottom
-                          ofView:self.messageBubbleView
-                      withOffset:self.footerVSpacing];
+    [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
+                                                          toEdge:ALEdgeBottom
+                                                          ofView:self.messageBubbleView
+                                                      withOffset:self.footerVSpacing]];
 
     if (hasExpirationTimer) {
         uint64_t expirationTimestamp = message.expiresAt;
@@ -405,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
     cellSize.height += self.dateHeaderHeight;
-    if (self.showFooter) {
+    if (self.shouldShowFooter) {
         cellSize.height += self.footerVSpacing;
         cellSize.height += self.footerHeight;
     }
