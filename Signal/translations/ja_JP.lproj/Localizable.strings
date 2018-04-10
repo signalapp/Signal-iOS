@@ -82,6 +82,9 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "添付ファイル";
 
+/* One line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "添付ファイル";
 
@@ -183,9 +186,6 @@
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "バックアップデータを正常にインポートできませんでした。";
-
-/* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "バックアップ状況を確認";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "バックアップの設定";
@@ -561,7 +561,7 @@
 "DISAPPEARING_MESSAGES" = "消えるメッセージ";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "オンにすると，この会話内で送受信されたメッセージは，閲覧後（一定時間経つと）消えます。";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "オンにすると，この会話内で送受信されたメッセージは，閲覧して一定時間経つと消えます。";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "メッセージは%@後に消えます";
@@ -669,10 +669,10 @@
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "登録鍵の有効化に失敗しました";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "無効化";
+"ENABLE_2FA_VIEW_DISABLE_2FA" = "無効にする";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "有効化";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "有効にする";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "進む";
@@ -684,7 +684,7 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "登録鍵の暗証番号を入力してください。この電話機を再度Signalに登録する場合に必要になります。";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "安全性を高めるために，暗証番号での登録鍵を有効にしてください。この電話機を再度Signalに登録する際に要求されます。";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "安全のため，暗証番号による登録鍵を有効にしてください。この電話機をSignalに再登録するときに要求されます。";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "登録鍵が有効になりました。この電話機を再度Signalに登録するには暗証番号が必要となります。";
@@ -974,6 +974,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "デバッグログ";
 
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Message";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "すべてのメディア";
 
@@ -1012,9 +1015,6 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIMEタイプ";
-
-/* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "添付ファイル無し";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "未取得";
@@ -1408,6 +1408,24 @@
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
 /* No comment provided by engineer. */
 "RATING_MSG" = "Signalを使ってプライベートな会話を楽しんでいる方に評価アンケートをお願いしています。１分もかかりませんし，他のユーザーのプライバシー確保の手助けになりますので、ご協力をお願いします。";
 
@@ -1518,6 +1536,9 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "暗証番号が正しくありません";
+
+/* Short name for edit menu item to reply to a message. */
+"REPLY_ITEM_ACTION" = "Reply";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "プッシュ通知の再登録";
@@ -1772,7 +1793,7 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "相手の名前と番号を表示する";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOSの電話アプリの最近の履歴に表示する";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOSの電話アプリの履歴に表示する。";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "履歴に通話を表示する";
@@ -1793,7 +1814,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "画面ロックまでの時間";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "画面ロックの解錠をタッチIDや，フェイスID，iOSのパスコードで行う。";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "画面ロックの解錠をタッチID・フェイスID・iOSパスコードで行います。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "画面ロック";
@@ -1826,10 +1847,10 @@
 "SETTINGS_SUPPORT" = "サポート";
 
 /* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "無効化";
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "無効";
 
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "有効化";
+"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "有効";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "登録鍵";

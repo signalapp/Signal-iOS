@@ -8,7 +8,7 @@
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "添加";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "添加联系人";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "添加新联系人";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "通过手机号码添加";
@@ -81,6 +81,9 @@
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "附件";
+
+/* One line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
 
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "附件";
@@ -183,9 +186,6 @@
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "无法导入备份。";
-
-/* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "正在检查备份状态";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "正在准备备份";
@@ -974,6 +974,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "信息记录日志";
 
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Message";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
 
@@ -1012,9 +1015,6 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 类型";
-
-/* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "附件丢失";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "未下载";
@@ -1408,6 +1408,24 @@
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "？";
 
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
 /* No comment provided by engineer. */
 "RATING_MSG" = "如果您喜欢用 Signal 进行私人会话，你可以通过评分的方式来支持我们。这将不会花费您很长时间，而且也将对保护其他人的隐私有所帮助。";
 
@@ -1519,6 +1537,9 @@
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "不正确的PIN码。";
 
+/* Short name for edit menu item to reply to a message. */
+"REPLY_ITEM_ACTION" = "Reply";
+
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "重新注册推送通知服务";
 
@@ -1550,10 +1571,10 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
 
 /* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "无法禁用 Screen Lock";
+"SCREEN_LOCK_DISABLE_FAILED" = "无法关闭屏幕锁";
 
 /* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "无法启用 Screen Lock";
+"SCREEN_LOCK_ENABLE_FAILED" = "无法开启屏幕锁";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "无法访问认证数据。";
@@ -1562,25 +1583,25 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "认证失败。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "认证失败次数太多。请稍后重试。";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "认证失败次数太多，请稍后再试。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "您需要先启用 iOS - 设置 - 触控 ID 与密码，来打开 Screen Lock 功能。";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "您需要先设置您的密码来开启屏幕锁功能。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "您需要先启用 iOS - 设置 - 触控 ID 与密码，来打开 Screen Lock 功能。";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "您需要先设置您的密码来开启屏幕锁功能。";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "您需要先启用 iOS - 设置 - 触控 ID 与密码，来打开 Screen Lock 功能。";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "您需要先设置您的密码来开启屏幕锁功能。";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "认证以禁用 Screen Lock。";
+"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "认证以禁用屏幕锁。";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "认证以启用 Screen Lock。";
+"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "认证来启用屏幕锁。";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证以打开 Signal。";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "认证来打开 Signal。";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "认证失败";
@@ -1751,7 +1772,7 @@
 "SETTINGS_INVITE_TITLE" = "邀请您的朋友";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "你可以在 @signalapp 上联系我。现可从 https://signal.org/download/ 下载。";
+"SETTINGS_INVITE_TWITTER_TEXT" = "你可以通过 @signalapp 来联系我。现在可以在 https://signal.org/download/ 下载。";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "消息提示音";
@@ -1790,16 +1811,16 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "消息已读时，查看和分享已读状态。该设置为可选设置，且对所有对话生效。";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock 超时";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "屏幕锁超时";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "请使用 触控 ID、面容 ID 或 iOS 锁屏密码，来解锁 Signal 屏幕。";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "请使用 触控ID、面容ID 或 iOS 密码，来解锁 Signal。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "屏幕锁🔒";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "屏幕锁🔒";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY" = "开启屏幕锁定功能";
@@ -1991,7 +2012,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不允许";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单的从锁屏应答来电。默认设置会隐藏呼叫人的信息，所以该信息会被保密。";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "iOS 通话整合可以帮您简单地从锁定屏幕来接听电话。默认设置显示匿名呼叫人，所以您不必担心隐私泄露。";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "更多信息请见您的隐私设置。";
@@ -2000,7 +2021,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "滑动即可应答";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您可以为所有对话设置一个默认提示音，或为每一个对话选择单独的提示音。您的来电铃声将与 iOS 电话簿联系人中所设置的铃声一致。";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "现在，您既可以为所有对话设置一个默认提示音，也可以为每一个对话选择单独的提示音。您的来电铃声将与 iOS 联系人中所设置的铃声一致。";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "检查通知设置";

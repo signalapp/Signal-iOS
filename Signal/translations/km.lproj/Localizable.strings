@@ -82,6 +82,9 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "ឯកសារភ្ជាប់";
 
+/* One line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "ឯកសារភ្ជាប់";
 
@@ -183,9 +186,6 @@
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "ឯកសារបម្រុងទុកមិនអាចនាំចូល។";
-
-/* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "កំពុងពិនិត្យស្ថានភាពបម្រុងទុក";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "កំពុងកំណត់បម្រុងទុក";
@@ -974,6 +974,9 @@
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "កំពុងចូល";
 
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Message";
+
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "ឯកសារមេឌាទាំងអស់";
 
@@ -1012,9 +1015,6 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "ប្រភេទ MIME";
-
-/* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "រកមិនឃើញឯកសារភ្ជាប់";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "មិនទាន់បានទាញយក";
@@ -1408,6 +1408,24 @@
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
 /* No comment provided by engineer. */
 "RATING_MSG" = "ប្រសិនបើអ្នកពេញចិត្តប្រើប្រាស់ Signal សម្រាប់ការសន្ទនាផ្ទាល់ខ្លួន អ្នកអាចគាំទ្រគម្រោងរបស់យើង ដោយដាក់ពិន្ទុវា។ វាចំណាយពេលមិនលើសពីមួយនាទីទេ និងអាចជួយអ្នកដទៃ រក្សាឯកជនភាពបាន។";
 
@@ -1518,6 +1536,9 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "លេខPIN  មិនត្រឹមត្រូវ។";
+
+/* Short name for edit menu item to reply to a message. */
+"REPLY_ITEM_ACTION" = "Reply";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ចុះឈ្មោះឡើងវិញ សម្រាប់ការផ្តល់ដំណឹង";

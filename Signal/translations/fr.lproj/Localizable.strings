@@ -82,6 +82,9 @@
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Pièce jointe";
 
+/* One line label indicating the user can add no more text to the attachment caption. */
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Pièce jointe";
 
@@ -146,7 +149,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal ne peut pas procéder au traitement de ce fichier tel quel. Veuillez essayer de le compresser avant de l'envoyer.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non supporté";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fichier non pris en charge";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Message vocal";
@@ -183,9 +186,6 @@
 
 /* Error indicating the backup import could not import the user's data. */
 "BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "La sauvegarde de données n'a pas pu être importée.";
-
-/* Indicates that the backup import is checking for an existing backup. */
-"BACKUP_IMPORT_PHASE_CHECK_BACKUP" = "Vérification d'état de la sauvegarde de données";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuration de la sauvegarde de données";
@@ -347,7 +347,7 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "L'accès à votre compte iCloud nous a été refusé pour sauvegarder vos données.";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le presse-papier";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Comparer avec le presse-papiers";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
@@ -365,16 +365,16 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ceci va remettre à zéro l'application en effaçant vos messages et en vous désinscrivant du serveur. L'application se fermera après l'effacement des données.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Êtes-vous sûr de vouloir supprimer votre compte ?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Voulez-vous vraiment supprimer votre compte ?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Vous ne pourrez plus recevoir ou envoyer de messages dans ce groupe.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Est-ce que vous voulez partir ?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Voulez-vous vraiment quitter ce groupe ?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Connecter un nouvel appareil";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Relier un nouvel appareil ";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ peut avoir réinstallé ou modifié des périphériques. Vérifiez votre numéro de sécurité avec eux pour assurer la confidentialité.";
@@ -618,7 +618,7 @@
 "EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Infos";
 
 /* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Sauvegarder";
+"EDIT_ITEM_SAVE_ACTION" = "Enregistrer";
 
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Éditer";
@@ -699,7 +699,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Appel échoué.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec de l'envoi du message.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Échec d’envoi du message.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Impossible d'envoyer en raison de données de confidentialité vaines.";
@@ -720,7 +720,7 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Votre appareil n'est plus enregistré pour votre numéro de téléphone. Vous devez supprimer et réinstaller Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez réessayer plus tard.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Erreur serveur. Veuillez ressayer plus tard.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
@@ -819,7 +819,7 @@
 "GROUP_AVATAR_CHANGED" = "Avatar modifié.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Groupe créé.";
+"GROUP_CREATED" = "Le groupe a été créé.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Tous les membres ne peuvent pas être ajoutés au groupe. Cliquer pour réessayer.";
@@ -936,7 +936,7 @@
 "LEAVE_BUTTON_TITLE" = "Quitter";
 
 /* table cell label in conversation settings */
-"LEAVE_GROUP_ACTION" = "Quitter ce groupe";
+"LEAVE_GROUP_ACTION" = "Quitter le groupe ";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "Ce code QR n'est pas valide, assurez-vous que vous numérisez le code QR affiché sur l'appareil que vous souhaitez lier.";
@@ -948,10 +948,10 @@
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Cet appareil pourra voir vos groupe et contacts, ainsi que lire et envoyer des messages en votre nom.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Souhaitez-vous connecter cet appareil ?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Relier cet appareil ?";
 
 /* attempt another linking */
-"LINK_DEVICE_RESTART" = "Réessayer";
+"LINK_DEVICE_RESTART" = "Ressayer";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scannez le code QR affiché sur votre appareil pour le lier.";
@@ -973,6 +973,9 @@
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Journalisation";
+
+/* Title for the 'long text message' view. */
+"LONG_TEXT_VIEW_TITLE" = "Message";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
@@ -1012,9 +1015,6 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Type MIME";
-
-/* Label for 'missing' attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MISSING_FILE" = "Pièce jointe manquante";
 
 /* Label for 'not yet downloaded' attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_NOT_YET_DOWNLOADED" = "Pas encore téléchargé";
@@ -1130,7 +1130,7 @@
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d'accéder à votre appareil photo.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal a besoin d’accéder à votre appareil photo.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l'application Paramètres.";
@@ -1408,6 +1408,24 @@
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
 
+/* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+
+/* Indicates this message is a quoted reply to an attachment of unknown type. */
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+
+/* Indicates this message is a quoted reply to an audio file. */
+"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+
+/* Indicates this message is a quoted reply to animated GIF file. */
+"QUOTED_REPLY_TYPE_GIF" = "GIF";
+
+/* Indicates this message is a quoted reply to an image file. */
+"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+
+/* Indicates this message is a quoted reply to a video file. */
+"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+
 /* No comment provided by engineer. */
 "RATING_MSG" = "Si vous appréciez utiliser Signal pour vos conversations privées, vous pouvez aider notre projet en le notant. Ça ne prend qu'une minute et vous aiderez certains à obtenir une meilleure confidentialité.";
 
@@ -1454,7 +1472,7 @@
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Saisir numéro";
 
 /* No comment provided by engineer. */
-"REGISTRATION_ERROR" = "Erreur d'enregistrement";
+"REGISTRATION_ERROR" = "Erreur d’enregistrement";
 
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n'avez pas vérifié le code que nous vous avons envoyé.";
@@ -1496,7 +1514,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Pas de numéro de téléphone";
 
 /* No comment provided by engineer. */
-"REJECT_CALL_BUTTON_TITLE" = "Rejeter";
+"REJECT_CALL_BUTTON_TITLE" = "Refuser";
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Le numéro de téléphone que vous essayez d'enregistrer est déjà enregistré auprès d'un autre serveur. Veuillez vous déconnecter et essayez à nouveau.";
@@ -1519,11 +1537,14 @@
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Ce n'est pas le bon code PIN.";
 
+/* Short name for edit menu item to reply to a message. */
+"REPLY_ITEM_ACTION" = "Reply";
+
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Réenregistrer pour recevoir les notifications";
 
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Réessayer";
+"RETRY_BUTTON_TEXT" = "Ressayer";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Ajouter au groupe de toute façon";
@@ -1610,7 +1631,7 @@
 "SEND_BUTTON_TITLE" = "Envoyer";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Échec de l'envoi de l'invitation. Veuillez réessayer plus tard. ";
+"SEND_INVITE_FAILURE" = "Échec d’envoi de l’invitation. Veuillez ressayer plus tard. ";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Vous avez invité votre ami à utiliser Signal !";
@@ -1619,7 +1640,7 @@
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Inviter par SMS %@";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Inviter un ami via un SMS non sécurisé ?";
+"SEND_SMS_CONFIRM_TITLE" = "Inviter un ami par texto non sécurisé ?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Souhaitez-vous inviter sur Signal le numéro suivant :";
@@ -1745,7 +1766,7 @@
 "SETTINGS_HISTORYLOG_TITLE" = "Effacer l'historique des conversations";
 
 /* No comment provided by engineer. */
-"SETTINGS_INFORMATION_HEADER" = "Information";
+"SETTINGS_INFORMATION_HEADER" = "Renseignements";
 
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Invitez vos amis";
@@ -1979,7 +2000,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "Échec de la déconnexion de Signal.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Pièce jointe non supportée.";
+"UNSUPPORTED_ATTACHMENT" = "Un type de pièce jointe non pris en charge a été reçu.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne supporte pas cette fonctionnalité.";
