@@ -188,6 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIView *quoteStripView = [UIView containerView];
         quoteStripView.backgroundColor = self.highlightColor;
         quoteStripView.userInteractionEnabled = NO;
+        quoteStripView.layer.cornerRadius = self.quotedReplyStripeRounding;
         [stripeAndTextContainer addSubview:quoteStripView];
         [quoteStripView autoPinHeightToSuperview];
         [quoteStripView autoPinLeadingToSuperviewMargin];
@@ -426,7 +427,6 @@ NS_ASSUME_NONNULL_BEGIN
     return 8.f;
 }
 
-// TODO:
 - (CGFloat)quotedAuthorBottomSpacing
 {
     return 3.f;
@@ -444,7 +444,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)quotedReplyStripeVExtension
 {
-    return 8.f;
+    return 4.f;
+}
+
+- (CGFloat)quotedReplyStripeRounding
+{
+    return 1.f;
 }
 
 // The spacing between the vertical "quoted reply stripe"

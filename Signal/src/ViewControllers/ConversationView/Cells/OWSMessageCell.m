@@ -77,7 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerLabel.hidden = YES;
 
     [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
-    [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.footerView autoPinWidthToSuperview];
@@ -270,23 +269,35 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (CGFloat)footerHeight
+- (BOOL)shouldShowFooter
 {
-    BOOL showFooter = NO;
+    BOOL shouldShowFooter = NO;
 
-    BOOL hasExpirationTimer = self.message.shouldStartExpireTimer;
-
-    if (hasExpirationTimer) {
-        showFooter = YES;
+    if (self.message.shouldStartExpireTimer) {
+        shouldShowFooter = YES;
     } else if (self.isOutgoing) {
-        showFooter = !self.viewItem.shouldHideRecipientStatus;
+        shouldShowFooter = !self.viewItem.shouldHideRecipientStatus;
     } else if (self.viewItem.isGroupThread) {
-        showFooter = YES;
+        shouldShowFooter = YES;
     } else {
-        showFooter = NO;
+        shouldShowFooter = NO;
     }
 
-    return (showFooter ? (CGFloat)ceil(MAX(kExpirationTimerViewSize, self.footerLabel.font.lineHeight)) : 0.f);
+    return shouldShowFooter;
+}
+
+- (CGFloat)footerHeight
+{
+    if (!self.shouldShowFooter) {
+        return 0.f;
+    }
+
+    return ceil(MAX(kExpirationTimerViewSize, self.footerLabel.font.lineHeight));
+}
+
+- (CGFloat)footerVSpacing
+{
+    return 1.f;
 }
 
 - (void)updateFooter
@@ -313,10 +324,16 @@ NS_ASSUME_NONNULL_BEGIN
         !attributedText) {
         self.footerLabel.hidden = YES;
         [self.viewConstraints addObjectsFromArray:@[
+            [self.footerView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView],
             [self.footerView autoSetDimension:ALDimensionHeight toSize:0],
         ]];
         return;
     }
+
+    [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
+                                                          toEdge:ALEdgeBottom
+                                                          ofView:self.messageBubbleView
+                                                      withOffset:self.footerVSpacing]];
 
     if (hasExpirationTimer) {
         uint64_t expirationTimestamp = message.expiresAt;
@@ -388,7 +405,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
     cellSize.height += self.dateHeaderHeight;
-    cellSize.height += self.footerHeight;
+    if (self.shouldShowFooter) {
+        cellSize.height += self.footerVSpacing;
+        cellSize.height += self.footerHeight;
+    }
 
     if (self.shouldHaveFailedSendBadge) {
         cellSize.width += self.failedSendBadgeSize;
