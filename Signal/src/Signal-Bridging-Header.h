@@ -29,6 +29,7 @@
 #import "OWSMessageCell.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
+#import "OWSQuotedMessageView.h"
 #import "OWSWebRTCDataProtos.pb.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"

@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 
 @property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
+@property (nonatomic, readonly) BOOL isForPreview;
 
 @end
 
@@ -35,8 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(quotedMessage);
 
-    return
-        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
+    return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
+                                         displayableQuotedText:displayableQuotedText
+                                                  isForPreview:NO];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
@@ -48,12 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
         displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
     }
 
-    return
-        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage displayableQuotedText:displayableQuotedText];
+    return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
+                                         displayableQuotedText:displayableQuotedText
+                                                  isForPreview:YES];
 }
 
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                         isForPreview:(BOOL)isForPreview
 {
     self = [super init];
 
@@ -65,6 +69,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
+    _isForPreview = isForPreview;
+
+    [self createContents];
 
     return self;
 }
@@ -258,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UILabel *quotedTextLabel = [UILabel new];
-    quotedTextLabel.numberOfLines = 3;
+    quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 3;
     quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
     quotedTextLabel.text = text;
     quotedTextLabel.textColor = textColor;
