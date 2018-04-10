@@ -7,6 +7,7 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -26,12 +27,12 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 @property (nonatomic) UIView *payloadView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
-@property (nonatomic) UILabel *timeLabel;
+@property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
-@property (nonatomic) TSThread *thread;
-@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic, nullable) TSThread *thread;
+@property (nonatomic, nullable) OWSContactsManager *contactsManager;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
@@ -93,13 +94,13 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     [self.nameLabel setContentHuggingHorizontalLow];
     [self.nameLabel setCompressionResistanceHorizontalLow];
 
-    self.timeLabel = [UILabel new];
-    [self.timeLabel setContentHuggingHorizontalHigh];
-    [self.timeLabel setCompressionResistanceHorizontalHigh];
+    self.dateTimeLabel = [UILabel new];
+    [self.dateTimeLabel setContentHuggingHorizontalHigh];
+    [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
     UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
-        self.timeLabel,
+        self.dateTimeLabel,
     ]];
     topRowView.axis = UILayoutConstraintAxisHorizontal;
     topRowView.spacing = 4;
@@ -130,7 +131,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
     [self.contentView addSubview:self.unreadBadge];
     [self.unreadBadge autoPinTrailingToSuperviewMarginWithInset:kHomeViewCellHMargin];
-    [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.timeLabel];
+    [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.dateTimeLabel];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
@@ -193,12 +194,12 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
-    self.timeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
+    self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
 
     self.separatorInset
         = UIEdgeInsetsMake(0, kHomeViewAvatarSize + kHomeViewCellHMargin + kHomeViewAvatarHSpacing, 0, 0);
 
-    self.timeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+    self.dateTimeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
@@ -298,10 +299,18 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
         return [NSAttributedString new];
     }
 
-    NSDateFormatter *formatter = ([DateUtil dateIsToday:date] ? [DateUtil timeFormatter] : [DateUtil dateFormatter]);
-    NSString *timeString = [formatter stringFromDate:date];
-    OWSAssert(timeString);
-    return [[NSAttributedString alloc] initWithString:timeString
+    NSString *dateTimeString;
+    if (![DateUtil dateIsThisYear:date]) {
+        dateTimeString = [[DateUtil dateFormatter] stringFromDate:date];
+    } else if ([DateUtil dateIsOlderThanOneWeek:date]) {
+        dateTimeString = [[DateUtil monthAndDayFormatter] stringFromDate:date];
+    } else if ([DateUtil dateIsOlderThanOneDay:date]) {
+        dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
+    } else {
+        dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
+    }
+
+    return [[NSAttributedString alloc] initWithString:dateTimeString
                                            attributes:@{
                                                NSForegroundColorAttributeName : [UIColor ows_darkGrayColor],
                                                NSFontAttributeName : self.dateTimeFont,

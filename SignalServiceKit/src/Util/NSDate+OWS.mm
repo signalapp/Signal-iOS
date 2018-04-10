@@ -14,6 +14,7 @@ const NSTimeInterval kHourInterval = 60 * kMinuteInterval;
 const NSTimeInterval kDayInterval = 24 * kHourInterval;
 const NSTimeInterval kWeekInterval = 7 * kDayInterval;
 const NSTimeInterval kMonthInterval = 30 * kDayInterval;
+const NSTimeInterval kYearInterval = 365 * kDayInterval;
 
 @implementation NSDate (OWS)
 

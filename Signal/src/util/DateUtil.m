@@ -47,12 +47,46 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
++ (NSDateFormatter *)monthAndDayFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        formatter.dateFormat = @"MMM d";
+    });
+    return formatter;
+}
+
++ (NSDateFormatter *)shortDayOfWeekFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        formatter.dateFormat = @"E";
+    });
+    return formatter;
+}
+
 + (BOOL)dateIsOlderThanOneDay:(NSDate *)date {
-    return [[NSDate date] timeIntervalSinceDate:date] > kDayInterval;
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
+    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
+    return dateDayOfEra < nowDayOfEra;
 }
 
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date {
-    return [[NSDate date] timeIntervalSinceDate:date] > kWeekInterval;
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
+    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
+    return dateDayOfEra < (nowDayOfEra - 6);
 }
 
 + (BOOL)date:(NSDate *)date isEqualToDateIgnoringTime:(NSDate *)anotherDate {
@@ -65,7 +99,18 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 }
 
 + (BOOL)dateIsToday:(NSDate *)date {
-    return [self date:[NSDate date] isEqualToDateIgnoringTime:date];
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return ([calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date] ==
+        [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now]);
+}
+
++ (BOOL)dateIsThisYear:(NSDate *)date
+{
+    NSDate *now = [NSDate date];
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return (
+        [calendar component:NSCalendarUnitYear fromDate:date] == [calendar component:NSCalendarUnitYear fromDate:now]);
 }
 
 + (BOOL)dateIsYesterday:(NSDate *)date

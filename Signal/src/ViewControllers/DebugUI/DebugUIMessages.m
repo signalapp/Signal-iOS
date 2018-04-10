@@ -71,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
              [DebugUIMessages allQuotedReplyAction:thread],
              // Exemplary
              [DebugUIMessages allFakeAction:thread],
+             [DebugUIMessages allFakeBackDatedAction:thread],
          ]) {
         [items addObject:[OWSTableItem itemWithTitle:action.label
                                          actionBlock:^{
@@ -107,6 +108,10 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSTableItem itemWithTitle:@"Select Quoted Reply"
                         actionBlock:^{
                             [DebugUIMessages selectQuotedReplyAction:thread];
+                        }],
+        [OWSTableItem itemWithTitle:@"Select Back-Dated"
+                        actionBlock:^{
+                            [DebugUIMessages selectBackDatedAction:thread];
                         }],
 
 #pragma mark - Misc.
@@ -2656,6 +2661,7 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObjectsFromArray:[self allFakeTextActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeBackDatedActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -2825,6 +2831,74 @@ NS_ASSUME_NONNULL_BEGIN
 
     return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Sequences"
                                                     subactions:[self allFakeSequenceActions:thread includeLabels:YES]];
+}
+
+#pragma mark - Back-dated
+
++ (DebugUIMessagesAction *)fakeBackDatedMessageAction:(TSThread *)thread
+                                                label:(NSString *)label
+                                           dateOffset:(int64_t)dateOffset
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Back-Date Message (%@)", label]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            NSString *messageBody =
+                [[@(index).stringValue stringByAppendingString:@" "] stringByAppendingString:self.randomText];
+            TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
+                                                             messageBody:messageBody
+                                                         fakeAssetLoader:nil
+                                                            messageState:TSOutgoingMessageStateSentToService
+                                                             isDelivered:NO
+                                                                  isRead:NO
+                                                           quotedMessage:nil
+                                                             transaction:transaction];
+            [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
+            [message saveWithTransaction:transaction];
+        }];
+}
+
++ (NSArray<DebugUIMessagesAction *> *)allFakeBackDatedActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSentToService
+                                                          text:@"⚠️ Back-Dated ⚠️"]];
+    }
+
+    [actions
+        addObject:[self fakeBackDatedMessageAction:thread label:@"One Minute Ago" dateOffset:-(int64_t)kMinuteInMs]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread label:@"One Hour Ago" dateOffset:-(int64_t)kHourInMs]];
+    [actions addObject:[self fakeBackDatedMessageAction:thread label:@"One Day Ago" dateOffset:-(int64_t)kDayInMs]];
+    [actions
+        addObject:[self fakeBackDatedMessageAction:thread label:@"Two Days Ago" dateOffset:-(int64_t)kDayInMs * 2]];
+    [actions
+        addObject:[self fakeBackDatedMessageAction:thread label:@"Ten Days Ago" dateOffset:-(int64_t)kDayInMs * 10]];
+    [actions
+        addObject:[self fakeBackDatedMessageAction:thread label:@"400 Days Ago" dateOffset:-(int64_t)kDayInMs * 400]];
+
+    return actions;
+}
+
++ (DebugUIMessagesAction *)allFakeBackDatedAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Back-Dated"
+                                                    subactions:[self allFakeBackDatedActions:thread includeLabels:YES]];
+}
+
++ (void)selectBackDatedAction:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(thread);
+
+    [self selectActionUI:[self allFakeBackDatedActions:thread includeLabels:NO] label:@"Select Back-Dated"];
 }
 
 #pragma mark -

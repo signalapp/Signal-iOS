@@ -45,6 +45,8 @@ extern const CGFloat kBubbleTextVInset;
 
 - (void)updatePartnerViews;
 
++ (CGFloat)minWidth;
+
 @end
 
 NS_ASSUME_NONNULL_END
