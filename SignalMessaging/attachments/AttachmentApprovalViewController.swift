@@ -609,19 +609,26 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
-        // compute new height assuming width is unchanged
-        let currentSize = textView.frame.size
-        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
-
-        if newHeight != self.textViewHeight {
-            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
-            self.textViewHeight = newHeight
-            self.textViewHeightConstraint?.constant = textViewHeight
-            self.invalidateIntrinsicContentSize()
-        }
+        updateHeight(textView: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+
+        // Limit caption character count. We do this in characters, not bytes.
+        // This character limit will be safely below our byte limit (16k) for almost all uses.
+        // Because the captioning interface doesn't allow newlines, in practice design pressures users to leave relatively short captions.
+        let maxCharacterCount = 2000
+        guard textView.text.count + text.count - range.length <= maxCharacterCount else {
+            // Accept as much of the input as we can
+            let remainingSpace = maxCharacterCount - textView.text.count
+            if (remainingSpace) > 0 {
+                let acceptableAddition = text.substring(to: text.startIndex.advanced(by: remainingSpace))
+                textView.text = "\(textView.text ?? "")\(acceptableAddition)"
+                updateHeight(textView: textView)
+            }
+            return false
+        }
+
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
@@ -641,6 +648,19 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
 
     // MARK: - Helpers
+
+    private func updateHeight(textView: UITextView) {
+        // compute new height assuming width is unchanged
+        let currentSize = textView.frame.size
+        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+
+        if newHeight != self.textViewHeight {
+            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
+            self.textViewHeight = newHeight
+            self.textViewHeightConstraint?.constant = textViewHeight
+            self.invalidateIntrinsicContentSize()
+        }
+    }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
