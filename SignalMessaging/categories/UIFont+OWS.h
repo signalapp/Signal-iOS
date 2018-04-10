@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Styles
 
 - (UIFont *)ows_italic;
+- (UIFont *)ows_bold;
 - (UIFont *)ows_medium;
 
 @end

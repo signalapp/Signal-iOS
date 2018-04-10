@@ -104,6 +104,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self styleWithSymbolicTraits:UIFontDescriptorTraitItalic];
 }
 
+- (UIFont *)ows_bold
+{
+    return [self styleWithSymbolicTraits:UIFontDescriptorTraitBold];
+}
+
 - (UIFont *)styleWithSymbolicTraits:(UIFontDescriptorSymbolicTraits)symbolicTraits
 {
     UIFontDescriptor *fontDescriptor = [self.fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];

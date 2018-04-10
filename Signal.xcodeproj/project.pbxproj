@@ -49,6 +49,8 @@
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386A53207D271C009F5D9C /* NeverClearView.swift */; };
+		34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* HomeViewController.m */; };
+		34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A50207D0C01009F5D9C /* HomeViewCell.m */; };
 		343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */; };
 		343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */; };
 		34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34480B351FD0929200BC14EF /* ShareAppExtensionContext.m */; };
@@ -163,12 +165,10 @@
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
-		34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
-		34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8701E8DF1700035BE1A /* HomeViewController.m */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
@@ -617,6 +617,10 @@
 		34330AA11E79686200DF2FB9 /* OWSProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProgressView.h; sourceTree = "<group>"; };
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		34386A53207D271C009F5D9C /* NeverClearView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeverClearView.swift; sourceTree = "<group>"; };
+		34386A4D207D0C01009F5D9C /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
+		34386A4E207D0C01009F5D9C /* HomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewCell.h; sourceTree = "<group>"; };
+		34386A4F207D0C01009F5D9C /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
+		34386A50207D0C01009F5D9C /* HomeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewCell.m; sourceTree = "<group>"; };
 		343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISyncMessages.h; sourceTree = "<group>"; };
 		343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISyncMessages.m; sourceTree = "<group>"; };
 		343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationScrollButton.m; sourceTree = "<group>"; };
@@ -748,8 +752,6 @@
 		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
 		34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ContactsPicker.xib; sourceTree = "<group>"; };
 		34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
-		34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InboxTableViewCell.h; sourceTree = "<group>"; };
-		34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InboxTableViewCell.m; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewContactThreadViewController.h; sourceTree = "<group>"; };
 		34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewContactThreadViewController.m; sourceTree = "<group>"; };
@@ -757,8 +759,6 @@
 		34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34B3F86D1E8DF1700035BE1A /* SignalsNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalsNavigationController.h; sourceTree = "<group>"; };
 		34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalsNavigationController.m; sourceTree = "<group>"; };
-		34B3F86F1E8DF1700035BE1A /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
-		34B3F8701E8DF1700035BE1A /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		34B3F89D1E8DF5490035BE1A /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSTableViewController.h; sourceTree = "<group>"; };
 		34B3F89E1E8DF5490035BE1A /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
@@ -1352,6 +1352,17 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		34386A4C207D0C01009F5D9C /* HomeView */ = {
+			isa = PBXGroup;
+			children = (
+				34386A4E207D0C01009F5D9C /* HomeViewCell.h */,
+				34386A50207D0C01009F5D9C /* HomeViewCell.m */,
+				34386A4F207D0C01009F5D9C /* HomeViewController.h */,
+				34386A4D207D0C01009F5D9C /* HomeViewController.m */,
+			);
+			path = HomeView;
+			sourceTree = "<group>";
+		};
 		34480B2F1FD0921000BC14EF /* utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -1583,10 +1594,7 @@
 				34D8C0221ED3673300188D7C /* DebugUI */,
 				34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
-				34B3F86F1E8DF1700035BE1A /* HomeViewController.h */,
-				34B3F8701E8DF1700035BE1A /* HomeViewController.m */,
-				34B3F8491E8DF1700035BE1A /* InboxTableViewCell.h */,
-				34B3F84A1E8DF1700035BE1A /* InboxTableViewCell.m */,
+				34386A4C207D0C01009F5D9C /* HomeView */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
 				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
 				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
@@ -3158,6 +3166,7 @@
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
+				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleStrokeView.m in Sources */,
 				34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
@@ -3178,6 +3187,7 @@
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
+				34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */,
 				34D1F0A91F867BFC0066283D /* ConversationViewCell.m in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				34CCAF381F0C0599004084F4 /* AppUpdateNag.m in Sources */,
@@ -3298,14 +3308,12 @@
 				340FC8A8204DAC8D007AEB0F /* CodeVerificationViewController.m in Sources */,
 				3461299C1FD1EA9E00532771 /* NotificationsManager.m in Sources */,
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
-				34B3F87E1E8DF1700035BE1A /* InboxTableViewCell.m in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
 				34D2CCD4206294B900CB1A14 /* OWSScreenLock.swift in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
-				34B3F8941E8DF1710035BE1A /* HomeViewController.m in Sources */,
 				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,

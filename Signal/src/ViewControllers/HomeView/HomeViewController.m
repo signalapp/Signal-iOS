@@ -6,7 +6,7 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "ConversationViewController.h"
-#import "InboxTableViewCell.h"
+#import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
@@ -210,8 +210,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self.tableView registerClass:[InboxTableViewCell class]
-           forCellReuseIdentifier:InboxTableViewCell.cellReuseIdentifier];
+    [self.tableView registerClass:[HomeViewCell class] forCellReuseIdentifier:HomeViewCell.cellReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -329,7 +328,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
 
-- (void)settingsButtonPressed:(id)sender {
+- (void)settingsButtonPressed:(id)sender
+{
     OWSNavigationController *navigationController = [AppSettingsViewController inModalNavigationController];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -578,13 +578,18 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    InboxTableViewCell *cell =
-        [self.tableView dequeueReusableCellWithIdentifier:InboxTableViewCell.cellReuseIdentifier];
+    HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [cell configureWithThread:thread contactsManager:self.contactsManager blockedPhoneNumberSet:_blockedPhoneNumberSet];
+    BOOL isLastCell = (indexPath.row == [self tableView:tableView numberOfRowsInSection:indexPath.section] - 1);
+    BOOL shouldHaveBottomSeparator = !isLastCell;
+
+    [cell configureWithThread:thread
+                  contactsManager:self.contactsManager
+            blockedPhoneNumberSet:self.blockedPhoneNumberSet
+        shouldHaveBottomSeparator:shouldHaveBottomSeparator];
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
@@ -606,7 +611,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return InboxTableViewCell.rowHeight;
+    return HomeViewCell.rowHeight;
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
@@ -728,7 +733,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction]
                                         : [thread unarchiveThreadWithTransaction:transaction];
-
     }];
     [self checkIfEmptyView];
 }
