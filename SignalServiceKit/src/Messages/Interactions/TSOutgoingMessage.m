@@ -416,15 +416,17 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     
     OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
-    
-    
+
+
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];
     } else {
         OWSFail(@"%@ message body length too long.", self.logTag);
         NSMutableString *truncatedBody = [self.body mutableCopy];
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            DDLogError(@"%@ truncating body which is too long: %tu", self.logTag, [truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+            DDLogError(@"%@ truncating body which is too long: %tu",
+                self.logTag,
+                [truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
             truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
         }
         [builder setBody:truncatedBody];
