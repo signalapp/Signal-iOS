@@ -90,6 +90,7 @@
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
@@ -1511,25 +1512,15 @@ typedef enum : NSUInteger {
     }
     static const CGFloat kThreshold = 50.f;
     if (self.collectionView.contentOffset.y < kThreshold) {
-        [self loadMoreMessages];
+        [self loadAnotherPageOfMessages];
     }
 }
 
-- (void)loadMoreMessages
+- (void)loadAnotherPageOfMessages
 {
     BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
 
-    // We want to restore the current scroll state after we update the range, update
-    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
-    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-
-    self.lastRangeLength = MIN(self.lastRangeLength + kYapDatabasePageSize, (NSUInteger) kYapDatabaseRangeMaxLength);
-
-    [self resetMappings];
-
-    [self.layout prepareLayout];
-
-    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
+    [self loadNMoreMessages:kYapDatabasePageSize];
 
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
@@ -1537,6 +1528,21 @@ typedef enum : NSUInteger {
     if (hasEarlierUnseenMessages) {
         [self scrollToUnreadIndicatorAnimated];
     }
+}
+
+- (void)loadNMoreMessages:(NSUInteger)numberOfMessagesToLoad
+{
+    // We want to restore the current scroll state after we update the range, update
+    // the dynamic interactions and re-layout.  Here we take a "before" snapshot.
+    CGFloat scrollDistanceToBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+
+    self.lastRangeLength = MIN(self.lastRangeLength + numberOfMessagesToLoad, (NSUInteger)kYapDatabaseRangeMaxLength);
+
+    [self resetMappings];
+
+    [self.layout prepareLayout];
+
+    self.collectionView.contentOffset = CGPointMake(0, self.safeContentHeight - scrollDistanceToBottom);
 }
 
 - (void)updateShowLoadMoreHeader
@@ -2122,6 +2128,136 @@ typedef enum : NSUInteger {
     OWSAssert(message);
 
     [self handleUnsentMessageTap:message];
+}
+
+- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(viewItem);
+    OWSAssert(quotedMessage);
+    OWSAssert(quotedMessage.timestamp > 0);
+    OWSAssert(quotedMessage.authorId.length > 0);
+
+    // We try to find the index of the item within the current thread's
+    // interactions that includes the "quoted interaction".
+    //
+    // NOTE: There are two indices:
+    //
+    // * The "group index" of the member of the database views group at
+    //   the db conneciton's current checkpoint.
+    // * The "index row/section" in the message mapping.
+    //
+    // NOTE: Since the range _IS NOT_ filtered by author,
+    // and timestamp collisions are possible, it's possible
+    // for:
+    //
+    // * The range to include more than the "quoted interaction".
+    // * The range to be non-empty but NOT include the "quoted interaction",
+    //   although this would be a bug.
+    __block TSInteraction *_Nullable quotedInteraction;
+    __block NSUInteger threadInteractionCount = 0;
+    __block NSNumber *_Nullable groupIndex = nil;
+
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedMessage.timestamp
+                                                                  authorId:quotedMessage.authorId
+                                                            threadUniqueId:self.thread.uniqueId
+                                                               transaction:transaction];
+        if (!quotedInteraction) {
+            return;
+        }
+
+        YapDatabaseAutoViewTransaction *_Nullable extension =
+            [transaction extension:TSMessageDatabaseViewExtensionName];
+        if (!extension) {
+            OWSFail(@"%@ Couldn't load view.", self.logTag);
+            return;
+        }
+
+        threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
+
+        groupIndex = [self findGroupIndexOfThreadInteraction:quotedInteraction transaction:transaction];
+    }];
+
+    if (!quotedInteraction || !groupIndex) {
+        DDLogError(@"%@ Couldn't find message quoted in quoted reply.", self.logTag);
+        return;
+    }
+
+    NSUInteger indexRow = 0;
+    NSUInteger indexSection = 0;
+    BOOL isInMappings = [self.messageMappings getRow:&indexRow
+                                             section:&indexSection
+                                            forIndex:groupIndex.unsignedIntegerValue
+                                             inGroup:self.thread.uniqueId];
+
+    if (!isInMappings) {
+        NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - groupIndex.integerValue);
+        NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+        NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
+        if (additionalItemsToLoad < 1) {
+            DDLogError(@"%@ Couldn't determine how to load quoted reply.", self.logTag);
+            return;
+        }
+
+        // Try to load more messages so that the quoted message
+        // is in the load window.
+        //
+        // This may fail if the quoted message is very old, in which
+        // case we'll load the max number of messages.
+        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
+
+        // `loadNMoreMessages` will reset the mapping and possibly
+        // integrate new changes, so we need to reload the "group index"
+        // of the quoted message.
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            groupIndex = [self findGroupIndexOfThreadInteraction:quotedInteraction transaction:transaction];
+        }];
+
+        if (!quotedInteraction || !groupIndex) {
+            DDLogError(@"%@ Failed to find quoted reply in group.", self.logTag);
+            return;
+        }
+
+        isInMappings = [self.messageMappings getRow:&indexRow
+                                            section:&indexSection
+                                           forIndex:groupIndex.unsignedIntegerValue
+                                            inGroup:self.thread.uniqueId];
+
+        if (!isInMappings) {
+            DDLogError(@"%@ Could not load quoted reply into mapping.", self.logTag);
+            return;
+        }
+    }
+
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)indexRow inSection:(NSInteger)indexSection];
+    [self.collectionView scrollToItemAtIndexPath:indexPath
+                                atScrollPosition:UICollectionViewScrollPositionTop
+                                        animated:YES];
+
+    // TODO: Highlight the quoted message?
+}
+
+- (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
+                                             transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(interaction);
+    OWSAssert(transaction);
+
+    YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
+    if (!extension) {
+        OWSFail(@"%@ Couldn't load view.", self.logTag);
+        return nil;
+    }
+
+    NSUInteger groupIndex = 0;
+    BOOL foundInGroup =
+        [extension getGroup:nil index:&groupIndex forKey:interaction.uniqueId inCollection:TSInteraction.collection];
+    if (!foundInGroup) {
+        DDLogError(@"%@ Couldn't find quoted message in group.", self.logTag);
+        return nil;
+    }
+    return @(groupIndex);
 }
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem

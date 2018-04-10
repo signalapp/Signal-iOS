@@ -668,6 +668,55 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ Deleted %zd/%zd objects from: %@", self.logTag, count, uniqueIds.count, collection);
 }
 
+#pragma mark - Find Content
+
++ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
+                                                      authorId:(NSString *)authorId
+                                                threadUniqueId:(NSString *)threadUniqueId
+                                                   transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(timestamp > 0);
+    OWSAssert(authorId.length > 0);
+
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (localNumber.length < 1) {
+        OWSFail(@"%@ missing long number.", self.logTag);
+        return nil;
+    }
+
+    NSArray<TSInteraction *> *interactions =
+        [TSInteraction interactionsWithTimestamp:timestamp
+                                          filter:^(TSInteraction *interaction) {
+                                              NSString *_Nullable messageAuthorId = nil;
+                                              if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                                  TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                                  messageAuthorId = incomingMessage.authorId;
+                                              } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                                  messageAuthorId = localNumber;
+                                              }
+                                              if (messageAuthorId.length < 1) {
+                                                  return NO;
+                                              }
+
+                                              if (![authorId isEqualToString:messageAuthorId]) {
+                                                  return NO;
+                                              }
+                                              if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
+                                                  return NO;
+                                              }
+                                              return YES;
+                                          }
+                                 withTransaction:transaction];
+    if (interactions.count < 1) {
+        return nil;
+    }
+    if (interactions.count > 1) {
+        // In case of collision, take the first.
+        DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
+    }
+    return interactions.firstObject;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

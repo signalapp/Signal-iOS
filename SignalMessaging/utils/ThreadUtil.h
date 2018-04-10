@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSThread;
 @class YapDatabaseConnection;
+@class YapDatabaseReadTransaction;
 
 @interface ThreadDynamicInteractions : NSObject
 
@@ -112,6 +113,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Delete Content
 
 + (void)deleteAllContent;
+
+#pragma mark - Find Content
+
++ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
+                                                      authorId:(NSString *)authorId
+                                                threadUniqueId:(NSString *)threadUniqueId
+                                                   transaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
