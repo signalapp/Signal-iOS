@@ -10,6 +10,18 @@
 #import <SignalServiceKit/NSObject+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
 
+@interface DateUtil (Test)
+
++ (BOOL)dateIsOlderThanToday:(NSDate *)date now:(NSDate *)now;
++ (BOOL)dateIsOlderThanOneWeek:(NSDate *)date now:(NSDate *)now;
++ (BOOL)dateIsToday:(NSDate *)date now:(NSDate *)now;
++ (BOOL)dateIsThisYear:(NSDate *)date now:(NSDate *)now;
++ (BOOL)dateIsYesterday:(NSDate *)date now:(NSDate *)now;
+
+@end
+
+#pragma mark -
+
 @interface NSString (OWS_Test)
 
 - (NSString *)removeAllCharactersIn:(NSCharacterSet *)characterSet;
@@ -79,7 +91,19 @@
 
 - (void)testDateComparators
 {
-    NSDate *now = [NSDate new];
+    // Use a specific reference date to make this test deterministic,
+    // and to avoid failing around midnight, new year's, etc.
+    NSDateComponents *nowDateComponents = [NSDateComponents new];
+    nowDateComponents.year = 2015;
+    nowDateComponents.month = 8;
+    nowDateComponents.day = 31;
+    nowDateComponents.hour = 8;
+    NSDate *now = [[NSCalendar currentCalendar] dateFromComponents:nowDateComponents];
+
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.dateStyle = NSDateFormatterLongStyle;
+    formatter.timeStyle = NSDateFormatterLongStyle;
+    NSLog(@"now: %@", [formatter stringFromDate:now]);
 
     NSDate *oneSecondAgo =
         [NSDate dateWithTimeIntervalSinceReferenceDate:[now timeIntervalSinceReferenceDate] - kSecondInterval];
@@ -111,73 +135,83 @@
     NSDate *twoYearsAhead =
         [NSDate dateWithTimeIntervalSinceReferenceDate:[now timeIntervalSinceReferenceDate] + kYearInterval * 2];
 
-    // These might fail around midnight.
-    XCTAssertTrue([DateUtil dateIsToday:oneSecondAgo]);
-    XCTAssertTrue([DateUtil dateIsToday:oneMinuteAgo]);
-    XCTAssertFalse([DateUtil dateIsToday:oneDayAgo]);
-    XCTAssertFalse([DateUtil dateIsToday:threeDaysAgo]);
-    XCTAssertFalse([DateUtil dateIsToday:tenDaysAgo]);
-    XCTAssertFalse([DateUtil dateIsToday:oneYearAgo]);
-    XCTAssertFalse([DateUtil dateIsToday:twoYearsAgo]);
+    NSLog(@"oneSecondAgo: %@", [formatter stringFromDate:oneSecondAgo]);
 
-    // These might fail around midnight.
-    XCTAssertTrue([DateUtil dateIsToday:oneSecondAhead]);
-    XCTAssertTrue([DateUtil dateIsToday:oneMinuteAhead]);
-    XCTAssertFalse([DateUtil dateIsToday:oneDayAhead]);
-    XCTAssertFalse([DateUtil dateIsToday:threeDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsToday:tenDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsToday:oneYearAhead]);
-    XCTAssertFalse([DateUtil dateIsToday:twoYearsAhead]);
+    XCTAssertTrue([DateUtil dateIsToday:oneSecondAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsToday:oneMinuteAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:oneDayAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:threeDaysAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:tenDaysAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:oneYearAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:twoYearsAgo now:now]);
 
-    // These might fail around midnight.
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneSecondAgo]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneMinuteAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneDay:oneDayAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneDay:threeDaysAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneDay:tenDaysAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneDay:oneYearAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneDay:twoYearsAgo]);
+    XCTAssertTrue([DateUtil dateIsToday:oneSecondAhead now:now]);
+    XCTAssertTrue([DateUtil dateIsToday:oneMinuteAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:oneDayAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:threeDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:tenDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:oneYearAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsToday:twoYearsAhead now:now]);
 
-    // These might fail around midnight.
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneSecondAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneMinuteAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneDayAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:threeDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:tenDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:oneYearAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneDay:twoYearsAhead]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneSecondAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneMinuteAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsYesterday:oneDayAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:threeDaysAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:tenDaysAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneYearAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:twoYearsAgo now:now]);
 
-    // These might fail around midnight.
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneSecondAgo]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneMinuteAgo]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneDayAgo]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:threeDaysAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:tenDaysAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:oneYearAgo]);
-    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:twoYearsAgo]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneSecondAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneMinuteAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneDayAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:threeDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:tenDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:oneYearAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsYesterday:twoYearsAhead now:now]);
 
-    // These might fail around midnight.
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneSecondAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneMinuteAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneDayAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:threeDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:tenDaysAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneYearAhead]);
-    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:twoYearsAhead]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneSecondAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneMinuteAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:oneDayAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:threeDaysAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:tenDaysAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:oneYearAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:twoYearsAgo now:now]);
 
-    // These might fail around new year's.
-    XCTAssertTrue([DateUtil dateIsThisYear:oneSecondAgo]);
-    XCTAssertTrue([DateUtil dateIsThisYear:oneMinuteAgo]);
-    XCTAssertTrue([DateUtil dateIsThisYear:oneDayAgo]);
-    XCTAssertFalse([DateUtil dateIsThisYear:oneYearAgo]);
-    XCTAssertFalse([DateUtil dateIsThisYear:twoYearsAgo]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneSecondAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneMinuteAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneDayAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:threeDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:tenDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:oneYearAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:twoYearsAhead now:now]);
 
-    // These might fail around new year's.
-    XCTAssertTrue([DateUtil dateIsThisYear:oneSecondAhead]);
-    XCTAssertTrue([DateUtil dateIsThisYear:oneMinuteAhead]);
-    XCTAssertTrue([DateUtil dateIsThisYear:oneDayAhead]);
-    XCTAssertFalse([DateUtil dateIsThisYear:oneYearAhead]);
-    XCTAssertFalse([DateUtil dateIsThisYear:twoYearsAhead]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneSecondAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneMinuteAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneDayAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:threeDaysAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:tenDaysAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:oneYearAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsOlderThanOneWeek:twoYearsAgo now:now]);
+
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneSecondAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneMinuteAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneDayAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:threeDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:tenDaysAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:oneYearAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:twoYearsAhead now:now]);
+
+    XCTAssertTrue([DateUtil dateIsThisYear:oneSecondAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsThisYear:oneMinuteAgo now:now]);
+    XCTAssertTrue([DateUtil dateIsThisYear:oneDayAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsThisYear:oneYearAgo now:now]);
+    XCTAssertFalse([DateUtil dateIsThisYear:twoYearsAgo now:now]);
+
+    XCTAssertTrue([DateUtil dateIsThisYear:oneSecondAhead now:now]);
+    XCTAssertTrue([DateUtil dateIsThisYear:oneMinuteAhead now:now]);
+    XCTAssertTrue([DateUtil dateIsThisYear:oneDayAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsThisYear:oneYearAhead now:now]);
+    XCTAssertFalse([DateUtil dateIsThisYear:twoYearsAhead now:now]);
 }
 
 - (void)testObjectComparison

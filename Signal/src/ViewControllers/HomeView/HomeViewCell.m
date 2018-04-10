@@ -192,6 +192,9 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     [self updateNameLabel];
     [self updateAvatarView];
 
+    // We update the fonts every time this cell is configured to ensure that
+    // changes to the dynamic type settings are reflected.
+    self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
     self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
@@ -204,6 +207,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
         self.unreadBadge.hidden = NO;
+        self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
 
         [self.viewConstraints addObjectsFromArray:@[
@@ -304,7 +308,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
         dateTimeString = [[DateUtil dateFormatter] stringFromDate:date];
     } else if ([DateUtil dateIsOlderThanOneWeek:date]) {
         dateTimeString = [[DateUtil monthAndDayFormatter] stringFromDate:date];
-    } else if ([DateUtil dateIsOlderThanOneDay:date]) {
+    } else if ([DateUtil dateIsOlderThanToday:date]) {
         dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
     } else {
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
@@ -381,6 +385,8 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 - (void)updateNameLabel
 {
     OWSAssertIsOnMainThread();
+
+    self.nameLabel.font = self.nameFont;
 
     TSThread *thread = self.thread;
     if (thread == nil) {
