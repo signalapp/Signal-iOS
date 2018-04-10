@@ -4165,6 +4165,9 @@ typedef enum : NSUInteger {
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
+        // TODO we should redundantly send the first n chars in the body field so it can be viewed
+        // on clients that don't support oversized text messgaes, (and potentially generate a preview
+        // before the attachment is downloaded)
         message = [ThreadUtil sendMessageWithAttachment:attachment
                                                inThread:self.thread
                                        quotedReplyModel:self.inputToolbar.quotedReply

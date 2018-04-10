@@ -484,6 +484,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     private let sendButton: UIButton
     private let textView: UITextView
     private let bottomGradient: GradientView
+    private let lengthLimitLabel: UILabel
 
     // Layout Constants
 
@@ -523,6 +524,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         self.bottomGradient = GradientView(from: UIColor.clear, to: UIColor.black)
         self.textView =  MessageTextView()
         self.textViewHeight = kMinTextViewHeight
+        self.lengthLimitLabel = UILabel()
 
         super.init(frame: CGRect.zero)
 
@@ -560,12 +562,24 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
+        // Length Limit Label shown when the user inputs too long of a message
+        lengthLimitLabel.textColor = .white
+        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED", comment: "One line label indicating the user can add no more text to the attachment caption.")
+        lengthLimitLabel.textAlignment = .center
+
+        // Add shadow in case overlayed on white content
+        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.layer.shadowOffset = CGSize(width: 0.0, height: 0.0)
+        lengthLimitLabel.layer.shadowOpacity = 0.8
+        self.lengthLimitLabel.isHidden = true
+
         let contentView = UIView()
         addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
         contentView.addSubview(bottomGradient)
         contentView.addSubview(sendButton)
         contentView.addSubview(textView)
+        contentView.addSubview(lengthLimitLabel)
 
         // Layout
         let kToolbarMargin: CGFloat = 8
@@ -597,6 +611,12 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         sendButton.setContentHuggingHigh()
         sendButton.setCompressionResistanceHigh()
 
+        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
+        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
+        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textView, withOffset: -6)
+        lengthLimitLabel.setContentHuggingHigh()
+        lengthLimitLabel.setCompressionResistanceHigh()
+
         let bottomGradientHeight = ScaleFromIPhone5(100)
         bottomGradient.autoSetDimension(.height, toSize: bottomGradientHeight)
         bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
@@ -609,19 +629,28 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
-        // compute new height assuming width is unchanged
-        let currentSize = textView.frame.size
-        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
-
-        if newHeight != self.textViewHeight {
-            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
-            self.textViewHeight = newHeight
-            self.textViewHeightConstraint?.constant = textViewHeight
-            self.invalidateIntrinsicContentSize()
-        }
+        updateHeight(textView: textView)
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+
+        // Limit caption character count. We do this in characters, not bytes.
+        // This character limit will be safely below our byte limit (16k) for almost all uses.
+        // Because the captioning interface doesn't allow newlines, in practice design pressures users to leave relatively short captions.
+        let maxCharacterCount = 2000
+        guard textView.text.count + text.count - range.length <= maxCharacterCount else {
+            self.lengthLimitLabel.isHidden = false
+            // Accept as much of the input as we can
+            let remainingSpace = maxCharacterCount - textView.text.count
+            if (remainingSpace) > 0 {
+                let acceptableAddition = text.substring(to: text.startIndex.advanced(by: remainingSpace))
+                textView.text = "\(textView.text ?? "")\(acceptableAddition)"
+                updateHeight(textView: textView)
+            }
+            return false
+        }
+        self.lengthLimitLabel.isHidden = true
+
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
@@ -641,6 +670,19 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
     }
 
     // MARK: - Helpers
+
+    private func updateHeight(textView: UITextView) {
+        // compute new height assuming width is unchanged
+        let currentSize = textView.frame.size
+        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+
+        if newHeight != self.textViewHeight {
+            Logger.debug("\(self.logTag) TextView height changed: \(self.textViewHeight) -> \(newHeight)")
+            self.textViewHeight = newHeight
+            self.textViewHeightConstraint?.constant = textViewHeight
+            self.invalidateIntrinsicContentSize()
+        }
+    }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
