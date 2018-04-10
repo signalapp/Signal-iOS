@@ -672,46 +672,49 @@ NS_ASSUME_NONNULL_BEGIN
 
     + (nullable TSInteraction *)findInteractionInThreadByTimestamp : (uint64_t)timestamp authorId
     : (NSString *)authorId threadUniqueId : (NSString *)threadUniqueId transaction
-    : (YapDatabaseReadTransaction *)transaction
+    : (YapDatabaseReadTransaction *)transaction;
 {
     OWSAssert(timestamp > 0);
     OWSAssert(authorId.length > 0);
 
     NSString *localNumber = [TSAccountManager localNumber];
     if (localNumber.length < 1) {
+        OWSFail(@"%@ missing long number.", self.logTag);
         return nil;
     }
 
     NSArray<TSInteraction *> *interactions =
-        [TSInteraction interactionsWithTimestamp:timestamp ofClass:[TSMessage class] withTransaction:transaction];
+        [TSInteraction interactionsWithTimestamp:timestamp
+                                          filter:^(TSInteraction *interaction) {
+                                              NSString *_Nullable messageAuthorId = nil;
+                                              if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                                  TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+                                                  messageAuthorId = incomingMessage.authorId;
+                                              } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                                  messageAuthorId = localNumber;
+                                              }
+                                              if (messageAuthorId.length < 1) {
+                                                  return NO;
+                                              }
 
-    TSInteraction *_Nullable result = nil;
-    for (TSInteraction *interaction in interactions) {
-        NSString *_Nullable messageAuthorId = nil;
-        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-            messageAuthorId = incomingMessage.authorId;
-        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-            messageAuthorId = localNumber;
-        }
-        if (messageAuthorId.length < 1) {
-            OWSFail(@"%@ Message missing author id.", self.logTag);
-            continue;
-        }
-        if (![authorId isEqualToString:messageAuthorId]) {
-            continue;
-        }
-        if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
-            continue;
-        }
-        if (result) {
-            // In case of collision, take the first.
-            DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
-            continue;
-        }
-        result = interaction;
+                                              if (![authorId isEqualToString:messageAuthorId]) {
+                                                  return NO;
+                                              }
+                                              if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
+                                                  return NO;
+                                              }
+                                              return YES;
+                                          }
+                                 withTransaction:transaction];
+    if (interactions.count < 1) {
+        return nil;
     }
-    return result;
+    if (interactions.count > 1) {
+        // In case of collision, take the first.
+        DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
+        return nil;
+    }
+    return interactions[0];
 }
 
 @end
