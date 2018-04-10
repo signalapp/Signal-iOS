@@ -658,7 +658,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
             if (incomingMessage.hasAttachments) {
                 NSString *attachmentId = incomingMessage.attachmentIds.firstObject;
-                TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+                __block TSAttachment *_Nullable attachment = nil;
+                [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
+                    readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                        attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+                    }];
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                     // Don't let users reply to attachments which aren't yet downloaded
                     // (or otherwise missing on disk).
