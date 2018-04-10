@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,6 +25,12 @@ static inline CGFloat CGFloatLerp(CGFloat left, CGFloat right, CGFloat alpha)
 static inline CGFloat CGFloatInverseLerp(CGFloat value, CGFloat minValue, CGFloat maxValue)
 {
     return (value - minValue) / (maxValue - minValue);
+}
+
+// Ceil to an even number
+static inline CGFloat CeilEven(CGFloat value)
+{
+    return 2.f * ceil(value * 0.5f);
 }
 
 void SetRandFunctionSeed(void);

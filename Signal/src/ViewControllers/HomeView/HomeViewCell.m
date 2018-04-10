@@ -15,16 +15,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kHomeViewCellHeight = 72;
-const NSUInteger kHomeViewCellHMargin = 16;
-const NSUInteger kHomeViewCellVMargin = 12;
-const NSUInteger kHomeViewAvatarSize = kHomeViewCellHeight - kHomeViewCellVMargin * 2;
-const NSUInteger kHomeViewAvatarHSpacing = 12;
-
 @interface HomeViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UIView *payloadView;
+@property (nonatomic) UIStackView *topRowView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
@@ -76,16 +71,16 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
-    [self.avatarView autoSetDimension:ALDimensionWidth toSize:kHomeViewAvatarSize];
-    [self.avatarView autoSetDimension:ALDimensionHeight toSize:kHomeViewAvatarSize];
-    [self.avatarView autoPinLeadingToSuperviewMarginWithInset:kHomeViewCellHMargin];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
+    [self.avatarView autoPinLeadingToSuperviewMarginWithInset:self.cellHMargin];
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
 
     self.payloadView = [UIView containerView];
     [self.contentView addSubview:self.payloadView];
-    [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:kHomeViewAvatarHSpacing];
+    [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
 
     self.nameLabel = [UILabel new];
@@ -102,6 +97,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
         self.nameLabel,
         self.dateTimeLabel,
     ]];
+    self.topRowView = topRowView;
     topRowView.axis = UILayoutConstraintAxisHorizontal;
     topRowView.spacing = 4;
     [self.payloadView addSubview:topRowView];
@@ -117,7 +113,6 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     [self.snippetLabel autoPinLeadingToSuperviewMargin];
     [self.snippetLabel autoPinTrailingToSuperviewMargin];
     [self.snippetLabel autoPinBottomToSuperviewMargin];
-    [self.snippetLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRowView withOffset:5.f];
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
@@ -130,7 +125,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
     [self.contentView addSubview:self.unreadBadge];
-    [self.unreadBadge autoPinTrailingToSuperviewMarginWithInset:kHomeViewCellHMargin];
+    [self.unreadBadge autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
     [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.dateTimeLabel];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
@@ -143,11 +138,6 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
-}
-
-+ (CGFloat)rowHeight
-{
-    return kHomeViewCellHeight;
 }
 
 - (void)initializeLayout
@@ -163,14 +153,11 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 - (void)configureWithThread:(TSThread *)thread
               contactsManager:(OWSContactsManager *)contactsManager
         blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
-    shouldHaveBottomSeparator:(BOOL)shouldHaveBottomSeparator
 {
     OWSAssertIsOnMainThread();
     OWSAssert(thread);
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
-
-    // TODO: Honor shouldHaveBottomSeparator.
 
     self.thread = thread;
     self.contactsManager = contactsManager;
@@ -190,9 +177,10 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
     self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
-
-    self.separatorInset
-        = UIEdgeInsetsMake(0, kHomeViewAvatarSize + kHomeViewCellHMargin + kHomeViewAvatarHSpacing, 0, 0);
+    CGFloat snippetHSpacing = ceil([HomeViewCell scaleValueWithDynamicType:6]);
+    [self.viewConstraints addObjectsFromArray:@[
+        [self.snippetLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.topRowView withOffset:snippetHSpacing],
+    ]];
 
     self.dateTimeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
 
@@ -209,16 +197,18 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
         const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
 
+        CGFloat unreadBadgeHSpacing = ceil([HomeViewCell scaleValueWithDynamicType:7]);
+
         [self.viewConstraints addObjectsFromArray:@[
-                                                    [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
-                                                    [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
-                                                    [self.unreadBadge autoPinLeadingToTrailingEdgeOfView:self.payloadView offset:4.f],
+            [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
+            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
+            [self.unreadBadge autoPinLeadingToTrailingEdgeOfView:self.payloadView offset:unreadBadgeHSpacing],
         ]];
     } else {
         self.unreadBadge.hidden = YES;
 
         [self.viewConstraints addObjectsFromArray:@[
-            [self.payloadView autoPinTrailingToSuperviewMarginWithInset:kHomeViewCellHMargin],
+            [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin],
         ]];
     }
 }
@@ -240,7 +230,7 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     }
 
     self.avatarView.image =
-        [OWSAvatarBuilder buildImageForThread:thread diameter:kHomeViewAvatarSize contactsManager:contactsManager];
+        [OWSAvatarBuilder buildImageForThread:thread diameter:self.avatarSize contactsManager:contactsManager];
 }
 
 - (NSAttributedString *)attributedSnippetForThread:(TSThread *)thread
@@ -343,6 +333,38 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 - (UIFont *)nameSecondaryFont
 {
     return [UIFont ows_dynamicTypeFootnoteFont];
+}
+
++ (CGFloat)scaleValueWithDynamicType:(CGFloat)minValue
+{
+    const NSUInteger kReferenceFontSizeMin = 17.f;
+
+    CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
+    // We don't want to scale these values any smaller than their reference values.
+    CGFloat alpha = MAX(1.f, referenceFontSize / kReferenceFontSizeMin);
+    return minValue * alpha;
+}
+
++ (CGFloat)rowHeight
+{
+    const NSUInteger kMinCellHeight = 72;
+
+    return CeilEven([self scaleValueWithDynamicType:kMinCellHeight]);
+}
+
+- (NSUInteger)cellHMargin
+{
+    return 16;
+}
+
+- (NSUInteger)avatarSize
+{
+    return 48.f;
+}
+
+- (NSUInteger)avatarHSpacing
+{
+    return 12.f;
 }
 
 #pragma mark - Reuse

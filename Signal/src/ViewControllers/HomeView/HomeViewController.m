@@ -210,6 +210,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[HomeViewCell class] forCellReuseIdentifier:HomeViewCell.cellReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
@@ -583,13 +584,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    BOOL isLastCell = (indexPath.row == [self tableView:tableView numberOfRowsInSection:indexPath.section] - 1);
-    BOOL shouldHaveBottomSeparator = !isLastCell;
-
     [cell configureWithThread:thread
-                  contactsManager:self.contactsManager
-            blockedPhoneNumberSet:self.blockedPhoneNumberSet
-        shouldHaveBottomSeparator:shouldHaveBottomSeparator];
+              contactsManager:self.contactsManager
+        blockedPhoneNumberSet:self.blockedPhoneNumberSet];
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
