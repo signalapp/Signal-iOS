@@ -122,15 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     // But this doesn't seem to work in practice on iOS 11 using UIFontWeightMedium.
 
     UIFont *derivedFont = [UIFont systemFontOfSize:self.pointSize weight:UIFontWeightMedium];
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-        return [[UIFontMetrics defaultMetrics] scaledFontForFont:derivedFont];
-#pragma clang diagnostic pop
-    } else {
-        return derivedFont;
-    }
+    return derivedFont;
 }
 
 @end
