@@ -670,9 +670,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Find Content
 
-    + (nullable TSInteraction *)findInteractionInThreadByTimestamp : (uint64_t)timestamp authorId
-    : (NSString *)authorId threadUniqueId : (NSString *)threadUniqueId transaction
-    : (YapDatabaseReadTransaction *)transaction;
++ (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
+                                                      authorId:(NSString *)authorId
+                                                threadUniqueId:(NSString *)threadUniqueId
+                                                   transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(timestamp > 0);
     OWSAssert(authorId.length > 0);
@@ -712,9 +713,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (interactions.count > 1) {
         // In case of collision, take the first.
         DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
-        return nil;
     }
-    return interactions[0];
+    return interactions.firstObject;
 }
 
 @end
