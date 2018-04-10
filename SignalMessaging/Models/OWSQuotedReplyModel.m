@@ -170,7 +170,8 @@
 
     if (!hasText && !hasAttachment) {
         OWSFail(@"%@ quoted message has neither text nor attachment", self.logTag);
-        return nil;
+        quotedText = @"";
+        hasText = YES;
     }
 
     return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp

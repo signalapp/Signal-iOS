@@ -347,7 +347,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (![[NSFileManager defaultManager] fileExistsAtPath:thumbnailPath]) {
-        OWSFail(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
+        // This isn't true for some useful edge cases tested by the Debug UI.
+        DDLogError(@"%@ missing thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
 
         return nil;
     }
