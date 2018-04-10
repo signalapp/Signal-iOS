@@ -135,14 +135,6 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
-    // TODO: Will this localize?  It assumes that the worst case
-    // unread count (99) will fit horizontally into some multiple
-    // N of the font's line height.
-    const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
-    self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
-    [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize];
-    [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize];
-
     [self.unreadBadge addSubview:self.unreadLabel];
     [self.unreadLabel autoVCenterInSuperview];
     [self.unreadLabel autoPinWidthToSuperview];
@@ -206,12 +198,21 @@ const NSUInteger kHomeViewAvatarHSpacing = 12;
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
+
         self.unreadBadge.hidden = NO;
         self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
 
+        // TODO: Will this localize?  It assumes that the worst case
+        // unread count (99) will fit horizontally into some multiple
+        // N of the font's line height.
+        const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
+        self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
+
         [self.viewConstraints addObjectsFromArray:@[
-            [self.unreadBadge autoPinLeadingToTrailingEdgeOfView:self.payloadView offset:4.f],
+                                                    [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
+                                                    [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
+                                                    [self.unreadBadge autoPinLeadingToTrailingEdgeOfView:self.payloadView offset:4.f],
         ]];
     } else {
         self.unreadBadge.hidden = YES;
