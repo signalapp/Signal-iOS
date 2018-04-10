@@ -668,6 +668,52 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ Deleted %zd/%zd objects from: %@", self.logTag, count, uniqueIds.count, collection);
 }
 
+#pragma mark - Find Content
+
+    + (nullable TSInteraction *)findInteractionInThreadByTimestamp : (uint64_t)timestamp authorId
+    : (NSString *)authorId threadUniqueId : (NSString *)threadUniqueId transaction
+    : (YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(timestamp > 0);
+    OWSAssert(authorId.length > 0);
+
+    NSString *localNumber = [TSAccountManager localNumber];
+    if (localNumber.length < 1) {
+        return nil;
+    }
+
+    NSArray<TSInteraction *> *interactions =
+        [TSInteraction interactionsWithTimestamp:timestamp ofClass:[TSMessage class] withTransaction:transaction];
+
+    TSInteraction *_Nullable result = nil;
+    for (TSInteraction *interaction in interactions) {
+        NSString *_Nullable messageAuthorId = nil;
+        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+            messageAuthorId = incomingMessage.authorId;
+        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            messageAuthorId = localNumber;
+        }
+        if (messageAuthorId.length < 1) {
+            OWSFail(@"%@ Message missing author id.", self.logTag);
+            continue;
+        }
+        if (![authorId isEqualToString:messageAuthorId]) {
+            continue;
+        }
+        if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
+            continue;
+        }
+        if (result) {
+            // In case of collision, take the first.
+            DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
+            continue;
+        }
+        result = interaction;
+    }
+    return result;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

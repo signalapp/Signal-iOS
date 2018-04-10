@@ -2138,8 +2138,15 @@ typedef enum : NSUInteger {
     OWSAssert(quotedMessage.timestamp > 0);
     OWSAssert(quotedMessage.authorId.length > 0);
 
-    // We try to range of items within the current thread's interactions
-    // that includs the "quoted interaction".
+    // We try to find the index of the item within the current thread's
+    // interactions that includes the "quoted interaction".
+    //
+    // NOTE: There are two indices:
+    //
+    // * The "group index" of the member of the database views group at
+    //   the db conneciton's current checkpoint.
+    // * The "index row/section" in the message mapping.
+    //
     // NOTE: Since the range _IS NOT_ filtered by author,
     // and timestamp collisions are possible, it's possible
     // for:
@@ -2147,101 +2154,15 @@ typedef enum : NSUInteger {
     // * The range to include more than the "quoted interaction".
     // * The range to be non-empty but NOT include the "quoted interaction",
     //   although this would be a bug.
-    NSUInteger threadInteractionCount = 0;
-    NSRange itemRange = [self findRangeOfQuotedMessage:quotedMessage threadInteractionCount:&threadInteractionCount];
-
-    if (itemRange.location == NSNotFound) {
-        OWSFail(@"%@ Couldn't find range of quoted reply.", self.logTag);
-        return;
-    }
-
-    NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - (NSInteger)itemRange.location);
-    NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
-    NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
-
-    NSInteger dstIndex = 0;
-    if (additionalItemsToLoad > 0) {
-        // Try to load more messages so that the quoted message
-        // is in the load window.
-        //
-        // This may fail if the quoted message is very old, in which
-        // case we'll load the max number of messages.
-        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
-        
-        // Scroll to the first item, which should be the quoted message,
-        // or if we couldn't load it, the oldest loadable message.
-        //
-        // We use `indexPathRowOfQuotedMessage` instead of doing
-        // some index math because:
-        //
-        // * Resetting the mapping may integrate other pending changes.
-        // * Dynamic interactions may change.
-        dstIndex = (NSInteger)[self indexPathRowOfQuotedMessage:quotedMessage];
-    } else {
-        // Scroll to the quoted message, which is already in the load window.
-        dstIndex = 1 + (NSInteger)oldLoadWindowSize - desiredWindowSize;
-    }
-
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:dstIndex inSection:0];
-    [self.collectionView scrollToItemAtIndexPath:indexPath
-                                atScrollPosition:UICollectionViewScrollPositionTop
-                                        animated:YES];
-
-    // TODO: Highlight the quoted message?
-}
-
-// This method makes a best effort to determine the best scroll position
-// after loading more interactions when trying to scroll to a quoted
-// message.
-//
-// It prefers to be simple than to correctly handle edge cases like multiple
-// interactions with the same timestamp.
-- (NSUInteger)indexPathRowOfQuotedMessage:(TSQuotedMessage *)quotedMessage
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(quotedMessage);
-    OWSAssert(quotedMessage.timestamp > 0);
-    OWSAssert(quotedMessage.authorId.length > 0);
-
-    NSUInteger result = 0;
-    for (NSUInteger row = 0; row < self.viewItems.count; row++) {
-        ConversationViewItem *viewItem = self.viewItems[row];
-        if (viewItem.interaction.timestamp > quotedMessage.timestamp) {
-            break;
-        }
-        result = row;
-    }
-    return result;
-}
-
-// If result range is valid, then threadInteractionCount will have a valid value too.
-- (NSRange)findRangeOfQuotedMessage:(TSQuotedMessage *)quotedMessage
-             threadInteractionCount:(NSUInteger *)threadInteractionCount
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(quotedMessage);
-    OWSAssert(quotedMessage.timestamp > 0);
-    OWSAssert(quotedMessage.authorId.length > 0);
-    OWSAssert(threadInteractionCount);
-
-    *threadInteractionCount = 0;
-
-    // We try to find the "quoted interaction" AND
-    // the range within the mapping that includes it.
-    // NOTE: Since the range _IS NOT_ filtered by author,
-    // and timestamp collisions are possible, it's possible
-    // for:
-    //
-    // * The range to include more than the "quoted interaction".
-    // * The range to be non-empty but NOT include the "quoted interaction",
-    //   although this would be a bug.
-    __block NSRange itemRange;
-    itemRange.location = NSNotFound;
+    __block TSInteraction *_Nullable quotedInteraction;
+    __block NSUInteger threadInteractionCount = 0;
+    __block NSNumber *_Nullable groupIndex = nil;
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        TSInteraction *_Nullable quotedInteraction = [self findInteractionInThreadByTimestamp:quotedMessage.timestamp
-                                                                                     authorId:quotedMessage.authorId
-                                                                                  transaction:transaction];
+        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedMessage.timestamp
+                                                                  authorId:quotedMessage.authorId
+                                                            threadUniqueId:self.thread.uniqueId
+                                                               transaction:transaction];
         if (!quotedInteraction) {
             return;
         }
@@ -2253,81 +2174,90 @@ typedef enum : NSUInteger {
             return;
         }
 
-        *threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
+        threadInteractionCount = [extension numberOfItemsInGroup:self.thread.uniqueId];
 
-        // See comments on YapDatabaseViewFind.
-        //
-        // Essentially we define a comparator/sort on timestamp.
-        YapDatabaseViewFind *viewFind =
-            [YapDatabaseViewFind withObjectBlock:^NSComparisonResult(NSString *collection, NSString *key, id object) {
-                if (![object isKindOfClass:[TSInteraction class]]) {
-                    OWSFail(@"%@ Unexpected type in database view.", self.logTag);
-                    return NSOrderedSame;
-                }
-
-                TSInteraction *interaction = object;
-
-                // For the findBlock, the "left operand" is the row that is passed,
-                // and the "right operand" is the desired range.
-                if (interaction.timestamp == quotedMessage.timestamp) {
-
-                    return NSOrderedSame;
-                } else if (interaction.timestamp < quotedMessage.timestamp) {
-                    // NSOrderedAscending  : The left operand is smaller than the right operand.
-                    return NSOrderedAscending;
-                } else {
-                    // NSOrderedDescending : The left operand is greater than the right operand.
-                    return NSOrderedDescending;
-                }
-            }];
-        itemRange = [extension findRangeInGroup:self.thread.uniqueId using:viewFind];
+        groupIndex = [self findGroupIndexOfThreadInteraction:quotedInteraction transaction:transaction];
     }];
 
-    return itemRange;
+    if (!quotedInteraction || !groupIndex) {
+        DDLogError(@"%@ Couldn't find message quoted in quoted reply.", self.logTag);
+        return;
+    }
+
+    NSUInteger indexRow = 0;
+    NSUInteger indexSection = 0;
+    BOOL isInMappings = [self.messageMappings getRow:&indexRow
+                                             section:&indexSection
+                                            forIndex:groupIndex.unsignedIntegerValue
+                                             inGroup:self.thread.uniqueId];
+
+    if (!isInMappings) {
+        NSInteger desiredWindowSize = MAX(0, 1 + (NSInteger)threadInteractionCount - groupIndex.integerValue);
+        NSUInteger oldLoadWindowSize = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
+        NSInteger additionalItemsToLoad = MAX(0, desiredWindowSize - (NSInteger)oldLoadWindowSize);
+        if (additionalItemsToLoad < 1) {
+            DDLogError(@"%@ Couldn't determine how to load quoted reply.", self.logTag);
+            return;
+        }
+
+        // Try to load more messages so that the quoted message
+        // is in the load window.
+        //
+        // This may fail if the quoted message is very old, in which
+        // case we'll load the max number of messages.
+        [self loadNMoreMessages:(NSUInteger)additionalItemsToLoad];
+
+        // `loadNMoreMessages` will reset the mapping and possibly
+        // integrate new changes, so we need to reload the "group index"
+        // of the quoted message.
+        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            groupIndex = [self findGroupIndexOfThreadInteraction:quotedInteraction transaction:transaction];
+        }];
+
+        if (!quotedInteraction || !groupIndex) {
+            DDLogError(@"%@ Failed to find quoted reply in group.", self.logTag);
+            return;
+        }
+
+        isInMappings = [self.messageMappings getRow:&indexRow
+                                            section:&indexSection
+                                           forIndex:groupIndex.unsignedIntegerValue
+                                            inGroup:self.thread.uniqueId];
+
+        if (!isInMappings) {
+            DDLogError(@"%@ Could not load quoted reply into mapping.", self.logTag);
+            return;
+        }
+    }
+
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(NSInteger)indexRow inSection:(NSInteger)indexSection];
+    [self.collectionView scrollToItemAtIndexPath:indexPath
+                                atScrollPosition:UICollectionViewScrollPositionTop
+                                        animated:YES];
+
+    // TODO: Highlight the quoted message?
 }
 
-- (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
+                                             transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(timestamp > 0);
-    OWSAssert(authorId.length > 0);
+    OWSAssert(interaction);
+    OWSAssert(transaction);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    if (localNumber.length < 1) {
+    YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
+    if (!extension) {
+        OWSFail(@"%@ Couldn't load view.", self.logTag);
         return nil;
     }
 
-    NSArray<TSInteraction *> *interactions =
-        [TSInteraction interactionsWithTimestamp:timestamp ofClass:[TSMessage class] withTransaction:transaction];
-
-    TSInteraction *_Nullable result = nil;
-    for (TSInteraction *interaction in interactions) {
-        NSString *_Nullable messageAuthorId = nil;
-        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-            messageAuthorId = incomingMessage.authorId;
-        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-            messageAuthorId = localNumber;
-        }
-        if (messageAuthorId.length < 1) {
-            OWSFail(@"%@ Message missing author id.", self.logTag);
-            continue;
-        }
-        if (![authorId isEqualToString:messageAuthorId]) {
-            continue;
-        }
-        if (![interaction.uniqueThreadId isEqualToString:self.thread.uniqueId]) {
-            continue;
-        }
-        if (result) {
-            // In case of collision, take the first.
-            DDLogError(@"%@ more than one matching interaction in thread.", self.logTag);
-            continue;
-        }
-        result = interaction;
+    NSUInteger groupIndex = 0;
+    BOOL foundInGroup =
+        [extension getGroup:nil index:&groupIndex forKey:interaction.uniqueId inCollection:TSInteraction.collection];
+    if (!foundInGroup) {
+        DDLogError(@"%@ Couldn't find quoted message in group.", self.logTag);
+        return nil;
     }
-    return result;
+    return @(groupIndex);
 }
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
