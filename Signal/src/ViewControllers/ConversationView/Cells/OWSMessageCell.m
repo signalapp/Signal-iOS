@@ -511,9 +511,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self showMediaMenuController:location];
             break;
         }
-        case OWSMessageGestureLocation_QuotedReply:
-            // TODO:
+        case OWSMessageGestureLocation_QuotedReply: {
+            CGPoint location = [sender locationInView:self];
+            [self showDefaultMenuController:location];
             break;
+        }
     }
 }
 
@@ -528,28 +530,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showTextMenuController:(CGPoint)fromLocation
 {
-    // We don't want taps on messages to hide the keyboard,
-    // so we only let messages become first responder
-    // while they are trying to present the menu controller.
-    self.isPresentingMenuController = YES;
-
-    [self becomeFirstResponder];
-
-    if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-    }
-
-    // We use custom action selectors so that we can control
-    // the ordering of the actions in the menu.
-    NSArray *menuItems = self.viewItem.textMenuControllerItems;
-    [UIMenuController sharedMenuController].menuItems = menuItems;
-    CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
-    [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];
-    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+    [self showMenuController:fromLocation menuItems:self.viewItem.textMenuControllerItems];
 }
 
 - (void)showMediaMenuController:(CGPoint)fromLocation
 {
+    [self showMenuController:fromLocation menuItems:self.viewItem.mediaMenuControllerItems];
+}
+
+- (void)showDefaultMenuController:(CGPoint)fromLocation
+{
+    [self showMenuController:fromLocation menuItems:self.viewItem.defaultMenuControllerItems];
+}
+
+- (void)showMenuController:(CGPoint)fromLocation menuItems:(NSArray *)menuItems
+{
+    if (menuItems.count < 1) {
+        OWSFail(@"%@ No menu items to present.", self.logTag);
+        return;
+    }
+
     // We don't want taps on messages to hide the keyboard,
     // so we only let messages become first responder
     // while they are trying to present the menu controller.
@@ -563,7 +563,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // We use custom action selectors so that we can control
     // the ordering of the actions in the menu.
-    NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
     [UIMenuController sharedMenuController].menuItems = menuItems;
     CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
     [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];

@@ -565,6 +565,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                    action:self.deleteActionSelector]
     ];
 }
+
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems
 {
     return @[
@@ -583,6 +584,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
                                               @"Short name for edit menu item to save contents of media message.")
                                    action:self.saveMediaActionSelector],
+    ];
+}
+
+- (NSArray<UIMenuItem *> *)defaultMenuControllerItems
+{
+    return @[
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+                                              @"Short name for edit menu item to show message metadata.")
+                                   action:self.metadataActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+                                              @"Short name for edit menu item to reply to a message.")
+                                   action:self.replyActionSelector],
+        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+                                              @"Short name for edit menu item to delete contents of media message.")
+                                   action:self.deleteActionSelector],
     ];
 }
 
