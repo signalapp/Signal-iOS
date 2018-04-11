@@ -83,10 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self.contentView addGestureRecognizer:tap];
-
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
@@ -482,104 +478,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Gesture recognizers
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender
-{
-    OWSAssert(self.delegate);
-
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
-        return;
-    }
-
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
-            return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
-            // Ignore taps on outgoing messages being sent.
-            return;
-        }
-    }
-
-    CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
-    switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
-        case OWSMessageGestureLocation_Default:
-            // Do nothing.
-            return;
-        case OWSMessageGestureLocation_OversizeText:
-            [self.delegate didTapTruncatedTextMessage:self.viewItem];
-            return;
-        case OWSMessageGestureLocation_Media:
-            [self handleMediaTapGesture];
-            break;
-        case OWSMessageGestureLocation_QuotedReply:
-            if (self.message.quotedMessage) {
-                [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
-            } else {
-                OWSFail(@"%@ Missing quoted message.", self.logTag)
-            }
-            break;
-    }
-}
-
-- (void)handleMediaTapGesture
-{
-    OWSAssert(self.delegate);
-
-    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
-
-    switch (self.cellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-            break;
-        case OWSMessageCellType_StillImage:
-            OWSAssert(self.messageBubbleView.bodyMediaView);
-            OWSAssert(attachmentStream);
-
-            [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.bodyMediaView];
-            break;
-        case OWSMessageCellType_AnimatedImage:
-            OWSAssert(self.messageBubbleView.bodyMediaView);
-            OWSAssert(attachmentStream);
-
-            [self.delegate didTapImageViewItem:self.viewItem
-                              attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.bodyMediaView];
-            break;
-        case OWSMessageCellType_Audio:
-            OWSAssert(attachmentStream);
-
-            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
-            return;
-        case OWSMessageCellType_Video:
-            OWSAssert(self.messageBubbleView.bodyMediaView);
-            OWSAssert(attachmentStream);
-
-            [self.delegate didTapVideoViewItem:self.viewItem
-                              attachmentStream:attachmentStream
-                                     imageView:self.messageBubbleView.bodyMediaView];
-            return;
-        case OWSMessageCellType_GenericAttachment:
-            OWSAssert(attachmentStream);
-
-            [AttachmentSharing showShareUIForAttachment:attachmentStream];
-            break;
-        case OWSMessageCellType_DownloadingAttachment: {
-            TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
-            OWSAssert(attachmentPointer);
-
-            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
-                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
-            }
-            break;
-        }
-    }
-}
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {

@@ -52,6 +52,7 @@
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSAudioPlayer.h>
 #import <SignalMessaging/OWSContactAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>

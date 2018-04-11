@@ -59,12 +59,16 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.layoutMargins = UIEdgeInsetsZero;
-    self.userInteractionEnabled = NO;
+    self.userInteractionEnabled = YES;
 
     self.bubbleView = [OWSBubbleView new];
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
+
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
 
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
@@ -148,6 +152,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.attachmentPointer);
 
     return self.viewItem.attachmentPointer;
+}
+
+- (TSMessage *)message
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    return (TSMessage *)self.viewItem.interaction;
 }
 
 - (CGSize)mediaSize
@@ -1017,6 +1028,8 @@ NS_ASSUME_NONNULL_BEGIN
     [NSLayoutConstraint deactivateConstraints:self.viewConstraints];
     self.viewConstraints = [NSMutableArray new];
 
+    self.delegate = nil;
+
     [self.bodyTextView removeFromSuperview];
     self.bodyTextView.text = nil;
     self.bodyTextView.hidden = YES;
@@ -1042,6 +1055,104 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Gestures
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
+            return;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            // Ignore taps on outgoing messages being sent.
+            return;
+        }
+    }
+
+    CGPoint locationInMessageBubble = [sender locationInView:self];
+    switch ([self gestureLocationForLocation:locationInMessageBubble]) {
+        case OWSMessageGestureLocation_Default:
+            // Do nothing.
+            return;
+        case OWSMessageGestureLocation_OversizeText:
+            [self.delegate didTapTruncatedTextMessage:self.viewItem];
+            return;
+        case OWSMessageGestureLocation_Media:
+            [self handleMediaTapGesture];
+            break;
+        case OWSMessageGestureLocation_QuotedReply:
+            if (self.message.quotedMessage) {
+                [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
+            } else {
+                OWSFail(@"%@ Missing quoted message.", self.logTag)
+            }
+            break;
+    }
+}
+
+- (void)handleMediaTapGesture
+{
+    OWSAssert(self.delegate);
+
+    TSAttachmentStream *_Nullable attachmentStream = self.viewItem.attachmentStream;
+
+    switch (self.cellType) {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_TextMessage:
+        case OWSMessageCellType_OversizeTextMessage:
+            break;
+        case OWSMessageCellType_StillImage:
+            OWSAssert(self.bodyMediaView);
+            OWSAssert(attachmentStream);
+
+            [self.delegate didTapImageViewItem:self.viewItem
+                              attachmentStream:attachmentStream
+                                     imageView:self.bodyMediaView];
+            break;
+        case OWSMessageCellType_AnimatedImage:
+            OWSAssert(self.bodyMediaView);
+            OWSAssert(attachmentStream);
+
+            [self.delegate didTapImageViewItem:self.viewItem
+                              attachmentStream:attachmentStream
+                                     imageView:self.bodyMediaView];
+            break;
+        case OWSMessageCellType_Audio:
+            OWSAssert(attachmentStream);
+
+            [self.delegate didTapAudioViewItem:self.viewItem attachmentStream:attachmentStream];
+            return;
+        case OWSMessageCellType_Video:
+            OWSAssert(self.bodyMediaView);
+            OWSAssert(attachmentStream);
+
+            [self.delegate didTapVideoViewItem:self.viewItem
+                              attachmentStream:attachmentStream
+                                     imageView:self.bodyMediaView];
+            return;
+        case OWSMessageCellType_GenericAttachment:
+            OWSAssert(attachmentStream);
+
+            [AttachmentSharing showShareUIForAttachment:attachmentStream];
+            break;
+        case OWSMessageCellType_DownloadingAttachment: {
+            TSAttachmentPointer *_Nullable attachmentPointer = self.viewItem.attachmentPointer;
+            OWSAssert(attachmentPointer);
+
+            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                [self.delegate didTapFailedIncomingAttachment:self.viewItem attachmentPointer:attachmentPointer];
+            }
+            break;
+        }
+    }
+}
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
