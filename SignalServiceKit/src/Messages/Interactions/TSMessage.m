@@ -216,11 +216,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {    
-    NSString *_Nullable bodyDescription = nil;
-    if (self.body.length > 0) {
-        bodyDescription = self.body;
-    }
-    
     NSString *_Nullable attachmentDescription = nil;
     if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
@@ -245,6 +240,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             attachmentDescription = NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL",
                 @"In Inbox view, last message label for thread with corrupted attachment.");
         }
+    }
+
+    NSString *_Nullable bodyDescription = nil;
+    if (self.body.length > 0) {
+        bodyDescription = self.body;
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
