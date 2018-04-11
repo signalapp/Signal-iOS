@@ -347,6 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         CGSize quotedAuthorSize
             = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxQuotedAuthorWidth, CGFLOAT_MAX)]);
+        quotedAuthorSize.width = MIN(quotedAuthorSize.width, maxQuotedAuthorWidth);
 
         quotedAuthorWidth = quotedAuthorSize.width;
 
@@ -363,6 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
         UILabel *quotedTextLabel = [self createQuotedTextLabel];
 
         CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxQuotedTextWidth, CGFLOAT_MAX)]);
+        textSize.width = MIN(textSize.width, maxQuotedTextWidth);
 
         quotedTextWidth = textSize.width + self.quotedReplyStripeThickness + self.quotedReplyStripeHSpacing;
         result.height += textSize.height + self.quotedReplyStripeVExtension * 2;
