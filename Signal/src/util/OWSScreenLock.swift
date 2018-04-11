@@ -24,6 +24,7 @@ import LocalAuthentication
         0
     ]
 
+    @objc public static let ScreenLockWasEnabled = Notification.Name("ScreenLockWasEnabled")
     @objc public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
 
     let primaryStorage: OWSPrimaryStorage
@@ -86,8 +87,13 @@ import LocalAuthentication
         AssertIsOnMainThread()
         assert(OWSStorage.isStorageReady())
 
+        let isEnabling = value && !isScreenLockEnabled()
+
         self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
 
+        if isEnabling {
+            NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockWasEnabled, object: nil)
+        }
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
     }
 
