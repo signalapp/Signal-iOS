@@ -125,6 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
             quotedAttachmentView.layer.borderWidth = 1.f;
             quotedAttachmentView.layer.cornerRadius = 2.f;
             quotedAttachmentView.clipsToBounds = YES;
+            quotedAttachmentView.backgroundColor = [UIColor whiteColor];
         } else {
             // TODO: This asset is wrong.
             // TODO: There's a special asset for audio files.
