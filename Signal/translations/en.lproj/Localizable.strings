@@ -1412,7 +1412,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
 
 /* Indicates the author of a quoted message is yourself. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
