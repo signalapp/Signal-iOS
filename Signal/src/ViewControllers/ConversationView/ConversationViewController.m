@@ -128,6 +128,7 @@ typedef enum : NSUInteger {
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
+    OWSMessageBubbleViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
@@ -2020,7 +2021,7 @@ typedef enum : NSUInteger {
                                                                   success:successHandler];
 }
 
-#pragma mark - Message Events
+#pragma mark - OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(ConversationViewItem *)viewItem
            attachmentStream:(TSAttachmentStream *)attachmentStream
@@ -4718,6 +4719,10 @@ typedef enum : NSUInteger {
     }
     cell.viewItem = viewItem;
     cell.delegate = self;
+    if ([cell isKindOfClass:[OWSMessageCell class]]) {
+        OWSMessageCell *messageCell = (OWSMessageCell *)cell;
+        messageCell.messageBubbleView.delegate = self;
+    }
     cell.contentWidth = self.layout.contentWidth;
 
     [cell loadForDisplay];

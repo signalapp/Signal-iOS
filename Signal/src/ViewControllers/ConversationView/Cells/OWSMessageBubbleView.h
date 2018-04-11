@@ -5,6 +5,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationViewItem;
+@class TSAttachmentPointer;
+@class TSAttachmentStream;
+@class TSOutgoingMessage;
+@class TSQuotedMessage;
 
 typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     // Message text, etc.
@@ -13,6 +17,29 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     OWSMessageGestureLocation_Media,
     OWSMessageGestureLocation_QuotedReply,
 };
+
+@protocol OWSMessageBubbleViewDelegate
+
+- (void)didTapImageViewItem:(ConversationViewItem *)viewItem
+           attachmentStream:(TSAttachmentStream *)attachmentStream
+                  imageView:(UIView *)imageView;
+
+- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
+           attachmentStream:(TSAttachmentStream *)attachmentStream
+                  imageView:(UIView *)imageView;
+
+- (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem;
+
+- (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
+                     attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
+
+- (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
+
+- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage;
+
+@end
 
 @interface OWSMessageBubbleView : UIView
 
@@ -25,6 +52,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
 @property (nonatomic) BOOL alwaysShowBubbleTail;
+
+@property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 

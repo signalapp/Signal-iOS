@@ -16,18 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewCellDelegate <NSObject>
 
-- (void)didTapImageViewItem:(ConversationViewItem *)viewItem
-           attachmentStream:(TSAttachmentStream *)attachmentStream
-                  imageView:(UIView *)imageView;
-- (void)didTapVideoViewItem:(ConversationViewItem *)viewItem
-           attachmentStream:(TSAttachmentStream *)attachmentStream
-                  imageView:(UIView *)imageView;
-- (void)didTapAudioViewItem:(ConversationViewItem *)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
-- (void)didTapTruncatedTextMessage:(ConversationViewItem *)conversationItem;
-- (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
-                     attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
-- (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
-- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage;
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
 
