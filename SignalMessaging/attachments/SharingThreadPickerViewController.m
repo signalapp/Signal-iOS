@@ -79,10 +79,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (nullable UIView *)createHeaderWithSearchBar:(UISearchBar *)searchBar
 {
-    OWSAssert(searchBar)
+    OWSAssert(searchBar);
 
-        const CGFloat contentVMargin
-        = 0;
+    const CGFloat contentVMargin = 0;
 
     UIView *header = [UIView new];
     header.backgroundColor = [UIColor whiteColor];
