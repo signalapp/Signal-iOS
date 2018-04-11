@@ -105,6 +105,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 - (NSArray<UIMenuItem *> *)textMenuControllerItems;
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
+- (NSArray<UIMenuItem *> *)defaultMenuControllerItems;
 
 - (BOOL)canPerformAction:(SEL)action;
 - (void)copyMediaAction;
