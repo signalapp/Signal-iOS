@@ -59,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.layoutMargins = UIEdgeInsetsZero;
-    self.userInteractionEnabled = NO;
 
     self.bubbleView = [OWSBubbleView new];
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
