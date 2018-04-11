@@ -36,7 +36,6 @@ class QuotedReplyPreview: UIView {
 
     func updateContents() {
         subviews.forEach { $0.removeFromSuperview() }
-        self.quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply)
 
         quotedMessageView.backgroundColor = .clear
 
