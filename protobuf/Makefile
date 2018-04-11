@@ -3,8 +3,8 @@
 
 PROTOC=protoc \
 		--plugin=/usr/local/bin/proto-gen-objc \
-		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/" \
-		--proto_path="${HOME}/src/WhisperSystems/protobuf-objc/src/compiler/google/protobuf/" \
+		--proto_path="${HOME}/src/Signal/protobuf-objc/src/compiler/" \
+		--proto_path="${HOME}/src/Signal/protobuf-objc/src/compiler/google/protobuf/" \
 		--proto_path='./'
 
 all: webrtc_data_proto

@@ -908,8 +908,8 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 
 #define QuotedAttachment_contentType @"contentType"
 #define QuotedAttachment_fileName @"fileName"
-#define QuotedAttachment_flags @"flags"
 #define QuotedAttachment_thumbnail @"thumbnail"
+#define QuotedAttachment_flags @"flags"
 @interface OWSSignalServiceProtosDataMessageQuoteQuotedAttachment : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasContentType_:1;
@@ -923,12 +923,12 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 }
 - (BOOL) hasContentType;
 - (BOOL) hasFileName;
-- (BOOL) hasFlags;
 - (BOOL) hasThumbnail;
+- (BOOL) hasFlags;
 @property (readonly, strong) NSString* contentType;
 @property (readonly, strong) NSString* fileName;
-@property (readonly) UInt32 flags;
 @property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* thumbnail;
+@property (readonly) UInt32 flags;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -975,17 +975,17 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFileName:(NSString*) value;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFileName;
 
-- (BOOL) hasFlags;
-- (UInt32) flags;
-- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFlags:(UInt32) value;
-- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFlags;
-
 - (BOOL) hasThumbnail;
 - (OWSSignalServiceProtosAttachmentPointer*) thumbnail;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setThumbnailBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) mergeThumbnail:(OWSSignalServiceProtosAttachmentPointer*) value;
 - (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearThumbnail;
+
+- (BOOL) hasFlags;
+- (UInt32) flags;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) setFlags:(UInt32) value;
+- (OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder*) clearFlags;
 @end
 
 @interface OWSSignalServiceProtosDataMessageQuoteBuilder : PBGeneratedMessageBuilder {
