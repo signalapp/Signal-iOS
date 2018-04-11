@@ -3960,7 +3960,7 @@ typedef enum : NSUInteger {
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
             CGFloat oldYOffset = self.collectionView.contentOffset.y;
-            CGFloat newYOffset = Clamp(oldYOffset + insetChange, 0, self.safeContentHeight);
+            CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, 0, self.safeContentHeight);
             CGPoint newOffset = CGPointMake(0, newYOffset);
 
             // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
@@ -4739,7 +4739,7 @@ typedef enum : NSUInteger {
 
     const CGFloat swipeTranslation
         = ([gestureRecognizer translationInView:self.view].x * (self.view.isRTL ? +1.f : -1.f));
-    const CGFloat ratioComplete = Clamp(swipeTranslation / self.view.frame.size.width, 0, 1);
+    const CGFloat ratioComplete = CGFloatClamp(swipeTranslation / self.view.frame.size.width, 0, 1);
 
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStateBegan: {

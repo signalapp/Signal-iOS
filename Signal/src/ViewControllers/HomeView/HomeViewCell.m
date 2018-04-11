@@ -6,6 +6,7 @@
 #import "OWSAvatarBuilder.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -85,14 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [self.payloadView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.payloadView.superview.layoutMarginsGuide.bottomAnchor]
-        .active
-        = YES;
-    [self.payloadView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:self.payloadView.superview.layoutMarginsGuide.topAnchor]
-        .active
-        = YES;
+    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -338,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     const NSUInteger kReferenceFontSizeMin = 17.f;
 
     CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    CGFloat alpha = MIN(1.3f, MAX(1.f, referenceFontSize / kReferenceFontSizeMin));
+    CGFloat alpha = CGFloatClamp(referenceFontSize / kReferenceFontSizeMin, 1.f, 1.3f);
     return minValue * alpha;
 }
 

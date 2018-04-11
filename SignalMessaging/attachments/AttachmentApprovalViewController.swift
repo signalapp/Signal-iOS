@@ -686,6 +686,6 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
         let contentSize = textView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return Clamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
+        return CGFloatClamp(contentSize.height, kMinTextViewHeight, maxTextViewHeight)
     }
 }

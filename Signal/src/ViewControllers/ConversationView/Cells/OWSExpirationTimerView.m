@@ -161,7 +161,7 @@ const CGFloat kExpirationTimerViewSize = 16.f;
     }
     
     CGFloat ratioRemaining = (CGFloat)timeUntilFlashing / (CGFloat)self.initialDurationSeconds;
-    CGFloat ratioComplete = Clamp((CGFloat)1.0 - ratioRemaining, 0, 1.0);
+    CGFloat ratioComplete = CGFloatClamp((CGFloat)1.0 - ratioRemaining, 0, 1.0);
     CGPoint startPosition = CGPointMake(0, self.fullHourglassImageView.height * ratioComplete);
     
     // We offset the bottom slightly to make sure the duration of the perceived animation is correct.

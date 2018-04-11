@@ -316,7 +316,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     const CGFloat kMaxTextViewHeight = 98.f;
     const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
         + self.inputTextView.contentInset.bottom);
-    const CGFloat textViewHeight = ceil(Clamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
+    const CGFloat textViewHeight = ceil(CGFloatClamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
     const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
 
     self.textViewHeight = textViewHeight;
