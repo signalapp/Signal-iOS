@@ -48,7 +48,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kOversizeTextMessageSizeThreshold = 16 * 1024;
+const NSUInteger kOversizeTextMessageSizeThreshold = 2 * 1024;
 
 void AssertIsOnSendingQueue()
 {
