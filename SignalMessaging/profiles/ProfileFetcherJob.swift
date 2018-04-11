@@ -19,6 +19,8 @@ public class ProfileFetcherJob: NSObject {
 
     let ignoreThrottling: Bool
 
+    var backgroundTask: OWSBackgroundTask?
+
     @objc
     public class func run(thread: TSThread, networkManager: TSNetworkManager) {
         ProfileFetcherJob(networkManager: networkManager).run(recipientIds: thread.recipientIdentifiers)
@@ -37,6 +39,18 @@ public class ProfileFetcherJob: NSObject {
 
     public func run(recipientIds: [String]) {
         AssertIsOnMainThread()
+
+        backgroundTask = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+            AssertIsOnMainThread()
+
+            guard status == .expired else {
+                return
+            }
+            guard let _ = self else {
+                return
+            }
+            Logger.error("background task time ran out before profile fetch completed.")
+        })
 
         if (!CurrentAppContext().isMainApp) {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
