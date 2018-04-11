@@ -268,7 +268,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *quotedTextLabel = [UILabel new];
     quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 3;
-    quotedTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     quotedTextLabel.text = text;
     quotedTextLabel.textColor = textColor;
     quotedTextLabel.font = font;
