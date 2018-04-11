@@ -1,14 +1,16 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAsserts.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-void AssertIsOnMainThread()
+void SwiftAssertIsOnMainThread(NSString *functionName)
 {
-    OWSCAssert([NSThread isMainThread]);
+    if (![NSThread isMainThread]) {
+        OWSCFail(@"%@ not on main thread", functionName);
+    }
 }
 
 NS_ASSUME_NONNULL_END

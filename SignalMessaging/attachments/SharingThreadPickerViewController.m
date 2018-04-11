@@ -318,7 +318,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                               message:(TSOutgoingMessage *)message
                    fromViewController:(UIViewController *)fromViewController
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     OWSAssert(error);
     OWSAssert(message);
     OWSAssert(fromViewController);
@@ -393,7 +393,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                             recipientId:(NSString *)recipientId
                      fromViewController:(UIViewController *)fromViewController
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
     OWSAssert(recipientId.length > 0);
     OWSAssert(fromViewController);
@@ -440,7 +440,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     OWSAssert(message);
     OWSAssert(fromViewController);
 
@@ -487,7 +487,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)attachmentUploadProgress:(NSNotification *)notification
 {
     DDLogDebug(@"%@ upload progress.", self.logTag);
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
     OWSAssert(self.progressView);
 
     if (!self.outgoingMessage) {

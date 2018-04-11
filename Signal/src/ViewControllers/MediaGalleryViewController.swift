@@ -747,7 +747,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
 
     func delete(items: [MediaGalleryItem], initiatedBy: MediaGalleryDataSourceDelegate) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(logTag) in \(#function) with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 

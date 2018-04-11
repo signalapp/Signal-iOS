@@ -65,7 +65,7 @@ import LocalAuthentication
     }
 
     func didBecomeActive() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         ignoreUnlockUntilActive = false
     }
@@ -73,7 +73,7 @@ import LocalAuthentication
     // MARK: - Properties
 
     @objc public func isScreenLockEnabled() -> Bool {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if !OWSStorage.isStorageReady() {
             owsFail("\(logTag) accessed screen lock state before storage is ready.")
@@ -84,7 +84,7 @@ import LocalAuthentication
     }
 
     private func setIsScreenLockEnabled(value: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         assert(OWSStorage.isStorageReady())
 
         let isEnabling = value && !isScreenLockEnabled()
@@ -98,7 +98,7 @@ import LocalAuthentication
     }
 
     @objc public func screenLockTimeout() -> TimeInterval {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if !OWSStorage.isStorageReady() {
             owsFail("\(logTag) accessed screen lock state before storage is ready.")
@@ -109,7 +109,7 @@ import LocalAuthentication
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         assert(OWSStorage.isStorageReady())
 
         self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
@@ -127,7 +127,7 @@ import LocalAuthentication
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK",
                                                                         comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
-                                        AssertIsOnMainThread()
+                                        SwiftAssertIsOnMainThread(#function)
 
                                         switch outcome {
                                         case .failure(let error):
@@ -151,7 +151,7 @@ import LocalAuthentication
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK",
                                                                         comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
-                                        AssertIsOnMainThread()
+                                        SwiftAssertIsOnMainThread(#function)
 
                                         switch outcome {
                                         case .failure(let error):
@@ -188,7 +188,7 @@ import LocalAuthentication
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                         comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
                                        completion: { (outcome: OWSScreenLockOutcome) in
-                                        AssertIsOnMainThread()
+                                        SwiftAssertIsOnMainThread(#function)
 
                                         switch outcome {
                                         case .failure(let error):
@@ -219,7 +219,7 @@ import LocalAuthentication
     // isScreenLockEnabled.
     private func tryToVerifyLocalAuthentication(localizedReason: String,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: OWSScreenLockOutcome) in

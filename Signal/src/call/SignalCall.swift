@@ -64,7 +64,7 @@ protocol CallObserver: class {
 
     var callRecord: TSCall? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
             assert(oldValue == nil)
 
             updateCallRecordType()
@@ -73,7 +73,7 @@ protocol CallObserver: class {
 
     var hasLocalVideo = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             for observer in observers {
                 observer.value?.hasLocalVideoDidChange(call: self, hasLocalVideo: hasLocalVideo)
@@ -83,7 +83,7 @@ protocol CallObserver: class {
 
     var state: CallState {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
@@ -105,7 +105,7 @@ protocol CallObserver: class {
 
     var isMuted = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             Logger.debug("\(TAG) muted changed: \(oldValue) -> \(self.isMuted)")
 
@@ -119,8 +119,8 @@ protocol CallObserver: class {
 
     var audioSource: AudioSource? = nil {
         didSet {
-            AssertIsOnMainThread()
-            Logger.debug("\(TAG) audioSource changed: \(String(describing:oldValue)) -> \(String(describing: audioSource))")
+            SwiftAssertIsOnMainThread(#function)
+            Logger.debug("\(TAG) audioSource changed: \(String(describing: oldValue)) -> \(String(describing: audioSource))")
 
             for observer in observers {
                 observer.value?.audioSourceDidChange(call: self, audioSource: audioSource)
@@ -138,7 +138,7 @@ protocol CallObserver: class {
 
     var isOnHold = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
             Logger.debug("\(TAG) isOnHold changed: \(oldValue) -> \(self.isOnHold)")
 
             for observer in observers {
@@ -179,7 +179,7 @@ protocol CallObserver: class {
     // -
 
     func addObserverAndSyncState(observer: CallObserver) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         observers.append(Weak(value: observer))
 
@@ -188,7 +188,7 @@ protocol CallObserver: class {
     }
 
     func removeObserver(_ observer: CallObserver) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         while let index = observers.index(where: { $0.value === observer }) {
             observers.remove(at: index)
@@ -196,13 +196,13 @@ protocol CallObserver: class {
     }
 
     func removeAllObservers() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         observers = []
     }
 
     private func updateCallRecordType() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let callRecord = self.callRecord else {
             return

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -15,7 +15,7 @@ class GifPickerCell: UICollectionViewCell {
 
     var imageInfo: GiphyImageInfo? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             ensureCellState()
         }
@@ -25,7 +25,7 @@ class GifPickerCell: UICollectionViewCell {
     // Here's a bit of logic to not preload offscreen cells that are prefetched.
     var isCellVisible = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             ensureCellState()
         }
@@ -42,7 +42,7 @@ class GifPickerCell: UICollectionViewCell {
 
     var isCellSelected: Bool = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
             ensureCellState()
         }
     }
@@ -137,8 +137,8 @@ class GifPickerCell: UICollectionViewCell {
         if stillAsset != nil || animatedAsset != nil {
             clearStillAssetRequest()
         } else if stillAssetRequest == nil {
-            stillAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:stillRendition,
-                                                                                priority:.high,
+            stillAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition: stillRendition,
+                                                                                priority: .high,
                                                                                 success: { [weak self] assetRequest, asset in
                                                                                     guard let strongSelf = self else { return }
                                                                                     if assetRequest != nil && assetRequest != strongSelf.stillAssetRequest {
@@ -163,8 +163,8 @@ class GifPickerCell: UICollectionViewCell {
         if animatedAsset != nil {
             clearAnimatedAssetRequest()
         } else if animatedAssetRequest == nil {
-            animatedAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition:animatedRendition,
-                                                                               priority:.low,
+            animatedAssetRequest = GiphyDownloader.sharedInstance.requestAsset(rendition: animatedRendition,
+                                                                               priority: .low,
                                                                                success: { [weak self] assetRequest, asset in
                                                                                 guard let strongSelf = self else { return }
                                                                                 if assetRequest != nil && assetRequest != strongSelf.animatedAssetRequest {
@@ -197,7 +197,7 @@ class GifPickerCell: UICollectionViewCell {
             clearViewState()
             return
         }
-        guard let image = YYImage(contentsOfFile:asset.filePath) else {
+        guard let image = YYImage(contentsOfFile: asset.filePath) else {
             owsFail("\(TAG) could not load asset.")
             clearViewState()
             return
@@ -267,7 +267,7 @@ class GifPickerCell: UICollectionViewCell {
 
     private func clearViewState() {
         imageView?.image = nil
-        self.backgroundColor = UIColor(white:0.95, alpha:1.0)
+        self.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
     }
 
     private func pickBestAsset() -> GiphyAsset? {

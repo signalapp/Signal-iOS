@@ -80,7 +80,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     func didBecomeActive() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.TAG) \(#function)")
 
@@ -89,7 +89,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     func reachabilityChanged() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.TAG) \(#function)")
 

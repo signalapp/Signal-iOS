@@ -24,11 +24,11 @@ public class OWSFlatButton: UIView {
 
     @objc
     public init() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
-        button = UIButton(type:.custom)
+        button = UIButton(type: .custom)
 
-        super.init(frame:CGRect.zero)
+        super.init(frame: CGRect.zero)
 
         createContent()
     }
@@ -40,7 +40,7 @@ public class OWSFlatButton: UIView {
 
     private func createContent() {
         self.addSubview(button)
-        button.addTarget(self, action:#selector(buttonPressed), for:.touchUpInside)
+        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         button.autoPinToSuperviewEdges()
     }
 
@@ -54,13 +54,13 @@ public class OWSFlatButton: UIView {
                              target: Any,
                              selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton()
-        button.setTitle(title:title,
+        button.setTitle(title: title,
                         font: font,
                         titleColor: titleColor )
-        button.setBackgroundColors(upColor:backgroundColor)
+        button.setBackgroundColors(upColor: backgroundColor)
         button.useDefaultCornerRadius()
-        button.setSize(width:width, height:height)
-        button.addTarget(target:target, selector:selector)
+        button.setSize(width: width, height: height)
+        button.addTarget(target: target, selector: selector)
         return button
     }
 
@@ -72,14 +72,14 @@ public class OWSFlatButton: UIView {
                              height: CGFloat,
                              target: Any,
                              selector: Selector) -> OWSFlatButton {
-        return OWSFlatButton.button(title:title,
-                                    font:fontForHeight(height),
-                                    titleColor:titleColor,
-                                    backgroundColor:backgroundColor,
-                                    width:width,
-                                    height:height,
-                                    target:target,
-                                    selector:selector)
+        return OWSFlatButton.button(title: title,
+                                    font: fontForHeight(height),
+                                    titleColor: titleColor,
+                                    backgroundColor: backgroundColor,
+                                    width: width,
+                                    height: height,
+                                    target: target,
+                                    selector: selector)
     }
 
     @objc
@@ -90,12 +90,12 @@ public class OWSFlatButton: UIView {
                              target: Any,
                              selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton()
-        button.setTitle(title:title,
+        button.setTitle(title: title,
                         font: font,
                         titleColor: titleColor )
-        button.setBackgroundColors(upColor:backgroundColor)
+        button.setBackgroundColors(upColor: backgroundColor)
         button.useDefaultCornerRadius()
-        button.addTarget(target:target, selector:selector)
+        button.addTarget(target: target, selector: selector)
         return button
     }
 
@@ -104,7 +104,7 @@ public class OWSFlatButton: UIView {
         // Cap the "button height" at 40pt or button text can look
         // excessively large.
         let fontPointSize = round(min(40, height) * 0.45)
-        return UIFont.ows_mediumFont(withSize:fontPointSize)
+        return UIFont.ows_mediumFont(withSize: fontPointSize)
     }
 
     // MARK: Methods
@@ -120,8 +120,8 @@ public class OWSFlatButton: UIView {
     @objc
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
-        button.setBackgroundImage(UIImage(color:upColor), for: .normal)
-        button.setBackgroundImage(UIImage(color:downColor), for: .highlighted)
+        button.setBackgroundImage(UIImage(color: upColor), for: .normal)
+        button.setBackgroundImage(UIImage(color: downColor), for: .highlighted)
     }
 
     @objc
@@ -132,8 +132,8 @@ public class OWSFlatButton: UIView {
 
     @objc
     public func setSize(width: CGFloat, height: CGFloat) {
-        button.autoSetDimension(.width, toSize:width)
-        button.autoSetDimension(.height, toSize:height)
+        button.autoSetDimension(.width, toSize: width)
+        button.autoSetDimension(.height, toSize: height)
     }
 
     @objc
@@ -152,7 +152,7 @@ public class OWSFlatButton: UIView {
     @objc
     public func addTarget(target: Any,
                           selector: Selector) {
-        button.addTarget(target, action:selector, for:.touchUpInside)
+        button.addTarget(target, action: selector, for: .touchUpInside)
     }
 
     @objc

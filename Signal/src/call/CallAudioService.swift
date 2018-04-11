@@ -141,24 +141,24 @@ protocol CallAudioServiceDelegate: class {
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         self.handleState(call: call)
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
     }
 
     internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
     }
 
     internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
 
@@ -170,7 +170,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         ensureProperAudioSession(call: call)
     }
@@ -208,7 +208,7 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func ensureProperAudioSession(call: SignalCall?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = call, !call.isTerminated else {
             // Revert to default audio
@@ -302,7 +302,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func handleDialing(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // HACK: Without this async, dialing sound only plays once. I don't really understand why. Does the audioSession
         // need some time to settle? Is somethign else interrupting our session?
@@ -313,31 +313,31 @@ protocol CallAudioServiceDelegate: class {
 
     private func handleAnswering(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
     }
 
     private func handleRemoteRinging(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.play(sound: OWSSound.callOutboundRinging)
     }
 
     private func handleLocalRinging(call: SignalCall) {
         Logger.debug("\(self.logTag) in \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         startRinging(call: call)
     }
 
     private func handleConnected(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
     }
 
     private func handleLocalFailure(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         play(sound: OWSSound.callFailure)
         handleCallEnded(call: call)
@@ -345,14 +345,14 @@ protocol CallAudioServiceDelegate: class {
 
     private func handleLocalHangup(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         handleCallEnded(call: call)
     }
 
     private func handleRemoteHangup(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         vibrate()
 
@@ -361,7 +361,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func handleBusy(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         play(sound: OWSSound.callBusy)
 
@@ -373,7 +373,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func handleCallEnded(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // Stop solo audio, revert to default.
         isSpeakerphoneEnabled = false
@@ -485,7 +485,7 @@ protocol CallAudioServiceDelegate: class {
                                  mode: String? = nil,
                                  options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
 
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         var audioSessionChanged = false
         do {

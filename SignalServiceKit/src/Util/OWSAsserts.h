@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
 // This function is intended for use in Swift.
-void AssertIsOnMainThread(void);
+void SwiftAssertIsOnMainThread(NSString *functionName);
 
 #define OWSRaiseException(name, formatParam, ...)                                                                      \
     {                                                                                                                  \
