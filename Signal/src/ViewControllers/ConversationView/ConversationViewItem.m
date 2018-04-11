@@ -769,7 +769,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             break;
         }
         case OWSMessageCellType_Unknown: {
-            OWSFail(@"%@ No text to share", self.logTag)
+            OWSFail(@"%@ No text to share", self.logTag);
         }
     }
 }

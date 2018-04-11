@@ -1103,7 +1103,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (self.message.quotedMessage) {
                 [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
             } else {
-                OWSFail(@"%@ Missing quoted message.", self.logTag)
+                OWSFail(@"%@ Missing quoted message.", self.logTag);
             }
             break;
     }

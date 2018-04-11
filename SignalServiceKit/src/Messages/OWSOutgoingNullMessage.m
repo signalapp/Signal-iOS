@@ -60,8 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
     // verification sync which is ~1-512 bytes larger then that.
     contentLength += self.verificationStateSyncMessage.paddingBytesLength;
 
-    OWSAssert(contentLength > 0)
-    
+    OWSAssert(contentLength > 0);
+
     nullMessageBuilder.padding = [Cryptography generateRandomBytes:contentLength];
     
     contentBuilder.nullMessage = [nullMessageBuilder build];
