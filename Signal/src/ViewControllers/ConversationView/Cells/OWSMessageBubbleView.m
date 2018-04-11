@@ -564,6 +564,7 @@ NS_ASSUME_NONNULL_BEGIN
     // some performance cost.
     stillImageView.layer.minificationFilter = kCAFilterTrilinear;
     stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
+    stillImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary:stillImageView];
 
     __weak OWSMessageBubbleView *weakSelf = self;
@@ -611,6 +612,7 @@ NS_ASSUME_NONNULL_BEGIN
     // We need to specify a contentMode since the size of the image
     // might not match the aspect ratio of the view.
     animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
+    animatedImageView.backgroundColor = [UIColor whiteColor];
     [self addAttachmentUploadViewIfNecessary:animatedImageView];
 
     __weak OWSMessageBubbleView *weakSelf = self;
