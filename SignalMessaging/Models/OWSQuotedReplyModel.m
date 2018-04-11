@@ -154,7 +154,7 @@
                     // The search will always converge since in the worst case (namely
                     // a single character which in utf-8 is >= 1024 bytes) the loop will
                     // exit when the string is empty.
-                    truncatedText = [truncatedText substringToIndex:truncatedText.length / 2];
+                    truncatedText = [truncatedText substringToIndex:oversizeText.length / 2];
                 }
                 if ([truncatedText dataUsingEncoding:NSUTF8StringEncoding].length < kOversizeTextMessageSizeThreshold) {
                     quotedText = truncatedText;

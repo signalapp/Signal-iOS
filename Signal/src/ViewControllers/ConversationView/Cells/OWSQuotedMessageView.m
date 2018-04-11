@@ -301,20 +301,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UILabel *)createQuotedAuthorLabel
 {
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
-    NSString *quotedAuthorText;
-    if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
-        quotedAuthorText = NSLocalizedString(
-            @"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF", @"Indicates the author of a quoted message is yourself.");
-    } else {
-        OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
-        quotedAuthorText = [NSString
-            stringWithFormat:
-                NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
-                    @"Indicates the author of a quoted message. Embeds {{the author's name or phone number}}."),
-            quotedAuthor];
-    }
+    OWSContactsManager *contactsManager = Environment.current.contactsManager;
+    NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
+    NSString *quotedAuthorText =
+        [NSString stringWithFormat:
+                      NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
+                          @"Indicates the author of a quoted message. Embeds {{the author's name or phone number}}."),
+                  quotedAuthor];
 
     UILabel *quotedAuthorLabel = [UILabel new];
     quotedAuthorLabel.text = quotedAuthorText;
