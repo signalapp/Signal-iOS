@@ -4,6 +4,7 @@
 
 #import "TSMessage.h"
 #import "AppContext.h"
+#import "MIMETypeUtil.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
 #import "TSAttachment.h"
@@ -206,7 +207,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             stringWithFormat:@"Media Message with attachmentId: %@ and caption: '%@'", attachmentId, self.body];
     } else if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
-        return [NSString stringWithFormat:@"Media Message with attachmentId:%@", attachmentId];
+        return [NSString stringWithFormat:@"Media Message with attachmentId: %@", attachmentId];
     } else {
         return [NSString stringWithFormat:@"%@ with body: %@", [self class], self.body];
     }
@@ -214,12 +215,26 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
+{    
     NSString *_Nullable attachmentDescription = nil;
     if ([self hasAttachments]) {
         NSString *attachmentId = self.attachmentIds[0];
         TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-        if (attachment) {
+        if ([OWSMimeTypeOversizeTextMessage isEqualToString:attachment.contentType]) {
+            // Handle oversize text attachments.
+            if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                NSData *_Nullable data = [NSData dataWithContentsOfFile:attachmentStream.filePath];
+                if (data) {
+                    NSString *_Nullable text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                    if (text) {
+                        return text.filterStringForDisplay;
+                    }
+                }
+            }
+            
+            return @"";
+        } else if (attachment) {
             attachmentDescription = attachment.description;
         } else {
             attachmentDescription = NSLocalizedString(@"UNKNOWN_ATTACHMENT_LABEL",
@@ -229,7 +244,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
-        // TODO: Filter this text using something like DisplayableText.
         bodyDescription = self.body;
     }
 
