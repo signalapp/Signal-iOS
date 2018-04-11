@@ -310,9 +310,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     // We want a value that is just high enough to yield perf benefits.
     const NSUInteger kIncomingMessageBatchSize = 32;
 
-    NSArray<OWSMessageContentJob *> *jobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
-    OWSAssert(jobs);
-    if (jobs.count < 1) {
+    NSArray<OWSMessageContentJob *> *batchJobs = [self.finder nextJobsForBatchSize:kIncomingMessageBatchSize];
+    OWSAssert(batchJobs);
+    if (batchJobs.count < 1) {
         self.isDrainingQueue = NO;
         DDLogVerbose(@"%@ Queue is drained", self.logTag);
         return;
@@ -320,15 +320,16 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    [self processJobs:jobs];
+    NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
 
-    [self.finder removeJobsWithIds:jobs.uniqueIds];
+    [self.finder removeJobsWithIds:processedJobs.uniqueIds];
 
     backgroundTask = nil;
 
-    DDLogVerbose(@"%@ completed %zd jobs. %zd jobs left.",
+    DDLogVerbose(@"%@ completed %zd/%zd jobs. %zd jobs left.",
         self.logTag,
-        jobs.count,
+        processedJobs.count,
+        batchJobs.count,
         [OWSMessageContentJob numberOfKeysInCollection]);
 
     // Wait a bit in hopes of increasing the batch size.
@@ -340,17 +341,29 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     });
 }
 
-- (void)processJobs:(NSArray<OWSMessageContentJob *> *)jobs
+- (NSArray<OWSMessageContentJob *> *)processJobs:(NSArray<OWSMessageContentJob *> *)jobs
 {
     AssertOnDispatchQueue(self.serialQueue);
 
+    NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
             [self.messagesManager processEnvelope:job.envelopeProto
                                     plaintextData:job.plaintextData
                                       transaction:transaction];
+            [processedJobs addObject:job];
+
+            if (CurrentAppContext().isInBackground) {
+                // If the app is in the background, stop processing this batch.
+                //
+                // Since this check is done after processing jobs, we'll continue
+                // to process jobs in batches of 1.  This reduces the cost of
+                // being interrupted and rolled back if app is suspended.
+                break;
+            }
         }
     }];
+    return processedJobs;
 }
 
 @end

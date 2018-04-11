@@ -285,10 +285,24 @@ public class SystemContactsFetcher: NSObject {
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
         AssertIsOnMainThread()
 
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
+            AssertIsOnMainThread()
+
+            guard status == .expired else {
+                return
+            }
+
+            guard let _ = self else {
+                return
+            }
+            Logger.error("background task time ran out contacts fetch completed.")
+        })
+
         // Ensure completion is invoked on main thread.
-        let completion = { error in
+        let completion: (Error?) -> Void = { error in
             DispatchMainThreadSafe({
                 completionParam?(error)
+                backgroundTask = nil
             })
         }
 
