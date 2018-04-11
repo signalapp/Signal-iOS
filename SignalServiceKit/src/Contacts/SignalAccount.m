@@ -50,16 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
     return _recipientId;
 }
 
-- (NSString *)displayName
+- (nullable NSString *)contactFullName
 {
-    NSString *baseName = (self.contact.fullName.length > 0 ? self.contact.fullName : self.recipientId);
-
-    OWSAssert(self.hasMultipleAccountContact == (self.multipleAccountLabelText != nil));
-    NSString *displayName = (self.multipleAccountLabelText
-            ? [NSString stringWithFormat:@"%@ (%@)", baseName, self.multipleAccountLabelText]
-            : baseName);
-
-    return displayName.filterStringForDisplay;
+    return self.contact.fullName.filterStringForDisplay;
 }
 
 - (NSString *)multipleAccountLabelText

@@ -367,12 +367,26 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return [OWSProfileManager sharedManager];
 }
 
-- (NSString *_Nullable)cachedDisplayNameForRecipientId:(NSString *)recipientId
+- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
-    return signalAccount.displayName;
+    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    if (!signalAccount) {
+        return nil;
+    }
+
+    NSString *fullName = signalAccount.contactFullName;
+    if (fullName.length == 0) {
+        return nil;
+    }
+
+    NSString *multipleAccountLabelText = signalAccount.multipleAccountLabelText;
+    if (multipleAccountLabelText.length == 0) {
+        return fullName;
+    }
+
+    return [NSString stringWithFormat:@"%@ (%@)", fullName, multipleAccountLabelText];
 }
 
 - (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
@@ -440,7 +454,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId
 {
-    return [self cachedDisplayNameForRecipientId:recipientId] != nil;
+    return [self cachedContactNameForRecipientId:recipientId].length > 0;
 }
 
 - (NSString *)unknownContactName
@@ -469,7 +483,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
 {
-    return [self cachedDisplayNameForRecipientId:recipientId];
+    return [self cachedContactNameForRecipientId:recipientId];
 }
 
 - (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
@@ -577,7 +591,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
@@ -608,7 +622,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
                                                                   secondaryFont:(UIFont *)secondaryFont
 {
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return [[NSAttributedString alloc] initWithString:savedContactName];
     }
@@ -640,7 +654,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
 {
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedDisplayNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
