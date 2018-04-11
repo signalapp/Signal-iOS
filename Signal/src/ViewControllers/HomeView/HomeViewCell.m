@@ -201,7 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
         ]];
-    } else {
     }
 }
 
@@ -327,13 +326,18 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont ows_dynamicTypeFootnoteFont];
 }
 
+// A simple function to scale dimensions to reflect dynamic type.  Given a value
+// we lerp it larger linearly to reflect size of dynamic type relative to a
+// reference value for default dynamic type sizes.
+//
+// * We _NEVER_ scale values down.
+// * We cap scaling.
 + (CGFloat)scaleValueWithDynamicType:(CGFloat)minValue
 {
+    // The default size of dynamic "body" type.
     const NSUInteger kReferenceFontSizeMin = 17.f;
 
     CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    // We don't want to scale these values any smaller than their reference values,
-    // and we don't want to scale them more than some arbitrary cap.
     CGFloat alpha = MIN(1.3f, MAX(1.f, referenceFontSize / kReferenceFontSizeMin));
     return minValue * alpha;
 }
