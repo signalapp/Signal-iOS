@@ -179,7 +179,6 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAuthorLabel setCompressionResistanceLow];
     }
 
-    UILabel *quotedTextLabel;
     {
         // Stripe and text container.
         UIView *stripeAndTextContainer = [UIView containerView];
@@ -213,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
         [quoteStripView setCompressionResistanceHigh];
 
         // Text.
-        quotedTextLabel = [self configureQuotedTextLabel];
+        UILabel *quotedTextLabel = [self configureQuotedTextLabel];
         [stripeAndTextContainer addSubview:quotedTextLabel];
         [quotedTextLabel autoPinTopToSuperviewMarginWithInset:self.quotedReplyStripeVExtension];
         [quotedTextLabel autoPinBottomToSuperviewMarginWithInset:self.quotedReplyStripeVExtension];
