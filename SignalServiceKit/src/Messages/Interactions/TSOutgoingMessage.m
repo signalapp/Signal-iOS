@@ -109,6 +109,10 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     if (attachmentId) {
         [attachmentIds addObject:attachmentId];
     }
+
+    TSGroupMetaMessage groupMetaMessage =
+        [thread isKindOfClass:TSGroupThread.class] ? TSGroupMessageDeliver : TSGroupMessageNone;
+
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:body
@@ -116,7 +120,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                       expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
-                                                      groupMetaMessage:TSGroupMessageNone
+                                                      groupMetaMessage:groupMetaMessage
                                                          quotedMessage:quotedMessage];
 }
 
