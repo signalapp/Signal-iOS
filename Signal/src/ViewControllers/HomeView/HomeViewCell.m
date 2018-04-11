@@ -340,8 +340,9 @@ NS_ASSUME_NONNULL_BEGIN
     const NSUInteger kReferenceFontSizeMin = 17.f;
 
     CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    // We don't want to scale these values any smaller than their reference values.
-    CGFloat alpha = MAX(1.f, referenceFontSize / kReferenceFontSizeMin);
+    // We don't want to scale these values any smaller than their reference values,
+    // and we don't want to scale them more than some arbitrary cap.
+    CGFloat alpha = MIN(1.3f, MAX(1.f, referenceFontSize / kReferenceFontSizeMin));
     return minValue * alpha;
 }
 
