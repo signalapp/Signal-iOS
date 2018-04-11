@@ -82,8 +82,17 @@ NS_ASSUME_NONNULL_BEGIN
     self.payloadView.axis = UILayoutConstraintAxisVertical;
     [self.contentView addSubview:self.payloadView];
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [self.payloadView autoVCenterInSuperview];
     [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
+    [self.payloadView autoVCenterInSuperview];
+    // Ensure that the cell's contents never overflow the cell bounds.
+    [self.payloadView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.payloadView.superview.layoutMarginsGuide.bottomAnchor]
+        .active
+        = YES;
+    [self.payloadView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.payloadView.superview.layoutMarginsGuide.topAnchor]
+        .active
+        = YES;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -95,13 +104,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
-    UIStackView *topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    self.topRowView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
         self.dateTimeLabel,
     ]];
-    self.topRowView = topRowView;
-    topRowView.axis = UILayoutConstraintAxisHorizontal;
-    [self.payloadView addArrangedSubview:topRowView];
+    self.topRowView.axis = UILayoutConstraintAxisHorizontal;
+    self.topRowView.alignment = UIStackViewAlignmentCenter;
+    [self.payloadView addArrangedSubview:self.topRowView];
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
@@ -331,9 +340,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)rowHeight
 {
-    const NSUInteger kMinCellHeight = 72;
-
-    return CeilEven([self scaleValueWithDynamicType:kMinCellHeight]);
+    return 72;
 }
 
 - (NSUInteger)cellHMargin
