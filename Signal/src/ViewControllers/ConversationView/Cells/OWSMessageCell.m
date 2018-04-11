@@ -83,10 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
-    //    UITapGestureRecognizer *tap =
-    //        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    //    [self.contentView addGestureRecognizer:tap];
-
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
@@ -483,47 +479,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gesture recognizers
 
-//- (void)handleTapGesture:(UITapGestureRecognizer *)sender
-//{
-//    OWSAssert(self.delegate);
-//
-//    if (sender.state != UIGestureRecognizerStateRecognized) {
-//        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
-//        return;
-//    }
-//
-//    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-//        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-//        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-//            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
-//            return;
-//        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
-//            // Ignore taps on outgoing messages being sent.
-//            return;
-//        }
-//    }
-//
-//    CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
-//    switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
-//        case OWSMessageGestureLocation_Default:
-//            // Do nothing.
-//            return;
-//        case OWSMessageGestureLocation_OversizeText:
-//            [self.delegate didTapTruncatedTextMessage:self.viewItem];
-//            return;
-//        case OWSMessageGestureLocation_Media:
-//            [self handleMediaTapGesture];
-//            break;
-//        case OWSMessageGestureLocation_QuotedReply:
-//            if (self.message.quotedMessage) {
-//                [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
-//            } else {
-//                OWSFail(@"%@ Missing quoted message.", self.logTag)
-//            }
-//            break;
-//    }
-//}
-//
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {
     OWSAssert(self.delegate);

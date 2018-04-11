@@ -1096,44 +1096,6 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 }
-//
-//- (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
-//{
-//    OWSAssert(self.delegate);
-//
-//    if (sender.state != UIGestureRecognizerStateBegan) {
-//        return;
-//    }
-//
-//    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-//        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-//        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-//            // Ignore long press on unsent messages.
-//            return;
-//        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
-//            // Ignore long press on outgoing messages being sent.
-//            return;
-//        }
-//    }
-//
-//    CGPoint locationInMessageBubble = [sender locationInView:self];
-//    switch ([self gestureLocationForLocation:locationInMessageBubble]) {
-//        case OWSMessageGestureLocation_Default:
-//        case OWSMessageGestureLocation_OversizeText: {
-//            CGPoint location = [sender locationInView:self];
-//            [self showTextMenuController:location];
-//            break;
-//        }
-//        case OWSMessageGestureLocation_Media: {
-//            CGPoint location = [sender locationInView:self];
-//            [self showMediaMenuController:location];
-//            break;
-//        }
-//        case OWSMessageGestureLocation_QuotedReply:
-//            // TODO:
-//            break;
-//    }
-//}
 
 - (void)handleMediaTapGesture
 {

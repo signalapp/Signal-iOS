@@ -12,7 +12,6 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-//class MessageDetailViewController: OWSViewController, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
 class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate {
 
     // MARK: Properties
@@ -330,7 +329,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         messageBubbleView.loadContent()
 
         assert(messageBubbleView.isUserInteractionEnabled)
-//        messageBubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(messageBubbleTapped)))
 
         let row = UIView()
         row.addSubview(messageBubbleView)
@@ -587,42 +585,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }
 
-//    // MARK: - Event Handlers
-//
-//    func messageBubbleTapped(sender: UIGestureRecognizer) {
-//        guard let messageBubbleView = messageBubbleView else {
-//            return
-//        }
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        if let outgoingMessage = viewItem.interaction as? TSOutgoingMessage {
-//            switch outgoingMessage.messageState {
-//            case .attemptingOut,
-//                 .unsent:
-//                // Ignore taps on "unsent" and "sending" messages.
-//                return
-//            default:
-//                break
-//            }
-//        }
-//
-//    let locationInMessageBubble = sender.location(in: messageBubbleView)
-//        switch messageBubbleView.gestureLocation(forLocation: locationInMessageBubble) {
-//        case .default:
-//            break
-//        case .oversizeText:
-//            let viewController = LongTextViewController(viewItem: viewItem)
-//            self.navigationController?.pushViewController(viewController, animated: true)
-//            break
-//        case .media:
-//            // TODO: We could show MediaGalleryViewController?
-//            break
-//        case .quotedReply:
-//            break
-//        }
-//    }
-
     // MARK: OWSMessageBubbleViewDelegate
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
@@ -714,17 +676,4 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             self.navigationController?.popViewController(animated: true)
         }
     }
-
-//    // MARK: MediaDetailPresenter
-//
-//    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
-//        guard self.attachmentStream != nil else {
-//            owsFail("attachment stream unexpectedly nil")
-//            return
-//        }
-//
-//        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
-//        mediaGalleryViewController.addDataSourceDelegate(self)
-//        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
-//    }
 }

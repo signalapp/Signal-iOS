@@ -14,11 +14,6 @@ public enum MediaMessageViewMode: UInt {
     case attachmentApproval
 }
 
-//@objc
-//public protocol MediaDetailPresenter: class {
-//    func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView)
-//}
-
 @objc
 public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
@@ -59,8 +54,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     @objc
     public var contentView: UIView?
 
-//    private weak var mediaDetailPresenter: MediaDetailPresenter?
-
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -68,18 +61,13 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         fatalError("\(#function) is unimplemented.")
     }
 
-//    @objc
-//    public convenience init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
-//        self.init(attachment: attachment, mode: mode, mediaDetailPresenter: nil)
-//    }
-
-    // TODO there's only one mode now, used by the AttachmentApprovalView
+    // Currently we only use one mode (AttachmentApproval), so we could simplify this class, but it's kind
+    // of nice that it's written in a flexible way in case we'd want to use it elsewhere again in the future.
     @objc
-    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) { //}, mediaDetailPresenter: MediaDetailPresenter?) {
+    public required init(attachment: SignalAttachment, mode: MediaMessageViewMode) {
         assert(!attachment.hasError)
         self.attachment = attachment
         self.mode = mode
-//        self.mediaDetailPresenter = mediaDetailPresenter
         super.init(frame: CGRect.zero)
 
         createViews()
@@ -205,9 +193,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: animatedImageView, aspectRatio: aspectRatio)
         contentView = animatedImageView
-//
-//        animatedImageView.isUserInteractionEnabled = true
-//        animatedImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapped)))
     }
 
     private func addSubviewWithScaleAspectFitLayout(view: UIView, aspectRatio: CGFloat) {
@@ -239,9 +224,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
-//
-//        imageView.isUserInteractionEnabled = true
-//        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imageTapped)))
     }
 
     private func createVideoPreview() {
@@ -270,9 +252,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             videoPlayButton.contentMode = .scaleAspectFit
             self.addSubview(videoPlayButton)
             videoPlayButton.autoCenterInSuperview()
-
-//            imageView.isUserInteractionEnabled = true
-//            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(videoTapped)))
         }
     }
 
@@ -447,43 +426,4 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         audioPlayButton?.setImage(image, for: .normal)
         audioPlayButton?.imageView?.tintColor = controlTintColor
     }
-//
-//    // MARK: - Full Screen Image
-//
-//    @objc
-//    func imageTapped(sender: UIGestureRecognizer) {
-//        // Approval view handles it's own zooming gesture
-//        guard mode != .attachmentApproval else {
-//            return
-//        }
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        guard let fromView = sender.view else {
-//            return
-//        }
-//
-//        showMediaDetailViewController(fromView: fromView)
-//    }
-//
-//    // MARK: - Video Playback
-//
-//    @objc
-//    func videoTapped(sender: UIGestureRecognizer) {
-//        // Approval view handles it's own play gesture
-//        guard mode != .attachmentApproval else {
-//            return
-//        }
-//        guard sender.state == .recognized else {
-//            return
-//        }
-//        guard let fromView = sender.view else {
-//            return
-//        }
-//
-//        showMediaDetailViewController(fromView: fromView)
-//    }
-//    func showMediaDetailViewController(fromView: UIView) {
-//        self.mediaDetailPresenter?.presentDetails(mediaMessageView: self, fromView: fromView)
-//    }
 }
