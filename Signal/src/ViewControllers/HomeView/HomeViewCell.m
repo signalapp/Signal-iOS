@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HomeViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UIView *payloadView;
+@property (nonatomic) UIStackView *payloadView;
 @property (nonatomic) UIStackView *topRowView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
@@ -78,10 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
 
-    self.payloadView = [UIView containerView];
+    self.payloadView = [UIStackView new];
+    self.payloadView.axis = UILayoutConstraintAxisVertical;
     [self.contentView addSubview:self.payloadView];
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
+    [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -99,20 +101,13 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
     self.topRowView = topRowView;
     topRowView.axis = UILayoutConstraintAxisHorizontal;
-    topRowView.spacing = 4;
-    [self.payloadView addSubview:topRowView];
-    [topRowView autoPinLeadingToSuperviewMargin];
-    [topRowView autoPinTrailingToSuperviewMargin];
-    [topRowView autoPinTopToSuperviewMargin];
+    [self.payloadView addArrangedSubview:topRowView];
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.numberOfLines = 1;
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [self.payloadView addSubview:self.snippetLabel];
-    [self.snippetLabel autoPinLeadingToSuperviewMargin];
-    [self.snippetLabel autoPinTrailingToSuperviewMargin];
-    [self.snippetLabel autoPinBottomToSuperviewMargin];
+    [self.payloadView addArrangedSubview:self.snippetLabel];
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
@@ -124,9 +119,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
-    [self.contentView addSubview:self.unreadBadge];
-    [self.unreadBadge autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
-    [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.dateTimeLabel];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
@@ -171,23 +163,22 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateNameLabel];
     [self updateAvatarView];
 
+    self.payloadView.spacing = 0.f;
+    self.topRowView.spacing = ceil([HomeViewCell scaleValueWithDynamicType:5]);
+
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
-    self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
-    CGFloat snippetHSpacing = ceil([HomeViewCell scaleValueWithDynamicType:6]);
-    [self.viewConstraints addObjectsFromArray:@[
-        [self.snippetLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.topRowView withOffset:snippetHSpacing],
-    ]];
 
+    self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
     self.dateTimeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
+        [self.topRowView addArrangedSubview:self.unreadBadge];
 
-        self.unreadBadge.hidden = NO;
         self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
 
@@ -197,19 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
         const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
 
-        CGFloat unreadBadgeHSpacing = ceil([HomeViewCell scaleValueWithDynamicType:7]);
-
         [self.viewConstraints addObjectsFromArray:@[
             [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
-            [self.unreadBadge autoPinLeadingToTrailingEdgeOfView:self.payloadView offset:unreadBadgeHSpacing],
         ]];
     } else {
-        self.unreadBadge.hidden = YES;
-
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin],
-        ]];
     }
 }
 
@@ -321,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)snippetFont
 {
-    return [UIFont ows_dynamicTypeBodyFont];
+    return [UIFont ows_dynamicTypeFootnoteFont];
 }
 
 - (UIFont *)nameFont
@@ -379,6 +362,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.thread = nil;
     self.contactsManager = nil;
+
+    [self.unreadBadge removeFromSuperview];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
