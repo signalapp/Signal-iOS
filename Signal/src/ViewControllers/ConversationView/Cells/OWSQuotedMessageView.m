@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
 @property (nonatomic, readonly) BOOL isForPreview;
+@property (nonatomic, readonly) BOOL isOutgoing;
 
 @end
 
@@ -33,12 +34,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                                                isOutgoing:(BOOL)isOutgoing
 {
     OWSAssert(quotedMessage);
 
     return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
                                          displayableQuotedText:displayableQuotedText
-                                                  isForPreview:NO];
+                                                  isForPreview:NO
+                                                    isOutgoing:isOutgoing];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
@@ -52,12 +55,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
                                          displayableQuotedText:displayableQuotedText
-                                                  isForPreview:YES];
+                                                  isForPreview:YES
+                                                    isOutgoing:YES];
 }
 
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                          isForPreview:(BOOL)isForPreview
+                           isOutgoing:(BOOL)isOutgoing
 {
     self = [super init];
 
@@ -70,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
     _isForPreview = isForPreview;
+    _isOutgoing = isOutgoing;
 
     [self createContents];
 
@@ -91,10 +97,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)highlightColor
 {
-    BOOL isIncomingQuote
-        = ![NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isIncomingQuote ? OWSMessagesBubbleImageFactory.bubbleColorIncoming
-                            : OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent);
+    BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+    return (isQuotingSelf ? OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
+                          : OWSMessagesBubbleImageFactory.bubbleColorIncoming);
 }
 
 #pragma mark -
@@ -305,8 +310,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;
     if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
-        quotedAuthorText = NSLocalizedString(
-            @"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF", @"Indicates the author of a quoted message is yourself.");
+
+        if (self.isOutgoing) {
+            quotedAuthorText = NSLocalizedString(
+                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF", @"message header label when quoting yourself");
+        } else {
+            quotedAuthorText = NSLocalizedString(
+                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
+        }
     } else {
         OWSContactsManager *contactsManager = Environment.current.contactsManager;
         NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];

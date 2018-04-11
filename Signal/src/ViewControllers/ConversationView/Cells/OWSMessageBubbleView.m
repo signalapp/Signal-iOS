@@ -263,9 +263,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isQuotedReply) {
         OWSAssert(!lastSubview);
 
-        OWSQuotedMessageView *quotedMessageView = [OWSQuotedMessageView
-            quotedMessageViewForConversation:self.viewItem.quotedReply
-                       displayableQuotedText:(self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
+        BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
+        DisplayableText *_Nullable displayableQuotedText
+            = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
+
+        OWSQuotedMessageView *quotedMessageView =
+            [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
+                                             displayableQuotedText:displayableQuotedText
+                                                        isOutgoing:isOutgoing];
         self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
@@ -915,9 +920,14 @@ NS_ASSUME_NONNULL_BEGIN
         return CGSizeZero;
     }
 
-    OWSQuotedMessageView *quotedMessageView = [OWSQuotedMessageView
-        quotedMessageViewForConversation:self.viewItem.quotedReply
-                   displayableQuotedText:(self.hasQuotedText ? self.viewItem.displayableQuotedText : nil)];
+    BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
+    DisplayableText *_Nullable displayableQuotedText
+        = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
+
+    OWSQuotedMessageView *quotedMessageView =
+        [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
+                                         displayableQuotedText:displayableQuotedText
+                                                    isOutgoing:isOutgoing];
     const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
     CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
     if (includeMargins) {

@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Factory method for "message bubble" views.
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
-                                     displayableQuotedText:(nullable DisplayableText *)displayableQuotedText;
+                                     displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                                                isOutgoing:(BOOL)isOutgoing;
 
 // Factory method for "message compose" views.
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage;
