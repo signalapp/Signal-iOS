@@ -225,6 +225,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageContentJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
+@property (atomic) BOOL isAppInBackground;
 
 - (instancetype)initWithMessagesManager:(OWSMessageManager *)messagesManager
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
@@ -253,12 +254,38 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     _finder = finder;
     _isDrainingQueue = NO;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillEnterForeground:)
+                                                 name:OWSApplicationWillEnterForegroundNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidEnterBackground:)
+                                                 name:OWSApplicationDidEnterBackgroundNotification
+                                               object:nil];
+
     // Start processing.
     [AppReadiness runNowOrWhenAppIsReady:^{
         [self drainQueue];
     }];
 
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Notifications
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    self.isAppInBackground = NO;
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    self.isAppInBackground = YES;
 }
 
 #pragma mark - instance methods
@@ -353,7 +380,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                                       transaction:transaction];
             [processedJobs addObject:job];
 
-            if (CurrentAppContext().isInBackground) {
+            if (self.isAppInBackground) {
                 // If the app is in the background, stop processing this batch.
                 //
                 // Since this check is done after processing jobs, we'll continue
