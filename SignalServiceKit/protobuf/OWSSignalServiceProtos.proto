@@ -95,8 +95,8 @@ message DataMessage {
 
       optional string            contentType = 1;
       optional string            fileName    = 2;
-      optional uint32            flags       = 3;
-      optional AttachmentPointer thumbnail   = 4;
+      optional AttachmentPointer thumbnail   = 3;
+      optional uint32            flags       = 4;
     }
 
     optional uint64            id          = 1;
