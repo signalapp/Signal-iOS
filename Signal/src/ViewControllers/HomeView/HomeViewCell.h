@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)cellReuseIdentifier;
 
 - (void)configureWithThread:(TSThread *)thread
-              contactsManager:(OWSContactsManager *)contactsManager
-        blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
-    shouldHaveBottomSeparator:(BOOL)shouldHaveBottomSeparator;
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
 
 @end
 

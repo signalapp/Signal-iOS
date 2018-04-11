@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
                         cell.accessoryMessage = NSLocalizedString(
                             @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                     } else {
-                        cell.selectionStyle = UITableViewCellSeparatorStyleNone;
+                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
                     }
                 } else {
                     // In the "members" section, we label "new" members as such when editing an existing group.
