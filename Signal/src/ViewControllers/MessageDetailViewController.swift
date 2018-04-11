@@ -12,7 +12,8 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
+//class MessageDetailViewController: OWSViewController, MediaDetailPresenter, MediaGalleryDataSourceDelegate {
+class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate {
 
     // MARK: Properties
 
@@ -318,30 +319,29 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
             rows += addAttachmentRows()
         }
 
-        if true {
-            let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
-            self.messageBubbleView = messageBubbleView
-            messageBubbleView.viewItem = viewItem
-            messageBubbleView.cellMediaCache = NSCache()
-            messageBubbleView.contentWidth = contentWidth()
-            messageBubbleView.alwaysShowBubbleTail = true
-            messageBubbleView.configureViews()
-            messageBubbleView.loadContent()
+        let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
+        messageBubbleView.delegate = self
+        self.messageBubbleView = messageBubbleView
+        messageBubbleView.viewItem = viewItem
+        messageBubbleView.cellMediaCache = NSCache()
+        messageBubbleView.contentWidth = contentWidth()
+        messageBubbleView.alwaysShowBubbleTail = true
+        messageBubbleView.configureViews()
+        messageBubbleView.loadContent()
 
-            messageBubbleView.isUserInteractionEnabled = true
-            messageBubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(messageBubbleTapped)))
+        assert(messageBubbleView.isUserInteractionEnabled)
+//        messageBubbleView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(messageBubbleTapped)))
 
-            let row = UIView()
-            row.addSubview(messageBubbleView)
-            messageBubbleView.autoPinHeightToSuperview()
+        let row = UIView()
+        row.addSubview(messageBubbleView)
+        messageBubbleView.autoPinHeightToSuperview()
 
-            let isIncoming = self.message as? TSIncomingMessage != nil
-            messageBubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
+        let isIncoming = self.message as? TSIncomingMessage != nil
+        messageBubbleView.autoPinEdge(toSuperviewEdge: isIncoming ? .leading : .trailing, withInset: bubbleViewHMargin)
 
-            self.messageBubbleViewWidthLayoutConstraint = messageBubbleView.autoSetDimension(.width, toSize: 0)
-            self.messageBubbleViewHeightLayoutConstraint = messageBubbleView.autoSetDimension(.height, toSize: 0)
-            rows.append(row)
-        }
+        self.messageBubbleViewWidthLayoutConstraint = messageBubbleView.autoSetDimension(.width, toSize: 0)
+        self.messageBubbleViewHeightLayoutConstraint = messageBubbleView.autoSetDimension(.height, toSize: 0)
+        rows.append(row)
 
         if rows.count == 0 {
             // Neither attachment nor body.
@@ -587,40 +587,112 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
         messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }
 
-    // MARK: - Event Handlers
+//    // MARK: - Event Handlers
+//
+//    func messageBubbleTapped(sender: UIGestureRecognizer) {
+//        guard let messageBubbleView = messageBubbleView else {
+//            return
+//        }
+//        guard sender.state == .recognized else {
+//            return
+//        }
+//        if let outgoingMessage = viewItem.interaction as? TSOutgoingMessage {
+//            switch outgoingMessage.messageState {
+//            case .attemptingOut,
+//                 .unsent:
+//                // Ignore taps on "unsent" and "sending" messages.
+//                return
+//            default:
+//                break
+//            }
+//        }
+//
+//    let locationInMessageBubble = sender.location(in: messageBubbleView)
+//        switch messageBubbleView.gestureLocation(forLocation: locationInMessageBubble) {
+//        case .default:
+//            break
+//        case .oversizeText:
+//            let viewController = LongTextViewController(viewItem: viewItem)
+//            self.navigationController?.pushViewController(viewController, animated: true)
+//            break
+//        case .media:
+//            // TODO: We could show MediaGalleryViewController?
+//            break
+//        case .quotedReply:
+//            break
+//        }
+//    }
 
-    func messageBubbleTapped(sender: UIGestureRecognizer) {
-        guard let messageBubbleView = messageBubbleView else {
+    // MARK: OWSMessageBubbleViewDelegate
+
+    func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
+        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+
+        mediaGalleryViewController.addDataSourceDelegate(self)
+        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+    }
+
+    func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
+        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+
+        mediaGalleryViewController.addDataSourceDelegate(self)
+        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
+    }
+
+    var audioAttachmentPlayer: OWSAudioPlayer?
+
+    func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
+        AssertIsOnMainThread()
+
+        guard let mediaURL = attachmentStream.mediaURL() else {
+            owsFail("\(logTag) in \(#function) mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
             return
         }
-        guard sender.state == .recognized else {
+
+        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+            owsFail("\(logTag) in \(#function) audio file missing at path: \(mediaURL)")
             return
         }
-        if let outgoingMessage = viewItem.interaction as? TSOutgoingMessage {
-            switch outgoingMessage.messageState {
-            case .attemptingOut,
-                 .unsent:
-                // Ignore taps on "unsent" and "sending" messages.
+
+        if let audioAttachmentPlayer = self.audioAttachmentPlayer {
+            // Is this player associated with this media adapter?
+            if (audioAttachmentPlayer.owner as? ConversationViewItem == viewItem) {
+                // Tap to pause & unpause.
+                audioAttachmentPlayer.togglePlayState()
                 return
-            default:
-                break
             }
+            audioAttachmentPlayer.stop()
+            self.audioAttachmentPlayer = nil
         }
 
-    let locationInMessageBubble = sender.location(in: messageBubbleView)
-        switch messageBubbleView.gestureLocation(forLocation: locationInMessageBubble) {
-        case .default:
-            break
-        case .oversizeText:
-            let viewController = LongTextViewController(viewItem: viewItem)
-            self.navigationController?.pushViewController(viewController, animated: true)
-            break
-        case .media:
-            // TODO: We could show MediaGalleryViewController?
-            break
-        case .quotedReply:
-            break
+        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, delegate: viewItem)
+        self.audioAttachmentPlayer = audioAttachmentPlayer
+
+        // Associate the player with this media adapter.
+        audioAttachmentPlayer.owner = viewItem
+        audioAttachmentPlayer.playWithPlaybackAudioCategory()
+    }
+
+    func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            return
         }
+
+        let viewController = LongTextViewController(viewItem: viewItem)
+        navigationController.pushViewController(viewController, animated: true)
+    }
+
+    func didTapFailedIncomingAttachment(_ viewItem: ConversationViewItem, attachmentPointer: TSAttachmentPointer) {
+        // no - op
+    }
+
+    func didTapFailedOutgoingMessage(_ message: TSOutgoingMessage) {
+        // no - op
+    }
+
+    func didTapQuotedMessage(_ viewItem: ConversationViewItem, quotedMessage: TSQuotedMessage) {
+        // no - op
     }
 
     // MediaGalleryDataSourceDelegate
@@ -643,16 +715,16 @@ class MessageDetailViewController: OWSViewController, MediaDetailPresenter, Medi
         }
     }
 
-    // MARK: MediaDetailPresenter
-
-    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
-        guard self.attachmentStream != nil else {
-            owsFail("attachment stream unexpectedly nil")
-            return
-        }
-
-        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
-        mediaGalleryViewController.addDataSourceDelegate(self)
-        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
-    }
+//    // MARK: MediaDetailPresenter
+//
+//    public func presentDetails(mediaMessageView: MediaMessageView, fromView: UIView) {
+//        guard self.attachmentStream != nil else {
+//            owsFail("attachment stream unexpectedly nil")
+//            return
+//        }
+//
+//        let mediaGalleryViewController = MediaGalleryViewController(thread: self.thread, uiDatabaseConnection: self.uiDatabaseConnection)
+//        mediaGalleryViewController.addDataSourceDelegate(self)
+//        mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: fromView)
+//    }
 }
