@@ -197,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSCAssert(strongSelf);
 
             // To be consistent with the threads (above), we use ContactTableViewCell
-            // instead of InboxTableViewCell to present contacts and threads.
+            // instead of HomeViewCell to present contacts and threads.
             ContactTableViewCell *cell = [ContactTableViewCell new];
             
             if ([thread isKindOfClass:[TSContactThread class]]) {

@@ -47,31 +47,92 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
-+ (BOOL)dateIsOlderThanOneDay:(NSDate *)date {
-    return [[NSDate date] timeIntervalSinceDate:date] > kDayInterval;
++ (NSDateFormatter *)monthAndDayFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        formatter.dateFormat = @"MMM d";
+    });
+    return formatter;
 }
 
-+ (BOOL)dateIsOlderThanOneWeek:(NSDate *)date {
-    return [[NSDate date] timeIntervalSinceDate:date] > kWeekInterval;
++ (NSDateFormatter *)shortDayOfWeekFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        formatter.dateFormat = @"E";
+    });
+    return formatter;
 }
 
-+ (BOOL)date:(NSDate *)date isEqualToDateIgnoringTime:(NSDate *)anotherDate {
-    static const unsigned componentFlags = (NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay);
-    NSDateComponents *components1 = [[NSCalendar autoupdatingCurrentCalendar] components:componentFlags fromDate:date];
-    NSDateComponents *components2 =
-        [[NSCalendar autoupdatingCurrentCalendar] components:componentFlags fromDate:anotherDate];
-    return ((components1.year == components2.year) && (components1.month == components2.month) &&
-            (components1.day == components2.day));
++ (BOOL)dateIsOlderThanToday:(NSDate *)date
+{
+    return [self dateIsOlderThanToday:date now:[NSDate date]];
 }
 
-+ (BOOL)dateIsToday:(NSDate *)date {
-    return [self date:[NSDate date] isEqualToDateIgnoringTime:date];
++ (BOOL)dateIsOlderThanToday:(NSDate *)date now:(NSDate *)now
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
+    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
+    return dateDayOfEra < nowDayOfEra;
+}
+
++ (BOOL)dateIsOlderThanOneWeek:(NSDate *)date
+{
+    return [self dateIsOlderThanOneWeek:date now:[NSDate date]];
+}
+
++ (BOOL)dateIsOlderThanOneWeek:(NSDate *)date now:(NSDate *)now
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
+    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
+    return dateDayOfEra < (nowDayOfEra - 6);
+}
+
++ (BOOL)dateIsToday:(NSDate *)date
+{
+    return [self dateIsToday:date now:[NSDate date]];
+}
+
++ (BOOL)dateIsToday:(NSDate *)date now:(NSDate *)now
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return ([calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date] ==
+        [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now]);
+}
+
++ (BOOL)dateIsThisYear:(NSDate *)date
+{
+    return [self dateIsThisYear:date now:[NSDate date]];
+}
+
++ (BOOL)dateIsThisYear:(NSDate *)date now:(NSDate *)now
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return (
+        [calendar component:NSCalendarUnitYear fromDate:date] == [calendar component:NSCalendarUnitYear fromDate:now]);
 }
 
 + (BOOL)dateIsYesterday:(NSDate *)date
 {
-    NSDate *yesterday = [NSDate ows_dateWithMillisecondsSince1970:[NSDate ows_millisecondTimeStamp] - kDayInMs];
-    return [self date:yesterday isEqualToDateIgnoringTime:date];
+    return [self dateIsYesterday:date now:[NSDate date]];
+}
+
++ (BOOL)dateIsYesterday:(NSDate *)date now:(NSDate *)now
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    return ([calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date] ==
+        [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now] - 1);
 }
 
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp isRTL:(BOOL)isRTL

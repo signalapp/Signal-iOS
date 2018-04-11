@@ -239,6 +239,11 @@ const CGFloat kBubbleTextVInset = 10.f;
     }
 }
 
++ (CGFloat)minWidth
+{
+    return (kBubbleHRounding * 2 + kBubbleThornSideInset);
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

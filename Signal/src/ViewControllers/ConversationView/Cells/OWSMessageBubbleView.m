@@ -933,6 +933,9 @@ NS_ASSUME_NONNULL_BEGIN
     cellSize.width = MAX(cellSize.width, textContentSize.width);
     cellSize.height += textContentSize.height;
 
+    // Make sure the bubble is always wide enough to complete it's bubble shape.
+    cellSize.width = MAX(cellSize.width, OWSBubbleView.minWidth);
+
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
     if (self.hasTapForMore) {
