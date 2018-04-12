@@ -81,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertIsOnMainThread();
     _appIsInactive = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
+    _isScreenLockUnlocked = NO;
 
     [self observeNotifications];
 
@@ -123,6 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(screenLockWasEnabled:)
                                                  name:OWSScreenLock.ScreenLockWasEnabled
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clockDidChange:)
+                                                 name:NSSystemClockDidChangeNotification
                                                object:nil];
 }
 
@@ -577,6 +582,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     self.appIsInBackground = YES;
+}
+
+- (void)clockDidChange:(NSNotification *)notification
+{
+    DDLogInfo(@"%@ clock did change", self.logTag);
+    self.isScreenLockUnlocked = NO;
 }
 
 #pragma mark - Inactive Timer
