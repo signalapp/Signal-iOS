@@ -150,7 +150,7 @@ import LocalAuthentication
     // On success or cancel, completion is called with nil argument.
     // Success and cancel can be differentiated by consulting
     // isScreenLockEnabled.
-        private func tryToVerifyLocalAuthentication(localizedReason: String,
+    private func tryToVerifyLocalAuthentication(localizedReason: String,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
         AssertIsOnMainThread()
 
