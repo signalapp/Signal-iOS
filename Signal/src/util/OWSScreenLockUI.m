@@ -587,7 +587,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)clockDidChange:(NSNotification *)notification
 {
     DDLogInfo(@"%@ clock did change", self.logTag);
+
     self.isScreenLockUnlocked = NO;
+
+    // NOTE: this notifications fires _before_ applicationDidBecomeActive,
+    // which is desirable.  Don't assume that though; call ensureScreenProtection
+    // just in case it's necessary.
+    [self ensureScreenProtection];
 }
 
 #pragma mark - Inactive Timer
