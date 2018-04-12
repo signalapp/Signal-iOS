@@ -47,7 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 // more than N seconds.
 @property (nonatomic, nullable) NSTimer *inactiveTimer;
 
-
 @end
 
 #pragma mark -
@@ -71,6 +70,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    OWSAssertIsOnMainThread();
+    _appIsInactive = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
 
     [self observeNotifications];
 
@@ -133,6 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tryToActivateScreenLockUponBecomingActive
 {
     OWSAssert(!self.appIsInactive);
+    OWSAssertIsOnMainThread();
 
     if (!self.isScreenLockUnlocked) {
         // Screen lock is already activated.
@@ -165,10 +168,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAppIsInactive:(BOOL)appIsInactive
 {
     _appIsInactive = appIsInactive;
+    OWSAssertIsOnMainThread();
 
     if (!appIsInactive) {
         [self tryToActivateScreenLockUponBecomingActive];
 
+        DDLogInfo(@"%@ setAppIsInactive clear screenLockCountdownDate.", self.logTag);
         self.screenLockCountdownDate = nil;
     }
 
@@ -179,6 +184,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAppIsInBackground:(BOOL)appIsInBackground
 {
+    OWSAssertIsOnMainThread();
+
     if (appIsInBackground && !_appIsInBackground) {
         [self startScreenLockCountdownIfNecessary];
     }
@@ -190,8 +197,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startScreenLockCountdownIfNecessary
 {
+    DDLogVerbose(@"%@ startScreenLockCountdownIfNecessary: %d", self.logTag, self.screenLockCountdownDate != nil);
+
     if (!self.screenLockCountdownDate) {
-        DDLogVerbose(@"%@ startScreenLockCountdownIfNecessary.", self.logTag);
+        DDLogInfo(@"%@ startScreenLockCountdown.", self.logTag);
         self.screenLockCountdownDate = [NSDate new];
     }
 
@@ -244,6 +253,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isShowingScreenLockUI) {
         return;
     }
+    if (self.appIsInactive) {
+        return;
+    }
 
     DDLogInfo(@"%@, try to unlock screen lock", self.logTag);
 
@@ -293,6 +305,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldHaveScreenProtection
 {
+    OWSAssertIsOnMainThread();
+
     // Show 'Screen Protection' if:
     //
     // * App is inactive and...
@@ -481,7 +495,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"showUnlockUI");
+    if (self.appIsInactive) {
+        // This button can be pressed while the app is inactive
+        // for a brief window while the iOS auth UI is dismissing.
+        return;
+    }
+
+    DDLogInfo(@"%@ unlockButtonTapped", self.logTag);
 
     self.didLastUnlockAttemptFail = NO;
 
