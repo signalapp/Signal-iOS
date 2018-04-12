@@ -299,28 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ trying to set is screen lock enabled: %@", self.logTag, @(shouldBeEnabled));
 
-    __weak typeof(self) weakSelf = self;
-    if (shouldBeEnabled) {
-        [OWSScreenLock.sharedManager tryToEnableScreenLockWithCompletion:^(NSError *_Nullable error) {
-            [weakSelf updateTableContents];
-
-            if (error) {
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_ENABLE_FAILED",
-                                                  @"Title for alert indicating that screen lock could not be enabled.")
-                                      message:error.localizedDescription];
-            }
-        }];
-    } else {
-        [OWSScreenLock.sharedManager tryToDisableScreenLockWithCompletion:^(NSError *_Nullable error) {
-            [weakSelf updateTableContents];
-
-            if (error) {
-                [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_DISABLE_FAILED",
-                                                  @"Title for alert indicating that screen lock could not be disabled.")
-                                      message:error.localizedDescription];
-            }
-        }];
-    }
+    [OWSScreenLock.sharedManager setIsScreenLockEnabled:shouldBeEnabled];
 }
 
 - (void)screenLockDidChange:(NSNotification *)notification
