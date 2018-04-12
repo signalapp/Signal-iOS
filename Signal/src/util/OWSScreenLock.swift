@@ -34,6 +34,11 @@ import LocalAuthentication
     private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
     private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
 
+    // We don't want the auth process itself to trigger screen lock.
+    // Specifically, we want to avoid  triggering the 'screen lock' if
+    // the user lingers in the auth UI in the privacy settings.
+    private var ignoreUnlockUntilActive = false
+
     // We temporarily resign any first responder while the Screen Lock is presented.
     weak var firstResponderBeforeLockscreen: UIResponder?
 
@@ -49,6 +54,21 @@ import LocalAuthentication
         super.init()
 
         SwiftSingletons.register(self)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func didBecomeActive() {
+        AssertIsOnMainThread()
+
+        ignoreUnlockUntilActive = false
     }
 
     // MARK: - Properties
@@ -152,6 +172,12 @@ import LocalAuthentication
                                             failure: @escaping ((Error) -> Void),
                                             unexpectedFailure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
+        guard !ignoreUnlockUntilActive else {
+            DispatchQueue.main.async {
+                // This prevents the 'screen lock' from activating if
+                // the user lingers in the auth UI in the privacy settings.
+                success()
+            }
         guard CurrentAppContext().isMainAppAndActive else {
             owsFail("\(self.logTag) \(#function) Unexpected request for 'screen lock' unlock UI while app is inactive.")
             cancel()
@@ -235,6 +261,8 @@ import LocalAuthentication
             return
         }
 
+        // Use ignoreUnlockUntilActive to suppress unlock verifications.
+        ignoreUnlockUntilActive = true
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: localizedReason) { success, evaluateError in
 
             if success {

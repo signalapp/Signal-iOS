@@ -575,6 +575,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)inactiveTimerDidFire
 {
+    DDLogVerbose(@"%@ inactiveTimerDidFire", self.logTag);
+
     [self startScreenLockCountdownIfNecessary];
 }
 
