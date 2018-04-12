@@ -1411,7 +1411,10 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
 
-/* Indicates the author of a quoted message is yourself. */
+/* message header label when someone else is quoting you */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+
+/* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
