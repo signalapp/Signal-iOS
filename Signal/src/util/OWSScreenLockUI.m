@@ -18,9 +18,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<NSLayoutConstraint *> *screenBlockingConstraints;
 @property (nonatomic) NSString *screenBlockingSignature;
 
-// Unlike UIApplication.applicationState, this state is
-// updated conservatively, e.g. the flag is cleared during
-// "will enter background."
+// Unlike UIApplication.applicationState, this state reflects the
+// notifications, i.e. "did become active", "will resign active",
+// "will enter foreground", "did enter background".
+//
+// We want to update our state to reflect these transitions and have
+// the "update" logic be consistent with "last reported" state. i.e.
+// when you're responding to "will resign active", we need to behave
+// as though we're already inactive.
+//
+// Secondly, we need to show the screen protection _before_ we become
+// inactive in order for it to be reflected in the app switcher.
 @property (nonatomic) BOOL appIsInactive;
 @property (nonatomic) BOOL appIsInBackground;
 
