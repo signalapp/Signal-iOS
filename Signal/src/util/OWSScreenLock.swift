@@ -126,7 +126,8 @@ import LocalAuthentication
     // isScreenLockEnabled.
     @objc public func tryToEnableScreenLock(completion: @escaping ((Error?) -> Void)) {
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK",
-                                                                        comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'."),
+                                                                          comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'."),
+                                       isUnlockAttempt: false,
                                        completion: { (outcome: OWSScreenLockOutcome) in
                                         AssertIsOnMainThread()
 
@@ -150,7 +151,8 @@ import LocalAuthentication
     // isScreenLockEnabled.
     @objc public func tryToDisableScreenLock(completion: @escaping ((Error?) -> Void)) {
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK",
-                                                                        comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'."),
+                                                                          comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'."),
+                                       isUnlockAttempt: false,
                                        completion: { (outcome: OWSScreenLockOutcome) in
                                         AssertIsOnMainThread()
 
@@ -178,6 +180,8 @@ import LocalAuthentication
                 // the user lingers in the auth UI in the privacy settings.
                 success()
             }
+            return
+        }
         guard CurrentAppContext().isMainAppAndActive else {
             owsFail("\(self.logTag) \(#function) Unexpected request for 'screen lock' unlock UI while app is inactive.")
             cancel()
@@ -192,7 +196,8 @@ import LocalAuthentication
         }
 
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
-                                                                        comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
+                                                                          comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
+                                       isUnlockAttempt: true,
                                        completion: { (outcome: OWSScreenLockOutcome) in
                                         AssertIsOnMainThread()
 
@@ -223,7 +228,8 @@ import LocalAuthentication
     // On success or cancel, completion is called with nil argument.
     // Success and cancel can be differentiated by consulting
     // isScreenLockEnabled.
-    private func tryToVerifyLocalAuthentication(localizedReason: String,
+        private func tryToVerifyLocalAuthentication(localizedReason: String,
+                                                    isUnlockAttempt: Bool,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
         AssertIsOnMainThread()
 
@@ -262,7 +268,9 @@ import LocalAuthentication
         }
 
         // Use ignoreUnlockUntilActive to suppress unlock verifications.
-        ignoreUnlockUntilActive = true
+        if !isUnlockAttempt {
+            ignoreUnlockUntilActive = true
+        }
         context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: localizedReason) { success, evaluateError in
 
             if success {
