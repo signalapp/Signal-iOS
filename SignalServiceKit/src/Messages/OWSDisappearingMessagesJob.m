@@ -96,12 +96,12 @@ NS_ASSUME_NONNULL_BEGIN
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
-                DDLogError(
+                OWSFail(
                     @"%@ Refusing to remove message which doesn't expire until: %lld", self.logTag, message.expiresAt);
                 return;
             }
 
-            DDLogDebug(@"%@ Removing message which expired at: %lld", self.logTag, message.expiresAt);
+            DDLogInfo(@"%@ Removing message which expired at: %lld", self.logTag, message.expiresAt);
             [message removeWithTransaction:transaction];
             expirationCount++;
         }
@@ -130,12 +130,12 @@ NS_ASSUME_NONNULL_BEGIN
         // In theory we could kill the loop here. It should resume when the next expiring message is saved,
         // But this is a safeguard for any race conditions that exist while running the job as a new message is saved.
         DDLogDebug(@"%@ No more expiring messages.", self.logTag);
-        [self runLater];
+        [self scheduleRunLater];
         return;
     }
 
     uint64_t nextExpirationAt = [nextExpirationTimestampNumber unsignedLongLongValue];
-    [self runByDate:[NSDate ows_dateWithMillisecondsSince1970:MAX(nextExpirationAt, now)]];
+    [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:MAX(nextExpirationAt, now)]];
 }
 
 + (void)setExpirationForMessage:(TSMessage *)message
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Necessary that the async expiration run happens *after* the message is saved with expiration configuration.
-    [self runByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
+    [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
 }
 
 + (void)setExpirationsForThread:(TSThread *)thread
@@ -304,13 +304,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
         self.hasStarted = YES;
 
-        [self runNow];
+        [self scheduleRunNow];
     });
 }
 
-- (void)runNow
+- (void)scheduleRunNow
 {
-    [self runByDate:[NSDate new] ignoreMinDelay:YES];
+    [self scheduleRunByDate:[NSDate new] ignoreMinDelay:YES];
 }
 
 - (NSTimeInterval)maxDelaySeconds
@@ -320,17 +320,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Waits the maximum amount of time to run again.
-- (void)runLater
+- (void)scheduleRunLater
 {
-    [self runByDate:[NSDate dateWithTimeIntervalSinceNow:self.maxDelaySeconds] ignoreMinDelay:YES];
+    [self scheduleRunByDate:[NSDate dateWithTimeIntervalSinceNow:self.maxDelaySeconds] ignoreMinDelay:YES];
 }
 
-- (void)runByDate:(NSDate *)date
+- (void)scheduleRunByDate:(NSDate *)date
 {
-    [self runByDate:date ignoreMinDelay:NO];
+    [self scheduleRunByDate:date ignoreMinDelay:NO];
 }
 
-- (void)runByDate:(NSDate *)date ignoreMinDelay:(BOOL)ignoreMinDelay
+- (NSDateFormatter *)dateFormatter
+{
+    static NSDateFormatter *dateFormatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateFormatter = [NSDateFormatter new];
+        dateFormatter.dateStyle = NSDateFormatterNoStyle;
+        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+        dateFormatter.locale = [NSLocale systemLocale];
+    });
+
+    return dateFormatter;
+}
+
+- (void)scheduleRunByDate:(NSDate *)date ignoreMinDelay:(BOOL)ignoreMinDelay
 {
     OWSAssert(date);
 
@@ -340,22 +354,16 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        NSDateFormatter *dateFormatter = [NSDateFormatter new];
-        dateFormatter.dateStyle = NSDateFormatterNoStyle;
-        dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
-        dateFormatter.locale = [NSLocale systemLocale];
-
         // Don't run more often than once per second.
         const NSTimeInterval kMinDelaySeconds = ignoreMinDelay ? 0.f : 1.f;
-        NSTimeInterval delaySeconds
-            = MAX(kMinDelaySeconds, MIN(self.maxDelaySeconds, [date timeIntervalSinceDate:[NSDate new]]));
-        NSDate *timerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
-        if (self.timerScheduleDate && [timerScheduleDate timeIntervalSinceDate:self.timerScheduleDate] > 0) {
-            DDLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to scheduled run at %@ (%d sec.)",
+        NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, MIN(self.maxDelaySeconds, date.timeIntervalSinceNow));
+        NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
+        if (self.timerScheduleDate && [self.timerScheduleDate isBeforeDate:newTimerScheduleDate]) {
+            DDLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
                 self.logTag,
-                [dateFormatter stringFromDate:date],
+                [self.dateFormatter stringFromDate:date],
                 (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
-                [dateFormatter stringFromDate:self.timerScheduleDate],
+                [self.dateFormatter stringFromDate:self.timerScheduleDate],
                 (int)round(MAX(0, [self.timerScheduleDate timeIntervalSinceDate:[NSDate new]])));
             return;
         }
@@ -363,10 +371,10 @@ NS_ASSUME_NONNULL_BEGIN
         // Update Schedule
         DDLogVerbose(@"%@ Scheduled run at %@ (%d sec.)",
             self.logTag,
-            [dateFormatter stringFromDate:timerScheduleDate],
-            (int)round(MAX(0, [timerScheduleDate timeIntervalSinceDate:[NSDate new]])));
+            [self.dateFormatter stringFromDate:newTimerScheduleDate],
+            (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
         [self resetTimer];
-        self.timerScheduleDate = timerScheduleDate;
+        self.timerScheduleDate = newTimerScheduleDate;
         self.timer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
                                                           target:self
                                                         selector:@selector(timerDidFire)
@@ -378,6 +386,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)timerDidFire
 {
     OWSAssertIsOnMainThread();
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (!CurrentAppContext().isMainAppAndActive) {
         // Don't schedule run when inactive or not in main app.
@@ -408,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self runNow];
+        [self scheduleRunNow];
     }];
 }
 
