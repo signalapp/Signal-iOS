@@ -14,7 +14,7 @@ class QuotedReplyPreview: UIView {
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
-    private var quotedMessageView: OWSQuotedMessageView
+    private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
     required init?(coder aDecoder: NSCoder) {
@@ -23,7 +23,6 @@ class QuotedReplyPreview: UIView {
 
     init(quotedReply: OWSQuotedReplyModel) {
         self.quotedReply = quotedReply
-        self.quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply)
 
         super.init(frame: .zero)
 
@@ -36,6 +35,12 @@ class QuotedReplyPreview: UIView {
 
     func updateContents() {
         subviews.forEach { $0.removeFromSuperview() }
+
+        // We instantiate quotedMessageView late to ensure that it is updated
+        // every time contentSizeCategoryDidChange (i.e. when dynamic type
+        // sizes changes).
+        let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply)
+        self.quotedMessageView = quotedMessageView
 
         quotedMessageView.backgroundColor = .clear
 
@@ -70,7 +75,11 @@ class QuotedReplyPreview: UIView {
     // MARK: Sizing
 
     func updateHeight() {
-        let size = self.quotedMessageView.size(forMaxWidth: CGFloat.infinity)
+        guard let quotedMessageView = quotedMessageView else {
+            owsFail("\(logTag) missing quotedMessageView")
+            return
+        }
+        let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)
         self.heightConstraint.constant = size.height
     }
 

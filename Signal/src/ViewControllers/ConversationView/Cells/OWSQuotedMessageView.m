@@ -112,6 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
+    // Ensure only called once.
     OWSAssert(!self.boundsStrokeView);
 
     self.backgroundColor = [UIColor whiteColor];

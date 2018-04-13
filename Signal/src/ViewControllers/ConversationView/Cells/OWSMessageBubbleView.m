@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)commontInit
 {
+    // Ensure only called once.
     OWSAssert(!self.bodyTextView);
 
     _viewConstraints = [NSMutableArray new];
