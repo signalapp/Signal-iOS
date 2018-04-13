@@ -641,9 +641,15 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
             Logger.debug("\(self.logTag) in \(#function) long text was truncated")
             self.lengthLimitLabel.isHidden = false
 
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
+            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
+            // to just measure the utf8 encoded bytes of the replaced substring.
+            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
+
             // Accept as much of the input as we can
-            let byteBudget = kOversizeTextMessageSizeThreshold + range.length - existingText.utf8.count
-            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: byteBudget) {
+            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
                 textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
 
