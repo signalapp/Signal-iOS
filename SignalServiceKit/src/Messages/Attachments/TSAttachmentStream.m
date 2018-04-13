@@ -432,8 +432,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *thumbnailData = UIImageJPEGRepresentation(result, 0.9);
 
-    OWSAssert(thumbnailData.length > 0)
-        DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
+    OWSAssert(thumbnailData.length > 0);
+    DDLogDebug(@"%@ generated thumbnail with size: %lu", self.logTag, (unsigned long)thumbnailData.length);
     [thumbnailData writeToFile:thumbnailPath atomically:YES];
 }
 
