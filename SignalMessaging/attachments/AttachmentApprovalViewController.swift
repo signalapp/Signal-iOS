@@ -634,19 +634,25 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 
-        // Limit caption character count. We do this in characters, not bytes.
-        // This character limit will be safely below our byte limit (16k) for almost all uses.
-        // Because the captioning interface doesn't allow newlines, in practice design pressures users to leave relatively short captions.
-        let maxCharacterCount = 2000
-        guard textView.text.count + text.count - range.length <= maxCharacterCount else {
+        let existingText: String = textView.text ?? ""
+        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
+
+        guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
+            Logger.debug("\(self.logTag) in \(#function) long text was truncated")
             self.lengthLimitLabel.isHidden = false
+
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
+            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
+            // to just measure the utf8 encoded bytes of the replaced substring.
+            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
+
             // Accept as much of the input as we can
-            let remainingSpace = maxCharacterCount - textView.text.count
-            if (remainingSpace) > 0 {
-                let acceptableAddition = text.substring(to: text.startIndex.advanced(by: remainingSpace))
-                textView.text = "\(textView.text ?? "")\(acceptableAddition)"
-                updateHeight(textView: textView)
+            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
+
             return false
         }
         self.lengthLimitLabel.isHidden = true
