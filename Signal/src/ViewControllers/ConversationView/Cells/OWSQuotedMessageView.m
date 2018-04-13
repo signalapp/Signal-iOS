@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         OWSContactsManager *contactsManager = Environment.current.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForPhoneIdentifier:self.quotedMessage.authorId];
+        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
