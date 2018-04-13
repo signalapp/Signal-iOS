@@ -9,6 +9,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, ScreenLockUIState) {
+    ScreenLockUIStateNone,
+    // Shown while app is inactive or background, if enabled.
+    ScreenLockUIStateScreenProtection,
+    // Shown while app is active, if enabled.
+    ScreenLockUIStateScreenLock,
+};
+
+NSString *NSStringForScreenLockUIState(ScreenLockUIState value);
+NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
+{
+    switch (value) {
+        case ScreenLockUIStateNone:
+            return @"ScreenLockUIStateNone";
+        case ScreenLockUIStateScreenProtection:
+            return @"ScreenLockUIStateScreenProtection";
+        case ScreenLockUIStateScreenLock:
+            return @"ScreenLockUIStateScreenLock";
+    }
+}
+
 @interface OWSScreenLockUI ()
 
 @property (nonatomic) UIWindow *screenBlockingWindow;
@@ -29,31 +50,32 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // Secondly, we need to show the screen protection _before_ we become
 // inactive in order for it to be reflected in the app switcher.
-@property (nonatomic) BOOL appIsInactive;
+@property (nonatomic) BOOL appIsInactiveOrBackground;
 @property (nonatomic) BOOL appIsInBackground;
 
 @property (nonatomic) BOOL isShowingScreenLockUI;
 @property (nonatomic) BOOL didLastUnlockAttemptFail;
 
 // We want to remain in "screen lock" mode while "local auth"
-// UI is dismissing.
+// UI is dismissing. So we lazily clear isShowingScreenLockUI
+// using this property.
 @property (nonatomic) BOOL shouldClearAuthUIWhenActive;
 
 // Indicates whether or not the user is currently locked out of
-// the app.  Only applies if OWSScreenLock.isScreenLockEnabled.
+// the app.  Should only be set if OWSScreenLock.isScreenLockEnabled.
 //
-// * The user is locked out out by default on app launch.
+// * The user is locked out by default on app launch.
 // * The user is also locked out if they spend more than
 //   "timeout" seconds outside the app.  When the user leaves
 //   the app, a "countdown" begins.
-@property (nonatomic) BOOL isScreenLockUnlocked;
+@property (nonatomic) BOOL isScreenLockLocked;
 
+// The "countdown" until screen lock takes effect.
 @property (nonatomic, nullable) NSDate *screenLockCountdownDate;
 
-// We normally start the "countdown" when the app enters the background,
-// But we also want to start the "countdown" if the app is inactive for
-// more than N seconds.
-@property (nonatomic, nullable) NSTimer *inactiveTimer;
+@property (nonatomic) UIWindow *rootWindow;
+
+@property (nonatomic, nullable) UIResponder *rootWindowResponder;
 
 @end
 
@@ -80,8 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssertIsOnMainThread();
-    _appIsInactive = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
-    _isScreenLockUnlocked = NO;
+
+    _appIsInactiveOrBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
 
     [self observeNotifications];
 
@@ -114,16 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(registrationStateDidChange)
-                                                 name:RegistrationStateDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(screenLockDidChange:)
                                                  name:OWSScreenLock.ScreenLockDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(screenLockWasEnabled:)
-                                                 name:OWSScreenLock.ScreenLockWasEnabled
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(clockDidChange:)
@@ -136,21 +150,30 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssert(rootWindow);
 
+    self.rootWindow = rootWindow;
+
     [self prepareScreenProtectionWithRootWindow:rootWindow];
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self ensureScreenProtection];
+        self.isScreenLockLocked = OWSScreenLock.sharedManager.isScreenLockEnabled;
+
+        [self ensureUI];
     }];
 }
 
 #pragma mark - Methods
 
-- (void)tryToActivateScreenLockUponBecomingActive
+- (void)tryToActivateScreenLockBasedOnCountdown
 {
-    OWSAssert(!self.appIsInactive);
+    OWSAssert(!self.appIsInBackground);
     OWSAssertIsOnMainThread();
 
-    if (!self.isScreenLockUnlocked) {
+    if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
+        // Screen lock is not enabled.
+        DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 0", self.logTag);
+        return;
+    }
+    if (self.isScreenLockLocked) {
         // Screen lock is already activated.
         DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive NO 0", self.logTag);
         return;
@@ -165,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSTimeInterval screenLockTimeout = OWSScreenLock.sharedManager.screenLockTimeout;
     OWSAssert(screenLockTimeout >= 0);
     if (countdownInterval >= screenLockTimeout) {
-        self.isScreenLockUnlocked = NO;
+        self.isScreenLockLocked = YES;
         DDLogVerbose(@"%@ tryToActivateScreenLockUponBecomingActive YES 1 (%0.3f >= %0.3f)",
             self.logTag,
             countdownInterval,
@@ -178,34 +201,43 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)setAppIsInactive:(BOOL)appIsInactive
+// Setter for property indicating that the app is either
+// inactive or in the background, e.g. not "foreground and active."
+- (void)setAppIsInactiveOrBackground:(BOOL)appIsInactiveOrBackground
 {
-    _appIsInactive = appIsInactive;
     OWSAssertIsOnMainThread();
 
-    if (!appIsInactive) {
-        [self tryToActivateScreenLockUponBecomingActive];
+    _appIsInactiveOrBackground = appIsInactiveOrBackground;
 
-        DDLogInfo(@"%@ setAppIsInactive clear screenLockCountdownDate.", self.logTag);
+    if (appIsInactiveOrBackground) {
+        if (!self.isShowingScreenLockUI) {
+            [self startScreenLockCountdownIfNecessary];
+        }
+    } else {
+        [self tryToActivateScreenLockBasedOnCountdown];
+
+        DDLogInfo(@"%@ setAppIsInactiveOrBackground clear screenLockCountdownDate.", self.logTag);
         self.screenLockCountdownDate = nil;
     }
 
-    [self startInactiveTimerIfNecessary];
-
-    [self ensureScreenProtection];
+    [self ensureUI];
 }
 
+// Setter for property indicating that the app is in the background.
+// If true, by definition the app is not active.
 - (void)setAppIsInBackground:(BOOL)appIsInBackground
 {
     OWSAssertIsOnMainThread();
 
-    if (appIsInBackground && !_appIsInBackground) {
-        [self startScreenLockCountdownIfNecessary];
-    }
-
     _appIsInBackground = appIsInBackground;
 
-    [self ensureScreenProtection];
+    if (self.appIsInBackground) {
+        [self startScreenLockCountdownIfNecessary];
+    } else {
+        [self tryToActivateScreenLockBasedOnCountdown];
+    }
+
+    [self ensureUI];
 }
 
 - (void)startScreenLockCountdownIfNecessary
@@ -218,55 +250,45 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     self.didLastUnlockAttemptFail = NO;
-
-    [self clearInactiveTimer];
 }
 
-- (void)ensureScreenProtection
+// Ensure that:
+//
+// * The blocking window has the correct state.
+// * That we show the "iOS auth UI to unlock" if necessary.
+- (void)ensureUI
 {
     OWSAssertIsOnMainThread();
 
     if (!AppReadiness.isAppReady) {
         [AppReadiness runNowOrWhenAppIsReady:^{
-            [self ensureScreenProtection];
+            [self ensureUI];
         }];
         return;
     }
 
-    BOOL shouldHaveScreenLock = self.shouldHaveScreenLock;
-    BOOL shouldHaveScreenProtection = self.shouldHaveScreenProtection;
+    ScreenLockUIState desiredUIState = self.desiredUIState;
 
-    BOOL shouldShowBlockWindow = shouldHaveScreenProtection || shouldHaveScreenLock;
-    DDLogVerbose(@"%@, shouldHaveScreenProtection: %d, shouldHaveScreenLock: %d, shouldShowBlockWindow: %d",
-        self.logTag,
-        shouldHaveScreenProtection,
-        shouldHaveScreenLock,
-        shouldShowBlockWindow);
-    if (self.screenBlockingWindow.hidden != !shouldShowBlockWindow) {
-        DDLogInfo(@"%@, %@.", self.logTag, shouldShowBlockWindow ? @"showing block window" : @"hiding block window");
-    }
-    [self updateScreenBlockingWindow:shouldShowBlockWindow shouldHaveScreenLock:shouldHaveScreenLock animated:YES];
+    DDLogVerbose(@"%@, ensureUI: %@", self.logTag, NSStringForScreenLockUIState(desiredUIState));
 
-    if (shouldHaveScreenLock && !self.didLastUnlockAttemptFail) {
-        [self tryToPresentScreenLockUI];
+    [self updateScreenBlockingWindow:desiredUIState animated:YES];
+
+    // Show the "iOS auth UI to unlock" if necessary.
+    if (desiredUIState == ScreenLockUIStateScreenLock && !self.didLastUnlockAttemptFail) {
+        [self tryToPresentAuthUIToUnlockScreenLock];
     }
 }
 
-- (void)tryToPresentScreenLockUI
+- (void)tryToPresentAuthUIToUnlockScreenLock
 {
     OWSAssertIsOnMainThread();
 
-    // If we no longer want to present the screen lock UI, abort.
-    if (!self.shouldHaveScreenLock) {
-        return;
-    }
-    if (self.didLastUnlockAttemptFail) {
-        return;
-    }
     if (self.isShowingScreenLockUI) {
+        // We're already showing the auth UI; abort.
         return;
     }
-    if (self.appIsInactive) {
+    if (self.appIsInactiveOrBackground) {
+        // Never show the auth UI unless active.
         return;
     }
 
@@ -279,9 +301,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.isShowingScreenLockUI = NO;
 
-        self.isScreenLockUnlocked = YES;
+        self.isScreenLockLocked = NO;
 
-        [self ensureScreenProtection];
+        [self ensureUI];
     }
         failure:^(NSError *error) {
             DDLogInfo(@"%@ unlock screen lock failed.", self.logTag);
@@ -310,56 +332,37 @@ NS_ASSUME_NONNULL_BEGIN
             self.didLastUnlockAttemptFail = YES;
 
             // Re-show the unlock UI.
-            [self ensureScreenProtection];
+            [self ensureUI];
         }];
 
-    [self ensureScreenProtection];
+    [self ensureUI];
 }
 
-- (BOOL)shouldHaveScreenProtection
+// Determines what the state of the app should be.
+- (ScreenLockUIState)desiredUIState
 {
-    OWSAssertIsOnMainThread();
-
-    // Show 'Screen Protection' if:
-    //
-    // * App is inactive and...
-    // * 'Screen Protection' is enabled.
-    if (!self.appIsInactive) {
-        return NO;
-    } else if (!Environment.preferences.screenSecurityIsEnabled) {
-        return NO;
-    } else {
-        return YES;
+    if (self.isScreenLockLocked) {
+        if (self.appIsInactiveOrBackground) {
+            DDLogVerbose(@"%@ desiredUIState: screen protection 1.", self.logTag);
+            return ScreenLockUIStateScreenProtection;
+        } else {
+            DDLogVerbose(@"%@ desiredUIState: screen lock 2.", self.logTag);
+            return ScreenLockUIStateScreenLock;
+        }
     }
-}
 
-- (BOOL)shouldHaveScreenLock
-{
-    if (![TSAccountManager isRegistered]) {
-        // Don't show 'Screen Lock' if user is not registered.
-        DDLogVerbose(@"%@ shouldHaveScreenLock NO 1.", self.logTag);
-        return NO;
-    } else if (!OWSScreenLock.sharedManager.isScreenLockEnabled) {
-        // Don't show 'Screen Lock' if 'Screen Lock' isn't enabled.
-        DDLogVerbose(@"%@ shouldHaveScreenLock NO 2.", self.logTag);
-        return NO;
-    } else if (self.appIsInBackground) {
-        // Don't show 'Screen Lock' if app is in background.
-        DDLogVerbose(@"%@ shouldHaveScreenLock NO 4.", self.logTag);
-        return NO;
-    } else if (self.isShowingScreenLockUI) {
-        // Maintain blocking window in 'screen lock' mode while we're
-        // showing the 'Unlock Screen Lock' UI.
-        DDLogVerbose(@"%@ shouldHaveScreenLock YES 0.", self.logTag);
-        return YES;
-    } else if (self.appIsInactive) {
-        // Don't show 'Screen Lock' if app is inactive.
-        DDLogVerbose(@"%@ shouldHaveScreenLock NO 5.", self.logTag);
-        return NO;
+    if (!self.appIsInactiveOrBackground) {
+        // App is inactive or background.
+        DDLogVerbose(@"%@ desiredUIState: none 3.", self.logTag);
+        return ScreenLockUIStateNone;
+    }
+
+    if (Environment.preferences.screenSecurityIsEnabled) {
+        DDLogVerbose(@"%@ desiredUIState: screen protection 4.", self.logTag);
+        return ScreenLockUIStateScreenProtection;
     } else {
-        BOOL shouldHaveScreenLock = !self.isScreenLockUnlocked;
-        DDLogVerbose(@"%@ shouldHaveScreenLock ? %d.", self.logTag, shouldHaveScreenLock);
-        return shouldHaveScreenLock;
+        DDLogVerbose(@"%@ desiredUIState: none 5.", self.logTag);
+        return ScreenLockUIStateNone;
     }
 }
 
@@ -373,7 +376,7 @@ NS_ASSUME_NONNULL_BEGIN
                       buttonTitle:nil
                      buttonAction:^(UIAlertAction *action) {
                          // After the alert, re-show the unlock UI.
-                         [self ensureScreenProtection];
+                         [self ensureUI];
                      }];
 }
 
@@ -394,7 +397,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIViewController *viewController = [UIViewController new];
     viewController.view.backgroundColor = UIColor.ows_materialBlueColor;
-
 
     UIView *rootView = viewController.view;
 
@@ -440,7 +442,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.screenBlockingImageView = imageView;
     self.screenBlockingButton = button;
 
-    [self updateScreenBlockingWindow:YES shouldHaveScreenLock:NO animated:NO];
+    // Default to screen protection until we know otherwise.
+    //    [self updateScreenBlockingWindow:ScreenLockUIStateScreenProtection animated:NO];
+    [self updateScreenBlockingWindow:ScreenLockUIStateNone animated:NO];
 }
 
 // The "screen blocking" window has three possible states:
@@ -450,13 +454,41 @@ NS_ASSUME_NONNULL_BEGIN
 // * "Screen Lock, local auth UI presented". Move the Signal logo so that it is visible.
 // * "Screen Lock, local auth UI not presented". Move the Signal logo so that it is visible,
 //    show "unlock" button.
-- (void)updateScreenBlockingWindow:(BOOL)shouldShowBlockWindow
-              shouldHaveScreenLock:(BOOL)shouldHaveScreenLock
-                          animated:(BOOL)animated
+- (void)updateScreenBlockingWindow:(ScreenLockUIState)desiredUIState animated:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
 
-    self.screenBlockingWindow.hidden = !shouldShowBlockWindow;
+    BOOL shouldShowBlockWindow = desiredUIState != ScreenLockUIStateNone;
+    if (self.rootWindow.hidden != shouldShowBlockWindow) {
+        DDLogInfo(@"%@, %@.", self.logTag, shouldShowBlockWindow ? @"showing block window" : @"hiding block window");
+    }
+
+    // When we hide the block window, try to capture the first responder of
+    // the root window before it is hidden.
+    if (shouldShowBlockWindow && !self.rootWindow.hidden) {
+        self.rootWindowResponder = [UIResponder currentFirstResponder];
+    }
+
+    // * Show/hide the app's root window as necessary.
+    // * Never hide the blocking window (that can lead to bad frames).
+    //   Instead, manipulate its window level to move it in front of
+    //   or behind the root window.
+    if (shouldShowBlockWindow) {
+        self.screenBlockingWindow.hidden = NO;
+        self.screenBlockingWindow.windowLevel = CGFLOAT_MAX;
+        self.rootWindow.hidden = YES;
+        self.rootWindow.windowLevel = CGFLOAT_MIN;
+    } else {
+        self.screenBlockingWindow.hidden = NO;
+        self.screenBlockingWindow.windowLevel = CGFLOAT_MIN;
+        [self.rootWindow makeKeyAndVisible];
+        self.rootWindow.windowLevel = CGFLOAT_MAX;
+
+        // When we show the block window, try to restore the first
+        // responder of the root window.
+        [self.rootWindowResponder becomeFirstResponder];
+        self.rootWindowResponder = nil;
+    }
 
     UIView *rootView = self.screenBlockingViewController.view;
 
@@ -464,15 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<NSLayoutConstraint *> *screenBlockingConstraints = [NSMutableArray new];
 
-    BOOL shouldShowUnlockButton = (!self.appIsInactive && !self.appIsInBackground && self.didLastUnlockAttemptFail);
-
-    DDLogVerbose(@"%@ updateScreenBlockingWindow. shouldShowBlockWindow: %d, shouldHaveScreenLock: %d, "
-                 @"shouldShowUnlockButton: %d.",
-        self.logTag,
-        shouldShowBlockWindow,
-        shouldHaveScreenLock,
-        shouldShowUnlockButton);
-
+    BOOL shouldHaveScreenLock = desiredUIState == ScreenLockUIStateScreenLock;
     NSString *signature = [NSString stringWithFormat:@"%d %d", shouldHaveScreenLock, self.isShowingScreenLockUI];
     if ([NSObject isNullableObject:self.screenBlockingSignature equalTo:signature]) {
         // Skip redundant work to avoid interfering with ongoing animations.
@@ -508,7 +532,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    if (self.appIsInactive) {
+    if (self.appIsInactiveOrBackground) {
         // This button can be pressed while the app is inactive
         // for a brief window while the iOS auth UI is dismissing.
         return;
@@ -518,44 +542,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.didLastUnlockAttemptFail = NO;
 
-    [self ensureScreenProtection];
+    [self ensureUI];
 }
 
 #pragma mark - Events
 
 - (void)screenLockDidChange:(NSNotification *)notification
 {
-    [self ensureScreenProtection];
-}
-
-- (void)screenLockWasEnabled:(NSNotification *)notification
-{
-    // When we enable screen lock, consider that an unlock.
-    self.isScreenLockUnlocked = YES;
-
-    DDLogVerbose(@"%@ screenLockWasEnabled", self.logTag);
-
-    [self ensureScreenProtection];
-}
-
-- (void)registrationStateDidChange
-{
-    OWSAssertIsOnMainThread();
-
-    DDLogInfo(@"registrationStateDidChange");
-
-    [self ensureScreenProtection];
+    [self ensureUI];
 }
 
 - (void)clearAuthUIWhenActive
 {
     // For continuity, continue to present blocking screen in "screen lock" mode while
     // dismissing the "local auth UI".
-    if (self.appIsInactive) {
+    if (self.appIsInactiveOrBackground) {
         self.shouldClearAuthUIWhenActive = YES;
     } else {
         self.isShowingScreenLockUI = NO;
-        [self ensureScreenProtection];
+        [self ensureUI];
     }
 }
 
@@ -566,12 +571,12 @@ NS_ASSUME_NONNULL_BEGIN
         self.isShowingScreenLockUI = NO;
     }
 
-    self.appIsInactive = NO;
+    self.appIsInactiveOrBackground = NO;
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    self.appIsInactive = YES;
+    self.appIsInactiveOrBackground = YES;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -584,43 +589,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.appIsInBackground = YES;
 }
 
+// Whenever the device date/time is edited by the user,
+// trigger screen lock immediately if enabled.
 - (void)clockDidChange:(NSNotification *)notification
 {
     DDLogInfo(@"%@ clock did change", self.logTag);
 
-    self.isScreenLockUnlocked = NO;
+    self.isScreenLockLocked = OWSScreenLock.sharedManager.isScreenLockEnabled;
 
     // NOTE: this notifications fires _before_ applicationDidBecomeActive,
-    // which is desirable.  Don't assume that though; call ensureScreenProtection
+    // which is desirable.  Don't assume that though; call ensureUI
     // just in case it's necessary.
-    [self ensureScreenProtection];
-}
-
-#pragma mark - Inactive Timer
-
-- (void)inactiveTimerDidFire
-{
-    DDLogVerbose(@"%@ inactiveTimerDidFire", self.logTag);
-
-    [self startScreenLockCountdownIfNecessary];
-}
-
-- (void)startInactiveTimerIfNecessary
-{
-    if (self.appIsInactive && !self.isShowingScreenLockUI && !self.inactiveTimer) {
-        [self.inactiveTimer invalidate];
-        self.inactiveTimer = [NSTimer weakScheduledTimerWithTimeInterval:45.f
-                                                                  target:self
-                                                                selector:@selector(inactiveTimerDidFire)
-                                                                userInfo:nil
-                                                                 repeats:NO];
-    }
-}
-
-- (void)clearInactiveTimer
-{
-    [self.inactiveTimer invalidate];
-    self.inactiveTimer = nil;
+    [self ensureUI];
 }
 
 @end
