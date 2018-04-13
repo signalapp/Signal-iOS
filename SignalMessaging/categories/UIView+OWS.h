@@ -125,6 +125,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @end
 
+#pragma mark -
+
+@interface UIScrollView (OWS)
+
+- (void)applyScrollViewInsetsFix;
+
+@end
+
 #pragma mark - Macros
 
 CG_INLINE CGSize CGSizeCeil(CGSize size)

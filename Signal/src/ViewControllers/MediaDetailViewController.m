@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     scrollView.decelerationRate = UIScrollViewDecelerationRateFast;
 
     if (@available(iOS 11.0, *)) {
-        scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        [scrollView contentInsetAdjustmentBehavior];
     } else {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }

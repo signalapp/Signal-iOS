@@ -521,13 +521,7 @@ typedef enum : NSUInteger {
     [self.collectionView autoPinWidthToSuperview];
     [self.collectionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
-    // Fix a bug that only affects iOS 11.0.x and 11.1.x.
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2)) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-        self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-#pragma clang diagnostic pop
-    }
+    [self.collectionView applyScrollViewInsetsFix];
 
     _inputToolbar = [ConversationInputToolbar new];
     self.inputToolbar.inputToolbarDelegate = self;
