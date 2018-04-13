@@ -84,11 +84,17 @@ NS_ASSUME_NONNULL_BEGIN
         [layer removeFromSuperlayer];
     }
 
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     for (ConfigureShapeLayerBlock configureShapeLayerBlock in self.configureShapeLayerBlocks) {
         CAShapeLayer *shapeLayer = [CAShapeLayer new];
         configureShapeLayerBlock(shapeLayer, self.bounds);
         [self.layer addSublayer:shapeLayer];
     }
+
+    [CATransaction commit];
 
     [self setNeedsDisplay];
 }

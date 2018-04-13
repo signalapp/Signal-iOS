@@ -130,7 +130,14 @@ const CGFloat kBubbleTextVInset = 10.f;
     if (!self.shapeLayer) {
         [self updateLayers];
     }
+
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     self.shapeLayer.fillColor = bubbleColor.CGColor;
+
+    [CATransaction commit];
 }
 
 - (void)updateLayers
@@ -144,9 +151,15 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     UIBezierPath *bezierPath = [self maskPath];
 
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
     self.shapeLayer.path = bezierPath.CGPath;
     self.maskLayer.path = bezierPath.CGPath;
+
+    [CATransaction commit];
 }
 
 - (UIBezierPath *)maskPath

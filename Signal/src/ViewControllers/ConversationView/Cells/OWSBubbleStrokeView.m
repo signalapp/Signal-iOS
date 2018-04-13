@@ -85,18 +85,20 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     // Don't fill the shape layer; we just want a stroke around the border.
     self.shapeLayer.fillColor = [UIColor clearColor].CGColor;
+
+    [CATransaction commit];
 
     self.clipsToBounds = YES;
 
     if (!self.bubbleView) {
         return;
     }
-
-    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
-    self.shapeLayer.lineWidth = self.strokeThickness;
-    self.shapeLayer.zPosition = 100.f;
 
     UIBezierPath *bezierPath = [UIBezierPath new];
 
@@ -110,7 +112,16 @@ NS_ASSUME_NONNULL_BEGIN
     [bubbleBezierPath applyTransform:transform];
     [bezierPath appendPath:bubbleBezierPath];
 
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
+    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
+    self.shapeLayer.lineWidth = self.strokeThickness;
+    self.shapeLayer.zPosition = 100.f;
     self.shapeLayer.path = bezierPath.CGPath;
+
+    [CATransaction commit];
 }
 
 @end

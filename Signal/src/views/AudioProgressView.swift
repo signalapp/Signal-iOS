@@ -73,6 +73,10 @@ import SignalServiceKit
     internal func updateContent() {
         SwiftAssertIsOnMainThread(#function)
 
+        // Prevent the shape layer from animating changes.
+        CATransaction.begin()
+        CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+
         let horizontalBarPath = UIBezierPath()
         let horizontalBarHeightFraction = CGFloat(0.25)
         let horizontalBarHeight = bounds.size.height * horizontalBarHeightFraction
@@ -89,5 +93,7 @@ import SignalServiceKit
         progressPath.append(UIBezierPath(roundedRect: progressBounds, cornerRadius: progressCornerRadius))
         progressLayer.path = progressPath.cgPath
         progressLayer.fillColor = progressColor.cgColor
+
+        CATransaction.commit()
     }
 }

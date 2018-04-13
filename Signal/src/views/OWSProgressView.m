@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProgressView.h"
@@ -43,6 +43,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.backgroundColor = [UIColor clearColor];
     self.color = [UIColor whiteColor];
 
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     self.borderLayer = [CAShapeLayer new];
     self.borderLayer.fillColor = self.color.CGColor;
     [self.layer addSublayer:self.borderLayer];
@@ -50,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.progressLayer = [CAShapeLayer new];
     self.progressLayer.fillColor = self.color.CGColor;
     [self.layer addSublayer:self.progressLayer];
+
+    [CATransaction commit];
 
     [self setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
     [self setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
@@ -79,6 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)update
 {
+    // Prevent the shape layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+
     CGFloat kBorderThickness = self.bounds.size.height * 0.1f;
     CGFloat kOuterRadius = self.bounds.size.height * 0.25f;
     CGFloat kInnerRadius = kOuterRadius - kBorderThickness;
@@ -107,6 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.progressLayer.path = progressPath.CGPath;
     self.progressLayer.fillColor = self.color.CGColor;
+
+    [CATransaction commit];
 }
 
 - (CGSize)sizeThatFits:(CGSize)size
