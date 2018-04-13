@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -53,7 +53,7 @@ public enum PushRegistrationError: Error {
 
         return self.registerUserNotificationSettings().then {
             guard !Platform.isSimulator else {
-                throw PushRegistrationError.pushNotSupported(description:"Push not supported on simulators")
+                throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
 
             return self.registerForVanillaPushToken().then { vanillaPushToken in
@@ -135,7 +135,7 @@ public enum PushRegistrationError: Error {
     // return any requested push tokens. We don't consider the notifications settings registration
     // *complete*  until AppDelegate#didRegisterUserNotificationSettings is called.
     private func registerUserNotificationSettings() -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.userNotificationSettingsPromise == nil else {
             let promise = self.userNotificationSettingsPromise!
@@ -181,7 +181,7 @@ public enum PushRegistrationError: Error {
 
     private func registerForVanillaPushToken() -> Promise<String> {
         Logger.info("\(self.logTag) in \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.vanillaTokenPromise == nil else {
             let promise = vanillaTokenPromise!
@@ -231,7 +231,7 @@ public enum PushRegistrationError: Error {
     }
 
     private func registerForVoipPushToken() -> Promise<String> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.logTag) in \(#function)")
 
         guard self.voipTokenPromise == nil else {

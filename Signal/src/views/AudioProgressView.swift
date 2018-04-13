@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -55,14 +55,14 @@ import SignalServiceKit
         self.horizontalBarLayer = CAShapeLayer()
         self.progressLayer = CAShapeLayer()
 
-        super.init(frame:CGRect.zero)
+        super.init(frame: CGRect.zero)
 
         self.layer.addSublayer(self.horizontalBarLayer)
         self.layer.addSublayer(self.progressLayer)
     }
 
     internal func updateSubviews() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.horizontalBarLayer.frame = self.bounds
         self.progressLayer.frame = self.bounds
@@ -71,19 +71,19 @@ import SignalServiceKit
     }
 
     internal func updateContent() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let horizontalBarPath = UIBezierPath()
         let horizontalBarHeightFraction = CGFloat(0.25)
         let horizontalBarHeight = bounds.size.height * horizontalBarHeightFraction
-        horizontalBarPath.append(UIBezierPath(rect: CGRect(x: 0, y:(bounds.size.height - horizontalBarHeight) * 0.5, width:bounds.size.width, height:horizontalBarHeight)))
+        horizontalBarPath.append(UIBezierPath(rect: CGRect(x: 0, y: (bounds.size.height - horizontalBarHeight) * 0.5, width: bounds.size.width, height: horizontalBarHeight)))
         horizontalBarLayer.path = horizontalBarPath.cgPath
         horizontalBarLayer.fillColor = horizontalBarColor.cgColor
 
         let progressHeight = bounds.self.height
         let progressWidth = progressHeight * 0.15
         let progressX = (bounds.self.width - progressWidth) * max(0.0, min(1.0, progress))
-        let progressBounds = CGRect(x:progressX, y:0, width:progressWidth, height:progressHeight)
+        let progressBounds = CGRect(x: progressX, y: 0, width: progressWidth, height: progressHeight)
         let progressCornerRadius = progressWidth * 0.5
         let progressPath = UIBezierPath()
         progressPath.append(UIBezierPath(roundedRect: progressBounds, cornerRadius: progressCornerRadius))

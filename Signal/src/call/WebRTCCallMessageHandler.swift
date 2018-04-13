@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,7 +34,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     // MARK: - Call Handlers
 
     public func receivedOffer(_ offer: OWSSignalServiceProtosCallMessageOffer, from callerId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard offer.hasId() else {
             owsFail("no callId in \(#function)")
             return
@@ -45,7 +45,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedAnswer(_ answer: OWSSignalServiceProtosCallMessageAnswer, from callerId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard answer.hasId() else {
             owsFail("no callId in \(#function)")
             return
@@ -56,7 +56,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard iceUpdate.hasId() else {
             owsFail("no callId in \(#function)")
             return
@@ -72,7 +72,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedHangup(_ hangup: OWSSignalServiceProtosCallMessageHangup, from callerId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard hangup.hasId() else {
             owsFail("no callId in \(#function)")
             return
@@ -83,7 +83,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     }
 
     public func receivedBusy(_ busy: OWSSignalServiceProtosCallMessageBusy, from callerId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard busy.hasId() else {
             owsFail("no callId in \(#function)")
             return

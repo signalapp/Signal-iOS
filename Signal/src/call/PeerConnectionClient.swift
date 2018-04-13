@@ -123,7 +123,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var cameraConstraints: RTCMediaConstraints
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callDirection: CallDirection, useTurnOnly: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.iceServers = iceServers
         self.delegate = delegate
@@ -142,7 +142,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         let connectionConstraintsDict = ["DtlsSrtpKeyAgreement": "true"]
         connectionConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: connectionConstraintsDict)
 
-        audioConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints:nil)
+        audioConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         cameraConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
         super.init()
@@ -163,7 +163,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: - Media Streams
 
     private func createSignalingDataChannel() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let configuration = RTCDataChannelConfiguration()
         // Insist upon an "ordered" TCP data channel for delivery reliability.
@@ -179,7 +179,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: Video
 
     fileprivate func createVideoSender() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) in \(#function)")
         assert(self.videoSender == nil, "\(#function) should only be called once.")
@@ -190,8 +190,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
 
         // TODO: We could cap the maximum video size.
-        let cameraConstraints = RTCMediaConstraints(mandatoryConstraints:nil,
-                                                    optionalConstraints:nil)
+        let cameraConstraints = RTCMediaConstraints(mandatoryConstraints: nil,
+                                                    optionalConstraints: nil)
 
         // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
@@ -213,7 +213,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setLocalVideoEnabled(enabled: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
@@ -253,7 +253,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: Audio
 
     fileprivate func createAudioSender() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(TAG) in \(#function)")
         assert(self.audioSender == nil, "\(#function) should only be called once.")
@@ -275,7 +275,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setAudioEnabled(enabled: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
@@ -299,19 +299,19 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             "OfferToReceiveAudio": "true",
             "OfferToReceiveVideo": "true"
         ]
-        return RTCMediaConstraints(mandatoryConstraints:mandatoryConstraints, optionalConstraints:nil)
+        return RTCMediaConstraints(mandatoryConstraints: mandatoryConstraints, optionalConstraints: nil)
     }
 
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return Promise { fulfill, reject in
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                    reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                     return
                 }
 
@@ -319,7 +319,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                     PeerConnectionClient.signalingQueue.async {
                         guard self.peerConnection != nil else {
                             Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                            reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                            reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                             return
                         }
                         guard error == nil else {
@@ -345,18 +345,18 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         return PromiseKit.wrap { resolve in
             self.assertOnSignalingQueue()
             Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
-            self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler:resolve)
+            self.peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription, completionHandler: resolve)
         }
     }
 
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return Promise { fulfill, reject in
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                    reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                     return
                 }
                 Logger.verbose("\(self.TAG) setting local session description: \(sessionDescription)")
@@ -373,7 +373,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func negotiateSessionDescription(remoteDescription: RTCSessionDescription, constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return setRemoteSessionDescription(remoteDescription)
             .then(on: PeerConnectionClient.signalingQueue) {
@@ -382,13 +382,13 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return Promise { fulfill, reject in
             PeerConnectionClient.signalingQueue.async {
                 guard self.peerConnection != nil else {
                     Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                    reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                    reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                     return
                 }
                 Logger.verbose("\(self.TAG) setting remote description: \(sessionDescription)")
@@ -412,7 +412,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             guard self.peerConnection != nil else {
                 Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                 return
             }
 
@@ -422,7 +422,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 PeerConnectionClient.signalingQueue.async {
                     guard self.peerConnection != nil else {
                         Logger.debug("\(self.TAG) \(#function) Ignoring obsolete event in terminated client")
-                        reject(NSError(domain:"Obsolete client", code:0, userInfo:nil))
+                        reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                         return
                     }
                     guard error == nil else {
@@ -462,7 +462,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func terminate() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         Logger.debug("\(TAG) in \(#function)")
 
         PeerConnectionClient.signalingQueue.async {
@@ -520,7 +520,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         PeerConnectionClient.signalingQueue.async {
             guard self.peerConnection != nil else {
@@ -548,7 +548,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             } else {
                 Logger.warn("\(self.TAG) sendDataChannelMessage failed: \(description)")
                 if isCritical {
-                    OWSProdError(OWSAnalyticsEvents.peerConnectionClientErrorSendDataChannelMessageFailed(), file:#file, function:#function, line:#line)
+                    OWSProdError(OWSAnalyticsEvents.peerConnectionClientErrorSendDataChannelMessageFailed(), file: #file, function: #function, line: #line)
                 }
             }
         }
@@ -570,7 +570,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
             Logger.debug("\(self.TAG) dataChannel didReceiveMessageWith buffer:\(buffer)")
 
-            guard let dataChannelMessage = OWSWebRTCProtosData.parse(from:buffer.data) else {
+            guard let dataChannelMessage = OWSWebRTCProtosData.parse(from: buffer.data) else {
                 // TODO can't proto parsings throw an exception? Is it just being lost in the Objc->Swift?
                 Logger.error("\(self.TAG) failed to parse dataProto")
                 return
@@ -745,7 +745,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // MARK: Test-only accessors
 
     internal func peerConnectionForTests() -> RTCPeerConnection {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         var result: RTCPeerConnection? = nil
         PeerConnectionClient.signalingQueue.sync {
@@ -756,7 +756,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     internal func dataChannelForTests() -> RTCDataChannel {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         var result: RTCDataChannel? = nil
         PeerConnectionClient.signalingQueue.sync {
@@ -767,7 +767,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     internal func flushSignalingQueueForTests() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         PeerConnectionClient.signalingQueue.sync {
             // Noop.
@@ -793,12 +793,12 @@ class HardenedRTCSessionDescription {
         var description = rtcSessionDescription.sdp
 
         // Enforce Constant bit rate.
-        let cbrRegex = try! NSRegularExpression(pattern:"(a=fmtp:111 ((?!cbr=).)*)\r?\n", options:.caseInsensitive)
+        let cbrRegex = try! NSRegularExpression(pattern: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", options: .caseInsensitive)
         description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.count), withTemplate: "$1;cbr=1\r\n")
 
         // Strip plaintext audio-level details
         // https://tools.ietf.org/html/rfc6464
-        let audioLevelRegex = try! NSRegularExpression(pattern:".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options:.caseInsensitive)
+        let audioLevelRegex = try! NSRegularExpression(pattern: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options: .caseInsensitive)
         description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)

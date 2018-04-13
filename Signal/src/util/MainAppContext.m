@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-    AssertIsOnMainThread();
+    OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];

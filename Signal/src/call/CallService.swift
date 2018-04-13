@@ -124,7 +124,7 @@ protocol CallServiceObserver: class {
 
     var peerConnectionClient: PeerConnectionClient? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             Logger.debug("\(self.logTag) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
         }
@@ -132,7 +132,7 @@ protocol CallServiceObserver: class {
 
     var call: SignalCall? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             oldValue?.removeObserver(self)
             call?.addObserverAndSyncState(observer: self)
@@ -177,7 +177,7 @@ protocol CallServiceObserver: class {
 
     weak var localVideoTrack: RTCVideoTrack? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             Logger.info("\(self.logTag) \(#function)")
 
@@ -187,7 +187,7 @@ protocol CallServiceObserver: class {
 
     weak var remoteVideoTrack: RTCVideoTrack? {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             Logger.info("\(self.logTag) \(#function)")
 
@@ -196,7 +196,7 @@ protocol CallServiceObserver: class {
     }
     var isRemoteVideoEnabled = false {
         didSet {
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             Logger.info("\(self.logTag) \(#function): \(isRemoteVideoEnabled)")
 
@@ -232,12 +232,12 @@ protocol CallServiceObserver: class {
     }
 
     func didEnterBackground() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }
 
     func didBecomeActive() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }
 
@@ -245,7 +245,7 @@ protocol CallServiceObserver: class {
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
     public func createCallUIAdapter() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if self.call != nil {
             Logger.warn("\(self.logTag) ending current call in \(#function). Did user toggle callkit preference while in a call?")
@@ -260,7 +260,7 @@ protocol CallServiceObserver: class {
      * Initiate an outgoing call.
      */
     public func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.call == nil else {
             let errorDescription = "\(self.logTag) call was unexpectedly already set."
@@ -354,7 +354,7 @@ protocol CallServiceObserver: class {
     }
 
     func readyToSendIceUpdates(call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.call == call else {
             self.handleFailedCall(failedCall: call, error: .obsoleteCall(description:"obsolete call in \(#function)"))
@@ -379,7 +379,7 @@ protocol CallServiceObserver: class {
      */
     public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
         Logger.info("\(self.logTag) received call answer for call: \(callId) thread: \(thread.contactIdentifier())")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             Logger.warn("\(self.logTag) ignoring obsolete call: \(callId) in \(#function)")
@@ -417,7 +417,7 @@ protocol CallServiceObserver: class {
      * User didn't answer incoming call
      */
     public func handleMissedCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // Insert missed call record
         if let callRecord = call.callRecord {
@@ -442,7 +442,7 @@ protocol CallServiceObserver: class {
      */
     private func handleLocalBusyCall(_ call: SignalCall) {
         Logger.info("\(self.logTag) \(#function) for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let busyMessage = OWSCallBusyMessage(callId: call.signalingId)
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: busyMessage)
@@ -457,7 +457,7 @@ protocol CallServiceObserver: class {
      */
     public func handleRemoteBusy(thread: TSContactThread, callId: UInt64) {
         Logger.info("\(self.logTag) \(#function) for thread: \(thread.contactIdentifier())")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             Logger.warn("\(self.logTag) ignoring obsolete call: \(callId) in \(#function)")
@@ -484,7 +484,7 @@ protocol CallServiceObserver: class {
      * the user of an incoming call.
      */
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
@@ -558,7 +558,7 @@ protocol CallServiceObserver: class {
         self.call = newCall
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             guard status == .expired else {
                 return
@@ -666,7 +666,7 @@ protocol CallServiceObserver: class {
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
         waitForPeerConnectionClient().then { () -> Void in
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             guard let call = self.call else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) since there is no current call. Call already ended?")
@@ -700,7 +700,7 @@ protocol CallServiceObserver: class {
      * remote client.
      */
     private func handleLocalAddedIceCandidate(_ iceCandidate: RTCIceCandidate) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
@@ -743,7 +743,7 @@ protocol CallServiceObserver: class {
      * client.
      */
     private func handleIceConnected() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This will only be called for the current peerConnectionClient, so
@@ -775,7 +775,7 @@ protocol CallServiceObserver: class {
      */
     public func handleRemoteHangup(thread: TSContactThread, callId: UInt64) {
         Logger.debug("\(self.logTag) in \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This may happen if we hang up slightly before they hang up.
@@ -818,7 +818,7 @@ protocol CallServiceObserver: class {
      * Used by notification actions which can't serialize a call object.
      */
     public func handleAnswerCall(localId: UUID) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
@@ -843,7 +843,7 @@ protocol CallServiceObserver: class {
      * User chose to answer call referred to by call `localId`. Used by the Callee only.
      */
     public func handleAnswerCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(self.logTag) in \(#function)")
 
@@ -884,7 +884,7 @@ protocol CallServiceObserver: class {
      */
     func handleConnectedCall(_ call: SignalCall) {
         Logger.info("\(self.logTag) in \(#function)")
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
@@ -913,7 +913,7 @@ protocol CallServiceObserver: class {
      * Incoming call only.
      */
     public func handleDeclineCall(localId: UUID) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
@@ -940,7 +940,7 @@ protocol CallServiceObserver: class {
      * Incoming call only.
      */
     public func handleDeclineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
 
@@ -963,7 +963,7 @@ protocol CallServiceObserver: class {
      * Can be used for Incoming and Outgoing calls.
      */
     func handleLocalHungupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let currentCall = self.call else {
             Logger.info("\(self.logTag) in \(#function), but no current call. Other party hung up just before us.")
@@ -1018,7 +1018,7 @@ protocol CallServiceObserver: class {
      * Can be used for Incoming and Outgoing calls.
      */
     func setIsMuted(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard call == self.call else {
             // This can happen after a call has ended. Reproducible on iOS11, when the other party ends the call.
@@ -1041,7 +1041,7 @@ protocol CallServiceObserver: class {
      * e.g. when another Call comes in.
      */
     func setIsOnHold(call: SignalCall, isOnHold: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard call == self.call else {
             Logger.info("\(self.logTag) ignoring held request for obsolete call")
@@ -1081,7 +1081,7 @@ protocol CallServiceObserver: class {
      * Can be used for Incoming and Outgoing calls.
      */
     func setHasLocalVideo(hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFail("\(self.logTag) could not identify frontmostViewController in \(#function)")
@@ -1109,7 +1109,7 @@ protocol CallServiceObserver: class {
     }
 
     private func setHasLocalVideoWithCameraPermissions(hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
@@ -1132,7 +1132,7 @@ protocol CallServiceObserver: class {
     }
 
     func handleCallKitStartVideo() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.setHasLocalVideo(hasLocalVideo: true)
     }
@@ -1148,7 +1148,7 @@ protocol CallServiceObserver: class {
      * Used by both Incoming and Outgoing calls.
      */
     private func handleDataChannelMessage(_ message: OWSWebRTCProtosData) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             // This should never happen; return to a known good state.
@@ -1203,7 +1203,7 @@ protocol CallServiceObserver: class {
      * The connection has been established. The clients can now communicate.
      */
     internal func peerConnectionClientIceConnected(_ peerConnectionClient: PeerConnectionClient) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1217,7 +1217,7 @@ protocol CallServiceObserver: class {
      * The connection failed to establish. The clients will not be able to communicate.
      */
     internal func peerConnectionClientIceFailed(_ peerConnectionClient: PeerConnectionClient) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1234,7 +1234,7 @@ protocol CallServiceObserver: class {
      * out of band, as part of establishing a connection over WebRTC.
      */
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1248,7 +1248,7 @@ protocol CallServiceObserver: class {
      * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
      */
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1259,7 +1259,7 @@ protocol CallServiceObserver: class {
     }
 
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1270,7 +1270,7 @@ protocol CallServiceObserver: class {
     }
 
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
             Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
@@ -1283,7 +1283,7 @@ protocol CallServiceObserver: class {
     // MARK: Helpers
 
     private func waitUntilReadyToSendIceUpdates() -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if self.readyToSendIceUpdatesPromise == nil {
             createReadyToSendIceUpdatesPromise()
@@ -1298,7 +1298,7 @@ protocol CallServiceObserver: class {
     }
 
     private func createReadyToSendIceUpdatesPromise() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.readyToSendIceUpdatesPromise == nil else {
             owsFail("expected readyToSendIceUpdatesPromise to be nil")
@@ -1322,7 +1322,7 @@ protocol CallServiceObserver: class {
     }
 
     private func waitForPeerConnectionClient() -> Promise<Void> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.peerConnectionClient == nil else {
             // peerConnectionClient already set
@@ -1342,7 +1342,7 @@ protocol CallServiceObserver: class {
     }
 
     private func createPeerConnectionClientPromise() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.peerConnectionClientPromise == nil else {
             owsFail("expected peerConnectionClientPromise to be nil")
@@ -1370,7 +1370,7 @@ protocol CallServiceObserver: class {
      * a list of servers, plus we have fallback servers hardcoded in the app.
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return firstly {
             return accountManager.getTurnServerInfo()
@@ -1412,7 +1412,7 @@ protocol CallServiceObserver: class {
     //   to reflect the error.
     // * IFF that call is the current call, we want to terminate it.
     public func handleFailedCall(failedCall: SignalCall?, error: CallError) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if case CallError.assertionError(description: let description) = error {
             owsFail(description)
@@ -1451,7 +1451,7 @@ protocol CallServiceObserver: class {
      * Clean up any existing call state and get ready to receive a new call.
      */
     private func terminateCall() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         Logger.debug("\(self.logTag) in \(#function)")
 
@@ -1498,36 +1498,36 @@ protocol CallServiceObserver: class {
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.logTag) \(#function): \(state)")
         updateIsVideoEnabled()
     }
 
     internal func hasLocalVideoDidChange(call: SignalCall, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         Logger.info("\(self.logTag) \(#function): \(hasLocalVideo)")
         self.updateIsVideoEnabled()
     }
 
     internal func muteDidChange(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
 
     internal func holdDidChange(call: SignalCall, isOnHold: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
 
     internal func audioSourceDidChange(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         // Do nothing
     }
 
     // MARK: - Video
 
     private func shouldHaveLocalVideoTrack() -> Bool {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             return false
@@ -1544,7 +1544,7 @@ protocol CallServiceObserver: class {
 
     //TODO only fire this when it's changed? as of right now it gets called whenever you e.g. lock the phone while it's incoming ringing.
     private func updateIsVideoEnabled() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
             return
@@ -1567,7 +1567,7 @@ protocol CallServiceObserver: class {
 
     // The observer-related methods should be invoked on the main thread.
     func addObserverAndSyncState(observer: CallServiceObserver) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         observers.append(Weak(value: observer))
 
@@ -1582,7 +1582,7 @@ protocol CallServiceObserver: class {
 
     // The observer-related methods should be invoked on the main thread.
     func removeObserver(_ observer: CallServiceObserver) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         while let index = observers.index(where: { $0.value === observer }) {
             observers.remove(at: index)
@@ -1591,13 +1591,13 @@ protocol CallServiceObserver: class {
 
     // The observer-related methods should be invoked on the main thread.
     func removeAllObservers() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         observers = []
     }
 
     private func fireDidUpdateVideoTracks() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let call = self.call
         let localVideoTrack = self.localVideoTrack
@@ -1614,7 +1614,7 @@ protocol CallServiceObserver: class {
 
     var activeCallTimer: Timer?
     func startCallTimer() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if self.activeCallTimer != nil {
             owsFail("\(self.logTag) activeCallTimer should only be set once per call")
@@ -1660,7 +1660,7 @@ protocol CallServiceObserver: class {
     }
 
     func stopAnyCallTimer() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil

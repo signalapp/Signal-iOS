@@ -189,7 +189,7 @@ public class SystemContactsFetcher: NSObject {
     }
 
     private func setupObservationIfNecessary() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard !hasSetupObservation else {
             return
         }
@@ -210,7 +210,7 @@ public class SystemContactsFetcher: NSObject {
      */
     @objc
     public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // Ensure completion is invoked on main thread.
         let completion = { error in
@@ -260,7 +260,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func fetchOnceIfAlreadyAuthorized() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard authorizationStatus == .authorized else {
             return
         }
@@ -273,7 +273,7 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
             return
@@ -283,10 +283,10 @@ public class SystemContactsFetcher: NSObject {
     }
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            AssertIsOnMainThread()
+            SwiftAssertIsOnMainThread(#function)
 
             guard status == .expired else {
                 return

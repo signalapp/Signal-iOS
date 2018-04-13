@@ -31,7 +31,7 @@ public class OWSBackupLazyRestoreJob: NSObject {
     }
 
     private func runAsync() {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         DispatchQueue.global().async {
             self.restoreAttachments()

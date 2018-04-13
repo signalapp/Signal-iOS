@@ -34,7 +34,7 @@ protocol CallUIAdaptee {
 // Shared default implementations
 extension CallUIAdaptee {
     internal func showCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let callViewController = CallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
@@ -51,13 +51,13 @@ extension CallUIAdaptee {
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
     internal func startAndShowOutgoingCall(recipientId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard self.callService.call == nil else {
             Logger.info("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
@@ -82,7 +82,7 @@ extension CallUIAdaptee {
     internal let audioService: CallAudioService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.contactsManager = contactsManager
         if Platform.isSimulator {
@@ -121,7 +121,7 @@ extension CallUIAdaptee {
     }
 
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // make sure we don't terminate audio session during call
         OWSAudioSession.shared.startAudioActivity(call.audioActivity)
@@ -131,45 +131,45 @@ extension CallUIAdaptee {
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
     internal func startOutgoingCall(handle: String) -> SignalCall {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         let call = adaptee.startOutgoingCall(handle: handle)
         return call
     }
 
     internal func answerCall(localId: UUID) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.answerCall(localId: localId)
     }
 
     internal func answerCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.answerCall(call)
     }
 
     internal func declineCall(localId: UUID) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.declineCall(localId: localId)
     }
 
     internal func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.declineCall(call)
     }
 
     internal func didTerminateCall(_ call: SignalCall?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         if let call = call {
             OWSAudioSession.shared.endAudioActivity(call.audioActivity)
@@ -177,62 +177,62 @@ extension CallUIAdaptee {
     }
 
     internal func startAndShowOutgoingCall(recipientId: String) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.startAndShowOutgoingCall(recipientId: recipientId)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.recipientAcceptedCall(call)
     }
 
     internal func remoteDidHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.remoteDidHangupCall(call)
     }
 
     internal func remoteBusy(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.remoteBusy(call)
     }
 
     internal func localHangupCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.localHangupCall(call)
     }
 
     internal func failCall(_ call: SignalCall, error: CallError) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.failCall(call, error: error)
     }
 
     internal func showCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.showCall(call)
     }
 
     internal func setIsMuted(call: SignalCall, isMuted: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // With CallKit, muting is handled by a CXAction, so it must go through the adaptee
         adaptee.setIsMuted(call: call, isMuted: isMuted)
     }
 
     internal func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         adaptee.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
     internal func setAudioSource(call: SignalCall, audioSource: AudioSource?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         // AudioSource is not handled by CallKit (e.g. there is no CXAction), so we handle it w/o going through the
         // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's
@@ -242,7 +242,7 @@ extension CallUIAdaptee {
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.
     internal var hasManualRinger: Bool {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         return adaptee.hasManualRinger
     }
@@ -250,7 +250,7 @@ extension CallUIAdaptee {
     // MARK: - CallServiceObserver
 
     internal func didUpdateCall(call: SignalCall?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         call?.addObserverAndSyncState(observer: audioService)
     }
@@ -258,8 +258,8 @@ extension CallUIAdaptee {
     internal func didUpdateVideoTracks(call: SignalCall?,
                                        localVideoTrack: RTCVideoTrack?,
                                        remoteVideoTrack: RTCVideoTrack?) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
-        audioService.didUpdateVideoTracks(call:call)
+        audioService.didUpdateVideoTracks(call: call)
     }
 }

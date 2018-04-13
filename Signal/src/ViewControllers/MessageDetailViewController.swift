@@ -499,7 +499,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // This method should be called after self.databaseConnection.beginLongLivedReadTransaction().
     private func updateDBConnectionAndMessageToLatest() {
 
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         self.uiDatabaseConnection.read { transaction in
             guard let uniqueId = self.message.uniqueId else {
@@ -516,7 +516,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     internal func yapDatabaseModified(notification: NSNotification) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard !wasDeleted else {
             // Item was deleted. Don't bother re-rendering, it will fail and we'll soon be dismissed.
@@ -606,7 +606,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var audioAttachmentPlayer: OWSAudioPlayer?
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
-        AssertIsOnMainThread()
+        SwiftAssertIsOnMainThread(#function)
 
         guard let mediaURL = attachmentStream.mediaURL() else {
             owsFail("\(logTag) in \(#function) mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
