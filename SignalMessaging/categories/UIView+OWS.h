@@ -118,6 +118,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)addRedBorderRecursively;
 
 #ifdef DEBUG
+- (void)logFrame;
+- (void)logFrameWithLabel:(NSString *)label;
 - (void)logFrameLater;
 - (void)logFrameLaterWithLabel:(NSString *)label;
 - (void)logHierarchyUpwardLaterWithLabel:(NSString *)label;
