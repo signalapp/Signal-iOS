@@ -634,19 +634,19 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
 
-        // Limit caption character count. We do this in characters, not bytes.
-        // This character limit will be safely below our byte limit (16k) for almost all uses.
-        // Because the captioning interface doesn't allow newlines, in practice design pressures users to leave relatively short captions.
-        let maxCharacterCount = 2000
-        guard textView.text.count + text.count - range.length <= maxCharacterCount else {
+        let existingText: String = textView.text ?? ""
+        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
+
+        guard proposedText.utf8.count <= kOversizeTextMessageSizeThreshold else {
+            Logger.debug("\(self.logTag) in \(#function) long text was truncated")
             self.lengthLimitLabel.isHidden = false
+
             // Accept as much of the input as we can
-            let remainingSpace = maxCharacterCount - textView.text.count
-            if (remainingSpace) > 0 {
-                let acceptableAddition = text.substring(to: text.startIndex.advanced(by: remainingSpace))
-                textView.text = "\(textView.text ?? "")\(acceptableAddition)"
-                updateHeight(textView: textView)
+            let byteBudget = kOversizeTextMessageSizeThreshold + range.length - existingText.utf8.count
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: byteBudget) {
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
+
             return false
         }
         self.lengthLimitLabel.isHidden = true
