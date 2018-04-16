@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadWithTransaction:transaction sendReadReceipt:YES updateExpiration:YES];
+        [message markAsReadWithTransaction:transaction sendReadReceipt:YES];
     }
 
     // Just to be defensive, we'll also check for unread messages.

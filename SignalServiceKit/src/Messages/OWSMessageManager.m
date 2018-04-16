@@ -1092,7 +1092,7 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
     if (shouldMarkMessageAsRead) {
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
+        [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO];
     }
 
     TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
@@ -1130,8 +1130,9 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
 
-    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                            contactsManager:self.contactsManager];
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                        contactsManager:self.contactsManager
+                                                                            transaction:transaction];
 
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];

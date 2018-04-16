@@ -166,42 +166,23 @@ void AssertIsOnDisappearingMessagesQueue()
     return deletedCount;
 }
 
-+ (void)setExpirationForMessage:(TSMessage *)message
-{
-    dispatch_async(self.serialQueue, ^{
-        [[self sharedJob] setExpirationForMessage:message];
-    });
-}
-
-- (void)setExpirationForMessage:(TSMessage *)message
+- (void)startExpirationForMessage:(TSMessage *)message
+                      transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
     if (!message.isExpiringMessage) {
         return;
     }
 
     OWSDisappearingMessagesConfiguration *disappearingConfig =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:message.uniqueThreadId];
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:message.uniqueThreadId transaction:transaction];
 
     if (!disappearingConfig.isEnabled) {
         return;
     }
 
-    [self setExpirationForMessage:message expirationStartedAt:[NSDate ows_millisecondTimeStamp]];
-}
-
-+ (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
-{
-    dispatch_async(self.serialQueue, ^{
-        [[self sharedJob] setExpirationForMessage:message expirationStartedAt:expirationStartedAt];
-    });
-}
-
-// This method should only be called on the serialQueue.
-- (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt
-{
-    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
-    }];
+    [self setExpirationForMessage:message
+              expirationStartedAt:[NSDate ows_millisecondTimeStamp]
+                      transaction:transaction];
 }
 
 - (void)setExpirationForMessage:(TSMessage *)message
@@ -222,106 +203,93 @@ void AssertIsOnDisappearingMessagesQueue()
         [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
     }
 
-    // Necessary that the async expiration run happens *after* the message is saved with expiration configuration.
-    [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
+    [transaction addCompletionQueue:nil
+                    completionBlock:^{
+                        // Necessary that the async expiration run happens *after* the message is saved with it's new
+                        // expiration configuration.
+                        [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
+                    }];
 }
 
-+ (void)setExpirationsForThread:(TSThread *)thread
-{
-    dispatch_async(self.serialQueue, ^{
-        [[self sharedJob] setExpirationsForThread:thread];
-    });
-}
-
-// This method should only be called on the serialQueue.
-- (void)setExpirationsForThread:(TSThread *)thread
+- (void)setExpirationsForThread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     uint64_t now = [NSDate ows_millisecondTimeStamp];
-    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.disappearingMessagesFinder
-            enumerateUnstartedExpiringMessagesInThread:thread
-                                                 block:^(TSMessage *_Nonnull message) {
-                                                     DDLogWarn(
-                                                         @"%@ Starting expiring message which should have already "
-                                                         @"been started.",
-                                                         self.logTag);
-                                                     // specify "now" in case D.M. have since been disabled, but we have
-                                                     // existing unstarted expiring messages that still need to expire.
-                                                     [self setExpirationForMessage:message
-                                                               expirationStartedAt:now
-                                                                       transaction:transaction];
-                                                 }
-                                           transaction:transaction];
-    }];
+    [self.disappearingMessagesFinder
+        enumerateUnstartedExpiringMessagesInThread:thread
+                                             block:^(TSMessage *_Nonnull message) {
+                                                 DDLogWarn(@"%@ Starting expiring message which should have already "
+                                                           @"been started.",
+                                                     self.logTag);
+                                                 // specify "now" in case D.M. have since been disabled, but we have
+                                                 // existing unstarted expiring messages that still need to expire.
+                                                 [self setExpirationForMessage:message
+                                                           expirationStartedAt:now
+                                                                   transaction:transaction];
+                                             }
+                                       transaction:transaction];
 
     backgroundTask = nil;
 }
 
-+ (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
-                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager
-{
-        [[self sharedJob] becomeConsistentWithConfigurationForMessage:message contactsManager:contactsManager];
-}
-
 - (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
     OWSAssert(contactsManager);
-
+    
     __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
-        // Become eventually consistent in the case that the remote changed their settings at the same time.
-        // Also in case remote doesn't support expiring messages
-        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId];
-
-        BOOL changed = NO;
-        if (message.expiresInSeconds == 0) {
-            if (disappearingMessagesConfiguration.isEnabled) {
-                changed = YES;
-                DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
-                          @"consistent.",
-                    self.logTag);
-                disappearingMessagesConfiguration.enabled = NO;
-                [disappearingMessagesConfiguration save];
-            }
-        } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
+    
+    // Become eventually consistent in the case that the remote changed their settings at the same time.
+    // Also in case remote doesn't support expiring messages
+    OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+    [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
+                                                               transaction:transaction];
+    
+    BOOL changed = NO;
+    if (message.expiresInSeconds == 0) {
+        if (disappearingMessagesConfiguration.isEnabled) {
             changed = YES;
-            DDLogInfo(@"%@ Received remote message with different expiration set, updating our expiration to become "
+            DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
                       @"consistent.",
-                self.logTag);
-            disappearingMessagesConfiguration.enabled = YES;
-            disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
-            [disappearingMessagesConfiguration save];
+                      self.logTag);
+            disappearingMessagesConfiguration.enabled = NO;
+            [disappearingMessagesConfiguration saveWithTransaction:transaction];
         }
-
-        if (!changed) {
-            return;
-        }
-
-        if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-            NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
-
-            // We want the info message to appear _before_ the message.
-            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
-                                                                               thread:message.thread
-                                                                        configuration:disappearingMessagesConfiguration
-                                                                  createdByRemoteName:contactName] save];
-        } else {
-            // We want the info message to appear _before_ the message.
-            [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
-                                                                               thread:message.thread
-                                                                        configuration:disappearingMessagesConfiguration]
-                save];
-        }
-
-        backgroundTask = nil;
-    });
+    } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
+        changed = YES;
+        DDLogInfo(@"%@ Received remote message with different expiration set, updating our expiration to become "
+                  @"consistent.",
+                  self.logTag);
+        disappearingMessagesConfiguration.enabled = YES;
+        disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
+        [disappearingMessagesConfiguration saveWithTransaction:transaction];
+    }
+    
+    if (!changed) {
+        return;
+    }
+    
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
+        
+        // We want the info message to appear _before_ the message.
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration
+                                                              createdByRemoteName:contactName] saveWithTransaction:transaction];
+    } else {
+        // We want the info message to appear _before_ the message.
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+                                                                           thread:message.thread
+                                                                    configuration:disappearingMessagesConfiguration]
+         saveWithTransaction:transaction];
+    }
+    
+    backgroundTask = nil;
 }
 
 - (void)startIfNecessary

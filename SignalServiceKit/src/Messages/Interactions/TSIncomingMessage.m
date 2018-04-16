@@ -136,7 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
                   sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -149,10 +148,10 @@ NS_ASSUME_NONNULL_BEGIN
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
-
-    if (updateExpiration) {
-        [OWSDisappearingMessagesJob setExpirationForMessage:self];
-    }
+    
+    [[OWSDisappearingMessagesJob sharedJob] startExpirationForMessage:self
+                                                          transaction:transaction];
+    
 
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];

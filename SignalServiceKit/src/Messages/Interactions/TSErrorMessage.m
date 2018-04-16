@@ -186,7 +186,6 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
                   sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -200,7 +199,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt and updateExpiration; they don't apply to error messages.
+    // Ignore sendReadReceipt - it doesn't apply to error messages.
 }
 
 @end

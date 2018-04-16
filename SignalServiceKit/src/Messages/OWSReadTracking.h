@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @class YapDatabaseReadWriteTransaction;
@@ -21,10 +21,9 @@
 - (BOOL)shouldAffectUnreadCounts;
 
 /**
- * Used for *responding* to a remote read receipt or in response to user activity.
+ * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                  sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration;
+                  sendReadReceipt:(BOOL)sendReadReceipt;
 
 @end

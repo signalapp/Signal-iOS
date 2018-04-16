@@ -96,7 +96,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
                   sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -110,7 +109,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt and updateExpiration; they don't apply to calls.
+    // Ignore sendReadReceipt - it doesn't apply to calls.
 }
 
 #pragma mark - Methods

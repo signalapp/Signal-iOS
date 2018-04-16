@@ -1052,13 +1052,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self sendSyncTranscriptForMessage:message];
     }
 
-    [OWSDisappearingMessagesJob setExpirationForMessage:message];
-}
-
-- (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSOutgoingMessage *)outgoingMessage
-{
-    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                            contactsManager:self.contactsManager];
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [[OWSDisappearingMessagesJob sharedJob] startExpirationForMessage:message
+                                                              transaction:transaction];
+    }];
 }
 
 - (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage

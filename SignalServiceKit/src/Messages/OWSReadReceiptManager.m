@@ -431,11 +431,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     if (!readReceipt) {
         return;
     }
-    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
+    [message markAsReadWithTransaction:transaction sendReadReceipt:NO];
     [readReceipt removeWithTransaction:transaction];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                                                             object:message];
+    [transaction addCompletionQueue:nil
+                    completionBlock:^{
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                               object:message];
+                    }];
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
@@ -538,13 +542,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     } else {
         DDLogError(@"Marking %zd messages as read by linked device.", interactions.count);
     }
+
     for (id<OWSReadTracking> possiblyRead in interactions) {
-        [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:wasLocal updateExpiration:YES];
+        [possiblyRead markAsReadWithTransaction:transaction sendReadReceipt:wasLocal];
         
         if ([possiblyRead isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)possiblyRead;
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                                                                     object:incomingMessage];
+            [transaction addCompletionQueue:nil
+                            completionBlock:^{
+                                [[NSNotificationCenter defaultCenter]
+                                 postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                 object:incomingMessage];
+                            }];
         }
     }
 }

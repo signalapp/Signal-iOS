@@ -3278,7 +3278,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:@[]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil];
-                [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                [message markAsReadWithTransaction:transaction sendReadReceipt:NO];
                 break;
             }
             case 1: {
@@ -3316,7 +3316,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   ]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil];
-                [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                [message markAsReadWithTransaction:transaction sendReadReceipt:NO];
                 break;
             }
             case 3: {
@@ -3767,7 +3767,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:[NSMutableArray new]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil];
-                [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+                [message markAsReadWithTransaction:transaction sendReadReceipt:NO];
             }
             {
                 TSOutgoingMessage *message =
@@ -4105,7 +4105,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
                                                       quotedMessage:quotedMessage];
-    [message markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:NO];
+    [message markAsReadWithTransaction:transaction sendReadReceipt:NO];
     return message;
 }
 

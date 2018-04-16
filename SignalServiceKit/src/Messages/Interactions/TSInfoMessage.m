@@ -131,7 +131,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 - (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
                   sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
 {
     OWSAssert(transaction);
 
@@ -145,7 +144,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt and updateExpiration; they don't apply to info messages.
+    // Ignore sendReadReceipt, it doesn't apply to info messages.
 }
 
 @end

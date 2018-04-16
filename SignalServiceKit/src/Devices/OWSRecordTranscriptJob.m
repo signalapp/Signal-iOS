@@ -134,9 +134,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (transcript.isExpirationTimerUpdate) {
-        [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                                contactsManager:self.contactsManager];
+        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                                            contactsManager:self.contactsManager
+                                                                                transaction:transaction];
         // early return to avoid saving an empty incoming message.
+        OWSAssert(transcript.body.length == 0);
+        OWSAssert(outgoingMessage.attachmentIds.count == 0);
+        
         return;
     }
 
@@ -147,10 +151,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [outgoingMessage saveWithTransaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithTransaction:transaction];
-    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:outgoingMessage
-                                                            contactsManager:self.contactsManager];
-    [OWSDisappearingMessagesJob setExpirationForMessage:outgoingMessage
-                                    expirationStartedAt:transcript.expirationStartedAt];
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
+                                                                        contactsManager:self.contactsManager
+                                                                            transaction:transaction];
+    [[OWSDisappearingMessagesJob sharedJob] setExpirationForMessage:outgoingMessage
+                                                expirationStartedAt:transcript.expirationStartedAt
+                                                        transaction:transaction];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
 
