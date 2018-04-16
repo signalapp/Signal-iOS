@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,16 +7,19 @@ import Foundation
 extension UIApplication {
 
     var frontmostViewControllerIgnoringAlerts: UIViewController? {
-        return findFrontmostViewController(ignoringAlerts:true)
+        return findFrontmostViewController(ignoringAlerts: true)
     }
 
     var frontmostViewController: UIViewController? {
-        return findFrontmostViewController(ignoringAlerts:false)
+        return findFrontmostViewController(ignoringAlerts: false)
     }
 
     internal func findFrontmostViewController(ignoringAlerts: Bool) -> UIViewController? {
-        let window = UIApplication.shared.keyWindow
-        guard let viewController = window!.rootViewController else {
+        guard let window = CurrentAppContext().mainWindow else {
+            return nil
+        }
+        Logger.error("findFrontmostViewController: \(window)")
+        guard let viewController = window.rootViewController else {
             owsFail("\(self.logTag) in \(#function) Missing root view controller.")
             return nil
         }
