@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+@class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
 @class TSQuotedMessage;
@@ -15,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) NSString *authorId;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
+@property (nonatomic, readonly, nullable) TSAttachmentPointer *thumbnailAttachmentPointer;
+@property (nonatomic, readonly) BOOL thumbnailDownloadFailed;
 
 // This property should be set IFF we are quoting a text message
 // or attachment with caption.
@@ -29,11 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) UIImage *thumbnailImage;
 
+// Used for building an outgoing quoted reply preview, before it's sent
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
                  attachmentStream:(nullable TSAttachmentStream *)attachment;
 
+// Used for persisted quoted replies, both incoming and outgoing.
 - (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                           transaction:(YapDatabaseReadTransaction *)transaction;
 

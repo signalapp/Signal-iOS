@@ -655,7 +655,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         // no - op
     }
 
-    func didTapQuotedMessage(_ viewItem: ConversationViewItem, quotedMessage: TSQuotedMessage) {
+    func didTapConversationItem(_ viewItem: ConversationViewItem, quotedReply: OWSQuotedReplyModel) {
+        // no - op
+    }
+
+    func didTapConversationItem(_ viewItem: ConversationViewItem, quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
         // no - op
     }
 

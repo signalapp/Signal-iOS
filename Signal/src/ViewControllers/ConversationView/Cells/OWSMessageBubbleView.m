@@ -17,7 +17,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView ()
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -272,6 +272,8 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
                                                         isOutgoing:isOutgoing];
+        quotedMessageView.delegate = self;
+
         self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
@@ -1101,8 +1103,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self handleMediaTapGesture];
             break;
         case OWSMessageGestureLocation_QuotedReply:
-            if (self.message.quotedMessage) {
-                [self.delegate didTapQuotedMessage:self.viewItem quotedMessage:self.message.quotedMessage];
+            if (self.viewItem.quotedReply) {
+                [self.delegate didTapConversationItem:self.viewItem quotedReply:self.viewItem.quotedReply];
             } else {
                 OWSFail(@"%@ Missing quoted message.", self.logTag);
             }
@@ -1196,6 +1198,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return OWSMessageGestureLocation_Default;
+}
+
+- (void)didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply
+    failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+{
+    [self.delegate didTapConversationItem:self.viewItem
+                                     quotedReply:quotedReply
+        failedThumbnailDownloadAttachmentPointer:attachmentPointer];
 }
 
 @end
