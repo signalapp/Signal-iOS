@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return 40.f;
+    return 44.f;
 }
 
 - (CGFloat)iconSize
@@ -118,61 +118,30 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
-    OWSBezierPathView *iconCircleView = [OWSBezierPathView new];
-    UIColor *iconColor
+    UIView *iconCircleView = [UIView containerView];
+    iconCircleView.backgroundColor
         = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
-    iconCircleView.configureShapeLayerBlock = ^(CAShapeLayer *_Nonnull layer, CGRect bounds) {
-        layer.path = [UIBezierPath bezierPathWithOvalInRect:bounds].CGPath;
-        layer.fillColor = iconColor.CGColor;
-    };
+    iconCircleView.layer.cornerRadius = self.iconSize * 0.5f;
     [contentView addSubview:iconCircleView];
     [iconCircleView autoPinLeadingToSuperviewMarginWithInset:self.iconHMargin];
     [iconCircleView autoVCenterInSuperview];
     [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
 
-    UIImage *image = [UIImage imageNamed:@"generic-attachment-small"];
+    UIImage *image = [UIImage imageNamed:@"attachment_file"];
     OWSAssert(image);
     UIImageView *imageView = [UIImageView new];
     imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     imageView.tintColor = self.bubbleBackgroundColor;
-    [contentView addSubview:imageView];
-    [imageView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:iconCircleView];
-    [imageView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:iconCircleView];
-    [imageView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:iconCircleView];
-    [imageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:iconCircleView];
+    [iconCircleView addSubview:imageView];
+    [imageView autoCenterInSuperview];
 
     const CGFloat kLabelHSpacing = self.iconHSpacing;
     UIView *labelsView = [UIView containerView];
     [contentView addSubview:labelsView];
-    [labelsView autoPinLeadingToTrailingEdgeOfView:imageView offset:kLabelHSpacing];
+    [labelsView autoPinLeadingToTrailingEdgeOfView:iconCircleView offset:kLabelHSpacing];
     [labelsView autoPinTrailingToSuperviewMarginWithInset:self.iconHMargin];
     [labelsView autoVCenterInSuperview];
-
-    NSString *filename = self.attachmentStream.sourceFilename;
-    if (!filename) {
-        filename = [[self.attachmentStream filePath] lastPathComponent];
-    }
-    NSString *fileExtension = filename.pathExtension;
-    if (fileExtension.length < 1) {
-        [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType];
-    }
-    if (fileExtension.length < 1) {
-        fileExtension = NSLocalizedString(@"GENERIC_ATTACHMENT_DEFAULT_TYPE",
-            @"A default label for attachment whose file extension cannot be determined.");
-    }
-
-    UILabel *fileTypeLabel = [UILabel new];
-    fileTypeLabel.text = fileExtension.uppercaseString;
-    fileTypeLabel.textColor = iconColor;
-    fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    fileTypeLabel.font = [UIFont ows_mediumFontWithSize:20.f];
-    fileTypeLabel.adjustsFontSizeToFitWidth = YES;
-    fileTypeLabel.textAlignment = NSTextAlignmentCenter;
-    // Center on icon.
-    [imageView addSubview:fileTypeLabel];
-    [fileTypeLabel autoCenterInSuperview];
-    [fileTypeLabel autoSetDimension:ALDimensionWidth toSize:15.f];
 
     const CGFloat kLabelVSpacing = 2;
     NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];

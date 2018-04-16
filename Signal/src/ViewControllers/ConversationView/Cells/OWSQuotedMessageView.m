@@ -104,8 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)highlightColor
 {
     BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isQuotingSelf ? OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
-                          : OWSMessagesBubbleImageFactory.bubbleColorIncoming);
+    return (isQuotingSelf ? OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
 }
 
 #pragma mark -
@@ -140,6 +139,17 @@ NS_ASSUME_NONNULL_BEGIN
             quotedAttachmentView.layer.cornerRadius = 2.f;
             quotedAttachmentView.clipsToBounds = YES;
             quotedAttachmentView.backgroundColor = [UIColor whiteColor];
+
+            if (self.isVideoAttachment) {
+                UIImage *contentIcon = [UIImage imageNamed:@"attachment_play_button"];
+                contentIcon = [contentIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                UIImageView *contentImageView = [self imageViewForImage:contentIcon];
+                contentImageView.tintColor = [UIColor whiteColor];
+                [quotedAttachmentView addSubview:contentImageView];
+                [contentImageView autoCenterInSuperview];
+                [contentImageView setContentHuggingHigh];
+                [contentImageView setCompressionResistanceHigh];
+            }
         } else if (self.quotedMessage.thumbnailDownloadFailed) {
             // TODO design review icon and color
             UIImage *contentIcon =
@@ -162,17 +172,19 @@ NS_ASSUME_NONNULL_BEGIN
                 [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFailedThumbnailDownload:)];
             [quotedAttachmentView addGestureRecognizer:tapGesture];
         } else {
-            // TODO: This asset is wrong.
-            // TODO: There's a special asset for audio files.
-            UIImage *contentIcon = [UIImage imageNamed:@"file-thin-black-filled-large"];
-            UIImageView *contentImageView = [self imageViewForImage:contentIcon];
             quotedAttachmentView = [UIView containerView];
-            [quotedAttachmentView addSubview:contentImageView];
             quotedAttachmentView.backgroundColor = self.highlightColor;
             quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
+
+            UIImage *contentIcon =
+                [UIImage imageNamed:(self.isAudioAttachment ? @"attachment_audio" : @"attachment_file")];
+            contentIcon = [contentIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UIImageView *contentImageView = [self imageViewForImage:contentIcon];
+            contentImageView.tintColor = [UIColor whiteColor];
+            [quotedAttachmentView addSubview:contentImageView];
             [contentImageView autoCenterInSuperview];
-            [contentImageView
-                autoSetDimensionsToSize:CGSizeMake(self.quotedAttachmentSize * 0.5f, self.quotedAttachmentSize * 0.5f)];
+            [contentImageView setContentHuggingHigh];
+            [contentImageView setCompressionResistanceHigh];
         }
 
         quotedAttachmentView.userInteractionEnabled = YES;
@@ -352,6 +364,28 @@ NS_ASSUME_NONNULL_BEGIN
             @"QUOTED_REPLY_TYPE_GIF", @"Indicates this message is a quoted reply to animated GIF file.");
     }
     return nil;
+}
+
+- (BOOL)isAudioAttachment
+{
+    // TODO: Are we going to use the filename?  For all mimetypes?
+    NSString *_Nullable contentType = self.quotedMessage.contentType;
+    if (contentType.length < 1) {
+        return NO;
+    }
+
+    return [MIMETypeUtil isAudio:contentType];
+}
+
+- (BOOL)isVideoAttachment
+{
+    // TODO: Are we going to use the filename?  For all mimetypes?
+    NSString *_Nullable contentType = self.quotedMessage.contentType;
+    if (contentType.length < 1) {
+        return NO;
+    }
+
+    return [MIMETypeUtil isVideo:contentType];
 }
 
 - (UILabel *)configureQuotedAuthorLabel
