@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
+// The unread badge has a larger v-height than the other elements in its
+// row.  We don't want it to distort the v-alignment of the cell's labels
+// so we use a container to reserve the correct width.
+@property (nonatomic) UIView *unreadBadgeContainer;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
@@ -121,8 +125,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
 
+    self.unreadBadgeContainer = [UIView containerView];
+    [self.unreadBadgeContainer setContentHuggingHigh];
+    [self.unreadBadgeContainer setCompressionResistanceHigh];
+
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    [self.unreadBadgeContainer addSubview:self.unreadBadge];
+    [self.unreadBadge autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
@@ -181,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
-        [self.topRowView addArrangedSubview:self.unreadBadge];
+        [self.topRowView addArrangedSubview:self.unreadBadgeContainer];
 
         self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
@@ -193,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
 
         [self.viewConstraints addObjectsFromArray:@[
+            [self.unreadBadgeContainer autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
         ]];
@@ -239,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION",
                                                           @"A label for conversations with blocked users.")
                                            attributes:@{
-                                               NSFontAttributeName : self.snippetFont.ows_medium,
+                                               NSFontAttributeName : self.snippetFont.ows_mediumWeight,
                                                NSForegroundColorAttributeName : [UIColor ows_blackColor],
                                            }]];
     } else {
@@ -259,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     initWithString:displayableText
                                                         attributes:@{
                                                             NSFontAttributeName :
-                                                                (hasUnreadMessages ? self.snippetFont.ows_medium
+                                                                (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
                                                                 (hasUnreadMessages ? [UIColor ows_blackColor]
@@ -291,9 +302,9 @@ NS_ASSUME_NONNULL_BEGIN
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    return [[NSAttributedString alloc] initWithString:dateTimeString
+    return [[NSAttributedString alloc] initWithString:dateTimeString.uppercaseString
                                            attributes:@{
-                                               NSForegroundColorAttributeName : [UIColor ows_darkGrayColor],
+                                               NSForegroundColorAttributeName : [UIColor blackColor],
                                                NSFontAttributeName : self.dateTimeFont,
                                            }];
 }
@@ -302,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)dateTimeFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont];
+    return [UIFont ows_dynamicTypeFootnoteFont].ows_mediumWeight;
 }
 
 - (UIFont *)snippetFont
@@ -312,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)nameFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_medium;
+    return [UIFont ows_dynamicTypeBodyFont].ows_mediumWeight;
 }
 
 // Used for profile names.
@@ -339,7 +350,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)rowHeight
 {
-    return 72;
+    // Scale the cell height using size of dynamic "body" type as a reference.
+    const CGFloat kReferenceFontSizeMin = 17.f;
+    const CGFloat kReferenceFontSizeMax = 23.f;
+    CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
+    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(referenceFontSize, kReferenceFontSizeMin, kReferenceFontSizeMax));
+
+    const CGFloat kCellHeightMin = 68.f;
+    const CGFloat kCellHeightMax = 76.f;
+    CGFloat result = ceil(CGFloatLerp(kCellHeightMin, kCellHeightMax, alpha));
+
+    return result;
 }
 
 - (NSUInteger)cellHMargin
@@ -369,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.contactsManager = nil;
 
-    [self.unreadBadge removeFromSuperview];
+    [self.unreadBadgeContainer removeFromSuperview];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

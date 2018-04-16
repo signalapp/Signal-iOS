@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     return font ?: self;
 }
 
-- (UIFont *)ows_medium
+- (UIFont *)ows_mediumWeight
 {
     // The recommended approach of deriving "medium" weight fonts for dynamic
     // type fonts is:

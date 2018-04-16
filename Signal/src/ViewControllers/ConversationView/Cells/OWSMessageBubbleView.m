@@ -1003,12 +1003,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)textTopMargin
 {
-    return kBubbleTextVInset;
+    return kBubbleTextTopInset;
 }
 
 - (CGFloat)textBottomMargin
 {
-    return kBubbleTextVInset + kBubbleThornVInset;
+    return kBubbleTextBottomInset + kBubbleThornVInset;
 }
 
 - (UIColor *)bodyTextColor

@@ -13,7 +13,8 @@ extern const CGFloat kBubbleHRounding;
 extern const CGFloat kBubbleThornSideInset;
 extern const CGFloat kBubbleThornVInset;
 extern const CGFloat kBubbleTextHInset;
-extern const CGFloat kBubbleTextVInset;
+extern const CGFloat kBubbleTextTopInset;
+extern const CGFloat kBubbleTextBottomInset;
 
 @class OWSBubbleView;
 
