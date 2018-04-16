@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
+// The unread badge has a larger v-height than the other elements in its
+// row.  We don't want it to distort the v-alignment of the cell's labels
+// so we use a placeholder to reserve the correct width.
+@property (nonatomic) UIView *unreadPlaceholder;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
@@ -121,8 +125,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
 
+    self.unreadPlaceholder = [UIView containerView];
+    [self.unreadPlaceholder setContentHuggingHigh];
+    [self.unreadPlaceholder setCompressionResistanceHigh];
+
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    [self.unreadPlaceholder addSubview:self.unreadBadge];
+    [self.unreadBadge autoCenterInSuperview];
     [self.unreadBadge setContentHuggingHigh];
     [self.unreadBadge setCompressionResistanceHigh];
 
@@ -181,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
-        [self.topRowView addArrangedSubview:self.unreadBadge];
+        [self.topRowView addArrangedSubview:self.unreadPlaceholder];
 
         self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
@@ -193,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
 
         [self.viewConstraints addObjectsFromArray:@[
+            [self.unreadPlaceholder autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
         ]];
@@ -379,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.contactsManager = nil;
 
-    [self.unreadBadge removeFromSuperview];
+    [self.unreadPlaceholder removeFromSuperview];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
