@@ -14,7 +14,8 @@ const CGFloat kBubbleHRounding = kOWSMessageCellCornerRadius;
 const CGFloat kBubbleThornSideInset = 5.f;
 const CGFloat kBubbleThornVInset = 0;
 const CGFloat kBubbleTextHInset = 10.f;
-const CGFloat kBubbleTextVInset = 10.f;
+const CGFloat kBubbleTextTopInset = 8.f;
+const CGFloat kBubbleTextBottomInset = 6.f;
 
 @interface OWSBubbleView ()
 
