@@ -785,9 +785,6 @@
 /* Label indicating loading is in progress */
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "កំពុងផ្ទុកឯកសារមេឌាចាស់ៗ...";
 
-/* A default label for attachment whose file extension cannot be determined. */
-"GENERIC_ATTACHMENT_DEFAULT_TYPE" = "?";
-
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
 
@@ -1411,7 +1408,10 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "ឆ្លើយតបទៅកាន់ %@";
 
-/* Indicates the author of a quoted message is yourself. */
+/* message header label when someone else is quoting you */
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+
+/* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
@@ -1573,12 +1573,6 @@
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "ភ្លាម";
 
-/* Title for alert indicating that screen lock could not be disabled. */
-"SCREEN_LOCK_DISABLE_FAILED" = "អេក្រង់ចាក់សោរ មិនអាចបិទ";
-
-/* Title for alert indicating that screen lock could not be enabled. */
-"SCREEN_LOCK_ENABLE_FAILED" = "អេក្រង់ចាក់សោរ មិនអាចបើក";
-
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "ការផ្ទៀងផ្ទាត់មិនអាចប្រើប្រាស់បាន។";
 
@@ -1596,12 +1590,6 @@
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "អ្នកត្រូវប្រើលេខកូដ ក្នុង iOS អ្នក ដើម្បីប្រើប្រាស់ អេក្រង់ចាក់សោរ។";
-
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to disable 'screen lock'. */
-"SCREEN_LOCK_REASON_DISABLE_SCREEN_LOCK" = "ផ្ទៀងផ្ទាត់ដើម្បីបិទ អេក្រង់ចាក់សោរ។";
-
-/* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to enable 'screen lock'. */
-"SCREEN_LOCK_REASON_ENABLE_SCREEN_LOCK" = "ផ្ទៀងផ្ទាត់ដើម្បីបើក អេក្រង់ចាក់សោរ។";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "ផ្ទៀងផ្ទាត់ដើម្បីបើក Signal។";
