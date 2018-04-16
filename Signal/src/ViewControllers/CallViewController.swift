@@ -71,6 +71,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     weak var remoteVideoTrack: RTCVideoTrack?
     var localVideoConstraints: [NSLayoutConstraint] = []
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     var shouldRemoteVideoControlsBeHidden = false {
         didSet {
             updateCallUI(callState: call.state)
@@ -174,6 +178,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         super.viewWillAppear(animated)
         UIDevice.current.isProximityMonitoringEnabled = true
         updateCallUI(callState: call.state)
+
+        self.becomeFirstResponder()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.becomeFirstResponder()
     }
 
     override func loadView() {

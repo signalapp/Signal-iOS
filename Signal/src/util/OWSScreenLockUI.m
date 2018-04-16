@@ -78,6 +78,7 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
 @property (nonatomic) UIWindow *rootWindow;
 
 @property (nonatomic, nullable) UIResponder *rootWindowResponder;
+@property (nonatomic, nullable, weak) UIViewController *rootFrontmostViewController;
 
 @end
 
@@ -485,7 +486,11 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
     // When we hide the root window, its first responder will resign.
     if (shouldShowBlockWindow && !self.rootWindow.hidden) {
         self.rootWindowResponder = [UIResponder currentFirstResponder];
-        DDLogInfo(@"%@ trying to capture self.rootWindowResponder: %@", self.logTag, self.rootWindowResponder);
+        self.rootFrontmostViewController = [UIApplication.sharedApplication frontmostViewControllerIgnoringAlerts];
+        DDLogInfo(@"%@ trying to capture self.rootWindowResponder: %@ (%@)",
+            self.logTag,
+            self.rootWindowResponder,
+            [self.rootFrontmostViewController class]);
     }
 
     // * Show/hide the app's root window as necessary.
@@ -508,10 +513,24 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
         // the user needs it, saving them a tap.
         // But in the case of an inputAccessoryView, like the ConversationViewController,
         // failing to restore firstResponder could hide the input toolbar.
-        DDLogInfo(@"%@ trying to restore self.rootWindowResponder: %@", self.logTag, self.rootWindowResponder);
-        [self.rootWindowResponder becomeFirstResponder];
+
+        UIViewController *rootFrontmostViewController =
+            [UIApplication.sharedApplication frontmostViewControllerIgnoringAlerts];
+
+        DDLogInfo(@"%@ trying to restore self.rootWindowResponder: %@ (%@ ? %@ == %d)",
+            self.logTag,
+            self.rootWindowResponder,
+            [self.rootFrontmostViewController class],
+            rootFrontmostViewController,
+            self.rootFrontmostViewController == rootFrontmostViewController);
+        if (self.rootFrontmostViewController == rootFrontmostViewController) {
+            [self.rootWindowResponder becomeFirstResponder];
+        }
         self.rootWindowResponder = nil;
+        self.rootFrontmostViewController = nil;
     }
+
+    self.screenBlockingImageView.hidden = !shouldShowBlockWindow;
 
     UIView *rootView = self.screenBlockingViewController.view;
 
