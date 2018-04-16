@@ -393,7 +393,8 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
                      buttonAction:^(UIAlertAction *action) {
                          // After the alert, re-show the unlock UI.
                          [self ensureUI];
-                     }];
+                     }
+               fromViewController:self.screenBlockingViewController];
 }
 
 // 'Screen Blocking' window obscures the app screen:
