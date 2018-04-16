@@ -467,7 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)quotedTextBottomInset
 {
-    return 4.f;
+    return 8.f;
 }
 
 - (CGFloat)quotedReplyStripeThickness

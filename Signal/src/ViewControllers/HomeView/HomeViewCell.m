@@ -291,9 +291,9 @@ NS_ASSUME_NONNULL_BEGIN
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    return [[NSAttributedString alloc] initWithString:dateTimeString
+    return [[NSAttributedString alloc] initWithString:dateTimeString.uppercaseString
                                            attributes:@{
-                                               NSForegroundColorAttributeName : [UIColor ows_darkGrayColor],
+                                               NSForegroundColorAttributeName : [UIColor blackColor],
                                                NSFontAttributeName : self.dateTimeFont,
                                            }];
 }
@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)dateTimeFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont];
+    return [UIFont ows_dynamicTypeFootnoteFont].ows_medium;
 }
 
 - (UIFont *)snippetFont
@@ -339,7 +339,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)rowHeight
 {
-    return 72;
+    // Scale the cell height using size of dynamic "body" type as a reference.
+    const CGFloat kReferenceFontSizeMin = 17.f;
+    const CGFloat kReferenceFontSizeMax = 23.f;
+    CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
+    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(referenceFontSize, kReferenceFontSizeMin, kReferenceFontSizeMax));
+
+    const CGFloat kCellHeightMin = 68.f;
+    const CGFloat kCellHeightMax = 76.f;
+    CGFloat result = ceil(CGFloatLerp(kCellHeightMin, kCellHeightMax, alpha));
+
+    return result;
 }
 
 - (NSUInteger)cellHMargin

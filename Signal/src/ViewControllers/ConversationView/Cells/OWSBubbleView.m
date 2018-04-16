@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kOWSMessageCellCornerRadius = 17;
+const CGFloat kOWSMessageCellCornerRadius = 18;
 
 const CGFloat kBubbleVRounding = kOWSMessageCellCornerRadius;
 const CGFloat kBubbleHRounding = kOWSMessageCellCornerRadius;

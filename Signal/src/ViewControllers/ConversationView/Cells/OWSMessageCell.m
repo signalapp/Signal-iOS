@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addSubview:self.dateHeaderLabel];
 
     self.footerLabel = [UILabel new];
-    self.footerLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
     self.footerLabel.textColor = [UIColor lightGrayColor];
     [self.footerView addSubview:self.footerLabel];
 
@@ -80,7 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
 
     [self.footerView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [self.footerView autoPinWidthToSuperview];
 
     self.contentView.userInteractionEnabled = YES;
 
@@ -160,6 +159,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
+
+    // Update label fonts to honor dynamic type size.
+    self.dateHeaderLabel.font = self.dateHeaderDateFont;
+    self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
 
     if (self.shouldHaveFailedSendBadge) {
         self.failedSendBadgeView = [UIImageView new];
@@ -294,7 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)footerVSpacing
 {
-    return 1.f;
+    return 0.f;
 }
 
 - (void)updateFooter
@@ -326,6 +329,13 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
         return;
     }
+
+    [self.viewConstraints addObjectsFromArray:@[
+        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:kBubbleThornSideInset]
+                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:kBubbleThornSideInset]),
+        (self.isIncoming ? [self.footerView autoPinTrailingToSuperviewMargin]
+                         : [self.footerView autoPinLeadingToSuperviewMargin]),
+    ]];
 
     [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
                                                           toEdge:ALEdgeBottom
