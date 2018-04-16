@@ -316,7 +316,18 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     AssertOnDispatchQueue(self.serialQueue);
     OWSAssert(job);
 
-    OWSSignalServiceProtosEnvelope *envelope = job.envelopeProto;
+    OWSSignalServiceProtosEnvelope *_Nullable envelope = nil;
+    @try {
+        envelope = job.envelopeProto;
+    } @catch (NSException *exception) {
+        OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
+        // TODO: Add analytics.
+        dispatch_async(self.serialQueue, ^{
+            completion(NO);
+        });
+        return;
+    }
+
     [self.messageDecrypter decryptEnvelope:envelope
         successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
             OWSAssert(transaction);

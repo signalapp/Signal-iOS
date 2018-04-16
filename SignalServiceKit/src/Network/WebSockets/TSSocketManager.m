@@ -385,20 +385,25 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            @try {
+                NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:message.body
+                                                                   withSignalingKey:TSAccountManager.signalingKey];
 
-            NSData *decryptedPayload =
-                [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:TSAccountManager.signalingKey];
+                if (!decryptedPayload) {
+                    DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
+                    [self sendWebSocketMessageAcknowledgement:message];
+                    backgroundTask = nil;
+                    return;
+                }
 
-            if (!decryptedPayload) {
-                DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
-                [self sendWebSocketMessageAcknowledgement:message];
-                backgroundTask = nil;
-                return;
+                OWSSignalServiceProtosEnvelope *envelope =
+                    [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
+
+                [self.messageReceiver handleReceivedEnvelope:envelope];
+            } @catch (NSException *exception) {
+                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                // TODO: Add analytics.
             }
-
-            OWSSignalServiceProtosEnvelope *envelope = [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
-
-            [self.messageReceiver handleReceivedEnvelope:envelope];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self sendWebSocketMessageAcknowledgement:message];
