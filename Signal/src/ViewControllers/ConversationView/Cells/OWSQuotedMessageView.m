@@ -412,7 +412,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeCaption1Font.ows_medium;
+    return UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
 }
 
 - (UIColor *)quotedAuthorColor

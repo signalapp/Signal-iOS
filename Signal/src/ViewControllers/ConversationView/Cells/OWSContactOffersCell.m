@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)titleFont
 {
-    return UIFont.ows_dynamicTypeBodyFont.ows_medium;
+    return UIFont.ows_dynamicTypeBodyFont.ows_mediumWeight;
 }
 
 - (UIFont *)buttonFont

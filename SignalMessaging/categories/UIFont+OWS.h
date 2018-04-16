@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)ows_italic;
 - (UIFont *)ows_bold;
-- (UIFont *)ows_medium;
+- (UIFont *)ows_mediumWeight;
 
 @end
 
