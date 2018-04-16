@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(!plaintextData);
             [self handleDeliveryReceipt:envelope transaction:transaction];
             break;
-        // Other messages are just dismissed for now.
+            // Other messages are just dismissed for now.
         case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
             DDLogWarn(@"Received Key Exchange Message, not supported");
             break;

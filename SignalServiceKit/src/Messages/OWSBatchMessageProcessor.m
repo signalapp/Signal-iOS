@@ -375,9 +375,14 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
-            [self.messagesManager processEnvelope:job.envelopeProto
-                                    plaintextData:job.plaintextData
-                                      transaction:transaction];
+            @try {
+                [self.messagesManager processEnvelope:job.envelopeProto
+                                        plaintextData:job.plaintextData
+                                          transaction:transaction];
+            } @catch (NSException *exception) {
+                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                // TODO: Add analytics.
+            }
             [processedJobs addObject:job];
 
             if (self.isAppInBackground) {

@@ -106,16 +106,17 @@ NS_ASSUME_NONNULL_BEGIN
             failureBlockParameter();
         });
     };
-    DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
-
-    OWSAssert(envelope.source.length > 0);
-    if ([self isEnvelopeBlocked:envelope]) {
-        DDLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
-        failureBlock();
-        return;
-    }
 
     @try {
+        DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
+
+        OWSAssert(envelope.source.length > 0);
+        if ([self isEnvelopeBlocked:envelope]) {
+            DDLogInfo(@"%@ ignoring blocked envelope: %@", self.logTag, envelope.source);
+            failureBlock();
+            return;
+        }
+
         switch (envelope.type) {
             case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
@@ -167,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
     } @catch (NSException *exception) {
-        DDLogError(@"Received an incorrectly formatted protocol buffer: %@", exception.debugDescription);
+        OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
     }
 

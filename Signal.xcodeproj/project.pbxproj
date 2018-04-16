@@ -222,6 +222,7 @@
 		34E3E5681EC4B19400495BAC /* AudioProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E3E5671EC4B19400495BAC /* AudioProgressView.swift */; };
 		34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */; };
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
+		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FD93701E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 34FD936F1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.m */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
@@ -860,6 +861,7 @@
 		34E3EF0C1EFC235B007F6822 /* DebugUIDiskUsage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIDiskUsage.m; sourceTree = "<group>"; };
 		34E3EF0E1EFC2684007F6822 /* DebugUIPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIPage.h; sourceTree = "<group>"; };
 		34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIPage.m; sourceTree = "<group>"; };
+		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FD936E1E3BD43A00109093 /* OWSAnyTouchGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSAnyTouchGestureRecognizer.h; path = views/OWSAnyTouchGestureRecognizer.h; sourceTree = "<group>"; };
@@ -2191,10 +2193,11 @@
 				34DB0BEB2011548A007B313F /* OWSDatabaseConverterTest.h */,
 				34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */,
 				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
+				34E8A8D02085238900B272B1 /* ProtoParsingTest.m */,
 				45360B8F1F9527DA00FA666C /* SearcherTest.swift */,
+				452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */,
 				B660F6B31C29868000687D6E /* UtilTest.h */,
 				B660F6B41C29868000687D6E /* UtilTest.m */,
-				452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -3360,6 +3363,7 @@
 				B660F6BB1C29868000687D6E /* OWSContactsManagerTest.m in Sources */,
 				B660F6D21C29868000687D6E /* PushManagerTest.m in Sources */,
 				455AC69E1F4F8B0300134004 /* ImageCacheTest.swift in Sources */,
+				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

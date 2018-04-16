@@ -62,7 +62,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSSignalServiceProtosEnvelope *)envelope
 {
     if (!_envelope) {
-        _envelope = [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
+        @try {
+            _envelope = [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
+        } @catch (NSException *exception) {
+            OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
+            // TODO: Add analytics.
+        }
     }
     return _envelope;
 }
