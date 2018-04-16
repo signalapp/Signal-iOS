@@ -5,10 +5,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationViewItem;
+@class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
-@class TSQuotedMessage;
 
 typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
     // Message text, etc.
@@ -37,7 +37,10 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
 
-- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage;
+- (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply;
+- (void)didTapConversationItem:(ConversationViewItem *)viewItem
+                                 quotedReply:(OWSQuotedReplyModel *)quotedReply
+    failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
 @end
 

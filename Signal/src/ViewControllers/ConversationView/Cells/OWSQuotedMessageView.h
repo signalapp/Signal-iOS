@@ -7,10 +7,20 @@ NS_ASSUME_NONNULL_BEGIN
 @class DisplayableText;
 @class OWSBubbleStrokeView;
 @class OWSQuotedReplyModel;
+@class TSAttachmentPointer;
+@class TSQuotedMessage;
+
+@protocol OWSQuotedMessageViewDelegate
+
+- (void)didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply
+    failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
+
+@end
 
 @interface OWSQuotedMessageView : UIView
 
 @property (nonatomic, nullable, readonly) OWSBubbleStrokeView *boundsStrokeView;
+@property (nonatomic, nullable, weak) id<OWSQuotedMessageViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 
