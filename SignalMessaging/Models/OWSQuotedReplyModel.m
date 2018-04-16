@@ -6,6 +6,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSAttachmentPointer.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSMessage.h>
@@ -27,9 +28,51 @@
                     thumbnailImage:attachmentStream.thumbnailImage
                        contentType:attachmentStream.contentType
                     sourceFilename:attachmentStream.sourceFilename
-                  attachmentStream:attachmentStream];
+                  attachmentStream:attachmentStream
+        thumbnailAttachmentPointer:nil
+           thumbnailDownloadFailed:NO];
 }
 
+- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
+                          transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(quotedMessage.quotedAttachments.count <= 1);
+    OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
+
+    BOOL thumbnailDownloadFailed = NO;
+    UIImage *_Nullable thumbnailImage;
+    TSAttachmentPointer *attachmentPointer;
+    if (attachmentInfo.thumbnailAttachmentStreamId) {
+        TSAttachment *attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+
+        TSAttachmentStream *attachmentStream;
+        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
+            attachmentStream = (TSAttachmentStream *)attachment;
+            thumbnailImage = attachmentStream.image;
+        }
+    } else if (attachmentInfo.thumbnailAttachmentPointerId) {
+        // download failed, or hasn't completed yet.
+        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
+        
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            attachmentPointer = (TSAttachmentPointer *)attachment;
+            if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
+                thumbnailDownloadFailed = YES;
+            }
+        }
+    }
+
+    return [self initWithTimestamp:quotedMessage.timestamp
+                          authorId:quotedMessage.authorId
+                              body:quotedMessage.body
+                    thumbnailImage:thumbnailImage
+                       contentType:attachmentInfo.contentType
+                    sourceFilename:attachmentInfo.sourceFilename
+                  attachmentStream:nil
+        thumbnailAttachmentPointer:attachmentPointer
+           thumbnailDownloadFailed:thumbnailDownloadFailed];
+}
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
@@ -38,6 +81,8 @@
                       contentType:(nullable NSString *)contentType
                    sourceFilename:(nullable NSString *)sourceFilename
                  attachmentStream:(nullable TSAttachmentStream *)attachmentStream
+       thumbnailAttachmentPointer:(nullable TSAttachmentPointer *)thumbnailAttachmentPointer
+          thumbnailDownloadFailed:(BOOL)thumbnailDownloadFailed
 {
     self = [super init];
     if (!self) {
@@ -51,35 +96,10 @@
     _contentType = contentType;
     _sourceFilename = sourceFilename;
     _attachmentStream = attachmentStream;
+    _thumbnailAttachmentPointer = thumbnailAttachmentPointer;
+    _thumbnailDownloadFailed = thumbnailDownloadFailed;
 
     return self;
-}
-
-- (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                          transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssert(quotedMessage.quotedAttachments.count <= 1);
-    OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
-
-    UIImage *_Nullable thumbnailImage;
-    if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
-
-        TSAttachmentStream *attachmentStream;
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            attachmentStream = (TSAttachmentStream *)attachment;
-            thumbnailImage = attachmentStream.image;
-        }
-    }
-
-    return [self initWithTimestamp:quotedMessage.timestamp
-                          authorId:quotedMessage.authorId
-                              body:quotedMessage.body
-                    thumbnailImage:thumbnailImage
-                       contentType:attachmentInfo.contentType
-                    sourceFilename:attachmentInfo.sourceFilename
-                  attachmentStream:nil];
 }
 
 - (TSQuotedMessage *)buildQuotedMessage

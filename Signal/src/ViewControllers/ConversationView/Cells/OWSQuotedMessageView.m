@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.boundsStrokeView);
 
     self.backgroundColor = [UIColor whiteColor];
-    self.userInteractionEnabled = NO;
+    self.userInteractionEnabled = YES;
     self.layoutMargins = UIEdgeInsetsZero;
     self.clipsToBounds = YES;
 
@@ -140,6 +140,25 @@ NS_ASSUME_NONNULL_BEGIN
             quotedAttachmentView.layer.cornerRadius = 2.f;
             quotedAttachmentView.clipsToBounds = YES;
             quotedAttachmentView.backgroundColor = [UIColor whiteColor];
+        } else if (self.quotedMessage.thumbnailDownloadFailed) {
+            // TODO design review icon and color
+            UIImage *contentIcon =
+                [[UIImage imageNamed:@"btnRefresh--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UIImageView *contentImageView = [self imageViewForImage:contentIcon];
+            contentImageView.contentMode = UIViewContentModeScaleAspectFit;
+            contentImageView.userInteractionEnabled = YES;
+            contentImageView.tintColor = UIColor.whiteColor;
+            quotedAttachmentView = [UIView containerView];
+            [quotedAttachmentView addSubview:contentImageView];
+            quotedAttachmentView.backgroundColor = self.highlightColor;
+            quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
+            [contentImageView autoCenterInSuperview];
+            [contentImageView
+                autoSetDimensionsToSize:CGSizeMake(self.quotedAttachmentSize * 0.5f, self.quotedAttachmentSize * 0.5f)];
+
+            UITapGestureRecognizer *tapGesture =
+                [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFailedThumbnailDownload:)];
+            [quotedAttachmentView addGestureRecognizer:tapGesture];
         } else {
             // TODO: This asset is wrong.
             // TODO: There's a special asset for audio files.
@@ -154,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
                 autoSetDimensionsToSize:CGSizeMake(self.quotedAttachmentSize * 0.5f, self.quotedAttachmentSize * 0.5f)];
         }
 
-        quotedAttachmentView.userInteractionEnabled = NO;
+        quotedAttachmentView.userInteractionEnabled = YES;
         [self addSubview:quotedAttachmentView];
         [quotedAttachmentView autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
         [quotedAttachmentView autoVCenterInSuperview];
@@ -222,6 +241,24 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedTextLabel setContentHuggingLow];
         [quotedTextLabel setCompressionResistanceLow];
     }
+}
+
+- (void)didTapFailedThumbnailDownload:(UITapGestureRecognizer *)gestureRecognizer
+{
+    DDLogDebug(@"%@ in didTapFailedThumbnailDownload", self.logTag);
+
+    if (!self.quotedMessage.thumbnailDownloadFailed) {
+        OWSFail(@"%@ in %s thumbnailDownloadFailed was unexectedly false", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
+    if (!self.quotedMessage.thumbnailAttachmentPointer) {
+        OWSFail(@"%@ in %s thumbnailAttachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
+    [self.delegate didTapQotedReply:self.quotedMessage
+        failedThumbnailDownloadAttachmentPointer:self.quotedMessage.thumbnailAttachmentPointer];
 }
 
 - (nullable UIImage *)tryToLoadThumbnailImage

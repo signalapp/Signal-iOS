@@ -2125,13 +2125,51 @@ typedef enum : NSUInteger {
     [self handleUnsentMessageTap:message];
 }
 
-- (void)didTapQuotedMessage:(ConversationViewItem *)viewItem quotedMessage:(TSQuotedMessage *)quotedMessage
+- (void)didTapConversationItem:(ConversationViewItem *)viewItem
+                                 quotedReply:(OWSQuotedReplyModel *)quotedReply
+    failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
     OWSAssertIsOnMainThread();
     OWSAssert(viewItem);
-    OWSAssert(quotedMessage);
-    OWSAssert(quotedMessage.timestamp > 0);
-    OWSAssert(quotedMessage.authorId.length > 0);
+    OWSAssert(attachmentPointer);
+
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    if (![message isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"%@ in %s message had unexpected class: %@", self.logTag, __PRETTY_FUNCTION__, message.class);
+        return;
+    }
+
+    OWSAttachmentsProcessor *processor =
+        [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                    networkManager:self.networkManager];
+
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [processor fetchAttachmentsForMessage:nil
+            transaction:transaction
+            success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                [self.editingDatabaseConnection
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                        [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                        [message saveWithTransaction:postSuccessTransaction];
+                    }];
+            }
+            failure:^(NSError *_Nonnull error) {
+                DDLogWarn(@"%@ Failed to redownload thumbnail with error: %@", self.logTag, error);
+                [self.editingDatabaseConnection
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                        [message touchWithTransaction:transaction];
+                    }];
+            }];
+    }];
+}
+
+- (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedMessage:(OWSQuotedReplyModel *)quotedReply
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(viewItem);
+    OWSAssert(quotedReply);
+    OWSAssert(quotedReply.timestamp > 0);
+    OWSAssert(quotedReply.authorId.length > 0);
 
     // We try to find the index of the item within the current thread's
     // interactions that includes the "quoted interaction".
@@ -2154,8 +2192,8 @@ typedef enum : NSUInteger {
     __block NSNumber *_Nullable groupIndex = nil;
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedMessage.timestamp
-                                                                  authorId:quotedMessage.authorId
+        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
+                                                                  authorId:quotedReply.authorId
                                                             threadUniqueId:self.thread.uniqueId
                                                                transaction:transaction];
         if (!quotedInteraction) {
