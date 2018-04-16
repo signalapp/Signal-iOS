@@ -514,16 +514,16 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
 
     UIView *rootView = self.screenBlockingViewController.view;
 
-    [NSLayoutConstraint deactivateConstraints:self.screenBlockingConstraints];
-
-    NSMutableArray<NSLayoutConstraint *> *screenBlockingConstraints = [NSMutableArray new];
-
     BOOL shouldHaveScreenLock = desiredUIState == ScreenLockUIStateScreenLock;
     NSString *signature = [NSString stringWithFormat:@"%d %d", shouldHaveScreenLock, self.isShowingScreenLockUI];
     if ([NSObject isNullableObject:self.screenBlockingSignature equalTo:signature]) {
         // Skip redundant work to avoid interfering with ongoing animations.
         return;
     }
+
+    [NSLayoutConstraint deactivateConstraints:self.screenBlockingConstraints];
+
+    NSMutableArray<NSLayoutConstraint *> *screenBlockingConstraints = [NSMutableArray new];
 
     self.screenBlockingButton.hidden = !shouldHaveScreenLock;
 

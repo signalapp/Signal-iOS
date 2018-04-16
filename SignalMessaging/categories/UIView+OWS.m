@@ -452,6 +452,21 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     }
 }
 
+- (void)logFrame
+{
+    [self logFrameWithLabel:@""];
+}
+
+- (void)logFrameWithLabel:(NSString *)label
+{
+    DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f",
+        self.logTag,
+        label,
+        NSStringFromCGRect(self.frame),
+        self.hidden,
+        self.layer.opacity);
+}
+
 - (void)logFrameLater
 {
     [self logFrameLaterWithLabel:@""];
@@ -460,12 +475,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (void)logFrameLaterWithLabel:(NSString *)label
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f",
-            self.logTag,
-            label,
-            NSStringFromCGRect(self.frame),
-            self.hidden,
-            self.layer.opacity);
+        [self logFrameWithLabel:label];
     });
 }
 
