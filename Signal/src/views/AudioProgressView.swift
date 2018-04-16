@@ -75,7 +75,7 @@ import SignalServiceKit
 
         // Prevent the shape layer from animating changes.
         CATransaction.begin()
-        CATransaction.setValue(kCFBooleanTrue, forKey: kCATransactionDisableActions)
+        CATransaction.setDisableActions(true)
 
         let horizontalBarPath = UIBezierPath()
         let horizontalBarHeightFraction = CGFloat(0.25)

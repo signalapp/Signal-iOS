@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     self.borderLayer = [CAShapeLayer new];
     self.borderLayer.fillColor = self.color.CGColor;
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     CGFloat kBorderThickness = self.bounds.size.height * 0.1f;
     CGFloat kOuterRadius = self.bounds.size.height * 0.25f;

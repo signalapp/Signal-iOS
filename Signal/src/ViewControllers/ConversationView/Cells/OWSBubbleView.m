@@ -133,7 +133,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     self.shapeLayer.fillColor = bubbleColor.CGColor;
 
@@ -153,7 +153,7 @@ const CGFloat kBubbleTextVInset = 10.f;
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
     self.shapeLayer.path = bezierPath.CGPath;

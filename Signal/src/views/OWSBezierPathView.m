@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     for (ConfigureShapeLayerBlock configureShapeLayerBlock in self.configureShapeLayerBlocks) {
         CAShapeLayer *shapeLayer = [CAShapeLayer new];

@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     // Don't fill the shape layer; we just want a stroke around the border.
     self.shapeLayer.fillColor = [UIColor clearColor].CGColor;
@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
-    [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+    [CATransaction setDisableActions:YES];
 
     self.shapeLayer.strokeColor = self.strokeColor.CGColor;
     self.shapeLayer.lineWidth = self.strokeThickness;
