@@ -10,7 +10,7 @@ extern NSString *const TSNetworkManagerDomain;
 
 BOOL IsNSErrorNetworkFailure(NSError *_Nullable error);
 
-typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, id responseObject);
+typedef void (^TSNetworkManagerSuccess)(NSURLSessionDataTask *task, _Nullable id responseObject);
 typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *error);
 
 @class TSRequest;

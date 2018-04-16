@@ -71,7 +71,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
-    TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, id responseObject) {
+    TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
         DDLogInfo(@"%@ request succeeded : %@", self.logTag, request);
         successBlock(task, responseObject);
     };
