@@ -17,6 +17,7 @@
 #import "TSMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
 // Can we move to Signal-iOS?
 @interface OWSDisappearingMessagesJob ()
 
@@ -24,12 +25,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
 
++ (dispatch_queue_t)serialQueue;
+
 // These three properties should only be accessed on the main thread.
 @property (nonatomic) BOOL hasStarted;
-@property (nonatomic, nullable) NSTimer *timer;
-@property (nonatomic, nullable) NSDate *timerScheduleDate;
+@property (nonatomic, nullable) NSTimer *nextDisappearanceTimer;
+@property (nonatomic, nullable) NSDate *nextDisappearanceDate;
+@property (nonatomic, nullable) NSTimer *fallbackTimer;
 
 @end
+
+void AssertIsOnDisappearingMessagesQueue()
+{
+#ifdef DEBUG
+    if (@available(iOS 10.0, *)) {
+        dispatch_assert_queue(OWSDisappearingMessagesJob.serialQueue);
+    }
+#endif
+}
 
 #pragma mark -
 
@@ -54,6 +67,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     _databaseConnection = primaryStorage.newDatabaseConnection;
     _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
+
+    // suspenders in case a deletion schedule is missed.
+    NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        if (CurrentAppContext().isMainApp) {
+            self->_fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
+                                                                        target:self
+                                                                      selector:@selector(fallbackTimerDidFire)
+                                                                      userInfo:nil
+                                                                       repeats:YES];
+        }
+    }];
 
     OWSSingletonAssert();
 
@@ -84,14 +109,15 @@ NS_ASSUME_NONNULL_BEGIN
     return queue;
 }
 
-// This method should only be called on the serialQueue.
-- (void)run
+- (NSUInteger)deleteExpiredMessages
 {
+    AssertIsOnDisappearingMessagesQueue();
+
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    __block uint expirationCount = 0;
+    __block NSUInteger expirationCount = 0;
     [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
@@ -108,34 +134,36 @@ NS_ASSUME_NONNULL_BEGIN
                                                                transaction:transaction];
     }];
 
-    DDLogDebug(@"%@ Removed %u expired messages", self.logTag, expirationCount);
+    DDLogDebug(@"%@ Removed %tu expired messages", self.logTag, expirationCount);
 
     backgroundTask = nil;
+    return expirationCount;
 }
 
-// This method should only be called on the serialQueue.
-- (void)runLoop
+// deletes any expired messages and schedules the next run.
+- (NSUInteger)runLoop
 {
-    DDLogVerbose(@"%@ Run", self.logTag);
+    DDLogVerbose(@"%@ in runLoop", self.logTag);
+    AssertIsOnDisappearingMessagesQueue();
 
-    [self run];
+    NSUInteger deletedCount = [self deleteExpiredMessages];
 
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
     __block NSNumber *nextExpirationTimestampNumber;
     [self.databaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         nextExpirationTimestampNumber =
             [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
     }];
+
     if (!nextExpirationTimestampNumber) {
-        // In theory we could kill the loop here. It should resume when the next expiring message is saved,
-        // But this is a safeguard for any race conditions that exist while running the job as a new message is saved.
         DDLogDebug(@"%@ No more expiring messages.", self.logTag);
-        [self scheduleRunLater];
-        return;
+        return deletedCount;
     }
 
-    uint64_t nextExpirationAt = [nextExpirationTimestampNumber unsignedLongLongValue];
-    [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:MAX(nextExpirationAt, now)]];
+    uint64_t nextExpirationAt = nextExpirationTimestampNumber.unsignedLongLongValue;
+    NSDate *nextEpirationDate = [NSDate ows_dateWithMillisecondsSince1970:nextExpirationAt];
+    [self scheduleRunByDate:nextEpirationDate];
+
+    return deletedCount;
 }
 
 + (void)setExpirationForMessage:(TSMessage *)message
@@ -304,30 +332,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
         self.hasStarted = YES;
 
-        [self scheduleRunNow];
+        dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+            [self runLoop];
+        });
     });
-}
-
-- (void)scheduleRunNow
-{
-    [self scheduleRunByDate:[NSDate new] ignoreMinDelay:YES];
-}
-
-- (NSTimeInterval)maxDelaySeconds
-{
-    // Don't run less often than once per N minutes.
-    return 5 * kMinuteInterval;
-}
-
-// Waits the maximum amount of time to run again.
-- (void)scheduleRunLater
-{
-    [self scheduleRunByDate:[NSDate dateWithTimeIntervalSinceNow:self.maxDelaySeconds] ignoreMinDelay:YES];
-}
-
-- (void)scheduleRunByDate:(NSDate *)date
-{
-    [self scheduleRunByDate:date ignoreMinDelay:NO];
 }
 
 - (NSDateFormatter *)dateFormatter
@@ -344,7 +352,7 @@ NS_ASSUME_NONNULL_BEGIN
     return dateFormatter;
 }
 
-- (void)scheduleRunByDate:(NSDate *)date ignoreMinDelay:(BOOL)ignoreMinDelay
+- (void)scheduleRunByDate:(NSDate *)date
 {
     OWSAssert(date);
 
@@ -355,16 +363,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Don't run more often than once per second.
-        const NSTimeInterval kMinDelaySeconds = ignoreMinDelay ? 0.f : 1.f;
-        NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, MIN(self.maxDelaySeconds, date.timeIntervalSinceNow));
+        const NSTimeInterval kMinDelaySeconds = 1.0;
+        NSTimeInterval delaySeconds = MAX(kMinDelaySeconds, date.timeIntervalSinceNow);
         NSDate *newTimerScheduleDate = [NSDate dateWithTimeIntervalSinceNow:delaySeconds];
-        if (self.timerScheduleDate && [self.timerScheduleDate isBeforeDate:newTimerScheduleDate]) {
+        if (self.nextDisappearanceDate && [self.nextDisappearanceDate isBeforeDate:newTimerScheduleDate]) {
             DDLogVerbose(@"%@ Request to run at %@ (%d sec.) ignored due to earlier scheduled run at %@ (%d sec.)",
                 self.logTag,
                 [self.dateFormatter stringFromDate:date],
                 (int)round(MAX(0, [date timeIntervalSinceDate:[NSDate new]])),
-                [self.dateFormatter stringFromDate:self.timerScheduleDate],
-                (int)round(MAX(0, [self.timerScheduleDate timeIntervalSinceDate:[NSDate new]])));
+                [self.dateFormatter stringFromDate:self.nextDisappearanceDate],
+                (int)round(MAX(0, [self.nextDisappearanceDate timeIntervalSinceDate:[NSDate new]])));
             return;
         }
 
@@ -373,17 +381,17 @@ NS_ASSUME_NONNULL_BEGIN
             self.logTag,
             [self.dateFormatter stringFromDate:newTimerScheduleDate],
             (int)round(MAX(0, [newTimerScheduleDate timeIntervalSinceDate:[NSDate new]])));
-        [self resetTimer];
-        self.timerScheduleDate = newTimerScheduleDate;
-        self.timer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
-                                                          target:self
-                                                        selector:@selector(timerDidFire)
-                                                        userInfo:nil
-                                                         repeats:NO];
+        [self resetNextDisappearanceTimer];
+        self.nextDisappearanceDate = newTimerScheduleDate;
+        self.nextDisappearanceTimer = [NSTimer weakScheduledTimerWithTimeInterval:delaySeconds
+                                                                           target:self
+                                                                         selector:@selector(disappearanceTimerDidFire)
+                                                                         userInfo:nil
+                                                                          repeats:NO];
     });
 }
 
-- (void)timerDidFire
+- (void)disappearanceTimerDidFire
 {
     OWSAssertIsOnMainThread();
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
@@ -394,20 +402,43 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [self resetTimer];
+    [self resetNextDisappearanceTimer];
 
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
         [self runLoop];
     });
 }
 
-- (void)resetTimer
+- (void)fallbackTimerDidFire
+{
+    OWSAssertIsOnMainThread();
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    BOOL recentlyScheduledDisappearanceTimer = NO;
+    if (fabs(self.nextDisappearanceDate.timeIntervalSinceNow) < 1.0) {
+        recentlyScheduledDisappearanceTimer = YES;
+    }
+
+    dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+        NSUInteger deletedCount = [self runLoop];
+
+        // Normally deletions should happen via the disappearanceTimer, to make sure that they're timely.
+        // So, if we're deleting something via the fallback timer, something may have gone wrong. The
+        // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
+        // is inevitable.
+        if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
+            OWSProdLogAndFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.");
+        }
+    });
+}
+
+- (void)resetNextDisappearanceTimer
 {
     OWSAssertIsOnMainThread();
 
-    [self.timer invalidate];
-    self.timer = nil;
-    self.timerScheduleDate = nil;
+    [self.nextDisappearanceTimer invalidate];
+    self.nextDisappearanceTimer = nil;
+    self.nextDisappearanceDate = nil;
 }
 
 #pragma mark - Notifications
@@ -417,7 +448,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppIsReady:^{
-        [self scheduleRunNow];
+        dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+            [self runLoop];
+        });
     }];
 }
 
@@ -425,7 +458,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self resetTimer];
+    [self resetNextDisappearanceTimer];
 }
 
 @end
