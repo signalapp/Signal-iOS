@@ -34,11 +34,20 @@ import Foundation
 
     @objc
     public class func showAlert(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil) {
+        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
+            return
+        }
+        showAlert(title: title, message: message, buttonTitle: buttonTitle, buttonAction: buttonAction,
+                  fromViewController: fromViewController)
+    }
+
+    @objc
+    public class func showAlert(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil, fromViewController: UIViewController?) {
         let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: buttonAction))
-        CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
+        fromViewController?.present(alert, animated: true, completion: nil)
     }
 
     @objc

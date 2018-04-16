@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation MainAppContext
 
+@synthesize mainWindow = _mainWindow;
+
 - (instancetype)init
 {
     self = [super init];
@@ -172,11 +174,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIViewController *)frontmostViewController
 {
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-}
-
-- (nullable UIView *)rootReferenceView
-{
-    return UIApplication.sharedApplication.keyWindow;
 }
 
 - (nullable UIAlertAction *)openSystemSettingsAction

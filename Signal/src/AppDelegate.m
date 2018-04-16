@@ -168,12 +168,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
         return YES;
     }
 
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-
+    UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window = mainWindow;
+    CurrentAppContext().mainWindow = mainWindow;
     // Show the launch screen until the async database view registrations are complete.
-    self.window.rootViewController = [self loadingRootViewController];
-
-    [self.window makeKeyAndVisible];
+    mainWindow.rootViewController = [self loadingRootViewController];
+    [mainWindow makeKeyAndVisible];
 
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.

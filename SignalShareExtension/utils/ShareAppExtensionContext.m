@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ShareAppExtensionContext
 
+@synthesize mainWindow = _mainWindow;
+
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {
     self = [super init];
@@ -170,11 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.rootViewController);
 
     return [self.rootViewController findFrontmostViewController:YES];
-}
-
-- (nullable UIView *)rootReferenceView
-{
-    return self.rootViewController.view;
 }
 
 - (nullable UIAlertAction *)openSystemSettingsAction
