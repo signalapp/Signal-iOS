@@ -214,6 +214,58 @@
     XCTAssertFalse([DateUtil dateIsThisYear:twoYearsAhead now:now]);
 }
 
+- (NSDate *)dateWithYear:(NSInteger)year
+                   month:(NSInteger)month
+                     day:(NSInteger)day
+                    hour:(NSInteger)hour
+                  minute:(NSInteger)minute
+{
+    NSDateComponents *components = [NSDateComponents new];
+    components.year = year;
+    components.month = month;
+    components.day = day;
+    components.hour = hour;
+    components.minute = minute;
+    return [[NSCalendar currentCalendar] dateFromComponents:components];
+}
+
+- (void)testDateComparators_timezoneVMidnight
+{
+    NSDateFormatter *formatter = [NSDateFormatter new];
+    formatter.dateStyle = NSDateFormatterLongStyle;
+    formatter.timeStyle = NSDateFormatterLongStyle;
+
+    NSDate *yesterdayBeforeMidnight = [self dateWithYear:2015 month:8 day:10 hour:23 minute:55];
+    NSLog(@"yesterdayBeforeMidnight: %@", [formatter stringFromDate:yesterdayBeforeMidnight]);
+
+    NSDate *todayAfterMidnight = [self dateWithYear:2015 month:8 day:11 hour:0 minute:5];
+    NSLog(@"todayAfterMidnight: %@", [formatter stringFromDate:todayAfterMidnight]);
+
+    NSDate *todayNoon = [self dateWithYear:2015 month:8 day:11 hour:12 minute:0];
+    NSLog(@"todayNoon: %@", [formatter stringFromDate:todayNoon]);
+
+    // Before Midnight, after Midnight.
+    XCTAssertFalse([DateUtil dateIsToday:yesterdayBeforeMidnight now:todayAfterMidnight]);
+    XCTAssertTrue([DateUtil dateIsYesterday:yesterdayBeforeMidnight now:todayAfterMidnight]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:yesterdayBeforeMidnight now:todayAfterMidnight]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:yesterdayBeforeMidnight now:todayAfterMidnight]);
+    XCTAssertTrue([DateUtil dateIsThisYear:yesterdayBeforeMidnight now:todayAfterMidnight]);
+
+    // Before Midnight, noon.
+    XCTAssertFalse([DateUtil dateIsToday:yesterdayBeforeMidnight now:todayNoon]);
+    XCTAssertTrue([DateUtil dateIsYesterday:yesterdayBeforeMidnight now:todayNoon]);
+    XCTAssertTrue([DateUtil dateIsOlderThanToday:yesterdayBeforeMidnight now:todayNoon]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:yesterdayBeforeMidnight now:todayNoon]);
+    XCTAssertTrue([DateUtil dateIsThisYear:yesterdayBeforeMidnight now:todayNoon]);
+
+    // After Midnight, noon.
+    XCTAssertTrue([DateUtil dateIsToday:todayAfterMidnight now:todayNoon]);
+    XCTAssertFalse([DateUtil dateIsYesterday:todayAfterMidnight now:todayNoon]);
+    XCTAssertFalse([DateUtil dateIsOlderThanToday:todayAfterMidnight now:todayNoon]);
+    XCTAssertFalse([DateUtil dateIsOlderThanOneWeek:todayAfterMidnight now:todayNoon]);
+    XCTAssertTrue([DateUtil dateIsThisYear:todayAfterMidnight now:todayNoon]);
+}
+
 - (void)testObjectComparison
 {
     XCTAssertTrue([NSObject isNullableObject:nil equalTo:nil]);
