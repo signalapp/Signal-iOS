@@ -6,7 +6,6 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"
-#import <AddressBookUI/AddressBookUI.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>

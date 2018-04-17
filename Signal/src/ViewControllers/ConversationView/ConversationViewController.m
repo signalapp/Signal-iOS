@@ -44,7 +44,6 @@
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AVFoundation/AVFoundation.h>
-#import <AddressBookUI/AddressBookUI.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
