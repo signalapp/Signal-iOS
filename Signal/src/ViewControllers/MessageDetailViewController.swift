@@ -322,6 +322,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
         messageBubbleView.delegate = self
+        messageBubbleView.addTapGestureHandler()
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
