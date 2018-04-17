@@ -78,11 +78,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (BOOL)dateIsOlderThanToday:(NSDate *)date now:(NSDate *)now
 {
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-
-    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
-    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
-    return dateDayOfEra < nowDayOfEra;
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    return dayDifference > 0;
 }
 
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date
@@ -92,11 +89,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date now:(NSDate *)now
 {
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-
-    NSUInteger dateDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date];
-    NSUInteger nowDayOfEra = [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now];
-    return dateDayOfEra < (nowDayOfEra - 6);
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    return dayDifference > 6;
 }
 
 + (BOOL)dateIsToday:(NSDate *)date
@@ -106,9 +100,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (BOOL)dateIsToday:(NSDate *)date now:(NSDate *)now
 {
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    return ([calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date] ==
-        [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now]);
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    return dayDifference == 0;
 }
 
 + (BOOL)dateIsThisYear:(NSDate *)date
@@ -130,9 +123,26 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (BOOL)dateIsYesterday:(NSDate *)date now:(NSDate *)now
 {
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    return dayDifference == 1;
+}
+
+// Returns the difference in days, ignoring hours, minutes, seconds.
+// If both dates are the same date, returns 0.
+// If firstDate is a day before secondDate, returns 1.
+//
+// Note: Assumes both dates use the "current" calendar.
++ (NSInteger)daysFromFirstDate:(NSDate *)firstDate toSecondDate:(NSDate *)secondDate
+{
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    return ([calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:date] ==
-        [calendar ordinalityOfUnit:NSCalendarUnitDay inUnit:NSCalendarUnitEra forDate:now] - 1);
+    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+    NSDateComponents *comp1 = [calendar components:units fromDate:firstDate];
+    NSDateComponents *comp2 = [calendar components:units fromDate:secondDate];
+    [comp1 setHour:12];
+    [comp2 setHour:12];
+    NSDate *date1 = [calendar dateFromComponents:comp1];
+    NSDate *date2 = [calendar dateFromComponents:comp2];
+    return [[calendar components:NSCalendarUnitDay fromDate:date1 toDate:date2 options:0] day];
 }
 
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp isRTL:(BOOL)isRTL
