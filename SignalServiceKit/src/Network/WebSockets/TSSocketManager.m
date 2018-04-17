@@ -8,15 +8,19 @@
 #import "Cryptography.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSTimer+OWS.h"
+#import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSSignalService.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSWebsocketSecurityPolicy.h"
 #import "SubProtocol.pb.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
+#import "TSErrorMessage.h"
+#import "TextSecureKitEnv.h"
 #import "Threading.h"
 
 static const CGFloat kSocketHeartbeatPeriodSeconds = 30.f;
@@ -403,6 +407,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             } @catch (NSException *exception) {
                 OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 // TODO: Add analytics.
+
+                [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWriteWithBlock:^(
+                    YapDatabaseReadWriteTransaction *transaction) {
+                    TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                               transaction:transaction];
+                }];
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{

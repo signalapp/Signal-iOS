@@ -279,6 +279,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
 - (void)markAllInThreadAsRead:(NSDictionary *)userInfo completionHandler:(void (^)(void))completionHandler
 {
     NSString *threadId = userInfo[Signal_Thread_UserInfo_Key];
+    if (!threadId) {
+        return;
+    }
 
     TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
     [OWSPrimaryStorage.dbReadWriteConnection

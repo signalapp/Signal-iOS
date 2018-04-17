@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSArray+OWS.h"
+#import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSPrimaryStorage+SessionStore.h"
@@ -14,7 +15,9 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "TSDatabaseView.h"
+#import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
+#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -382,6 +385,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
             } @catch (NSException *exception) {
                 OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 // TODO: Add analytics.
+                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                           transaction:transaction];
             }
             [processedJobs addObject:job];
 

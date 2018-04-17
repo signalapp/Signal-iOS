@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "AppReadiness.h"
 #import "NSArray+OWS.h"
+#import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
@@ -14,7 +15,9 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "TSDatabaseView.h"
+#import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
+#import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -322,6 +325,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     } @catch (NSException *exception) {
         OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
         // TODO: Add analytics.
+
+        [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                           transaction:transaction];
+            }];
+
         dispatch_async(self.serialQueue, ^{
             completion(NO);
         });
