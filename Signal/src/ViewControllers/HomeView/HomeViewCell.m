@@ -302,8 +302,6 @@ NS_ASSUME_NONNULL_BEGIN
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    DDLogInfo(@"%@ dateTimeString: %@", self.logTag, dateTimeString);
-
     return [[NSAttributedString alloc] initWithString:dateTimeString.uppercaseString
                                            attributes:@{
                                                NSForegroundColorAttributeName : [UIColor blackColor],
