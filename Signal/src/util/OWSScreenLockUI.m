@@ -438,6 +438,8 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
         // Show the blocking window in front of the status bar.
         self.screenBlockingWindow.windowLevel = UIWindowLevelStatusBar + 1;
         self.rootWindow.hidden = YES;
+        [self.screenBlockingWindow becomeFirstResponder];
+        OWSAssert([self.screenBlockingWindow isFirstResponder]);
     } else {
         self.screenBlockingWindow.windowLevel = UIWindowLevel_Background;
         [self.rootWindow makeKeyAndVisible];
