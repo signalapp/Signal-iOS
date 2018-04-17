@@ -83,6 +83,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.contentView.userInteractionEnabled = YES;
 
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
+
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
@@ -489,6 +493,29 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Gesture recognizers
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    if (sender.state != UIGestureRecognizerStateRecognized) {
+        DDLogVerbose(@"%@ Ignoring tap on message: %@", self.logTag, self.viewItem.interaction.debugDescription);
+        return;
+    }
+
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
+            return;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            // Ignore taps on outgoing messages being sent.
+            return;
+        }
+    }
+
+    [self.messageBubbleView handleTapGesture:sender];
+}
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
 {

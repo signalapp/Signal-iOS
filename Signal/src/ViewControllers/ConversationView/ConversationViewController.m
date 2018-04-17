@@ -2163,7 +2163,7 @@ typedef enum : NSUInteger {
     }];
 }
 
-- (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedMessage:(OWSQuotedReplyModel *)quotedReply
+- (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply
 {
     OWSAssertIsOnMainThread();
     OWSAssert(viewItem);

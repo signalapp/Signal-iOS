@@ -41,6 +41,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSCache *)cellMediaCache;
 
+#pragma mark - Messages
+
+- (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
+
 @end
 
 #pragma mark -

@@ -35,8 +35,6 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
-- (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
-
 - (void)didTapConversationItem:(ConversationViewItem *)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply;
 - (void)didTapConversationItem:(ConversationViewItem *)viewItem
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
@@ -73,7 +71,15 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (void)prepareForReuse;
 
+#pragma mark - Gestures
+
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble;
+
+// This only needs to be called when we use the cell _outside_ the context
+// of a conversation view message cell.
+- (void)addTapGestureHandler;
+
+- (void)handleTapGesture:(UITapGestureRecognizer *)sender;
 
 @end
 

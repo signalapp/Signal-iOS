@@ -67,10 +67,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
 
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
-
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
     self.bodyTextView.dataDetectorTypes
@@ -1071,6 +1067,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Gestures
 
+- (void)addTapGestureHandler
+{
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
+}
+
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
     OWSAssert(self.delegate);
@@ -1083,7 +1086,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
-            [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
             return;
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
             // Ignore taps on outgoing messages being sent.
