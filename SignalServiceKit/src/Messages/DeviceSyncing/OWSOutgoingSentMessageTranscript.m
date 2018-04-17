@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSOutgoingMessage.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,13 +49,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
-    [sentBuilder setDestination:self.message.recipientIdentifier];
-    [sentBuilder setMessage:[self.message buildDataMessage:self.message.recipientIdentifier]];
+    [sentBuilder setDestination:self.recipientIdentifierForMessage];
+    [sentBuilder setMessage:[self.message buildDataMessage:self.recipientIdentifierForMessage]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];
 
     return syncMessageBuilder;
+}
+
+// Note that this will return nil for group messages.
+- (nullable NSString *)recipientIdentifierForMessage
+{
+    return self.message.thread.contactIdentifier;
 }
 
 @end

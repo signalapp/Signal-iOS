@@ -103,12 +103,10 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // Map of "recipient id"-to-"read time" of the recipients who have read the message.
 @property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
-@property (nonatomic, readonly) BOOL isSilent;
+// List of all recipients, captured the first time we enqueue the message to be sent.
+@property (atomic, readonly, nullable) NSSet<NSString *> *intendedRecipientIds;
 
-/**
- * Signal Identifier (e.g. e164 number) or nil if in a group thread.
- */
-- (nullable NSString *)recipientIdentifier;
+@property (nonatomic, readonly) BOOL isSilent;
 
 /**
  * The data representation of this message, to be encrypted, before being sent.
@@ -167,6 +165,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                     readTimestamp:(uint64_t)readTimestamp
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (nullable NSNumber *)firstRecipientReadTimestamp;
+- (void)updateWithIntendedRecipientIds:(NSSet<NSString *> *)intendedRecipientIds
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Sent Recipients
 

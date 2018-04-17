@@ -212,7 +212,16 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     groupRows.append(divider)
                 }
 
-                for recipientId in thread.recipientIdentifiers {
+                var messageRecipientIds: [String]
+                if let intendedRecipientIds = outgoingMessage.intendedRecipientIds {
+                    // New messages capture the list of intended recipients.
+                    messageRecipientIds = Array(intendedRecipientIds)
+                } else {
+                    // For legacy messages, just use the list of members of the thread.
+                    messageRecipientIds = thread.recipientIdentifiers
+                }
+
+                for recipientId in messageRecipientIds {
                     let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {

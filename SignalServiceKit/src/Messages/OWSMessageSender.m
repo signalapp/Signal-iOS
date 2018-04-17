@@ -303,6 +303,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // If this is the first time we're trying to send this message, capture a list
+            // of intended recipients from the current state of the thread.
+            if (!message.intendedRecipientIds) {
+                NSSet<NSString *> *intendedRecipientIds = [NSSet setWithArray:message.thread.recipientIdentifiers];
+                [message updateWithIntendedRecipientIds:intendedRecipientIds transaction:transaction];
+            }
+
             if (message.quotedMessage) {
                 quotedThumbnailAttachments =
                     [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
@@ -416,11 +423,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error
+- (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers
+                         intendedRecipientIds:(NSSet<NSString *> *)intendedRecipientIds
+                                        error:(NSError **)error
 {
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
 
     for (NSString *recipientId in identifiers) {
+        if (![intendedRecipientIds containsObject:recipientId]) {
+            DDLogWarn(@"%@ skipping unintended recipient id: %@", self.logTag, recipientId);
+            continue;
+        }
         SignalRecipient *existingRecipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientId];
 
         if (existingRecipient) {
@@ -450,11 +463,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSThread *thread = message.thread;
 
         if ([thread isKindOfClass:[TSGroupThread class]]) {
+            OWSAssert(message.intendedRecipientIds);
+
             TSGroupThread *gThread = (TSGroupThread *)thread;
 
             NSError *error;
-            NSArray<SignalRecipient *> *recipients =
-                [self getRecipients:gThread.groupModel.groupMemberIds error:&error];
+            NSArray<SignalRecipient *> *recipients = [self getRecipients:gThread.groupModel.groupMemberIds
+                                                    intendedRecipientIds:message.intendedRecipientIds
+                                                                   error:&error];
 
             if (recipients.count == 0) {
                 if (!error) {
