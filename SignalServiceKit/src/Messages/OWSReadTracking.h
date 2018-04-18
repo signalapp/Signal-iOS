@@ -15,15 +15,18 @@
  */
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
+@property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t timestampForSorting;
 @property (nonatomic, readonly) NSString *uniqueThreadId;
+
 
 - (BOOL)shouldAffectUnreadCounts;
 
 /**
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                  sendReadReceipt:(BOOL)sendReadReceipt;
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+              sendReadReceipt:(BOOL)sendReadReceipt
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

@@ -3,6 +3,7 @@
 //
 
 #import "TSThread.h"
+#import "NSDate+OWS.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
@@ -230,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadWithTransaction:transaction sendReadReceipt:YES];
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
     }
 
     // Just to be defensive, we'll also check for unread messages.

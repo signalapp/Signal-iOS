@@ -7,6 +7,7 @@
 #import "ContactsUpdater.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
+#import "NSDate+OWS.h"
 #import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
@@ -1053,8 +1054,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [[OWSDisappearingMessagesJob sharedJob] startExpirationForMessage:message
-                                                              transaction:transaction];
+        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
+                                                         expirationStartedAt:[NSDate ows_millisecondTimeStamp]
+                                                                 transaction:transaction];
     }];
 }
 

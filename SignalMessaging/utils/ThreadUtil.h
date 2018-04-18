@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) NSNumber *unreadIndicatorPosition;
 
 // If there are unseen messages in the thread, this is the timestamp
-// of the oldest unseen messaage.
+// of the oldest unseen message.
 //
 // Once we enter messages view, we mark all messages read, so we need
 // a snapshot of what the first unread message was when we entered the

@@ -166,8 +166,9 @@ void AssertIsOnDisappearingMessagesQueue()
     return deletedCount;
 }
 
-- (void)startExpirationForMessage:(TSMessage *)message
-                      transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+- (void)startAnyExpirationForMessage:(TSMessage *)message
+                 expirationStartedAt:(uint64_t)expirationStartedAt
+                         transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
     if (!message.isExpiringMessage) {
         return;
@@ -180,9 +181,7 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    [self setExpirationForMessage:message
-              expirationStartedAt:[NSDate ows_millisecondTimeStamp]
-                      transaction:transaction];
+    [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
 }
 
 - (void)setExpirationForMessage:(TSMessage *)message
@@ -195,8 +194,8 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    int startedSecondsAgo = [NSDate new].timeIntervalSince1970 - expirationStartedAt / 1000.0;
-    DDLogDebug(@"%@ Starting expiration for message read %d seconds ago", self.logTag, startedSecondsAgo);
+    NSTimeInterval startedSecondsAgo = ([NSDate ows_millisecondTimeStamp] - expirationStartedAt) / 1000.0;
+    DDLogDebug(@"%@ Starting expiration for message read %f seconds ago", self.logTag, startedSecondsAgo);
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
@@ -211,27 +210,27 @@ void AssertIsOnDisappearingMessagesQueue()
                     }];
 }
 
-- (void)setExpirationsForThread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-
-    uint64_t now = [NSDate ows_millisecondTimeStamp];
-    [self.disappearingMessagesFinder
-        enumerateUnstartedExpiringMessagesInThread:thread
-                                             block:^(TSMessage *_Nonnull message) {
-                                                 DDLogWarn(@"%@ Starting expiring message which should have already "
-                                                           @"been started.",
-                                                     self.logTag);
-                                                 // specify "now" in case D.M. have since been disabled, but we have
-                                                 // existing unstarted expiring messages that still need to expire.
-                                                 [self setExpirationForMessage:message
-                                                           expirationStartedAt:now
-                                                                   transaction:transaction];
-                                             }
-                                       transaction:transaction];
-
-    backgroundTask = nil;
-}
+//- (void)setExpirationsForThread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
+//{
+//    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+//
+//    uint64_t now = [NSDate ows_millisecondTimeStamp];
+//    [self.disappearingMessagesFinder
+//        enumerateUnstartedExpiringMessagesInThread:thread
+//                                             block:^(TSMessage *_Nonnull message) {
+//                                                 DDLogWarn(@"%@ Starting expiring message which should have already "
+//                                                           @"been started.",
+//                                                     self.logTag);
+//                                                 // specify "now" in case D.M. have since been disabled, but we have
+//                                                 // existing unstarted expiring messages that still need to expire.
+//                                                 [self setExpirationForMessage:message
+//                                                           expirationStartedAt:now
+//                                                                   transaction:transaction];
+//                                             }
+//                                       transaction:transaction];
+//
+//    backgroundTask = nil;
+//}
 
 - (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager

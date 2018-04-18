@@ -129,8 +129,14 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return NO;
 }
 
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                  sendReadReceipt:(BOOL)sendReadReceipt
+- (uint64_t)expireStartedAt
+{
+    return 0;
+}
+
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+              sendReadReceipt:(BOOL)sendReadReceipt
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
 
