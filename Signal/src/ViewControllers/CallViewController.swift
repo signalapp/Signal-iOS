@@ -19,6 +19,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return SignalApp.shared().callUIAdapter
     }
 
+    // Feature Flag
+    @objc public static let kShowCallViewOnSeparateWindow = true
+
     let contactsManager: OWSContactsManager
 
     // MARK: Properties
@@ -1103,11 +1106,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             hasDismissed = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 guard let strongSelf = self else { return }
-                strongSelf.dismiss(animated: true, completion: completion)
+                strongSelf.dismissImmediately(completion: completion)
             }
         } else {
             hasDismissed = true
-            self.dismiss(animated: false, completion: completion)
+            dismissImmediately(completion: completion)
+        }
+    }
+
+    internal func dismissImmediately(completion: (() -> Void)?) {
+        if CallViewController.kShowCallViewOnSeparateWindow {
+            OWSWindowManager.shared().endCall(self)
+            completion?()
+        } else {
+            self.dismiss(animated: true, completion: completion)
         }
     }
 

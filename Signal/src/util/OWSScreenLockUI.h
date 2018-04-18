@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Rename to window manager or somesuch.
 @interface OWSScreenLockUI : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
