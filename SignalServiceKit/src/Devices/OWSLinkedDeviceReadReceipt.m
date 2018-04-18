@@ -44,9 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // For legacy objects, before we were tracking read time, use the original messages "sent" timestamp
     // as the local read time. This will always be at least a little bit earlier than the message was
-    // actually read, but it's the safer assumption. At worst we'll delete the message from this device
-    // earlier than the user expects, but this shouldn't be terrible because we know they've read the
-    // message on the other device. Keep in mind this *only* affects "early" read receipts.
+    // actually read, which isn't ideal, but safer than persisting a disappearing message too long, especially
+    // since we know they read it on their linked desktop.
     if (_readTimestamp == 0) {
         _readTimestamp = _messageIdTimestamp;
     }

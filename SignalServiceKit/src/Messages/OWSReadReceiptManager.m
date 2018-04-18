@@ -464,7 +464,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }
 
         if (messageIdTimestamp == 0) {
-            OWSProdLogAndFail(@"%@ in %s messageIdTimstamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
+            OWSProdLogAndFail(@"%@ in %s messageIdTimestamp was unexpectedly 0", self.logTag, __PRETTY_FUNCTION__);
             continue;
         }
 

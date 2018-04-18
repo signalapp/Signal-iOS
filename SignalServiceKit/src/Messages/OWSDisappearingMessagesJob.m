@@ -72,11 +72,11 @@ void AssertIsOnDisappearingMessagesQueue()
     NSTimeInterval kFallBackTimerInterval = 5 * kMinuteInterval;
     [AppReadiness runNowOrWhenAppIsReady:^{
         if (CurrentAppContext().isMainApp) {
-            self->_fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
-                                                                        target:self
-                                                                      selector:@selector(fallbackTimerDidFire)
-                                                                      userInfo:nil
-                                                                       repeats:YES];
+            self.fallbackTimer = [NSTimer weakScheduledTimerWithTimeInterval:kFallBackTimerInterval
+                                                                      target:self
+                                                                    selector:@selector(fallbackTimerDidFire)
+                                                                    userInfo:nil
+                                                                     repeats:YES];
         }
     }];
 
