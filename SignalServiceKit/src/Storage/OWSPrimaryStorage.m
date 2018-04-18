@@ -136,31 +136,23 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
     DDLogVerbose(@"%@ async registrations enqueued.", self.logTag);
 
-    // Flush the write queue to ensure all async registrations have begun.
-    [[self newDatabaseConnection]
-        flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
-                             completionBlock:^{
-                                 // Block until all async registrations are complete.
-                                 //
-                                 // NOTE: This has to happen on the "registration connections" for this
-                                 //       database.
+    // Use an empty read/write transaction to to ensure all async registrations have completed.
+    [[self newDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // Do nothing.
+        //
+        // We can't use flushTransactionsWithCompletionQueue because it
+        // doesn't flush the YapDatabase.writeQueue.
+    }
+        completionQueue:dispatch_get_main_queue()
+        completionBlock:^{
+            OWSAssert(!self.areAsyncRegistrationsComplete);
 
-                                 OWSAssert(!self.areAsyncRegistrationsComplete);
+            DDLogVerbose(@"%@ async registrations complete.", self.logTag);
 
-                                 [pendingRegistrationConnectionSet removeObject:dbConnection];
-                                 if (pendingRegistrationConnectionSet.count > 0) {
-                                     DDLogVerbose(@"%@ registration "
-                                                  @"connection flushed.",
-                                         self.logTag);
-                                     return;
-                                 }
+            self.areAsyncRegistrationsComplete = YES;
 
-                                 DDLogVerbose(@"%@ async registrations complete.", self.logTag);
-
-                                 self.areAsyncRegistrationsComplete = YES;
-
-                                 completion();
-                             }];
+            completion();
+        }];
 }
 
 + (void)protectFiles
