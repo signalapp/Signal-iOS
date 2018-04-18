@@ -134,8 +134,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 
-@property (nonatomic, readonly, nullable) NSMutableSet<YapDatabaseConnection *> *registrationConnectionSet;
-
 @end
 
 #pragma mark -
@@ -185,27 +183,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
 #endif
 
-    [self.registrationConnectionSet addObject:connection];
-
     return connection;
-}
-
-- (void)collectRegistrationConnections
-{
-    OWSAssert(!self.registrationConnectionSet);
-
-    _registrationConnectionSet = [NSMutableSet set];
-}
-
-- (NSSet<YapDatabaseConnection *> *)clearCollectedRegistrationConnections
-{
-    OWSAssert(self.registrationConnectionSet);
-
-    NSSet<YapDatabaseConnection *> *registrationConnectionSetCopy = [self.registrationConnectionSet copy];
-
-    _registrationConnectionSet = nil;
-
-    return registrationConnectionSetCopy;
 }
 
 @end
