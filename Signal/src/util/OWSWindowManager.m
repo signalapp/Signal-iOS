@@ -205,7 +205,8 @@ const int kReturnToCallWindowHeight = 20.f;
     OWSAssert(!self.callViewController);
 
     self.callViewController = callViewController;
-    // Attach callViewController from window.
+    // Attach callViewController to window.
+    [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.isCallViewActive = YES;
 
