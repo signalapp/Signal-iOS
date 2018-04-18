@@ -74,6 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)messageAuthorId;
 
+// convenience method for expiring a message which was just read
+- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

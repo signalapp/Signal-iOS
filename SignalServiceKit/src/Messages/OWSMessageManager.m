@@ -708,8 +708,8 @@ NS_ASSUME_NONNULL_BEGIN
         });
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.logTag, (u_long)syncMessage.read.count);
-
         [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                                   readTimestamp:envelope.timestamp
                                                                      transaction:transaction];
     } else if (syncMessage.hasVerified) {
         DDLogInfo(@"%@ Received verification state for %@", self.logTag, syncMessage.verified.destination);
@@ -1074,7 +1074,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
 
     OWSAssert([TSAccountManager isRegistered]);
-    NSString *localNumber = [TSAccountManager localNumber];
 
     if (!thread) {
         OWSFail(@"%@ Can't finalize without thread", self.logTag);
@@ -1087,12 +1086,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage saveWithTransaction:transaction];
 
-    // Any messages sent from the current user - from this device or another - should be
-    // automatically marked as read.
-    BOOL shouldMarkMessageAsRead = [envelope.source isEqualToString:localNumber];
-    if (shouldMarkMessageAsRead) {
+    // Any messages sent from the current user - from this device or another - should be automatically marked as read.
+    if ([envelope.source isEqualToString:TSAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadWithTransaction:transaction sendReadReceipt:NO updateExpiration:YES];
+        [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
 
     TSQuotedMessage *_Nullable quotedMessage = incomingMessage.quotedMessage;
@@ -1130,8 +1127,9 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
 
-    [OWSDisappearingMessagesJob becomeConsistentWithConfigurationForMessage:incomingMessage
-                                                            contactsManager:self.contactsManager];
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:incomingMessage
+                                                                        contactsManager:self.contactsManager
+                                                                            transaction:transaction];
 
     // Update thread preview in inbox
     [thread touchWithTransaction:transaction];

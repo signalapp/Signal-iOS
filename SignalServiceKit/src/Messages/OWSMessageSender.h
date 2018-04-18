@@ -84,14 +84,6 @@ NS_SWIFT_NAME(MessageSender)
                            success:(void (^)(void))successHandler
                            failure:(void (^)(NSError *error))failureHandler;
 
-/**
- * Set local configuration to match that of the of `outgoingMessage`'s sender
- *
- * We do this because messages and async message latency make it possible for thread participants disappearing messags
- * configuration to get out of sync.
- */
-- (void)becomeConsistentWithDisappearingConfigurationForMessage:(TSOutgoingMessage *)outgoingMessage;
-
 @end
 
 NS_ASSUME_NONNULL_END

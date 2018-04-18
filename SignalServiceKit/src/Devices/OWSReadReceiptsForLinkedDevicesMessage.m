@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosSyncMessageReadBuilder *readProtoBuilder =
             [OWSSignalServiceProtosSyncMessageReadBuilder new];
         [readProtoBuilder setSender:readReceipt.senderId];
-        [readProtoBuilder setTimestamp:readReceipt.timestamp];
+        [readProtoBuilder setTimestamp:readReceipt.messageIdTimestamp];
         [syncMessageBuilder addRead:[readProtoBuilder build]];
     }
 

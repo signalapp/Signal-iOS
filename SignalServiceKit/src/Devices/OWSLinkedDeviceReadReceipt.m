@@ -8,37 +8,67 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSLinkedDeviceReadReceipt
 
-- (instancetype)initWithSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp
+- (instancetype)initWithSenderId:(NSString *)senderId
+              messageIdTimestamp:(uint64_t)messageIdTimestamp
+                   readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssert(senderId.length > 0 && timestamp > 0);
+    OWSAssert(senderId.length > 0 && messageIdTimestamp > 0);
 
-    self = [super initWithUniqueId:[OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId timestamp:timestamp]];
+    NSString *receiptId =
+        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
+    self = [super initWithUniqueId:receiptId];
     if (!self) {
         return self;
     }
 
     _senderId = senderId;
-    _timestamp = timestamp;
+    _messageIdTimestamp = messageIdTimestamp;
+    _readTimestamp = readTimestamp;
 
     return self;
 }
 
-+ (NSString *)uniqueIdForSenderId:(NSString *)senderId timestamp:(uint64_t)timestamp
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    OWSAssert(senderId.length > 0 && timestamp > 0);
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
 
-    return [NSString stringWithFormat:@"%@-%llu", senderId, timestamp];
+    // renamed timestamp -> messageIdTimestamp
+    if (!_messageIdTimestamp) {
+        NSNumber *_Nullable legacyTimestamp = (NSNumber *)[coder decodeObjectForKey:@"timestamp"];
+        OWSAssert(legacyTimestamp.unsignedLongLongValue > 0);
+        _messageIdTimestamp = legacyTimestamp.unsignedLongLongValue;
+    }
+
+    // For legacy objects, before we were tracking read time, use the original messages "sent" timestamp
+    // as the local read time. This will always be at least a little bit earlier than the message was
+    // actually read, which isn't ideal, but safer than persisting a disappearing message too long, especially
+    // since we know they read it on their linked desktop.
+    if (_readTimestamp == 0) {
+        _readTimestamp = _messageIdTimestamp;
+    }
+
+    return self;
+}
+
++ (NSString *)uniqueIdForSenderId:(NSString *)senderId messageIdTimestamp:(uint64_t)messageIdTimestamp
+{
+    OWSAssert(senderId.length > 0 && messageIdTimestamp > 0);
+
+    return [NSString stringWithFormat:@"%@-%llu", senderId, messageIdTimestamp];
 }
 
 + (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                                       timestamp:(uint64_t)timestamp
+                                                              messageIdTimestamp:(uint64_t)messageIdTimestamp
                                                                      transaction:
                                                                          (YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
-
-    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:[self uniqueIdForSenderId:senderId timestamp:timestamp]
-                                                   transaction:transaction];
+    NSString *receiptId =
+        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
+    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:receiptId transaction:transaction];
 }
 
 @end

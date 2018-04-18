@@ -3,6 +3,7 @@
 //
 
 #import "TSIncomingMessage.h"
+#import "NSDate+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -134,25 +135,37 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                  sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
+- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
+                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+{
+    [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                sendReadReceipt:sendReadReceipt
+                    transaction:transaction];
+}
+
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+              sendReadReceipt:(BOOL)sendReadReceipt
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 {
     OWSAssert(transaction);
 
-    if (_read) {
+    if (_read && readTimestamp <= self.expireStartedAt) {
         return;
     }
 
-    DDLogDebug(
-        @"%@ marking as read uniqueId: %@ which has timestamp: %llu", self.logTag, self.uniqueId, self.timestamp);
+    NSTimeInterval secondsAgoRead = ([NSDate ows_millisecondTimeStamp] - readTimestamp) / 1000;
+    DDLogDebug(@"%@ marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
+        self.logTag,
+        self.uniqueId,
+        self.timestamp,
+        secondsAgoRead);
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    if (updateExpiration) {
-        [OWSDisappearingMessagesJob setExpirationForMessage:self];
-    }
+    [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
+                                                     expirationStartedAt:readTimestamp
+                                                             transaction:transaction];
 
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];

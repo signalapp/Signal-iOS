@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define OWSDisappearingMessagesConfigurationDefaultExpirationDuration kDayInterval
 
+@class YapDatabaseReadTransaction;
+
 @interface OWSDisappearingMessagesConfiguration : TSYapDatabaseObject
 
 - (instancetype)initDefaultWithThreadId:(NSString *)threadId;
@@ -21,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL dictionaryValueDidChange;
 @property (readonly, getter=isNewRecord) BOOL newRecord;
 
-+ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId;
++ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId
+                                     transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
 

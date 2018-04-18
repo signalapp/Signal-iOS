@@ -89,15 +89,21 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 #pragma mark - OWSReadTracking
 
+- (uint64_t)expireStartedAt
+{
+    return 0;
+}
+
 - (BOOL)shouldAffectUnreadCounts
 {
     return YES;
 }
 
-- (void)markAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-                  sendReadReceipt:(BOOL)sendReadReceipt
-                 updateExpiration:(BOOL)updateExpiration
+- (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
+              sendReadReceipt:(BOOL)sendReadReceipt
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+
     OWSAssert(transaction);
 
     if (_read) {
@@ -110,7 +116,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt and updateExpiration; they don't apply to calls.
+    // Ignore sendReadReceipt - it doesn't apply to calls.
 }
 
 #pragma mark - Methods
@@ -127,7 +133,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self saveWithTransaction:transaction];
-
+        
         // redraw any thread-related unread count UI.
         [self touchThreadWithTransaction:transaction];
     }];

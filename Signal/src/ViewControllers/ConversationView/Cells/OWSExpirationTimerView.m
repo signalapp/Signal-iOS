@@ -159,8 +159,8 @@ const CGFloat kExpirationTimerViewSize = 16.f;
         OWSFail(@"initialDurationSeconds was unexpectedly 0");
         return;
     }
-    
-    CGFloat ratioRemaining = (CGFloat)timeUntilFlashing / (CGFloat)self.initialDurationSeconds;
+
+    CGFloat ratioRemaining = (CGFloat)secondsLeft / (CGFloat)self.initialDurationSeconds;
     CGFloat ratioComplete = CGFloatClamp((CGFloat)1.0 - ratioRemaining, 0, 1.0);
     CGPoint startPosition = CGPointMake(0, self.fullHourglassImageView.height * ratioComplete);
     

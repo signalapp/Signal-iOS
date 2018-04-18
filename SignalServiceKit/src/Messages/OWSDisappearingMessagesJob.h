@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class TSMessage;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -16,9 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (void)setExpirationsForThread:(TSThread *)thread;
-+ (void)setExpirationForMessage:(TSMessage *)message;
-+ (void)setExpirationForMessage:(TSMessage *)message expirationStartedAt:(uint64_t)expirationStartedAt;
+- (void)startAnyExpirationForMessage:(TSMessage *)message
+                 expirationStartedAt:(uint64_t)expirationStartedAt
+                         transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
+
+- (void)setExpirationForMessage:(TSMessage *)message
+            expirationStartedAt:(uint64_t)expirationStartedAt
+                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
 
 /**
  * Synchronize our disappearing messages settings with that of the given message. Useful so we can
@@ -31,8 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
  * @param contactsManager
  *   Provides the contact name responsible for any configuration changes in an info message.
  */
-+ (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
-                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager;
+- (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
+                                    contactsManager:(id<ContactsManagerProtocol>)contactsManager
+                                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // Clean up any messages that expired since last launch immediately
 // and continue cleaning in the background.
