@@ -138,36 +138,50 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 
     DDLogVerbose(@"%@ async registrations enqueued.", self.logTag);
 
-    // Block until all async registrations are complete.
-    //
-    // NOTE: This has to happen on the "registration connections" for this
-    //       database.
-    NSMutableSet<YapDatabaseConnection *> *pendingRegistrationConnectionSet =
-        [[((OWSDatabase *)self.database)clearCollectedRegistrationConnections] mutableCopy];
-    DDLogVerbose(@"%@ flushing registration connections: %zd.", self.logTag, pendingRegistrationConnectionSet.count);
+    [[self registrationConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // Block until all async registrations are complete.
+        //
+        // NOTE: This has to happen on the "registration connections" for this
+        //       database.
+        NSMutableSet<YapDatabaseConnection *> *pendingRegistrationConnectionSet =
+            [[((OWSDatabase *)self.database)clearCollectedRegistrationConnections] mutableCopy];
+        DDLogVerbose(@"%@ flushing registration connections: %zd.", self.logTag, pendingRegistrationConnectionSet.count);
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for (YapDatabaseConnection *dbConnection in pendingRegistrationConnectionSet) {
-            [dbConnection
-                flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
-                                     completionBlock:^{
-                                         OWSAssertIsOnMainThread();
-                                         OWSAssert(!self.areAsyncRegistrationsComplete);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (pendingRegistrationConnectionSet.count > 0) {
+                for (YapDatabaseConnection *dbConnection in pendingRegistrationConnectionSet) {
+                    [dbConnection
+                        flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
+                                             completionBlock:^{
+                                                 OWSAssertIsOnMainThread();
 
-                                         [pendingRegistrationConnectionSet removeObject:dbConnection];
-                                         if (pendingRegistrationConnectionSet.count > 0) {
-                                             DDLogVerbose(@"%@ registration connection flushed.", self.logTag);
-                                             return;
-                                         }
+                                                 [pendingRegistrationConnectionSet removeObject:dbConnection];
+                                                 if (pendingRegistrationConnectionSet.count > 0) {
+                                                     DDLogVerbose(@"%@ registration connection flushed.", self.logTag);
+                                                     return;
+                                                 }
 
-                                         DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+                                                 [self markAsyncRegistrationsAsCompleteWithCompletion:completion];
+                                             }];
+                }
+            } else {
+                [self markAsyncRegistrationsAsCompleteWithCompletion:completion];
+            }
+        });
+    }];
+}
 
-                                         self.areAsyncRegistrationsComplete = YES;
+- (void)markAsyncRegistrationsAsCompleteWithCompletion:(void (^_Nonnull)(void))completion
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(!self.areAsyncRegistrationsComplete);
+    OWSAssert(completion);
 
-                                         completion();
-                                     }];
-        }
-    });
+    DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+
+    self.areAsyncRegistrationsComplete = YES;
+
+    completion();
 }
 
 + (void)protectFiles
