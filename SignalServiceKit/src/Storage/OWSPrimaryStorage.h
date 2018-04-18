@@ -6,9 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-void runSyncRegistrationsForStorage(OWSStorage *storage);
-void runAsyncRegistrationsForStorage(OWSStorage *storage);
-
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;

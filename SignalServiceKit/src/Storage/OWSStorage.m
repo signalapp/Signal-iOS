@@ -134,8 +134,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 
-@property (nonatomic, readonly, nullable) NSMutableSet<YapDatabaseConnection *> *registrationConnectionSet;
-
 @end
 
 #pragma mark -
@@ -185,27 +183,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
 #endif
 
-    [self.registrationConnectionSet addObject:connection];
-
     return connection;
-}
-
-- (void)collectRegistrationConnections
-{
-    OWSAssert(!self.registrationConnectionSet);
-
-    _registrationConnectionSet = [NSMutableSet set];
-}
-
-- (NSSet<YapDatabaseConnection *> *)clearCollectedRegistrationConnections
-{
-    OWSAssert(self.registrationConnectionSet);
-
-    NSSet<YapDatabaseConnection *> *registrationConnectionSetCopy = [self.registrationConnectionSet copy];
-
-    _registrationConnectionSet = nil;
-
-    return registrationConnectionSetCopy;
 }
 
 @end
@@ -510,6 +488,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
 {
+    [self asyncRegisterExtension:extension withName:extensionName completion:nil];
+}
+
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+                    completion:(nullable dispatch_block_t)completion
+{
     [self.database asyncRegisterExtension:extension
                                  withName:extensionName
                           completionBlock:^(BOOL ready) {
@@ -518,6 +503,12 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                               } else {
                                   DDLogVerbose(@"%@ asyncRegisterExtension succeeded: %@", self.logTag, extensionName);
                               }
+
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (completion) {
+                                      completion();
+                                  }
+                              });
                           }];
 }
 
