@@ -343,6 +343,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 }
 
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage
+                                             completion:(nullable dispatch_block_t)completion
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -391,7 +392,9 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSAttachment collection]]];
     YapDatabaseView *view =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
-    [storage asyncRegisterExtension:view withName:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
+    [storage asyncRegisterExtension:view
+                           withName:TSLazyRestoreAttachmentsDatabaseViewExtensionName
+                         completion:completion];
 }
 
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction

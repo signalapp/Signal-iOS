@@ -71,6 +71,9 @@ extern NSString *const StorageIsReadyNotification;
 #endif
 
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+                    completion:(nullable dispatch_block_t)completion;
 
 - (nullable id)registeredExtension:(NSString *)extensionName;
 

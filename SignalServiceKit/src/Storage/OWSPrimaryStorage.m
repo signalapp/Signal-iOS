@@ -30,9 +30,10 @@ void runSyncRegistrationsForStorage(OWSStorage *storage)
     [TSDatabaseView registerCrossProcessNotifier:storage];
 }
 
-void runAsyncRegistrationsForStorage(OWSStorage *storage)
+void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssert(storage);
+    OWSCAssert(completion);
 
     // Asynchronously register other extensions.
     //
@@ -57,7 +58,9 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage];
+    // NOTE: Always pass the completion to the _LAST_ of the async database
+    // view registrations.
+    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
 }
 
 #pragma mark -
@@ -132,27 +135,19 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSAssert(completion);
 
-    runAsyncRegistrationsForStorage(self);
+    DDLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
 
-    DDLogVerbose(@"%@ async registrations enqueued.", self.logTag);
+    runAsyncRegistrationsForStorage(self, ^{
+        OWSAssertIsOnMainThread();
 
-    // Use an empty read/write transaction to to ensure all async registrations have completed.
-    [[self newDatabaseConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        // Do nothing.
-        //
-        // We can't use flushTransactionsWithCompletionQueue because it
-        // doesn't flush the YapDatabase.writeQueue.
-    }
-        completionQueue:dispatch_get_main_queue()
-        completionBlock:^{
-            OWSAssert(!self.areAsyncRegistrationsComplete);
+        OWSAssert(!self.areAsyncRegistrationsComplete);
 
-            DDLogVerbose(@"%@ async registrations complete.", self.logTag);
+        DDLogVerbose(@"%@ async registrations complete.", self.logTag);
 
-            self.areAsyncRegistrationsComplete = YES;
+        self.areAsyncRegistrationsComplete = YES;
 
-            completion();
-        }];
+        completion();
+    });
 }
 
 + (void)protectFiles

@@ -488,6 +488,13 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
                       withName:(NSString *)extensionName
 {
+    [self asyncRegisterExtension:extension withName:extensionName completion:nil];
+}
+
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+                    completion:(nullable dispatch_block_t)completion
+{
     [self.database asyncRegisterExtension:extension
                                  withName:extensionName
                           completionBlock:^(BOOL ready) {
@@ -496,6 +503,12 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                               } else {
                                   DDLogVerbose(@"%@ asyncRegisterExtension succeeded: %@", self.logTag, extensionName);
                               }
+
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (completion) {
+                                      completion();
+                                  }
+                              });
                           }];
 }
 
