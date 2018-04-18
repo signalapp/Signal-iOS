@@ -44,12 +44,6 @@ extern NSString *const StorageIsReadyNotification;
            options:(YapDatabaseOptions *)inOptions
           delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-// Starts collecting references to the registration connections.
-- (void)collectRegistrationConnections;
-// Stops collecting references to the registration connections and returns
-// all collected connections.
-- (NSSet<YapDatabaseConnection *> *)clearCollectedRegistrationConnections;
-
 @end
 
 #pragma mark -
@@ -77,6 +71,9 @@ extern NSString *const StorageIsReadyNotification;
 #endif
 
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
+- (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
+                      withName:(NSString *)extensionName
+                    completion:(nullable dispatch_block_t)completion;
 
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
