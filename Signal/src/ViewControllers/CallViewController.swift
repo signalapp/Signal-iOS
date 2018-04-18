@@ -30,27 +30,27 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: Views
 
     var hasConstraints = false
-    var blurView: UIVisualEffectView?
+    var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
 
     // MARK: Contact Views
 
-    let contactNameLabel = MarqueeLabel()
-    let contactAvatarView = AvatarImageView()
-    let contactAvatarContainerView = UIView.container()
-    let callStatusLabel = UILabel()
+    var contactNameLabel: MarqueeLabel!
+    var contactAvatarView: AvatarImageView!
+    var contactAvatarContainerView: UIView!
+    var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
 
     // MARK: Ongoing Call Controls
 
-    var ongoingCallView: UIView?
+    var ongoingCallView: UIView!
 
-    var hangUpButton: UIButton?
-    var audioSourceButton: UIButton?
-    var audioModeMuteButton: UIButton?
-    var audioModeVideoButton: UIButton?
-    var videoModeMuteButton: UIButton?
-    var videoModeVideoButton: UIButton?
+    var hangUpButton: UIButton!
+    var audioSourceButton: UIButton!
+    var audioModeMuteButton: UIButton!
+    var audioModeVideoButton: UIButton!
+    var videoModeMuteButton: UIButton!
+    var videoModeVideoButton: UIButton!
     // TODO: Later, we'll re-enable the text message button
     //       so users can send and read messages during a 
     //       call.
@@ -58,15 +58,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Incoming Call Controls
 
-    var incomingCallView: UIView?
+    var incomingCallView: UIView!
 
-    var acceptIncomingButton: UIButton?
-    var declineIncomingButton: UIButton?
+    var acceptIncomingButton: UIButton!
+    var declineIncomingButton: UIButton!
 
     // MARK: Video Views
 
-    var remoteVideoView: RemoteVideoView?
-    var localVideoView: RTCCameraPreviewView?
+    var remoteVideoView: RemoteVideoView!
+    var localVideoView: RTCCameraPreviewView!
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
     var localVideoConstraints: [NSLayoutConstraint] = []
@@ -90,8 +90,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             }
         }
     }
-    let settingsNagView = UIView()
-    let settingsNagDescriptionLabel = UILabel()
+    var settingsNagView: UIView!
+    var settingsNagDescriptionLabel: UILabel!
 
     // MARK: Audio Source
 
@@ -219,8 +219,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Dark blurred background.
         let blurEffect = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        self.blurView = blurView
+        blurView = UIVisualEffectView(effect: blurEffect)
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
@@ -235,22 +234,15 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func didTouchRootView(sender: UIGestureRecognizer) {
-        guard let remoteVideoView = remoteVideoView else {
-            owsFail("\(TAG) missing remoteVideoView.")
-            return
-        }
         if !remoteVideoView.isHidden {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
     }
 
     func createVideoViews() {
-        let remoteVideoView = RemoteVideoView()
-        self.remoteVideoView = remoteVideoView
+        remoteVideoView = RemoteVideoView()
         remoteVideoView.isUserInteractionEnabled = false
-
-        let localVideoView = RTCCameraPreviewView()
-        self.localVideoView = localVideoView
+        localVideoView = RTCCameraPreviewView()
 
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true
@@ -259,6 +251,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createContactViews() {
+        contactNameLabel = MarqueeLabel()
+
         // marquee config
         contactNameLabel.type = .continuous
         // This feels pretty slow when you're initially waiting for it, but when you're overlaying video calls, anything faster is distracting.
@@ -278,6 +272,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         self.view.addSubview(contactNameLabel)
 
+        callStatusLabel = UILabel()
         callStatusLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(19, 25))
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.layer.shadowOffset = CGSize.zero
@@ -285,11 +280,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         callStatusLabel.layer.shadowRadius = 4
         self.view.addSubview(callStatusLabel)
 
+        contactAvatarContainerView = UIView.container()
         self.view.addSubview(contactAvatarContainerView)
+        contactAvatarView = AvatarImageView()
         contactAvatarContainerView.addSubview(contactAvatarView)
     }
 
     func createSettingsNagViews() {
+        settingsNagView = UIView()
         settingsNagView.isHidden = true
         self.view.addSubview(settingsNagView)
 
@@ -298,6 +296,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         viewStack.autoPinWidthToSuperview()
         viewStack.autoVCenterInSuperview()
 
+        settingsNagDescriptionLabel = UILabel()
         settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
                                                              comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
         settingsNagDescriptionLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(16, 18))
@@ -349,38 +348,32 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
 //        textMessageButton = createButton(imageName:"message-active-wide",
 //                                                action:#selector(didPressTextMessage))
-        let audioSourceButton = createButton(imageName: "audio-call-speaker-inactive",
-                                          action: #selector(didPressAudioSource),
-                                          accessibilityLabel: NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
-                                                                 comment: "Accessibility label for selection the audio source"))
-        self.audioSourceButton = audioSourceButton
+        audioSourceButton = createButton(imageName: "audio-call-speaker-inactive",
+                                          action: #selector(didPressAudioSource))
+        audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
+                                                                 comment: "Accessibility label for selection the audio source")
 
-        let hangUpButton = createButton(imageName: "hangup-active-wide",
-                                    action: #selector(didPressHangup),
-                                    accessibilityLabel: NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
-                                                            comment: "Accessibility label for hang up call"))
-        self.hangUpButton = hangUpButton
+        hangUpButton = createButton(imageName: "hangup-active-wide",
+                                    action: #selector(didPressHangup))
+        hangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
+                                                            comment: "Accessibility label for hang up call")
 
-        let audioModeMuteButton = createButton(imageName: "audio-call-mute-inactive",
-                                           action: #selector(didPressMute),
-                                           accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL",
-                                                                   comment: "Accessibility label for muting the microphone"))
-        self.audioModeMuteButton = audioModeMuteButton
+        audioModeMuteButton = createButton(imageName: "audio-call-mute-inactive",
+                                           action: #selector(didPressMute))
+        audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
+                                                                   comment: "Accessibility label for muting the microphone")
 
-        let videoModeMuteButton = createButton(imageName: "video-mute-unselected",
-                                           action: #selector(didPressMute),
-        accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone"))
-        self.videoModeMuteButton = videoModeMuteButton
+        videoModeMuteButton = createButton(imageName: "video-mute-unselected",
+                                           action: #selector(didPressMute))
+        videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
 
-        let audioModeVideoButton = createButton(imageName: "audio-call-video-inactive",
-                                            action: #selector(didPressVideo),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call"))
-        self.audioModeMuteButton = audioModeVideoButton
+        audioModeVideoButton = createButton(imageName: "audio-call-video-inactive",
+                                            action: #selector(didPressVideo))
+        audioModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call")
 
-        let videoModeVideoButton = createButton(imageName: "video-video-unselected",
-                                            action: #selector(didPressVideo),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only"))
-        self.videoModeVideoButton = videoModeVideoButton
+        videoModeVideoButton = createButton(imageName: "video-video-unselected",
+                                            action: #selector(didPressVideo))
+        videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
 
         setButtonSelectedImage(button: audioModeMuteButton, imageName: "audio-call-mute-active")
         setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
@@ -432,16 +425,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createIncomingCallControls() {
 
-        let acceptIncomingButton = createButton(imageName: "call-active-wide",
-                                            action: #selector(didPressAnswerCall),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                    comment: "Accessibility label for accepting incoming calls"))
-        self.acceptIncomingButton = acceptIncomingButton
-        let declineIncomingButton = createButton(imageName: "hangup-active-wide",
-                                             action: #selector(didPressDeclineCall),
-accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                     comment: "Accessibility label for declining incoming calls"))
-        self.declineIncomingButton = declineIncomingButton
+        acceptIncomingButton = createButton(imageName: "call-active-wide",
+                                            action: #selector(didPressAnswerCall))
+        acceptIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+                                                                    comment: "Accessibility label for accepting incoming calls")
+        declineIncomingButton = createButton(imageName: "hangup-active-wide",
+                                             action: #selector(didPressDeclineCall))
+        declineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+                                                                     comment: "Accessibility label for declining incoming calls")
 
         incomingCallView = createContainerForCallControls(controlGroups: [
             [acceptIncomingButton, declineIncomingButton ]
@@ -460,19 +451,19 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         for row in rows {
             containerView.addSubview(row)
             row.autoHCenterInSuperview()
-            if let prevRow = prevRow {
-                row.autoPinEdge(.top, to: .bottom, of: prevRow, withOffset: rowspacing)
+            if prevRow != nil {
+                row.autoPinEdge(.top, to: .bottom, of: prevRow!, withOffset: rowspacing)
             }
             prevRow = row
         }
 
         containerView.setContentHuggingVerticalHigh()
-        rows.first?.autoPinEdge(toSuperviewEdge: .top)
-        rows.last?.autoPinEdge(toSuperviewEdge: .bottom)
+        rows.first!.autoPinEdge(toSuperviewEdge: .top)
+        rows.last!.autoPinEdge(toSuperviewEdge: .bottom)
         return containerView
     }
 
-    func createButton(imageName: String, action: Selector, accessibilityLabel: String) -> UIButton {
+    func createButton(imageName: String, action: Selector) -> UIButton {
         let image = UIImage(named: imageName)
         assert(image != nil)
         let button = UIButton()
@@ -484,7 +475,6 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         button.addTarget(self, action: action, for: .touchUpInside)
         button.autoSetDimension(.width, toSize: buttonSize())
         button.autoSetDimension(.height, toSize: buttonSize())
-        button.accessibilityLabel = accessibilityLabel
         return button
     }
 
@@ -503,11 +493,11 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                 subview.setContentHuggingHorizontalHigh()
                 subview.autoVCenterInSuperview()
 
-                if let lastSubview = lastSubview {
+                if lastSubview != nil {
                     let spacer = UIView()
                     spacer.isHidden = true
                     row.addSubview(spacer)
-                    spacer.autoPinEdge(.left, to: .right, of: lastSubview)
+                    spacer.autoPinEdge(.left, to: .right, of: lastSubview!)
                     spacer.autoPinEdge(.right, to: .left, of: subview)
                     spacer.setContentHuggingHorizontalLow()
                     spacer.autoVCenterInSuperview()
@@ -522,8 +512,8 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
 
                 lastSubview = subview
             }
-            subviews.first?.autoPinEdge(toSuperviewEdge: .left)
-            subviews.last?.autoPinEdge(toSuperviewEdge: .right)
+            subviews.first!.autoPinEdge(toSuperviewEdge: .left)
+            subviews.last!.autoPinEdge(toSuperviewEdge: .right)
         } else if subviews.count == 1 {
             // If there's only one subview in this row, center it.
             let subview = subviews.first!
@@ -538,27 +528,6 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     // MARK: - Layout
 
     override func updateViewConstraints() {
-        guard let blurView = blurView else {
-            owsFail("\(TAG) missing blurView.")
-            return
-        }
-        guard let localVideoView = localVideoView else {
-            owsFail("\(TAG) missing localVideoView.")
-            return
-        }
-        guard let remoteVideoView = remoteVideoView else {
-            owsFail("\(TAG) missing remoteVideoView.")
-            return
-        }
-        guard let ongoingCallView = ongoingCallView else {
-            owsFail("\(TAG) missing ongoingCallView.")
-            return
-        }
-        guard let incomingCallView = incomingCallView else {
-            owsFail("\(TAG) missing incomingCallView.")
-            return
-        }
-
         if !hasConstraints {
             // We only want to create our constraints once.
             //
@@ -644,19 +613,11 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     }
 
     internal func updateRemoteVideoLayout() {
-        guard let remoteVideoView = remoteVideoView else {
-            owsFail("\(TAG) missing remoteVideoView.")
-            return
-        }
         remoteVideoView.isHidden = !self.hasRemoteVideoTrack
         updateCallUI(callState: call.state)
     }
 
     internal func updateLocalVideoLayout() {
-        guard let localVideoView = localVideoView else {
-            owsFail("\(TAG) missing localVideoView.")
-            return
-        }
 
         NSLayoutConstraint.deactivate(self.localVideoConstraints)
 
@@ -701,10 +662,9 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             let callDuration = call.connectionDuration()
             let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
             if dateFormatter == nil {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "HH:mm:ss"
-                dateFormatter.timeZone = TimeZone(identifier: "UTC")!
-                self.dateFormatter = dateFormatter
+                dateFormatter = DateFormatter()
+                dateFormatter!.dateFormat = "HH:mm:ss"
+                dateFormatter!.timeZone = TimeZone(identifier: "UTC")!
             }
             var formattedDate = dateFormatter!.string(from: callDurationDate)
             if formattedDate.hasPrefix("00:") {
@@ -747,39 +707,29 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
 
     func updateCallUI(callState: CallState) {
         assert(Thread.isMainThread)
-
-        guard let remoteVideoView = remoteVideoView else {
-            owsFail("\(TAG) missing remoteVideoView.")
-            return
-        }
-        guard let localVideoView = localVideoView else {
-            owsFail("\(TAG) missing localVideoView.")
-            return
-        }
-
         updateCallStatusLabel(callState: callState)
 
         if isShowingSettingsNag {
             settingsNagView.isHidden = false
             contactAvatarView.isHidden = true
-            ongoingCallView?.isHidden = true
+            ongoingCallView.isHidden = true
             return
         }
 
         // Marquee scrolling is distracting during a video call, disable it.
         contactNameLabel.labelize = call.hasLocalVideo
 
-        audioModeMuteButton?.isSelected = call.isMuted
-        videoModeMuteButton?.isSelected = call.isMuted
-        audioModeVideoButton?.isSelected = call.hasLocalVideo
-        videoModeVideoButton?.isSelected = call.hasLocalVideo
+        audioModeMuteButton.isSelected = call.isMuted
+        videoModeMuteButton.isSelected = call.isMuted
+        audioModeVideoButton.isSelected = call.hasLocalVideo
+        videoModeVideoButton.isSelected = call.hasLocalVideo
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
-        incomingCallView?.isHidden = !isRinging
-        incomingCallView?.isUserInteractionEnabled = isRinging
-        ongoingCallView?.isHidden = isRinging
-        ongoingCallView?.isUserInteractionEnabled = !isRinging
+        incomingCallView.isHidden = !isRinging
+        incomingCallView.isUserInteractionEnabled = isRinging
+        ongoingCallView.isHidden = isRinging
+        ongoingCallView.isUserInteractionEnabled = !isRinging
 
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
@@ -799,7 +749,7 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
-            ongoingCallView?.isHidden = true
+            ongoingCallView.isHidden = true
         } else {
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
@@ -809,24 +759,24 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         if self.hasAlternateAudioSources {
             // With bluetooth, button does not stay selected. Pressing it pops an actionsheet
             // and the button should immediately "unselect".
-            audioSourceButton?.isSelected = false
+            audioSourceButton.isSelected = false
 
             if hasLocalVideo {
-                audioSourceButton?.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .normal)
-                audioSourceButton?.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .selected)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .normal)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_video_mode"), for: .selected)
             } else {
-                audioSourceButton?.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .normal)
-                audioSourceButton?.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .selected)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .normal)
+                audioSourceButton.setImage(#imageLiteral(resourceName: "ic_speaker_bluetooth_inactive_audio_mode"), for: .selected)
             }
-            audioSourceButton?.isHidden = false
+            audioSourceButton.isHidden = false
         } else {
             // No bluetooth audio detected
-            audioSourceButton?.setImage(#imageLiteral(resourceName: "audio-call-speaker-inactive"), for: .normal)
-            audioSourceButton?.setImage(#imageLiteral(resourceName: "audio-call-speaker-active"), for: .selected)
+            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-inactive"), for: .normal)
+            audioSourceButton.setImage(#imageLiteral(resourceName: "audio-call-speaker-active"), for: .selected)
 
             // If there's no bluetooth, we always use speakerphone, so no need for
             // a button, giving more screen back for the video.
-            audioSourceButton?.isHidden = hasLocalVideo
+            audioSourceButton.isHidden = hasLocalVideo
         }
 
         // Dismiss Handling
@@ -869,18 +819,18 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     //   before the operation completes.
     func updateAudioSourceButtonIsSelected() {
         guard callUIAdapter.audioService.isSpeakerphoneEnabled else {
-            self.audioSourceButton?.isSelected = false
+            self.audioSourceButton.isSelected = false
             return
         }
 
         // VideoChat mode enables the output speaker, but we don't
         // want to highlight the speaker button in that case.
         guard !call.hasLocalVideo else {
-            self.audioSourceButton?.isSelected = false
+            self.audioSourceButton.isSelected = false
             return
         }
 
-        self.audioSourceButton?.isSelected = true
+        self.audioSourceButton.isSelected = true
     }
 
     // MARK: - Actions
@@ -986,10 +936,7 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     private func markSettingsNagAsComplete() {
         Logger.info("\(TAG) called \(#function)")
 
-        guard let preferences = Environment.current().preferences else {
-            owsFail("\(TAG) missing preferences.")
-            return
-        }
+        let preferences = Environment.current().preferences!
 
         preferences.setIsCallKitEnabled(preferences.isCallKitEnabled())
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
@@ -1053,10 +1000,6 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         guard self.localVideoTrack != localVideoTrack else {
             return
         }
-        guard let localVideoView = localVideoView else {
-            owsFail("\(TAG) missing localVideoView.")
-            return
-        }
 
         self.localVideoTrack = localVideoTrack
 
@@ -1078,10 +1021,6 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     internal func updateRemoteVideoTrack(remoteVideoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)
         guard self.remoteVideoTrack != remoteVideoTrack else {
-            return
-        }
-        guard let remoteVideoView = remoteVideoView else {
-            owsFail("\(TAG) missing remoteVideoView.")
             return
         }
 
