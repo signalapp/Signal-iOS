@@ -49,6 +49,13 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (BOOL)shouldUseReceiptDateForSorting
+{
+    // Use the timestamp, not the "received at" timestamp to sort,
+    // since we're creating these interactions after the fact and back-dating them.
+    return NO;
+}
+
 - (NSString *)description
 {
     if (self.createdByRemoteName) {

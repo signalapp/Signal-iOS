@@ -254,16 +254,17 @@ void AssertIsOnDisappearingMessagesQueue()
         NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
         
         // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
                                                                            thread:message.thread
                                                                     configuration:disappearingMessagesConfiguration
-                                                              createdByRemoteName:contactName] saveWithTransaction:transaction];
+                                                              createdByRemoteName:contactName]
+            saveWithTransaction:transaction];
     } else {
         // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestamp - 1
+        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
                                                                            thread:message.thread
                                                                     configuration:disappearingMessagesConfiguration]
-         saveWithTransaction:transaction];
+            saveWithTransaction:transaction];
     }
     
     backgroundTask = nil;
