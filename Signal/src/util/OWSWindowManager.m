@@ -10,24 +10,32 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
+
+// In front of the root window _and_ status bar
+// but behind the screen blocking window.
 const UIWindowLevel UIWindowLevel_ReturnToCall(void);
 const UIWindowLevel UIWindowLevel_ReturnToCall(void)
 {
-    return UIWindowLevelNormal + 1.f;
+    return UIWindowLevelStatusBar + 1.f;
 }
+// In front of the root window, behind the screen blocking window.
 const UIWindowLevel UIWindowLevel_CallView(void);
 const UIWindowLevel UIWindowLevel_CallView(void)
 {
-    return UIWindowLevelNormal + 2.f;
+    return UIWindowLevelNormal + 1.f;
 }
+// In front of everything, including the status bar.
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void);
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
-    return UIWindowLevelStatusBar + 1.f;
+    return UIWindowLevelStatusBar + 2.f;
 }
 
-const int kReturnToCallWindowHeight = 40.f;
+// TODO: Verify that this is the correct height for:
+// CallKit, non-CallKit, incoming and outgoing calls.
+const int kReturnToCallWindowHeight = 20.f;
 
 @implementation OWSWindowRootViewController
 
@@ -47,9 +55,11 @@ const int kReturnToCallWindowHeight = 40.f;
 
 // UIWindowLevel_ReturnToCall
 @property (nonatomic) UIWindow *returnToCallWindow;
+@property (nonatomic) UILabel *returnToCallLabel;
 
 // UIWindowLevel_CallView
 @property (nonatomic) UIWindow *callViewWindow;
+@property (nonatomic) UINavigationController *callNavigationController;
 
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
@@ -105,13 +115,13 @@ const int kReturnToCallWindowHeight = 40.f;
     self.rootWindow = rootWindow;
     self.screenBlockingWindow = screenBlockingWindow;
 
-    self.returnToCallWindow = [OWSWindowManager createReturnToCallWindow:rootWindow];
-    self.callViewWindow = [OWSWindowManager createCallViewWindow:rootWindow];
+    self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
+    self.callViewWindow = [self createCallViewWindow:rootWindow];
 
     [self ensureWindowState];
 }
 
-+ (UIWindow *)createReturnToCallWindow:(UIWindow *)rootWindow
+- (UIWindow *)createReturnToCallWindow:(UIWindow *)rootWindow
 {
     OWSAssertIsOnMainThread();
     OWSAssert(rootWindow);
@@ -125,13 +135,13 @@ const int kReturnToCallWindowHeight = 40.f;
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
-    // TODO:
-    window.backgroundColor = UIColor.ows_materialBlueColor;
-    window.backgroundColor = [UIColor redColor];
+    // This is the color of the iOS "return to call" banner.
+    // TODO: What's the right color to use here?
+    UIColor *backgroundColor = [UIColor colorWithRGBHex:0x4cd964];
+    window.backgroundColor = backgroundColor;
 
     UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = UIColor.ows_materialBlueColor;
-    viewController.view.backgroundColor = [UIColor redColor];
+    viewController.view.backgroundColor = backgroundColor;
 
     UIView *rootView = viewController.view;
     rootView.userInteractionEnabled = YES;
@@ -139,19 +149,20 @@ const int kReturnToCallWindowHeight = 40.f;
                                                                            action:@selector(returnToCallWasTapped:)]];
 
     UILabel *label = [UILabel new];
-    label.text = NSLocalizedString(@"CALL_WINDOW_RETURN_TO_CALL", @"Label for the 'return to call' indicator.");
+    label.text = NSLocalizedString(@"CALL_WINDOW_RETURN_TO_CALL", @"Label for the 'return to call' banner.");
     label.textColor = [UIColor whiteColor];
     // TODO: Dynamic type?
-    label.font = [UIFont ows_mediumFontWithSize:18.f];
+    label.font = [UIFont ows_regularFontWithSize:14.f];
     [rootView addSubview:label];
     [label autoCenterInSuperview];
+    self.returnToCallLabel = label;
 
     window.rootViewController = viewController;
 
     return window;
 }
 
-+ (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
+- (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
 {
     OWSAssertIsOnMainThread();
     OWSAssert(rootWindow);
@@ -160,6 +171,7 @@ const int kReturnToCallWindowHeight = 40.f;
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
+    // TODO: What's the right color to use here?
     window.backgroundColor = [UIColor ows_materialBlueColor];
 
     UIViewController *viewController = [OWSWindowRootViewController new];
@@ -168,6 +180,7 @@ const int kReturnToCallWindowHeight = 40.f;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
+    self.callNavigationController = navigationController;
 
     window.rootViewController = navigationController;
 
@@ -193,9 +206,7 @@ const int kReturnToCallWindowHeight = 40.f;
 
     self.callViewController = callViewController;
     // Attach callViewController from window.
-    OWSAssert([self.callViewWindow.rootViewController isKindOfClass:[UINavigationController class]]);
-    UINavigationController *navigationController = (UINavigationController *)self.callViewWindow.rootViewController;
-    [navigationController pushViewController:callViewController animated:NO];
+    [self.callNavigationController pushViewController:callViewController animated:NO];
     self.isCallViewActive = YES;
 
     [self ensureWindowState];
@@ -213,9 +224,7 @@ const int kReturnToCallWindowHeight = 40.f;
     }
 
     // Dettach callViewController from window.
-    OWSAssert([self.callViewWindow.rootViewController isKindOfClass:[UINavigationController class]]);
-    UINavigationController *navigationController = (UINavigationController *)self.callViewWindow.rootViewController;
-    [navigationController popToRootViewControllerAnimated:NO];
+    [self.callNavigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
     self.isCallViewActive = NO;
 
@@ -386,6 +395,19 @@ const int kReturnToCallWindowHeight = 40.f;
 
     if (self.returnToCallWindow.hidden) {
         DDLogInfo(@"%@ showing 'return to call' window.", self.logTag);
+
+        [self.returnToCallLabel.layer removeAllAnimations];
+        self.returnToCallLabel.alpha = 1.f;
+        [UIView animateWithDuration:1.f
+            delay:0.f
+            options:(UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
+                        | UIViewAnimationOptionBeginFromCurrentState)
+            animations:^{
+                self.returnToCallLabel.alpha = 0.f;
+            }
+            completion:^(BOOL finished) {
+                self.returnToCallLabel.alpha = 1.f;
+            }];
     }
 
     self.returnToCallWindow.hidden = NO;
@@ -400,6 +422,7 @@ const int kReturnToCallWindowHeight = 40.f;
     }
 
     self.returnToCallWindow.hidden = YES;
+    [self.returnToCallLabel.layer removeAllAnimations];
 }
 
 - (void)showCallViewWindowIfNecessary
