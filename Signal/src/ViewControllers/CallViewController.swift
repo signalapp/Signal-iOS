@@ -52,9 +52,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var videoModeMuteButton: UIButton?
     var videoModeVideoButton: UIButton?
     // TODO: Later, we'll re-enable the text message button
-    //       so users can send and read messages during a 
+    //       so users can send and read messages during a
     //       call.
-//    var textMessageButton: UIButton!
+    //    var textMessageButton: UIButton!
 
     // MARK: Incoming Call Controls
 
@@ -309,7 +309,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let descriptionVSpacingHeight = ScaleFromIPhone5To7Plus(30, 60)
 
         let callSettingsButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
-                                                                              comment: "Label for button that shows the privacy settings."),
+                                                                               comment: "Label for button that shows the privacy settings."),
                                                       font: OWSFlatButton.fontForHeight(buttonHeight),
                                                       titleColor: UIColor.white,
                                                       backgroundColor: UIColor.ows_signalBrandBlue,
@@ -321,7 +321,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         callSettingsButton.autoPinEdge(.top, to: .bottom, of: settingsNagDescriptionLabel, withOffset: descriptionVSpacingHeight)
 
         let notNowButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
-                                                                        comment: "Label for button that dismiss the call view's settings nag."),
+                                                                         comment: "Label for button that dismiss the call view's settings nag."),
                                                 font: OWSFlatButton.fontForHeight(buttonHeight),
                                                 titleColor: UIColor.white,
                                                 backgroundColor: UIColor.ows_signalBrandBlue,
@@ -344,39 +344,39 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createOngoingCallControls() {
 
-//        textMessageButton = createButton(imageName:"message-active-wide",
-//                                                action:#selector(didPressTextMessage))
+        //        textMessageButton = createButton(imageName:"message-active-wide",
+        //                                                action:#selector(didPressTextMessage))
         let audioSourceButton = createButton(imageName: "audio-call-speaker-inactive",
-                                          action: #selector(didPressAudioSource),
-                                          accessibilityLabel: NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
-                                                                 comment: "Accessibility label for selection the audio source"))
+                                             action: #selector(didPressAudioSource),
+                                             accessibilityLabel: NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
+                                                                                   comment: "Accessibility label for selection the audio source"))
         self.audioSourceButton = audioSourceButton
 
         let hangUpButton = createButton(imageName: "hangup-active-wide",
-                                    action: #selector(didPressHangup),
-                                    accessibilityLabel: NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
-                                                            comment: "Accessibility label for hang up call"))
+                                        action: #selector(didPressHangup),
+                                        accessibilityLabel: NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
+                                                                              comment: "Accessibility label for hang up call"))
         self.hangUpButton = hangUpButton
 
         let audioModeMuteButton = createButton(imageName: "audio-call-mute-inactive",
-                                           action: #selector(didPressMute),
-                                           accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL",
-                                                                   comment: "Accessibility label for muting the microphone"))
+                                               action: #selector(didPressMute),
+                                               accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL",
+                                                                                     comment: "Accessibility label for muting the microphone"))
         self.audioModeMuteButton = audioModeMuteButton
 
         let videoModeMuteButton = createButton(imageName: "video-mute-unselected",
-                                           action: #selector(didPressMute),
-        accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone"))
+                                               action: #selector(didPressMute),
+                                               accessibilityLabel: NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone"))
         self.videoModeMuteButton = videoModeMuteButton
 
         let audioModeVideoButton = createButton(imageName: "audio-call-video-inactive",
-                                            action: #selector(didPressVideo),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call"))
+                                                action: #selector(didPressVideo),
+                                                accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call"))
         self.audioModeMuteButton = audioModeVideoButton
 
         let videoModeVideoButton = createButton(imageName: "video-video-unselected",
-                                            action: #selector(didPressVideo),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only"))
+                                                action: #selector(didPressVideo),
+                                                accessibilityLabel: NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only"))
         self.videoModeVideoButton = videoModeVideoButton
 
         setButtonSelectedImage(button: audioModeMuteButton, imageName: "audio-call-mute-active")
@@ -386,9 +386,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         createContainerForCallControls(containerView: ongoingCallView,
                                        controlGroups: [
-            [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
-            [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
-        ])
+                                        [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
+                                        [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
+            ])
     }
 
     func presentAudioSourcePicker() {
@@ -431,19 +431,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createIncomingCallControls() {
 
         let acceptIncomingButton = createButton(imageName: "call-active-wide",
-                                            action: #selector(didPressAnswerCall),
-                                            accessibilityLabel: NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                    comment: "Accessibility label for accepting incoming calls"))
+                                                action: #selector(didPressAnswerCall),
+                                                accessibilityLabel: NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+                                                                                      comment: "Accessibility label for accepting incoming calls"))
         self.acceptIncomingButton = acceptIncomingButton
         let declineIncomingButton = createButton(imageName: "hangup-active-wide",
-                                             action: #selector(didPressDeclineCall),
-accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                     comment: "Accessibility label for declining incoming calls"))
+                                                 action: #selector(didPressDeclineCall),
+                                                 accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+                                                                                       comment: "Accessibility label for declining incoming calls"))
         self.declineIncomingButton = declineIncomingButton
 
         createContainerForCallControls(containerView: incomingCallView,
                                        controlGroups: [
-            [acceptIncomingButton, declineIncomingButton ]
+                                        [acceptIncomingButton, declineIncomingButton ]
             ])
     }
 
@@ -565,7 +565,7 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             // The buttons have built-in 10% margins, so to appear centered
             // the avatar's bottom spacing should be a bit less.
             let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
-            // Layout of the local video view is a bit unusual because 
+            // Layout of the local video view is a bit unusual because
             // although the view is square, it will be used
             let videoPreviewHMargin = CGFloat(0)
 
@@ -830,10 +830,10 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
-                                                         target: self,
-                                                         userInfo: nil,
-                                                         repeats: true) {[weak self] _ in
-                                                            self?.updateCallDuration()
+                                                             target: self,
+                                                             userInfo: nil,
+                                                             repeats: true) {[weak self] _ in
+                                                                self?.updateCallDuration()
                 }
             }
         } else {
@@ -965,8 +965,8 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
 
     // We only show the "blocking" settings nag until the user has chosen
     // to view the privacy settings _or_ dismissed the nag at least once.
-    // 
-    // In either case, we set the "CallKit enabled" and "CallKit privacy enabled" 
+    //
+    // In either case, we set the "CallKit enabled" and "CallKit privacy enabled"
     // settings to their default values to indicate that the user has reviewed
     // them.
     private func markSettingsNagAsComplete() {
