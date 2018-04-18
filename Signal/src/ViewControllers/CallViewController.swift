@@ -140,17 +140,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
-
-        assert(callUIAdapter.audioService.delegate == nil)
-        callUIAdapter.audioService.delegate = self
-        observeNotifications()
-    }
-
-    func observeNotifications() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
-                                               object: nil)
     }
 
     deinit {
@@ -208,6 +197,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         call.addObserverAndSyncState(observer: self)
 
         SignalApp.shared().callService.addObserverAndSyncState(observer: self)
+
+        assert(callUIAdapter.audioService.delegate == nil)
+        callUIAdapter.audioService.delegate = self
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didBecomeActive),
+                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
+                                               object: nil)
     }
 
     // MARK: - Create Views
