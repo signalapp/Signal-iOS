@@ -153,46 +153,32 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage)
                                      pendingRegistrationConnectionSet.count);
 
                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                     if (pendingRegistrationConnectionSet.count > 0) {
-                                         for (YapDatabaseConnection *dbConnection in pendingRegistrationConnectionSet) {
-                                             [dbConnection
-                                                 flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
-                                                                      completionBlock:^{
-                                                                          OWSAssertIsOnMainThread();
+                                     for (YapDatabaseConnection *dbConnection in pendingRegistrationConnectionSet) {
+                                         [dbConnection
+                                             flushTransactionsWithCompletionQueue:dispatch_get_main_queue()
+                                                                  completionBlock:^{
+                                                                      OWSAssertIsOnMainThread();
+                                                                      OWSAssert(!self.areAsyncRegistrationsComplete);
 
-                                                                          [pendingRegistrationConnectionSet
-                                                                              removeObject:dbConnection];
-                                                                          if (pendingRegistrationConnectionSet.count
-                                                                              > 0) {
-                                                                              DDLogVerbose(@"%@ registration "
-                                                                                           @"connection flushed.",
-                                                                                  self.logTag);
-                                                                              return;
-                                                                          }
+                                                                      [pendingRegistrationConnectionSet
+                                                                          removeObject:dbConnection];
+                                                                      if (pendingRegistrationConnectionSet.count > 0) {
+                                                                          DDLogVerbose(@"%@ registration "
+                                                                                       @"connection flushed.",
+                                                                              self.logTag);
+                                                                          return;
+                                                                      }
 
-                                                                          [self
-                                                                              markAsyncRegistrationsAsCompleteWithCompletion:
-                                                                                  completion];
-                                                                      }];
-                                         }
-                                     } else {
-                                         [self markAsyncRegistrationsAsCompleteWithCompletion:completion];
+                                                                      DDLogVerbose(@"%@ async registrations complete.",
+                                                                          self.logTag);
+
+                                                                      self.areAsyncRegistrationsComplete = YES;
+
+                                                                      completion();
+                                                                  }];
                                      }
                                  });
                              }];
-}
-
-- (void)markAsyncRegistrationsAsCompleteWithCompletion:(void (^_Nonnull)(void))completion
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(!self.areAsyncRegistrationsComplete);
-    OWSAssert(completion);
-
-    DDLogVerbose(@"%@ async registrations complete.", self.logTag);
-
-    self.areAsyncRegistrationsComplete = YES;
-
-    completion();
 }
 
 + (void)protectFiles
