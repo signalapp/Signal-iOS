@@ -160,13 +160,10 @@ const int kReturnToCallWindowHeight = 40.f;
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_CallView();
     window.opaque = YES;
-    // TODO:
-    window.backgroundColor = UIColor.ows_materialBlueColor;
-    window.backgroundColor = [UIColor yellowColor];
+    window.backgroundColor = [UIColor ows_materialBlueColor];
 
     UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = UIColor.ows_materialBlueColor;
-    viewController.view.backgroundColor = [UIColor yellowColor];
+    viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
 
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:viewController];
@@ -196,7 +193,9 @@ const int kReturnToCallWindowHeight = 40.f;
 
     self.callViewController = callViewController;
     // Attach callViewController from window.
-    [self.callViewWindow.rootViewController.navigationController pushViewController:callViewController animated:NO];
+    OWSAssert([self.callViewWindow.rootViewController isKindOfClass:[UINavigationController class]]);
+    UINavigationController *navigationController = (UINavigationController *)self.callViewWindow.rootViewController;
+    [navigationController pushViewController:callViewController animated:NO];
     self.isCallViewActive = YES;
 
     [self ensureWindowState];
@@ -214,7 +213,9 @@ const int kReturnToCallWindowHeight = 40.f;
     }
 
     // Dettach callViewController from window.
-    [self.callViewWindow.rootViewController.navigationController popToRootViewControllerAnimated:NO];
+    OWSAssert([self.callViewWindow.rootViewController isKindOfClass:[UINavigationController class]]);
+    UINavigationController *navigationController = (UINavigationController *)self.callViewWindow.rootViewController;
+    [navigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
     self.isCallViewActive = NO;
 
@@ -241,6 +242,13 @@ const int kReturnToCallWindowHeight = 40.f;
     self.isCallViewActive = YES;
 
     [self ensureWindowState];
+}
+
+- (BOOL)hasCall
+{
+    OWSAssertIsOnMainThread();
+
+    return self.callViewController != nil;
 }
 
 #pragma mark - Window State

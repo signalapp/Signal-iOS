@@ -1687,11 +1687,9 @@ protocol CallServiceObserver: class {
             return
         }
 
-        let frontmostViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
-
-        guard nil != frontmostViewController as? CallViewController else {
+        if !OWSWindowManager.shared().hasCall() {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file: #file, function: #function, line: #line)
-            owsFail("\(self.logTag) in \(#function) Call terminated due to call view presentation delay: \(frontmostViewController.debugDescription).")
+            owsFail("\(self.logTag) in \(#function) Call terminated due to missing call view.")
             self.handleFailedCall(failedCall: call, error: CallError.assertionError(description: "Call view didn't present after \(kMaxViewPresentationDelay) seconds"))
             return
         }

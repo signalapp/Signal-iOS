@@ -30,6 +30,7 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)endCall:(UIViewController *)callViewController;
 - (void)leaveCallView;
 - (void)returnToCallView;
+- (BOOL)hasCall;
 
 @end
 
