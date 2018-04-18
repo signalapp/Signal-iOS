@@ -210,28 +210,6 @@ void AssertIsOnDisappearingMessagesQueue()
                     }];
 }
 
-//- (void)setExpirationsForThread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
-//{
-//    OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-//
-//    uint64_t now = [NSDate ows_millisecondTimeStamp];
-//    [self.disappearingMessagesFinder
-//        enumerateUnstartedExpiringMessagesInThread:thread
-//                                             block:^(TSMessage *_Nonnull message) {
-//                                                 DDLogWarn(@"%@ Starting expiring message which should have already "
-//                                                           @"been started.",
-//                                                     self.logTag);
-//                                                 // specify "now" in case D.M. have since been disabled, but we have
-//                                                 // existing unstarted expiring messages that still need to expire.
-//                                                 [self setExpirationForMessage:message
-//                                                           expirationStartedAt:now
-//                                                                   transaction:transaction];
-//                                             }
-//                                       transaction:transaction];
-//
-//    backgroundTask = nil;
-//}
-
 - (void)becomeConsistentWithConfigurationForMessage:(TSMessage *)message
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
                                         transaction:(YapDatabaseReadWriteTransaction *)transaction

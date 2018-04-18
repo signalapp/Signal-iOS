@@ -6,13 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDeviceReadReceipt ()
-
-// FIXME remove this `timestamp` property and migrate in initWithCoder.
-@property (nonatomic, readonly) uint64_t timestamp;
-
-@end
-
 @implementation OWSLinkedDeviceReadReceipt
 
 - (instancetype)initWithSenderId:(NSString *)senderId
@@ -42,18 +35,20 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    // renamed timestamp -> messageIdTimestamp
     if (!_messageIdTimestamp) {
-        // FIXME to remove this legacy `timestamp` property, we need to figure out exactly how MTL encodes uint64_t.
-        // e.g. can we just do something like: `((NSNumber *)[coder decodeObjectForKey:@"timestamp"]).unsignedLongLong`
-        _messageIdTimestamp = _timestamp;
+        NSNumber *_Nullable legacyTimestamp = (NSNumber *)[coder decodeObjectForKey:@"timestamp"];
+        OWSAssert(legacyTimestamp.unsignedLongLongValue > 0);
+        _messageIdTimestamp = legacyTimestamp.unsignedLongLongValue;
     }
 
-    // For legacy early LinkedDeviceReadReceipts, before we were tracking read time, we assume the message was read as
-    // soon as it was sent. This is always going to be at least a little earlier than it was actually read, but we have
-    // nothing better to choose, and by the very fact that we're receiving a read receipt, we have good reason to
-    // believe they read the message on the other device.
+    // For legacy objects, before we were tracking read time, use the original messages "sent" timestamp
+    // as the local read time. This will always be at least a little bit earlier than the message was
+    // actually read, but it's the safer assumption. At worst we'll delete the message from this device
+    // earlier than the user expects, but this shouldn't be terrible because we know they've read the
+    // message on the other device. Keep in mind this *only* affects "early" read receipts.
     if (_readTimestamp == 0) {
-        _readTimestamp = _timestamp;
+        _readTimestamp = _messageIdTimestamp;
     }
 
     return self;
