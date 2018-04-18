@@ -30,7 +30,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     // MARK: Views
 
     var hasConstraints = false
-    var blurView: UIVisualEffectView?
+    let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
     var dateFormatter: DateFormatter?
 
     // MARK: Contact Views
@@ -43,7 +43,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Ongoing Call Controls
 
-    var ongoingCallView: UIView?
+    let ongoingCallView = UIView()
 
     var hangUpButton: UIButton?
     var audioSourceButton: UIButton?
@@ -58,7 +58,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: Incoming Call Controls
 
-    var incomingCallView: UIView?
+    let incomingCallView = UIView()
 
     var acceptIncomingButton: UIButton?
     var declineIncomingButton: UIButton?
@@ -218,9 +218,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                                     action: #selector(didTouchRootView)))
 
         // Dark blurred background.
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        self.blurView = blurView
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
@@ -387,7 +384,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
         setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
 
-        ongoingCallView = createContainerForCallControls(controlGroups: [
+        createContainerForCallControls(containerView: ongoingCallView,
+                                       controlGroups: [
             [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
             [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
         ])
@@ -443,13 +441,14 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                                                                      comment: "Accessibility label for declining incoming calls"))
         self.declineIncomingButton = declineIncomingButton
 
-        incomingCallView = createContainerForCallControls(controlGroups: [
+        createContainerForCallControls(containerView: incomingCallView,
+                                       controlGroups: [
             [acceptIncomingButton, declineIncomingButton ]
             ])
     }
 
-    func createContainerForCallControls(controlGroups: [[UIView]]) -> UIView {
-        let containerView = UIView()
+    func createContainerForCallControls(containerView: UIView,
+                                        controlGroups: [[UIView]]) {
         self.view.addSubview(containerView)
         var rows: [UIView] = []
         for controlGroup in controlGroups {
@@ -469,7 +468,6 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         containerView.setContentHuggingVerticalHigh()
         rows.first?.autoPinEdge(toSuperviewEdge: .top)
         rows.last?.autoPinEdge(toSuperviewEdge: .bottom)
-        return containerView
     }
 
     func createButton(imageName: String, action: Selector, accessibilityLabel: String) -> UIButton {
@@ -538,24 +536,12 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
     // MARK: - Layout
 
     override func updateViewConstraints() {
-        guard let blurView = blurView else {
-            owsFail("\(TAG) missing blurView.")
-            return
-        }
         guard let localVideoView = localVideoView else {
             owsFail("\(TAG) missing localVideoView.")
             return
         }
         guard let remoteVideoView = remoteVideoView else {
             owsFail("\(TAG) missing remoteVideoView.")
-            return
-        }
-        guard let ongoingCallView = ongoingCallView else {
-            owsFail("\(TAG) missing ongoingCallView.")
-            return
-        }
-        guard let incomingCallView = incomingCallView else {
-            owsFail("\(TAG) missing incomingCallView.")
             return
         }
 
@@ -762,7 +748,7 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         if isShowingSettingsNag {
             settingsNagView.isHidden = false
             contactAvatarView.isHidden = true
-            ongoingCallView?.isHidden = true
+            ongoingCallView.isHidden = true
             return
         }
 
@@ -776,10 +762,10 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
-        incomingCallView?.isHidden = !isRinging
-        incomingCallView?.isUserInteractionEnabled = isRinging
-        ongoingCallView?.isHidden = isRinging
-        ongoingCallView?.isUserInteractionEnabled = !isRinging
+        incomingCallView.isHidden = !isRinging
+        incomingCallView.isUserInteractionEnabled = isRinging
+        ongoingCallView.isHidden = isRinging
+        ongoingCallView.isUserInteractionEnabled = !isRinging
 
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
@@ -799,7 +785,7 @@ accessibilityLabel: NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
-            ongoingCallView?.isHidden = true
+            ongoingCallView.isHidden = true
         } else {
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
