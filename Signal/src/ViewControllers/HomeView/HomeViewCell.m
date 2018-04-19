@@ -186,8 +186,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
 
-    self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
-    self.dateTimeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+    self.dateTimeLabel.text = [self stringForDate:thread.lastMessageDate];
+
+    if (hasUnreadMessages) {
+        self.dateTimeLabel.textColor = [UIColor ows_blackColor];
+        self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
+    } else {
+        self.dateTimeLabel.textColor = [UIColor lightGrayColor];
+        self.dateTimeLabel.font = self.dateTimeFont;
+    }
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
     if (unreadCount > 0) {
@@ -284,11 +291,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Date formatting
 
-- (NSAttributedString *)attributedStringForDate:(nullable NSDate *)date
+- (NSString *)stringForDate:(nullable NSDate *)date
 {
     if (date == nil) {
         OWSProdLogAndFail(@"%@ date was unexpectedly nil", self.logTag);
-        return [NSAttributedString new];
+        return @"";
     }
 
     NSString *dateTimeString;
@@ -302,11 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    return [[NSAttributedString alloc] initWithString:dateTimeString.uppercaseString
-                                           attributes:@{
-                                               NSForegroundColorAttributeName : [UIColor blackColor],
-                                               NSFontAttributeName : self.dateTimeFont,
-                                           }];
+    return dateTimeString.uppercaseString;
 }
 
 #pragma mark - Constants
