@@ -3700,7 +3700,7 @@ NS_ASSUME_NONNULL_BEGIN
                             expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
                                                                       : 0)expireStartedAt:0
                               isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageNone
+                            groupMetaMessage:TSGroupMessageUnspecified
                                quotedMessage:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
@@ -3778,7 +3778,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                expiresInSeconds:0
                                                                 expireStartedAt:0
                                                                  isVoiceMessage:NO
-                                                               groupMetaMessage:TSGroupMessageNone
+                                                               groupMetaMessage:TSGroupMessageUnspecified
                                                                   quotedMessage:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
@@ -4016,7 +4016,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:0
                                                     expireStartedAt:0
                                                      isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMessageNone
+                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:quotedMessage];
 
     if (attachmentId.length > 0 && filename.length > 0) {
