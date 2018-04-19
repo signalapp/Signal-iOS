@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)dateTimeFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
 }
 
 - (UIFont *)snippetFont
