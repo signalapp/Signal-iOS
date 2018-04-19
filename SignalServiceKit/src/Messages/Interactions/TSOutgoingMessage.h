@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
 };
 
 typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
-    TSGroupMessageNone,
+    TSGroupMessageUnspecified,
     TSGroupMessageNew,
     TSGroupMessageUpdate,
     TSGroupMessageDeliver,
