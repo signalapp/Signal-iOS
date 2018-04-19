@@ -189,18 +189,34 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self.contentView addSubview:self.unreadBadge];
 
-        self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
+        self.unreadLabel.text = [OWSFormat formatInt:unreadCount];
 
         // TODO: Will this localize?  It assumes that the worst case
         // unread count (99) will fit horizontally into some multiple
         // N of the font's line height.
-        const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
-        self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
+        const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
+        self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
+
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
+                             forConstraints:^{
+                                 // This is a bit arbitrary, but it should scale with the size of dynamic text
+                                 CGFloat minMargin = CeilEven(unreadBadgeHeight * .5);
+
+                                 // Spec check. Should be 12pts (6pt on each side) when using default font size.
+                                 OWSAssert(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
+
+                                 [self.viewConstraints addObject:[self.unreadBadge autoMatchDimension:ALDimensionWidth
+                                                                                          toDimension:ALDimensionWidth
+                                                                                               ofView:self.unreadLabel
+                                                                                           withOffset:minMargin]];
+                             }];
 
         [self.viewConstraints addObjectsFromArray:@[
             // badge sizing
-            [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
-            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
+            [self.unreadBadge autoSetDimension:ALDimensionWidth
+                                        toSize:unreadBadgeHeight
+                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
 
             // Horizontally, badge is inserted after the tail of the payloadView, pushing back the date *and* snippet
             // view
