@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:transcript.expirationDuration
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMessageNone
+                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage];
 
     // TODO: When written, desktop didn't yet support sending quotedMessages, so we didn't have a

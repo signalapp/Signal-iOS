@@ -110,9 +110,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         [attachmentIds addObject:attachmentId];
     }
 
-    TSGroupMetaMessage groupMetaMessage =
-        [thread isKindOfClass:TSGroupThread.class] ? TSGroupMessageDeliver : TSGroupMessageNone;
-
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:body
@@ -120,7 +117,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                                       expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
-                                                      groupMetaMessage:groupMetaMessage
+                                                      groupMetaMessage:TSGroupMessageUnspecified
                                                          quotedMessage:quotedMessage];
 }
 
@@ -162,7 +159,20 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     _messageState = TSOutgoingMessageStateAttemptingOut;
     _sentRecipients = [NSArray new];
     _hasSyncedTranscript = NO;
-    _groupMetaMessage = groupMetaMessage;
+
+    if ([thread isKindOfClass:TSGroupThread.class]) {
+        // Unless specified, we assume group messages are "Delivery" i.e. normal messages.
+        if (groupMetaMessage == TSGroupMessageUnspecified) {
+            _groupMetaMessage = TSGroupMessageDeliver;
+        } else {
+            _groupMetaMessage = groupMetaMessage;
+        }
+    } else {
+        OWSAssert(groupMetaMessage == TSGroupMessageUnspecified);
+        // Specifying a group meta message only makes sense for Group threads
+        _groupMetaMessage = TSGroupMessageUnspecified;
+    }
+
     _isVoiceMessage = isVoiceMessage;
 
     _attachmentFilenameMap = [NSMutableDictionary new];
@@ -172,12 +182,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (BOOL)shouldBeSaved
 {
-    if (!(self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageNone)) {
-        DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
-        return NO;
+    if (self.groupMetaMessage == TSGroupMessageDeliver || self.groupMetaMessage == TSGroupMessageUnspecified) {
+        return YES;
     }
 
-    return YES;
+    return NO;
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -186,6 +195,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         // There's no need to save this message, since it's not displayed to the user.
         //
         // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+        DDLogDebug(@"%@ Skipping save for group meta message.", self.logTag);
+
         return;
     }
 

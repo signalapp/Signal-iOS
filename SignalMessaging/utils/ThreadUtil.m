@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    expiresInSeconds:expiresInSeconds
                                                     expireStartedAt:0
                                                      isVoiceMessage:[attachment isVoiceMessage]
-                                                   groupMetaMessage:TSGroupMessageNone
+                                                   groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessage]];
 
     [messageSender enqueueAttachment:attachment.dataSource
