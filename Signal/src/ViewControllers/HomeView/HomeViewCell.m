@@ -24,10 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
-// The unread badge has a larger v-height than the other elements in its
-// row.  We don't want it to distort the v-alignment of the cell's labels
-// so we use a container to reserve the correct width.
-@property (nonatomic) UIView *unreadBadgeContainer;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
@@ -65,20 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.avatarView);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.layoutMargins = UIEdgeInsetsZero;
-    self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.preservesSuperviewLayoutMargins = NO;
-    self.contentView.preservesSuperviewLayoutMargins = NO;
+    self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
+    self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
 
     _viewConstraints = [NSMutableArray new];
 
     self.avatarView = [[AvatarImageView alloc] init];
+
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-    [self.avatarView autoPinLeadingToSuperviewMarginWithInset:self.cellHMargin];
+    [self.avatarView autoPinLeadingToSuperviewMargin];
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
@@ -87,11 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.payloadView.axis = UILayoutConstraintAxisVertical;
     [self.contentView addSubview:self.payloadView];
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
     [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
     [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -108,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel,
     ]];
     self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentCenter;
+    self.topRowView.alignment = UIStackViewAlignmentBottom;
     [self.payloadView addArrangedSubview:self.topRowView];
 
     self.snippetLabel = [UILabel new];
@@ -125,20 +120,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
 
-    self.unreadBadgeContainer = [UIView containerView];
-    [self.unreadBadgeContainer setContentHuggingHigh];
-    [self.unreadBadgeContainer setCompressionResistanceHigh];
-
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
-    [self.unreadBadgeContainer addSubview:self.unreadBadge];
-    [self.unreadBadge autoCenterInSuperview];
-    [self.unreadBadge setContentHuggingHigh];
-    [self.unreadBadge setCompressionResistanceHigh];
-
     [self.unreadBadge addSubview:self.unreadLabel];
-    [self.unreadLabel autoVCenterInSuperview];
-    [self.unreadLabel autoPinWidthToSuperview];
+    [self.unreadLabel autoCenterInSuperview];
+    [self.unreadLabel setContentHuggingHigh];
+    [self.unreadLabel setCompressionResistanceHigh];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -178,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateAvatarView];
 
     self.payloadView.spacing = 0.f;
-    self.topRowView.spacing = ceil([HomeViewCell scaleValueWithDynamicType:5]);
+    self.topRowView.spacing = self.topRowHSpacing;
 
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
@@ -197,10 +184,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
-    if (unreadCount > 0) {
-        [self.topRowView addArrangedSubview:self.unreadBadgeContainer];
+    if (unreadCount == 0) {
+        [self.viewConstraints addObject:[self.payloadView autoPinTrailingToSuperviewMargin]];
+    } else {
+        [self.contentView addSubview:self.unreadBadge];
 
-        self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
         self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
 
         // TODO: Will this localize?  It assumes that the worst case
@@ -210,9 +198,22 @@ NS_ASSUME_NONNULL_BEGIN
         self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
 
         [self.viewConstraints addObjectsFromArray:@[
-            [self.unreadBadgeContainer autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
+            // badge sizing
             [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
             [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
+
+            // Horizontally, badge is inserted after the tail of the payloadView, pushing back the date *and* snippet
+            // view
+            [self.payloadView autoPinEdge:ALEdgeTrailing
+                                   toEdge:ALEdgeLeading
+                                   ofView:self.unreadBadge
+                               withOffset:-self.topRowHSpacing],
+            [self.unreadBadge autoPinTrailingToSuperviewMargin],
+
+            // Vertically, badge is positioned vertically by aligning it's label *subview's* baseline.
+            // This allows us a single visual baseline of text across the top row across [name, dateTime,
+            // optional(unread count)]
+            [self.unreadLabel autoAlignAxis:ALAxisBaseline toSameAxisOfView:self.dateTimeLabel]
         ]];
     }
 }
@@ -381,6 +382,12 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
+// Using an NSUInteger precludes us from negating this value
+- (CGFloat)topRowHSpacing
+{
+    return ceil([HomeViewCell scaleValueWithDynamicType:5]);
+}
+
 #pragma mark - Reuse
 
 - (void)prepareForReuse
@@ -393,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.contactsManager = nil;
 
-    [self.unreadBadgeContainer removeFromSuperview];
+    [self.unreadBadge removeFromSuperview];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
