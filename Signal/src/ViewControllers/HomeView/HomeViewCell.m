@@ -318,7 +318,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)snippetFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont];
+    return [UIFont ows_dynamicTypeSubheadlineFont];
 }
 
 - (UIFont *)nameFont
