@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
     self.unreadLabel = [UILabel new];
-    self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
+    self.unreadLabel.font = self.dateTimeFont;
     self.unreadLabel.textColor = [UIColor whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
