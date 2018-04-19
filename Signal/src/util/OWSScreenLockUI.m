@@ -4,42 +4,17 @@
 
 #import "OWSScreenLockUI.h"
 #import "Signal-Swift.h"
+#import <SignalMessaging/ScreenLockViewController.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, ScreenLockUIState) {
-    ScreenLockUIStateNone,
-    // Shown while app is inactive or background, if enabled.
-    ScreenLockUIStateScreenProtection,
-    // Shown while app is active, if enabled.
-    ScreenLockUIStateScreenLock,
-};
-
-NSString *NSStringForScreenLockUIState(ScreenLockUIState value);
-NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
-{
-    switch (value) {
-        case ScreenLockUIStateNone:
-            return @"ScreenLockUIStateNone";
-        case ScreenLockUIStateScreenProtection:
-            return @"ScreenLockUIStateScreenProtection";
-        case ScreenLockUIStateScreenLock:
-            return @"ScreenLockUIStateScreenLock";
-    }
-}
-
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
-@interface OWSScreenLockUI ()
+@interface OWSScreenLockUI () <ScreenLockViewDelegate>
 
 @property (nonatomic) UIWindow *screenBlockingWindow;
-@property (nonatomic) UIViewController *screenBlockingViewController;
-@property (nonatomic) UIView *screenBlockingImageView;
-@property (nonatomic) UIView *screenBlockingButton;
-@property (nonatomic) NSArray<NSLayoutConstraint *> *screenBlockingConstraints;
-@property (nonatomic) NSString *screenBlockingSignature;
 
 // Unlike UIApplication.applicationState, this state reflects the
 // notifications, i.e. "did become active", "will resign active",
@@ -54,8 +29,10 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
 // inactive in order for it to be reflected in the app switcher.
 @property (nonatomic) BOOL appIsInactiveOrBackground;
 @property (nonatomic) BOOL appIsInBackground;
+@property (nonatomic) ScreenLockViewController *screenBlockingViewController;
 
 @property (nonatomic) BOOL isShowingScreenLockUI;
+
 @property (nonatomic) BOOL didLastUnlockAttemptFail;
 
 // We want to remain in "screen lock" mode while "local auth"
@@ -392,7 +369,7 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
                           message:message
                       buttonTitle:nil
                      buttonAction:^(UIAlertAction *action) {
-                         // After the alert, re-show the unlock UI.
+                         // After the alert, update the UI.
                          [self ensureUI];
                      }
                fromViewController:self.screenBlockingViewController];
@@ -413,52 +390,12 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
     window.opaque = YES;
     window.backgroundColor = UIColor.ows_materialBlueColor;
 
-    UIViewController *viewController = [UIViewController new];
-    viewController.view.backgroundColor = UIColor.ows_materialBlueColor;
-
-    UIView *rootView = viewController.view;
-
-    UIView *edgesView = [UIView containerView];
-    [rootView addSubview:edgesView];
-    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [edgesView autoPinWidthToSuperview];
-
-    UIImage *image = [UIImage imageNamed:@"logoSignal"];
-    UIImageView *imageView = [UIImageView new];
-    imageView.image = image;
-    [edgesView addSubview:imageView];
-    [imageView autoHCenterInSuperview];
-
-    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
-    const CGFloat imageSize = round(shortScreenDimension / 3.f);
-    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
-
-    const CGFloat kButtonHeight = 40.f;
-    OWSFlatButton *button =
-        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
-                                           @"Label for button on lock screen that lets users unlock Signal.")
-                                  font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:[UIColor ows_materialBlueColor]
-                       backgroundColor:[UIColor whiteColor]
-                                target:self
-                              selector:@selector(showUnlockUI)];
-    [edgesView addSubview:button];
-
-    [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
-    [button autoPinLeadingToSuperviewMarginWithInset:50.f];
-    [button autoPinTrailingToSuperviewMarginWithInset:50.f];
-    const CGFloat kVMargin = 65.f;
-    [button autoPinBottomToSuperviewMarginWithInset:kVMargin];
-
+    ScreenLockViewController *viewController = [ScreenLockViewController new];
+    viewController.delegate = self;
     window.rootViewController = viewController;
 
     self.screenBlockingWindow = window;
     self.screenBlockingViewController = viewController;
-    self.screenBlockingImageView = imageView;
-    self.screenBlockingButton = button;
 
     // Default to screen protection until we know otherwise.
     [self updateScreenBlockingWindow:ScreenLockUIStateNone animated:NO];
@@ -530,61 +467,9 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
         self.rootFrontmostViewController = nil;
     }
 
-    self.screenBlockingImageView.hidden = !shouldShowBlockWindow;
-
-    UIView *rootView = self.screenBlockingViewController.view;
-
-    BOOL shouldHaveScreenLock = desiredUIState == ScreenLockUIStateScreenLock;
-    NSString *signature = [NSString stringWithFormat:@"%d %d", shouldHaveScreenLock, self.isShowingScreenLockUI];
-    if ([NSObject isNullableObject:self.screenBlockingSignature equalTo:signature]) {
-        // Skip redundant work to avoid interfering with ongoing animations.
-        return;
-    }
-
-    [NSLayoutConstraint deactivateConstraints:self.screenBlockingConstraints];
-
-    NSMutableArray<NSLayoutConstraint *> *screenBlockingConstraints = [NSMutableArray new];
-
-    self.screenBlockingButton.hidden = !shouldHaveScreenLock;
-
-    if (self.isShowingScreenLockUI) {
-        const CGFloat kVMargin = 60.f;
-        [screenBlockingConstraints addObject:[self.screenBlockingImageView autoPinEdge:ALEdgeTop
-                                                                                toEdge:ALEdgeTop
-                                                                                ofView:rootView
-                                                                            withOffset:kVMargin]];
-    } else {
-        [screenBlockingConstraints addObject:[self.screenBlockingImageView autoVCenterInSuperview]];
-    }
-
-    self.screenBlockingConstraints = screenBlockingConstraints;
-    self.screenBlockingSignature = signature;
-
-    if (animated) {
-        [UIView animateWithDuration:0.35f
-                         animations:^{
-                             [rootView layoutIfNeeded];
-                         }];
-    } else {
-        [rootView layoutIfNeeded];
-    }
-}
-
-- (void)showUnlockUI
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.appIsInactiveOrBackground) {
-        // This button can be pressed while the app is inactive
-        // for a brief window while the iOS auth UI is dismissing.
-        return;
-    }
-
-    DDLogInfo(@"%@ unlockButtonTapped", self.logTag);
-
-    self.didLastUnlockAttemptFail = NO;
-
-    [self ensureUI];
+    [self.screenBlockingViewController updateUIWithState:desiredUIState
+                                             isLogoAtTop:self.isShowingScreenLockUI
+                                                animated:animated];
 }
 
 #pragma mark - Events
@@ -651,6 +536,25 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
     // NOTE: this notifications fires _before_ applicationDidBecomeActive,
     // which is desirable.  Don't assume that though; call ensureUI
     // just in case it's necessary.
+    [self ensureUI];
+}
+
+#pragma mark - ScreenLockViewDelegate
+
+- (void)unlockButtonWasTapped
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.appIsInactiveOrBackground) {
+        // This button can be pressed while the app is inactive
+        // for a brief window while the iOS auth UI is dismissing.
+        return;
+    }
+
+    DDLogInfo(@"%@ unlockButtonWasTapped", self.logTag);
+
+    self.didLastUnlockAttemptFail = NO;
+
     [self ensureUI];
 }
 
