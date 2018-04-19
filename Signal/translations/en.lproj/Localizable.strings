@@ -876,6 +876,9 @@
 "IN_CALL_CONNECTING" = "Connecting…";
 
 /* Call setup status label */
+"IN_CALL_RECONNECTING" = "Reconnecting...";
+
+/* Call setup status label */
 "IN_CALL_RINGING" = "Ringing…";
 
 /* Call setup status label */

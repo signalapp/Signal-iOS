@@ -27,6 +27,7 @@ protocol PeerConnectionClientDelegate: class {
 
     /**
      * The connection has been established. The clients can now communicate.
+     * This can be called multiple times throughout the call in the event of temporary network disconnects.
      */
     func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient)
 
@@ -34,6 +35,13 @@ protocol PeerConnectionClientDelegate: class {
      * The connection failed to establish. The clients will not be able to communicate.
      */
     func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient)
+
+    /**
+     * After initially connecting, the connection disconnected.
+     * It maybe be temporary, in which case `peerConnectionClientIceConnected` will be called again once we're reconnected.
+     * Otherwise, `peerConnectionClientIceFailed` will eventually called.
+     */
+    func peerConnectionClientIceDisconnected(_ peerconnectionClient: PeerConnectionClient)
 
     /**
      * During the Signaling process each client generates IceCandidates locally, which contain information about how to 
@@ -676,6 +684,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 }
             case .disconnected:
                 Logger.warn("\(self.TAG) RTCIceConnection disconnected.")
+                if let delegate = self.delegate {
+                    DispatchQueue.main.async { [weak self] in
+                        guard let strongSelf = self else { return }
+                        delegate.peerConnectionClientIceDisconnected(strongSelf)
+                    }
+                }
             default:
                 Logger.debug("\(self.TAG) ignoring change IceConnectionState:\(newState.debugDescription)")
             }

@@ -547,7 +547,7 @@ protocol CallServiceObserver: class {
                     // If both users are trying to call each other at the same time,
                     // both should see busy.
                     handleRemoteBusy(thread: existingCall.thread, callId: existingCall.signalingId)
-                case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+                case .answering, .localRinging, .connected, .localFailure, .localHangup, .remoteHangup, .remoteBusy, .reconnecting:
                     // If one user calls another while the other has a "vestigial" call with
                     // that same user, fail the old call.
                     terminateCall()
@@ -769,8 +769,31 @@ protocol CallServiceObserver: class {
             Logger.info("\(self.logTag) call already ringing. Ignoring \(#function): \(call.identifiersForLogs).")
         case .connected:
             Logger.info("\(self.logTag) Call reconnected \(#function): \(call.identifiersForLogs).")
+        case .reconnecting:
+            call.state = .connected
+        case .idle, .localRinging, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+            owsFail("\(self.logTag) unexpected call state for \(#function): \(call.state): \(call.identifiersForLogs).")
+        }
+    }
+
+    private func handleIceDisconnected() {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard let call = self.call else {
+            // This will only be called for the current peerConnectionClient, so
+            // fail the current call.
+            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
+            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) ignoring \(#function) since there is no current call."))
+            return
+        }
+
+        Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
+
+        switch call.state {
+        case .connected:
+            call.state = .reconnecting
         default:
-            Logger.debug("\(self.logTag) unexpected call state for \(#function): \(call.state): \(call.identifiersForLogs).")
+            owsFail("\(self.logTag) unexpected call state for \(#function): \(call.state): \(call.identifiersForLogs).")
         }
     }
 
@@ -804,7 +827,7 @@ protocol CallServiceObserver: class {
         switch call.state {
         case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
             handleMissedCall(call)
-        case .connected, .localHangup, .remoteHangup:
+        case .connected, .reconnecting, .localHangup, .remoteHangup:
             Logger.info("\(self.logTag) call is finished.")
         }
 
@@ -1215,6 +1238,17 @@ protocol CallServiceObserver: class {
         }
 
         self.handleIceConnected()
+    }
+
+    func peerConnectionClientIceDisconnected(_ peerconnectionClient: PeerConnectionClient) {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard peerConnectionClient == self.peerConnectionClient else {
+            Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete peerConnectionClient")
+            return
+        }
+
+        self.handleIceDisconnected()
     }
 
     /**
