@@ -327,8 +327,9 @@ protocol CallServiceObserver: class {
 
             // Don't let the outgoing call ring forever. We don't support inbound ringing forever anyway.
             let timeout: Promise<Void> = after(interval: connectingTimeoutSeconds).then { () -> Void in
-                // rejecting a promise by throwing is safely a no-op if the promise has already been fulfilled
-                OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingOutgoing(), file: #file, function: #function, line: #line)
+                // This code will always be called, whether or not the call has timed out.
+                // However, if the call has already connected, the `race` promise will have already been
+                // fulfilled. Rejecting an already fulfilled promise is a no-op.
                 throw CallError.timeout(description: "timed out waiting to receive call answer")
             }
 
@@ -341,6 +342,9 @@ protocol CallServiceObserver: class {
             Logger.error("\(self.logTag) placing call \(call.identifiersForLogs) failed with error: \(error)")
 
             if let callError = error as? CallError {
+                if case .timeout = callError {
+                    OWSProdInfo(OWSAnalyticsEvents.callServiceErrorTimeoutWhileConnectingOutgoing(), file: #file, function: #function, line: #line)
+                }
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorOutgoingConnectionFailedInternal(), file: #file, function: #function, line: #line)
                 self.handleFailedCall(failedCall: call, error: callError)
             } else {
