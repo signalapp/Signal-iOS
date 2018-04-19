@@ -361,7 +361,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(referenceFontSize, kReferenceFontSizeMin, kReferenceFontSizeMax));
 
     const CGFloat kCellHeightMin = 68.f;
-    const CGFloat kCellHeightMax = 76.f;
+    const CGFloat kCellHeightMax = 80.f;
     CGFloat result = ceil(CGFloatLerp(kCellHeightMin, kCellHeightMax, alpha));
 
     return result;
