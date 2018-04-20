@@ -289,6 +289,7 @@ protocol CallAudioServiceDelegate: class {
         case .remoteRinging: handleRemoteRinging(call: call)
         case .localRinging: handleLocalRinging(call: call)
         case .connected: handleConnected(call: call)
+        case .reconnecting: handleReconnecting(call: call)
         case .localFailure: handleLocalFailure(call: call)
         case .localHangup: handleLocalHangup(call: call)
         case .remoteHangup: handleRemoteHangup(call: call)
@@ -331,6 +332,11 @@ protocol CallAudioServiceDelegate: class {
     }
 
     private func handleConnected(call: SignalCall) {
+        Logger.debug("\(self.logTag) \(#function)")
+        SwiftAssertIsOnMainThread(#function)
+    }
+
+    private func handleReconnecting(call: SignalCall) {
         Logger.debug("\(self.logTag) \(#function)")
         SwiftAssertIsOnMainThread(#function)
     }

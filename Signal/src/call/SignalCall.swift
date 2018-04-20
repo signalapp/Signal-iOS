@@ -12,6 +12,7 @@ enum CallState: String {
     case remoteRinging
     case localRinging
     case connected
+    case reconnecting
     case localFailure // terminal
     case localHangup // terminal
     case remoteHangup // terminal
@@ -47,7 +48,7 @@ protocol CallObserver: class {
         switch state {
         case .localFailure, .localHangup, .remoteHangup, .remoteBusy:
             return true
-        case .idle, .dialing, .answering, .remoteRinging, .localRinging, .connected:
+        case .idle, .dialing, .answering, .remoteRinging, .localRinging, .connected, .reconnecting:
             return false
         }
     }
@@ -87,12 +88,11 @@ protocol CallObserver: class {
             Logger.debug("\(TAG) state changed: \(oldValue) -> \(self.state) for call: \(self.identifiersForLogs)")
 
             // Update connectedDate
-            if self.state == .connected {
+            if case .connected = self.state {
+                // if it's the first time we've connected (not a reconnect)
                 if connectedDate == nil {
                     connectedDate = NSDate()
                 }
-            } else {
-                connectedDate = nil
             }
 
             updateCallRecordType()

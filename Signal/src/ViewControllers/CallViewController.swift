@@ -676,6 +676,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                 }
             }
             return formattedDate
+        case .reconnecting:
+            return NSLocalizedString("IN_CALL_RECONNECTING", comment: "Call setup status label")
         case .remoteBusy:
             return NSLocalizedString("END_CALL_RESPONDER_IS_BUSY", comment: "Call setup status label")
         case .localFailure:
@@ -694,18 +696,39 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
+    var isBlinkingReconnectLabel = false
     func updateCallStatusLabel(callState: CallState) {
         assert(Thread.isMainThread)
 
         let text = String(format: CallStrings.callStatusFormat,
                           localizedTextForCallState(callState))
         self.callStatusLabel.text = text
+
+        // Handle reconnecting blinking
+        if case .reconnecting = callState {
+            if !isBlinkingReconnectLabel {
+                isBlinkingReconnectLabel = true
+                UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
+                               animations: {
+                                self.callStatusLabel.alpha = 0.2
+                }, completion: nil)
+            } else {
+                // already blinking
+            }
+        } else {
+            // We're no longer in a reconnecting state, either the call failed or we reconnected.
+            // Stop the blinking animation
+            if isBlinkingReconnectLabel {
+                self.callStatusLabel.layer.removeAllAnimations()
+                self.callStatusLabel.alpha = 1
+                isBlinkingReconnectLabel = false
+            }
+        }
     }
 
     func updateCallUI(callState: CallState) {
         assert(Thread.isMainThread)
         updateCallStatusLabel(callState: callState)
-
         if isShowingSettingsNag {
             settingsNagView.isHidden = false
             contactAvatarView.isHidden = true
