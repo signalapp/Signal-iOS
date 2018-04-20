@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel,
     ]];
     self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentBottom;
+    self.topRowView.alignment = UIStackViewAlignmentLastBaseline;
     [self.payloadView addArrangedSubview:self.topRowView];
 
     self.snippetLabel = [UILabel new];
@@ -189,11 +189,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self.contentView addSubview:self.unreadBadge];
 
-        self.unreadLabel.text = [OWSFormat formatInt:unreadCount];
+        self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
 
-        // TODO: Will this localize?  It assumes that the worst case
-        // unread count (99) will fit horizontally into some multiple
-        // N of the font's line height.
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
 
