@@ -1,40 +1,10 @@
 //
-//  iRate.m
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-//  Version 1.11.4
-//
-//  Created by Nick Lockwood on 26/01/2011.
-//  Copyright 2011 Charcoal Design
-//
-//  Distributed under the permissive zlib license
-//  Get the latest version from here:
-//
-//  https://github.com/nicklockwood/iRate
-//
-//  This software is provided 'as-is', without any express or implied
-//  warranty.  In no event will the authors be held liable for any damages
-//  arising from the use of this software.
-//
-//  Permission is granted to anyone to use this software for any purpose,
-//  including commercial applications, and to alter it and redistribute it
-//  freely, subject to the following restrictions:
-//
-//  1. The origin of this software must not be misrepresented; you must not
-//  claim that you wrote the original software. If you use this software
-//  in a product, an acknowledgment in the product documentation would be
-//  appreciated but is not required.
-//
-//  2. Altered source versions must be plainly marked as such, and must not be
-//  misrepresented as being the original software.
-//
-//  3. This notice may not be removed or altered from any source distribution.
-//
-
 
 #import "iRate.h"
-
-
 #import <Availability.h>
+
 #if !__has_feature(objc_arc)
 #error This class requires automatic reference counting
 #endif
@@ -130,6 +100,8 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 @property (nonatomic, assign) BOOL checkingForAppStoreID;
 @property (nonatomic, assign) BOOL shouldPreventPromptAtNextTest;
 
+@property (nonatomic) BOOL hasQueuedSynchronize;
+
 @end
 
 
@@ -179,6 +151,10 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(applicationWillEnterForeground)
                                                          name:UIApplicationWillEnterForegroundNotification
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(applicationDidBecomeActive)
+                                                         name:UIApplicationDidBecomeActiveNotification
                                                        object:nil];
         }
 
@@ -335,7 +311,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setFirstUsed:(NSDate *)date {
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:iRateFirstUsedKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSDate *)lastReminded {
@@ -344,7 +320,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setLastReminded:(NSDate *)date {
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:iRateLastRemindedKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSUInteger)usesCount {
@@ -353,7 +329,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setUsesCount:(NSUInteger)count {
     [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)count forKey:iRateUseCountKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSUInteger)eventCount {
@@ -362,7 +338,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setEventCount:(NSUInteger)count {
     [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)count forKey:iRateEventCountKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (float)usesPerWeek {
@@ -377,7 +353,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setDeclinedThisVersion:(BOOL)declined {
     [[NSUserDefaults standardUserDefaults] setObject:(declined ? self.applicationVersion : nil)
                                               forKey:iRateDeclinedVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (BOOL)declinedAnyVersion {
@@ -395,7 +371,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setRatedThisVersion:(BOOL)rated {
     [[NSUserDefaults standardUserDefaults] setObject:(rated ? self.applicationVersion : nil)
                                               forKey:iRateRatedVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (BOOL)ratedAnyVersion {
@@ -584,7 +560,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setAppStoreIDOnMainThread:(NSString *)appStoreIDString {
     _appStoreID = [appStoreIDString integerValue];
     [[NSUserDefaults standardUserDefaults] setInteger:_appStoreID forKey:iRateAppStoreIDKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (void)connectionSucceeded {
@@ -924,7 +900,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
             [defaults setInteger:0 forKey:iRateUseCountKey];
             [defaults setInteger:0 forKey:iRateEventCountKey];
             [defaults setObject:nil forKey:iRateLastRemindedKey];
-            [defaults synchronize];
+            [self synchronizeWhenSafeToDoSo];
         } else if ([[NSDate date] timeIntervalSinceDate:self.firstUsed] >
                    (self.daysUntilPrompt - 1) * SECONDS_IN_A_DAY) {
             // if was previously installed, but we haven't yet prompted for a rating
@@ -969,6 +945,26 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
         if (self.promptAtLaunch) {
             [self promptIfAllCriteriaMet];
         }
+    }
+}
+
+// Only synchronize when active.
+- (void)synchronizeWhenSafeToDoSo
+{
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        self.hasQueuedSynchronize = YES;
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    self.hasQueuedSynchronize = NO;
+}
+
+// Only synchronize when active.
+- (void)applicationDidBecomeActive
+{
+    if (self.hasQueuedSynchronize) {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        self.hasQueuedSynchronize = NO;
     }
 }
 
