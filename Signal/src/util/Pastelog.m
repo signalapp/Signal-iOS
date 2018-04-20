@@ -126,9 +126,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
             // Add a file extension to the upload's key.
             NSString *fileExtension = strongSelf.fileUrl.lastPathComponent.pathExtension;
             if (fileExtension.length < 1) {
-                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                DDLogError(@"%@ Invalid file url: %@, %@", strongSelf.logTag, urlString, responseObject);
                 [strongSelf
-                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid file url")];
                 return;
             }
             uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
