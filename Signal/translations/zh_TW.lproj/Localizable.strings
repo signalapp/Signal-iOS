@@ -83,7 +83,7 @@
 "ATTACHMENT" = "附件";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "已達到訊息限制。";
 
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "附件";
@@ -972,7 +972,7 @@
 "LOGGING_SECTION" = "紀錄中";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "訊息";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有的多媒體檔案";
@@ -1406,28 +1406,28 @@
 "QUESTIONMARK_PUNCTUATION" = "？";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "回覆給 1%@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "回覆給你";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "回覆給你自己";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "附件";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+"QUOTED_REPLY_TYPE_AUDIO" = "聲音";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+"QUOTED_REPLY_TYPE_IMAGE" = "影像";
 
 /* Indicates this message is a quoted reply to a video file. */
-"QUOTED_REPLY_TYPE_VIDEO" = "Video";
+"QUOTED_REPLY_TYPE_VIDEO" = "影片";
 
 /* No comment provided by engineer. */
 "RATING_MSG" = "如果你喜歡用 Signal 來進行私密通話，你可以透過評分的方式來支持我們的計劃。這不會花你超過一分鐘的時間，而且也將對保護其他人隱私有所幫助。";
@@ -1541,7 +1541,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "這不是正確的 PIN 碼。";
 
 /* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "Reply";
+"REPLY_ITEM_ACTION" = "回覆";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "重新註冊推播通知";
@@ -1805,7 +1805,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定逾時";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "使用 Touch ID、Face ID或是你的 iOS裝置密碼來解鎖 Signal 的螢幕。";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "螢幕鎖定";

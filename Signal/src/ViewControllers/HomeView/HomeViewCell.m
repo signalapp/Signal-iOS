@@ -24,10 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
-// The unread badge has a larger v-height than the other elements in its
-// row.  We don't want it to distort the v-alignment of the cell's labels
-// so we use a container to reserve the correct width.
-@property (nonatomic) UIView *unreadBadgeContainer;
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
@@ -65,20 +61,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.avatarView);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.layoutMargins = UIEdgeInsetsZero;
+    self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.preservesSuperviewLayoutMargins = NO;
-    self.contentView.preservesSuperviewLayoutMargins = NO;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
 
     _viewConstraints = [NSMutableArray new];
 
     self.avatarView = [[AvatarImageView alloc] init];
+
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-    [self.avatarView autoPinLeadingToSuperviewMarginWithInset:self.cellHMargin];
+    [self.avatarView autoPinLeadingToSuperviewMargin];
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
@@ -87,11 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.payloadView.axis = UILayoutConstraintAxisVertical;
     [self.contentView addSubview:self.payloadView];
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [self.payloadView autoPinTrailingToSuperviewMarginWithInset:self.cellHMargin];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
     [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
     [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -108,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel,
     ]];
     self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentCenter;
+    self.topRowView.alignment = UIStackViewAlignmentLastBaseline;
     [self.payloadView addArrangedSubview:self.topRowView];
 
     self.snippetLabel = [UILabel new];
@@ -120,25 +116,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
     self.unreadLabel = [UILabel new];
-    self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
     self.unreadLabel.textColor = [UIColor whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
 
-    self.unreadBadgeContainer = [UIView containerView];
-    [self.unreadBadgeContainer setContentHuggingHigh];
-    [self.unreadBadgeContainer setCompressionResistanceHigh];
-
     self.unreadBadge = [NeverClearView new];
     self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
-    [self.unreadBadgeContainer addSubview:self.unreadBadge];
-    [self.unreadBadge autoCenterInSuperview];
-    [self.unreadBadge setContentHuggingHigh];
-    [self.unreadBadge setCompressionResistanceHigh];
-
     [self.unreadBadge addSubview:self.unreadLabel];
-    [self.unreadLabel autoVCenterInSuperview];
-    [self.unreadLabel autoPinWidthToSuperview];
+    [self.unreadLabel autoCenterInSuperview];
+    [self.unreadLabel setContentHuggingHigh];
+    [self.unreadLabel setCompressionResistanceHigh];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -178,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateAvatarView];
 
     self.payloadView.spacing = 0.f;
-    self.topRowView.spacing = ceil([HomeViewCell scaleValueWithDynamicType:5]);
+    self.topRowView.spacing = self.topRowHSpacing;
 
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
@@ -186,26 +173,60 @@ NS_ASSUME_NONNULL_BEGIN
     self.snippetLabel.attributedText =
         [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
 
-    self.dateTimeLabel.attributedText = [self attributedStringForDate:thread.lastMessageDate];
-    self.dateTimeLabel.textColor = hasUnreadMessages ? [UIColor ows_materialBlueColor] : [UIColor ows_darkGrayColor];
+    self.dateTimeLabel.text = [self stringForDate:thread.lastMessageDate];
+
+    if (hasUnreadMessages) {
+        self.dateTimeLabel.textColor = [UIColor ows_blackColor];
+        self.dateTimeLabel.font = self.unreadFont.ows_mediumWeight;
+    } else {
+        self.dateTimeLabel.textColor = [UIColor lightGrayColor];
+        self.dateTimeLabel.font = self.unreadFont;
+    }
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
-    if (unreadCount > 0) {
-        [self.topRowView addArrangedSubview:self.unreadBadgeContainer];
+    if (unreadCount == 0) {
+        [self.viewConstraints addObject:[self.payloadView autoPinTrailingToSuperviewMargin]];
+    } else {
+        [self.contentView addSubview:self.unreadBadge];
 
-        self.unreadLabel.font = [UIFont ows_dynamicTypeCaption1Font];
-        self.unreadLabel.text = [OWSFormat formatInt:MIN(99, (int)unreadCount)];
+        self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
+        self.unreadLabel.font = self.unreadFont;
+        const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
+        self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
 
-        // TODO: Will this localize?  It assumes that the worst case
-        // unread count (99) will fit horizontally into some multiple
-        // N of the font's line height.
-        const int unreadBadgeSize = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
-        self.unreadBadge.layer.cornerRadius = unreadBadgeSize / 2;
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
+                             forConstraints:^{
+                                 // This is a bit arbitrary, but it should scale with the size of dynamic text
+                                 CGFloat minMargin = CeilEven(unreadBadgeHeight * .5);
+
+                                 // Spec check. Should be 12pts (6pt on each side) when using default font size.
+                                 OWSAssert(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
+
+                                 [self.viewConstraints addObject:[self.unreadBadge autoMatchDimension:ALDimensionWidth
+                                                                                          toDimension:ALDimensionWidth
+                                                                                               ofView:self.unreadLabel
+                                                                                           withOffset:minMargin]];
+                             }];
 
         [self.viewConstraints addObjectsFromArray:@[
-            [self.unreadBadgeContainer autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
-            [self.unreadBadge autoSetDimension:ALDimensionWidth toSize:unreadBadgeSize],
-            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeSize],
+            // badge sizing
+            [self.unreadBadge autoSetDimension:ALDimensionWidth
+                                        toSize:unreadBadgeHeight
+                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
+
+            // Horizontally, badge is inserted after the tail of the payloadView, pushing back the date *and* snippet
+            // view
+            [self.payloadView autoPinEdge:ALEdgeTrailing
+                                   toEdge:ALEdgeLeading
+                                   ofView:self.unreadBadge
+                               withOffset:-self.topRowHSpacing],
+            [self.unreadBadge autoPinTrailingToSuperviewMargin],
+
+            // Vertically, badge is positioned vertically by aligning it's label *subview's* baseline.
+            // This allows us a single visual baseline of text across the top row across [name, dateTime,
+            // optional(unread count)]
+            [self.unreadLabel autoAlignAxis:ALAxisBaseline toSameAxisOfView:self.dateTimeLabel]
         ]];
     }
 }
@@ -284,11 +305,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Date formatting
 
-- (NSAttributedString *)attributedStringForDate:(nullable NSDate *)date
+- (NSString *)stringForDate:(nullable NSDate *)date
 {
     if (date == nil) {
         OWSProdLogAndFail(@"%@ date was unexpectedly nil", self.logTag);
-        return [NSAttributedString new];
+        return @"";
     }
 
     NSString *dateTimeString;
@@ -302,23 +323,19 @@ NS_ASSUME_NONNULL_BEGIN
         dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     }
 
-    return [[NSAttributedString alloc] initWithString:dateTimeString.uppercaseString
-                                           attributes:@{
-                                               NSForegroundColorAttributeName : [UIColor blackColor],
-                                               NSFontAttributeName : self.dateTimeFont,
-                                           }];
+    return dateTimeString.uppercaseString;
 }
 
 #pragma mark - Constants
 
-- (UIFont *)dateTimeFont
+- (UIFont *)unreadFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
 }
 
 - (UIFont *)snippetFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont];
+    return [UIFont ows_dynamicTypeSubheadlineFont];
 }
 
 - (UIFont *)nameFont
@@ -357,7 +374,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(referenceFontSize, kReferenceFontSizeMin, kReferenceFontSizeMax));
 
     const CGFloat kCellHeightMin = 68.f;
-    const CGFloat kCellHeightMax = 76.f;
+    const CGFloat kCellHeightMax = 80.f;
     CGFloat result = ceil(CGFloatLerp(kCellHeightMin, kCellHeightMax, alpha));
 
     return result;
@@ -378,6 +395,12 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
+// Using an NSUInteger precludes us from negating this value
+- (CGFloat)topRowHSpacing
+{
+    return ceil([HomeViewCell scaleValueWithDynamicType:5]);
+}
+
 #pragma mark - Reuse
 
 - (void)prepareForReuse
@@ -390,7 +413,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.thread = nil;
     self.contactsManager = nil;
 
-    [self.unreadBadgeContainer removeFromSuperview];
+    [self.unreadBadge removeFromSuperview];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

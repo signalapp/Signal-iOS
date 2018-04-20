@@ -95,15 +95,19 @@ import LocalAuthentication
 
     // MARK: - Methods
 
+    // This method should only be called:
+    //
+    // * On the main thread.
+    //
+    // Exactly one of these completions will be performed:
+    //
+    // * Asynchronously.
+    // * On the main thread.
     @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
                                             failure: @escaping ((Error) -> Void),
                                             unexpectedFailure: @escaping ((Error) -> Void),
                                             cancel: @escaping (() -> Void)) {
-        guard CurrentAppContext().isMainAppAndActive else {
-            owsFail("\(self.logTag) \(#function) Unexpected request for 'screen lock' unlock UI while app is inactive.")
-            cancel()
-            return
-        }
+        SwiftAssertIsOnMainThread(#function)
 
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
                                                                           comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
@@ -112,41 +116,44 @@ import LocalAuthentication
 
                                         switch outcome {
                                         case .failure(let error):
+                                            Logger.error("\(self.logTag) local authentication failed with error: \(error)")
                                             failure(self.authenticationError(errorDescription: error))
                                         case .unexpectedFailure(let error):
+                                            Logger.error("\(self.logTag) local authentication failed with unexpected error: \(error)")
                                             unexpectedFailure(self.authenticationError(errorDescription: error))
                                         case .success:
+                                            Logger.verbose("\(self.logTag) local authentication succeeded.")
                                             success()
                                         case .cancel:
+                                            Logger.verbose("\(self.logTag) local authentication cancelled.")
                                             cancel()
                                         }
         })
     }
 
-    // On failure, completion is called with an error argument.
-    // On success or cancel, completion is called with nil argument.
-    // Success and cancel can be differentiated by consulting
-    // isScreenLockEnabled.
+    // This method should only be called:
+    //
+    // * On the main thread.
+    //
+    // completionParam will be performed:
+    //
+    // * Asynchronously.
+    // * On the main thread.
     private func tryToVerifyLocalAuthentication(localizedReason: String,
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
         SwiftAssertIsOnMainThread(#function)
 
+        let defaultErrorDescription = NSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
+                                                        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
+
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: OWSScreenLockOutcome) in
-            switch outcome {
-            case .failure(let error):
-                Logger.error("\(self.logTag) local authentication failed with error: \(error)")
-            default:
-                break
-            }
             DispatchQueue.main.async {
                 completionParam(outcome)
             }
         }
 
         let context = screenLockContext()
-        let defaultErrorDescription = NSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
-                                                        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
 
         var authError: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &authError)

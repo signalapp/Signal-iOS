@@ -1409,10 +1409,10 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "ឆ្លើយតបទៅកាន់ %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "ឆ្លើយតបមកកាន់អ្នក";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "ឆ្លើយតបមកកាន់ខ្លួនអ្នក";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "ឯកសារភ្ជាប់";
@@ -1805,7 +1805,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "រយៈពេលចាក់សោរអេក្រង់";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ដោះសោរអេក្រង់ Signal ដោយប្រើ Touch ID, Face ID, ឬ លេខកូដនៅលើឧបករណ៍ iOS របស់អ្នក។";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "អេក្រង់ចាក់សោរ";
