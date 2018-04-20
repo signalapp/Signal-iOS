@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
     self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
@@ -115,7 +116,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
     self.unreadLabel = [UILabel new];
-    self.unreadLabel.font = self.dateTimeFont;
     self.unreadLabel.textColor = [UIColor whiteColor];
     self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.unreadLabel.textAlignment = NSTextAlignmentCenter;
@@ -177,10 +177,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (hasUnreadMessages) {
         self.dateTimeLabel.textColor = [UIColor ows_blackColor];
-        self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
+        self.dateTimeLabel.font = self.unreadFont.ows_mediumWeight;
     } else {
         self.dateTimeLabel.textColor = [UIColor lightGrayColor];
-        self.dateTimeLabel.font = self.dateTimeFont;
+        self.dateTimeLabel.font = self.unreadFont;
     }
 
     NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.contentView addSubview:self.unreadBadge];
 
         self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
-
+        self.unreadLabel.font = self.unreadFont;
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
 
@@ -328,7 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Constants
 
-- (UIFont *)dateTimeFont
+- (UIFont *)unreadFont
 {
     return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
 }
