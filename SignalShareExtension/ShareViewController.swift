@@ -121,6 +121,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                selector: #selector(owsApplicationWillEnterForeground),
                                                name: .OWSApplicationWillEnterForeground,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationDidEnterBackground),
+                                               name: .OWSApplicationDidEnterBackground,
+                                               object: nil)
 
         Logger.info("\(self.logTag) \(#function) completed.")
 
@@ -135,6 +139,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // That isn't safe; the codebase is full of statics (e.g. singletons) which
         // we can't easily clean up.
         ExitShareExtension()
+    }
+
+    @objc
+    public func applicationDidEnterBackground() {
+        SwiftAssertIsOnMainThread(#function)
+
+        Logger.info("\(self.logTag) \(#function)")
+
+        if OWSScreenLock.shared.isScreenLockEnabled() {
+
+            Logger.info("\(self.logTag) \(#function) dismissing.")
+
+            self.dismiss(animated: false) { [weak self] in
+                SwiftAssertIsOnMainThread(#function)
+                guard let strongSelf = self else { return }
+                strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+            }
+        }
     }
 
     private func activate() {
@@ -293,6 +315,20 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("\(logTag) Presenting initial root view controller")
 
+        if OWSScreenLock.shared.isScreenLockEnabled() {
+            presentScreenLock()
+        } else {
+            presentContentView()
+        }
+    }
+
+    private func presentContentView() {
+        SwiftAssertIsOnMainThread(#function)
+
+        Logger.debug("\(self.logTag) \(#function)")
+
+        Logger.info("\(logTag) Presenting content view")
+
         if !TSAccountManager.isRegistered() {
             showNotRegisteredView()
         } else if !OWSProfileManager.shared().localProfileExists() {
@@ -302,7 +338,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         } else {
             DispatchQueue.main.async { [weak self] in
                 guard let strongSelf = self else { return }
-                strongSelf.presentConversationPicker()
+                strongSelf.buildAttachmentAndPresentConversationPicker()
             }
         }
 
@@ -310,24 +346,24 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     }
 
     func startupLogging() {
-        Logger.info("iOS Version: \(UIDevice.current.systemVersion)}")
+        Logger.info("\(self.logTag) iOS Version: \(UIDevice.current.systemVersion)}")
 
         let locale = NSLocale.current as NSLocale
         if let localeIdentifier = locale.object(forKey: NSLocale.Key.identifier) as? String,
             localeIdentifier.count > 0 {
-            Logger.info("Locale Identifier: \(localeIdentifier)")
+            Logger.info("\(self.logTag) Locale Identifier: \(localeIdentifier)")
         } else {
             owsFail("Locale Identifier: Unknown")
         }
         if let countryCode = locale.object(forKey: NSLocale.Key.countryCode) as? String,
             countryCode.count > 0 {
-            Logger.info("Country Code: \(countryCode)")
+            Logger.info("\(self.logTag) Country Code: \(countryCode)")
         } else {
             owsFail("Country Code: Unknown")
         }
         if let languageCode = locale.object(forKey: NSLocale.Key.languageCode) as? String,
             languageCode.count > 0 {
-            Logger.info("Language Code: \(languageCode)")
+            Logger.info("\(self.logTag) Language Code: \(languageCode)")
         } else {
             owsFail("Language Code: Unknown")
         }
@@ -436,6 +472,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
 
+    public func shareViewWasUnlocked() {
+        Logger.info("\(self.logTag) \(#function)")
+
+        presentContentView()
+    }
+
     public func shareViewWasCompleted() {
         Logger.info("\(self.logTag) \(#function)")
 
@@ -488,20 +530,21 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }
     }
 
-    private func presentConversationPicker() {
+    private func buildAttachmentAndPresentConversationPicker() {
         SwiftAssertIsOnMainThread(#function)
 
         self.buildAttachment().then { [weak self] attachment -> Void in
             SwiftAssertIsOnMainThread(#function)
             guard let strongSelf = self else { return }
 
+            strongSelf.progressPoller = nil
+            strongSelf.loadViewController = nil
+
             let conversationPicker = SharingThreadPickerViewController(shareViewDelegate: strongSelf)
             Logger.debug("\(strongSelf.logTag) presentConversationPicker: \(conversationPicker)")
             conversationPicker.attachment = attachment
-            strongSelf.progressPoller = nil
-            strongSelf.loadViewController = nil
             strongSelf.showPrimaryViewController(conversationPicker)
-            Logger.info("showing picker with attachment: \(attachment)")
+            Logger.info("\(strongSelf.logTag) showing picker with attachment: \(attachment)")
         }.catch {[weak self]  error in
             SwiftAssertIsOnMainThread(#function)
             guard let strongSelf = self else { return }
@@ -515,6 +558,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             owsFail("\(strongSelf.logTag) building attachment failed with error: \(error)")
         }.retainUntilComplete()
+    }
+
+    private func presentScreenLock() {
+        SwiftAssertIsOnMainThread(#function)
+
+        let screenLockUI = SAEScreenLockViewController(shareViewDelegate: self)
+        Logger.debug("\(self.logTag) presentScreenLock: \(screenLockUI)")
+        showPrimaryViewController(screenLockUI)
+        Logger.info("\(self.logTag) showing screen lock")
     }
 
     private class func itemMatchesSpecificUtiType(itemProvider: NSItemProvider, utiType: String) -> Bool {
