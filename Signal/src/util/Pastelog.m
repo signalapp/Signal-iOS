@@ -80,23 +80,28 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         parameters:nil
         progress:nil
         success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
+            DebugLogUploader *strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+
             if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
-                [weakSelf
+                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
             NSString *uploadUrl = responseObject[@"url"];
             if (![uploadUrl isKindOfClass:[NSString class]] || uploadUrl.length < 1) {
-                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
-                [weakSelf
+                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
             NSDictionary *fields = responseObject[@"fields"];
             if (![fields isKindOfClass:[NSDictionary class]] || fields.count < 1) {
-                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
-                [weakSelf
+                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
@@ -104,27 +109,33 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                 NSString *fieldValue = fields[fieldName];
                 if (![fieldName isKindOfClass:[NSString class]] || fieldName.length < 1
                     || ![fieldValue isKindOfClass:[NSString class]] || fieldValue.length < 1) {
-                    DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
-                    [weakSelf failWithError:OWSErrorWithCodeDescription(
-                                                OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                    DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                    [strongSelf failWithError:OWSErrorWithCodeDescription(
+                                                  OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                     return;
                 }
             }
             NSString *_Nullable uploadKey = fields[@"key"];
             if (![uploadKey isKindOfClass:[NSString class]] || uploadKey.length < 1) {
-                DDLogError(@"%@ Invalid response: %@, %@", weakSelf.logTag, urlString, responseObject);
-                [weakSelf
+                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                [strongSelf
                     failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
                 return;
             }
             
             // Add a file extension to the upload's key.
-            NSString *fileExtension = weakSelf.fileUrl.lastPathComponent.pathExtension;
+            NSString *fileExtension = strongSelf.fileUrl.lastPathComponent.pathExtension;
+            if (fileExtension.length < 1) {
+                DDLogError(@"%@ Invalid response: %@, %@", strongSelf.logTag, urlString, responseObject);
+                [strongSelf
+                    failWithError:OWSErrorWithCodeDescription(OWSErrorCodeDebugLogUploadFailed, @"Invalid response")];
+                return;
+            }
             uploadKey = [uploadKey stringByAppendingPathExtension:fileExtension];
             NSMutableDictionary *updatedFields = [fields mutableCopy];
             updatedFields[@"key"] = uploadKey;
-            
-            [weakSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
+
+            [strongSelf uploadFileWithUploadUrl:uploadUrl fields:updatedFields uploadKey:uploadKey];
         }
         failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
             DDLogError(@"%@ failed: %@", weakSelf.logTag, urlString);
