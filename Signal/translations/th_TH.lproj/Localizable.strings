@@ -113,13 +113,13 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "เกิดข้อผิดพลาดในการส่งไฟล์แนบ";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดภาพที่แนบได้";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "ไม่สามารถปรับขนาดภาพที่แนบมาได้";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "ไม่สามารถประมวลผลวิดีโอ";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถแยกวิเคราะห์ภาพที่แนบได้";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "ไม่สามารถวิเคราะห์ภาพที่แนบมาได้";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "ไม่สามารถลบข้อมูล metadata จากรูปได้";
@@ -206,7 +206,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "กำลังคืนค่าไฟล์";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกบล็อกจะไม่สามารถโทรหาคุณหรือส่งข้อความถึงคุณ";
+"BLOCK_BEHAVIOR_EXPLANATION" = "ผู้ใช้ที่ถูกบล็อกจะไม่สามารถโทรหาหรือส่งข้อความถึงคุณได้";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "บล็อก";
@@ -251,7 +251,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "เลิกบล็อก %@ แล้ว";
 
 /* The title of the 'user unblocked' alert. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "ผู้ใช้ถูกยกเลิกการบล็อก";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE" = "ยกเลิกการบล็อกผู้ใช้แล้ว";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "บล็อก";
@@ -482,7 +482,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "บล็อกผู้ใช้นี้";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตเซสชันของคุณจะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่จะเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วไม่ได้";
+"CORRUPTED_SESSION_DESCRIPTION" = "การรีเซ็ตเซสชันของคุณจะทำให้คุณรับข้อความในอนาคตจาก %@ ได้ แต่จะไม่สามารถเรียกคืนข้อความใดๆ ที่เสียหายไปแล้วได้";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "เลือกรหัสประเทศ";
@@ -543,7 +543,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "อีกหนึ่งขั้นตอน";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "ลิงก์ของ gist ถูกคัดลอกไว้ในคลิปบอร์ดของคุณแล้ว คุณกำลังถูกเปลี่ยนทางไปยังรายการประเด็นของ GitHub";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "คัดลอกลิงก์ของ gist ไว้ในคลิปบอร์ดของคุณแล้ว คุณกำลังถูกนำไปยังรายการประเด็นของ GitHub";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "เปลี่ยนเส้นทางไปยัง GitHub";
@@ -1805,7 +1805,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "หมดเวลาการล็อกหน้าจอ";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "ปลดล็อกหน้าจอ Signal โดยใช้ Touch ID, Face ID หรือรหัสของอุปกรณ์ iOS ของคุณ";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "ล็อกหน้าจอ";
@@ -2003,7 +2003,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "ไม่ได้รับอนุญาต";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "การรับสายจากหน้าจอที่ล็อกอยู่ของคุณสามารถทำได้ง่ายๆ ด้วยการผสานกับการโทรของ iOS เราจะปิดชื่อคนที่โทรหาคุณโดยปริบาย ดังนั้นมันจะเป็นส่วนตัว";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "คุณสามารถรับสายจากหน้าจอที่ล็อกอยู่ได้ง่ายๆ ด้วยการผสานกับการโทรของ iOS และยังมีความเป็นส่วนตัวเพราะเราจะปิดชื่อคนที่โทรหาคุณไว้เป็นค่าเริ่มต้น";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "เรียนรู้เพิ่มเติมในการตั้งค่าความเป็นส่วนตัวของคุณ";
@@ -2030,10 +2030,10 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "พร้อมเข้ามาใกล้ๆ หรือยัง";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "ตอนนี้คุณมีทางเลือกที่จะดูและแชร์ได้หลังจากข้อความถูกอ่าน";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "ตอนนี้เมื่อข้อความถูกอ่านแล้ว คุณสามารถเลือกที่จะดูและแชร์ได้";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "เปิดใช้การตอบรับเมื่ออ่านในการตั้งค่าความเป็นส่วนตัวของคุณ";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "เปิดใช้การตอบรับเมื่ออ่าน ในการตั้งค่าความเป็นส่วนตัวของคุณ";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "ขอแนะนำการตอบรับเมื่ออ่าน";
@@ -2042,7 +2042,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal รองรับการโทรด้วยวิดีโอได้อย่างปลอดภัยแล้ว เพียงโทรออกตามปกติ แตะปุ่มวิดีโอ แล้วโบกมือทักทาย";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "สวัสดีการโทรด้วยวิดีโออย่างปลอดภัย!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "การโทรด้วยวิดีโออย่างปลอดภัย!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ต้องการ iOS 9 หรือใหม่กว่า โปรดอัปเกรด iOS ได้ใน การตั้งค่า >> ทั่วไป >> รายการอัปเดตซอฟต์แวร์ ";
