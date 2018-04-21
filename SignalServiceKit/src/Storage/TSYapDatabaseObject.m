@@ -109,8 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    OWSAssert(![NSThread isMainThread]);
-    
+    //    OWSAssert(![NSThread isMainThread]);
+
     // We use TSYapDatabaseObject's dbReadWriteConnection (not OWSPrimaryStorage's
     // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
     // save] and want to write to the same connection we read from.  To get true
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    OWSAssert(![NSThread isMainThread]);
+    //    OWSAssert(![NSThread isMainThread]);
 
     // Use a dedicated connection for model reads & writes.
     static YapDatabaseConnection *dbReadWriteConnection = nil;

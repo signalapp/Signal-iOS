@@ -127,9 +127,10 @@ NS_ASSUME_NONNULL_BEGIN
     return OWSInteractionType_Unknown;
 }
 
-- (NSString *)description {
-    OWSFail(@"Abstract Method");
-    return @"Interaction description";
+- (NSString *)description
+{
+    return [NSString
+        stringWithFormat:@"%@ in thread: %@ timestamp: %tu", [super description], self.uniqueThreadId, self.timestamp];
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {

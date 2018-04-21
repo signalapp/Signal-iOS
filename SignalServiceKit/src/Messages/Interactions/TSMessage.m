@@ -265,13 +265,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-- (NSString *)description
-{
-    // TODO verify this isn't exposed in the UI
-    OWSFail(@"%@ in %s verify this isn't being used anywhere except logging.", self.logTag, __PRETTY_FUNCTION__);
-    return [super description];
-}
-
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];
