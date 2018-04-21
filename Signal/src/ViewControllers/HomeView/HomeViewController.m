@@ -156,14 +156,14 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
-    [self.tableView reloadData];
+    [self reloadTableViewData];
 }
 
 - (void)signalAccountsDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
-    [self.tableView reloadData];
+    [self reloadTableViewData];
 }
 
 #pragma mark - View Life Cycle
@@ -473,6 +473,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 }
 
+- (void)reloadTableViewData
+{
+    // PERF: come up with a more nuanced cache clearing scheme
+    [self.threadModelCache removeAllObjects];
+    [self.tableView reloadData];
+}
+
 - (void)resetMappings
 {
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
@@ -489,7 +496,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         }];
     }
 
-    [[self tableView] reloadData];
+    [self reloadTableViewData];
+
     [self checkIfEmptyView];
     [self updateInboxCountLabel];
 
@@ -926,7 +934,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     [self resetMappings];
 
-    [[self tableView] reloadData];
+    [self reloadTableViewData];
     [self checkIfEmptyView];
     [self updateReminderViews];
 }
