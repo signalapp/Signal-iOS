@@ -91,7 +91,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return OWSInteractionType_Info;
 }
 
-- (NSString *)description {
+- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
             return NSLocalizedString(@"SECURE_SESSION_RESET", nil);

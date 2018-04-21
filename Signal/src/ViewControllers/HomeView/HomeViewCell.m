@@ -146,11 +146,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureWithThread:(TSThread *)thread
               contactsManager:(OWSContactsManager *)contactsManager
         blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+                transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssert(thread);
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
+    OWSAssert(transaction);
 
     self.thread = thread;
     self.contactsManager = contactsManager;
@@ -171,7 +173,9 @@ NS_ASSUME_NONNULL_BEGIN
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.attributedText =
-        [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
+        [self attributedSnippetForThread:thread
+                   blockedPhoneNumberSet:blockedPhoneNumberSet
+                             transaction:transaction];
 
     self.dateTimeLabel.text = [self stringForDate:thread.lastMessageDate];
 
@@ -253,6 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)attributedSnippetForThread:(TSThread *)thread
                              blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+                                       transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(thread);
 
@@ -285,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     : [UIColor lightGrayColor]),
                                                         }]];
         }
-        NSString *displayableText = thread.lastMessageLabel.filterStringForDisplay;
+        NSString *displayableText = [thread lastMessageLabelWithTransaction:transaction];
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText

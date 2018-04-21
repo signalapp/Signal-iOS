@@ -97,7 +97,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return OWSInteractionType_Error;
 }
 
-- (NSString *)description {
+- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
     switch (_errorType) {
         case TSErrorMessageNoSession:
             return NSLocalizedString(@"ERROR_MESSAGE_NO_SESSION", @"");

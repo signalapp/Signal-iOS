@@ -67,7 +67,13 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     return OWSInteractionType_Call;
 }
 
-- (NSString *)description {
+- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self previewText];
+}
+
+- (NSString *)previewText
+{
     switch (_callType) {
         case RPRecentCallTypeIncoming:
             return NSLocalizedString(@"INCOMING_CALL", @"");
@@ -83,8 +89,14 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
         case RPRecentCallTypeIncomingDeclined:
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
-                @"info message recorded in conversation history when local user declined a call");
+                                     @"info message recorded in conversation history when local user declined a call");
     }
+}
+
+- (NSString *)description
+{
+    OWSFail(@"%@ in %s verify this isnt exposed in the UI", self.logTag, __PRETTY_FUNCTION__);
+    return [self previewText];
 }
 
 #pragma mark - OWSReadTracking

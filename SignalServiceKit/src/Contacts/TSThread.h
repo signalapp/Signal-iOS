@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Thread preview string.
  */
-- (NSString *)lastMessageLabel;
+- (NSString *)lastMessageLabelWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  *  Updates the thread's caches of the latest interaction.

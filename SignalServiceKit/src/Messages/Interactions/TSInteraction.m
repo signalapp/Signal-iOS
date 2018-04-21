@@ -128,6 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (NSString *)description {
+    OWSFail(@"Abstract Method");
     return @"Interaction description";
 }
 

@@ -19,6 +19,12 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Offer,
 };
 
+@protocol OWSPreviewText
+
+- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
+
+@end
+
 @interface TSInteraction : TSYapDatabaseObject
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;

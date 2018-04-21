@@ -4,6 +4,7 @@
 
 #import "TSThread.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
@@ -246,26 +247,24 @@ NS_ASSUME_NONNULL_BEGIN
     return last;
 }
 
-- (TSInteraction *)lastInteractionForInbox
+- (TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     __block TSInteraction *last = nil;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:self.uniqueId
-                     withOptions:NSEnumerationReverse
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-
-                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
-                          TSInteraction *interaction = (TSInteraction *)object;
-
-                          if ([TSThread shouldInteractionAppearInInbox:interaction]) {
-                              last = interaction;
-                              *stop = YES;
-                          }
-                      }];
-    }];
+    [[transaction ext:TSMessageDatabaseViewExtensionName]
+     enumerateRowsInGroup:self.uniqueId
+     withOptions:NSEnumerationReverse
+     usingBlock:^(
+                  NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+         
+         OWSAssert([object isKindOfClass:[TSInteraction class]]);
+         
+         TSInteraction *interaction = (TSInteraction *)object;
+         
+         if ([TSThread shouldInteractionAppearInInbox:interaction]) {
+             last = interaction;
+             *stop = YES;
+         }
+     }];
     return last;
 }
 
@@ -277,12 +276,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString *)lastMessageLabel {
-    TSInteraction *interaction = self.lastInteractionForInbox;
-    if (interaction == nil) {
-        return @"";
+- (NSString *)lastMessageLabelWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
+    if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {
+        id<OWSPreviewText> previewable = (id<OWSPreviewText>)interaction;
+        return [previewable previewTextWithTransaction:transaction].filterStringForDisplay;
     } else {
-        return interaction.description;
+        return @"";
     }
 }
 

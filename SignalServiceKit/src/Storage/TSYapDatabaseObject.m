@@ -109,17 +109,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (YapDatabaseConnection *)dbReadConnection
 {
+    OWSAssert(![NSThread isMainThread]);
+    
     // We use TSYapDatabaseObject's dbReadWriteConnection (not OWSPrimaryStorage's
     // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
     // save] and want to write to the same connection we read from.  To get true
     // consistency, we'd want to update entities by reading & writing from within
     // the same transaction, but that'll be a big refactor.
-
     return self.dbReadWriteConnection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
+    OWSAssert(![NSThread isMainThread]);
+
     // Use a dedicated connection for model reads & writes.
     static YapDatabaseConnection *dbReadWriteConnection = nil;
     static dispatch_once_t onceToken;

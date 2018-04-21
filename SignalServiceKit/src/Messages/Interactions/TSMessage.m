@@ -265,14 +265,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-// TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
 - (NSString *)description
 {
-    __block NSString *result;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self previewTextWithTransaction:transaction];
-    }];
-    return result;
+    // TODO verify this isn't exposed in the UI
+    OWSFail(@"%@ in %s verify this isn't being used anywhere except logging.", self.logTag, __PRETTY_FUNCTION__);
+    return [super description];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

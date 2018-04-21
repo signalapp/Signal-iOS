@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSString *)description
+-(NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     if (self.createdByRemoteName) {
         if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {

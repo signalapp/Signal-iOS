@@ -395,7 +395,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self updateReminderViews];
@@ -490,7 +494,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnce];
     }
 }
@@ -506,11 +514,21 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.isAppInBackground = YES;
 }
 
+- (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSThread numberOfKeysInCollectionWithTransaction:transaction] > 0;
+}
+
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     // It's possible a thread was created while we where in the background. But since we don't honor contact
     // requests unless the app is in the foregrond, we must check again here upon becoming active.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self updateReminderViews];
@@ -584,9 +602,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [cell configureWithThread:thread
-              contactsManager:self.contactsManager
-        blockedPhoneNumberSet:self.blockedPhoneNumberSet];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        [cell configureWithThread:thread
+                  contactsManager:self.contactsManager
+            blockedPhoneNumberSet:self.blockedPhoneNumberSet
+                      transaction:transaction];
+    }];
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);

@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
-@interface TSMessage : TSInteraction
+@interface TSMessage : TSInteraction <OWSPreviewText>
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
@@ -39,7 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasAttachments;
 - (nullable TSAttachment *)attachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (BOOL)shouldStartExpireTimer;
