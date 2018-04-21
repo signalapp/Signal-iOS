@@ -17,6 +17,8 @@ extern NSString *const OWSApplicationDidBecomeActiveNotification;
 
 typedef void (^BackgroundTaskExpirationHandler)(void);
 
+NSString *NSStringForUIApplicationState(UIApplicationState value);
+
 @class OWSAES256Key;
 
 @protocol AppContext <NSObject>

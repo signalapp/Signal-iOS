@@ -142,6 +142,10 @@
 		34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */; };
 		34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSContactsSyncing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSContactsSyncing.m */; };
+		34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */; };
+		34641E1B2088DA4100E2EDE5 /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */; };
+		34641E1C2088DA4100E2EDE5 /* ScreenLockViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -206,7 +210,6 @@
 		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
 		34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */; };
-		34D2CCD4206294B900CB1A14 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */; };
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
 		34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
@@ -726,6 +729,11 @@
 		346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
 		34612A041FD7238500532771 /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
 		34612A051FD7238500532771 /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
+		34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSScreenLock.swift; sourceTree = "<group>"; };
+		34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenLockViewController.m; path = SignalMessaging/ViewControllers/ScreenLockViewController.m; sourceTree = SOURCE_ROOT; };
+		34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenLockViewController.h; path = SignalMessaging/ViewControllers/ScreenLockViewController.h; sourceTree = SOURCE_ROOT; };
+		34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEScreenLockViewController.h; sourceTree = "<group>"; };
+		34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEScreenLockViewController.m; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		347850581FD9972E007B8332 /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
@@ -828,7 +836,6 @@
 		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupLazyRestoreJob.swift; sourceTree = "<group>"; };
-		34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSScreenLock.swift; sourceTree = "<group>"; };
 		34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScreenLockUI.h; sourceTree = "<group>"; };
 		34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScreenLockUI.m; sourceTree = "<group>"; };
 		34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIMessagesAction.m; sourceTree = "<group>"; };
@@ -1408,6 +1415,7 @@
 				344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
+				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
 				34480B4F1FD0A7A300BC14EF /* OWSScrubbingLogFormatter.h */,
 				34480B511FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m */,
 				346129331FD1A88700532771 /* OWSSwiftUtils.swift */,
@@ -1577,6 +1585,8 @@
 				344F248620069ECB00CFB4F4 /* ModalActivityIndicatorViewController.swift */,
 				344D6CE920069E070042AF96 /* NewNonContactConversationViewController.h */,
 				344D6CE820069E070042AF96 /* NewNonContactConversationViewController.m */,
+				34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */,
+				34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */,
 				344D6CE620069E060042AF96 /* SelectRecipientViewController.h */,
 				344D6CE720069E060042AF96 /* SelectRecipientViewController.m */,
 				344F2495200FD03200CFB4F4 /* SharingThreadPickerViewController.h */,
@@ -1812,6 +1822,8 @@
 				4535186C1FC635DD00210559 /* MainInterface.storyboard */,
 				347850561FD86544007B8332 /* SAEFailedViewController.swift */,
 				3461284A1FD0B93F00532771 /* SAELoadViewController.swift */,
+				34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */,
+				34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */,
 				4535186A1FC635DD00210559 /* ShareViewController.swift */,
 				34480B371FD092A900BC14EF /* SignalShareExtension-Bridging-Header.h */,
 				34480B381FD092E300BC14EF /* SignalShareExtension-Prefix.pch */,
@@ -2030,7 +2042,6 @@
 				340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */,
 				340FC8CB20518C76007AEB0F /* OWSBackupJob.h */,
 				340FC8CC20518C76007AEB0F /* OWSBackupJob.m */,
-				34D2CCD3206294B900CB1A14 /* OWSScreenLock.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
 				34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */,
@@ -2328,6 +2339,7 @@
 			files = (
 				451F8A3A1FD711D9005CB9DA /* ContactsViewHelper.h in Headers */,
 				34480B491FD0A60200BC14EF /* OWSMath.h in Headers */,
+				34641E1C2088DA4100E2EDE5 /* ScreenLockViewController.h in Headers */,
 				346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */,
 				344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */,
 				34480B521FD0A7A400BC14EF /* OWSLogger.h in Headers */,
@@ -3067,6 +3079,7 @@
 			files = (
 				4535186B1FC635DD00210559 /* ShareViewController.swift in Sources */,
 				34480B361FD0929200BC14EF /* ShareAppExtensionContext.m in Sources */,
+				34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */,
 				3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */,
 				347850571FD86544007B8332 /* SAEFailedViewController.swift in Sources */,
 			);
@@ -3098,6 +3111,7 @@
 				34480B641FD0A98800BC14EF /* UIView+OWS.m in Sources */,
 				34C3C7932040B0DD0000134C /* OWSAudioPlayer.m in Sources */,
 				3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */,
+				34641E1B2088DA4100E2EDE5 /* ScreenLockViewController.m in Sources */,
 				344F248520069E9C00CFB4F4 /* CountryCodeViewController.m in Sources */,
 				34480B671FD0AA9400BC14EF /* UIFont+OWS.m in Sources */,
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
@@ -3155,6 +3169,7 @@
 				344D6CEB20069E070042AF96 /* SelectRecipientViewController.m in Sources */,
 				34480B591FD0A7A400BC14EF /* OWSScrubbingLogFormatter.m in Sources */,
 				451F8A441FD7156B005CB9DA /* BlockListUIUtils.m in Sources */,
+				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				451F8A381FD7117E005CB9DA /* OWSViewController.m in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
@@ -3320,7 +3335,6 @@
 				4521C3C01F59F3BA00B4C582 /* TextFieldHelper.swift in Sources */,
 				34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */,
 				340FC8AC204DAC8D007AEB0F /* PrivacySettingsTableViewController.m in Sources */,
-				34D2CCD4206294B900CB1A14 /* OWSScreenLock.swift in Sources */,
 				340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */,
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,

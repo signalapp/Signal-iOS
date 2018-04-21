@@ -1409,7 +1409,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Vastaus: %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Vastaus sinulle";
 
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Vastaus itsellesi";
@@ -1805,7 +1805,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automaattisen näytön lukituksen odotusaika";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Avaa Signalin ruudun lukitus Touch ID:llä, Face ID:llä tai pääsykoodillasi.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ruudun lukitus";

@@ -130,6 +130,8 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 @property (nonatomic, assign) BOOL checkingForAppStoreID;
 @property (nonatomic, assign) BOOL shouldPreventPromptAtNextTest;
 
+@property (nonatomic) BOOL hasQueuedSynchronize;
+
 @end
 
 
@@ -179,6 +181,10 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
             [[NSNotificationCenter defaultCenter] addObserver:self
                                                      selector:@selector(applicationWillEnterForeground)
                                                          name:UIApplicationWillEnterForegroundNotification
+                                                       object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(applicationDidBecomeActive)
+                                                         name:UIApplicationDidBecomeActiveNotification
                                                        object:nil];
         }
 
@@ -335,7 +341,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setFirstUsed:(NSDate *)date {
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:iRateFirstUsedKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSDate *)lastReminded {
@@ -344,7 +350,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setLastReminded:(NSDate *)date {
     [[NSUserDefaults standardUserDefaults] setObject:date forKey:iRateLastRemindedKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSUInteger)usesCount {
@@ -353,7 +359,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setUsesCount:(NSUInteger)count {
     [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)count forKey:iRateUseCountKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (NSUInteger)eventCount {
@@ -362,7 +368,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 
 - (void)setEventCount:(NSUInteger)count {
     [[NSUserDefaults standardUserDefaults] setInteger:(NSInteger)count forKey:iRateEventCountKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (float)usesPerWeek {
@@ -377,7 +383,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setDeclinedThisVersion:(BOOL)declined {
     [[NSUserDefaults standardUserDefaults] setObject:(declined ? self.applicationVersion : nil)
                                               forKey:iRateDeclinedVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (BOOL)declinedAnyVersion {
@@ -395,7 +401,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setRatedThisVersion:(BOOL)rated {
     [[NSUserDefaults standardUserDefaults] setObject:(rated ? self.applicationVersion : nil)
                                               forKey:iRateRatedVersionKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (BOOL)ratedAnyVersion {
@@ -584,7 +590,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)setAppStoreIDOnMainThread:(NSString *)appStoreIDString {
     _appStoreID = [appStoreIDString integerValue];
     [[NSUserDefaults standardUserDefaults] setInteger:_appStoreID forKey:iRateAppStoreIDKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self synchronizeWhenSafeToDoSo];
 }
 
 - (void)connectionSucceeded {
@@ -924,7 +930,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
             [defaults setInteger:0 forKey:iRateUseCountKey];
             [defaults setInteger:0 forKey:iRateEventCountKey];
             [defaults setObject:nil forKey:iRateLastRemindedKey];
-            [defaults synchronize];
+            [self synchronizeWhenSafeToDoSo];
         } else if ([[NSDate date] timeIntervalSinceDate:self.firstUsed] >
                    (self.daysUntilPrompt - 1) * SECONDS_IN_A_DAY) {
             // if was previously installed, but we haven't yet prompted for a rating
@@ -969,6 +975,26 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
         if (self.promptAtLaunch) {
             [self promptIfAllCriteriaMet];
         }
+    }
+}
+
+// Only synchronize when active.
+- (void)synchronizeWhenSafeToDoSo
+{
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        self.hasQueuedSynchronize = YES;
+        return;
+    }
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    self.hasQueuedSynchronize = NO;
+}
+
+// Only synchronize when active.
+- (void)applicationDidBecomeActive
+{
+    if (self.hasQueuedSynchronize) {
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        self.hasQueuedSynchronize = NO;
     }
 }
 

@@ -1187,7 +1187,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Membre";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nommer ce groupe de discussion";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nommer ce dialogue de groupe";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autre Utilisateurs";
@@ -1409,7 +1409,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Répondre à %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Vous répond";
 
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Répondre à vous-même";
@@ -1613,7 +1613,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Autres contacts";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Chats récents";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Dialogues récents";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Envoyer à nouveau";
@@ -1805,7 +1805,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Délai de verrouillage de l'écran";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Déverrouillez l'écran Signal en utilisant Touch ID, Face ID ou le mot de passe de votre appareil iOS.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Verrouillage d'écran";

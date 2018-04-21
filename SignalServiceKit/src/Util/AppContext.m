@@ -11,6 +11,18 @@ NSString *const OWSApplicationWillEnterForegroundNotification = @"OWSApplication
 NSString *const OWSApplicationWillResignActiveNotification = @"OWSApplicationWillResignActiveNotification";
 NSString *const OWSApplicationDidBecomeActiveNotification = @"OWSApplicationDidBecomeActiveNotification";
 
+NSString *NSStringForUIApplicationState(UIApplicationState value)
+{
+    switch (value) {
+        case UIApplicationStateActive:
+            return @"UIApplicationStateActive";
+        case UIApplicationStateInactive:
+            return @"UIApplicationStateInactive";
+        case UIApplicationStateBackground:
+            return @"UIApplicationStateBackground";
+    }
+}
+
 static id<AppContext> currentAppContext = nil;
 
 id<AppContext> CurrentAppContext(void)
