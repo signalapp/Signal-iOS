@@ -200,18 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
     return count;
 }
 
-- (BOOL)hasUnreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    TSInteraction *interaction = [self lastInteractionWithTransaction:transaction];
-    BOOL hasUnread = NO;
-
-    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        hasUnread = ![(TSIncomingMessage *)interaction wasRead];
-    }
-
-    return hasUnread;
-}
-
 - (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
@@ -245,13 +233,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
-- (TSInteraction *)lastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
-}
-
 - (TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
     [[transaction ext:TSMessageDatabaseViewExtensionName]
      enumerateRowsInGroup:self.uniqueId
@@ -260,11 +244,20 @@ NS_ASSUME_NONNULL_BEGIN
                   NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
          
          OWSAssert([object isKindOfClass:[TSInteraction class]]);
-         
+
+         missedCount++;
          TSInteraction *interaction = (TSInteraction *)object;
          
          if ([TSThread shouldInteractionAppearInInbox:interaction]) {
              last = interaction;
+
+             // For long ignored threads, with lots of SN changes this can get really slow.
+             // I see this in development because I have a lot of long forgotten threads with members
+             // who's test devices are constantly reinstalled. We could add a purpose-built DB view,
+             // but I think in the real world this is rare to be a hotspot.
+             if (missedCount > 50) {
+                 DDLogWarn(@"%@ found last interaction for inbox after skipping %tu items", self.logTag, missedCount);
+             }
              *stop = YES;
          }
      }];

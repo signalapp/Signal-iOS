@@ -947,6 +947,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
+        // default is 250
+        _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
