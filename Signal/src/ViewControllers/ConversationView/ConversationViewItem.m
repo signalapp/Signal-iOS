@@ -660,6 +660,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     } else if (action == self.metadataActionSelector) {
         return YES;
     } else if (action == self.replyActionSelector) {
+        if ([self.interaction isKindOfClass:[TSMessage class]]) {
+            TSMessage *message = (TSMessage *)self.interaction;
+            if (message.isExpiringMessage) {
+                return NO;
+            }
+        }
+
         if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
             if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent

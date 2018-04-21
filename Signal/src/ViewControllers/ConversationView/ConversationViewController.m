@@ -2317,6 +2317,11 @@ typedef enum : NSUInteger {
         return;
     }
 
+    if (message.isExpiringMessage) {
+        OWSFail(@"%@ unexpected expiring reply message: %@", self.logTag, message);
+        return;
+    }
+
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         quotedReply = [OWSQuotedReplyModel quotedReplyForMessage:message transaction:transaction];
