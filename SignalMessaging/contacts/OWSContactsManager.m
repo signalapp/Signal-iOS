@@ -371,9 +371,15 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     if (!signalAccount) {
-        return nil;
+        // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
+        DDLogDebug(@"%@ no signal account", self.logTag);
+        Contact *_Nullable nonSignalContact = self.allContactsMap[recipientId];
+        if (!nonSignalContact) {
+            return nil;
+        }
+        return nonSignalContact.fullName;
     }
 
     NSString *fullName = signalAccount.contactFullName;
