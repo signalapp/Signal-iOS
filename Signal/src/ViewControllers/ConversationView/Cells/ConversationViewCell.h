@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSMessage;
 @class TSOutgoingMessage;
 @class TSQuotedMessage;
+@class YapDatabaseReadTransaction;
 
 @protocol ConversationViewCellDelegate <NSObject>
 
@@ -71,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 // The width of the collection view.
 @property (nonatomic) int contentWidth;
 
-- (void)loadForDisplay;
+- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
 

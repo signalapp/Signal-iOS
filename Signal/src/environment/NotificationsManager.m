@@ -18,6 +18,7 @@
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TextSecureKitEnv.h>
 #import <SignalServiceKit/Threading.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 @interface NotificationsManager ()
 
@@ -200,51 +201,56 @@
 
 #pragma mark - Signal Messages
 
-- (void)notifyUserForErrorMessage:(TSErrorMessage *)message inThread:(TSThread *)thread {
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)message
+                           thread:(TSThread *)thread
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssert(message);
     OWSAssert(thread);
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (thread.isMuted) {
-            return;
-        }
+    NSString *messageText = [message previewTextWithTransaction:transaction];
 
-        BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+    [transaction
+        addCompletionQueue:nil
+           completionBlock:^() {
+               if (thread.isMuted) {
+                   return;
+               }
 
-        NSString *messageDescription = message.description;
+               BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
 
-        if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageDescription) {
-            UILocalNotification *notification = [[UILocalNotification alloc] init];
-            notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
-            if (shouldPlaySound) {
-                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                notification.soundName = [OWSSounds filenameForSound:sound];
-            }
+               if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageText) {
+                   UILocalNotification *notification = [[UILocalNotification alloc] init];
+                   notification.userInfo = @{ Signal_Thread_UserInfo_Key : thread.uniqueId };
+                   if (shouldPlaySound) {
+                       OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                       notification.soundName = [OWSSounds filenameForSound:sound];
+                   }
 
-            NSString *alertBodyString = @"";
+                   NSString *alertBodyString = @"";
 
-            NSString *authorName = [thread name];
-            switch (self.notificationPreviewType) {
-                case NotificationNamePreview:
-                case NotificationNameNoPreview:
-                    alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName, messageDescription];
-                    break;
-                case NotificationNoNameNoPreview:
-                    alertBodyString = messageDescription;
-                    break;
-            }
-            notification.alertBody = alertBodyString;
+                   NSString *authorName = [thread name];
+                   switch (self.notificationPreviewType) {
+                       case NotificationNamePreview:
+                       case NotificationNameNoPreview:
+                           alertBodyString = [NSString stringWithFormat:@"%@: %@", authorName, messageText];
+                           break;
+                       case NotificationNoNameNoPreview:
+                           alertBodyString = messageText;
+                           break;
+                   }
+                   notification.alertBody = alertBodyString;
 
-            [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
-        } else {
-            if (shouldPlaySound && [Environment.preferences soundInForeground]) {
-                OWSSound sound = [OWSSounds notificationSoundForThread:thread];
-                SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
-                // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
-                AudioServicesPlayAlertSound(soundId);
-            }
-        }
-    });
+                   [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
+               } else {
+                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                       OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                       SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
+                       // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+                       AudioServicesPlayAlertSound(soundId);
+                   }
+               }
+           }];
 }
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)message

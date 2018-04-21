@@ -545,7 +545,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [message saveWithTransaction:transaction];
     }
 
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                          thread:contactThread
+                                                                     transaction:transaction];
 }
 
 - (void)enqueueSyncMessageForVerificationStateForRecipientId:(NSString *)recipientId

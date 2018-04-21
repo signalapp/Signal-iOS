@@ -85,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-- (void)loadForDisplay
+- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);

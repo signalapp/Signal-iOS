@@ -69,11 +69,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self previewText];
-}
-
-- (NSString *)previewText
-{
+    // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:
             return NSLocalizedString(@"INCOMING_CALL", @"");
@@ -91,12 +87,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
                                      @"info message recorded in conversation history when local user declined a call");
     }
-}
-
-- (NSString *)description
-{
-    OWSFail(@"%@ in %s verify this isnt exposed in the UI", self.logTag, __PRETTY_FUNCTION__);
-    return [self previewText];
 }
 
 #pragma mark - OWSReadTracking
