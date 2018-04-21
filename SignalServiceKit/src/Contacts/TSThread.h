@@ -70,7 +70,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return YES if it has unread TSIncomingMessages, NO otherwise.
  */
-- (BOOL)hasUnreadMessages;
+- (BOOL)hasUnreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(hasUnreadMessages(transaction:));
+- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(unreadMessageCount(transaction:));
 
 - (BOOL)hasSafetyNumbers;
 
@@ -90,7 +93,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Thread preview string.
  */
-- (NSString *)lastMessageLabelWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(lastMessageText(transaction:));
 
 /**
  *  Updates the thread's caches of the latest interaction.

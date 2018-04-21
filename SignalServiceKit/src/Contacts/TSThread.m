@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
-- (TSInteraction *)lastInteraction;
+- (TSInteraction *)lastInteractionWithTranscation:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
@@ -200,8 +200,9 @@ NS_ASSUME_NONNULL_BEGIN
     return count;
 }
 
-- (BOOL)hasUnreadMessages {
-    TSInteraction *interaction = self.lastInteraction;
+- (BOOL)hasUnreadMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSInteraction *interaction = [self lastInteractionWithTransaction:transaction];
     BOOL hasUnread = NO;
 
     if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
@@ -229,6 +230,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [messages copy];
 }
 
+- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.uniqueId];
+}
+
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
@@ -239,12 +245,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
-- (TSInteraction *) lastInteraction {
-    __block TSInteraction *last;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
-    }];
-    return last;
+- (TSInteraction *)lastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
 }
 
 - (TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -276,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString *)lastMessageLabelWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
     if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {

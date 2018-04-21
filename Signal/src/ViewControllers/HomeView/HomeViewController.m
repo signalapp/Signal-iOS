@@ -600,14 +600,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        [cell configureWithThread:thread
-                  contactsManager:self.contactsManager
-            blockedPhoneNumberSet:self.blockedPhoneNumberSet
-                      transaction:transaction];
+    TSThread *threadRecord = [self threadForIndexPath:indexPath];
+    __block ThreadModel *thread;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        thread = [[ThreadModel alloc] initWithThread:threadRecord transaction:transaction];
     }];
+
+    [cell configureWithThread:thread
+              contactsManager:self.contactsManager
+        blockedPhoneNumberSet:self.blockedPhoneNumberSet];
 
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
@@ -969,7 +970,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnce];
     }
 
