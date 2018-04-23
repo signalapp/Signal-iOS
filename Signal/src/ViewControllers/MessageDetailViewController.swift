@@ -212,7 +212,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     groupRows.append(divider)
                 }
 
-                for recipientId in thread.recipientIdentifiers {
+                let messageRecipientIds = outgoingMessage.recipientIds()
+
+                for recipientId in messageRecipientIds {
                     let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
@@ -560,7 +562,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                               comment: "Status label for messages which are read.")
         case .failed:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
-                              comment: "Status label for messages which are failed.")
+                                     comment: "Status label for messages which are failed.")
+        case .skipped:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
+                                     comment: "Status label for messages which were skipped.")
         }
     }
 

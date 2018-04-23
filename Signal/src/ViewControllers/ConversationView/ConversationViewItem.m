@@ -662,8 +662,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     } else if (action == self.replyActionSelector) {
         if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
-            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent
-                || outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed
+                || outgoingMessage.messageState == TSOutgoingMessageStateSending) {
                 // Don't let users reply to messages which aren't yet delivered to the service.
                 return NO;
             }

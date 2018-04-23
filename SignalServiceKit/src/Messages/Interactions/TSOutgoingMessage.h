@@ -11,14 +11,30 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     // a) Enqueued for sending.
     // b) Waiting on attachment upload(s).
     // c) Being sent to the service.
-    TSOutgoingMessageStateAttemptingOut,
+    TSOutgoingMessageStateSending,
     // The failure state.
-    TSOutgoingMessageStateUnsent,
-    // These two enum values have been combined into TSOutgoingMessageStateSentToService.
+    TSOutgoingMessageStateFailed,
+    // These two enum values have been combined into TSOutgoingMessageStateSent.
     TSOutgoingMessageStateSent_OBSOLETE,
     TSOutgoingMessageStateDelivered_OBSOLETE,
     // The message has been sent to the service.
-    TSOutgoingMessageStateSentToService,
+    TSOutgoingMessageStateSent,
+};
+
+// Used
+typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
+    // Message could not be sent to recipient.
+    OWSOutgoingMessageRecipientStateFailed = 0,
+    // Message is being sent to the recipient (enqueued, uploading or sending).
+    OWSOutgoingMessageRecipientStateSending,
+    // The message was not sent because the recipient is not valid.
+    // For example, this recipient may have left the group.
+    OWSOutgoingMessageRecipientStateSkipped,
+    // The message has been sent to the service.  It may also have been delivered or read.
+    OWSOutgoingMessageRecipientStateSent,
+
+    OWSOutgoingMessageRecipientStateMin = OWSOutgoingMessageRecipientStateFailed,
+    OWSOutgoingMessageRecipientStateMax = OWSOutgoingMessageRecipientStateSent,
 };
 
 typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
@@ -34,6 +50,16 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class OWSSignalServiceProtosContentBuilder;
 @class OWSSignalServiceProtosDataMessageBuilder;
 @class SignalRecipient;
+
+@interface TSOutgoingMessageRecipientState : NSObject
+
+@property (atomic, readonly) OWSOutgoingMessageRecipientState state;
+@property (atomic, nullable, readonly) NSNumber *deliveryTimestamp;
+@property (atomic, nullable, readonly) NSNumber *readTimestamp;
+
+@end
+
+#pragma mark -
 
 @interface TSOutgoingMessage : TSMessage
 
@@ -75,11 +101,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
 
-@property (atomic, readonly) TSOutgoingMessageState messageState;
-
-// The message has been sent to the service and received by at least one recipient client.
-// A recipient may have more than one client, and group message may have more than one recipient.
-@property (atomic, readonly) BOOL wasDelivered;
+@property (readonly) TSOutgoingMessageState messageState;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly) NSString *customMessage;
@@ -89,26 +111,12 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 
-// If set, this group message should only be sent to a single recipient.
-@property (atomic, readonly) NSString *singleGroupRecipient;
-
 @property (nonatomic, readonly) BOOL isVoiceMessage;
 
 // This property won't be accurate for legacy messages.
 @property (atomic, readonly) BOOL isFromLinkedDevice;
 
-// Map of "recipient id"-to-"delivery time" of the recipients who have received the message.
-@property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientDeliveryMap;
-
-// Map of "recipient id"-to-"read time" of the recipients who have read the message.
-@property (atomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
-
 @property (nonatomic, readonly) BOOL isSilent;
-
-/**
- * Signal Identifier (e.g. e164 number) or nil if in a group thread.
- */
-- (nullable NSString *)recipientIdentifier;
 
 /**
  * The data representation of this message, to be encrypted, before being sent.
@@ -143,36 +151,70 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (BOOL)shouldBeSaved;
 
+- (NSArray<NSString *> *)recipientIds;
+
+- (NSArray<NSString *> *)sendingRecipientIds;
+
+- (NSArray<NSString *> *)deliveredRecipientIds;
+
+- (NSArray<NSString *> *)readRecipientIds;
+
+- (NSUInteger)sentRecipientsCount;
+
+- (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId;
+
 #pragma mark - Update With... Methods
 
-- (void)updateWithMessageState:(TSOutgoingMessageState)messageState;
-- (void)updateWithMessageState:(TSOutgoingMessageState)messageState
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+// This method is used to record a successful send to one recipient.
+- (void)updateWithSentRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// This method is used to record a skipped send to one recipient.
+- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// On app launch, all "sending" recipients should be marked as "failed".
+- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// When we start a message send, all "failed" recipients should be marked as "sending".
+- (void)updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+#ifdef DEBUG
+// This method is used to forge the message state for fake messages.
+- (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+#endif
+
+// This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error;
+
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
+
+// This method is used to record a successful delivery to one recipient.
+//
 // deliveryTimestamp is an optional parameter, since legacy
 // delivery receipts don't have a "delivery timestamp".  Those
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
-- (void)updateWithDeliveredToRecipientId:(NSString *)recipientId
-                       deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithDeliveredRecipient:(NSString *)recipientId
+                   deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (void)updateWithWasSentFromLinkedDeviceWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// This method is used to rewrite the recipient list with a single recipient.
+// It is used to reply to a "group info request", which should only be
+// delivered to the requestor.
 - (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+// This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipientId:(NSString *)recipientId
                     readTimestamp:(uint64_t)readTimestamp
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (nullable NSNumber *)firstRecipientReadTimestamp;
-
-#pragma mark - Sent Recipients
-
-- (NSUInteger)sentRecipientsCount;
-- (BOOL)wasSentToRecipient:(NSString *)contactId;
-- (void)updateWithSentRecipient:(NSString *)contactId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

@@ -262,9 +262,9 @@ NS_ASSUME_NONNULL_BEGIN
                     timestamp);
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {
-                [outgoingMessage updateWithDeliveredToRecipientId:recipientId
-                                                deliveryTimestamp:deliveryTimestamp
-                                                      transaction:transaction];
+                [outgoingMessage updateWithDeliveredRecipient:recipientId
+                                            deliveryTimestamp:deliveryTimestamp
+                                                  transaction:transaction];
             }
         }
     }

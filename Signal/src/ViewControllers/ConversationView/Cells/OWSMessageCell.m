@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateUnsent;
+    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
 }
 
 - (UIImage *)failedSendBadge
@@ -527,10 +527,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Ignore long press on unsent messages.
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore long press on outgoing messages being sent.
             return;
         }

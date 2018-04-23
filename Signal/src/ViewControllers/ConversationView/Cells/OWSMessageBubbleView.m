@@ -499,7 +499,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Ignore taps on links in outgoing messages that haven't been sent yet, as
         // this interferes with "tap to retry".
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSentToService;
+        shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSent;
     }
     [self.class loadForTextDisplay:self.bodyTextView
                               text:self.displayableBodyText.displayText
@@ -1026,7 +1026,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut;
+    return outgoingMessage.messageState == TSOutgoingMessageStateSending;
 }
 
 - (OWSMessagesBubbleImageFactory *)bubbleFactory
@@ -1085,9 +1085,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }

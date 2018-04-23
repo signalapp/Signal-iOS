@@ -45,9 +45,9 @@ public class OWSMessagesBubbleImageFactory: NSObject {
             return self.incoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
-            case .unsent:
+            case .failed:
                 return outgoingFailed
-            case .attemptingOut:
+            case .sending:
                 return currentlyOutgoing
             default:
                 return outgoing
@@ -75,9 +75,9 @@ public class OWSMessagesBubbleImageFactory: NSObject {
             return OWSMessagesBubbleImageFactory.bubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
-            case .unsent:
+            case .failed:
                 return OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
-            case .attemptingOut:
+            case .sending:
                 return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
             default:
                 return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent

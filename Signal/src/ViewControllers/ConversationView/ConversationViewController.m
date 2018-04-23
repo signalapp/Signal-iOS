@@ -4663,7 +4663,7 @@ typedef enum : NSUInteger {
             MessageRecipientStatus recipientStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
 
-            if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
                 // always show "failed to send" status
                 shouldHideRecipientStatus = NO;
             } else {
