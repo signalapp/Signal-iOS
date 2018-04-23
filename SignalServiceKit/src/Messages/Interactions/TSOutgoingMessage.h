@@ -51,10 +51,12 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class OWSSignalServiceProtosDataMessageBuilder;
 @class SignalRecipient;
 
-@interface TSOutgoingMessageRecipientState : NSObject
+@interface TSOutgoingMessageRecipientState : MTLModel
 
 @property (atomic, readonly) OWSOutgoingMessageRecipientState state;
+// This property should only be set if state == .sent.
 @property (atomic, nullable, readonly) NSNumber *deliveryTimestamp;
+// This property should only be set if state == .sent.
 @property (atomic, nullable, readonly) NSNumber *readTimestamp;
 
 @end

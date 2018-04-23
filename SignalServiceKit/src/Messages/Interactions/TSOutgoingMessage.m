@@ -6,6 +6,7 @@
 #import "NSDate+OWS.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
@@ -107,7 +108,16 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
     // Our default recipient list is the current thread members.
-    NSArray<NSString *> *recipientIds = [self.thread recipientIdentifiers];
+    __block NSArray<NSString *> *recipientIds = @[];
+    // To avoid deadlock while migrating these records, we use a dedicated
+    // migration connection.  For legacy records (created more than ~9 months
+    // before the migration), we need to infer the recipient list for this
+    // message from the current thread membership.  This inference isn't
+    // always accurate, so not using the same connection for both reads is
+    // acceptable.
+    [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        recipientIds = [[self threadWithTransaction:transaction] recipientIdentifiers];
+    }];
     if (sentRecipients) {
         // If we have a `sentRecipients` list, prefer that as it is more accurate.
         recipientIds = sentRecipients;
@@ -146,8 +156,16 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         recipientStateMap[recipientId] = recipientState;
     }
     self.recipientStateMap = [recipientStateMap copy];
+}
 
-    [self updateMessageState];
++ (YapDatabaseConnection *)dbMigrationConnection
+{
+    static YapDatabaseConnection *connection = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        connection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
+    });
+    return connection;
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -258,14 +276,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }
     self.recipientStateMap = [recipientStateMap copy];
 
-    [self updateMessageState];
-
     return self;
-}
-
-- (void)updateMessageState
-{
-    //    self.messageState = [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
 }
 
 - (TSOutgoingMessageState)messageState
@@ -462,7 +473,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                          recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                      }
                                  }
-                                 [message updateMessageState];
                              }];
 }
 
@@ -479,7 +489,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                          recipientState.state = OWSOutgoingMessageRecipientStateSending;
                                      }
                                  }
-                                 [message updateMessageState];
                              }];
 }
 
@@ -515,8 +524,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
 
-    // TODO: I suspect we're double-calling this method.
-
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
@@ -526,7 +533,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                 [message updateMessageState];
                              }];
 }
 
@@ -544,7 +550,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
-                                 [message updateMessageState];
                              }];
 }
 
@@ -567,7 +572,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.deliveryTimestamp = deliveryTimestamp;
-                                 [message updateMessageState];
                              }];
 }
 
@@ -590,7 +594,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
-                                 [message updateMessageState];
                              }];
 }
 
@@ -608,7 +611,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                      }
                                  }
                                  [message setIsFromLinkedDevice:YES];
-                                 [message updateMessageState];
                              }];
 }
 
@@ -626,7 +628,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                  [message setRecipientStateMap:@{
                                      singleGroupRecipient : recipientState,
                                  }];
-                                 [message updateMessageState];
                              }];
 }
 
@@ -668,7 +669,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                              break;
                                      }
                                  }
-                                 [message updateMessageState];
                              }];
 }
 #pragma mark -

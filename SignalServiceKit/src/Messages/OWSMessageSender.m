@@ -593,11 +593,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
-            DDLogInfo(@"%@ Marking group message as sent to recipient: %@", self.logTag, recipient.uniqueId);
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                // Mark this recipient as "sent".
-                [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
-            }];
             [futureSource trySetResult:@1];
         }
         failure:^(NSError *error) {
