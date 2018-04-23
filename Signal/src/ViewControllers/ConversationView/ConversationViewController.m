@@ -4757,7 +4757,9 @@ typedef enum : NSUInteger {
     }
     cell.contentWidth = self.layout.contentWidth;
 
-    [cell loadForDisplay];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [cell loadForDisplayWithTransaction:transaction];
+    }];
 
     return cell;
 }

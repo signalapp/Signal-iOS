@@ -269,8 +269,10 @@ NS_ASSUME_NONNULL_BEGIN
         exception.name,
         exception.reason);
 
-    __block TSErrorMessage *errorMessage;
+
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSErrorMessage *errorMessage;
+
         if ([exception.name isEqualToString:NoSessionException]) {
             OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorNoSession], envelope);
             errorMessage = [TSErrorMessage missingSessionWithEnvelope:envelope withTransaction:transaction];
@@ -298,18 +300,21 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         OWSAssert(errorMessage);
-        [errorMessage saveWithTransaction:transaction];
+        if (errorMessage != nil) {
+            [errorMessage saveWithTransaction:transaction];
+            [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
+        }
     }];
-
-    if (errorMessage != nil) {
-        [self notifyForErrorMessage:errorMessage withEnvelope:envelope];
-    }
 }
 
-- (void)notifyForErrorMessage:(TSErrorMessage *)errorMessage withEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
+                         envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source];
-    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage inThread:contactThread];
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForErrorMessage:errorMessage
+                                                                          thread:contactThread
+                                                                     transaction:transaction];
 }
 
 @end

@@ -437,7 +437,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         [builder setBody:self.body];
     } else {
         OWSFail(@"%@ message body length too long.", self.logTag);
-        NSMutableString *truncatedBody = [self.body mutableCopy];
+        NSString *truncatedBody = self.body;
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
             DDLogError(@"%@ truncating body which is too long: %tu",
                 self.logTag,

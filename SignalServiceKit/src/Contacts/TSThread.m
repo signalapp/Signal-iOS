@@ -4,6 +4,7 @@
 
 #import "TSThread.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
@@ -24,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
-- (TSInteraction *)lastInteraction;
+- (TSInteraction *)lastInteractionWithTranscation:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
@@ -199,17 +200,6 @@ NS_ASSUME_NONNULL_BEGIN
     return count;
 }
 
-- (BOOL)hasUnreadMessages {
-    TSInteraction *interaction = self.lastInteraction;
-    BOOL hasUnread = NO;
-
-    if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-        hasUnread = ![(TSIncomingMessage *)interaction wasRead];
-    }
-
-    return hasUnread;
-}
-
 - (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
@@ -228,6 +218,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [messages copy];
 }
 
+- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.uniqueId];
+}
+
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
@@ -238,34 +233,34 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
-- (TSInteraction *) lastInteraction {
-    __block TSInteraction *last;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        last = [[transaction ext:TSMessageDatabaseViewExtensionName] lastObjectInGroup:self.uniqueId];
-    }];
-    return last;
-}
-
-- (TSInteraction *)lastInteractionForInbox
+- (TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:self.uniqueId
-                     withOptions:NSEnumerationReverse
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+    [[transaction ext:TSMessageDatabaseViewExtensionName]
+     enumerateRowsInGroup:self.uniqueId
+     withOptions:NSEnumerationReverse
+     usingBlock:^(
+                  NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+         
+         OWSAssert([object isKindOfClass:[TSInteraction class]]);
 
-                          OWSAssert([object isKindOfClass:[TSInteraction class]]);
+         missedCount++;
+         TSInteraction *interaction = (TSInteraction *)object;
+         
+         if ([TSThread shouldInteractionAppearInInbox:interaction]) {
+             last = interaction;
 
-                          TSInteraction *interaction = (TSInteraction *)object;
-
-                          if ([TSThread shouldInteractionAppearInInbox:interaction]) {
-                              last = interaction;
-                              *stop = YES;
-                          }
-                      }];
-    }];
+             // For long ignored threads, with lots of SN changes this can get really slow.
+             // I see this in development because I have a lot of long forgotten threads with members
+             // who's test devices are constantly reinstalled. We could add a purpose-built DB view,
+             // but I think in the real world this is rare to be a hotspot.
+             if (missedCount > 50) {
+                 DDLogWarn(@"%@ found last interaction for inbox after skipping %tu items", self.logTag, missedCount);
+             }
+             *stop = YES;
+         }
+     }];
     return last;
 }
 
@@ -277,12 +272,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString *)lastMessageLabel {
-    TSInteraction *interaction = self.lastInteractionForInbox;
-    if (interaction == nil) {
-        return @"";
+- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    TSInteraction *interaction = [self lastInteractionForInboxWithTransaction:transaction];
+    if ([interaction conformsToProtocol:@protocol(OWSPreviewText)]) {
+        id<OWSPreviewText> previewable = (id<OWSPreviewText>)interaction;
+        return [previewable previewTextWithTransaction:transaction].filterStringForDisplay;
     } else {
-        return interaction.description;
+        return @"";
     }
 }
 

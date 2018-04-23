@@ -65,12 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key;
 
-/**
- *  Returns whether or not the thread has unread messages.
- *
- *  @return YES if it has unread TSIncomingMessages, NO otherwise.
- */
-- (BOOL)hasUnreadMessages;
+- (NSUInteger)unreadMessageCountWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(unreadMessageCount(transaction:));
 
 - (BOOL)hasSafetyNumbers;
 
@@ -90,7 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Thread preview string.
  */
-- (NSString *)lastMessageLabel;
+- (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(lastMessageText(transaction:));
 
 /**
  *  Updates the thread's caches of the latest interaction.

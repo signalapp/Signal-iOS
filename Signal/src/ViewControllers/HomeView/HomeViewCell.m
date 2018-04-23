@@ -12,7 +12,6 @@
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
-@property (nonatomic, nullable) TSThread *thread;
+@property (nonatomic, nullable) ThreadViewModel *thread;
 @property (nonatomic, nullable) OWSContactsManager *contactsManager;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
@@ -143,9 +142,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithThread:(TSThread *)thread
-              contactsManager:(OWSContactsManager *)contactsManager
-        blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+- (void)configureWithThread:(ThreadViewModel *)thread
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
     OWSAssertIsOnMainThread();
     OWSAssert(thread);
@@ -183,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateTimeLabel.font = self.unreadFont;
     }
 
-    NSUInteger unreadCount = [[OWSMessageUtils sharedManager] unreadMessagesInThread:thread];
+    NSUInteger unreadCount = thread.unreadCount;
     if (unreadCount == 0) {
         [self.viewConstraints addObject:[self.payloadView autoPinTrailingToSuperviewMargin]];
     } else {
@@ -240,18 +239,19 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSThread *thread = self.thread;
+    ThreadViewModel *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);
         self.avatarView.image = nil;
         return;
     }
 
-    self.avatarView.image =
-        [OWSAvatarBuilder buildImageForThread:thread diameter:self.avatarSize contactsManager:contactsManager];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord
+                                                         diameter:self.avatarSize
+                                                  contactsManager:contactsManager];
 }
 
-- (NSAttributedString *)attributedSnippetForThread:(TSThread *)thread
+- (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread
                              blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
     OWSAssert(thread);
@@ -285,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     : [UIColor lightGrayColor]),
                                                         }]];
         }
-        NSString *displayableText = thread.lastMessageLabel.filterStringForDisplay;
+        NSString *displayableText = thread.lastMessageText;
         if (displayableText) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.nameLabel.font = self.nameFont;
 
-    TSThread *thread = self.thread;
+    ThreadViewModel *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;

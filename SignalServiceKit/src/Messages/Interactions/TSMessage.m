@@ -265,16 +265,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-// TODO deprecate this and implement something like previewTextWithTransaction: for all TSInteractions
-- (NSString *)description
-{
-    __block NSString *result;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self previewTextWithTransaction:transaction];
-    }];
-    return result;
-}
-
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super removeWithTransaction:transaction];

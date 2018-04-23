@@ -150,4 +150,26 @@ void SwiftAssertIsOnMainThread(NSString *functionName);
                                      userInfo:userInfoParam];                                                          \
     }
 
+
+// UI JANK
+//
+// In pursuit of smooth UI, we want to continue moving blocking operations off the main thread.
+// Add `OWSJanksUI` in code paths that shouldn't be called on the main thread.
+// Because we have pervasively broken this tenant, enabling it by default would be too disruptive
+// but it's helpful while unjanking and maybe someday we can have it enabled by default.
+//#define DEBUG_UI_JANK 1
+
+#ifdef DEBUG
+#ifdef DEBUG_UI_JANK
+#define OWSJanksUI()                                                                                                   \
+    do {                                                                                                               \
+        OWSAssert(![NSThread isMainThread])                                                                            \
+    } while (NO)
+#endif
+#endif
+
+#ifndef OWSJanksUI
+#define OWSJanksUI()
+#endif
+
 NS_ASSUME_NONNULL_END

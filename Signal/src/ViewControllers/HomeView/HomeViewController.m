@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
-
+@property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -108,6 +108,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
+    _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
     [ExperienceUpgradeFinder sharedManager];
@@ -155,14 +156,14 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
 
-    [self.tableView reloadData];
+    [self reloadTableViewData];
 }
 
 - (void)signalAccountsDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
-    [self.tableView reloadData];
+    [self reloadTableViewData];
 }
 
 #pragma mark - View Life Cycle
@@ -395,7 +396,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self updateReminderViews];
@@ -468,6 +473,13 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 }
 
+- (void)reloadTableViewData
+{
+    // PERF: come up with a more nuanced cache clearing scheme
+    [self.threadViewModelCache removeAllObjects];
+    [self.tableView reloadData];
+}
+
 - (void)resetMappings
 {
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
@@ -484,13 +496,18 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         }];
     }
 
-    [[self tableView] reloadData];
+    [self reloadTableViewData];
+
     [self checkIfEmptyView];
     [self updateInboxCountLabel];
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnce];
     }
 }
@@ -506,11 +523,21 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.isAppInBackground = YES;
 }
 
+- (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSThread numberOfKeysInCollectionWithTransaction:transaction] > 0;
+}
+
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     // It's possible a thread was created while we where in the background. But since we don't honor contact
     // requests unless the app is in the foregrond, we must check again here upon becoming active.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+    
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self updateReminderViews];
@@ -577,13 +604,29 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
+- (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
+{
+    TSThread *threadRecord = [self threadForIndexPath:indexPath];
+
+    ThreadViewModel *_Nullable cachedThreadViewModel = [self.threadViewModelCache objectForKey:threadRecord.uniqueId];
+    if (cachedThreadViewModel) {
+        return cachedThreadViewModel;
+    }
+
+    __block ThreadViewModel *_Nullable newThreadViewModel;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
+    }];
+    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
+    return newThreadViewModel;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
+    ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
     [cell configureWithThread:thread
               contactsManager:self.contactsManager
         blockedPhoneNumberSet:self.blockedPhoneNumberSet];
@@ -891,7 +934,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     [self resetMappings];
 
-    [[self tableView] reloadData];
+    [self reloadTableViewData];
     [self checkIfEmptyView];
     [self updateReminderViews];
 }
@@ -904,6 +947,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     if (!_uiDatabaseConnection) {
         _uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
+        // default is 250
+        _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
     }
     return _uiDatabaseConnection;
@@ -948,7 +993,12 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
-    if ([TSThread numberOfKeysInCollection] > 0) {
+    __block BOOL hasAnyMessages;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
+    }];
+
+    if (hasAnyMessages) {
         [self.contactsManager requestSystemContactsOnce];
     }
 
@@ -989,6 +1039,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }
 
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
+        NSString *key = rowChange.collectionKey.key;
+        OWSAssert(key);
+        [self.threadViewModelCache removeObjectForKey:key];
+
         switch (rowChange.type) {
             case YapDatabaseViewChangeDelete: {
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]

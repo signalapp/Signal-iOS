@@ -3223,7 +3223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                   TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
-                  DDLogError(@"Create fake thread: %@, interactions: %zd",
+                  DDLogError(@"Create fake thread: %@, interactions: %tu",
                       phoneNumber.toE164,
                       contactThread.numberOfInteractions);
               }];
@@ -3251,7 +3251,7 @@ NS_ASSUME_NONNULL_BEGIN
                         [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                     }];
                 remainder -= batchSize;
-                DDLogInfo(@"%@ sendFakeMessages %zd / %zd", self.logTag, counter - remainder, counter);
+                DDLogInfo(@"%@ sendFakeMessages %td / %tu", self.logTag, counter - remainder, counter);
             }
         });
     }
@@ -3263,7 +3263,7 @@ NS_ASSUME_NONNULL_BEGIN
               isTextOnly:(BOOL)isTextOnly
              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    DDLogInfo(@"%@ sendFakeMessages: %zd", self.logTag, counter);
+    DDLogInfo(@"%@ sendFakeMessages: %tu", self.logTag, counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText = [self randomText];
@@ -3411,7 +3411,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(thread);
 
-    DDLogInfo(@"%@ injectIncomingMessageInThread: %zd", self.logTag, counter);
+    DDLogInfo(@"%@ injectIncomingMessageInThread: %tu", self.logTag, counter);
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];

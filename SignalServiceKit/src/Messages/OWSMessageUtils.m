@@ -95,14 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
     [CurrentAppContext() setMainAppBadgeNumber:numberOfItems];
 }
 
-- (NSUInteger)unreadMessagesInThread:(TSThread *)thread
-{
-    __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
-    }];
-    return numberOfItems;
-}
 
 @end
 

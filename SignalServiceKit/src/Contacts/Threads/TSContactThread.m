@@ -114,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
 }
 
+// TODO deprecate this? seems weird to access the displayName in the DB model
 - (NSString *)name
 {
     return [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];

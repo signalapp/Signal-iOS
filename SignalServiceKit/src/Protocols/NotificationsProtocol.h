@@ -1,11 +1,14 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class TSErrorMessage;
 @class TSIncomingMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
+
 @protocol ContactsManagerProtocol;
 
 @protocol NotificationsProtocol <NSObject>
@@ -15,6 +18,10 @@
                      contactsManager:(id<ContactsManagerProtocol>)contactsManager
                          transaction:(YapDatabaseReadTransaction *)transaction;
 
-- (void)notifyUserForErrorMessage:(TSErrorMessage *)error inThread:(TSThread *)thread;
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)error
+                           thread:(TSThread *)thread
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END

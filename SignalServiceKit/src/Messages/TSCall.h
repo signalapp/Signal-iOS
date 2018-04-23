@@ -20,7 +20,7 @@ typedef enum {
     RPRecentCallTypeIncomingDeclined
 } RPRecentCallType;
 
-@interface TSCall : TSInteraction <OWSReadTracking>
+@interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
 @property (nonatomic, readonly) RPRecentCallType callType;
 

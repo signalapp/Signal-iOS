@@ -150,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)loadForDisplay
+- (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
