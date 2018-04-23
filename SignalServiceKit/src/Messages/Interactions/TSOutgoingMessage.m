@@ -44,6 +44,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 @property (atomic) NSDictionary<NSString *, NSNumber *> *recipientReadMap;
 
+@property (atomic, nullable) NSSet<NSString *> *intendedRecipientIds;
+
 @end
 
 #pragma mark -
@@ -201,11 +203,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }
 
     [super saveWithTransaction:transaction];
-}
-
-- (nullable NSString *)recipientIdentifier
-{
-    return self.thread.contactIdentifier;
 }
 
 - (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
@@ -420,6 +417,18 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
         }
     }
     return result;
+}
+
+- (void)updateWithIntendedRecipientIds:(NSSet<NSString *> *)intendedRecipientIds
+                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(intendedRecipientIds);
+    OWSAssert(transaction);
+
+    [self applyChangeToSelfAndLatestCopy:transaction
+                             changeBlock:^(TSOutgoingMessage *message) {
+                                 message.intendedRecipientIds = [intendedRecipientIds copy];
+                             }];
 }
 
 #pragma mark -
