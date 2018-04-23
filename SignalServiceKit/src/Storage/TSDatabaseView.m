@@ -162,7 +162,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSMessageDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 
