@@ -117,7 +117,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     return [[YapDatabaseSecondaryIndex alloc]
         initWithSetup:setup
               handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"1"]];
+           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
 }
 
 #ifdef DEBUG

@@ -127,7 +127,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     return [[YapDatabaseSecondaryIndex alloc]
         initWithSetup:setup
               handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"1"]];
+           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
 }
 
 #ifdef DEBUG

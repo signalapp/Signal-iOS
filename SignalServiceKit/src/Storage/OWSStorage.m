@@ -490,12 +490,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionSuffix = @"kNSUserDefaul
     return [NSString stringWithFormat:@".%@", suffix];
 }
 
-+ (NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(NSString *)versionTag
++ (nullable NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(nullable NSString *)versionTag
 {
     OWSAssertIsOnMainThread();
 
     NSString *_Nullable suffix = [self databaseExtensionVersionSuffix];
     if (suffix) {
+        if (!versionTag) {
+            versionTag = @"0";
+        }
         NSString *result = [versionTag stringByAppendingString:suffix];
         DDLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, suffix, result);
         return result;

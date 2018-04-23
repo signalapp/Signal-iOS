@@ -188,7 +188,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     return [[YapDatabaseSecondaryIndex alloc]
         initWithSetup:setup
               handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"1"]];
+           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
 }
 
 #ifdef DEBUG
