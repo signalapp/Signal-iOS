@@ -92,6 +92,11 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
 }
 
++ (NSString *)databaseExtensionName
+{
+    return OWSIncomingMessageFinderExtensionName;
+}
+
 + (void)asyncRegisterExtensionWithPrimaryStorage:(OWSStorage *)storage
 {
     DDLogInfo(@"%@ registering async.", self.logTag);

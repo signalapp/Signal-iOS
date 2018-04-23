@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
-void runSyncRegistrationsForStorage(OWSStorage *storage)
+void RunSyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
 
@@ -30,7 +30,7 @@ void runSyncRegistrationsForStorage(OWSStorage *storage)
     [TSDatabaseView registerCrossProcessNotifier:storage];
 }
 
-void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
+void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssert(storage);
     OWSCAssert(completion);
@@ -61,6 +61,84 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     // NOTE: Always pass the completion to the _LAST_ of the async database
     // view registrations.
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
+}
+
+extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
+extern NSString *const TSUnseenDatabaseViewExtensionName;
+extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
+
+void VerifyRegistrationsForStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
+    // This should 1:1 correspond to the database view registrations
+    // done in RunSyncRegistrationsForStorage() and
+    // RunAsyncRegistrationsForStorage().
+    NSArray<NSString *> *databaseViewNames = @[
+        // We don't need to verify the cross process notifier.
+        // [TSDatabaseView registerCrossProcessNotifier:storage];
+
+        // [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:storage];
+        TSMessageDatabaseViewExtensionName,
+
+        // [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
+        TSThreadDatabaseViewExtensionName,
+
+        // [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
+        TSUnreadDatabaseViewExtensionName,
+
+        // [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+        @"idx",
+
+        // [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
+        [OWSMessageReceiver databaseExtensionName],
+
+        // [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
+        [OWSBatchMessageProcessor databaseExtensionName],
+
+        // [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
+        TSUnseenDatabaseViewExtensionName,
+
+        // [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
+        TSThreadOutgoingMessageDatabaseViewExtensionName,
+
+        // [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
+        TSThreadSpecialMessagesDatabaseViewExtensionName,
+
+        // [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
+        [OWSIncomingMessageFinder databaseExtensionName],
+
+        // [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
+        TSSecondaryDevicesDatabaseViewExtensionName,
+
+        // [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
+        [OWSDisappearingMessagesFinder databaseExtensionName],
+
+        // [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+        [OWSFailedMessagesJob databaseExtensionName],
+
+        // [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+        [OWSFailedAttachmentDownloadsJob databaseExtensionName],
+
+        // [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+        [OWSMediaGalleryFinder databaseExtensionName],
+
+        // NOTE: Always pass the completion to the _LAST_ of the async database
+        // view registrations.
+        // [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
+        TSLazyRestoreAttachmentsDatabaseViewExtensionName,
+    ];
+
+    __block BOOL hasMissingDatabaseView = NO;
+    [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (NSString *databaseViewName in databaseViewNames) {
+            YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:databaseViewName];
+            if (!viewTransaction) {
+                OWSProdLogAndCFail(@"VerifyRegistrationsForStorage missing database view: %@", databaseViewName);
+                hasMissingDatabaseView = YES;
+            }
+        }
+    }];
 }
 
 #pragma mark -
@@ -119,7 +197,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
 
 - (void)runSyncRegistrations
 {
-    runSyncRegistrationsForStorage(self);
+    RunSyncRegistrationsForStorage(self);
 
     // See comments on OWSDatabaseConnection.
     //
@@ -137,7 +215,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
 
     DDLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
 
-    runAsyncRegistrationsForStorage(self, ^{
+    RunAsyncRegistrationsForStorage(self, ^{
         OWSAssertIsOnMainThread();
 
         OWSAssert(!self.areAsyncRegistrationsComplete);
@@ -147,7 +225,14 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
         self.areAsyncRegistrationsComplete = YES;
 
         completion();
+
+        [self verifyDatabaseViews];
     });
+}
+
+- (void)verifyDatabaseViews
+{
+    VerifyRegistrationsForStorage(self);
 }
 
 + (void)protectFiles

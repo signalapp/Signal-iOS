@@ -464,6 +464,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 #pragma mark - class methods
 
++ (NSString *)databaseExtensionName
+{
+    return OWSMessageContentJobFinderExtensionName;
+}
+
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     [OWSMessageContentJobFinder asyncRegisterDatabaseExtension:storage];

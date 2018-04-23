@@ -136,6 +136,11 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 }
 #endif
 
++ (NSString *)databaseExtensionName
+{
+    return OWSFailedMessagesJobMessageStateIndex;
+}
+
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSFailedMessagesJobMessageStateIndex];

@@ -111,6 +111,11 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 
 #pragma mark - Extension registration
 
++ (NSString *)databaseExtensionName
+{
+    return OWSMediaGalleryFinderExtensionName;
+}
+
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension]

@@ -126,6 +126,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 }
 #endif
 
++ (NSString *)databaseExtensionName
+{
+    return OWSFailedAttachmentDownloadsJobAttachmentStateIndex;
+}
+
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension]

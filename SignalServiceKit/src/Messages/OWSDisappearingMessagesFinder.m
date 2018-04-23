@@ -196,6 +196,11 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 }
 #endif
 
++ (NSString *)databaseExtensionName
+{
+    return OWSDisappearingMessageFinderExpiresAtIndex;
+}
+
 + (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self indexDatabaseExtension] withName:OWSDisappearingMessageFinderExpiresAtIndex];
