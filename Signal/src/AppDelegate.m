@@ -6,6 +6,7 @@
 #import "AppStoreRating.h"
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
+#import "HomeViewController.h"
 #import "DebugLogger.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
