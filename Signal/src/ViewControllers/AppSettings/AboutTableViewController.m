@@ -79,21 +79,43 @@
         attachmentCount = [transaction numberOfKeysInCollection:[TSAttachment collection]];
     }];
 
+    NSByteCountFormatter *byteCountFormatter = [NSByteCountFormatter new];
+
+    // format counts with thousands separator
+    NSNumberFormatter *numberFormatter = [NSNumberFormatter new];
+    numberFormatter.formatterBehavior = NSNumberFormatterBehavior10_4;
+    numberFormatter.numberStyle = NSNumberFormatterDecimalStyle;
+
     OWSTableSection *debugSection = [OWSTableSection new];
+
     debugSection.headerTitle = @"Debug";
-    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %zd", threadCount]]];
-    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %zd", messageCount]]];
+
+    NSString *formattedThreadCount = [numberFormatter stringFromNumber:@(threadCount)];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Attachments: %zd", attachmentCount]]];
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Threads: %@", formattedThreadCount]]];
+
+    NSString *formattedMessageCount = [numberFormatter stringFromNumber:@(messageCount)];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %llu",
-                                                          [OWSPrimaryStorage.sharedManager databaseFileSize]]]];
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Messages: %@", formattedMessageCount]]];
+
+    NSString *formattedAttachmentCount = [numberFormatter stringFromNumber:@(attachmentCount)];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Attachments: %@",
+                                                                    formattedAttachmentCount]]];
+
+    NSString *dbSize =
+        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseFileSize]];
+    [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %@", dbSize]]];
+
+    NSString *dbWALSize =
+        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseWALFileSize]];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database WAL size: %llu",
-                                                          [OWSPrimaryStorage.sharedManager databaseWALFileSize]]]];
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database WAL size: %@", dbWALSize]]];
+
+    NSString *dbSHMSize =
+        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseSHMFileSize]];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %llu",
-                                                          [OWSPrimaryStorage.sharedManager databaseSHMFileSize]]]];
+        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %@", dbSHMSize]]];
+
     [contents addSection:debugSection];
 
     OWSPreferences *preferences = [Environment preferences];
