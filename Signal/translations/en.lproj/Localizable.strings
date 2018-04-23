@@ -872,8 +872,11 @@
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
 
-/* Title for the home view. */
-"HOME_VIEW_TITLE" = "Signal";
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";

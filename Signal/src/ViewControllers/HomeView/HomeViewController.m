@@ -182,11 +182,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // TODO: Remove this.
     [SignalApp.sharedApp setHomeViewController:self];
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                      target:self
-                                                      action:@selector(showNewConversationView)];
-
     ReminderView *archiveReminderView = [ReminderView new];
     archiveReminderView.text = NSLocalizedString(
         @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
@@ -265,17 +260,23 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self showInboxGrouping];
+    [self updateMappings];
+    [self checkIfEmptyView];
+    [self updateReminderViews];
 
     // because this uses the table data source, `tableViewSetup` must happen
     // after mappings have been set up in `showInboxGrouping`
     [self tableViewSetUp];
 
-    // TODO: Should our app name be translated?  Probably not.
-    self.title = NSLocalizedString(@"HOME_VIEW_TITLE", @"Title for the home view.");
-
-    self.navigationItem.leftBarButtonItem.accessibilityLabel
-        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    switch (self.homeViewMode) {
+        case HomeViewMode_Inbox:
+            // TODO: Should our app name be translated?  Probably not.
+            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the home view's default mode.");
+            break;
+        case HomeViewMode_Archive:
+            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
+            break;
+    }
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -294,6 +295,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)updateBarButtonItems
 {
+    if (self.homeViewMode != HomeViewMode_Inbox) {
+        return;
+    }
     const CGFloat kBarButtonSize = 44;
     // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
     // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
@@ -325,7 +329,15 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         0,
         round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
         round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+    settingsButton.accessibilityLabel
+        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    self.navigationItem.leftBarButtonItem = settingsButton;
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                      target:self
+                                                      action:@selector(showNewConversationView)];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -847,7 +859,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self isIndexPathForArchivedConversations:indexPath]) {
-        [self showArchiveGrouping];
+        [self showArchivedConversations];
         return;
     }
 
@@ -953,29 +965,21 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return _threadMappings;
 }
 
-// TODO: Rework.
 - (void)showInboxGrouping
 {
-    self.homeViewMode = HomeViewMode_Inbox;
+    OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
-// TODO: Rework.
-- (void)showArchiveGrouping
+- (void)showArchivedConversations
 {
-    self.homeViewMode = HomeViewMode_Archive;
-}
+    OWSAssert(self.homeViewMode == HomeViewMode_Inbox);
 
-// TODO: Rework.
-- (void)setHomeViewMode:(HomeViewMode)homeViewMode
-{
-    BOOL didChange = _homeViewMode != homeViewMode;
-    _homeViewMode = homeViewMode;
-    if (didChange || !_threadMappings) {
-        [self updateMappings];
-    } else {
-        [self checkIfEmptyView];
-        [self updateReminderViews];
-    }
+    // Push a separate instance of this view using "archive" mode.
+    HomeViewController *homeView = [HomeViewController new];
+    homeView.homeViewMode = HomeViewMode_Archive;
+    [self.navigationController pushViewController:homeView animated:YES];
 }
 
 - (NSString *)currentGrouping
