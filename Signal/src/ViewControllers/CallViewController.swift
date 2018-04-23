@@ -46,7 +46,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Ongoing Call Controls
 
-    var ongoingCallView: UIView!
+    var ongoingCallControls: UIStackView!
+
+    var ongoingAudioCallControls: UIStackView!
+    var ongoingVideoCallControls: UIStackView!
 
     var hangUpButton: UIButton!
     var audioSourceButton: UIButton!
@@ -54,14 +57,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var audioModeVideoButton: UIButton!
     var videoModeMuteButton: UIButton!
     var videoModeVideoButton: UIButton!
-    // TODO: Later, we'll re-enable the text message button
-    //       so users can send and read messages during a 
-    //       call.
-//    var textMessageButton: UIButton!
+    var videoModeFlipCameraButton: UIButton!
 
     // MARK: - Incoming Call Controls
 
-    var incomingCallView: UIView!
+    var incomingCallControls: UIStackView!
 
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
@@ -182,7 +182,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     override func loadView() {
         self.view = UIView()
+
+        self.view.layoutMargins = UIEdgeInsets(top: 16, left: 20, bottom: 16, right: 20)
         createViews()
+        createViewConstraints()
     }
 
     override func viewDidLoad() {
@@ -348,42 +351,60 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
 //        textMessageButton = createButton(imageName:"message-active-wide",
 //                                                action:#selector(didPressTextMessage))
-        audioSourceButton = createButton(imageName: "audio-call-speaker-inactive",
+        audioSourceButton = createButton(image: #imageLiteral(resourceName: "audio-call-speaker-inactive"),
                                           action: #selector(didPressAudioSource))
         audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
                                                                  comment: "Accessibility label for selection the audio source")
 
-        hangUpButton = createButton(imageName: "hangup-active-wide",
+        hangUpButton = createButton(image: #imageLiteral(resourceName: "hangup-active-wide"),
                                     action: #selector(didPressHangup))
         hangUpButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_HANGUP_LABEL",
                                                             comment: "Accessibility label for hang up call")
 
-        audioModeMuteButton = createButton(imageName: "audio-call-mute-inactive",
+        audioModeMuteButton = createButton(image: #imageLiteral(resourceName: "audio-call-mute-inactive"),
                                            action: #selector(didPressMute))
+        audioModeMuteButton.setImage(#imageLiteral(resourceName: "audio-call-mute-active"), for: .selected)
+
         audioModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL",
                                                                    comment: "Accessibility label for muting the microphone")
 
-        videoModeMuteButton = createButton(imageName: "video-mute-unselected",
-                                           action: #selector(didPressMute))
-        videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
-
-        audioModeVideoButton = createButton(imageName: "audio-call-video-inactive",
+        audioModeVideoButton = createButton(image: #imageLiteral(resourceName: "audio-call-video-inactive"),
                                             action: #selector(didPressVideo))
+        audioModeVideoButton.setImage(#imageLiteral(resourceName: "audio-call-video-active"), for: .selected)
         audioModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_VIDEO_LABEL", comment: "Accessibility label to switch to video call")
 
-        videoModeVideoButton = createButton(imageName: "video-video-unselected",
+        videoModeMuteButton = createButton(image: #imageLiteral(resourceName: "video-mute-unselected"),
+                                           action: #selector(didPressMute))
+        videoModeMuteButton.setImage(#imageLiteral(resourceName: "video-mute-selected"), for: .selected)
+        videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
+        videoModeMuteButton.alpha = 0.9
+
+        // TODO proper asset
+        videoModeFlipCameraButton = createButton(image: #imageLiteral(resourceName: "btnRefresh--white"),
+                                                 action: #selector(didPressFlipCamera))
+        videoModeFlipCameraButton.setImage(#imageLiteral(resourceName: "btnRefresh--white"),
+                                           for: .selected)
+        videoModeFlipCameraButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_CAMERA_DIRECTION", comment: "Accessibility label to toggle front vs. rear facing camera")
+        videoModeFlipCameraButton.alpha = 0.9
+
+        videoModeVideoButton = createButton(image: #imageLiteral(resourceName: "video-video-unselected"),
                                             action: #selector(didPressVideo))
+        videoModeVideoButton.setImage(#imageLiteral(resourceName: "video-video-selected"), for: .selected)
         videoModeVideoButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_TO_AUDIO_LABEL", comment: "Accessibility label to switch to audio only")
+        videoModeVideoButton.alpha = 0.9
 
-        setButtonSelectedImage(button: audioModeMuteButton, imageName: "audio-call-mute-active")
-        setButtonSelectedImage(button: videoModeMuteButton, imageName: "video-mute-selected")
-        setButtonSelectedImage(button: audioModeVideoButton, imageName: "audio-call-video-active")
-        setButtonSelectedImage(button: videoModeVideoButton, imageName: "video-video-selected")
+        ongoingCallControls = UIStackView(arrangedSubviews: [hangUpButton])
+        ongoingCallControls.axis = .vertical
+        ongoingCallControls.alignment = .center
+        view.addSubview(ongoingCallControls)
 
-        ongoingCallView = createContainerForCallControls(controlGroups: [
-            [audioModeMuteButton, audioSourceButton, audioModeVideoButton ],
-            [videoModeMuteButton, hangUpButton, videoModeVideoButton ]
-        ])
+        ongoingAudioCallControls = UIStackView(arrangedSubviews: [audioModeMuteButton, audioSourceButton, audioModeVideoButton])
+        ongoingAudioCallControls.distribution = .equalSpacing
+        ongoingAudioCallControls.axis = .horizontal
+
+        ongoingVideoCallControls = UIStackView(arrangedSubviews: [videoModeMuteButton, videoModeFlipCameraButton, videoModeVideoButton])
+        ongoingAudioCallControls.distribution = .equalSpacing
+        ongoingVideoCallControls.axis = .horizontal
     }
 
     func presentAudioSourcePicker() {
@@ -416,59 +437,30 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.present(actionSheetController, animated: true)
     }
 
-    func setButtonSelectedImage(button: UIButton, imageName: String) {
-        let image = UIImage(named: imageName)
-        assert(image != nil)
-        button.setImage(image, for: .selected)
-    }
-
     func updateAvatarImage() {
         contactAvatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: 400, contactsManager: contactsManager)
     }
 
     func createIncomingCallControls() {
 
-        acceptIncomingButton = createButton(imageName: "call-active-wide",
+        acceptIncomingButton = createButton(image: #imageLiteral(resourceName: "call-active-wide"),
                                             action: #selector(didPressAnswerCall))
         acceptIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
                                                                     comment: "Accessibility label for accepting incoming calls")
-        declineIncomingButton = createButton(imageName: "hangup-active-wide",
+        declineIncomingButton = createButton(image: #imageLiteral(resourceName: "hangup-active-wide"),
                                              action: #selector(didPressDeclineCall))
         declineIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
                                                                      comment: "Accessibility label for declining incoming calls")
 
-        incomingCallView = createContainerForCallControls(controlGroups: [
-            [acceptIncomingButton, declineIncomingButton ]
-            ])
+        incomingCallControls = UIStackView(arrangedSubviews: [acceptIncomingButton, declineIncomingButton])
+        incomingCallControls.axis = .horizontal
+        incomingCallControls.alignment = .center
+        incomingCallControls.distribution = .equalSpacing
+
+        view.addSubview(incomingCallControls)
     }
 
-    func createContainerForCallControls(controlGroups: [[UIView]]) -> UIView {
-        let containerView = UIView()
-        self.view.addSubview(containerView)
-        var rows: [UIView] = []
-        for controlGroup in controlGroups {
-            rows.append(rowWithSubviews(subviews: controlGroup))
-        }
-        let rowspacing = ScaleFromIPhone5To7Plus(6, 7)
-        var prevRow: UIView?
-        for row in rows {
-            containerView.addSubview(row)
-            row.autoHCenterInSuperview()
-            if prevRow != nil {
-                row.autoPinEdge(.top, to: .bottom, of: prevRow!, withOffset: rowspacing)
-            }
-            prevRow = row
-        }
-
-        containerView.setContentHuggingVerticalHigh()
-        rows.first!.autoPinEdge(toSuperviewEdge: .top)
-        rows.last!.autoPinEdge(toSuperviewEdge: .bottom)
-        return containerView
-    }
-
-    func createButton(imageName: String, action: Selector) -> UIButton {
-        let image = UIImage(named: imageName)
-        assert(image != nil)
+    func createButton(image: UIImage, action: Selector) -> UIButton {
         let button = UIButton()
         button.setImage(image, for: .normal)
         button.imageEdgeInsets = UIEdgeInsets(top: buttonInset(),
@@ -481,134 +473,81 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return button
     }
 
-    // Creates a row containing a given set of subviews.
-    func rowWithSubviews(subviews: [UIView]) -> UIView {
-        let row = UIView()
-        row.setContentHuggingVerticalHigh()
-        row.autoSetDimension(.height, toSize: buttonSize())
-
-        if subviews.count > 1 {
-            // If there's more than one subview in the row,
-            // space them evenly within the row.
-            var lastSubview: UIView?
-            for subview in subviews {
-                row.addSubview(subview)
-                subview.setContentHuggingHorizontalHigh()
-                subview.autoVCenterInSuperview()
-
-                if lastSubview != nil {
-                    let spacer = UIView()
-                    spacer.isHidden = true
-                    row.addSubview(spacer)
-                    spacer.autoPinEdge(.left, to: .right, of: lastSubview!)
-                    spacer.autoPinEdge(.right, to: .left, of: subview)
-                    spacer.setContentHuggingHorizontalLow()
-                    spacer.autoVCenterInSuperview()
-
-                    if subviews.count == 2 {
-                        // special case to hardcode the spacer's size when there is only 1 spacer.
-                        spacer.autoSetDimension(.width, toSize: ScaleFromIPhone5To7Plus(46, 60))
-                    } else {
-                        spacer.autoSetDimension(.width, toSize: ScaleFromIPhone5To7Plus(3, 5))
-                    }
-                }
-
-                lastSubview = subview
-            }
-            subviews.first!.autoPinEdge(toSuperviewEdge: .left)
-            subviews.last!.autoPinEdge(toSuperviewEdge: .right)
-        } else if subviews.count == 1 {
-            // If there's only one subview in this row, center it.
-            let subview = subviews.first!
-            row.addSubview(subview)
-            subview.autoVCenterInSuperview()
-            subview.autoPinWidthToSuperview()
-        }
-
-        return row
-    }
-
     // MARK: - Layout
 
-    override func updateViewConstraints() {
-        if !hasConstraints {
-            // We only want to create our constraints once.
-            //
-            // Note that constraints are also created elsewhere.
-            // This only creates the constraints for the top-level contents of the view.
-            hasConstraints = true
+    func createViewConstraints() {
+        let topMargin = CGFloat(40)
+        let contactVSpacing = CGFloat(3)
+        let settingsNagHMargin = CGFloat(30)
+        let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
+        let incomingHMargin = ScaleFromIPhone5To7Plus(30, 56)
+        let incomingBottomMargin = CGFloat(41)
+        let settingsNagBottomMargin = CGFloat(41)
+        let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
+        // The buttons have built-in 10% margins, so to appear centered
+        // the avatar's bottom spacing should be a bit less.
+        let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
+        // Layout of the local video view is a bit unusual because
+        // although the view is square, it will be used
+        let videoPreviewHMargin = CGFloat(0)
 
-            let topMargin = CGFloat(40)
-            let contactHMargin = CGFloat(5)
-            let contactVSpacing = CGFloat(3)
-            let ongoingHMargin = ScaleFromIPhone5To7Plus(46, 72)
-            let incomingHMargin = ScaleFromIPhone5To7Plus(46, 72)
-            let settingsNagHMargin = CGFloat(30)
-            let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
-            let incomingBottomMargin = CGFloat(41)
-            let settingsNagBottomMargin = CGFloat(41)
-            let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
-            // The buttons have built-in 10% margins, so to appear centered
-            // the avatar's bottom spacing should be a bit less.
-            let avatarBottomSpacing = ScaleFromIPhone5To7Plus(18, 41)
-            // Layout of the local video view is a bit unusual because 
-            // although the view is square, it will be used
-            let videoPreviewHMargin = CGFloat(0)
+        // Dark blurred background.
+        blurView.autoPinEdgesToSuperviewEdges()
 
-            // Dark blurred background.
-            blurView.autoPinEdgesToSuperviewEdges()
+        localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
+        localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
+        localVideoView.autoSetDimension(.width, toSize: localVideoSize)
+        localVideoView.autoSetDimension(.height, toSize: localVideoSize)
 
-            localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
-            localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
-            let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
-            localVideoView.autoSetDimension(.width, toSize: localVideoSize)
-            localVideoView.autoSetDimension(.height, toSize: localVideoSize)
+        remoteVideoView.autoPinEdgesToSuperviewEdges()
 
-            remoteVideoView.autoPinEdgesToSuperviewEdges()
+        contactNameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        contactNameLabel.autoPinLeadingToSuperviewMargin()
+        contactNameLabel.setContentHuggingVerticalHigh()
+        contactNameLabel.setCompressionResistanceHigh()
 
-            contactNameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
-            contactNameLabel.autoPinLeadingToSuperviewMargin(withInset: contactHMargin)
-            contactNameLabel.setContentHuggingVerticalHigh()
-            contactNameLabel.setCompressionResistanceHigh()
+        callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
+        callStatusLabel.autoPinLeadingToSuperviewMargin()
+        callStatusLabel.setContentHuggingVerticalHigh()
+        callStatusLabel.setCompressionResistanceHigh()
 
-            callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
-            callStatusLabel.autoPinLeadingToSuperviewMargin(withInset: contactHMargin)
-            callStatusLabel.setContentHuggingVerticalHigh()
-            callStatusLabel.setCompressionResistanceHigh()
+        contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
+        contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingCallControls, withOffset: -avatarBottomSpacing)
+        contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
 
-            contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
-            contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingCallView, withOffset: -avatarBottomSpacing)
-            contactAvatarContainerView.autoPinWidthToSuperview(withMargin: avatarTopSpacing)
+        contactAvatarView.autoCenterInSuperview()
 
-            contactAvatarView.autoCenterInSuperview()
-
-            // Ensure ContacAvatarView gets as close as possible to it's superview edges while maintaining
-            // aspect ratio.
-            contactAvatarView.autoPinToSquareAspectRatio()
-            contactAvatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            contactAvatarView.autoPinEdge(toSuperviewEdge: .right, withInset: 0, relation: .greaterThanOrEqual)
-            contactAvatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
-            contactAvatarView.autoPinEdge(toSuperviewEdge: .left, withInset: 0, relation: .greaterThanOrEqual)
-            NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
-                contactAvatarView.autoPinEdgesToSuperviewMargins()
-            }
-
-            // Ongoing call controls
-            ongoingCallView.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
-            ongoingCallView.autoPinWidthToSuperview(withMargin: ongoingHMargin)
-            ongoingCallView.setContentHuggingVerticalHigh()
-
-            // Incoming call controls
-            incomingCallView.autoPinEdge(toSuperviewEdge: .bottom, withInset: incomingBottomMargin)
-            incomingCallView.autoPinWidthToSuperview(withMargin: incomingHMargin)
-            incomingCallView.setContentHuggingVerticalHigh()
-
-            // Settings nag views
-            settingsNagView.autoPinEdge(toSuperviewEdge: .bottom, withInset: settingsNagBottomMargin)
-            settingsNagView.autoPinWidthToSuperview(withMargin: settingsNagHMargin)
-            settingsNagView.autoPinEdge(.top, to: .bottom, of: callStatusLabel)
+        // Ensure ContacAvatarView gets as close as possible to it's superview edges while maintaining
+        // aspect ratio.
+        contactAvatarView.autoPinToSquareAspectRatio()
+        contactAvatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        contactAvatarView.autoPinEdge(toSuperviewEdge: .right, withInset: 0, relation: .greaterThanOrEqual)
+        contactAvatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+        contactAvatarView.autoPinEdge(toSuperviewEdge: .left, withInset: 0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+            contactAvatarView.autoPinEdgesToSuperviewMargins()
         }
 
+        // Ongoing call controls
+        ongoingCallControls.autoPinEdge(toSuperviewEdge: .bottom, withInset: ongoingBottomMargin)
+        ongoingCallControls.autoPinLeadingToSuperviewMargin()
+        ongoingCallControls.autoPinTrailingToSuperviewMargin()
+        ongoingCallControls.setContentHuggingVerticalHigh()
+
+        // Incoming call controls
+        incomingCallControls.autoPinEdge(toSuperviewEdge: .bottom, withInset: incomingBottomMargin)
+        incomingCallControls.autoPinLeadingToSuperviewMargin(withInset: incomingHMargin)
+        incomingCallControls.autoPinTrailingToSuperviewMargin(withInset: incomingHMargin)
+        incomingCallControls.setContentHuggingVerticalHigh()
+
+        // Settings nag views
+        settingsNagView.autoPinEdge(toSuperviewEdge: .bottom, withInset: settingsNagBottomMargin)
+        settingsNagView.autoPinWidthToSuperview(withMargin: settingsNagHMargin)
+        settingsNagView.autoPinEdge(.top, to: .bottom, of: callStatusLabel)
+    }
+
+    override func updateViewConstraints() {
         updateRemoteVideoLayout()
         updateLocalVideoLayout()
 
@@ -738,7 +677,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         if isShowingSettingsNag {
             settingsNagView.isHidden = false
             contactAvatarView.isHidden = true
-            ongoingCallView.isHidden = true
+            ongoingCallControls.isHidden = true
             return
         }
 
@@ -752,10 +691,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Show Incoming vs. Ongoing call controls
         let isRinging = callState == .localRinging
-        incomingCallView.isHidden = !isRinging
-        incomingCallView.isUserInteractionEnabled = isRinging
-        ongoingCallView.isHidden = isRinging
-        ongoingCallView.isUserInteractionEnabled = !isRinging
+        incomingCallControls.isHidden = !isRinging
+        incomingCallControls.isUserInteractionEnabled = isRinging
+        ongoingCallControls.isHidden = isRinging
+        ongoingCallControls.isUserInteractionEnabled = !isRinging
 
         // Rework control state if remote video is available.
         let hasRemoteVideo = !remoteVideoView.isHidden
@@ -764,18 +703,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Rework control state if local video is available.
         let hasLocalVideo = !localVideoView.isHidden
 
-        for subview in [audioModeMuteButton, audioModeVideoButton] {
-            subview?.isHidden = hasLocalVideo
-        }
-        for subview in [videoModeMuteButton, videoModeVideoButton] {
-            subview?.isHidden = !hasLocalVideo
+        if hasLocalVideo {
+            ongoingAudioCallControls.removeFromSuperview()
+            ongoingCallControls.insertArrangedSubview(ongoingVideoCallControls, at: 0)
+        } else {
+            ongoingVideoCallControls.removeFromSuperview()
+            ongoingCallControls.insertArrangedSubview(ongoingAudioCallControls, at: 0)
         }
 
         // Also hide other controls if user has tapped to hide them.
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
-            ongoingCallView.isHidden = true
+            ongoingCallControls.isHidden = true
         } else {
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
@@ -913,6 +853,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         let hasLocalVideo = !sender.isSelected
 
         callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
+    }
+
+    func didPressFlipCamera(sender: UIButton) {
+        let wantsRearFacingCamera = sender.isSelected
+        Logger.info("\(TAG) in \(#function) with wantsRearFacingCamera: \(wantsRearFacingCamera)")
+
+//        callUIAdapter.updateCamera(call: call, wantsRearFacingCamera: wantsRearFacingCamera)
     }
 
     /**
