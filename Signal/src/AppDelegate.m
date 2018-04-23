@@ -61,6 +61,8 @@ static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewContr
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 
+static NSTimeInterval launchStartedAt;
+
 @interface AppDelegate ()
 
 @property (nonatomic) BOOL hasInitialRootViewController;
@@ -103,6 +105,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     // This should be the first thing we do.
     SetCurrentAppContext([MainAppContext new]);
+
+    launchStartedAt = CACurrentMediaTime();
 
     BOOL isLoggingEnabled;
 #ifdef DEBUG
@@ -171,8 +175,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window = mainWindow;
     CurrentAppContext().mainWindow = mainWindow;
-    // Show the launch screen until the async database view registrations are complete.
-    mainWindow.rootViewController = [self loadingRootViewController];
+    // Show LoadingViewController until the async database view registrations are complete.
+    mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
     // performUpdateCheck must be invoked after Environment has been initialized because
@@ -310,11 +314,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    // Show the launch screen until the async database view registrations are complete.
-    //
-    // Note: we void using loadingRootViewController, since it will indirectly try to
-    // instantiate primary storage, which will fail.
-    self.window.rootViewController = [self loadingRootViewControllerWithShowUpgradeWarning:NO];
+    // Show the launch screen
+    self.window.rootViewController =
+        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
 
     [self.window makeKeyAndVisible];
 
@@ -409,74 +411,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     free(machine);
 
     DDLogInfo(@"iPhone Version: %@", platform);
-}
-
-- (UIViewController *)loadingRootViewController
-{
-    NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
-    NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
-    // Every time we change or add a database view in such a way that
-    // might cause a delay on launch, we need to bump this constant.
-    //
-    // We added a database view in v2.23.0.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.23.0";
-    BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
-        && (!lastCompletedLaunchAppVersion ||
-               [VersionMigrations isVersion:lastCompletedLaunchAppVersion
-                                   lessThan:kLastVersionWithDatabaseViewChange]));
-    DDLogInfo(@"%@ mayNeedUpgrade: %d", self.logTag, mayNeedUpgrade);
-
-    return [self loadingRootViewControllerWithShowUpgradeWarning:mayNeedUpgrade];
-}
-
-- (UIViewController *)loadingRootViewControllerWithShowUpgradeWarning:(BOOL)showUpgradeWarning
-{
-    UIViewController *viewController =
-        [[UIStoryboard storyboardWithName:@"Launch Screen" bundle:nil] instantiateInitialViewController];
-
-    if (!showUpgradeWarning) {
-        return viewController;
-    }
-
-    UIView *rootView = viewController.view;
-    UIImageView *iconView = nil;
-    for (UIView *subview in viewController.view.subviews) {
-        if ([subview isKindOfClass:[UIImageView class]]) {
-            iconView = (UIImageView *)subview;
-            break;
-        }
-    }
-    if (!iconView) {
-        OWSFail(@"Database view registration overlay has unexpected contents.");
-        return viewController;
-    }
-
-    UILabel *bottomLabel = [UILabel new];
-    bottomLabel.text = NSLocalizedString(
-        @"DATABASE_VIEW_OVERLAY_SUBTITLE", @"Subtitle shown while the app is updating its database.");
-    bottomLabel.font = [UIFont ows_mediumFontWithSize:16.f];
-    bottomLabel.textColor = [UIColor whiteColor];
-    bottomLabel.numberOfLines = 0;
-    bottomLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    bottomLabel.textAlignment = NSTextAlignmentCenter;
-    [rootView addSubview:bottomLabel];
-
-    UILabel *topLabel = [UILabel new];
-    topLabel.text
-        = NSLocalizedString(@"DATABASE_VIEW_OVERLAY_TITLE", @"Title shown while the app is updating its database.");
-    topLabel.font = [UIFont ows_mediumFontWithSize:20.f];
-    topLabel.textColor = [UIColor whiteColor];
-    topLabel.numberOfLines = 0;
-    topLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    topLabel.textAlignment = NSTextAlignmentCenter;
-    [rootView addSubview:topLabel];
-
-    [bottomLabel autoPinWidthToSuperviewWithMargin:20.f];
-    [topLabel autoPinWidthToSuperviewWithMargin:20.f];
-    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:10.f];
-    [iconView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:bottomLabel withOffset:40.f];
-
-    return viewController;
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -1150,7 +1084,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [self enableBackgroundRefreshIfNecessary];
 
     if ([TSAccountManager isRegistered]) {
-        DDLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        DDLogInfo(@"%@ localNumber: %@", [TSAccountManager localNumber], self.logTag);
 
         [[OWSPrimaryStorage sharedManager].newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -1182,7 +1116,8 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
     self.hasInitialRootViewController = YES;
 
-    DDLogInfo(@"%@ Presenting initial root view controller", self.logTag);
+    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
+    DDLogInfo(@"%@ Presenting app %.2f seconds after launch started.", self.logTag, startupDuration);
 
     if ([TSAccountManager isRegistered]) {
         HomeViewController *homeView = [HomeViewController new];
