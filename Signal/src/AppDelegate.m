@@ -707,14 +707,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
-    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
-    [AppReadiness runNowOrWhenAppIsReady:^{
-        if ([TSAccountManager isRegistered]) {
-            [SignalApp.sharedApp.homeViewController updateInboxCountLabel];
-        }
-        backgroundTask = nil;
-    }];
-
     [DDLog flushLog];
 }
 

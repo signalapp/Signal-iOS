@@ -13,8 +13,6 @@
     keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
         callOnViewAppearing:(BOOL)callOnViewAppearing;
 
-- (void)updateInboxCountLabel;
-
 - (void)showNewConversationView;
 
 - (void)presentTopLevelModalViewController:(UIViewController *)viewController
