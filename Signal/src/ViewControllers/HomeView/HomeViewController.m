@@ -47,7 +47,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) UISegmentedControl *segmentedControl;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
-@property (nonatomic, readonly) NSCache<NSString *, ThreadModel *> *threadModelCache;
+@property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     _messageSender = [Environment current].messageSender;
     _blockingManager = [OWSBlockingManager sharedManager];
     _blockedPhoneNumberSet = [NSSet setWithArray:[_blockingManager blockedPhoneNumbers]];
-    _threadModelCache = [NSCache new];
+    _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
     [ExperienceUpgradeFinder sharedManager];
@@ -476,7 +476,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 - (void)reloadTableViewData
 {
     // PERF: come up with a more nuanced cache clearing scheme
-    [self.threadModelCache removeAllObjects];
+    [self.threadViewModelCache removeAllObjects];
     [self.tableView reloadData];
 }
 
@@ -604,21 +604,21 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
 }
 
-- (ThreadModel *)threadModelForIndexPath:(NSIndexPath *)indexPath
+- (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
 {
     TSThread *threadRecord = [self threadForIndexPath:indexPath];
 
-    ThreadModel *_Nullable cachedThreadModel = [self.threadModelCache objectForKey:threadRecord.uniqueId];
-    if (cachedThreadModel) {
-        return cachedThreadModel;
+    ThreadViewModel *_Nullable cachedThreadViewModel = [self.threadViewModelCache objectForKey:threadRecord.uniqueId];
+    if (cachedThreadViewModel) {
+        return cachedThreadViewModel;
     }
 
-    __block ThreadModel *_Nullable newThreadModel;
+    __block ThreadViewModel *_Nullable newThreadViewModel;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        newThreadModel = [[ThreadModel alloc] initWithThread:threadRecord transaction:transaction];
+        newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
     }];
-    [self.threadModelCache setObject:newThreadModel forKey:threadRecord.uniqueId];
-    return newThreadModel;
+    [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
+    return newThreadViewModel;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -626,7 +626,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
-    ThreadModel *thread = [self threadModelForIndexPath:indexPath];
+    ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
     [cell configureWithThread:thread
               contactsManager:self.contactsManager
         blockedPhoneNumberSet:self.blockedPhoneNumberSet];
@@ -1041,7 +1041,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         NSString *key = rowChange.collectionKey.key;
         OWSAssert(key);
-        [self.threadModelCache removeObjectForKey:key];
+        [self.threadViewModelCache removeObjectForKey:key];
 
         switch (rowChange.type) {
             case YapDatabaseViewChangeDelete: {

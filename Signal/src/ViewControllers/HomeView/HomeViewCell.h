@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContactsManager;
-@class ThreadModel;
+@class ThreadViewModel;
 @class YapDatabaseReadTransaction;
 
 @interface HomeViewCell : UITableViewCell
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)cellReuseIdentifier;
 
-- (void)configureWithThread:(ThreadModel *)thread
+- (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
 

@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
 
-@property (nonatomic, nullable) ThreadModel *thread;
+@property (nonatomic, nullable) ThreadViewModel *thread;
 @property (nonatomic, nullable) OWSContactsManager *contactsManager;
 
 @property (nonatomic, readonly) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass(self.class);
 }
 
-- (void)configureWithThread:(ThreadModel *)thread
+- (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    ThreadModel *thread = self.thread;
+    ThreadViewModel *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);
         self.avatarView.image = nil;
@@ -251,7 +251,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   contactsManager:contactsManager];
 }
 
-- (NSAttributedString *)attributedSnippetForThread:(ThreadModel *)thread
+- (NSAttributedString *)attributedSnippetForThread:(ThreadViewModel *)thread
                              blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
     OWSAssert(thread);
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.nameLabel.font = self.nameFont;
 
-    ThreadModel *thread = self.thread;
+    ThreadViewModel *thread = self.thread;
     if (thread == nil) {
         OWSFail(@"%@ thread should not be nil", self.logTag);
         self.nameLabel.attributedText = nil;

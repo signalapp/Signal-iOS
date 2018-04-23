@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class ThreadModel: NSObject {
+public class ThreadViewModel: NSObject {
     let hasUnreadMessages: Bool
     let lastMessageDate: Date
     let isGroupThread: Bool
