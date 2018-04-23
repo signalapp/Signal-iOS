@@ -373,6 +373,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)showNewConversationView
 {
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
@@ -1050,11 +1054,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                                inNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.self.threadMappings updateWithTransaction:transaction];
+            [self.threadMappings updateWithTransaction:transaction];
         }];
         [self checkIfEmptyView];
-        self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
-                                                                         view:TSThreadDatabaseViewExtensionName];
 
         return;
     }
