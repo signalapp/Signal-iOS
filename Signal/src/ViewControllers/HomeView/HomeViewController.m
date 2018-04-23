@@ -182,25 +182,21 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // TODO: Remove this.
     [SignalApp.sharedApp setHomeViewController:self];
 
-    ReminderView *archiveReminderView = [ReminderView new];
-    archiveReminderView.text = NSLocalizedString(
-        @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
-    __weak HomeViewController *weakSelf = self;
-    archiveReminderView.tapAction = ^{
-        [weakSelf showInboxGrouping];
-    };
+    ReminderView *archiveReminderView =
+        [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
+                                              @"Label reminding the user that they are in archive mode.")];
     [self.view addSubview:archiveReminderView];
     [archiveReminderView autoPinWidthToSuperview];
     [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
 
-    ReminderView *missingContactsPermissionView = [ReminderView new];
-    missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multi-line label explaining how to show names instead of phone numbers in your inbox");
-    missingContactsPermissionView.tapAction = ^{
-        [[UIApplication sharedApplication] openSystemSettings];
-    };
+    ReminderView *missingContactsPermissionView = [ReminderView
+        nagWithText:NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+                        @"Multi-line label explaining how to show names instead of phone numbers in your inbox")
+          tapAction:^{
+              [[UIApplication sharedApplication] openSystemSettings];
+          }];
     [self.view addSubview:missingContactsPermissionView];
     [missingContactsPermissionView autoPinWidthToSuperview];
     [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
@@ -1056,6 +1052,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.self.threadMappings updateWithTransaction:transaction];
         }];
+        [self checkIfEmptyView];
+        self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
+                                                                         view:TSThreadDatabaseViewExtensionName];
+
         return;
     }
 
@@ -1141,17 +1141,27 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)checkIfEmptyView
 {
-    [_tableView setHidden:NO];
-    [_emptyBoxLabel setHidden:NO];
-    if (self.homeViewMode == HomeViewMode_Inbox && [self.threadMappings numberOfItemsInGroup:TSInboxGroup] == 0) {
+    // We need to consult the db view, not the mapping since the mapping only knows about
+    // the current group.
+    __block NSUInteger inboxCount;
+    __block NSUInteger archiveCount;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSThreadDatabaseViewExtensionName];
+        inboxCount = [viewTransaction numberOfItemsInGroup:TSInboxGroup];
+        archiveCount = [viewTransaction numberOfItemsInGroup:TSArchiveGroup];
+    }];
+
+    if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
-    } else if (self.homeViewMode == HomeViewMode_Archive &&
-        [self.threadMappings numberOfItemsInGroup:TSArchiveGroup] == 0) {
+        [_emptyBoxLabel setHidden:NO];
+    } else if (self.homeViewMode == HomeViewMode_Archive && archiveCount == 0) {
         [self setEmptyBoxText];
         [_tableView setHidden:YES];
+        [_emptyBoxLabel setHidden:NO];
     } else {
         [_emptyBoxLabel setHidden:YES];
+        [_tableView setHidden:NO];
     }
 }
 
