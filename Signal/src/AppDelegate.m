@@ -161,6 +161,11 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
         notificationsProtocolBlock:^{
             return SignalApp.sharedApp.notificationsManager;
+        }
+        migrationCompletion:^{
+            OWSAssertIsOnMainThread();
+
+            [self versionMigrationsDidComplete];
         }];
 
     [UIUtil applySignalAppearence];
@@ -175,14 +180,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Show the launch screen until the async database view registrations are complete.
     mainWindow.rootViewController = [self loadingRootViewController];
     [mainWindow makeKeyAndVisible];
-
-    // performUpdateCheck must be invoked after Environment has been initialized because
-    // upgrade process may depend on Environment.
-    [VersionMigrations performUpdateCheckWithCompletion:^{
-        OWSAssertIsOnMainThread();
-
-        [self versionMigrationsDidComplete];
-    }];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];

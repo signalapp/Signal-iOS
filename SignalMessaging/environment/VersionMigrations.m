@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
     OWSAssert([Environment current]);
