@@ -87,11 +87,14 @@ extension CallUIAdaptee {
     private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
     internal let audioService: CallAudioService
+    internal let callService: CallService
 
     required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         SwiftAssertIsOnMainThread(#function)
 
         self.contactsManager = contactsManager
+        self.callService = callService
+
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
@@ -245,6 +248,12 @@ extension CallUIAdaptee {
         // adaptee, relying on the AudioService CallObserver to put the system in a state consistent with the call's
         // assigned property.
         call.audioSource = audioSource
+    }
+
+    internal func setCameraSource(call: SignalCall, useBackCamera: Bool) {
+        SwiftAssertIsOnMainThread(#function)
+
+        callService.setCameraSource(call: call, useBackCamera: useBackCamera)
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.

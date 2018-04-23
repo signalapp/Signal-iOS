@@ -856,10 +856,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func didPressFlipCamera(sender: UIButton) {
-        let wantsRearFacingCamera = sender.isSelected
-        Logger.info("\(TAG) in \(#function) with wantsRearFacingCamera: \(wantsRearFacingCamera)")
+        // toggle value
+        sender.isSelected = !sender.isSelected
 
-//        callUIAdapter.updateCamera(call: call, wantsRearFacingCamera: wantsRearFacingCamera)
+        let useBackCamera = sender.isSelected
+        Logger.info("\(TAG) in \(#function) with useBackCamera: \(useBackCamera)")
+
+        callUIAdapter.setCameraSource(call: call, useBackCamera: useBackCamera)
     }
 
     /**

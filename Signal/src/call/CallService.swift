@@ -1164,6 +1164,22 @@ protocol CallServiceObserver: class {
         self.setHasLocalVideo(hasLocalVideo: true)
     }
 
+    func setCameraSource(call: SignalCall, useBackCamera: Bool) {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard call == self.call else {
+            owsFail("\(logTag) in \(#function) for non-current call.")
+            return
+        }
+
+        guard let peerConnectionClient = self.peerConnectionClient else {
+            owsFail("\(logTag) in \(#function) peerConnectionClient was unexpectedly nil")
+            return
+        }
+
+        peerConnectionClient.setCameraSource(useBackCamera: useBackCamera)
+    }
+
     /**
      * Local client received a message on the WebRTC data channel. 
      *
