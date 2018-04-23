@@ -506,7 +506,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "This can take a few minutes.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Updating Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* The current day. */
 "DATE_TODAY" = "Today";
