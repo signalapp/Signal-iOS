@@ -3,6 +3,7 @@
 //
 
 #import "TSDatabaseSecondaryIndexes.h"
+#import "OWSStorage.h"
 #import "TSInteraction.h"
 
 #define TSTimeStampSQLiteIndex @"messagesTimeStamp"
@@ -25,7 +26,10 @@
 
     YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:block];
 
-    YapDatabaseSecondaryIndex *secondaryIndex = [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
+    YapDatabaseSecondaryIndex *secondaryIndex = [[YapDatabaseSecondaryIndex alloc]
+        initWithSetup:setup
+              handler:handler
+           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"1"]];
 
     return secondaryIndex;
 }

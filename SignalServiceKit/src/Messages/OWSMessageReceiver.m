@@ -183,7 +183,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[OWSMessageDecryptJob collection]]];
 
-    return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
+    return [[YapDatabaseAutoView alloc]
+        initWithGrouping:grouping
+                 sorting:sorting
+              versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"1"]
+                 options:options];
 }
 
 + (void)registerLegacyClasses

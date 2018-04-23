@@ -64,9 +64,12 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 - (YapDatabaseConnection *)newDatabaseConnection;
 
-#ifdef DEBUG
+#pragma mark - Extension Registration
+
++ (void)incrementDatabaseExtensionVersionSuffix;
++ (NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(NSString *)versionTag;
+
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
-#endif
 
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 - (void)asyncRegisterExtension:(YapDatabaseExtension *)extension
@@ -74,6 +77,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
                     completion:(nullable dispatch_block_t)completion;
 
 - (nullable id)registeredExtension:(NSString *)extensionName;
+
+#pragma mark -
 
 - (unsigned long long)databaseFileSize;
 - (unsigned long long)databaseWALFileSize;

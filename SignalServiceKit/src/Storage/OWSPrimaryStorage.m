@@ -139,6 +139,9 @@ void VerifyRegistrationsForStorage(OWSStorage *storage)
             }
         }
     }];
+    if (hasMissingDatabaseView) {
+        [OWSStorage incrementDatabaseExtensionVersionSuffix];
+    }
 }
 
 #pragma mark -

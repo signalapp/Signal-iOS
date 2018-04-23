@@ -6,6 +6,7 @@
 #import "AppContext.h"
 #import "NSData+Base64.h"
 #import "NSNotificationCenter+OWS.h"
+#import "NSUserDefaults+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
@@ -15,6 +16,8 @@
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
+#import <YapDatabase/YapDatabaseSecondaryIndex.h>
+#import <YapDatabase/YapDatabaseView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,6 +38,8 @@ const NSUInteger kDatabasePasswordLength = 30;
 
 typedef NSData *_Nullable (^LoadDatabaseMetadataBlock)(NSError **_Nullable);
 typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
+
+NSString *const kNSUserDefaults_DatabaseExtensionVersionSuffix = @"kNSUserDefaults_DatabaseExtensionVersionSuffix";
 
 #pragma mark -
 
@@ -461,6 +466,43 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     return dbConnection;
 }
 
+#pragma mark - Extension Registration
+
++ (void)incrementDatabaseExtensionVersionSuffix
+{
+    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
+    OWSAssert(appUserDefaults);
+    NSNumber *_Nullable suffix = [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
+    [appUserDefaults setValue:@(suffix.intValue + 1) forKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
+    [appUserDefaults synchronize];
+}
+
++ (nullable NSString *)databaseExtensionVersionSuffix
+{
+    NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
+    OWSAssert(appUserDefaults);
+    NSNumber *_Nullable suffix = [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
+    if (!suffix) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@".%@", suffix];
+}
+
++ (NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(NSString *)versionTag
+{
+    OWSAssertIsOnMainThread();
+
+    NSString *_Nullable suffix = [self databaseExtensionVersionSuffix];
+    if (suffix) {
+        NSString *result = [versionTag stringByAppendingString:suffix];
+        DDLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, suffix, result);
+        return result;
+    }
+    return versionTag;
+}
+
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
     return [self.database registerExtension:extension withName:extensionName];
@@ -476,6 +518,24 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                       withName:(NSString *)extensionName
                     completion:(nullable dispatch_block_t)completion
 {
+    if ([extension isKindOfClass:[YapDatabaseView class]]) {
+        YapDatabaseView *databaseView = (YapDatabaseView *)extension;
+
+        NSString *_Nullable databaseExtensionVersionSuffix = [OWSStorage databaseExtensionVersionSuffix];
+        if (databaseExtensionVersionSuffix) {
+            OWSAssert([databaseView.versionTag hasSuffix:databaseExtensionVersionSuffix]);
+        }
+    } else if ([extension isKindOfClass:[YapDatabaseSecondaryIndex class]]) {
+        YapDatabaseSecondaryIndex *secondaryIndex = (YapDatabaseSecondaryIndex *)extension;
+
+        NSString *_Nullable databaseExtensionVersionSuffix = [OWSStorage databaseExtensionVersionSuffix];
+        if (databaseExtensionVersionSuffix) {
+            OWSAssert([secondaryIndex.versionTag hasSuffix:databaseExtensionVersionSuffix]);
+        }
+    } else {
+        OWSProdLogAndFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
+    }
+
     [self.database asyncRegisterExtension:extension
                                  withName:extensionName
                           completionBlock:^(BOOL ready) {
