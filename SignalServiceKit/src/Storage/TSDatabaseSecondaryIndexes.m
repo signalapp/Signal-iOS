@@ -10,6 +10,11 @@
 
 @implementation TSDatabaseSecondaryIndexes
 
++ (NSString *)registerTimeStampIndexExtensionName
+{
+    return @"idx";
+}
+
 + (YapDatabaseSecondaryIndex *)registerTimeStampIndex {
     YapDatabaseSecondaryIndexSetup *setup = [[YapDatabaseSecondaryIndexSetup alloc] init];
     [setup addColumn:TSTimeStampSQLiteIndex withType:YapDatabaseSecondaryIndexTypeReal];
@@ -39,7 +44,7 @@
 {
     NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ = %lld", TSTimeStampSQLiteIndex, timestamp];
     YapDatabaseQuery *query   = [YapDatabaseQuery queryWithFormat:formattedString];
-    [[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:block];
+    [[transaction ext:[self registerTimeStampIndexExtensionName]] enumerateKeysMatchingQuery:query usingBlock:block];
 }
 
 @end
