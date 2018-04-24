@@ -6,8 +6,8 @@
 #import "AppStoreRating.h"
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
-#import "HomeViewController.h"
 #import "DebugLogger.h"
+#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
@@ -156,7 +156,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [AppSetup setupEnvironment:^{
+    [AppSetup setupEnvironmentWithCallMessageHandlerBlock:^{
         return SignalApp.sharedApp.callMessageHandler;
     }
         notificationsProtocolBlock:^{
@@ -1086,6 +1086,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [AppVersion.instance mainAppLaunchDidComplete];
 
     [Environment.current.contactsManager loadSignalAccountsFromCache];
+    [Environment.current.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];

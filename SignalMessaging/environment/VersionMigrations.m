@@ -88,8 +88,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self clearBloomFilterCache];
     }
 
-    [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-        runAllOutstandingWithCompletion:completion];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
+            runAllOutstandingWithCompletion:completion];
+    });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

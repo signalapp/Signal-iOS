@@ -18,9 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppSetup
 
-+ (void)setupEnvironment:(CallMessageHandlerBlock)callMessageHandlerBlock
-    notificationsProtocolBlock:(NotificationsManagerBlock)notificationsManagerBlock
-           migrationCompletion:(dispatch_block_t)migrationCompletion
++ (void)setupEnvironmentWithCallMessageHandlerBlock:(CallMessageHandlerBlock)callMessageHandlerBlock
+                         notificationsProtocolBlock:(NotificationsManagerBlock)notificationsManagerBlock
+                                migrationCompletion:(dispatch_block_t)migrationCompletion
 {
     OWSAssert(callMessageHandlerBlock);
     OWSAssert(notificationsManagerBlock);
@@ -51,19 +51,16 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [OWSStorage setupStorageWithMigrationBlock:^() {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // Don't start database migrations until storage is ready.
-                [VersionMigrations performUpdateCheckWithCompletion:^() {
-                    OWSAssertIsOnMainThread();
+        [OWSStorage registerExtensionsWithMigrationBlock:^() {
+            // Don't start database migrations until storage is ready.
+            [VersionMigrations performUpdateCheckWithCompletion:^() {
+                OWSAssertIsOnMainThread();
 
-                    migrationCompletion();
+                migrationCompletion();
 
-                    backgroundTask = nil;
-                }];
-            });
+                backgroundTask = nil;
+            }];
         }];
-        [[Environment current].contactsManager startObserving];
     });
 }
 

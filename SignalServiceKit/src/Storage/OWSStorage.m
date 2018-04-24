@@ -325,7 +325,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWS_ABSTRACT_METHOD();
 }
 
-+ (void)setupStorageWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
++ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
 {
     OWSAssert(migrationBlock);
 

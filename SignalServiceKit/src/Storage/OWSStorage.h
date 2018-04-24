@@ -58,7 +58,7 @@ typedef void (^OWSStorageMigrationBlock)(void);
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
-+ (void)setupStorageWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
++ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
 
 + (void)resetAllStorage;
 

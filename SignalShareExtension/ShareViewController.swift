@@ -88,7 +88,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment({
+        AppSetup.setupEnvironment(callMessageHandlerBlock: {
             return NoopCallMessageHandler()
         },
                                   notificationsProtocolBlock: {
@@ -268,6 +268,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         AppVersion.instance().saeLaunchDidComplete()
 
         Environment.current().contactsManager.loadSignalAccountsFromCache()
+        Environment.current().contactsManager.startObserving()
 
         ensureRootViewController()
 
