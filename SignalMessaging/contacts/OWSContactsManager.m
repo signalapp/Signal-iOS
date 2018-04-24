@@ -19,6 +19,7 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 
+@import AddressBook;
 @import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
