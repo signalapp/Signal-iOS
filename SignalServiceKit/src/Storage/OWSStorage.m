@@ -499,10 +499,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     NSNumber *_Nullable versionSuffix = versionMap[extensionName];
 
     if (versionSuffix) {
-        if (!versionTag) {
-            versionTag = @"0";
-        }
-        NSString *result = [NSString stringWithFormat:@"%@.%@", versionTag, versionSuffix];
+        NSString *result =
+            [NSString stringWithFormat:@"%@.%@", (versionTag.length < 1 ? @"0" : versionTag), versionSuffix];
         DDLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, versionSuffix, result);
         return result;
     }
