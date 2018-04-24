@@ -77,10 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertIsOnMainThread();
 
-    _appIsInactiveOrBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
-
-    [self observeNotifications];
-
     OWSSingletonAssert();
 
     return self;
@@ -126,10 +122,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self createScreenBlockingWindowWithRootWindow:rootWindow];
     OWSAssert(self.screenBlockingWindow);
-    [[OWSWindowManager sharedManager] setupWithRootWindow:rootWindow screenBlockingWindow:self.screenBlockingWindow];
+}
+
+- (void)startObserving
+{
+    _appIsInactiveOrBackground = [UIApplication sharedApplication].applicationState != UIApplicationStateActive;
+
+    [self observeNotifications];
 
     // Default to screen protection until we know otherwise.
-    [self updateScreenBlockingWindow:ScreenLockUIStateNone animated:NO];
+    [self updateScreenBlockingWindow:ScreenLockUIStateScreenProtection animated:NO];
 
     // Initialize the screen lock state.
     //
@@ -393,9 +395,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.screenBlockingWindow = window;
     self.screenBlockingViewController = viewController;
-
-    // Default to screen protection until we know otherwise.
-    [self updateScreenBlockingWindow:ScreenLockUIStateNone animated:NO];
 }
 
 // The "screen blocking" window has three possible states:

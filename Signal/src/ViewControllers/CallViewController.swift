@@ -24,19 +24,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     let contactsManager: OWSContactsManager
 
-    // MARK: Properties
+    // MARK: - Properties
 
     let thread: TSContactThread
     let call: SignalCall
     var hasDismissed = false
 
-    // MARK: Views
+    // MARK: - Views
 
     var hasConstraints = false
     var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
 
-    // MARK: Contact Views
+    // MARK: - Contact Views
 
     var contactNameLabel: MarqueeLabel!
     var contactAvatarView: AvatarImageView!
@@ -44,7 +44,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
 
-    // MARK: Ongoing Call Controls
+    // MARK: - Ongoing Call Controls
 
     var ongoingCallView: UIView!
 
@@ -59,14 +59,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     //       call.
 //    var textMessageButton: UIButton!
 
-    // MARK: Incoming Call Controls
+    // MARK: - Incoming Call Controls
 
     var incomingCallView: UIView!
 
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
 
-    // MARK: Video Views
+    // MARK: - Video Views
 
     var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
@@ -84,7 +84,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: Settings Nag Views
+    // MARK: - Settings Nag Views
 
     var isShowingSettingsNag = false {
         didSet {
@@ -96,7 +96,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var settingsNagView: UIView!
     var settingsNagDescriptionLabel: UILabel!
 
-    // MARK: Audio Source
+    // MARK: - Audio Source
 
     var hasAlternateAudioSources: Bool {
         Logger.info("\(TAG) available audio sources: \(allAudioSources)")
@@ -129,7 +129,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
@@ -155,7 +155,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: View Lifecycle
+    // MARK: - View Lifecycle
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -968,6 +968,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
+    func didTapLeaveCall(sender: UIGestureRecognizer) {
+        guard sender.state == .recognized else {
+            return
+        }
+        OWSWindowManager.shared().leaveCallView()
+    }
+
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
@@ -996,7 +1003,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.updateCallUI(callState: call.state)
     }
 
-    // MARK: CallAudioServiceDelegate
+    // MARK: - CallAudioServiceDelegate
 
     func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isSpeakerphoneEnabled: Bool) {
         SwiftAssertIsOnMainThread(#function)
@@ -1139,14 +1146,5 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         updateLocalVideoTrack(localVideoTrack: localVideoTrack)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
-    }
-
-    // MARK: - Event Handlers
-
-    func leaveCallViewTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
-        OWSWindowManager.shared().leaveCallView()
     }
 }

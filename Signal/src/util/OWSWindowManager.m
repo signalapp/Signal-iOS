@@ -151,10 +151,11 @@ const int kReturnToCallWindowHeight = 20.f;
     UILabel *label = [UILabel new];
     label.text = NSLocalizedString(@"CALL_WINDOW_RETURN_TO_CALL", @"Label for the 'return to call' banner.");
     label.textColor = [UIColor whiteColor];
-    // TODO: Dynamic type?
+    // System UI doesn't use dynamic type; neither do we.
     label.font = [UIFont ows_regularFontWithSize:14.f];
     [rootView addSubview:label];
     [label autoCenterInSuperview];
+    OWSAssert(!self.returnToCallLabel);
     self.returnToCallLabel = label;
 
     window.rootViewController = viewController;
@@ -180,6 +181,7 @@ const int kReturnToCallWindowHeight = 20.f;
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
+    OWSAssert(!self.callNavigationController);
     self.callNavigationController = navigationController;
 
     window.rootViewController = navigationController;
@@ -271,63 +273,43 @@ const int kReturnToCallWindowHeight = 20.f;
     OWSAssert(self.callViewWindow);
     OWSAssert(self.screenBlockingWindow);
 
+    // To avoid bad frames, we never want to hide the blocking window, so we manipulate
+    // its window level to "hide" it behind other windows.  The other windows have fixed
+    // window level and are shown/hidden as necessary.
+    //
+    // Note that we always "hide" before we "show".
     if (self.isScreenBlockActive) {
         // Show Screen Block.
 
-        [self hideRootWindowIfNecessary];
-        [self hideReturnToCallWindowIfNecessary];
-        [self hideCallViewWindowIfNecessary];
-        [self showScreenBlockWindowIfNecessary];
+        [self ensureRootWindowHidden];
+        [self ensureReturnToCallWindowHidden];
+        [self ensureCallViewWindowHidden];
+        [self ensureScreenBlockWindowShown];
     } else if (self.callViewController && self.isCallViewActive) {
         // Show Call View.
 
-        [self hideRootWindowIfNecessary];
-        [self hideReturnToCallWindowIfNecessary];
-        [self showCallViewWindowIfNecessary];
-        [self hideScreenBlockWindowIfNecessary];
+        [self ensureRootWindowHidden];
+        [self ensureReturnToCallWindowHidden];
+        [self ensureCallViewWindowShown];
+        [self ensureScreenBlockWindowHidden];
     } else if (self.callViewController) {
         // Show Root Window + "Return to Call".
 
-        [self showRootWindowIfNecessary];
-        [self showReturnToCallWindowIfNecessary];
-        [self hideCallViewWindowIfNecessary];
-        [self hideScreenBlockWindowIfNecessary];
+        [self ensureRootWindowShown];
+        [self ensureReturnToCallWindowShown];
+        [self ensureCallViewWindowHidden];
+        [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
 
-        [self showRootWindowIfNecessary];
-        [self hideReturnToCallWindowIfNecessary];
-        [self hideCallViewWindowIfNecessary];
-        [self hideScreenBlockWindowIfNecessary];
+        [self ensureRootWindowShown];
+        [self ensureReturnToCallWindowHidden];
+        [self ensureCallViewWindowHidden];
+        [self ensureScreenBlockWindowHidden];
     }
-
-    DDLogVerbose(@"%@ rootWindow: %d %f", self.logTag, self.rootWindow.hidden, self.rootWindow.windowLevel);
-    DDLogVerbose(@"%@ returnToCallWindow: %d %f",
-        self.logTag,
-        self.returnToCallWindow.hidden,
-        self.returnToCallWindow.windowLevel);
-    DDLogVerbose(@"%@ callViewWindow: %d %f", self.logTag, self.callViewWindow.hidden, self.callViewWindow.windowLevel);
-    DDLogVerbose(@"%@ screenBlockingWindow: %d %f",
-        self.logTag,
-        self.screenBlockingWindow.hidden,
-        self.screenBlockingWindow.windowLevel);
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        DDLogVerbose(@"%@ ...rootWindow: %d %f", self.logTag, self.rootWindow.hidden, self.rootWindow.windowLevel);
-        DDLogVerbose(@"%@ ...returnToCallWindow: %d %f",
-            self.logTag,
-            self.returnToCallWindow.hidden,
-            self.returnToCallWindow.windowLevel);
-        DDLogVerbose(
-            @"%@ ...callViewWindow: %d %f", self.logTag, self.callViewWindow.hidden, self.callViewWindow.windowLevel);
-        DDLogVerbose(@"%@ ...screenBlockingWindow: %d %f",
-            self.logTag,
-            self.screenBlockingWindow.hidden,
-            self.screenBlockingWindow.windowLevel);
-    });
 }
 
-- (void)showRootWindowIfNecessary
+- (void)ensureRootWindowShown
 {
     OWSAssertIsOnMainThread();
 
@@ -368,7 +350,7 @@ const int kReturnToCallWindowHeight = 20.f;
     self.rootFrontmostViewController = nil;
 }
 
-- (void)hideRootWindowIfNecessary
+- (void)ensureRootWindowHidden
 {
     OWSAssertIsOnMainThread();
 
@@ -390,7 +372,7 @@ const int kReturnToCallWindowHeight = 20.f;
     self.rootWindow.hidden = YES;
 }
 
-- (void)showReturnToCallWindowIfNecessary
+- (void)ensureReturnToCallWindowShown
 {
     OWSAssertIsOnMainThread();
 
@@ -414,7 +396,7 @@ const int kReturnToCallWindowHeight = 20.f;
     self.returnToCallWindow.hidden = NO;
 }
 
-- (void)hideReturnToCallWindowIfNecessary
+- (void)ensureReturnToCallWindowHidden
 {
     OWSAssertIsOnMainThread();
 
@@ -426,7 +408,7 @@ const int kReturnToCallWindowHeight = 20.f;
     [self.returnToCallLabel.layer removeAllAnimations];
 }
 
-- (void)showCallViewWindowIfNecessary
+- (void)ensureCallViewWindowShown
 {
     OWSAssertIsOnMainThread();
 
@@ -438,7 +420,7 @@ const int kReturnToCallWindowHeight = 20.f;
     [self.callViewWindow.rootViewController becomeFirstResponder];
 }
 
-- (void)hideCallViewWindowIfNecessary
+- (void)ensureCallViewWindowHidden
 {
     OWSAssertIsOnMainThread();
 
@@ -449,7 +431,7 @@ const int kReturnToCallWindowHeight = 20.f;
     self.callViewWindow.hidden = YES;
 }
 
-- (void)showScreenBlockWindowIfNecessary
+- (void)ensureScreenBlockWindowShown
 {
     OWSAssertIsOnMainThread();
 
@@ -461,7 +443,7 @@ const int kReturnToCallWindowHeight = 20.f;
     [self.screenBlockingWindow.rootViewController becomeFirstResponder];
 }
 
-- (void)hideScreenBlockWindowIfNecessary
+- (void)ensureScreenBlockWindowHidden
 {
     OWSAssertIsOnMainThread();
 
