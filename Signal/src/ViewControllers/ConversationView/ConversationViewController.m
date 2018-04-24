@@ -117,6 +117,68 @@ typedef enum : NSUInteger {
 
 #pragma mark -
 
+@interface OWSImagePickerController : UIImagePickerController
+
+@end
+
+#pragma mark -
+
+@implementation OWSImagePickerController
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    [self becomeFirstResponder];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    [self becomeFirstResponder];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSDocumentMenuViewController : UIDocumentMenuViewController
+
+@end
+
+#pragma mark -
+
+@implementation OWSDocumentMenuViewController
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+
+    [self becomeFirstResponder];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    [self becomeFirstResponder];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+@end
+
+#pragma mark -
+
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
     ContactsViewHelperDelegate,
@@ -2547,7 +2609,7 @@ typedef enum : NSUInteger {
     // TODO: UIDocumentMenuViewController is deprecated; we should use UIDocumentPickerViewController
     //       instead.
     UIDocumentMenuViewController *menuController =
-        [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
+        [[OWSDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
 
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
@@ -2718,7 +2780,7 @@ typedef enum : NSUInteger {
             return;
         }
 
-        UIImagePickerController *picker = [UIImagePickerController new];
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
@@ -2755,7 +2817,7 @@ typedef enum : NSUInteger {
             return;
         }
 
-        UIImagePickerController *picker = [UIImagePickerController new];
+        UIImagePickerController *picker = [OWSImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         picker.delegate = self;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];

@@ -53,6 +53,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var progressiveSearchTimer: Timer?
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -129,6 +133,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.becomeFirstResponder()
     }
 
     override func viewDidAppear(_ animated: Bool) {
