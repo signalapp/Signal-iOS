@@ -18,11 +18,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation AppSetup
 
-+ (void)setupEnvironment:(CallMessageHandlerBlock)callMessageHandlerBlock
-    notificationsProtocolBlock:(NotificationsManagerBlock)notificationsManagerBlock
++ (void)setupEnvironmentWithCallMessageHandlerBlock:(CallMessageHandlerBlock)callMessageHandlerBlock
+                         notificationsProtocolBlock:(NotificationsManagerBlock)notificationsManagerBlock
+                                migrationCompletion:(dispatch_block_t)migrationCompletion
 {
     OWSAssert(callMessageHandlerBlock);
     OWSAssert(notificationsManagerBlock);
+    OWSAssert(migrationCompletion);
+
+    __block OWSBackgroundTask *_Nullable backgroundTask =
+        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -46,8 +51,16 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [OWSStorage setupStorage];
-        [[Environment current].contactsManager startObserving];
+        [OWSStorage registerExtensionsWithMigrationBlock:^() {
+            // Don't start database migrations until storage is ready.
+            [VersionMigrations performUpdateCheckWithCompletion:^() {
+                OWSAssertIsOnMainThread();
+
+                migrationCompletion();
+
+                backgroundTask = nil;
+            }];
+        }];
     });
 }
 

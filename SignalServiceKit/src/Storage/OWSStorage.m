@@ -74,7 +74,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
+    OWSAssert(delegate.areAllRegistrationsComplete);
 
     OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
@@ -101,7 +101,7 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 {
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssert(delegate);
-    OWSAssert(delegate.areAllRegistrationsComplete || self.canWriteBeforeStorageReady);
+    OWSAssert(delegate.areAllRegistrationsComplete);
 
     __block OWSBackgroundTask *_Nullable backgroundTask = nil;
     if (CurrentAppContext().isMainApp) {
@@ -176,13 +176,6 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 - (YapDatabaseConnection *)registrationConnection
 {
     YapDatabaseConnection *connection = [super registrationConnection];
-
-#ifdef DEBUG
-    // Flag the registration connection as such.
-    OWSAssert([connection isKindOfClass:[OWSDatabaseConnection class]]);
-    ((OWSDatabaseConnection *)connection).canWriteBeforeStorageReady = YES;
-#endif
-
     return connection;
 }
 
@@ -332,29 +325,24 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
     OWS_ABSTRACT_METHOD();
 }
 
-+ (NSArray<OWSStorage *> *)allStorages
++ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
 {
-    return @[
-        OWSPrimaryStorage.sharedManager,
-    ];
-}
+    OWSAssert(migrationBlock);
 
-+ (void)setupStorage
-{
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    for (OWSStorage *storage in self.allStorages) {
-        [storage runSyncRegistrations];
-    }
+    [OWSPrimaryStorage.sharedManager runSyncRegistrations];
 
-    for (OWSStorage *storage in self.allStorages) {
-        [storage runAsyncRegistrationsWithCompletion:^{
-            if ([self postRegistrationCompleteNotificationIfPossible]) {
-                backgroundTask = nil;
-            }
-        }];
-    }
+    [OWSPrimaryStorage.sharedManager runAsyncRegistrationsWithCompletion:^{
+        OWSAssert(self.isStorageReady);
+
+        [self postRegistrationCompleteNotification];
+
+        migrationBlock();
+
+        backgroundTask = nil;
+    }];
 }
 
 - (YapDatabaseConnection *)registrationConnection
@@ -363,11 +351,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 }
 
 // Returns YES IFF all registrations are complete.
-+ (BOOL)postRegistrationCompleteNotificationIfPossible
++ (void)postRegistrationCompleteNotification
 {
-    if (!self.isStorageReady) {
-        return NO;
-    }
+    OWSAssert(self.isStorageReady);
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -375,18 +363,11 @@ typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
                                                                  object:nil
                                                                userInfo:nil];
     });
-
-    return YES;
 }
 
 + (BOOL)isStorageReady
 {
-    for (OWSStorage *storage in self.allStorages) {
-        if (!storage.areAllRegistrationsComplete) {
-            return NO;
-        }
-    }
-    return YES;
+    return OWSPrimaryStorage.sharedManager.areAllRegistrationsComplete;
 }
 
 - (BOOL)tryToLoadDatabase
