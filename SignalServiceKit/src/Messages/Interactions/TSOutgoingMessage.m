@@ -267,6 +267,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     _attachmentFilenameMap = [NSMutableDictionary new];
 
+    // New outgoing messages should immediately determine their
+    // recipient list from current thread state.
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
     NSArray<NSString *> *recipientIds = [self.thread recipientIdentifiers];
     for (NSString *recipientId in recipientIds) {

@@ -153,14 +153,19 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 - (BOOL)shouldBeSaved;
 
+// All recipients of this message.
 - (NSArray<NSString *> *)recipientIds;
 
+// All recipients of this message who we are currently trying to send to (queued, uploading or doing send).
 - (NSArray<NSString *> *)sendingRecipientIds;
 
+// All recipients of this message to whom it has been sent and delivered.
 - (NSArray<NSString *> *)deliveredRecipientIds;
 
+// All recipients of this message to whom it has been sent, delivered and read.
 - (NSArray<NSString *> *)readRecipientIds;
 
+// Number of recipients of this message to whom it has been sent.
 - (NSUInteger)sentRecipientsCount;
 
 - (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId;
@@ -179,11 +184,11 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // When we start a message send, all "failed" recipients should be marked as "sending".
 - (void)updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-#ifdef DEBUG
 // This method is used to forge the message state for fake messages.
+//
+// NOTE: This method should only be used by Debug UI, etc.
 - (void)updateWithFakeMessageState:(TSOutgoingMessageState)messageState
                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
-#endif
 
 // This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error;
