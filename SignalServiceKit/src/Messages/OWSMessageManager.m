@@ -891,7 +891,7 @@ NS_ASSUME_NONNULL_BEGIN
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageUpdate];
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
-    [message updateWithSingleGroupRecipient:envelope.source transaction:transaction];
+    [message updateWithSendingToSingleGroupRecipient:envelope.source transaction:transaction];
 
     [self sendGroupUpdateForThread:gThread message:message];
 }

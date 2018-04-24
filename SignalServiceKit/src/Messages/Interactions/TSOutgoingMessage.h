@@ -213,8 +213,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be
 // delivered to the requestor.
-- (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
+                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipientId:(NSString *)recipientId

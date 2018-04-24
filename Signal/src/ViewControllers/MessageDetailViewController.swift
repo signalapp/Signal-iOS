@@ -193,13 +193,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
             let isGroupThread = thread.isGroupThread()
 
-            let recipientStatusGroups: [MessageRecipientStatus] = [
+            let recipientStatusGroups: [MessageReceiptStatus] = [
                 .read,
                 .uploading,
                 .delivered,
                 .sent,
                 .sending,
-                .failed
+                .failed,
+                .skipped
             ]
             for recipientStatusGroup in recipientStatusGroups {
                 var groupRows = [UIView]()
@@ -548,8 +549,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         updateContent()
     }
 
-    private func string(for messageRecipientStatus: MessageRecipientStatus) -> String {
-        switch messageRecipientStatus {
+    private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
+        switch messageReceiptStatus {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")

@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
             NSString *statusMessage =
-                [MessageRecipientStatusUtils statusMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+                [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
             attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
         }
     } else if (self.viewItem.isGroupThread) {

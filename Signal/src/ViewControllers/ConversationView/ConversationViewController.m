@@ -4651,7 +4651,7 @@ typedef enum : NSUInteger {
 
     // Update the "shouldShowDate" property of the view items.
     OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
-    MessageRecipientStatus lastRecipientStatus = MessageRecipientStatusUploading;
+    MessageReceiptStatus lastReceiptStatus = MessageReceiptStatusUploading;
     NSString *_Nullable lastIncomingSenderId = nil;
     for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
         BOOL shouldHideRecipientStatus = NO;
@@ -4660,20 +4660,21 @@ typedef enum : NSUInteger {
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
-            MessageRecipientStatus recipientStatus =
-                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+            MessageReceiptStatus receiptStatus =
+                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage
+                                                                  referenceView:self.view];
 
             if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
                 // always show "failed to send" status
                 shouldHideRecipientStatus = NO;
             } else {
                 shouldHideRecipientStatus
-                    = (interactionType == lastInteractionType && recipientStatus == lastRecipientStatus);
+                    = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus);
             }
 
             shouldHideBubbleTail = interactionType == lastInteractionType;
 
-            lastRecipientStatus = recipientStatus;
+            lastReceiptStatus = receiptStatus;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;

@@ -271,7 +271,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
-    NSArray<NSString *> *recipientIds = [self.thread recipientIdentifiers];
+    NSArray<NSString *> *recipientIds = [thread recipientIdentifiers];
     for (NSString *recipientId in recipientIds) {
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
         recipientState.state = OWSOutgoingMessageRecipientStateSending;
@@ -565,6 +565,9 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                          recipientId);
                                      return;
                                  }
+                                 if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
+                                 }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.deliveryTimestamp = deliveryTimestamp;
                              }];
@@ -586,6 +589,9 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                                          self.logTag,
                                          recipientId);
                                      return;
+                                 }
+                                 if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+                                     DDLogWarn(@"%@ marking unsent message as delivered.", self.logTag);
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
@@ -609,8 +615,8 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
                              }];
 }
 
-- (void)updateWithSingleGroupRecipient:(NSString *)singleGroupRecipient
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
+                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(singleGroupRecipient.length > 0);
