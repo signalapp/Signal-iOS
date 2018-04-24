@@ -92,6 +92,11 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
 }
 
+- (instancetype)initWithFailedMessageType:(TSErrorMessageType)errorMessageType
+{
+    return [self initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil failedMessageType:errorMessageType];
+}
+
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Error;
@@ -145,6 +150,11 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
                         failedMessageType:TSErrorMessageInvalidMessage];
+}
+
++ (instancetype)corruptedMessageInUnknownThread
+{
+    return [[self alloc] initWithFailedMessageType:TSErrorMessageInvalidMessage];
 }
 
 + (instancetype)invalidVersionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope

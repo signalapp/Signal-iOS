@@ -206,7 +206,13 @@
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(message);
-    OWSAssert(thread);
+
+    if (!thread) {
+        OWSProdLogAndFail(
+            @"%@ unexpected notification not associated with a thread: %@.", self.logTag, [message class]);
+        [self notifyUserForThreadlessErrorMessage:message transaction:transaction];
+        return;
+    }
 
     NSString *messageText = [message previewTextWithTransaction:transaction];
 
@@ -245,6 +251,40 @@
                } else {
                    if (shouldPlaySound && [Environment.preferences soundInForeground]) {
                        OWSSound sound = [OWSSounds notificationSoundForThread:thread];
+                       SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
+                       // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+                       AudioServicesPlayAlertSound(soundId);
+                   }
+               }
+           }];
+}
+
+- (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)message
+                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+{
+    OWSAssert(message);
+
+    NSString *messageText = [message previewTextWithTransaction:transaction];
+
+    [transaction
+        addCompletionQueue:nil
+           completionBlock:^() {
+               BOOL shouldPlaySound = [self shouldPlaySoundForNotification];
+
+               if (([UIApplication sharedApplication].applicationState != UIApplicationStateActive) && messageText) {
+                   UILocalNotification *notification = [[UILocalNotification alloc] init];
+                   if (shouldPlaySound) {
+                       OWSSound sound = [OWSSounds globalNotificationSound];
+                       notification.soundName = [OWSSounds filenameForSound:sound];
+                   }
+
+                   NSString *alertBodyString = messageText;
+                   notification.alertBody = alertBodyString;
+
+                   [[PushManager sharedManager] presentNotification:notification checkForCancel:NO];
+               } else {
+                   if (shouldPlaySound && [Environment.preferences soundInForeground]) {
+                       OWSSound sound = [OWSSounds globalNotificationSound];
                        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:sound quiet:YES];
                        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
                        AudioServicesPlayAlertSound(soundId);

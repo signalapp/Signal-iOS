@@ -170,6 +170,13 @@ NS_ASSUME_NONNULL_BEGIN
     } @catch (NSException *exception) {
         OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
+
+        [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                           transaction:transaction];
+            }];
     }
 
     failureBlock();

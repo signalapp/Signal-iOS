@@ -56,6 +56,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 + (instancetype)corruptedMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
++ (instancetype)corruptedMessageInUnknownThread;
+
 + (instancetype)invalidVersionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
