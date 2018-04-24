@@ -124,6 +124,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }
     NSString *_Nullable singleGroupRecipient = [coder decodeObjectForKey:@"singleGroupRecipient"];
     if (singleGroupRecipient) {
+        OWSFail(@"%@ unexpected single group recipient message.", self.logTag);
         // If this is a "single group recipient message", treat it as such.
         recipientIds = @[
             singleGroupRecipient,
@@ -334,22 +335,14 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     [super saveWithTransaction:transaction];
 }
 
-- (OWSOutgoingMessageRecipientState)maxMessageState
+- (BOOL)hasSentToAnyRecipient
 {
-    OWSOutgoingMessageRecipientState result = OWSOutgoingMessageRecipientStateMin;
     for (TSOutgoingMessageRecipientState *recipientState in self.recipientStateMap.allValues) {
-        result = MAX(recipientState.state, result);
+        if (recipientState.state == OWSOutgoingMessageRecipientStateSent) {
+            return YES;
+        }
     }
-    return result;
-}
-
-- (OWSOutgoingMessageRecipientState)minMessageState
-{
-    OWSOutgoingMessageRecipientState result = OWSOutgoingMessageRecipientStateMax;
-    for (TSOutgoingMessageRecipientState *recipientState in self.recipientStateMap.allValues) {
-        result = MIN(recipientState.state, result);
-    }
-    return result;
+    return NO;
 }
 
 - (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
@@ -366,7 +359,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     } else if (self.recipientStateMap.count < 1) {
         return YES;
     } else {
-        return self.maxMessageState >= OWSOutgoingMessageRecipientStateSent;
+        return self.hasSentToAnyRecipient;
     }
 }
 
@@ -382,7 +375,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
 - (NSArray<NSString *> *)recipientIds
 {
-    return [self.recipientStateMap.allKeys copy];
+    return self.recipientStateMap.allKeys;
 }
 
 - (NSArray<NSString *> *)sendingRecipientIds

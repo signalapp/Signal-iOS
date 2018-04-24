@@ -607,6 +607,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
           failure:(RetryableFailureHandler)failureHandler
 {
     [self saveGroupMessage:message inThread:thread];
+
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
     for (SignalRecipient *recipient in recipients) {
@@ -614,12 +615,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         // We don't need to send the message to ourselves...
         if ([recipientId isEqualToString:[TSAccountManager localNumber]]) {
-            continue;
-        }
-        if (![message.sendingRecipientIds containsObject:recipientId]) {
-            // Skip recipients we have already sent this message to (on an
-            // earlier retry, perhaps).
-            DDLogInfo(@"%@ Skipping group message recipient; already sent: %@", self.logTag, recipient.uniqueId);
             continue;
         }
 

@@ -156,7 +156,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 // All recipients of this message.
 - (NSArray<NSString *> *)recipientIds;
 
-// All recipients of this message who we are currently trying to send to (queued, uploading or doing send).
+// All recipients of this message who we are currently trying to send to (queued, uploading or during send).
 - (NSArray<NSString *> *)sendingRecipientIds;
 
 // All recipients of this message to whom it has been sent and delivered.

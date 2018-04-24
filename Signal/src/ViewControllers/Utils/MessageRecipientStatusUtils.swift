@@ -16,35 +16,6 @@ import SignalMessaging
     case skipped
 }
 
-// Our per-recipient status messages are "biased towards success"
-// and reflect the most successful known state for that recipient.
-//
-// Our per-message status messages are "biased towards failure"
-// and reflect the least successful known state for that message.
-//
-// Why?
-//
-// When showing the per-recipient status, we want to show the message
-// as "read" even if delivery failed to another recipient of the same
-// message.
-//
-// When showing the per-message status, we want to show the message
-// as "failed" if delivery failed to any recipient, even if another 
-// receipient has read the message.
-// 
-// Note also that for legacy reasons we have redundant and possibly
-// conflicting state.  Examples:
-//
-// * We could have an entry in the recipientReadMap for a message
-//   that has no entries in its recipientDeliveryMap.
-// * We could have an entry in the recipientReadMap or recipientDeliveryMap
-//   for a message whose status is "attempting out" or "unsent".
-// * We could have a message whose wasDelivered property is false but
-//   which has entries in its recipientDeliveryMap or recipientReadMap.
-// * Etc.
-//
-// To resolve this ambiguity, we apply a "bias" towards success or
-// failure.
 class MessageRecipientStatusUtils: NSObject {
     // MARK: Initializers
 
