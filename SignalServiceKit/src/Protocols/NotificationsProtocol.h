@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSIncomingMessage;
 @class TSThread;
 @class YapDatabaseReadTransaction;
+@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
