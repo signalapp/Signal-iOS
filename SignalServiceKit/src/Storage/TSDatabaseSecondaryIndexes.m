@@ -26,10 +26,8 @@
 
     YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:block];
 
-    YapDatabaseSecondaryIndex *secondaryIndex = [[YapDatabaseSecondaryIndex alloc]
-        initWithSetup:setup
-              handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
+    YapDatabaseSecondaryIndex *secondaryIndex =
+        [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 
     return secondaryIndex;
 }

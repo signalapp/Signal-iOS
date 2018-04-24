@@ -67,14 +67,12 @@ extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *const TSUnseenDatabaseViewExtensionName;
 extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
 
-void VerifyRegistrationsForStorage(OWSStorage *storage)
+NSArray<NSString *> *ExtensionNamesForPrimaryStorage()
 {
-    OWSCAssert(storage);
-
     // This should 1:1 correspond to the database view registrations
     // done in RunSyncRegistrationsForStorage() and
     // RunAsyncRegistrationsForStorage().
-    NSArray<NSString *> *databaseViewNames = @[
+    return @[
         // We don't need to verify the cross process notifier.
         // [TSDatabaseView registerCrossProcessNotifier:storage];
 
@@ -128,20 +126,23 @@ void VerifyRegistrationsForStorage(OWSStorage *storage)
         // [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
         TSLazyRestoreAttachmentsDatabaseViewExtensionName,
     ];
+}
 
-    __block BOOL hasMissingDatabaseView = NO;
+void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
     [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        for (NSString *databaseViewName in databaseViewNames) {
-            YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:databaseViewName];
+        for (NSString *extensionName in ExtensionNamesForPrimaryStorage()) {
+            YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
             if (!viewTransaction) {
-                OWSProdLogAndCFail(@"VerifyRegistrationsForStorage missing database view: %@", databaseViewName);
-                hasMissingDatabaseView = YES;
+                OWSProdLogAndCFail(
+                    @"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
+
+                [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
             }
         }
     }];
-    if (hasMissingDatabaseView) {
-        [OWSStorage incrementDatabaseExtensionVersionSuffix];
-    }
 }
 
 #pragma mark -
@@ -235,7 +236,7 @@ void VerifyRegistrationsForStorage(OWSStorage *storage)
 
 - (void)verifyDatabaseViews
 {
-    VerifyRegistrationsForStorage(self);
+    VerifyRegistrationsForPrimaryStorage(self);
 }
 
 + (void)protectFiles

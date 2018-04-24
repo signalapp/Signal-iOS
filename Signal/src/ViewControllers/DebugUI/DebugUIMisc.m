@@ -120,9 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
                                            }]];
 #endif
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Increment database extension version suffix"
+    [items addObject:[OWSTableItem itemWithTitle:@"Increment Database Extension Versions"
                                      actionBlock:^() {
-                                         [OWSStorage incrementDatabaseExtensionVersionSuffix];
+                                         for (NSString *extensionName in ExtensionNamesForPrimaryStorage()) {
+                                             [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
+                                         }
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];

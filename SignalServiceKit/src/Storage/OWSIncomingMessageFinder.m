@@ -89,10 +89,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
     YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:block];
 
-    return [[YapDatabaseSecondaryIndex alloc]
-        initWithSetup:setup
-              handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
 
 + (NSString *)databaseExtensionName

@@ -66,8 +66,7 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 #pragma mark - Extension Registration
 
-+ (void)incrementDatabaseExtensionVersionSuffix;
-+ (nullable NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(nullable NSString *)versionTag;
++ (void)incrementVersionOfDatabaseExtension:(NSString *)extensionName;
 
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName;
 

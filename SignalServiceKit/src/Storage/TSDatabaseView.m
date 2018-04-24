@@ -78,11 +78,10 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSInteraction collection]]];
 
-    YapDatabaseView *view = [[YapDatabaseAutoView alloc]
-        initWithGrouping:viewGrouping
-                 sorting:viewSorting
-              versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:version]
-                 options:options];
+    YapDatabaseView *view = [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping
+                                                                  sorting:viewSorting
+                                                               versionTag:version
+                                                                  options:options];
     [storage asyncRegisterExtension:view withName:viewName];
 }
 
@@ -228,11 +227,8 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSThread collection]]];
 
-    YapDatabaseView *databaseView = [[YapDatabaseAutoView alloc]
-        initWithGrouping:viewGrouping
-                 sorting:viewSorting
-              versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"3"]
-                 options:options];
+    YapDatabaseView *databaseView =
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [storage asyncRegisterExtension:databaseView withName:TSThreadDatabaseViewExtensionName];
 }
@@ -340,11 +336,8 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     NSSet *deviceCollection = [NSSet setWithObject:[OWSDevice collection]];
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:deviceCollection];
 
-    YapDatabaseView *view = [[YapDatabaseAutoView alloc]
-        initWithGrouping:viewGrouping
-                 sorting:viewSorting
-              versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"3"]
-                 options:options];
+    YapDatabaseView *view =
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
 
     [storage asyncRegisterExtension:view withName:TSSecondaryDevicesDatabaseViewExtensionName];
 }
@@ -397,11 +390,8 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     options.isPersistent = YES;
     options.allowedCollections =
         [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:[TSAttachment collection]]];
-    YapDatabaseView *view = [[YapDatabaseAutoView alloc]
-        initWithGrouping:viewGrouping
-                 sorting:viewSorting
-              versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:@"3"]
-                 options:options];
+    YapDatabaseView *view =
+        [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"3" options:options];
     [storage asyncRegisterExtension:view
                            withName:TSLazyRestoreAttachmentsDatabaseViewExtensionName
                          completion:completion];

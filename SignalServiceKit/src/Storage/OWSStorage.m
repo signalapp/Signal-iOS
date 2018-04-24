@@ -15,9 +15,11 @@
 #import <Curve25519Kit/Randomness.h>
 #import <SAMKeychain/SAMKeychain.h>
 #import <YapDatabase/YapDatabase.h>
+#import <YapDatabase/YapDatabaseAutoView.h>
+#import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
-#import <YapDatabase/YapDatabaseView.h>
+#import <YapDatabase/YapDatabaseSecondaryIndexPrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,7 +41,7 @@ const NSUInteger kDatabasePasswordLength = 30;
 typedef NSData *_Nullable (^LoadDatabaseMetadataBlock)(NSError **_Nullable);
 typedef NSData *_Nullable (^CreateDatabaseMetadataBlock)(void);
 
-NSString *const kNSUserDefaults_DatabaseExtensionVersionSuffix = @"kNSUserDefaults_DatabaseExtensionVersionSuffix";
+NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_DatabaseExtensionVersionMap";
 
 #pragma mark -
 
@@ -468,46 +470,87 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionSuffix = @"kNSUserDefaul
 
 #pragma mark - Extension Registration
 
-+ (void)incrementDatabaseExtensionVersionSuffix
++ (void)incrementVersionOfDatabaseExtension:(NSString *)extensionName
 {
     DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
     OWSAssert(appUserDefaults);
-    NSNumber *_Nullable suffix = [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
-    [appUserDefaults setValue:@(suffix.intValue + 1) forKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
+    NSMutableDictionary<NSString *, NSNumber *> *_Nullable versionMap =
+        [[appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionMap] mutableCopy];
+    if (!versionMap) {
+        versionMap = [NSMutableDictionary new];
+    }
+    NSNumber *_Nullable versionSuffix = versionMap[extensionName];
+    versionMap[extensionName] = @(versionSuffix.intValue + 1);
+    [appUserDefaults setValue:versionMap forKey:kNSUserDefaults_DatabaseExtensionVersionMap];
     [appUserDefaults synchronize];
 }
 
-+ (nullable NSString *)databaseExtensionVersionSuffix
-{
-    NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
-    OWSAssert(appUserDefaults);
-    NSNumber *_Nullable suffix = [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionSuffix];
-    if (!suffix) {
-        return nil;
-    }
-    return [NSString stringWithFormat:@".%@", suffix];
-}
-
-+ (nullable NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(nullable NSString *)versionTag
+- (nullable NSString *)appendSuffixToDatabaseExtensionVersionIfNecessary:(nullable NSString *)versionTag
+                                                           extensionName:(NSString *)extensionName
 {
     OWSAssertIsOnMainThread();
 
-    NSString *_Nullable suffix = [self databaseExtensionVersionSuffix];
-    if (suffix) {
+    NSUserDefaults *appUserDefaults = [NSUserDefaults appUserDefaults];
+    OWSAssert(appUserDefaults);
+    NSDictionary<NSString *, NSNumber *> *_Nullable versionMap =
+        [appUserDefaults valueForKey:kNSUserDefaults_DatabaseExtensionVersionMap];
+    NSNumber *_Nullable versionSuffix = versionMap[extensionName];
+
+    if (versionSuffix) {
         if (!versionTag) {
             versionTag = @"0";
         }
-        NSString *result = [versionTag stringByAppendingString:suffix];
-        DDLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, suffix, result);
+        NSString *result = [NSString stringWithFormat:@"%@.%@", versionTag, versionSuffix];
+        DDLogWarn(@"%@ database extension version: %@ + %@ -> %@", self.logTag, versionTag, versionSuffix, result);
         return result;
     }
     return versionTag;
 }
 
+- (YapDatabaseExtension *)updateExtensionVersion:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
+{
+    OWSAssert(extension);
+    OWSAssert(extensionName.length > 0);
+
+    if ([extension isKindOfClass:[YapDatabaseAutoView class]]) {
+        YapDatabaseAutoView *databaseView = (YapDatabaseAutoView *)extension;
+        YapDatabaseAutoView *databaseViewCopy = [[YapDatabaseAutoView alloc]
+            initWithGrouping:databaseView.grouping
+                     sorting:databaseView.sorting
+                  versionTag:[self appendSuffixToDatabaseExtensionVersionIfNecessary:databaseView.versionTag
+                                                                       extensionName:extensionName]
+                     options:databaseView.options];
+        return databaseViewCopy;
+    } else if ([extension isKindOfClass:[YapDatabaseSecondaryIndex class]]) {
+        YapDatabaseSecondaryIndex *secondaryIndex = (YapDatabaseSecondaryIndex *)extension;
+        OWSAssert(secondaryIndex->setup);
+        OWSAssert(secondaryIndex->handler);
+        YapDatabaseSecondaryIndex *secondaryIndexCopy = [[YapDatabaseSecondaryIndex alloc]
+            initWithSetup:secondaryIndex->setup
+                  handler:secondaryIndex->handler
+               versionTag:[self appendSuffixToDatabaseExtensionVersionIfNecessary:secondaryIndex.versionTag
+                                                                    extensionName:extensionName]
+                  options:secondaryIndex->options];
+        return secondaryIndexCopy;
+    } else if ([extension isKindOfClass:[YapDatabaseCrossProcessNotification class]]) {
+        // versionTag doesn't matter for YapDatabaseCrossProcessNotification.
+        return extension;
+    } else {
+        // This method needs to be able to update the versionTag of all extensions.
+        // If we start using other extension types, we need to modify this method to
+        // handle them as well.
+        OWSProdLogAndFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
+
+        return extension;
+    }
+}
+
 - (BOOL)registerExtension:(YapDatabaseExtension *)extension withName:(NSString *)extensionName
 {
+    extension = [self updateExtensionVersion:extension withName:extensionName];
+
     return [self.database registerExtension:extension withName:extensionName];
 }
 
@@ -521,23 +564,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionSuffix = @"kNSUserDefaul
                       withName:(NSString *)extensionName
                     completion:(nullable dispatch_block_t)completion
 {
-    if ([extension isKindOfClass:[YapDatabaseView class]]) {
-        YapDatabaseView *databaseView = (YapDatabaseView *)extension;
-
-        NSString *_Nullable databaseExtensionVersionSuffix = [OWSStorage databaseExtensionVersionSuffix];
-        if (databaseExtensionVersionSuffix) {
-            OWSAssert([databaseView.versionTag hasSuffix:databaseExtensionVersionSuffix]);
-        }
-    } else if ([extension isKindOfClass:[YapDatabaseSecondaryIndex class]]) {
-        YapDatabaseSecondaryIndex *secondaryIndex = (YapDatabaseSecondaryIndex *)extension;
-
-        NSString *_Nullable databaseExtensionVersionSuffix = [OWSStorage databaseExtensionVersionSuffix];
-        if (databaseExtensionVersionSuffix) {
-            OWSAssert([secondaryIndex.versionTag hasSuffix:databaseExtensionVersionSuffix]);
-        }
-    } else {
-        OWSProdLogAndFail(@"%@ Unknown extension type: %@", self.logTag, [extension class]);
-    }
+    extension = [self updateExtensionVersion:extension withName:extensionName];
 
     [self.database asyncRegisterExtension:extension
                                  withName:extensionName

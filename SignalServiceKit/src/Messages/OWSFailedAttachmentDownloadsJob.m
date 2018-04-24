@@ -114,10 +114,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             dict[OWSFailedAttachmentDownloadsJobAttachmentStateColumn] = @(attachment.state);
         }];
 
-    return [[YapDatabaseSecondaryIndex alloc]
-        initWithSetup:setup
-              handler:handler
-           versionTag:[OWSStorage appendSuffixToDatabaseExtensionVersionIfNecessary:nil]];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
 
 #ifdef DEBUG

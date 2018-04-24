@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSArray<NSString *> *ExtensionNamesForPrimaryStorage();
+
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
