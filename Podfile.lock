@@ -144,6 +144,23 @@ DEPENDENCIES:
   - YapDatabase/SQLCipher (from `https://github.com/signalapp/YapDatabase.git`, branch `release/unencryptedHeaders`)
   - YYImage
 
+SPEC REPOS:
+  https://github.com/CocoaPods/Specs.git:
+    - AFNetworking
+    - ATAppUpdater
+    - CocoaLumberjack
+    - JSQSystemSoundPlayer
+    - libPhoneNumber-iOS
+    - Mantle
+    - ProtocolBuffers
+    - PureLayout
+    - Reachability
+    - SAMKeychain
+    - SSZipArchive
+    - TwistedOakCollapsingFutures
+    - UnionFind
+    - YYImage
+
 EXTERNAL SOURCES:
   AxolotlKit:
     :git: https://github.com/signalapp/SignalProtocolKit.git
@@ -159,7 +176,7 @@ EXTERNAL SOURCES:
     :branch: mkirk/share-compatible
     :git: https://github.com/signalapp/JSQMessagesViewController.git
   SignalServiceKit:
-    :path: .
+    :path: "."
   SocketRocket:
     :git: https://github.com/facebook/SocketRocket.git
   SQLCipher:
@@ -222,4 +239,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6a1bafb7c5bedfa4e577580ff12e487cc7111f38
 
-COCOAPODS: 1.4.0
+COCOAPODS: 1.5.0

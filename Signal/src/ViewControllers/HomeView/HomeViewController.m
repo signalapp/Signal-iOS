@@ -273,6 +273,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
             break;
     }
+    self.navigationItem.backBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil];
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -677,7 +682,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssert(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    // TODO:
     disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
     [disclosureImageView setContentHuggingHigh];
     [disclosureImageView setCompressionResistanceHigh];
@@ -691,13 +695,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;
     stackView.spacing = 5;
-    if (cell.isRTL) {
-        [stackView addArrangedSubview:disclosureImageView];
-        [stackView addArrangedSubview:label];
-    } else {
-        [stackView addArrangedSubview:label];
-        [stackView addArrangedSubview:disclosureImageView];
-    }
+    [stackView addArrangedSubview:label];
+    [stackView addArrangedSubview:disclosureImageView];
     [cell.contentView addSubview:stackView];
     [stackView autoCenterInSuperview];
     // Constrain to cell margins.
@@ -1154,11 +1153,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }];
 
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
-        [self setEmptyBoxText];
+        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
         [_emptyBoxLabel setHidden:NO];
     } else if (self.homeViewMode == HomeViewMode_Archive && archiveCount == 0) {
-        [self setEmptyBoxText];
+        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
         [_emptyBoxLabel setHidden:NO];
     } else {
@@ -1167,7 +1166,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 }
 
-- (void)setEmptyBoxText
+- (void)updateEmptyBoxText
 {
     _emptyBoxLabel.textColor = [UIColor grayColor];
     _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
