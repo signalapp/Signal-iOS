@@ -16,61 +16,46 @@ import SignalMessaging
     case skipped
 }
 
-class MessageRecipientStatusUtils: NSObject {
+@objc
+public class MessageRecipientStatusUtils: NSObject {
     // MARK: Initializers
 
     @available(*, unavailable, message:"do not instantiate this class.")
     private override init() {
     }
 
-    // This method is per-recipient and "biased towards success".
-    // See comments above.
-    public class func recipientStatus(outgoingMessage: TSOutgoingMessage,
-                                      recipientId: String,
+    class func recipientStatus(outgoingMessage: TSOutgoingMessage,
+            recipientState: TSOutgoingMessageRecipientState,
                                       referenceView: UIView) -> MessageRecipientStatus {
         let (messageRecipientStatus, _, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                                     recipientId: recipientId,
+                                                                             recipientState: recipientState,
                                                                                      referenceView: referenceView)
         return messageRecipientStatus
     }
 
-    // This method is per-recipient and "biased towards success".
-    // See comments above.
+    @objc
     public class func shortStatusMessage(outgoingMessage: TSOutgoingMessage,
-                                    recipientId: String,
+        recipientState: TSOutgoingMessageRecipientState,
                                     referenceView: UIView) -> String {
         let (_, shortStatusMessage, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                 recipientId: recipientId,
+                                                                         recipientState: recipientState,
                                                                  referenceView: referenceView)
         return shortStatusMessage
     }
 
-    // This method is per-recipient and "biased towards success".
-    // See comments above.
+    @objc
     public class func longStatusMessage(outgoingMessage: TSOutgoingMessage,
-                                    recipientId: String,
+        recipientState: TSOutgoingMessageRecipientState,
                                     referenceView: UIView) -> String {
         let (_, _, longStatusMessage) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
-                                                                 recipientId: recipientId,
+                                                                        recipientState: recipientState,
                                                                  referenceView: referenceView)
         return longStatusMessage
     }
 
-    // This method is per-recipient and "biased towards success".  
-    // See comments above.
-    public class func recipientStatusAndStatusMessage(outgoingMessage: TSOutgoingMessage,
-                                                      recipientId: String,
+    class func recipientStatusAndStatusMessage(outgoingMessage: TSOutgoingMessage,
+        recipientState: TSOutgoingMessageRecipientState,
                                                       referenceView: UIView) -> (status: MessageRecipientStatus, shortStatusMessage: String, longStatusMessage: String) {
-        // Legacy messages don't have "recipient read" state or "per-recipient delivery" state,
-        // so we fall back to `TSOutgoingMessageState` which is not per-recipient and therefore
-        // might be misleading.
-
-        guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
-            owsFail("\(self.logTag) no message status for recipient: \(recipientId).")
-            let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
-            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "message footer for failed messages")
-            return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
-        }
 
         switch recipientState.state {
         case .failed:
@@ -156,7 +141,7 @@ class MessageRecipientStatusUtils: NSObject {
 
     // This method is per-message and "biased towards failure".
     // See comments above.
-    public class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageRecipientStatus {
+    class func recipientStatus(outgoingMessage: TSOutgoingMessage) -> MessageRecipientStatus {
         switch outgoingMessage.messageState {
         case .failed:
             return .failed

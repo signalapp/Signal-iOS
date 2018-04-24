@@ -215,7 +215,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                 let messageRecipientIds = outgoingMessage.recipientIds()
 
                 for recipientId in messageRecipientIds {
-                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
+                    guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
+                        owsFail("\(self.logTag) no message status for recipient: \(recipientId).")
+                        continue
+                    }
+
+                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
