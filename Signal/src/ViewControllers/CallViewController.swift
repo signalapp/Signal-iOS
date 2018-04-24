@@ -237,9 +237,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         if !remoteVideoView.isHidden {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
-
-        // TODO: Until we have a proper design, use background taps to leave call view.
-        OWSWindowManager.shared().leaveCallView()
     }
 
     func createVideoViews() {
