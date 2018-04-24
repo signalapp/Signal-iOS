@@ -410,6 +410,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             actionSheetController.addAction(routeAudioAction)
         }
 
+        // Note: It's critical that we present from this view and
+        // not the "frontmost view controller" since this view may
+        // reside on a separate window.
         self.present(actionSheetController, animated: true)
     }
 
@@ -931,7 +934,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
-            let fromViewController = UIApplication.shared.frontmostViewController
+            let fromViewController = UIApplication.shared.findFrontmostViewController(ignoringAlerts: true)
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
