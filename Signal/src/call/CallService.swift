@@ -790,6 +790,8 @@ protocol CallServiceObserver: class {
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
 
         switch call.state {
+        case .remoteRinging:
+            Logger.debug("\(self.logTag) in \(#function) disconnect while ringing... we'll keep ringing")
         case .connected:
             call.state = .reconnecting
         default:
