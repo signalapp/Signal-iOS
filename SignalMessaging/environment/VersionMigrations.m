@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     // performUpdateCheck must be invoked after Environment has been initialized because
     // upgrade process may depend on Environment.
     OWSAssert([Environment current]);
@@ -86,8 +88,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self clearBloomFilterCache];
     }
 
-    [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-        runAllOutstandingWithCompletion:completion];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
+            runAllOutstandingWithCompletion:completion];
+    });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

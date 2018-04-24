@@ -22,10 +22,6 @@ extern NSString *const StorageIsReadyNotification;
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 
-#ifdef DEBUG
-@property (atomic) BOOL canWriteBeforeStorageReady;
-#endif
-
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
@@ -48,6 +44,8 @@ extern NSString *const StorageIsReadyNotification;
 
 #pragma mark -
 
+typedef void (^OWSStorageMigrationBlock)(void);
+
 @interface OWSStorage : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -60,7 +58,7 @@ extern NSString *const StorageIsReadyNotification;
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
-+ (void)setupStorage;
++ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
 
 + (void)resetAllStorage;
 

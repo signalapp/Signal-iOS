@@ -58,16 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(completion);
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
-    // These migrations won't be run until storage registrations are enqueued,
-    // but this transaction might begin before all registrations are marked as
-    // complete, so disable this checking.
-    //
-    // TODO: Once we move "app readiness" into AppSetup, we should explicitly
-    // not start these migrations until storage is ready.  We can then remove
-    // this statement which disables checking.
-#ifdef DEBUG
-    dbConnection.canWriteBeforeStorageReady = YES;
-#endif
 
     [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self runUpWithTransaction:transaction];
@@ -88,18 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self.dbReadWriteConnection;
 }
 
-// Database migrations need to occur _before_ storage is ready (by definition),
-// so we need to use a connection with canWriteBeforeStorageReady set in
-// debug builds.
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
     static dispatch_once_t onceToken;
     static YapDatabaseConnection *sharedDBConnection;
     dispatch_once(&onceToken, ^{
         sharedDBConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
-
-        OWSAssert([sharedDBConnection isKindOfClass:[OWSDatabaseConnection class]]);
-        ((OWSDatabaseConnection *)sharedDBConnection).canWriteBeforeStorageReady = YES;
     });
 
     return sharedDBConnection;

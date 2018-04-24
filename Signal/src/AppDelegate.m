@@ -7,6 +7,7 @@
 #import "AppUpdateNag.h"
 #import "CodeVerificationViewController.h"
 #import "DebugLogger.h"
+#import "HomeViewController.h"
 #import "MainAppContext.h"
 #import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
@@ -155,11 +156,16 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
-    [AppSetup setupEnvironment:^{
+    [AppSetup setupEnvironmentWithCallMessageHandlerBlock:^{
         return SignalApp.sharedApp.callMessageHandler;
     }
         notificationsProtocolBlock:^{
             return SignalApp.sharedApp.notificationsManager;
+        }
+        migrationCompletion:^{
+            OWSAssertIsOnMainThread();
+
+            [self versionMigrationsDidComplete];
         }];
 
     [UIUtil applySignalAppearence];
@@ -174,14 +180,6 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     // Show the launch screen until the async database view registrations are complete.
     mainWindow.rootViewController = [self loadingRootViewController];
     [mainWindow makeKeyAndVisible];
-
-    // performUpdateCheck must be invoked after Environment has been initialized because
-    // upgrade process may depend on Environment.
-    [VersionMigrations performUpdateCheckWithCompletion:^{
-        OWSAssertIsOnMainThread();
-
-        [self versionMigrationsDidComplete];
-    }];
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -1096,6 +1094,7 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     [AppVersion.instance mainAppLaunchDidComplete];
 
     [Environment.current.contactsManager loadSignalAccountsFromCache];
+    [Environment.current.contactsManager startObserving];
 
     // If there were any messages in our local queue which we hadn't yet processed.
     [[OWSMessageReceiver sharedInstance] handleAnyUnprocessedEnvelopesAsync];
