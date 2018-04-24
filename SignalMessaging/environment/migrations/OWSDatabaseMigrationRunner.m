@@ -10,6 +10,7 @@
 #import "OWS105AttachmentFilePaths.h"
 #import "OWS107LegacySounds.h"
 #import "OWS108CallLoggingPreference.h"
+#import "OWS109OutgoingMessageState.h"
 #import "OWSDatabaseMigration.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
@@ -42,7 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS105AttachmentFilePaths alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS106EnsureProfileComplete alloc] initWithPrimaryStorage:primaryStorage],
         [[OWS107LegacySounds alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage]
+        [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage],
+        [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage]
     ];
 }
 

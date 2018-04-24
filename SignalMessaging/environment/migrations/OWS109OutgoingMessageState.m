@@ -3,6 +3,7 @@
 //
 
 #import "OWS109OutgoingMessageState.h"
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -18,34 +19,61 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
     return OWS109OutgoingMessageStateMigrationId;
 }
 
-- (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+// Override parent migration
+- (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    OWSAssert(transaction);
+    OWSAssert(completion);
 
-    // Persist the migration of the outgoing message state.
-    // For performance, we want to upgrade all existing outgoing messages in
-    // a single transaction.
-    NSMutableArray<NSString *> *messageIds =
-        [[transaction allKeysInCollection:TSOutgoingMessage.collection] mutableCopy];
-    DDLogInfo(@"%@ Migrating %zd outgoing messages.", self.logTag, messageIds.count);
-    while (messageIds.count > 0) {
+    OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
+
+    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        NSMutableArray<NSString *> *messageIds =
+            [[transaction allKeysInCollection:TSOutgoingMessage.collection] mutableCopy];
+        DDLogInfo(@"%@ Migrating %zd outgoing messages.", self.logTag, messageIds.count);
+
+        [self processBatch:messageIds
+              dbConnection:dbConnection
+                completion:^{
+                    DDLogInfo(@"Completed migration %@", self.uniqueId);
+
+                    [self save];
+
+                    completion();
+                }];
+    }];
+}
+
+- (void)processBatch:(NSMutableArray<NSString *> *)messageIds
+        dbConnection:(OWSDatabaseConnection *)dbConnection
+          completion:(OWSDatabaseMigrationCompletion)completion
+{
+    OWSAssert(dbConnection);
+    OWSAssert(completion);
+
+    DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, messageIds.count);
+
+    if (messageIds.count < 1) {
+        completion();
+        return;
+    }
+
+    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         const int kBatchSize = 1000;
-        @autoreleasepool {
-            for (int i = 0; i < kBatchSize; i++) {
-                if (messageIds.count == 0) {
-                    break;
-                }
-                NSString *messageId = [messageIds lastObject];
-                [messageIds removeLastObject];
-                id message = [transaction objectForKey:messageId inCollection:TSOutgoingMessage.collection];
-                if (![message isKindOfClass:[TSOutgoingMessage class]]) {
-                    return;
-                }
-                TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-                [outgoingMessage saveWithTransaction:transaction];
+        for (int i = 0; i < kBatchSize && messageIds.count > 0; i++) {
+            NSString *messageId = [messageIds lastObject];
+            [messageIds removeLastObject];
+            id message = [transaction objectForKey:messageId inCollection:TSOutgoingMessage.collection];
+            if (![message isKindOfClass:[TSOutgoingMessage class]]) {
+                continue;
             }
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+            [outgoingMessage saveWithTransaction:transaction];
         }
     }
+        completionBlock:^{
+            // Process the next batch.
+            [self processBatch:messageIds dbConnection:dbConnection completion:completion];
+        }];
 }
 
 @end
