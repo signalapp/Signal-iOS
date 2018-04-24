@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "Archive";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "Archive";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "Attachment";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -869,8 +866,17 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "You have left the group.";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blocked";
+
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
@@ -888,7 +894,7 @@
 "IN_CALL_TERMINATED" = "Call Ended.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "You are viewing your archived messages. Tap to return to your Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "To see the names of your contacts, update your system settings to allow contact access.";
@@ -2109,9 +2115,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "Inbox";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";

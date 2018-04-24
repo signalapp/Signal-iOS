@@ -3,7 +3,6 @@
 //
 
 #import "ShowGroupMembersViewController.h"
-#import "HomeViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ViewControllerUtils.h"

@@ -211,8 +211,11 @@
              keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
                  callOnViewAppearing:(BOOL)callOnViewAppearing
 {
+    OWSAssertIsOnMainThread();
     // At most one.
     OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (!thread) {
         OWSFail(@"%@ Can't present nil thread.", self.logTag);

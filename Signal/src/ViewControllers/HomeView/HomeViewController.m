@@ -32,7 +32,12 @@
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
-typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
+typedef NS_ENUM(NSInteger, HomeViewMode) {
+    HomeViewMode_Archive,
+    HomeViewMode_Inbox,
+};
+
+NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
 @interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
 
@@ -42,9 +47,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 @property (nonatomic) YapDatabaseConnection *editingDbConnection;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *threadMappings;
-@property (nonatomic) CellState viewingThreadsIn;
-@property (nonatomic) long inboxCount;
-@property (nonatomic) UISegmentedControl *segmentedControl;
+@property (nonatomic) HomeViewMode homeViewMode;
 @property (nonatomic) id previewingContext;
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
@@ -81,6 +84,8 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     if (!self) {
         return self;
     }
+
+    _homeViewMode = HomeViewMode_Inbox;
 
     [self commonInit];
 
@@ -177,30 +182,21 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // TODO: Remove this.
     [SignalApp.sharedApp setHomeViewController:self];
 
-    self.navigationItem.rightBarButtonItem =
-        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                      target:self
-                                                      action:@selector(showNewConversationView)];
-
-    ReminderView *archiveReminderView = [ReminderView new];
-    archiveReminderView.text = NSLocalizedString(
-        @"INBOX_VIEW_ARCHIVE_MODE_REMINDER", @"Label reminding the user that they are in archive mode.");
-    __weak HomeViewController *weakSelf = self;
-    archiveReminderView.tapAction = ^{
-        [weakSelf showInboxGrouping];
-    };
+    ReminderView *archiveReminderView =
+        [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
+                                              @"Label reminding the user that they are in archive mode.")];
     [self.view addSubview:archiveReminderView];
     [archiveReminderView autoPinWidthToSuperview];
     [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
 
-    ReminderView *missingContactsPermissionView = [ReminderView new];
-    missingContactsPermissionView.text = NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-        @"Multi-line label explaining how to show names instead of phone numbers in your inbox");
-    missingContactsPermissionView.tapAction = ^{
-        [[UIApplication sharedApplication] openSystemSettings];
-    };
+    ReminderView *missingContactsPermissionView = [ReminderView
+        nagWithText:NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
+                        @"Multi-line label explaining how to show names instead of phone numbers in your inbox")
+          tapAction:^{
+              [[UIApplication sharedApplication] openSystemSettings];
+          }];
     [self.view addSubview:missingContactsPermissionView];
     [missingContactsPermissionView autoPinWidthToSuperview];
     [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
@@ -213,6 +209,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[HomeViewCell class] forCellReuseIdentifier:HomeViewCell.cellReuseIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -237,7 +234,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateReminderViews
 {
-    BOOL shouldHideArchiveReminderView = self.viewingThreadsIn != kArchiveState;
+    BOOL shouldHideArchiveReminderView = self.homeViewMode != HomeViewMode_Archive;
     BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
     if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
         && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
@@ -259,25 +256,28 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     // Create the database connection.
     [self uiDatabaseConnection];
 
-    [self showInboxGrouping];
+    [self updateMappings];
+    [self checkIfEmptyView];
+    [self updateReminderViews];
 
     // because this uses the table data source, `tableViewSetup` must happen
     // after mappings have been set up in `showInboxGrouping`
     [self tableViewSetUp];
 
-    self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[
-        NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil),
-        NSLocalizedString(@"ARCHIVE_NAV_BAR_TITLE", nil)
-    ]];
-
-    [self.segmentedControl addTarget:self
-                              action:@selector(swappedSegmentedControl)
-                    forControlEvents:UIControlEventValueChanged];
-    UINavigationItem *navigationItem = self.navigationItem;
-    navigationItem.titleView = self.segmentedControl;
-    [self.segmentedControl setSelectedSegmentIndex:0];
-    navigationItem.leftBarButtonItem.accessibilityLabel
-        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    switch (self.homeViewMode) {
+        case HomeViewMode_Inbox:
+            // TODO: Should our app name be translated?  Probably not.
+            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_INBOX", @"Title for the home view's default mode.");
+            break;
+        case HomeViewMode_Archive:
+            self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
+            break;
+    }
+    self.navigationItem.backBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil];
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -296,6 +296,9 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)updateBarButtonItems
 {
+    if (self.homeViewMode != HomeViewMode_Inbox) {
+        return;
+    }
     const CGFloat kBarButtonSize = 44;
     // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
     // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
@@ -327,7 +330,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         0,
         round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
         round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:button];
+    settingsButton.accessibilityLabel
+        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    self.navigationItem.leftBarButtonItem = settingsButton;
+
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                      target:self
+                                                      action:@selector(showNewConversationView)];
 }
 
 - (void)settingsButtonPressed:(id)sender
@@ -367,6 +378,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)showNewConversationView
 {
+    OWSAssertIsOnMainThread();
+
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     NewContactThreadViewController *viewController = [NewContactThreadViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
@@ -384,15 +399,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     }];
 }
 
-- (void)swappedSegmentedControl
-{
-    if (self.segmentedControl.selectedSegmentIndex == 0) {
-        [self showInboxGrouping];
-    } else {
-        [self showArchiveGrouping];
-    }
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -407,8 +413,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             });
         }];
     }
-
-    [self updateInboxCountLabel];
 
     self.isViewVisible = YES;
 
@@ -499,7 +503,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     [self reloadTableViewData];
 
     [self checkIfEmptyView];
-    [self updateInboxCountLabel];
 
     // If the user hasn't already granted contact access
     // we don't want to request until they receive a message.
@@ -601,7 +604,24 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+    NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+    if (self.homeViewMode == HomeViewMode_Inbox) {
+        // Add the "archived conversations" row.
+        result++;
+    }
+    return result;
+}
+
+- (BOOL)isIndexPathForArchivedConversations:(NSIndexPath *)indexPath
+{
+    if (self.homeViewMode != HomeViewMode_Inbox) {
+        return NO;
+    }
+    if (indexPath.section != 0) {
+        return NO;
+    }
+    NSInteger cellCount = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)0];
+    return indexPath.row == cellCount;
 }
 
 - (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
@@ -623,6 +643,15 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([self isIndexPathForArchivedConversations:indexPath]) {
+        return [self cellForArchivedConversationsRow:tableView];
+    } else {
+        return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
+{
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
 
@@ -634,6 +663,47 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     if ((unsigned long)indexPath.row == [self.threadMappings numberOfItemsInSection:0] - 1) {
         cell.separatorInset = UIEdgeInsetsMake(0.f, cell.bounds.size.width, 0.f, 0.f);
     }
+
+    return cell;
+}
+
+- (UITableViewCell *)cellForArchivedConversationsRow:(UITableView *)tableView
+{
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
+    OWSAssert(cell);
+
+    for (UIView *subview in cell.contentView.subviews) {
+        [subview removeFromSuperview];
+    }
+
+    cell.backgroundColor = [UIColor whiteColor];
+
+    UIImage *disclosureImage = [UIImage imageNamed:(cell.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+    OWSAssert(disclosureImage);
+    UIImageView *disclosureImageView = [UIImageView new];
+    disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    disclosureImageView.tintColor = [UIColor colorWithRGBHex:0xd1d1d6];
+    [disclosureImageView setContentHuggingHigh];
+    [disclosureImageView setCompressionResistanceHigh];
+
+    UILabel *label = [UILabel new];
+    label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont ows_dynamicTypeBodyFont];
+    label.textColor = [UIColor blackColor];
+
+    UIStackView *stackView = [UIStackView new];
+    stackView.axis = UILayoutConstraintAxisHorizontal;
+    stackView.spacing = 5;
+    [stackView addArrangedSubview:label];
+    [stackView addArrangedSubview:disclosureImageView];
+    [cell.contentView addSubview:stackView];
+    [stackView autoCenterInSuperview];
+    // Constrain to cell margins.
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
 
     return cell;
 }
@@ -675,6 +745,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([self isIndexPathForArchivedConversations:indexPath]) {
+        return @[];
+    }
+
     UITableViewRowAction *deleteAction =
         [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
                                            title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
@@ -683,7 +757,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
                                          }];
 
     UITableViewRowAction *archiveAction;
-    if (self.viewingThreadsIn == kInboxState) {
+    if (self.homeViewMode == HomeViewMode_Inbox) {
         archiveAction = [UITableViewRowAction
             rowActionWithStyle:UITableViewRowActionStyleNormal
                          title:NSLocalizedString(@"ARCHIVE_ACTION",
@@ -761,7 +835,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
         [thread removeWithTransaction:transaction];
     }];
 
-    _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
     [self checkIfEmptyView];
 }
 
@@ -769,31 +842,26 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 {
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    BOOL viewingThreadsIn = self.viewingThreadsIn;
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        viewingThreadsIn == kInboxState ? [thread archiveThreadWithTransaction:transaction]
-                                        : [thread unarchiveThreadWithTransaction:transaction];
+        switch (self.homeViewMode) {
+            case HomeViewMode_Inbox:
+                [thread archiveThreadWithTransaction:transaction];
+                break;
+            case HomeViewMode_Archive:
+                [thread unarchiveThreadWithTransaction:transaction];
+                break;
+        }
     }];
     [self checkIfEmptyView];
 }
 
-- (void)updateInboxCountLabel
-{
-    NSUInteger numberOfItems = [OWSMessageUtils.sharedManager unreadMessagesCount];
-    NSString *unreadString = NSLocalizedString(@"WHISPER_NAV_BAR_TITLE", nil);
-
-    if (numberOfItems > 0) {
-        unreadString = [unreadString stringByAppendingFormat:@" (%@)", [OWSFormat formatInt:(int)numberOfItems]];
-    }
-
-    [_segmentedControl setTitle:unreadString forSegmentAtIndex:0];
-    [_segmentedControl sizeToFit];
-    [_segmentedControl.superview setNeedsLayout];
-    [_segmentedControl reloadInputViews];
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([self isIndexPathForArchivedConversations:indexPath]) {
+        [self showArchivedConversations];
+        return;
+    }
+
     TSThread *thread = [self threadForIndexPath:indexPath];
     [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -898,30 +966,29 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)showInboxGrouping
 {
-    self.viewingThreadsIn = kInboxState;
+    OWSAssert(self.homeViewMode == HomeViewMode_Archive);
+
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
-- (void)showArchiveGrouping
+- (void)showArchivedConversations
 {
-    self.viewingThreadsIn = kArchiveState;
-}
+    OWSAssert(self.homeViewMode == HomeViewMode_Inbox);
 
-- (void)setViewingThreadsIn:(CellState)viewingThreadsIn
-{
-    BOOL didChange = _viewingThreadsIn != viewingThreadsIn;
-    _viewingThreadsIn = viewingThreadsIn;
-    self.segmentedControl.selectedSegmentIndex = (viewingThreadsIn == kInboxState ? 0 : 1);
-    if (didChange || !self.threadMappings) {
-        [self updateMappings];
-    } else {
-        [self checkIfEmptyView];
-        [self updateReminderViews];
-    }
+    // Push a separate instance of this view using "archive" mode.
+    HomeViewController *homeView = [HomeViewController new];
+    homeView.homeViewMode = HomeViewMode_Archive;
+    [self.navigationController pushViewController:homeView animated:YES];
 }
 
 - (NSString *)currentGrouping
 {
-    return self.viewingThreadsIn == kInboxState ? TSInboxGroup : TSArchiveGroup;
+    switch (self.homeViewMode) {
+        case HomeViewMode_Inbox:
+            return TSInboxGroup;
+        case HomeViewMode_Archive:
+            return TSArchiveGroup;
+    }
 }
 
 - (void)updateMappings
@@ -986,8 +1053,10 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                                inNotifications:notifications]) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.self.threadMappings updateWithTransaction:transaction];
+            [self.threadMappings updateWithTransaction:transaction];
         }];
+        [self checkIfEmptyView];
+
         return;
     }
 
@@ -1011,7 +1080,6 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
     // We want this regardless of if we're currently viewing the archive.
     // So we run it before the early return
-    [self updateInboxCountLabel];
     [self checkIfEmptyView];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
@@ -1047,13 +1115,11 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
             case YapDatabaseViewChangeDelete: {
                 [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
-                _inboxCount += (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeInsert: {
                 [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
                                       withRowAnimation:UITableViewRowAnimationAutomatic];
-                _inboxCount -= (self.viewingThreadsIn == kArchiveState) ? 1 : 0;
                 break;
             }
             case YapDatabaseViewChangeMove: {
@@ -1076,21 +1142,31 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
 
 - (void)checkIfEmptyView
 {
-    [_tableView setHidden:NO];
-    [_emptyBoxLabel setHidden:NO];
-    if (self.viewingThreadsIn == kInboxState && [self.threadMappings numberOfItemsInGroup:TSInboxGroup] == 0) {
-        [self setEmptyBoxText];
+    // We need to consult the db view, not the mapping since the mapping only knows about
+    // the current group.
+    __block NSUInteger inboxCount;
+    __block NSUInteger archiveCount;
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSThreadDatabaseViewExtensionName];
+        inboxCount = [viewTransaction numberOfItemsInGroup:TSInboxGroup];
+        archiveCount = [viewTransaction numberOfItemsInGroup:TSArchiveGroup];
+    }];
+
+    if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
+        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
-    } else if (self.viewingThreadsIn == kArchiveState &&
-        [self.threadMappings numberOfItemsInGroup:TSArchiveGroup] == 0) {
-        [self setEmptyBoxText];
+        [_emptyBoxLabel setHidden:NO];
+    } else if (self.homeViewMode == HomeViewMode_Archive && archiveCount == 0) {
+        [self updateEmptyBoxText];
         [_tableView setHidden:YES];
+        [_emptyBoxLabel setHidden:NO];
     } else {
         [_emptyBoxLabel setHidden:YES];
+        [_tableView setHidden:NO];
     }
 }
 
-- (void)setEmptyBoxText
+- (void)updateEmptyBoxText
 {
     _emptyBoxLabel.textColor = [UIColor grayColor];
     _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
@@ -1100,7 +1176,7 @@ typedef NS_ENUM(NSInteger, CellState) { kArchiveState, kInboxState };
     NSString *firstLine = @"";
     NSString *secondLine = @"";
 
-    if (self.viewingThreadsIn == kInboxState) {
+    if (self.homeViewMode == HomeViewMode_Inbox) {
         if ([Environment.preferences getHasSentAMessage]) {
             firstLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");

@@ -82,12 +82,12 @@ NS_ASSUME_NONNULL_BEGIN
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
 
-    ReminderView *contactsPermissionReminderView = [[ReminderView alloc]
-        initWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                         @"Multi-line label explaining why compose-screen contact picker is empty.")
-           tapAction:^{
-               [[UIApplication sharedApplication] openSystemSettings];
-           }];
+    ReminderView *contactsPermissionReminderView =
+        [ReminderView nagWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                                      @"Multi-line label explaining why compose-screen contact picker is empty.")
+                        tapAction:^{
+                            [[UIApplication sharedApplication] openSystemSettings];
+                        }];
     [self.view addSubview:contactsPermissionReminderView];
     [contactsPermissionReminderView autoPinWidthToSuperview];
     [contactsPermissionReminderView autoPinEdgeToSuperviewMargin:ALEdgeTop];
