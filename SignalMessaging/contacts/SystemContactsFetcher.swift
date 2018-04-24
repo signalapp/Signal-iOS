@@ -113,35 +113,6 @@ public enum ContactStoreAuthorizationStatus {
          authorized
 }
 
-class ContactStoreAdapter: ContactStoreAdaptee {
-
-    let adaptee: ContactStoreAdaptee
-
-    init() {
-        self.adaptee = ContactsFrameworkContactStoreAdaptee()
-    }
-
-    var supportsContactEditing: Bool {
-        return self.adaptee.supportsContactEditing
-    }
-
-    var authorizationStatus: ContactStoreAuthorizationStatus {
-        return self.adaptee.authorizationStatus
-    }
-
-    func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
-        return self.adaptee.requestAccess(completionHandler: completionHandler)
-    }
-
-    func fetchContacts() -> Result<[Contact], Error> {
-        return self.adaptee.fetchContacts()
-    }
-
-    func startObservingChanges(changeHandler: @escaping () -> Void) {
-        self.adaptee.startObservingChanges(changeHandler: changeHandler)
-    }
-}
-
 @objc public protocol SystemContactsFetcherDelegate: class {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
 }
@@ -152,7 +123,7 @@ public class SystemContactsFetcher: NSObject {
     private let TAG = "[SystemContactsFetcher]"
     var lastContactUpdateHash: Int?
     var lastDelegateNotificationDate: Date?
-    let contactStoreAdapter: ContactStoreAdapter
+    let contactStoreAdapter: ContactsFrameworkContactStoreAdaptee
 
     @objc
     public weak var delegate: SystemContactsFetcherDelegate?
@@ -176,7 +147,7 @@ public class SystemContactsFetcher: NSObject {
     private var hasSetupObservation = false
 
     override init() {
-        self.contactStoreAdapter = ContactStoreAdapter()
+        self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee()
 
         super.init()
 
