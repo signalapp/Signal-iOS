@@ -95,6 +95,7 @@ class MessageRecipientStatusUtils: NSObject {
         // might be misleading.
 
         guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
+            owsFail("\(self.logTag) no message status for recipient: \(recipientId).")
             let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
             let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "message footer for failed messages")
             return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
@@ -143,7 +144,7 @@ class MessageRecipientStatusUtils: NSObject {
             return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         case .skipped:
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
-                                                  comment: "message status if message delivery to a recipient is skipped.")
+                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account.")
             return (status:.skipped, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         }
     }
@@ -176,7 +177,7 @@ class MessageRecipientStatusUtils: NSObject {
             return NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "message footer for sent messages")
         default:
-            owsFail("Message has unexpected status: \(outgoingMessage.messageState).")
+            owsFail("\(self.logTag) Message has unexpected status: \(outgoingMessage.messageState).")
             return NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "message footer for sent messages")
         }
@@ -204,7 +205,7 @@ class MessageRecipientStatusUtils: NSObject {
 
             return .sent
         default:
-            owsFail("Message has unexpected status: \(outgoingMessage.messageState).")
+            owsFail("\(self.logTag) Message has unexpected status: \(outgoingMessage.messageState).")
 
             return .sent
         }

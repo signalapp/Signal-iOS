@@ -505,10 +505,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }

@@ -22,23 +22,29 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
 {
     OWSAssert(transaction);
 
-    NSMutableArray<TSOutgoingMessage *> *outgoingMessages = [NSMutableArray new];
-    [transaction enumerateKeysAndObjectsInCollection:TSOutgoingMessage.collection
-                                          usingBlock:^(NSString *key, id value, BOOL *stop) {
-                                              if (![value isKindOfClass:[TSOutgoingMessage class]]) {
-                                                  return;
-                                              }
-                                              TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)value;
-                                              [outgoingMessages addObject:outgoingMessage];
-                                          }];
-
-    DDLogInfo(@"Saving %zd outgoing messages.", outgoingMessages.count);
-
     // Persist the migration of the outgoing message state.
     // For performance, we want to upgrade all existing outgoing messages in
     // a single transaction.
-    for (TSOutgoingMessage *outgoingMessage in outgoingMessages) {
-        [outgoingMessage saveWithTransaction:transaction];
+    NSMutableArray<NSString *> *messageIds =
+        [[transaction allKeysInCollection:TSOutgoingMessage.collection] mutableCopy];
+    DDLogInfo(@"%@ Migrating %zd outgoing messages.", self.logTag, messageIds.count);
+    while (messageIds.count > 0) {
+        const int kBatchSize = 1000;
+        @autoreleasepool {
+            for (int i = 0; i < kBatchSize; i++) {
+                if (messageIds.count == 0) {
+                    break;
+                }
+                NSString *messageId = [messageIds lastObject];
+                [messageIds removeLastObject];
+                id message = [transaction objectForKey:messageId inCollection:TSOutgoingMessage.collection];
+                if (![message isKindOfClass:[TSOutgoingMessage class]]) {
+                    return;
+                }
+                TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+                [outgoingMessage saveWithTransaction:transaction];
+            }
+        }
     }
 }
 

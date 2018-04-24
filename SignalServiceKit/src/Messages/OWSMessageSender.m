@@ -476,8 +476,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     for (NSString *recipientId in obsoleteRecipientIds) {
                         // Mark this recipient as "skipped".
-                        //
-                        // TODO: We should also mark as "skipped" group members who no longer have signal accounts.
                         [message updateWithSkippedRecipient:recipientId transaction:transaction];
                     }
                 }];
@@ -703,6 +701,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        thread:(TSThread *)thread
 {
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        if (thread.isGroupThread) {
+            // Mark as "skipped" group members who no longer have signal accounts.
+            [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
+        }
+
         [recipient removeWithTransaction:transaction];
         [[TSInfoMessage userNotRegisteredMessageInThread:thread]
             saveWithTransaction:transaction];
