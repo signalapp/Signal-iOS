@@ -185,7 +185,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             dict[OWSDisappearingMessageFinderThreadIdColumn] = message.uniqueThreadId;
         }];
 
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
 
 #ifdef DEBUG
@@ -195,6 +195,11 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     [storage registerExtension:[self indexDatabaseExtension] withName:OWSDisappearingMessageFinderExpiresAtIndex];
 }
 #endif
+
++ (NSString *)databaseExtensionName
+{
+    return OWSDisappearingMessageFinderExpiresAtIndex;
+}
 
 + (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage
 {

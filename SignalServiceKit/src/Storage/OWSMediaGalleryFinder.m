@@ -111,6 +111,11 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
 
 #pragma mark - Extension registration
 
++ (NSString *)databaseExtensionName
+{
+    return OWSMediaGalleryFinderExtensionName;
+}
+
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
     [storage asyncRegisterExtension:[self mediaGalleryDatabaseExtension]
@@ -158,7 +163,7 @@ static NSString *const OWSMediaGalleryFinderExtensionName = @"OWSMediaGalleryFin
     
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.allowedCollections = [[YapWhitelistBlacklist alloc] initWithWhitelist:[NSSet setWithObject:TSMessage.collection]];
-    
+
     return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
 

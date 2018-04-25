@@ -7,6 +7,8 @@
 
 @interface TSDatabaseSecondaryIndexes : NSObject
 
++ (NSString *)registerTimeStampIndexExtensionName;
+
 + (YapDatabaseSecondaryIndex *)registerTimeStampIndex;
 
 + (void)enumerateMessagesWithTimestamp:(uint64_t)timestamp

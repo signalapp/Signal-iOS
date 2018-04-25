@@ -128,6 +128,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(_messageFormat, ##__VA_ARGS__);                                                                        \
     }
 
+#define OWSProdLogAndCFail(_messageFormat, ...)                                                                        \
+    {                                                                                                                  \
+        DDLogError(_messageFormat, ##__VA_ARGS__);                                                                     \
+        [DDLog flushLog];                                                                                              \
+        OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
+    }
+
 // This function is intended for use in Swift.
 void SwiftAssertIsOnMainThread(NSString *functionName);
 

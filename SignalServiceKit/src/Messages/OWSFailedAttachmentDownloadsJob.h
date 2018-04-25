@@ -14,9 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)run;
 
-/**
- * Database extensions required for class to work.
- */
++ (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
 #ifdef DEBUG

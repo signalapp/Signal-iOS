@@ -120,6 +120,15 @@ NS_ASSUME_NONNULL_BEGIN
                                            }]];
 #endif
 
+    [items
+        addObject:[OWSTableItem
+                      itemWithTitle:@"Increment Database Extension Versions"
+                        actionBlock:^() {
+                            for (NSString *extensionName in OWSPrimaryStorage.sharedManager.registeredExtensionNames) {
+                                [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
+                            }
+                        }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 

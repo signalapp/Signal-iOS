@@ -25,9 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (nullable NSNumber *)nextExpirationTimestampWithTransaction:(YapDatabaseReadTransaction *_Nonnull)transaction;
 
-/**
- * Database extensions required for class to work.
- */
++ (NSString *)databaseExtensionName;
+
 + (void)asyncRegisterDatabaseExtensions:(OWSStorage *)storage;
 
 #ifdef DEBUG

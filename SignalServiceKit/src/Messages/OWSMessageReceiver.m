@@ -413,6 +413,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 #pragma mark - class methods
 
++ (NSString *)databaseExtensionName
+{
+    return OWSMessageDecryptJobFinderExtensionName;
+}
+
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
     [OWSMessageDecryptJobFinder asyncRegisterDatabaseExtension:storage];
