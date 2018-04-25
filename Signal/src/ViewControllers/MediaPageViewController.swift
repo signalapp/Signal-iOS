@@ -79,14 +79,27 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let kSpacingBetweenItems: CGFloat = 20
 
         let headerView = UIStackView()
-        headerView.axis = .vertical
-        headerView.alignment = .center
-
         self.headerView = headerView
 
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+
+        // needed for proper layout on iOS10
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+
+        headerView.axis = .vertical
+        headerView.alignment = .center
+        headerView.addArrangedSubview(headerNameLabel)
+        headerView.addArrangedSubview(headerDateLabel)
+        Logger.debug("\(self.logTag) in \(#function) 1 headerView.frame: \(headerView.frame)")
+
+//        headerView.layoutIfNeeded()
+
+        Logger.debug("\(self.logTag) in \(#function) 2 headerView.frame: \(headerView.frame)")
+//        headerView.sizeToFit()
+
+        Logger.debug("\(self.logTag) in \(#function) 3 headerView.frame: \(headerView.frame)")
 
         self.dataSource = self
         self.delegate = self
@@ -123,8 +136,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
 
-        headerView.addArrangedSubview(headerNameLabel)
-        headerView.addArrangedSubview(headerDateLabel)
         self.navigationItem.titleView = headerView
         self.updateTitle()
 

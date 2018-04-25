@@ -273,11 +273,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
             break;
     }
+
+    // We don't show any text for the back button, so there's no need to localize it. But because we left align the
+    // conversation title view, we having a title which is just spaces, we can add tappable padding to the back button.
+    // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
+    // gesture animating our title view properly vs. creating our own back button bar item and adjusting padding that
+    // way.
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
-                                         style:UIBarButtonItemStylePlain
-                                        target:nil
-                                        action:nil];
+        [[UIBarButtonItem alloc] initWithTitle:@"   " style:UIBarButtonItemStylePlain target:nil action:nil];
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
