@@ -1148,146 +1148,126 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Jpeg ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingJpegAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Gif ⚠️"]];
     }
     [actions addObjectsFromArray:@[
         // Don't bother with multiple GIF states.
-        [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingLargeGifAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingGifAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingLargeGifAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Mp3 ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingMp3Action:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Mp4 ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingMp4Action:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Compact Landscape Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingCompactLandscapePngAction:thread
-                                       messageState:TSOutgoingMessageStateAttemptingOut
-                                         hasCaption:NO],
-        [self fakeOutgoingCompactLandscapePngAction:thread
-                                       messageState:TSOutgoingMessageStateAttemptingOut
-                                         hasCaption:YES],
-        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingCompactLandscapePngAction:thread
-                                       messageState:TSOutgoingMessageStateSentToService
-                                         hasCaption:NO],
-        [self fakeOutgoingCompactLandscapePngAction:thread
-                                       messageState:TSOutgoingMessageStateSentToService
-                                         hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingCompactLandscapePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Compact Portrait Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingCompactPortraitPngAction:thread
-                                      messageState:TSOutgoingMessageStateAttemptingOut
-                                        hasCaption:NO],
-        [self fakeOutgoingCompactPortraitPngAction:thread
-                                      messageState:TSOutgoingMessageStateAttemptingOut
-                                        hasCaption:YES],
-        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingCompactPortraitPngAction:thread
-                                      messageState:TSOutgoingMessageStateSentToService
-                                        hasCaption:NO],
-        [self fakeOutgoingCompactPortraitPngAction:thread
-                                      messageState:TSOutgoingMessageStateSentToService
-                                        hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingCompactPortraitPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Wide Landscape Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingWideLandscapePngAction:thread
-                                    messageState:TSOutgoingMessageStateAttemptingOut
-                                      hasCaption:YES],
-        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingWideLandscapePngAction:thread
-                                    messageState:TSOutgoingMessageStateSentToService
-                                      hasCaption:YES],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingWideLandscapePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Tall Portrait Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingTallPortraitPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Large Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingLargePngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Tiny Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingTinyPngAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Reserved Color Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
@@ -1297,7 +1277,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[UIColor whiteColor]
                           textColor:[UIColor ows_signalBrandBlueColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateUnsent
+                       messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"
@@ -1305,7 +1285,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[UIColor whiteColor]
                           textColor:[UIColor ows_signalBrandBlueColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateAttemptingOut
+                       messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing White Png"
@@ -1313,7 +1293,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[UIColor whiteColor]
                           textColor:[UIColor ows_signalBrandBlueColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSentToService
+                       messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
 
         [self fakeOutgoingPngAction:thread
@@ -1322,7 +1302,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateUnsent
+                       messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
@@ -1330,7 +1310,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateAttemptingOut
+                       messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
@@ -1338,7 +1318,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingUnsent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSentToService
+                       messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
 
         [self fakeOutgoingPngAction:thread
@@ -1347,7 +1327,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateUnsent
+                       messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
@@ -1355,7 +1335,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateAttemptingOut
+                       messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sending' Png"
@@ -1363,7 +1343,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSending]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSentToService
+                       messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
 
         [self fakeOutgoingPngAction:thread
@@ -1372,7 +1352,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateUnsent
+                       messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
@@ -1380,7 +1360,7 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateAttemptingOut
+                       messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Sent' Png"
@@ -1388,55 +1368,55 @@ NS_ASSUME_NONNULL_BEGIN
                     backgroundColor:[OWSMessagesBubbleImageFactory bubbleColorOutgoingSent]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
-                       messageState:TSOutgoingMessageStateSentToService
+                       messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Tiny Pdf ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:YES],
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:YES],
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
-        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSending hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:YES],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
+        [self fakeOutgoingTinyPdfAction:thread messageState:TSOutgoingMessageStateSent hasCaption:YES],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Large Pdf ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingLargePdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingLargePdfAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Missing Png ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMissingPngAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Large Pdf ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
+        [self fakeOutgoingMissingPdfAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
     ]];
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Oversize Text ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateUnsent hasCaption:NO],
-        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateAttemptingOut hasCaption:NO],
-        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSentToService hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateFailed hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSending hasCaption:NO],
+        [self fakeOutgoingOversizeTextAction:thread messageState:TSOutgoingMessageStateSent hasCaption:NO],
     ]];
 
     // Incoming
@@ -1837,31 +1817,31 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Statuses ⚠️"]];
     }
     [actions addObjectsFromArray:@[
-        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateUnsent],
-        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateAttemptingOut],
-        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSentToService],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateFailed],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSending],
+        [self fakeShortOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSent],
         [self fakeShortOutgoingTextMessageAction:thread
-                                    messageState:TSOutgoingMessageStateSentToService
+                                    messageState:TSOutgoingMessageStateSent
                                      isDelivered:YES
                                           isRead:NO],
         [self fakeShortOutgoingTextMessageAction:thread
-                                    messageState:TSOutgoingMessageStateSentToService
+                                    messageState:TSOutgoingMessageStateSent
                                      isDelivered:YES
                                           isRead:YES],
     ]];
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Outgoing Message Bodies ⚠️"]];
     }
     for (NSString *messageBody in messageBodies) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:messageBody]];
     }
     return actions;
@@ -1905,7 +1885,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Used fixed values for properties that shouldn't matter much.
     BOOL quotedMessageIsDelivered = NO;
     BOOL quotedMessageIsRead = NO;
-    TSOutgoingMessageState quotedMessageMessageState = TSOutgoingMessageStateSentToService;
+    TSOutgoingMessageState quotedMessageMessageState = TSOutgoingMessageStateSent;
     BOOL replyIsDelivered = NO;
     BOOL replyIsRead = NO;
 
@@ -2063,7 +2043,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Short Text"
@@ -2074,7 +2054,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Medium Text"
@@ -2085,7 +2065,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Medium Text"
@@ -2096,7 +2076,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Long Text"
@@ -2107,7 +2087,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:longText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
     ]];
 
     if (includeLabels) {
@@ -2124,7 +2104,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Jpg"
@@ -2135,7 +2115,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp3"
@@ -2146,7 +2126,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp3"
@@ -2157,7 +2137,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp4"
@@ -2168,7 +2148,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp4"
@@ -2179,7 +2159,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Gif"
@@ -2190,7 +2170,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Gif"
@@ -2201,7 +2181,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Pdf"
@@ -2212,7 +2192,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Missing Pdf"
@@ -2223,7 +2203,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tiny Png"
@@ -2234,7 +2214,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Missing Png"
@@ -2245,7 +2225,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
     ]];
 
     if (includeLabels) {
@@ -2262,7 +2242,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tall Portrait Png"
@@ -2273,7 +2253,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tall Portrait Png"
@@ -2284,7 +2264,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Wide Landscape Png"
@@ -2295,7 +2275,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Wide Landscape Png"
@@ -2306,7 +2286,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Wide Landscape Png"
@@ -2317,7 +2297,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tiny Png"
@@ -2328,7 +2308,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tiny Png"
@@ -2339,7 +2319,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
     ]];
 
     void (^directionActions)(BOOL, BOOL) = ^(BOOL isQuotedMessageIncoming, BOOL isReplyIncoming) {
@@ -2353,7 +2333,7 @@ NS_ASSUME_NONNULL_BEGIN
                          isReplyIncoming:isReplyIncoming
                         replyMessageBody:shortText
                         replyAssetLoader:nil
-                       replyMessageState:TSOutgoingMessageStateSentToService],
+                       replyMessageState:TSOutgoingMessageStateSent],
         ]];
     };
 
@@ -2380,7 +2360,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp3"
@@ -2391,7 +2371,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Mp4"
@@ -2402,7 +2382,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Gif"
@@ -2413,7 +2393,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Pdf"
@@ -2424,7 +2404,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Missing Pdf"
@@ -2435,7 +2415,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Tiny Png"
@@ -2446,7 +2426,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Missing Png"
@@ -2457,7 +2437,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Short Text"
@@ -2468,7 +2448,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateAttemptingOut],
+                   replyMessageState:TSOutgoingMessageStateSending],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Short Text"
@@ -2479,7 +2459,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         [self fakeQuotedReplyAction:thread
                   quotedMessageLabel:@"Short Text"
@@ -2490,7 +2470,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateUnsent],
+                   replyMessageState:TSOutgoingMessageStateFailed],
     ]];
 
 
@@ -2509,7 +2489,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Text -> Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2521,7 +2501,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:nil
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Text -> Png
         [self fakeQuotedReplyAction:thread
@@ -2533,7 +2513,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:nil
                     replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2545,7 +2525,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Portrait Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2557,7 +2537,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader tallPortraitPngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Landscape Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2569,7 +2549,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
 
         // Png -> Landscape Png + Text
@@ -2582,7 +2562,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Landscape Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2594,7 +2574,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:shortText
                     replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Landscape Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2606,7 +2586,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
 
         // Png -> Landscape Png + Text
         [self fakeQuotedReplyAction:thread
@@ -2618,7 +2598,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isReplyIncoming:NO
                     replyMessageBody:mediumText
                     replyAssetLoader:[DebugUIMessagesAssetLoader wideLandscapePngInstance]
-                   replyMessageState:TSOutgoingMessageStateSentToService],
+                   replyMessageState:TSOutgoingMessageStateSent],
     ]];
 
     return actions;
@@ -2710,60 +2690,59 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Short Message Sequences ⚠️"]];
     }
 
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming"]];
-    [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
-                                                      text:@"Outgoing"]];
+    [actions
+        addObject:[self fakeOutgoingTextMessageAction:thread messageState:TSOutgoingMessageStateSent text:@"Outgoing"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 1"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 2"]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming 3"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateUnsent
+                                              messageState:TSOutgoingMessageStateFailed
                                                       text:@"Outgoing Unsent 1"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateUnsent
+                                              messageState:TSOutgoingMessageStateFailed
                                                       text:@"Outgoing Unsent 2"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                              messageState:TSOutgoingMessageStateSending
                                                       text:@"Outgoing Sending 1"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                              messageState:TSOutgoingMessageStateSending
                                                       text:@"Outgoing Sending 2"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                       text:@"Outgoing Sent 1"]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                       text:@"Outgoing Sent 2"]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:@"Outgoing Delivered 1"
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:NO]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:@"Outgoing Delivered 2"
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:NO]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:@"Outgoing Read 1"
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:YES]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:@"Outgoing Read 2"
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:YES]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:@"Incoming"]];
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Long Message Sequences ⚠️"]];
     }
 
@@ -2772,7 +2751,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                       text:[@"Outgoing" stringByAppendingString:longText]]];
     [actions
         addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 1" stringByAppendingString:longText]]];
@@ -2781,43 +2760,43 @@ NS_ASSUME_NONNULL_BEGIN
     [actions
         addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming 3" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateUnsent
+                                              messageState:TSOutgoingMessageStateFailed
                                                       text:[@"Outgoing Unsent 1" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateUnsent
+                                              messageState:TSOutgoingMessageStateFailed
                                                       text:[@"Outgoing Unsent 2" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                              messageState:TSOutgoingMessageStateSending
                                                       text:[@"Outgoing Sending 1" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateAttemptingOut
+                                              messageState:TSOutgoingMessageStateSending
                                                       text:[@"Outgoing Sending 2" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                       text:[@"Outgoing Sent 1" stringByAppendingString:longText]]];
     [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                       text:[@"Outgoing Sent 2" stringByAppendingString:longText]]];
     [actions
         addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                       text:[@"Outgoing Delivered 1" stringByAppendingString:longText]
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                isDelivered:YES
                                                     isRead:NO]];
     [actions
         addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                       text:[@"Outgoing Delivered 2" stringByAppendingString:longText]
-                                              messageState:TSOutgoingMessageStateSentToService
+                                              messageState:TSOutgoingMessageStateSent
                                                isDelivered:YES
                                                     isRead:NO]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:[@"Outgoing Read 1" stringByAppendingString:longText]
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:YES]];
     [actions addObject:[self fakeShortOutgoingTextMessageAction:thread
                                                            text:[@"Outgoing Read 2" stringByAppendingString:longText]
-                                                   messageState:TSOutgoingMessageStateSentToService
+                                                   messageState:TSOutgoingMessageStateSent
                                                     isDelivered:YES
                                                          isRead:YES]];
     [actions addObject:[self fakeIncomingTextMessageAction:thread text:[@"Incoming" stringByAppendingString:longText]]];
@@ -2849,7 +2828,7 @@ NS_ASSUME_NONNULL_BEGIN
             TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
                                                              messageBody:messageBody
                                                          fakeAssetLoader:nil
-                                                            messageState:TSOutgoingMessageStateSentToService
+                                                            messageState:TSOutgoingMessageStateSent
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
@@ -2867,7 +2846,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeLabels) {
         [actions addObject:[self fakeOutgoingTextMessageAction:thread
-                                                  messageState:TSOutgoingMessageStateSentToService
+                                                  messageState:TSOutgoingMessageStateSent
                                                           text:@"⚠️ Back-Dated ⚠️"]];
     }
 
@@ -3285,7 +3264,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self createFakeOutgoingMessage:thread
                                     messageBody:randomText
                                 fakeAssetLoader:nil
-                                   messageState:TSOutgoingMessageStateUnsent
+                                   messageState:TSOutgoingMessageStateFailed
                                     isDelivered:NO
                                          isRead:NO
                                   quotedMessage:nil
@@ -3336,7 +3315,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     messageBody:nil
                                    attachmentId:attachmentStream.uniqueId
                                        filename:filename
-                                   messageState:TSOutgoingMessageStateUnsent
+                                   messageState:TSOutgoingMessageStateFailed
                                     isDelivered:NO
                                          isRead:NO
                                  isVoiceMessage:NO
@@ -3707,7 +3686,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (TSOutgoingMessage *message in messages) {
-        [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:initialTransaction];
+        [message updateWithFakeMessageState:TSOutgoingMessageStateSending transaction:initialTransaction];
         [message saveWithTransaction:initialTransaction];
     }
 
@@ -3781,11 +3760,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                groupMetaMessage:TSGroupMessageUnspecified
                                                                   quotedMessage:nil];
                 [message saveWithTransaction:transaction];
-                [message updateWithMessageState:TSOutgoingMessageStateSentToService transaction:transaction];
+                [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId transaction:transaction];
-                [message updateWithDeliveredToRecipientId:recipientId
-                                        deliveryTimestamp:timestamp
-                                              transaction:transaction];
+                [message updateWithDeliveredRecipient:recipientId deliveryTimestamp:timestamp transaction:transaction];
                 [message updateWithReadRecipientId:recipientId
                                      readTimestamp:timestamp.unsignedLongLongValue
                                        transaction:transaction];
@@ -3935,11 +3912,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasCaption) {
         [label appendString:@" 🔤"];
     }
-    if (outgoingMessageState == TSOutgoingMessageStateUnsent) {
+    if (outgoingMessageState == TSOutgoingMessageStateFailed) {
         [label appendString:@" (Unsent)"];
-    } else if (outgoingMessageState == TSOutgoingMessageStateAttemptingOut) {
+    } else if (outgoingMessageState == TSOutgoingMessageStateSending) {
         [label appendString:@" (Sending)"];
-    } else if (outgoingMessageState == TSOutgoingMessageStateSentToService) {
+    } else if (outgoingMessageState == TSOutgoingMessageStateSent) {
         if (isRead) {
             [label appendString:@" (Read)"];
         } else if (isDelivered) {
@@ -4024,13 +4001,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [message saveWithTransaction:transaction];
-    [message updateWithMessageState:messageState transaction:transaction];
+    [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
         NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
         OWSAssert(recipientId.length > 0);
-        [message updateWithDeliveredToRecipientId:recipientId
-                                deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
-                                      transaction:transaction];
+        [message updateWithDeliveredRecipient:recipientId
+                            deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                  transaction:transaction];
     }
     if (isRead) {
         NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;

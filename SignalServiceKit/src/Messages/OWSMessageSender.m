@@ -186,7 +186,8 @@ void AssertIsOnSendingQueue()
 
 - (void)didSucceed
 {
-    [self.message updateWithMessageState:TSOutgoingMessageStateSentToService];
+    OWSAssert(self.message.messageState == TSOutgoingMessageStateSent);
+
     self.successHandler();
 }
 
@@ -311,7 +312,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             // All outgoing messages should be saved at the time they are enqueued.
             [message saveWithTransaction:transaction];
-            [message updateWithMessageState:TSOutgoingMessageStateAttemptingOut transaction:transaction];
+            // When we start a message send, all "failed" recipients should be marked as "sending".
+            [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
         }];
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
@@ -417,11 +419,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (NSArray<SignalRecipient *> *)getRecipients:(NSArray<NSString *> *)identifiers error:(NSError **)error
+- (NSArray<SignalRecipient *> *)getRecipientsForRecipientIds:(NSArray<NSString *> *)recipientIds error:(NSError **)error
 {
+    OWSAssert(error);
+
+    error = nil;
+
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
 
-    for (NSString *recipientId in identifiers) {
+    for (NSString *recipientId in recipientIds) {
         SignalRecipient *existingRecipient = [SignalRecipient recipientWithTextSecureIdentifier:recipientId];
 
         if (existingRecipient) {
@@ -451,11 +457,36 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         TSThread *thread = message.thread;
 
         if ([thread isKindOfClass:[TSGroupThread class]]) {
+
             TSGroupThread *gThread = (TSGroupThread *)thread;
+
+            // Send to the intersection of:
+            //
+            // * "sending" recipients of the message.
+            // * members of the group.
+            //
+            // I.e. try to send a message IFF:
+            //
+            // * The recipient was in the group when the message was first tried to be sent.
+            // * The recipient is still in the group.
+            // * The recipient is in the "sending" state.
+            NSMutableSet<NSString *> *obsoleteRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
+            [obsoleteRecipientIds minusSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            if (obsoleteRecipientIds.count > 0) {
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    for (NSString *recipientId in obsoleteRecipientIds) {
+                        // Mark this recipient as "skipped".
+                        [message updateWithSkippedRecipient:recipientId transaction:transaction];
+                    }
+                }];
+            }
+
+            NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
+            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
 
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
-                [self getRecipients:gThread.groupModel.groupMemberIds error:&error];
+                [self getRecipientsForRecipientIds:sendingRecipientIds.allObjects error:&error];
 
             if (recipients.count == 0) {
                 if (!error) {
@@ -491,7 +522,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // you might, for example, have a pending outgoing message when
             // you block them.
             OWSAssert(recipientContactId.length > 0);
-            if ([_blockingManager isRecipientIdBlocked:recipientContactId]) {
+            if ([self.blockingManager isRecipientIdBlocked:recipientContactId]) {
                 DDLogInfo(@"%@ skipping 1:1 send to blocked contact: %@", self.logTag, recipientContactId);
                 NSError *error = OWSErrorMakeMessageSendFailedToBlockListError();
                 // No need to retry - the user will continue to be blocked.
@@ -560,10 +591,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
         success:^{
-            DDLogInfo(@"%@ Marking group message as sent to recipient: %@", self.logTag, recipient.uniqueId);
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
-            }];
             [futureSource trySetResult:@1];
         }
         failure:^(NSError *error) {
@@ -580,6 +607,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
           failure:(RetryableFailureHandler)failureHandler
 {
     [self saveGroupMessage:message inThread:thread];
+
     NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
 
     for (SignalRecipient *recipient in recipients) {
@@ -587,17 +615,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         // We don't need to send the message to ourselves...
         if ([recipientId isEqualToString:[TSAccountManager localNumber]]) {
-            continue;
-        }
-        // We don't need to sent the message to all group members if
-        // it has a "single group recipient".
-        if (message.singleGroupRecipient && ![message.singleGroupRecipient isEqualToString:recipientId]) {
-            continue;
-        }
-        if ([message wasSentToRecipient:recipientId]) {
-            // Skip recipients we have already sent this message to (on an
-            // earlier retry, perhaps).
-            DDLogInfo(@"%@ Skipping group message recipient; already sent: %@", self.logTag, recipient.uniqueId);
             continue;
         }
 
@@ -679,6 +696,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        thread:(TSThread *)thread
 {
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        if (thread.isGroupThread) {
+            // Mark as "skipped" group members who no longer have signal accounts.
+            [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
+        }
+
         [recipient removeWithTransaction:transaction];
         [[TSInfoMessage userNotRegisteredMessageInThread:thread]
             saveWithTransaction:transaction];
@@ -904,7 +926,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             dispatch_async([OWSDispatch sendingQueue], ^{
-                [recipient save];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient saveWithTransaction:transaction];
+                    [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
+                }];
+
                 [self handleMessageSentLocally:message];
                 successHandler();
             });

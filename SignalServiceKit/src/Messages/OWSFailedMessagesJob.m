@@ -44,9 +44,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 
     NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
 
-    NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ == %d",
-                                          OWSFailedMessagesJobMessageStateColumn,
-                                          (int)TSOutgoingMessageStateAttemptingOut];
+    NSString *formattedString = [NSString
+        stringWithFormat:@"WHERE %@ == %d", OWSFailedMessagesJobMessageStateColumn, (int)TSOutgoingMessageStateSending];
     YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
     [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
         enumerateKeysMatchingQuery:query
@@ -83,8 +82,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
-                OWSAssert(message.messageState == TSOutgoingMessageStateAttemptingOut);
-                if (message.messageState != TSOutgoingMessageStateAttemptingOut) {
+                OWSAssert(message.messageState == TSOutgoingMessageStateSending);
+                if (message.messageState != TSOutgoingMessageStateSending) {
                     DDLogError(@"%@ Refusing to mark as unsent message with state: %d",
                         self.logTag,
                         (int)message.messageState);
@@ -92,8 +91,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 }
 
                 DDLogDebug(@"%@ marking message as unsent: %@", self.logTag, message.uniqueId);
-                [message updateWithMessageState:TSOutgoingMessageStateUnsent transaction:transaction];
-                OWSAssert(message.messageState == TSOutgoingMessageStateUnsent);
+                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
+                OWSAssert(message.messageState == TSOutgoingMessageStateFailed);
 
                 count++;
             }

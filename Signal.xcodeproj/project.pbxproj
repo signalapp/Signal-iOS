@@ -165,6 +165,8 @@
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
 		34A910601FFEB114000C4745 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9105F1FFEB114000C4745 /* OWSBackup.m */; };
+		34ABB2C42090C59700C727A6 /* OWSResaveCollectionDBMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 34ABB2C22090C59600C727A6 /* OWSResaveCollectionDBMigration.m */; };
+		34ABB2C52090C59700C727A6 /* OWSResaveCollectionDBMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 34ABB2C32090C59700C727A6 /* OWSResaveCollectionDBMigration.h */; };
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
@@ -214,6 +216,8 @@
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
 		34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
+		34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */; };
+		34D58730208E2C4200D2255A /* OWS109OutgoingMessageState.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */; };
 		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
@@ -758,6 +762,8 @@
 		34A55F3620485464002CC6DE /* OWS2FARegistrationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS2FARegistrationViewController.h; sourceTree = "<group>"; };
 		34A9105E1FFEB113000C4745 /* OWSBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackup.h; sourceTree = "<group>"; };
 		34A9105F1FFEB114000C4745 /* OWSBackup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackup.m; sourceTree = "<group>"; };
+		34ABB2C22090C59600C727A6 /* OWSResaveCollectionDBMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSResaveCollectionDBMigration.m; sourceTree = "<group>"; };
+		34ABB2C32090C59700C727A6 /* OWSResaveCollectionDBMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSResaveCollectionDBMigration.h; sourceTree = "<group>"; };
 		34B0796B1FCF46B000E248C2 /* MainAppContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainAppContext.m; sourceTree = "<group>"; };
 		34B0796C1FCF46B000E248C2 /* MainAppContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainAppContext.h; sourceTree = "<group>"; };
 		34B0796E1FD07B1E00E248C2 /* SignalShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SignalShareExtension.entitlements; sourceTree = "<group>"; };
@@ -847,6 +853,8 @@
 		34D2CCDD206939B200CB1A14 /* DebugUIMessagesAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesAction.h; sourceTree = "<group>"; };
 		34D2CCDE206939B400CB1A14 /* DebugUIMessagesAssetLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesAssetLoader.h; sourceTree = "<group>"; };
 		34D2CCE220693A1700CB1A14 /* DebugUIMessagesUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesUtils.h; sourceTree = "<group>"; };
+		34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS109OutgoingMessageState.m; sourceTree = "<group>"; };
+		34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS109OutgoingMessageState.h; sourceTree = "<group>"; };
 		34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarViewHelper.h; sourceTree = "<group>"; };
 		34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarViewHelper.m; sourceTree = "<group>"; };
 		34D8C0231ED3673300188D7C /* DebugUIMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessages.h; sourceTree = "<group>"; };
@@ -1525,10 +1533,14 @@
 				4503F1C1204711D200CEE724 /* OWS107LegacySounds.m */,
 				4598198C204E2F28009414F2 /* OWS108CallLoggingPreference.h */,
 				4598198D204E2F28009414F2 /* OWS108CallLoggingPreference.m */,
+				34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */,
+				34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */,
 				346129931FD1E30000532771 /* OWSDatabaseMigration.h */,
 				346129941FD1E30000532771 /* OWSDatabaseMigration.m */,
 				346129E51FD5C0C600532771 /* OWSDatabaseMigrationRunner.h */,
 				346129E41FD5C0C600532771 /* OWSDatabaseMigrationRunner.m */,
+				34ABB2C32090C59700C727A6 /* OWSResaveCollectionDBMigration.h */,
+				34ABB2C22090C59600C727A6 /* OWSResaveCollectionDBMigration.m */,
 			);
 			path = migrations;
 			sourceTree = "<group>";
@@ -2351,6 +2363,7 @@
 				346129E71FD5C0C600532771 /* OWSDatabaseMigrationRunner.h in Headers */,
 				344D6CEA20069E070042AF96 /* SelectRecipientViewController.h in Headers */,
 				34480B521FD0A7A400BC14EF /* OWSLogger.h in Headers */,
+				34ABB2C52090C59700C727A6 /* OWSResaveCollectionDBMigration.h in Headers */,
 				459B775D207BA4810071D0AB /* OWSQuotedReplyModel.h in Headers */,
 				34612A001FD5F31400532771 /* OWS105AttachmentFilePaths.h in Headers */,
 				346129F61FD5F31400532771 /* OWS103EnableVideoCalling.h in Headers */,
@@ -2379,6 +2392,7 @@
 				34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 				3461295A1FD1D74C00532771 /* Environment.h in Headers */,
+				34D58730208E2C4200D2255A /* OWS109OutgoingMessageState.h in Headers */,
 				4598198E204E2F28009414F2 /* OWS108CallLoggingPreference.h in Headers */,
 				34480B631FD0A98800BC14EF /* UIView+OWS.h in Headers */,
 				451F8A4B1FD715E1005CB9DA /* OWSGroupAvatarBuilder.h in Headers */,
@@ -3045,6 +3059,7 @@
 				451F8A3D1FD713CA005CB9DA /* ThreadViewHelper.m in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
 				452C7CA72037628B003D51A5 /* Weak.swift in Sources */,
+				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
 				451F8A341FD710C3005CB9DA /* ConversationSearcher.swift in Sources */,
 				346129341FD1A88700532771 /* OWSSwiftUtils.swift in Sources */,
 				346129FE1FD5F31400532771 /* OWS106EnsureProfileComplete.swift in Sources */,
@@ -3089,6 +3104,7 @@
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
+				34ABB2C42090C59700C727A6 /* OWSResaveCollectionDBMigration.m in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				3461293C1FD1D46A00532771 /* OWSMath.m in Sources */,
 				451F8A391FD711D6005CB9DA /* ContactsViewHelper.m in Sources */,
@@ -3425,7 +3441,11 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "DEBUG=1 $(inherited) SSK_BUILDING_FOR_TESTS=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"SSK_BUILDING_FOR_TESTS=1",
+				);
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "TSAccountManager.h"
 #import "TSOutgoingMessage.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,8 +50,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
-    [sentBuilder setDestination:self.message.recipientIdentifier];
-    [sentBuilder setMessage:[self.message buildDataMessage:self.message.recipientIdentifier]];
+
+    NSString *_Nullable localNumber = [TSAccountManager localNumber];
+    OWSAssert(localNumber.length > 0);
+    OWSAssert([localNumber isEqualToString:self.message.thread.contactIdentifier]);
+    [sentBuilder setDestination:localNumber];
+    [sentBuilder setMessage:[self.message buildDataMessage:localNumber]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];

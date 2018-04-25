@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateUnsent;
+    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
 }
 
 - (UIImage *)failedSendBadge
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!self.viewItem.shouldHideRecipientStatus || hasExpirationTimer) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
             NSString *statusMessage =
-                [MessageRecipientStatusUtils statusMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+                [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
             attributedText = [[NSAttributedString alloc] initWithString:statusMessage attributes:@{}];
         }
     } else if (self.viewItem.isGroupThread) {
@@ -505,10 +505,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }
@@ -527,10 +527,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateUnsent) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Ignore long press on unsent messages.
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateAttemptingOut) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore long press on outgoing messages being sent.
             return;
         }

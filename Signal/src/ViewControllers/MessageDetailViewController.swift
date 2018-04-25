@@ -193,13 +193,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
             let isGroupThread = thread.isGroupThread()
 
-            let recipientStatusGroups: [MessageRecipientStatus] = [
+            let recipientStatusGroups: [MessageReceiptStatus] = [
                 .read,
                 .uploading,
                 .delivered,
                 .sent,
                 .sending,
-                .failed
+                .failed,
+                .skipped
             ]
             for recipientStatusGroup in recipientStatusGroups {
                 var groupRows = [UIView]()
@@ -212,8 +213,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     groupRows.append(divider)
                 }
 
-                for recipientId in thread.recipientIdentifiers {
-                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientId: recipientId, referenceView: self.view)
+                let messageRecipientIds = outgoingMessage.recipientIds()
+
+                for recipientId in messageRecipientIds {
+                    guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
+                        owsFail("\(self.logTag) no message status for recipient: \(recipientId).")
+                        continue
+                    }
+
+                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState, referenceView: self.view)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -541,8 +549,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         updateContent()
     }
 
-    private func string(for messageRecipientStatus: MessageRecipientStatus) -> String {
-        switch messageRecipientStatus {
+    private func string(for messageReceiptStatus: MessageReceiptStatus) -> String {
+        switch messageReceiptStatus {
         case .uploading:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
                               comment: "Status label for messages which are uploading.")
@@ -560,7 +568,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                               comment: "Status label for messages which are read.")
         case .failed:
             return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
-                              comment: "Status label for messages which are failed.")
+                                     comment: "Status label for messages which are failed.")
+        case .skipped:
+            return NSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
+                                     comment: "Status label for messages which were skipped.")
         }
     }
 
