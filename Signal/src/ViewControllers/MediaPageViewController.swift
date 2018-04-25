@@ -67,7 +67,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    private let navItemTitleView: ConversationHeaderView!
+    private let headerView: UIStackView
 
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
@@ -76,10 +76,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.sliderEnabled = options.contains(.sliderEnabled)
         self.mediaGalleryDataSource = mediaGalleryDataSource
 
-        let headerView =  ConversationHeaderView()
-        self.navItemTitleView = headerView
-
         let kSpacingBetweenItems: CGFloat = 20
+
+        let headerView = UIStackView()
+        headerView.axis = .vertical
+        headerView.alignment = .center
+
+        self.headerView = headerView
 
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
@@ -120,13 +123,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
 
-        navItemTitleView.titleLabel = headerNameLabel
-        navItemTitleView.subtitleLabel = headerDateLabel
-        navItemTitleView.addSubview(headerNameLabel)
-        navItemTitleView.addSubview(headerDateLabel)
-        navItemTitleView.frame = CGRect(origin: .zero, size: CGSize(width: 150, height: 35))
-        navItemTitleView.layoutSubviews()
-        self.navigationItem.titleView = navItemTitleView
+        headerView.addArrangedSubview(headerNameLabel)
+        headerView.addArrangedSubview(headerDateLabel)
+        self.navigationItem.titleView = headerView
         self.updateTitle()
 
         if showAllMediaButton {
