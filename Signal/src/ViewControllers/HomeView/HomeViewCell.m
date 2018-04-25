@@ -94,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.nameLabel setContentHuggingHorizontalLow];
     [self.nameLabel setCompressionResistanceHorizontalLow];
 
+    [self.contentView addBorderWithColor:[UIColor blueColor]];
+    [self.nameLabel addRedBorder];
+    [self.snippetLabel addRedBorder];
+
     self.dateTimeLabel = [UILabel new];
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
@@ -125,6 +129,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
+
+    UIView *payloadBorderView = [UIView new];
+    [payloadBorderView addBorderWithColor:[UIColor greenColor]];
+    [self.contentView addSubview:payloadBorderView];
+    [payloadBorderView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.payloadView];
+    [payloadBorderView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.payloadView];
+    [payloadBorderView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.payloadView];
+    [payloadBorderView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.payloadView];
 }
 
 + (NSString *)cellReuseIdentifier
