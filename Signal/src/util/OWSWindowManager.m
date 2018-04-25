@@ -124,11 +124,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssertIsOnMainThread();
     OWSAssert(rootWindow);
 
-    DDLogVerbose(@"%@ updateReturnToCallWindowLayout", self.logTag);
-
-    CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
-    DDLogVerbose(@"%@ statusBarFrame: %@", self.logTag, NSStringFromCGRect(statusBarFrame));
-
     // "Return to call" should remain at the top of the screen.
     CGRect windowFrame = rootWindow.bounds;
     // Use zero height until updateReturnToCallWindowLayout.
@@ -174,12 +169,10 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssertIsOnMainThread();
 
     CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
-    DDLogVerbose(@"%@ statusBarFrame: %@", self.logTag, NSStringFromCGRect(statusBarFrame));
     CGFloat statusBarHeight = statusBarFrame.size.height;
 
     CGRect windowFrame = self.rootWindow.bounds;
     windowFrame.size.height = statusBarHeight + 20.f;
-    DDLogVerbose(@"%@ windowFrame: %@", self.logTag, NSStringFromCGRect(windowFrame));
     self.returnToCallWindow.frame = windowFrame;
     self.returnToCallWindow.rootViewController.view.frame = windowFrame;
 
@@ -193,11 +186,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [rootView setNeedsLayout];
     [rootView layoutIfNeeded];
 
-    [self.returnToCallWindow logFrameWithLabel:@"returnToCallWindow"];
-    [rootView logFrameWithLabel:@"returnToCallWindow view"];
     for (UIView *subview in rootView.subviews) {
-        [subview logFrameWithLabel:@"returnToCallWindow subview"];
-
         [subview setNeedsLayout];
         [subview layoutIfNeeded];
     }
