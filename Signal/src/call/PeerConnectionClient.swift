@@ -120,6 +120,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
+    private var localVideoSource: RTCAVFoundationVideoSource?
+
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
     // causing deadlock in its destructor.  Therefore we take great care
     // with this property.
@@ -203,6 +205,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         // TODO: Revisit the cameraConstraints.
         let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
+        self.localVideoSource = videoSource
+
         self.videoCaptureSession = videoSource.captureSession
         videoSource.useBackCamera = false
 
@@ -218,6 +222,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         let videoSender = peerConnection.sender(withKind: kVideoTrackType, streamId: Identifiers.mediaStream.rawValue)
         videoSender.track = localVideoTrack
         self.videoSender = videoSender
+    }
+
+    public func setCameraSource(useBackCamera: Bool) {
+        guard let localVideoSource = self.localVideoSource else {
+            owsFail("\(logTag) in \(#function) localVideoSource was unexpectedly nil")
+            return
+        }
+
+        // certain devices, e.g. 16GB iPod touch don't have a back camera
+        guard localVideoSource.canUseBackCamera else {
+            owsFail("\(logTag) in \(#function) canUseBackCamera was unexpectedly false")
+            return
+        }
+
+        localVideoSource.useBackCamera = useBackCamera
     }
 
     public func setLocalVideoEnabled(enabled: Bool) {
