@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.contentView.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = NO;
 
     self.backgroundColor = [UIColor whiteColor];
 
