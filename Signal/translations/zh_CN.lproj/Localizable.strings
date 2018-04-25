@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "存档";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "存档";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "附件";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -316,11 +313,17 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "显示隐私设置";
 
+/* Accessibility label to toggle front vs. rear facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "转为语音通话";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "转为视频通话";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "回拨";
@@ -869,11 +872,23 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "您退出了这个群。";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "已加入黑名单";
 
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "链接中...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Reconnecting...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "响铃中...";
@@ -885,7 +900,7 @@
 "IN_CALL_TERMINATED" = "通话结束。";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "您正在查看您存档的消息。点击回到您的收件箱。";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "要查看您的联系人名称，请在系统设置中允许访问联系人。";
@@ -1031,6 +1046,9 @@
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "已发送";
 
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "正在上传";
 
@@ -1063,6 +1081,9 @@
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "已读";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "正在发送...";
@@ -2106,9 +2127,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "请完成 Signal 桌面版设置。";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "收件箱";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您取消了阅后即焚。";

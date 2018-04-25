@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "បណ្ណសារ";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "បណ្ណសារ";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "ឯកសារភ្ជាប់";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -316,11 +313,17 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "បង្ហាញការកំណត់ឯកជន";
 
+/* Accessibility label to toggle front vs. rear facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "ផ្លាស់ប្តូរជាការហៅសំឡេង";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "ផ្លាស់ប្តូរជាការហៅវីដេអូ";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "ហៅទៅវិញ";
@@ -869,11 +872,23 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "អ្នកបានចាកចេញពីក្រុម។";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "បានហាមឃាត់";
 
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "កំពុងតភ្ជាប់...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Reconnecting...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "កំពុងរោទិ៍...";
@@ -885,7 +900,7 @@
 "IN_CALL_TERMINATED" = "ការហៅបញ្ចប់។";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "អ្នកកំពុងបើកមើលបណ្ណាសារ។ ចុច ដើម្បីត្រឡប់ទៅកាន់ប្រអប់សំបុត្រ។";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "ដើម្បីមើលឈ្មោះនៃបញ្ជីទំនាក់ទំនងរបស់អ្នក សូមធ្វើបច្ចុប្បភាពការកំណត់ប្រព័ន្ធរបស់អ្នក ដើម្បីបើកអោយចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
@@ -1031,6 +1046,9 @@
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "បានផ្ញើ";
 
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "បានបញ្ជូន";
 
@@ -1063,6 +1081,9 @@
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "អាន";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "កំពុងផ្ញើ...";
@@ -2106,9 +2127,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "បញ្ចប់ការកំណត់លើ Signal Desktop។";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "ប្រអប់សារ";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកបានបិទសាររលុប។";

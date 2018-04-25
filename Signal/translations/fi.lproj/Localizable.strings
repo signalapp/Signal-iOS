@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "Arkistoi";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "Arkisto";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "Liite";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -316,11 +313,17 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Näytä yksityisyysasetukset";
 
+/* Accessibility label to toggle front vs. rear facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Vaihda äänipuheluun";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Vaihda videopuheluun";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Palaa puheluun koskettamalla tästä";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Soita takaisin";
@@ -869,11 +872,23 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Olet poistunut ryhmästä.";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkistoidut keskustelut";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Estetyt";
 
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Arkisto";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Yhdistetään...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Yhdistetään uudelleen...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Soi...";
@@ -885,7 +900,7 @@
 "IN_CALL_TERMINATED" = "Puhelu loppui.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Olet täällä hetkellä arkistoiduissa keskusteluissa. Palaa takaisin postilaatikkoon napauttamalla.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Jotta voit nähdä yhteystietojesi nimet, salli järjestelmäasetuksistasi yhteystietojen käyttö.";
@@ -1031,6 +1046,9 @@
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Lähetetty";
 
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Lähetetään";
 
@@ -1063,6 +1081,9 @@
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Luettu";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Lähetetään...";
@@ -1805,7 +1826,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Automaattisen näytön lukituksen odotusaika";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Avaa Signalin ruudun lukitus Touch ID:llä, Face ID:llä tai pääsykoodillasi. Voit silti vastata saapuviin puheluihin ja saada ilmoituksia viesteistä vaikka ruudun lukitus on päällä. Signalin ilmoitusasetuksista voit säätää mitä tietoja ilmoituksissa näytetään.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ruudun lukitus";
@@ -2106,9 +2127,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Saata yhdistäminen loppuun Signal Desktopissa.";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "Postilaatikko";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sinä asetit katoavat viestit pois päältä.";

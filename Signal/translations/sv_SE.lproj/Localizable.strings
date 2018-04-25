@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "Arkivera";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "Arkivera";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "Bifogad fil";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -316,11 +313,17 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Visa inställningar för integritetsskydd";
 
+/* Accessibility label to toggle front vs. rear facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Byt till ljudsamtal";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Byt till videosamtal";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tillbaka";
@@ -869,11 +872,23 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "Du har lämnat gruppen.";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blockerad";
 
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Ansluter...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Reconnecting...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Ringer...";
@@ -885,7 +900,7 @@
 "IN_CALL_TERMINATED" = "Samtalet avslutades.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Du ser de arkiverade meddelandena. Tryck för att gå tillbaka till din Inbox.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Om du vill se namnen på dina kontakter, uppdatera Systeminställningarna för att tillåta åtkomst till kontakter.";
@@ -1031,6 +1046,9 @@
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Skickad";
 
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Skickar iväg";
 
@@ -1063,6 +1081,9 @@
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "Läst";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Skickar...";
@@ -1697,7 +1718,7 @@
 "SETTINGS_BACKUP_PHASE" = "Fas";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "Förlopp";
 
 /* Label for status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Status";
@@ -1772,7 +1793,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandenotiser kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notisinnehåll";
@@ -2018,7 +2039,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Uppdaterade samtals- och meddelandeljud";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Skapa din profil";
@@ -2106,9 +2127,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Färdigställ länkningen i Signal Desktop.";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "Inbox";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Du stängde av att meddelanden försvinner.";

@@ -77,9 +77,6 @@
 "ARCHIVE_ACTION" = "မှတ်တမ်း ";
 
 /* No comment provided by engineer. */
-"ARCHIVE_NAV_BAR_TITLE" = "မှတ်တမ်း ";
-
-/* No comment provided by engineer. */
 "ATTACHMENT" = "ပူးတွဲ ";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
@@ -316,11 +313,17 @@
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "ကိုယ်ရေးအချက်အလက်အပြင်အဆင်ကိုပြပါ ";
 
+/* Accessibility label to toggle front vs. rear facing camera */
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+
+/* Label for the 'return to call' banner. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "ပြန်ခေါ်မည် ";
@@ -869,11 +872,23 @@
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "အဖွဲ့မှသင်ထွက်လိုက်သည်။";
 
+/* Label for 'archived conversations' button. */
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "ဘလော့လုပ်ပြီး";
 
+/* Title for the home view's 'archive' mode. */
+"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+
+/* Title for the home view's default mode. */
+"HOME_VIEW_TITLE_INBOX" = "Signal";
+
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "ချိတ်ဆက်နေသည်...";
+
+/* Call setup status label */
+"IN_CALL_RECONNECTING" = "Reconnecting...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "ဖုန်းသံမြည်နေသည်";
@@ -885,7 +900,7 @@
 "IN_CALL_TERMINATED" = "ခေါ်ဆိုမှုပြီးပြီ။";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "သိမ်းထားသော စာများဖြစ်သည်။ အဝင်စာလက်ခံနေရာသို့ပြန်သွားရန် တစ်ချက်နှိပ်ပါ။";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "လိပ်စာစာရင်းမှ လူအမည်များကိုကြည့်ရန် စစ်စတမ် ပြင်ဆင်ချက်တွင် “allow contact access” ဟုပြင်လိုက်ပါ။";
@@ -1031,6 +1046,9 @@
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "ပို့ပြီး";
 
+/* Status label for messages which were skipped. */
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "အပ်လုပ် တင်နေသည်";
 
@@ -1063,6 +1081,9 @@
 
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "ဖတ်ပြီး";
+
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "ပို့ဆဲ ...";
@@ -2106,9 +2127,6 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "ကွန်ပျူတာတွင် Signal ကို အပြီးတပ်ဆင်ပါ။";
-
-/* No comment provided by engineer. */
-"WHISPER_NAV_BAR_TITLE" = "စာပုံး";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "စာများ ပျက်သွားစေရန် လုပ်ထားချက်ကို ရပ်လိုက်သည်။";
