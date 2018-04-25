@@ -416,11 +416,12 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
 {
     NSString *lastLaunchedAppVersion = AppVersion.instance.lastAppVersion;
     NSString *lastCompletedLaunchAppVersion = AppVersion.instance.lastCompletedLaunchAppVersion;
-    // Every time we change or add a database view in such a way that
-    // might cause a delay on launch, we need to bump this constant.
+    // Every time we change or add a database view to a large collection or
+    // add a database migration to a large collection, this can delay launch
+    // so we need to bump this constant.
     //
-    // We added a database view in v2.23.0.
-    NSString *kLastVersionWithDatabaseViewChange = @"2.23.0";
+    // We added a database migration around all outgoing messages in v2.25.0.
+    NSString *kLastVersionWithDatabaseViewChange = @"2.25.0";
     BOOL mayNeedUpgrade = ([TSAccountManager isRegistered] && lastLaunchedAppVersion
         && (!lastCompletedLaunchAppVersion ||
                [VersionMigrations isVersion:lastCompletedLaunchAppVersion
