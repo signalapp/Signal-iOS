@@ -356,8 +356,6 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     if (!self.isExpiringMessage) {
         return NO;
-    } else if (self.recipientStateMap.count < 1) {
-        return YES;
     } else {
         return self.hasSentToAnyRecipient;
     }

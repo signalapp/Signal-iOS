@@ -4,6 +4,7 @@
 
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "TSAccountManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
 
@@ -49,19 +50,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
-    [sentBuilder setDestination:self.recipientIdentifierForMessage];
-    [sentBuilder setMessage:[self.message buildDataMessage:self.recipientIdentifierForMessage]];
+
+    NSString *_Nullable localNumber = [TSAccountManager localNumber];
+    OWSAssert(localNumber.length > 0);
+    OWSAssert([localNumber isEqualToString:self.message.thread.contactIdentifier]);
+    [sentBuilder setDestination:localNumber];
+    [sentBuilder setMessage:[self.message buildDataMessage:localNumber]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];
 
     return syncMessageBuilder;
-}
-
-// Note that this will return nil for group messages.
-- (nullable NSString *)recipientIdentifierForMessage
-{
-    return self.message.thread.contactIdentifier;
 }
 
 @end
