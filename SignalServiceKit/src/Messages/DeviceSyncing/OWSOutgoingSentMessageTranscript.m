@@ -4,7 +4,6 @@
 
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "OWSSignalServiceProtos.pb.h"
-#import "TSAccountManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
 
@@ -51,11 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
 
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
-    OWSAssert(localNumber.length > 0);
-    OWSAssert([localNumber isEqualToString:self.message.thread.contactIdentifier]);
-    [sentBuilder setDestination:localNumber];
-    [sentBuilder setMessage:[self.message buildDataMessage:localNumber]];
+    // Sync messages have no thread or destination.
+    OWSAssert(!self.message.thread.contactIdentifier);
+    [sentBuilder setDestination:nil];
+    [sentBuilder setMessage:[self.message buildDataMessage:nil]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];
