@@ -84,8 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    //
+    // NOTE: It's critical that we pin to the superview top and bottom _edge_ and not _margin_.
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
     // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];

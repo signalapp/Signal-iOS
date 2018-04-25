@@ -169,6 +169,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interaction);
     OWSAssert(label);
 
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = [self titleFont];
+
     // TODO: Should we move the copy generation into this view?
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {

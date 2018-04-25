@@ -94,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.titleLabel.text = [self titleForInteraction:interaction];
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];
 
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = [self titleFont];
+    self.subtitleLabel.font = [self subtitleFont];
+
     self.backgroundColor = [UIColor whiteColor];
 
     [self setNeedsLayout];
@@ -208,6 +212,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
 
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
+
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = [self titleFont];
+    self.subtitleLabel.font = [self subtitleFont];
 
     // TODO: Should we use viewWidth?
     CGSize result = CGSizeMake(viewWidth, 0);
