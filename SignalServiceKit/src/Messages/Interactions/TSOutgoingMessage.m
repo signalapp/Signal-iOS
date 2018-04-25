@@ -431,7 +431,7 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 
     TSOutgoingMessageRecipientState *_Nullable result = self.recipientStateMap[recipientId];
     OWSAssert(result);
-    return result;
+    return [result copy];
 }
 
 #pragma mark - Update With... Methods
