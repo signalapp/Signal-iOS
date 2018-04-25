@@ -3,11 +3,17 @@
 //
 
 #import "TSDatabaseSecondaryIndexes.h"
+#import "OWSStorage.h"
 #import "TSInteraction.h"
 
 #define TSTimeStampSQLiteIndex @"messagesTimeStamp"
 
 @implementation TSDatabaseSecondaryIndexes
+
++ (NSString *)registerTimeStampIndexExtensionName
+{
+    return @"idx";
+}
 
 + (YapDatabaseSecondaryIndex *)registerTimeStampIndex {
     YapDatabaseSecondaryIndexSetup *setup = [[YapDatabaseSecondaryIndexSetup alloc] init];
@@ -25,7 +31,8 @@
 
     YapDatabaseSecondaryIndexHandler *handler = [YapDatabaseSecondaryIndexHandler withObjectBlock:block];
 
-    YapDatabaseSecondaryIndex *secondaryIndex = [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
+    YapDatabaseSecondaryIndex *secondaryIndex =
+        [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 
     return secondaryIndex;
 }
@@ -37,7 +44,7 @@
 {
     NSString *formattedString = [NSString stringWithFormat:@"WHERE %@ = %lld", TSTimeStampSQLiteIndex, timestamp];
     YapDatabaseQuery *query   = [YapDatabaseQuery queryWithFormat:formattedString];
-    [[transaction ext:@"idx"] enumerateKeysMatchingQuery:query usingBlock:block];
+    [[transaction ext:[self registerTimeStampIndexExtensionName]] enumerateKeysMatchingQuery:query usingBlock:block];
 }
 
 @end

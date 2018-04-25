@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
-void runSyncRegistrationsForStorage(OWSStorage *storage)
+void RunSyncRegistrationsForStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
 
@@ -30,7 +30,7 @@ void runSyncRegistrationsForStorage(OWSStorage *storage)
     [TSDatabaseView registerCrossProcessNotifier:storage];
 }
 
-void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
+void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssert(storage);
     OWSCAssert(completion);
@@ -43,7 +43,8 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:storage];
     [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
     [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
-    [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:@"idx"];
+    [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
+                           withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
     [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
     [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
 
@@ -61,6 +62,24 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     // NOTE: Always pass the completion to the _LAST_ of the async database
     // view registrations.
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
+}
+
+void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
+{
+    OWSCAssert(storage);
+
+    [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        for (NSString *extensionName in storage.registeredExtensionNames) {
+            DDLogVerbose(@"Verifying database extension: %@", extensionName);
+            YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
+            if (!viewTransaction) {
+                OWSProdLogAndCFail(
+                    @"VerifyRegistrationsForPrimaryStorage missing database extension: %@", extensionName);
+
+                [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
+            }
+        }
+    }];
 }
 
 #pragma mark -
@@ -119,7 +138,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
 
 - (void)runSyncRegistrations
 {
-    runSyncRegistrationsForStorage(self);
+    RunSyncRegistrationsForStorage(self);
 
     // See comments on OWSDatabaseConnection.
     //
@@ -137,7 +156,7 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
 
     DDLogVerbose(@"%@ async registrations enqueuing.", self.logTag);
 
-    runAsyncRegistrationsForStorage(self, ^{
+    RunAsyncRegistrationsForStorage(self, ^{
         OWSAssertIsOnMainThread();
 
         OWSAssert(!self.areAsyncRegistrationsComplete);
@@ -147,7 +166,14 @@ void runAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
         self.areAsyncRegistrationsComplete = YES;
 
         completion();
+
+        [self verifyDatabaseViews];
     });
+}
+
+- (void)verifyDatabaseViews
+{
+    VerifyRegistrationsForPrimaryStorage(self);
 }
 
 + (void)protectFiles

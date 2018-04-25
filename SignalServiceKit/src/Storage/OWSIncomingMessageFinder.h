@@ -12,9 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
-/**
- * Must be called before using this finder.
- */
++ (NSString *)databaseExtensionName;
 + (void)asyncRegisterExtensionWithPrimaryStorage:(OWSStorage *)storage;
 
 /**

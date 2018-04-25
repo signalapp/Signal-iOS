@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Extension registration
 
++ (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
 @end

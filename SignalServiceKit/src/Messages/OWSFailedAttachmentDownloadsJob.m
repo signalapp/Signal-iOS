@@ -114,7 +114,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             dict[OWSFailedAttachmentDownloadsJobAttachmentStateColumn] = @(attachment.state);
         }];
 
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
 
 #ifdef DEBUG
@@ -125,6 +125,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
                                   withName:OWSFailedAttachmentDownloadsJobAttachmentStateIndex];
 }
 #endif
+
++ (NSString *)databaseExtensionName
+{
+    return OWSFailedAttachmentDownloadsJobAttachmentStateIndex;
+}
 
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage
 {
