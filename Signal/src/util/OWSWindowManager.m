@@ -33,10 +33,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     return UIWindowLevelStatusBar + 2.f;
 }
 
-// TODO: Verify that this is the correct height for:
-// CallKit, non-CallKit, incoming and outgoing calls.
-const int kReturnToCallWindowHeight = 20.f;
-
 @implementation OWSWindowRootViewController
 
 - (BOOL)canBecomeFirstResponder
@@ -118,6 +114,8 @@ const int kReturnToCallWindowHeight = 20.f;
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
 
+    [self updateReturnToCallWindowLayout];
+
     [self ensureWindowState];
 }
 
@@ -126,11 +124,15 @@ const int kReturnToCallWindowHeight = 20.f;
     OWSAssertIsOnMainThread();
     OWSAssert(rootWindow);
 
+    DDLogVerbose(@"%@ updateReturnToCallWindowLayout", self.logTag);
+
+    CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
+    DDLogVerbose(@"%@ statusBarFrame: %@", self.logTag, NSStringFromCGRect(statusBarFrame));
+
     // "Return to call" should remain at the top of the screen.
-    //
-    // TODO: Extend below the status bar.
     CGRect windowFrame = rootWindow.bounds;
-    windowFrame.size.height = kReturnToCallWindowHeight;
+    // Use zero height until updateReturnToCallWindowLayout.
+    windowFrame.size.height = 0;
     UIWindow *window = [[UIWindow alloc] initWithFrame:windowFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
@@ -147,6 +149,7 @@ const int kReturnToCallWindowHeight = 20.f;
     rootView.userInteractionEnabled = YES;
     [rootView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                            action:@selector(returnToCallWasTapped:)]];
+    rootView.layoutMargins = UIEdgeInsetsZero;
 
     UILabel *label = [UILabel new];
     label.text = NSLocalizedString(@"CALL_WINDOW_RETURN_TO_CALL", @"Label for the 'return to call' banner.");
@@ -154,13 +157,50 @@ const int kReturnToCallWindowHeight = 20.f;
     // System UI doesn't use dynamic type; neither do we.
     label.font = [UIFont ows_regularFontWithSize:14.f];
     [rootView addSubview:label];
-    [label autoCenterInSuperview];
-    OWSAssert(!self.returnToCallLabel);
+
+    // returnToCallLabel uses manual layout.
+    //
+    // TODO: Is there a better way to do this?
+    label.translatesAutoresizingMaskIntoConstraints = NO;
     self.returnToCallLabel = label;
 
     window.rootViewController = viewController;
 
     return window;
+}
+
+- (void)updateReturnToCallWindowLayout
+{
+    OWSAssertIsOnMainThread();
+
+    CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
+    DDLogVerbose(@"%@ statusBarFrame: %@", self.logTag, NSStringFromCGRect(statusBarFrame));
+    CGFloat statusBarHeight = statusBarFrame.size.height;
+
+    CGRect windowFrame = self.rootWindow.bounds;
+    windowFrame.size.height = statusBarHeight + 20.f;
+    DDLogVerbose(@"%@ windowFrame: %@", self.logTag, NSStringFromCGRect(windowFrame));
+    self.returnToCallWindow.frame = windowFrame;
+    self.returnToCallWindow.rootViewController.view.frame = windowFrame;
+
+    [self.returnToCallLabel sizeToFit];
+    CGRect labelFrame = self.returnToCallLabel.frame;
+    labelFrame.origin.x = floor(windowFrame.size.width - labelFrame.size.width);
+    self.returnToCallLabel.frame = labelFrame;
+
+    UIView *rootView = self.returnToCallWindow.rootViewController.view;
+
+    [rootView setNeedsLayout];
+    [rootView layoutIfNeeded];
+
+    [self.returnToCallWindow logFrameWithLabel:@"returnToCallWindow"];
+    [rootView logFrameWithLabel:@"returnToCallWindow view"];
+    for (UIView *subview in rootView.subviews) {
+        [subview logFrameWithLabel:@"returnToCallWindow subview"];
+
+        [subview setNeedsLayout];
+        [subview layoutIfNeeded];
+    }
 }
 
 - (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
@@ -211,6 +251,8 @@ const int kReturnToCallWindowHeight = 20.f;
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.isCallViewActive = YES;
+
+    [self updateReturnToCallWindowLayout];
 
     [self ensureWindowState];
 }
@@ -394,6 +436,8 @@ const int kReturnToCallWindowHeight = 20.f;
     }
 
     self.returnToCallWindow.hidden = NO;
+
+    [self updateReturnToCallWindowLayout];
 }
 
 - (void)ensureReturnToCallWindowHidden
