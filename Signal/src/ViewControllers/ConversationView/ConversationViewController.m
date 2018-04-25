@@ -489,6 +489,7 @@ typedef enum : NSUInteger {
 
     [self createConversationScrollButtons];
     [self createHeaderViews];
+
     //    [self createBackButton];
     [self addNotificationListeners];
     [self loadDraftInCompose];
@@ -1114,21 +1115,25 @@ typedef enum : NSUInteger {
 
 - (void)createHeaderViews
 {
-    _backButtonUnreadCountView = [UIView new];
-    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
-    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-    _backButtonUnreadCountView.hidden = YES;
-    _backButtonUnreadCountView.userInteractionEnabled = NO;
+    //    _backButtonUnreadCountView = [UIView new];
+    //    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
+    //    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
+    //    _backButtonUnreadCountView.hidden = YES;
+    //    _backButtonUnreadCountView.userInteractionEnabled = NO;
+    //
+    //    _backButtonUnreadCountLabel = [UILabel new];
+    //    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
+    //    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
+    //    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+    //    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
+    //
 
-    _backButtonUnreadCountLabel = [UILabel new];
-    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-
-
-    ConversationHeaderView *headerView = [ConversationHeaderView new];
+    ConversationHeaderView *headerView =
+        [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
     headerView.delegate = self;
+
+    //    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:36
+    //    contactsManager:self.contactsManager]; headerView.avatarImage = avatarImage;
 
     self.headerView = headerView;
 
@@ -3814,21 +3819,21 @@ typedef enum : NSUInteger {
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
 {
-    OWSAssertIsOnMainThread();
-    if (_backButtonUnreadCount == unreadCount) {
-        // No need to re-render same count.
-        return;
-    }
-    _backButtonUnreadCount = unreadCount;
-
-    OWSAssert(_backButtonUnreadCountView != nil);
-    _backButtonUnreadCountView.hidden = unreadCount <= 0;
-
-    OWSAssert(_backButtonUnreadCountLabel != nil);
-
-    // Max out the unread count at 99+.
-    const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
+    //    OWSAssertIsOnMainThread();
+    //    if (_backButtonUnreadCount == unreadCount) {
+    //        // No need to re-render same count.
+    //        return;
+    //    }
+    //    _backButtonUnreadCount = unreadCount;
+    //
+    //    OWSAssert(_backButtonUnreadCountView != nil);
+    //    _backButtonUnreadCountView.hidden = unreadCount <= 0;
+    //
+    //    OWSAssert(_backButtonUnreadCountLabel != nil);
+    //
+    //    // Max out the unread count at 99+.
+    //    const NSUInteger kMaxUnreadCount = 99;
+    //    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions

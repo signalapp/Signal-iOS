@@ -38,70 +38,77 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
-    public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 20)
-    public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 11)
+    public var avatarImage: UIImage? {
+        get {
+            return self.avatarView.image
+        }
+        set {
+            self.avatarView.image = newValue
+        }
+    }
+
+    public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 17)
+    public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
 
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
 //    public let columns: UIStackView
 //    public let textRows: UIStackView
     private let titleLabel: UILabel
     private let subtitleLabel: UILabel
+    private let avatarView: AvatarImageView
 
-    override init(frame: CGRect) {
+    public required init(thread: TSThread, contactsManager: OWSContactsManager) {
 
-        // TODO
-//        let avatarView: UIImageView = UIImageView()
+        let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)
+        self.avatarView = avatarView
+        // remove default border on avatarView
+        avatarView.layer.borderWidth = 0
 
         titleLabel = UILabel()
         titleLabel.textColor = .white
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.font = titlePrimaryFont
-        titleLabel.setContentHuggingHigh()
 
         subtitleLabel = UILabel()
         subtitleLabel.textColor = .white
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.font = subtitleFont
-        subtitleLabel.setContentHuggingHigh()
 
-//        textRows = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-//        textRows.axis = .vertical
-//        textRows.alignment = .leading
+        let textRows = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        textRows.axis = .vertical
+        textRows.alignment = .leading
+        textRows.distribution = .fillProportionally
 
-//        columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        textRows.layoutMargins = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        textRows.isLayoutMarginsRelativeArrangement = true
 
-        super.init(frame: frame)
+        // low content hugging so that the text rows push container to the right bar button item(s)
+        textRows.setContentHuggingLow()
+
+        super.init(frame: .zero)
+
+        self.layoutMargins = UIEdgeInsets(top: 4, left: 2, bottom: 4, right: 2)
+        self.isLayoutMarginsRelativeArrangement = true
 
         // needed for proper layout on iOS10
         self.translatesAutoresizingMaskIntoConstraints = false
 
-        self.axis = .vertical
-        self.distribution = .fillProportionally
-        self.alignment = .leading
+        self.axis = .horizontal
+        self.alignment = .center
         self.spacing = 0
-        self.addArrangedSubview(titleLabel)
-        self.addArrangedSubview(subtitleLabel)
+        self.addArrangedSubview(avatarView)
+        self.addArrangedSubview(textRows)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
         self.addGestureRecognizer(tapGesture)
-
-//        titleLabel.setCompressionResistanceHigh()
-//        subtitleLabel.setCompressionResistanceHigh()
-//        self.setCompressionResistanceHigh()
-//        self.setContentHuggingLow()
-
-//        self.layoutIfNeeded()
-//        sizeToFit()
-//
-//        self.translatesAutoresizingMaskIntoConstraints = true
-
-//        self.addSubview(columns)
-//        columns.autoPinEdgesToSuperviewEdges()
-//        self.addRedBorderRecursively()
     }
 
     required public init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    required public override init(frame: CGRect) {
+        fatalError("init(frame:) has not been implemented")
     }
 
     public override var intrinsicContentSize: CGSize {

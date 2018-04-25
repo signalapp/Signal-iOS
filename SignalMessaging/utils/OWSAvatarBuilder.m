@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager
 {
+    OWSAssert(thread);
+    OWSAssert(contactsManager);
+
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
