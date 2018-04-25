@@ -695,15 +695,19 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;
     stackView.spacing = 5;
+    // If alignment isn't set, UIStackView uses the height of
+    // disclosureImageView, even if label has a higher desired height.
+    stackView.alignment = UIStackViewAlignmentCenter;
     [stackView addArrangedSubview:label];
     [stackView addArrangedSubview:disclosureImageView];
     [cell.contentView addSubview:stackView];
     [stackView autoCenterInSuperview];
     // Constrain to cell margins.
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
+    // NOTE: It's critical that we pin to the superview top and bottom _edge_ and not _margin_.
+    [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
 
     return cell;
 }

@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.contentView.preservesSuperviewLayoutMargins = NO;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
 
@@ -84,8 +84,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    //
+    // NOTE: It's critical that we pin to the superview top and bottom _edge_ and not _margin_.
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
     // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
@@ -93,10 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.nameLabel.font = self.nameFont;
     [self.nameLabel setContentHuggingHorizontalLow];
     [self.nameLabel setCompressionResistanceHorizontalLow];
-
-    [self.contentView addBorderWithColor:[UIColor blueColor]];
-    [self.nameLabel addRedBorder];
-    [self.snippetLabel addRedBorder];
 
     self.dateTimeLabel = [UILabel new];
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
@@ -129,14 +127,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
-
-    UIView *payloadBorderView = [UIView new];
-    [payloadBorderView addBorderWithColor:[UIColor greenColor]];
-    [self.contentView addSubview:payloadBorderView];
-    [payloadBorderView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.payloadView];
-    [payloadBorderView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.payloadView];
-    [payloadBorderView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:self.payloadView];
-    [payloadBorderView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:self.payloadView];
 }
 
 + (NSString *)cellReuseIdentifier
