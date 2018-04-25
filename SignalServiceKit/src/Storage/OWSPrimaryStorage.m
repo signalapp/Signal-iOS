@@ -44,7 +44,7 @@ void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
     [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
     [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
-                           withName:[self registerTimeStampIndexExtensionName]];
+                           withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
     [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
     [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
 
@@ -64,78 +64,13 @@ void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
 }
 
-extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
-extern NSString *const TSUnseenDatabaseViewExtensionName;
-extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
-
-NSArray<NSString *> *ExtensionNamesForPrimaryStorage()
-{
-    // This should 1:1 correspond to the database view registrations
-    // done in RunSyncRegistrationsForStorage() and
-    // RunAsyncRegistrationsForStorage().
-    return @[
-        // We don't need to verify the cross process notifier.
-        // [TSDatabaseView registerCrossProcessNotifier:storage];
-
-        // [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:storage];
-        TSMessageDatabaseViewExtensionName,
-
-        // [TSDatabaseView asyncRegisterThreadDatabaseView:storage];
-        TSThreadDatabaseViewExtensionName,
-
-        // [TSDatabaseView asyncRegisterUnreadDatabaseView:storage];
-        TSUnreadDatabaseViewExtensionName,
-
-        // [storage asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex] withName:[self
-        // registerTimeStampIndexExtensionName]];
-        [self registerTimeStampIndexExtensionName],
-
-        // [OWSMessageReceiver asyncRegisterDatabaseExtension:storage];
-        [OWSMessageReceiver databaseExtensionName],
-
-        // [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:storage];
-        [OWSBatchMessageProcessor databaseExtensionName],
-
-        // [TSDatabaseView asyncRegisterUnseenDatabaseView:storage];
-        TSUnseenDatabaseViewExtensionName,
-
-        // [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
-        TSThreadOutgoingMessageDatabaseViewExtensionName,
-
-        // [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
-        TSThreadSpecialMessagesDatabaseViewExtensionName,
-
-        // [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
-        [OWSIncomingMessageFinder databaseExtensionName],
-
-        // [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
-        TSSecondaryDevicesDatabaseViewExtensionName,
-
-        // [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
-        [OWSDisappearingMessagesFinder databaseExtensionName],
-
-        // [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-        [OWSFailedMessagesJob databaseExtensionName],
-
-        // [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-        [OWSFailedAttachmentDownloadsJob databaseExtensionName],
-
-        // [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-        [OWSMediaGalleryFinder databaseExtensionName],
-
-        // NOTE: Always pass the completion to the _LAST_ of the async database
-        // view registrations.
-        // [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];
-        TSLazyRestoreAttachmentsDatabaseViewExtensionName,
-    ];
-}
-
 void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 {
     OWSCAssert(storage);
 
     [[storage newDatabaseConnection] asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        for (NSString *extensionName in ExtensionNamesForPrimaryStorage()) {
+        for (NSString *extensionName in storage.registeredExtensionNames) {
+            DDLogVerbose(@"Verifying database extension: %@", extensionName);
             YapDatabaseViewTransaction *_Nullable viewTransaction = [transaction ext:extensionName];
             if (!viewTransaction) {
                 OWSProdLogAndCFail(

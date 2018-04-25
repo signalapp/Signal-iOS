@@ -77,6 +77,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 - (nullable id)registeredExtension:(NSString *)extensionName;
 
+- (NSArray<NSString *> *)registeredExtensionNames;
+
 #pragma mark -
 
 - (unsigned long long)databaseFileSize;

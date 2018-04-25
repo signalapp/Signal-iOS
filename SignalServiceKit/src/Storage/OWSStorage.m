@@ -241,6 +241,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 @property (atomic, nullable) YapDatabase *database;
 
+@property (nonatomic) NSMutableArray<NSString *> *extensionNames;
+
 @end
 
 #pragma mark -
@@ -256,6 +258,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                                                  selector:@selector(resetStorage)
                                                      name:OWSResetStorageNotification
                                                    object:nil];
+
+        self.extensionNames = [NSMutableArray new];
     }
 
     return self;
@@ -549,6 +553,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 {
     extension = [self updateExtensionVersion:extension withName:extensionName];
 
+    OWSAssert(![self.extensionNames containsObject:extensionName]);
+    [self.extensionNames addObject:extensionName];
+
     return [self.database registerExtension:extension withName:extensionName];
 }
 
@@ -563,6 +570,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                     completion:(nullable dispatch_block_t)completion
 {
     extension = [self updateExtensionVersion:extension withName:extensionName];
+
+    OWSAssert(![self.extensionNames containsObject:extensionName]);
+    [self.extensionNames addObject:extensionName];
 
     [self.database asyncRegisterExtension:extension
                                  withName:extensionName
@@ -584,6 +594,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 - (nullable id)registeredExtension:(NSString *)extensionName
 {
     return [self.database registeredExtension:extensionName];
+}
+
+- (NSArray<NSString *> *)registeredExtensionNames
+{
+    return [self.extensionNames copy];
 }
 
 #pragma mark - Password
