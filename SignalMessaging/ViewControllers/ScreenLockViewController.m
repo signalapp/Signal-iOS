@@ -136,4 +136,9 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [self.delegate unlockButtonWasTapped];
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
 @end

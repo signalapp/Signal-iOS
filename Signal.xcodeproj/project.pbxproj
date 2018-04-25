@@ -142,6 +142,7 @@
 		34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */; };
 		34612A061FD7238600532771 /* OWSContactsSyncing.h in Headers */ = {isa = PBXBuildFile; fileRef = 34612A041FD7238500532771 /* OWSContactsSyncing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34612A071FD7238600532771 /* OWSContactsSyncing.m in Sources */ = {isa = PBXBuildFile; fileRef = 34612A051FD7238500532771 /* OWSContactsSyncing.m */; };
+		34641E1220878FB000E2EDE5 /* OWSWindowManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */; };
 		34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */; };
 		34641E1B2088DA4100E2EDE5 /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */; };
 		34641E1C2088DA4100E2EDE5 /* ScreenLockViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -730,6 +731,8 @@
 		346129F41FD5F31400532771 /* OWS104CreateRecipientIdentities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS104CreateRecipientIdentities.h; sourceTree = "<group>"; };
 		34612A041FD7238500532771 /* OWSContactsSyncing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactsSyncing.h; sourceTree = "<group>"; };
 		34612A051FD7238500532771 /* OWSContactsSyncing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactsSyncing.m; sourceTree = "<group>"; };
+		34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSWindowManager.m; sourceTree = "<group>"; };
+		34641E1120878FB000E2EDE5 /* OWSWindowManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSWindowManager.h; sourceTree = "<group>"; };
 		34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSScreenLock.swift; sourceTree = "<group>"; };
 		34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenLockViewController.m; path = SignalMessaging/ViewControllers/ScreenLockViewController.m; sourceTree = SOURCE_ROOT; };
 		34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenLockViewController.h; path = SignalMessaging/ViewControllers/ScreenLockViewController.h; sourceTree = SOURCE_ROOT; };
@@ -2045,9 +2048,11 @@
 				340FC8CE205BF2FA007AEB0F /* OWSBackupIO.m */,
 				340FC8CB20518C76007AEB0F /* OWSBackupJob.h */,
 				340FC8CC20518C76007AEB0F /* OWSBackupJob.m */,
+				34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */,
 				34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */,
 				34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */,
-				34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */,
+				34641E1120878FB000E2EDE5 /* OWSWindowManager.h */,
+				34641E1020878FAF00E2EDE5 /* OWSWindowManager.m */,
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
@@ -3201,6 +3206,7 @@
 				45D308AD2049A439000189E4 /* PinEntryView.m in Sources */,
 				340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */,
 				45B5360E206DD8BB00D61655 /* UIResponder+OWS.swift in Sources */,
+				34641E1220878FB000E2EDE5 /* OWSWindowManager.m in Sources */,
 				45F659821E1BE77000444429 /* NonCallKitCallUIAdaptee.swift in Sources */,
 				45AE48511E0732D6004D96C2 /* TurnServerInfo.swift in Sources */,
 				34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */,

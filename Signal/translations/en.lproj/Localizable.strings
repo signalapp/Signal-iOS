@@ -319,6 +319,9 @@
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
 
+/* Label for the 'return to call' indicator. */
+"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Call Back";
 

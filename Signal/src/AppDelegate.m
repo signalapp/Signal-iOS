@@ -189,6 +189,9 @@ static NSString *const kURLHostVerifyPrefix             = @"verify";
     }
 
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
+    [[OWSWindowManager sharedManager] setupWithRootWindow:self.window
+                                     screenBlockingWindow:OWSScreenLockUI.sharedManager.screenBlockingWindow];
+    [OWSScreenLockUI.sharedManager startObserving];
 
     // Ensure OWSContactsSyncing is instantiated.
     [OWSContactsSyncing sharedManager];

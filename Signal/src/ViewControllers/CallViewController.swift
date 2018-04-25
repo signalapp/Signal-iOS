@@ -19,21 +19,24 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         return SignalApp.shared().callUIAdapter
     }
 
+    // Feature Flag
+    @objc public static let kShowCallViewOnSeparateWindow = true
+
     let contactsManager: OWSContactsManager
 
-    // MARK: Properties
+    // MARK: - Properties
 
     let thread: TSContactThread
     let call: SignalCall
     var hasDismissed = false
 
-    // MARK: Views
+    // MARK: - Views
 
     var hasConstraints = false
     var blurView: UIVisualEffectView!
     var dateFormatter: DateFormatter?
 
-    // MARK: Contact Views
+    // MARK: - Contact Views
 
     var contactNameLabel: MarqueeLabel!
     var contactAvatarView: AvatarImageView!
@@ -41,7 +44,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
 
-    // MARK: Ongoing Call Controls
+    // MARK: - Ongoing Call Controls
 
     var ongoingCallView: UIView!
 
@@ -56,14 +59,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     //       call.
 //    var textMessageButton: UIButton!
 
-    // MARK: Incoming Call Controls
+    // MARK: - Incoming Call Controls
 
     var incomingCallView: UIView!
 
     var acceptIncomingButton: UIButton!
     var declineIncomingButton: UIButton!
 
-    // MARK: Video Views
+    // MARK: - Video Views
 
     var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
@@ -81,7 +84,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: Settings Nag Views
+    // MARK: - Settings Nag Views
 
     var isShowingSettingsNag = false {
         didSet {
@@ -93,7 +96,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var settingsNagView: UIView!
     var settingsNagDescriptionLabel: UILabel!
 
-    // MARK: Audio Source
+    // MARK: - Audio Source
 
     var hasAlternateAudioSources: Bool {
         Logger.info("\(TAG) available audio sources: \(allAudioSources)")
@@ -126,7 +129,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
     required init?(coder aDecoder: NSCoder) {
@@ -152,7 +155,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: View Lifecycle
+    // MARK: - View Lifecycle
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -407,6 +410,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             actionSheetController.addAction(routeAudioAction)
         }
 
+        // Note: It's critical that we present from this view and
+        // not the "frontmost view controller" since this view may
+        // reside on a separate window.
         self.present(actionSheetController, animated: true)
     }
 
@@ -928,7 +934,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
-            let fromViewController = UIApplication.shared.frontmostViewController
+            let fromViewController = UIApplication.shared.findFrontmostViewController(ignoringAlerts: true)
             assert(fromViewController != nil)
 
             // Construct the "settings" view & push the "privacy settings" view.
@@ -962,6 +968,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
+    func didTapLeaveCall(sender: UIGestureRecognizer) {
+        guard sender.state == .recognized else {
+            return
+        }
+        OWSWindowManager.shared().leaveCallView()
+    }
+
     // MARK: - CallObserver
 
     internal func stateDidChange(call: SignalCall, state: CallState) {
@@ -990,7 +1003,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.updateCallUI(callState: call.state)
     }
 
-    // MARK: CallAudioServiceDelegate
+    // MARK: - CallAudioServiceDelegate
 
     func callAudioService(_ callAudioService: CallAudioService, didUpdateIsSpeakerphoneEnabled isSpeakerphoneEnabled: Bool) {
         SwiftAssertIsOnMainThread(#function)
@@ -1103,11 +1116,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             hasDismissed = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 guard let strongSelf = self else { return }
-                strongSelf.dismiss(animated: true, completion: completion)
+                strongSelf.dismissImmediately(completion: completion)
             }
         } else {
             hasDismissed = true
-            self.dismiss(animated: false, completion: completion)
+            dismissImmediately(completion: completion)
+        }
+    }
+
+    internal func dismissImmediately(completion: (() -> Void)?) {
+        if CallViewController.kShowCallViewOnSeparateWindow {
+            OWSWindowManager.shared().endCall(self)
+            completion?()
+        } else {
+            self.dismiss(animated: true, completion: completion)
         }
     }
 

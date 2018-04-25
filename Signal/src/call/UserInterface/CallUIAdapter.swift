@@ -39,15 +39,22 @@ extension CallUIAdaptee {
         let callViewController = CallViewController(call: call)
         callViewController.modalTransitionStyle = .crossDissolve
 
-        guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
-            owsFail("in \(#function) view controller unexpectedly nil")
-            return
-        }
+        if CallViewController.kShowCallViewOnSeparateWindow {
+            OWSWindowManager.shared().startCall(callViewController)
+        } else {
+            guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
+                owsFail("in \(#function) view controller unexpectedly nil")
+                return
+            }
 
-        if let presentedViewController = presentingViewController.presentedViewController {
-            presentedViewController.dismiss(animated: false)
+            if let presentedViewController = presentingViewController.presentedViewController {
+                presentedViewController.dismiss(animated: false) {
+                    presentingViewController.present(callViewController, animated: true)
+                }
+            } else {
+                presentingViewController.present(callViewController, animated: true)
+            }
         }
-        presentingViewController.present(callViewController, animated: true)
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
