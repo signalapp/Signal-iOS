@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "プライバシー設定を表示する";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "カメラの方向を変更";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "音声通話に切り替える";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "ビデオ通話に切り替える";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "タッチして通話に戻る";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "折り返す";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "グループを離れました";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "保存済みの会話";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "拒否中";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "アーカイブ";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "接続中";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "再接続しています...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "呼び出し中";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "通話が終了";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "この会話は保存されました。新しいメッセージが届いたら受信箱に現れます。";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "連絡先の名前を見るには，連絡先へのアクセスが必要です。";
@@ -1047,7 +1047,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "送信済み";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "スキップされました";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "送信中";
@@ -1083,7 +1083,7 @@
 "MESSAGE_STATUS_READ" = "既読";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "スキップされました";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "送信中";
@@ -1430,7 +1430,7 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@へ返信しています";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "あなたへの返信です";
 
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "あなた自身に返信しています";
@@ -1826,7 +1826,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "画面ロックまでの時間";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID、 Face IDやパスワードで画面ロックを解除してください。画面ロックがオンの場合でも通話は可能です。設定画面で、どんな情報が表示させるかを変更可能です。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "画面ロック";

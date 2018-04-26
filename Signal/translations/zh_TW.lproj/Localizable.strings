@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "顯示隱私權設定";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "變換相機方向";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "切換至語音通話";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "切換至影像通話";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "點取以回到撥號";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "電話回撥";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "你已退出了群組。";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "封存對話";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "已封鎖";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "封存";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "連接中...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "重新連接中...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "響鈴中...";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "結束通話。";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "這些對話已經封存了。如果收到新的訊息，它們會出現在收件夾中。";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "要查看你聯絡人的名稱，請在系統設定中允許存取聯絡資訊。";
@@ -1047,7 +1047,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "已傳送";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "略過";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "上傳中";
@@ -1083,7 +1083,7 @@
 "MESSAGE_STATUS_READ" = "已讀";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "略過";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "傳送中...";
@@ -1826,7 +1826,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定逾時";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "透過 Touch ID、Face ID，或你的 iOS 裝置的密碼來解鎖 Signal。在螢幕鎖啟動的情況下，你仍然可以接聽來電及接收訊息通知。Signal 的通知設定允許你客製化要顯示的資訊。";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "螢幕鎖定";

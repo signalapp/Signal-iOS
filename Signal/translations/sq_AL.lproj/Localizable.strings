@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Shfaq Rregullime Privatësie";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Ndërroni Drejtimin e Kameras";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Kalo në thirrje audio";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Kalo në thirrje video";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Prekeni, që të riktheheni te thirrja";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ktheji Thirrjen";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "E braktisët grupin.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Biseda të Arkivuara";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "I bllokuar";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "Po lidhet…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "Po rilidhet…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Po i bihet ziles…";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "Thirrja Përfundoi.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Këto biseda janë arkivuar. Ato do të shfaqen te mesazhet e marrë nëse merren mesazhe të rinj.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Që të shihni emrat e kontakteve tuaj, përditësoni rregullimet tuaja për sistemim që të lejohet hyrje te kontaktet.";
@@ -1047,7 +1047,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "I dërguar";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Anashkaluar";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Po ngarkohet";
@@ -1083,7 +1083,7 @@
 "MESSAGE_STATUS_READ" = "I lexuar";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Anashkaluar";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Po dërgohet…";

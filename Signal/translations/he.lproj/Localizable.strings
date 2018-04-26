@@ -74,7 +74,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "העבר לארכיון";
+"ARCHIVE_ACTION" = "ארכב";
 
 /* No comment provided by engineer. */
 "ATTACHMENT" = "צרופה";
@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "הראה הגדרות פרטיות";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "החלף כיוון מצלמה";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "החלף אל שיחת שמע";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "החלף אל שיחת וידיאו";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "גע כדי לחזור לשיחה";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "חייג חזרה";
@@ -633,13 +633,13 @@
 "EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_FIRST_TEXT" = "הקשר על הכפתור חַבֵּר";
+"EMPTY_ARCHIVE_FIRST_TEXT" = "הקש על הכפתור חַבֵּר";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "התחל את שיחת Signal הראשונה שלך!";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_TEXT" = "אתה יכול לשים בארכיון שיחות בלתי־פעילות לאחר־כך בתיבת הדואר הנכנס שלך.";
+"EMPTY_ARCHIVE_TEXT" = "אתה יכול לארכב שיחות בלתי־פעילות למועד מאוחר יותר מתיבת הדואר הנכנס שלך.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "נקה את השיחות שלך.";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "יצאת מהקבוצה.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "שיחות מאורכבות";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "חסום";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "ארכיון";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "מתחבר...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "מתחבר מחדש...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "מצלצל...";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "השיחה הסתיימה.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "שיחות אלו מאורכבות. הן יופיעו בתיבת דואר נכנס אם מתקבלות הודעות חדשות.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "כדי לראות את שמות אנשי הקשר שלך, עדכן את הגדרות המערכת שלך כדי לאפשר גישה אל אנשי קשר.";
@@ -942,7 +942,7 @@
 "KEEP_MESSAGES_DURATION" = "הודעות יעלמו לאחר %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "הודעות לא נעלמות";
+"KEEP_MESSAGES_FOREVER" = "הודעות אינן נעלמות";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "עזוב";
@@ -1047,7 +1047,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "נשלח";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "מדולג";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "מעלה";
@@ -1083,7 +1083,7 @@
 "MESSAGE_STATUS_READ" = "נקרא";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "מדולג";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "שולח...";
@@ -1739,7 +1739,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "הוסף...";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "אין לך אנשי קשר ב-Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "אין לך אנשי קשר ב־Signal.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "אין תוצאות חיפוש";
@@ -1754,10 +1754,10 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "שדר מחדש שיחות תמיד";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "שדר מחדש את כל השיחות דרך שרת Signal כדי למנוע את חשיפת כתובת ה-IP שלך אל איש הקשר שלך. אפשור יפחית איכות שיחות.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "שדר מחדש את כל השיחות דרך שרת Signal כדי למנוע את חשיפת כתובת ה־IP שלך אל איש הקשר שלך. אפשור יפחית איכות שיחות.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "נקה היסטורית שיחה";
+"SETTINGS_CLEAR_HISTORY" = "נקה היסטורית שיחות";
 
 /* No comment provided by engineer. */
 "SETTINGS_COPYRIGHT" = "זכויות יוצרים Open Whisper Systems\nתחת רשיון GPLv3";
@@ -1766,7 +1766,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "מחק חשבון";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "האם אתה בטוח שאתה רוצה למחוק את ההיסטוריה שלך (הודעות, צרופות, היסטורית שיחות ...)? פעולה זו אינה יכולה להתבטל.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "האם אתה בטוח שאתה רוצה למחוק את ההיסטוריה שלך (הודעות, צרופות, היסטורית שיחות ...)? פעולה זו אינה ניתנת לביטול.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "מחק הכל";
@@ -1775,7 +1775,7 @@
 "SETTINGS_HELP_HEADER" = "עזרה";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "נקה היסטורית שיחה";
+"SETTINGS_HISTORYLOG_TITLE" = "נקה היסטורית שיחות";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "מידע";
@@ -1979,7 +1979,7 @@
 "TXT_DELETE_TITLE" = "מחק";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "להוציא מהארכיון";
+"UNARCHIVE_ACTION" = "הוצא מארכיון";
 
 /* In Inbox view, last message label for thread with corrupted attachment. */
 "UNKNOWN_ATTACHMENT_LABEL" = "צרופה בלתי ידועה";
@@ -2009,7 +2009,7 @@
 "UNNAMED_DEVICE" = "מכשיר ללא שם";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "נכשל בביטול הרישום מ-Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "נכשל בביטול הרישום מ־Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "התקבל סוג בלתי נתמך של צרופה.";
@@ -2126,7 +2126,7 @@
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "הודעה קולית";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "השלם התקנה על Signal שולחן עבודה.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "השלם התקנה ב־Signal שולחן עבודה.";
 
 /* Info Message when you disable disappearing messages */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הִשְׁבַּת הודעות נעלמות.";

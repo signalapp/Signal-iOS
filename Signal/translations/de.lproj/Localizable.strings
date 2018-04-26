@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Datenschutzeinstellungen anzeigen";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamerarichtung wechseln";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Zu Audioanruf wechseln";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Zu Videoanruf wechseln";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Antippen, um zum Anruf zurückzukehren";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Rückruf";
@@ -639,7 +639,7 @@
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Starte deine erste Signal-Unterhaltung!";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_TEXT" = "Du kannst inaktive Unterhaltungen für später archivieren.";
+"EMPTY_ARCHIVE_TEXT" = "Du kannst inaktive Unterhaltungen aus dem Eingang für später archivieren.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Unterhaltungen aufräumen.";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "Du hast die Gruppe verlassen.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archivierte Unterhaltungen";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blockiert";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "Archiv";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "Verbinden …";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "Verbindung wird wiederhergestellt …";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Klingeln …";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "Anruf beendet.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Diese Unterhaltungen sind archiviert. Sie erscheinen im Eingang, sobald neue Nachrichten empfangen werden.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Um die Namen deiner Kontakte sehen zu können, musst du in der App »Einstellungen« Signal Zugriff auf deine Kontakte erlauben.";
@@ -1047,7 +1047,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Gesendet";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Übersprungen";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Wird hochgeladen";
@@ -1083,7 +1083,7 @@
 "MESSAGE_STATUS_READ" = "Gelesen";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Übersprungen";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Wird gesendet …";

@@ -167,10 +167,10 @@
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Impossible de télécharger votre sauvegarde de données.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Nettoyage du sauvegarde des données";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Nettoyage de la sauvegarde";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialization du sauvegarde de données";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialisation de la sauvegarde";
 
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Données en cours d'exportation";
@@ -296,7 +296,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Refuser l'appel entrant";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "Fin d'appel";
+"CALL_VIEW_HANGUP_LABEL" = "Raccrocher";
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Muet";
@@ -314,7 +314,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Afficher les paramètres de confidentialité";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Changer de caméra";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Passer à l'appel audio";
@@ -323,7 +323,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Passer à l'appel vidéo";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Appuyez pour revenir à l’appel";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Rappeler";
@@ -530,7 +530,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copier le lien";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Contacter l’assistance";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Envoyer au dernier sujet";
@@ -570,7 +570,7 @@
 "DISAPPEARING_MESSAGES_HINT" = "Actuellement, les messages disparaissent après %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Paramètres des messages disparus";
+"DISAPPEARING_MESSAGES_LABEL" = "Paramètres des messages éphémères";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Annuler";
@@ -849,7 +849,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Membres";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Plus longtemps marqué comme vérifié";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "N’est plus marqué comme vérifié";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Envoyer le message";
@@ -873,13 +873,13 @@
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversations archivées";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqués";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "Archives";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -888,7 +888,7 @@
 "IN_CALL_CONNECTING" = "Connexion en cours...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "Reconnexion…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Sonnerie…";
@@ -900,7 +900,7 @@
 "IN_CALL_TERMINATED" = "Appel terminé.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Ces conversations sont archivées. Elles apparaitront dans la boîte de réception si de nouveaux messages sont reçus.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Pour voir les noms de vos contacts, mettez à jour les paramètres de votre système pour permettre l'accès aux contacts.";
@@ -978,7 +978,7 @@
 "LINKED_DEVICES_TITLE" = "Appareils liés";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "La connection a echouée";
+"LINKING_DEVICE_FAILED_TITLE" = "Impossible de lier l’appareil";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membres du groupe";
@@ -1035,7 +1035,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Distribué";
 
 /* Status label for messages which are failed. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Echoué";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Échec";
 
 /* Status label for messages which are read. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Lu";
@@ -1104,7 +1104,7 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
 
 /* Action sheet title after tapping on failed download. */
-"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Téléchargement Echoué.";
+"MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Échec du téléchargement.";
 
 /* Action sheet button text */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION" = "Télécharger de nouveau";
@@ -1113,10 +1113,10 @@
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Vous avez bloqué 1 membre de ce groupe";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Vous avez bloqué %@ Membres de ce groupe";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Vous avez bloqué %@ membres de ce groupe";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Partager votre profil avec ce groupe?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Partager votre profil avec ce groupe ?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Plus d'un membre de ce groupe n'est plus marqué comme vérifié. Appuyez dessus pour les options.";
@@ -1137,7 +1137,7 @@
 "MISSED_CALL" = "Appel manqué";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Appel manqué de %@ parce que leur numéro de sécurité a changé.";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Appel manqué de %@ parce que son numéro de sécurité a changé.";
 
 /* notification title */
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Appel manqué parce que le numéro de sécurité de l'appelant a changé.";
@@ -1154,7 +1154,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l'application Paramètres.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Le signal nécessite l'accès à votre médiathèque pour cela.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal doit accéder à votre médiathèque pour cela.";
 
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Appel manqué de %@.";
@@ -1211,7 +1211,7 @@
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nommer ce dialogue de groupe";
 
 /* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autre Utilisateurs";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Autres utilisateurs";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Souhaitez-vous supprimer ces modifications ?";
@@ -1286,7 +1286,7 @@
 "PHONE_NUMBER_TYPE_HOME" = "Maison";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax Maison";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax maison";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
@@ -1301,7 +1301,7 @@
 "PHONE_NUMBER_TYPE_OTHER" = "Autre";
 
 /* Label for 'Other FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER_FAX" = "Autre Fax";
+"PHONE_NUMBER_TYPE_OTHER_FAX" = "Autre fax";
 
 /* Label for 'Pager' phone numbers. */
 "PHONE_NUMBER_TYPE_PAGER" = "Pager";
@@ -1313,10 +1313,10 @@
 "PHONE_NUMBER_TYPE_WORK" = "Travail";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax Travail";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax travail";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouer Média";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Jouer média";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Vous n'avez pas marqué %@ comme vérifié.";
@@ -1328,7 +1328,7 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ est vérifié.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Apprendre encore plus";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "En savoir plus";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Appuyez pour numériser";
@@ -1358,7 +1358,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Le code scanné ne semble pas être une clé de sécurité. Assurez vous d'avoir une version à jour de Signal.";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous désirez vérifier votre connexion chiffrée avec %@, compare les chiffres ci-dessus avec ceux sur l'appareil de votre contact.\n\nVous pouvez aussi scanner le code sur leur appareil, et vice-versa.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Si vous désirez vérifier votre connexion chiffrée avec %@, comparez les numéros ci-dessus avec ceux sur l'appareil de votre contact.\n\nVous pouvez aussi scanner le code sur son appareil, et vice-versa.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Vérifier le numéro de sécurité";
@@ -1367,7 +1367,7 @@
 "PRIVACY_VERIFY_BUTTON" = "Marquer comme vérifié";
 
 /* No comment provided by engineer. */
-"PROCEED_BUTTON" = "Procéder";
+"PROCEED_BUTTON" = "Continuer";
 
 /* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
 "PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
@@ -1502,7 +1502,7 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nous ne pouvons pas activer votre compte tant que vous n'avez pas vérifié le code que nous vous avons envoyé.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Ce format de numéro de téléphone n'est pas supporté. Contactez le support.";
+"REGISTRATION_NON_VALID_NUMBER" = "Ce format de numéro de téléphone n’est pas pris en charge, veuillez contacter l’assistance.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numéro de téléphone";
@@ -1604,13 +1604,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Trop de tentatives d'authentification échouées. Veuillez réessayer plus tard.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser le verrouillage d’écran.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser le verrouillage d’écran.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Vous devez activer un code d'accès dans vos paramètres iOS pour utiliser le verrouillage d’écran.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authentifier pour ouvrir Signal.";
@@ -1706,13 +1706,13 @@
 "SETTINGS_BACKUP" = "Sauvegarde";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Sauvegarder Maintenant";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Sauvegarder maintenant";
 
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Effacer Sauvegarde";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sauvegarde Activé";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Sauvegarde activée";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Phase";
@@ -1766,10 +1766,10 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Supprimer le compte";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Êtes-vous sûr de vouloir supprimer tout votre historique (messages, pièces jointes, historique des appels...) ? Cette action est irréversible.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Voulez-vous vraiment supprimer tout votre historique (messages, pièces jointes, historique des appels...) ? Cette action est irréversible.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Supprimer tout";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Tout supprimer";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Aide";
@@ -1943,7 +1943,7 @@
 "TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@minutes";
+"TIME_AMOUNT_MINUTES" = "%@ minutes";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
@@ -2015,7 +2015,7 @@
 "UNSUPPORTED_ATTACHMENT" = "Un type de pièce jointe non pris en charge a été reçu.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne supporte pas cette fonctionnalité.";
+"UNSUPPORTED_FEATURE_ERROR" = "Votre appareil ne prend pas en charge cette fonctionnalité.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Vous ne pouvez pas supprimer les membres du groupe. Ils doivent soit partir, soit créer un nouveau groupe sans ce membre.";
@@ -2054,7 +2054,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Vous avez maintenant la possibilité de voir et de partager lorsque les messages ont été lus.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Activez les accusés de lecture depuis les préférences de vie privée.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Envoyer les accusés de lecture";
@@ -2117,13 +2117,13 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisser pour effacer";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Message Vocal";
+"VOICE_MESSAGE_FILE_NAME" = "Message vocal";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Appuyez et maintenez la touche pour enregistrer un message vocal.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Message Vocal";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Message vocal";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complétez la configuration sur Signal Desktop";
@@ -2147,6 +2147,6 @@
 
 "media_message_accessibility_label" = "%@ : Message media";
 
-"accessory_button_accessibility_label" = "Partager media";
+"accessory_button_accessibility_label" = "Partager média";
 
 "new_message_received_accessibility_announcement" = "Nouveau message reçu";
