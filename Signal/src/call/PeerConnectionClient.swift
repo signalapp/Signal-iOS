@@ -225,18 +225,22 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setCameraSource(useBackCamera: Bool) {
-        guard let localVideoSource = self.localVideoSource else {
-            owsFail("\(logTag) in \(#function) localVideoSource was unexpectedly nil")
-            return
-        }
+        SwiftAssertIsOnMainThread(#function)
 
-        // certain devices, e.g. 16GB iPod touch don't have a back camera
-        guard localVideoSource.canUseBackCamera else {
-            owsFail("\(logTag) in \(#function) canUseBackCamera was unexpectedly false")
-            return
-        }
+        PeerConnectionClient.signalingQueue.async {
+            guard let localVideoSource = self.localVideoSource else {
+                owsFail("\(self.logTag) in \(#function) localVideoSource was unexpectedly nil")
+                return
+            }
 
-        localVideoSource.useBackCamera = useBackCamera
+            // certain devices, e.g. 16GB iPod touch don't have a back camera
+            guard localVideoSource.canUseBackCamera else {
+                owsFail("\(self.logTag) in \(#function) canUseBackCamera was unexpectedly false")
+                return
+            }
+
+            localVideoSource.useBackCamera = useBackCamera
+        }
     }
 
     public func setLocalVideoEnabled(enabled: Bool) {
@@ -525,6 +529,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         audioSender = nil
         audioTrack = nil
         videoSender = nil
+        localVideoSource = nil
         localVideoTrack = nil
         remoteVideoTrack = nil
 
@@ -827,12 +832,12 @@ class HardenedRTCSessionDescription {
 
         // Enforce Constant bit rate.
         let cbrRegex = try! NSRegularExpression(pattern: "(a=fmtp:111 ((?!cbr=).)*)\r?\n", options: .caseInsensitive)
-        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.count), withTemplate: "$1;cbr=1\r\n")
+        description = cbrRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.count), withTemplate: "$1;cbr=1\r\n")
 
         // Strip plaintext audio-level details
         // https://tools.ietf.org/html/rfc6464
         let audioLevelRegex = try! NSRegularExpression(pattern: ".+urn:ietf:params:rtp-hdrext:ssrc-audio-level.*\r?\n", options: .caseInsensitive)
-        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSMakeRange(0, description.count), withTemplate: "")
+        description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
     }
