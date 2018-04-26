@@ -279,8 +279,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
     // gesture animating our title view nicely vs. creating our own back button bar item with custom padding, which does
     // not properly animate with the "swipe to go back" or "swipe left for info" gestures.
+    NSUInteger paddingLength = 3;
+    NSString *paddingString = [@"" stringByPaddingToLength:paddingLength withString:@" " startingAtIndex:0];
+
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:@"  " style:UIBarButtonItemStylePlain target:nil action:nil];
+        [[UIBarButtonItem alloc] initWithTitle:paddingString style:UIBarButtonItemStylePlain target:nil action:nil];
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {

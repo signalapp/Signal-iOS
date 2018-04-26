@@ -20,9 +20,6 @@ public class ConversationHeaderView: UIStackView {
         }
         set {
             self.titleLabel.attributedText = newValue
-//            self.layoutIfNeeded()
-//            self.titleLabel.sizeToFit()
-//            self.sizeToFit()
         }
     }
 
@@ -32,9 +29,6 @@ public class ConversationHeaderView: UIStackView {
         }
         set {
             self.subtitleLabel.attributedText = newValue
-//            self.layoutIfNeeded()
-//            self.subtitleLabel.sizeToFit()
-//            self.sizeToFit()
         }
     }
 
@@ -51,8 +45,6 @@ public class ConversationHeaderView: UIStackView {
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
 
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
-//    public let columns: UIStackView
-//    public let textRows: UIStackView
     private let titleLabel: UILabel
     private let subtitleLabel: UILabel
     private let avatarView: AvatarImageView
@@ -90,9 +82,6 @@ public class ConversationHeaderView: UIStackView {
         self.layoutMargins = UIEdgeInsets(top: 4, left: 2, bottom: 4, right: 2)
         self.isLayoutMarginsRelativeArrangement = true
 
-        // needed for proper layout on iOS10
-        self.translatesAutoresizingMaskIntoConstraints = false
-
         self.axis = .horizontal
         self.alignment = .center
         self.spacing = 0
@@ -112,8 +101,8 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public override var intrinsicContentSize: CGSize {
-        // Grow to fill as much of the navbar as possible.
         if #available(iOS 11, *) {
+            // Grow to fill as much of the navbar as possible.
             return UILayoutFittingExpandedSize
         } else {
             return super.intrinsicContentSize

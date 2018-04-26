@@ -179,8 +179,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) NSCache *cellMediaCache;
 @property (nonatomic) ConversationHeaderView *headerView;
-//@property (nonatomic) UILabel *navigationBarTitleLabel;
-@property (nonatomic) UILabel *navigationBarSubtitleLabel;
 @property (nonatomic, nullable) UIView *bannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
@@ -490,7 +488,7 @@ typedef enum : NSUInteger {
     [self createConversationScrollButtons];
     [self createHeaderViews];
 
-    //    [self createBackButton];
+
     [self addNotificationListeners];
     [self loadDraftInCompose];
 }
@@ -1106,34 +1104,25 @@ typedef enum : NSUInteger {
     }
 
     self.headerView.attributedTitle = name;
-    //    self.navigationBarTitleLabel.attributedText = name;
-
-    // TODO layout still necessary with stackview?
-    // Changing the title requires relayout of the nav bar contents.
-    [self updateBarButtonItems];
 }
 
 - (void)createHeaderViews
 {
-    //    _backButtonUnreadCountView = [UIView new];
-    //    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
-    //    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-    //    _backButtonUnreadCountView.hidden = YES;
-    //    _backButtonUnreadCountView.userInteractionEnabled = NO;
-    //
-    //    _backButtonUnreadCountLabel = [UILabel new];
-    //    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-    //    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-    //    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-    //    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-    //
+    _backButtonUnreadCountView = [UIView new];
+    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
+    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
+    _backButtonUnreadCountView.hidden = YES;
+    _backButtonUnreadCountView.userInteractionEnabled = NO;
+
+    _backButtonUnreadCountLabel = [UILabel new];
+    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
+    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
+    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
+    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
 
     ConversationHeaderView *headerView =
         [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
     headerView.delegate = self;
-
-    //    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:36
-    //    contactsManager:self.contactsManager]; headerView.avatarImage = avatarImage;
 
     self.headerView = headerView;
 
@@ -1143,23 +1132,8 @@ typedef enum : NSUInteger {
                                                       action:@selector(navigationTitleLongPressed:)]];
 #endif
 
-    //    self.navigationBarTitleLabel = [UILabel new];
-    //    self.navigationBarTitleView.titleLabel = self.navigationBarTitleLabel;
-    //    self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-    //    self.navigationBarTitleLabel.font = [self navigationBarTitleLabelFont];
-    //    self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    //    [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
-
-    //    self.navigationBarSubtitleLabel = [UILabel new];
-    //    self.navigationBarTitleView.subtitleLabel = self.navigationBarSubtitleLabel;
     [self updateNavigationBarSubtitleLabel];
-    //    [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
 }
-
-//- (UIFont *)navigationBarTitleLabelFont
-//{
-//    return [UIFont ows_boldFontWithSize:20.f];
-//}
 
 - (CGFloat)unreadCountViewDiameter
 {
@@ -1199,35 +1173,17 @@ typedef enum : NSUInteger {
 - (void)updateBarButtonItems
 {
     if (self.navigationItem.titleView == nil) {
-        // Request "full width" title; the navigation bar will truncate this
-        // to fit between the left and right buttons.
-        //        self.navigationBarTitleView.frame = CGRectMake(0, 0, screenWidth, 44);
-        DDLogDebug(@"%@ assigning titleView", self.logTag);
-
-        UILabel *label1 = [UILabel new];
-        label1.text = @"title";
-        label1.textColor = UIColor.whiteColor;
-        label1.font = [UIFont ows_regularFontWithSize:17];
-        UILabel *label2 = [UILabel new];
-        label2.text = @"subtitle";
-        label2.textColor = UIColor.whiteColor;
-        label2.font = [UIFont ows_regularFontWithSize:12];
-
-        UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ label1, label2 ]];
-        stackView.axis = UILayoutConstraintAxisVertical;
-
-        [label1 setCompressionResistanceHigh];
-        [label2 setCompressionResistanceHigh];
-        [stackView setCompressionResistanceHigh];
-        //        [stackView autoSetDimensionsToSize:CGSizeMake(100, 40)];
-
-        //        self.navigationItem.titleView = stackView;
+        if (@available(iOS 11, *)) {
+            // Do nothing, we use autolayout/intrinsic content size to grow
+        } else {
+            // Request "full width" title; the navigation bar will truncate this
+            // to fit between the left and right buttons.
+            CGSize screenSize = [UIScreen mainScreen].bounds.size;
+            CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+            self.headerView.frame = headerFrame;
+        }
+        
         self.navigationItem.titleView = self.headerView;
-    } else {
-        // Don't reset the frame of the navigationBarTitleView every time
-        // this method is called or we'll gave bad frames where it will appear
-        // in the wrong position.
-        //        [self.navigationBarTitleView layoutSubviews];
     }
 
     if (self.userLeftGroup) {
@@ -3819,21 +3775,21 @@ typedef enum : NSUInteger {
 
 - (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
 {
-    //    OWSAssertIsOnMainThread();
-    //    if (_backButtonUnreadCount == unreadCount) {
-    //        // No need to re-render same count.
-    //        return;
-    //    }
-    //    _backButtonUnreadCount = unreadCount;
-    //
-    //    OWSAssert(_backButtonUnreadCountView != nil);
-    //    _backButtonUnreadCountView.hidden = unreadCount <= 0;
-    //
-    //    OWSAssert(_backButtonUnreadCountLabel != nil);
-    //
-    //    // Max out the unread count at 99+.
-    //    const NSUInteger kMaxUnreadCount = 99;
-    //    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
+    OWSAssertIsOnMainThread();
+    if (_backButtonUnreadCount == unreadCount) {
+        // No need to re-render same count.
+        return;
+    }
+    _backButtonUnreadCount = unreadCount;
+
+    OWSAssert(_backButtonUnreadCountView != nil);
+    _backButtonUnreadCountView.hidden = unreadCount <= 0;
+
+    OWSAssert(_backButtonUnreadCountLabel != nil);
+
+    // Max out the unread count at 99+.
+    const NSUInteger kMaxUnreadCount = 99;
+    _backButtonUnreadCountLabel.text = [OWSFormat formatInt:(int)MIN(kMaxUnreadCount, unreadCount)];
 }
 
 #pragma mark 3D Touch Preview Actions
