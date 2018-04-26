@@ -74,7 +74,7 @@ public class ConversationHeaderView: UIStackView {
         textRows.distribution = .fillProportionally
         textRows.spacing = 0
 
-        textRows.layoutMargins = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        textRows.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
         textRows.isLayoutMarginsRelativeArrangement = true
 
         // low content hugging so that the text rows push container to the right bar button item(s)
