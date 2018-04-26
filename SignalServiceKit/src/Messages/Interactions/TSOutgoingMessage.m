@@ -10,6 +10,7 @@
 #import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
+#import "TSAccountManager.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
@@ -271,7 +272,16 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
-    NSArray<NSString *> *recipientIds = [thread recipientIdentifiers];
+    NSArray<NSString *> *recipientIds;
+    if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        NSString *_Nullable localNumber = [TSAccountManager localNumber];
+        OWSAssert(localNumber);
+        recipientIds = @[
+            localNumber,
+        ];
+    } else {
+        recipientIds = [thread recipientIdentifiers];
+    }
     for (NSString *recipientId in recipientIds) {
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
         recipientState.state = OWSOutgoingMessageRecipientStateSending;
@@ -552,6 +562,11 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
 {
     OWSAssert(recipientId.length > 0);
     OWSAssert(transaction);
+
+    // If delivery notification doesn't include timestamp, use "now" as an estimate.
+    if (!deliveryTimestamp) {
+        deliveryTimestamp = @([NSDate ows_millisecondTimeStamp]);
+    }
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {

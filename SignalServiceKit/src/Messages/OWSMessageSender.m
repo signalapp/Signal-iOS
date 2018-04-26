@@ -456,7 +456,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     dispatch_async([OWSDispatch sendingQueue], ^{
         TSThread *thread = message.thread;
 
-        if ([thread isKindOfClass:[TSGroupThread class]]) {
+        // TODO: It would be nice to combine the "contact" and "group" send logic here.
+        if ([thread isKindOfClass:[TSContactThread class]] &&
+            [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
+            // Send to self.
+            [self handleSendToMyself:message];
+            successHandler();
+            return;
+        } else if ([thread isKindOfClass:[TSGroupThread class]]) {
 
             TSGroupThread *gThread = (TSGroupThread *)thread;
 
@@ -470,8 +477,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // * The recipient was in the group when the message was first tried to be sent.
             // * The recipient is still in the group.
             // * The recipient is in the "sending" state.
+
+            NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
+            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            [sendingRecipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
+
+            // Mark skipped recipients as such.  We skip because:
+            //
+            // * Recipient is no longer in the group.
+            // * Recipient is blocked.
+            //
+            // Elsewhere, we skip recipient if their Signal account has been deactivated.
             NSMutableSet<NSString *> *obsoleteRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-            [obsoleteRecipientIds minusSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            [obsoleteRecipientIds minusSet:sendingRecipientIds];
             if (obsoleteRecipientIds.count > 0) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     for (NSString *recipientId in obsoleteRecipientIds) {
@@ -480,9 +498,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
                 }];
             }
-
-            NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
 
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
@@ -505,17 +520,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             || [message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
             TSContactThread *contactThread = (TSContactThread *)thread;
-            if ([contactThread.contactIdentifier isEqualToString:[TSAccountManager localNumber]]
-                && ![message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
 
-                [self handleSendToMyself:message];
-                successHandler();
-                return;
-            }
-
-            NSString *recipientContactId = [message isKindOfClass:[OWSOutgoingSyncMessage class]]
-                ? [TSAccountManager localNumber]
-                : contactThread.contactIdentifier;
+            NSString *recipientContactId
+                = ([message isKindOfClass:[OWSOutgoingSyncMessage class]] ? [TSAccountManager localNumber]
+                                                                          : contactThread.contactIdentifier);
 
             // If we block a user, don't send 1:1 messages to them. The UI
             // should prevent this from occurring, but in some edge cases
