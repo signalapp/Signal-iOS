@@ -8,7 +8,6 @@
 #import "BlockListViewController.h"
 #import "ContactsViewHelper.h"
 #import "ConversationCollectionView.h"
-#import "ConversationHeaderView.h"
 #import "ConversationInputTextView.h"
 #import "ConversationInputToolbar.h"
 #import "ConversationScrollButton.h"
@@ -124,6 +123,7 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
+    ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
@@ -178,9 +178,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSTimer *readTimer;
 @property (nonatomic) NSCache *cellMediaCache;
-@property (nonatomic) ConversationHeaderView *navigationBarTitleView;
-@property (nonatomic) UILabel *navigationBarTitleLabel;
-@property (nonatomic) UILabel *navigationBarSubtitleLabel;
+@property (nonatomic) ConversationHeaderView *headerView;
 @property (nonatomic, nullable) UIView *bannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
@@ -350,7 +348,7 @@ typedef enum : NSUInteger {
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
         if ([self.thread isKindOfClass:[TSContactThread class]]) {
             // update title with profile name
-            [self setNavigationTitle];
+            [self updateNavigationTitle];
         }
 
         if (self.isGroupConversation) {
@@ -489,7 +487,16 @@ typedef enum : NSUInteger {
 
     [self createConversationScrollButtons];
     [self createHeaderViews];
-    [self createBackButton];
+
+    if (@available(iOS 11, *)) {
+        // We use the default back button from home view, which animates nicely with interactive transitions like the
+        // interactive pop gesture and the "slide left" for info.
+    } else {
+        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
+        // with interactive transitions, but has the appropriate width.
+        [self createBackButton];
+    }
+
     [self addNotificationListeners];
     [self loadDraftInCompose];
 }
@@ -623,7 +630,7 @@ typedef enum : NSUInteger {
     [self updateDisappearingMessagesConfiguration];
 
     [self updateBarButtonItems];
-    [self setNavigationTitle];
+    [self updateNavigationTitle];
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
@@ -1082,7 +1089,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
-- (void)setNavigationTitle
+- (void)updateNavigationTitle
 {
     NSAttributedString *name;
     if (self.thread.isGroupThread) {
@@ -1095,19 +1102,16 @@ typedef enum : NSUInteger {
         OWSAssert(self.thread.contactIdentifier);
         name = [self.contactsManager
             attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
-                                                        primaryFont:[self navigationBarTitleLabelFont]
-                                                      secondaryFont:[UIFont ows_regularFontWithSize:11.f]];
+                                                        primaryFont:self.headerView.titlePrimaryFont
+                                                      secondaryFont:self.headerView.titleSecondaryFont];
     }
     self.title = nil;
 
-    if ([name isEqual:self.navigationBarTitleLabel.attributedText]) {
+    if ([name isEqual:self.headerView.attributedTitle]) {
         return;
     }
 
-    self.navigationBarTitleLabel.attributedText = name;
-
-    // Changing the title requires relayout of the nav bar contents.
-    [self updateBarButtonItems];
+    self.headerView.attributedTitle = name;
 }
 
 - (void)createHeaderViews
@@ -1124,33 +1128,31 @@ typedef enum : NSUInteger {
     _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
     _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
 
-    self.navigationBarTitleView = [ConversationHeaderView new];
-    self.navigationBarTitleView.userInteractionEnabled = YES;
-    [self.navigationBarTitleView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                     action:@selector(navigationTitleTapped:)]];
+    ConversationHeaderView *headerView =
+        [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
+    self.headerView = headerView;
+
+    headerView.delegate = self;
+    self.navigationItem.titleView = headerView;
+
+    if (@available(iOS 11, *)) {
+        // Do nothing, we use autolayout/intrinsic content size to grow
+    } else {
+        // Request "full width" title; the navigation bar will truncate this
+        // to fit between the left and right buttons.
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+        headerView.frame = headerFrame;
+    }
+
 #ifdef USE_DEBUG_UI
-    [self.navigationBarTitleView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
-                                                          initWithTarget:self
-                                                                  action:@selector(navigationTitleLongPressed:)]];
+    [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
+                                         initWithTarget:self
+                                                 action:@selector(navigationTitleLongPressed:)]];
 #endif
 
-    self.navigationBarTitleLabel = [UILabel new];
-    self.navigationBarTitleView.titleLabel = self.navigationBarTitleLabel;
-    self.navigationBarTitleLabel.textColor = [UIColor whiteColor];
-    self.navigationBarTitleLabel.font = [self navigationBarTitleLabelFont];
-    self.navigationBarTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [self.navigationBarTitleView addSubview:self.navigationBarTitleLabel];
 
-    self.navigationBarSubtitleLabel = [UILabel new];
-    self.navigationBarTitleView.subtitleLabel = self.navigationBarSubtitleLabel;
     [self updateNavigationBarSubtitleLabel];
-    [self.navigationBarTitleView addSubview:self.navigationBarSubtitleLabel];
-}
-
-- (UIFont *)navigationBarTitleLabelFont
-{
-    return [UIFont ows_boldFontWithSize:20.f];
 }
 
 - (CGFloat)unreadCountViewDiameter
@@ -1190,47 +1192,6 @@ typedef enum : NSUInteger {
 
 - (void)updateBarButtonItems
 {
-    // We want to leave space for the "back" button, the "timer" button, and the "call"
-    // button, and all of the whitespace around these views.  There
-    // isn't a convenient way to calculate these in a navigation bar, so we just leave
-    // a constant amount of space which will be safe unless Apple makes radical changes
-    // to the appearance of the navigation bar.
-    int rightBarButtonItemCount = 0;
-    if ([self canCall]) {
-        rightBarButtonItemCount++;
-    }
-    if (self.disappearingMessagesConfiguration.isEnabled) {
-        rightBarButtonItemCount++;
-    }
-    CGFloat barButtonSize = 0;
-    switch (rightBarButtonItemCount) {
-        case 0:
-            barButtonSize = 70;
-            break;
-        case 1:
-            barButtonSize = 105;
-            break;
-        default:
-            OWSFail(@"%@ Unexpected number of right navbar items.", self.logTag);
-        // In production, fall through to the largest defined case.
-        case 2:
-            barButtonSize = 150;
-            break;
-    }
-    CGSize screenSize = [UIScreen mainScreen].bounds.size;
-    CGFloat screenWidth = MIN(screenSize.width, screenSize.height);
-    if (self.navigationItem.titleView != self.navigationBarTitleView) {
-        // Request "full width" title; the navigation bar will truncate this
-        // to fit between the left and right buttons.
-        self.navigationBarTitleView.frame = CGRectMake(0, 0, screenWidth, 44);
-        self.navigationItem.titleView = self.navigationBarTitleView;
-    } else {
-        // Don't reset the frame of the navigationBarTitleView every time
-        // this method is called or we'll gave bad frames where it will appear
-        // in the wrong position.
-        [self.navigationBarTitleView layoutSubviews];
-    }
-
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;
@@ -1326,7 +1287,7 @@ typedef enum : NSUInteger {
             appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
                                            attributes:@{
-                                               NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
+                                               NSFontAttributeName : self.headerView.subtitleFont,
                                                NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
                                            }]];
     } else {
@@ -1336,13 +1297,12 @@ typedef enum : NSUInteger {
                                                  @"The subtitle for the messages view title indicates that the "
                                                  @"title can be tapped to access settings for this conversation.")
                                   attributes:@{
-                                      NSFontAttributeName : [UIFont ows_regularFontWithSize:9.f],
+                                      NSFontAttributeName : self.headerView.subtitleFont,
                                       NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
                                   }]];
     }
 
-    self.navigationBarSubtitleLabel.attributedText = subtitleText;
-    [self.navigationBarSubtitleLabel sizeToFit];
+    self.headerView.attributedSubtitle = subtitleText;
 }
 
 
@@ -3080,7 +3040,7 @@ typedef enum : NSUInteger {
                 }
             }
         }];
-        [self setNavigationTitle];
+        [self updateNavigationTitle];
     }
 
     [self updateDisappearingMessagesConfiguration];
@@ -3845,13 +3805,11 @@ typedef enum : NSUInteger {
     return @[];
 }
 
-#pragma mark - Event Handling
+#pragma mark - ConversationHeaderViewDelegate
 
-- (void)navigationTitleTapped:(UIGestureRecognizer *)gestureRecognizer
+- (void)didTapConversationHeaderView:(ConversationHeaderView *)conversationHeaderView
 {
-    if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self showConversationSettings];
-    }
+    [self showConversationSettings];
 }
 
 #ifdef USE_DEBUG_UI

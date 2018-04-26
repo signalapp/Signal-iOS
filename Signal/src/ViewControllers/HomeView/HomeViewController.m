@@ -273,11 +273,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             self.title = NSLocalizedString(@"HOME_VIEW_TITLE_ARCHIVE", @"Title for the home view's 'archive' mode.");
             break;
     }
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
-                                         style:UIBarButtonItemStylePlain
-                                        target:nil
-                                        action:nil];
+
+    [self applyDefaultBackButton];
 
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)]
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
@@ -287,11 +284,35 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateBarButtonItems];
 }
 
+- (void)applyDefaultBackButton
+{
+    // We don't show any text for the back button, so there's no need to localize it. But because we left align the
+    // conversation title view, we add a little tappable padding after the back button, by having a title of spaces.
+    // Admittedly this is kind of a hack and not super fine grained, but it's simple and results in the interactive pop
+    // gesture animating our title view nicely vs. creating our own back button bar item with custom padding, which does
+    // not properly animate with the "swipe to go back" or "swipe left for info" gestures.
+    NSUInteger paddingLength = 3;
+    NSString *paddingString = [@"" stringByPaddingToLength:paddingLength withString:@" " startingAtIndex:0];
+
+    self.navigationItem.backBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:paddingString style:UIBarButtonItemStylePlain target:nil action:nil];
+}
+
+- (void)applyArchiveBackButton
+{
+    self.navigationItem.backBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 
     [self displayAnyUnseenUpgradeExperience];
+    [self applyDefaultBackButton];
 }
 
 - (void)updateBarButtonItems
@@ -402,6 +423,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
     __block BOOL hasAnyMessages;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
         hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
@@ -436,6 +458,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     [self checkIfEmptyView];
+    [self applyDefaultBackButton];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -978,6 +1001,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)showArchivedConversations
 {
     OWSAssert(self.homeViewMode == HomeViewMode_Inbox);
+
+    // When showing archived conversations, we want to use a conventional "back" button
+    // to return to the "inbox" home view.
+    [self applyArchiveBackButton];
 
     // Push a separate instance of this view using "archive" mode.
     HomeViewController *homeView = [HomeViewController new];

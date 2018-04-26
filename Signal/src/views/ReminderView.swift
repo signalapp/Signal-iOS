@@ -79,17 +79,29 @@ class ReminderView: UIView {
 
         self.addSubview(container)
         container.autoPinWidthToSuperview(withMargin: 16)
-        container.autoPinHeightToSuperview(withMargin: 16)
+        switch (mode) {
+        case .nag:
+            container.autoPinHeightToSuperview(withMargin: 16)
+        case .explanation:
+            container.autoPinHeightToSuperview(withMargin: 12)
+        }
+
+        // Margin: top and bottom 12 left and right 16.
 
         // Label
-        label.font = UIFont.ows_regularFont(withSize: 14)
+        switch (mode) {
+        case .nag:
+            label.font = UIFont.ows_regularFont(withSize: 14)
+        case .explanation:
+            label.font = UIFont.ows_dynamicTypeSubheadline
+        }
         container.addSubview(label)
+        label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.autoPinEdge(toSuperviewEdge: .top)
         label.autoPinLeadingToSuperviewMargin()
+        label.autoPinEdge(toSuperviewEdge: .top)
         label.autoPinEdge(toSuperviewEdge: .bottom)
-        label.textColor = UIColor.black.withAlphaComponent(0.9)
 
         guard mode == .nag else {
             label.autoPinTrailingToSuperviewMargin()

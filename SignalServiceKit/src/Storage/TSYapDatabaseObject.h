@@ -92,6 +92,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)save;
 
 /**
+ * Assign the latest persisted values from the database.
+ */
+- (void)reload;
+
+/**
  * Saves the object with the shared readWrite connection - does not block.
  *
  * Be mindful that this method may clobber other changes persisted

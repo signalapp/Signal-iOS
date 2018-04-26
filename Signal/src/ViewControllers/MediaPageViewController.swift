@@ -67,7 +67,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    private let navItemTitleView: ConversationHeaderView!
+    private let headerView: UIStackView
 
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
@@ -76,14 +76,22 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.sliderEnabled = options.contains(.sliderEnabled)
         self.mediaGalleryDataSource = mediaGalleryDataSource
 
-        let headerView =  ConversationHeaderView()
-        self.navItemTitleView = headerView
-
         let kSpacingBetweenItems: CGFloat = 20
+
+        let headerView = UIStackView()
+        self.headerView = headerView
 
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
+
+        // needed for proper layout on iOS9/10
+        headerView.translatesAutoresizingMaskIntoConstraints = false
+
+        headerView.axis = .vertical
+        headerView.alignment = .center
+        headerView.addArrangedSubview(headerNameLabel)
+        headerView.addArrangedSubview(headerDateLabel)
 
         self.dataSource = self
         self.delegate = self
@@ -120,13 +128,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
         self.navigationItem.leftBarButtonItem = backButton
 
-        navItemTitleView.titleLabel = headerNameLabel
-        navItemTitleView.subtitleLabel = headerDateLabel
-        navItemTitleView.addSubview(headerNameLabel)
-        navItemTitleView.addSubview(headerDateLabel)
-        navItemTitleView.frame = CGRect(origin: .zero, size: CGSize(width: 150, height: 35))
-        navItemTitleView.layoutSubviews()
-        self.navigationItem.titleView = navItemTitleView
+        self.navigationItem.titleView = headerView
         self.updateTitle()
 
         if showAllMediaButton {

@@ -10,6 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachmentStream;
 @class YapDatabaseReadWriteTransaction;
 
+extern NSString *const TSGroupThreadAvatarChangedNotification;
+extern NSString *const TSGroupThread_NotificaitonKey_UniqueId;
+
 @interface TSGroupThread : TSThread
 
 @property (nonatomic, strong) TSGroupModel *groupModel;

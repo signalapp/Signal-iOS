@@ -12,6 +12,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const TSGroupThreadAvatarChangedNotification = @"TSGroupThreadAvatarChangedNotification";
+NSString *const TSGroupThread_NotificaitonKey_UniqueId = @"TSGroupThread_NotificaitonKey_UniqueId";
+
 @implementation TSGroupThread
 
 #define TSGroupThreadPrefix @"g"
@@ -191,6 +194,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.groupModel.groupImage = [attachmentStream image];
     [self saveWithTransaction:transaction];
+
+    [transaction addCompletionQueue:nil
+                    completionBlock:^{
+                        NSDictionary *userInfo = @{ TSGroupThread_NotificaitonKey_UniqueId : self.uniqueId };
+
+                        [[NSNotificationCenter defaultCenter]
+                            postNotificationName:TSGroupThreadAvatarChangedNotification
+                                          object:self.uniqueId
+                                        userInfo:userInfo];
+                    }];
 
     // Avatars are stored directly in the database, so there's no need
     // to keep the attachment around after assigning the image.

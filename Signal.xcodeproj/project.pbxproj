@@ -195,7 +195,6 @@
 		34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */; };
 		34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F04F1F7D45A60066283D /* GifPickerCell.swift */; };
 		34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */; };
-		34D1F0821F8678AA0066283D /* ConversationHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0661F8678AA0066283D /* ConversationHeaderView.m */; };
 		34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0681F8678AA0066283D /* ConversationInputTextView.m */; };
 		34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */; };
 		34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F06E1F8678AA0066283D /* ConversationViewController.m */; };
@@ -384,6 +383,7 @@
 		45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D231761DC7E8F10034FA89 /* SessionResetJob.swift */; };
 		45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */; };
 		45D308AD2049A439000189E4 /* PinEntryView.m in Sources */ = {isa = PBXBuildFile; fileRef = 45D308AC2049A439000189E4 /* PinEntryView.m */; };
+		45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */; };
 		45DF5DF21DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */; };
 		45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5A6981F61E6DD001E4A8A /* MarqueeLabel.swift */; };
 		45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */; };
@@ -811,8 +811,6 @@
 		34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = end_call_tone_cept.caf; path = Signal/AudioFiles/end_call_tone_cept.caf; sourceTree = SOURCE_ROOT; };
 		34D1F04F1F7D45A60066283D /* GifPickerCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerCell.swift; sourceTree = "<group>"; };
 		34D1F0511F7E8EA30066283D /* GiphyDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyDownloader.swift; sourceTree = "<group>"; };
-		34D1F0651F8678AA0066283D /* ConversationHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationHeaderView.h; sourceTree = "<group>"; };
-		34D1F0661F8678AA0066283D /* ConversationHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationHeaderView.m; sourceTree = "<group>"; };
 		34D1F0671F8678AA0066283D /* ConversationInputTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationInputTextView.h; sourceTree = "<group>"; };
 		34D1F0681F8678AA0066283D /* ConversationInputTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationInputTextView.m; sourceTree = "<group>"; };
 		34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConversationInputToolbar.h; sourceTree = "<group>"; };
@@ -1023,6 +1021,7 @@
 		45D2AC01204885170033C692 /* OWS2FAReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWS2FAReminderViewController.swift; sourceTree = "<group>"; };
 		45D308AB2049A439000189E4 /* PinEntryView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PinEntryView.h; sourceTree = "<group>"; };
 		45D308AC2049A439000189E4 /* PinEntryView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PinEntryView.m; sourceTree = "<group>"; };
+		45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationHeaderView.swift; sourceTree = "<group>"; };
 		45DF5DF11DDB843F00C936C7 /* CompareSafetyNumbersActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompareSafetyNumbersActivity.swift; sourceTree = "<group>"; };
 		45E282DE1D08E67800ADD4C8 /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = translations/gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		45E282DF1D08E6CC00ADD4C8 /* id */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = id; path = translations/id.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1472,8 +1471,6 @@
 				34D1F0951F867BFC0066283D /* Cells */,
 				34D1F0B21F86D31D0066283D /* ConversationCollectionView.h */,
 				34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */,
-				34D1F0651F8678AA0066283D /* ConversationHeaderView.h */,
-				34D1F0661F8678AA0066283D /* ConversationHeaderView.m */,
 				34D1F0671F8678AA0066283D /* ConversationInputTextView.h */,
 				34D1F0681F8678AA0066283D /* ConversationInputTextView.m */,
 				34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */,
@@ -1486,6 +1483,7 @@
 				34D1F0701F8678AA0066283D /* ConversationViewItem.m */,
 				34D1F0711F8678AA0066283D /* ConversationViewLayout.h */,
 				34D1F0721F8678AA0066283D /* ConversationViewLayout.m */,
+				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -3140,7 +3138,6 @@
 				B6DA6B071B8A2F9A00CA6F98 /* AppStoreRating.m in Sources */,
 				451A13B11E13DED2000A50FD /* CallNotificationsAdapter.swift in Sources */,
 				450DF2091E0DD2C6003D14BE /* UserNotificationsAdaptee.swift in Sources */,
-				34D1F0821F8678AA0066283D /* ConversationHeaderView.m in Sources */,
 				34D1F0AB1F867BFC0066283D /* OWSContactOffersCell.m in Sources */,
 				340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */,
 				343A65981FC4CFE7000477A1 /* ConversationScrollButton.m in Sources */,
@@ -3248,6 +3245,7 @@
 				45BB93381E688E14001E3939 /* UIDevice+featureSupport.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
+				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
