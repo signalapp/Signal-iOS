@@ -477,8 +477,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // * The recipient was in the group when the message was first tried to be sent.
             // * The recipient is still in the group.
             // * The recipient is in the "sending" state.
+
+            NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
+            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            [sendingRecipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
+
+            // Mark skipped recipients as such.  We skip because:
+            //
+            // * Recipient is no longer in the group.
+            // * Recipient is blocked.
+            //
+            // Elsewhere, we skip recipient if their Signal account has been deactivated.
             NSMutableSet<NSString *> *obsoleteRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-            [obsoleteRecipientIds minusSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
+            [obsoleteRecipientIds minusSet:sendingRecipientIds];
             if (obsoleteRecipientIds.count > 0) {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     for (NSString *recipientId in obsoleteRecipientIds) {
@@ -487,10 +498,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
                 }];
             }
-
-            NSMutableSet<NSString *> *sendingRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-            [sendingRecipientIds intersectSet:[NSSet setWithArray:gThread.groupModel.groupMemberIds]];
-            [sendingRecipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
 
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
