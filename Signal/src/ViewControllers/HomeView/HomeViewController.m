@@ -630,7 +630,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-    if (self.homeViewMode == HomeViewMode_Inbox) {
+    if (self.homeViewMode == HomeViewMode_Inbox && self.numberOfArchivedThreads > 0) {
         // Add the "archived conversations" row.
         result++;
     }
@@ -1173,17 +1173,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView endUpdates];
 }
 
-- (void)checkIfEmptyView
+- (NSUInteger)numberOfThreadsInGroup:(NSString *)group
 {
     // We need to consult the db view, not the mapping since the mapping only knows about
     // the current group.
-    __block NSUInteger inboxCount;
-    __block NSUInteger archiveCount;
+    __block NSUInteger result;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSThreadDatabaseViewExtensionName];
-        inboxCount = [viewTransaction numberOfItemsInGroup:TSInboxGroup];
-        archiveCount = [viewTransaction numberOfItemsInGroup:TSArchiveGroup];
+        result = [viewTransaction numberOfItemsInGroup:group];
     }];
+    return result;
+}
+
+- (NSUInteger)numberOfInboxThreads
+{
+    return [self numberOfThreadsInGroup:TSInboxGroup];
+}
+
+- (NSUInteger)numberOfArchivedThreads
+{
+    return [self numberOfThreadsInGroup:TSArchiveGroup];
+}
+
+- (void)checkIfEmptyView
+{
+    NSUInteger inboxCount = self.numberOfInboxThreads;
+    NSUInteger archiveCount = self.numberOfArchivedThreads;
 
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
         [self updateEmptyBoxText];
