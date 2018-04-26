@@ -70,6 +70,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 @property (nonatomic) TSThread *lastThread;
 
+@property (nonatomic) BOOL hasArchivedThreadsRow;
+
 @end
 
 #pragma mark -
@@ -461,6 +463,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [self checkIfEmptyView];
     [self applyDefaultBackButton];
+    if ([self updateHasArchivedThreadsRow]) {
+        [self.tableView reloadData];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -525,6 +530,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }];
     }
 
+    [self updateHasArchivedThreadsRow];
     [self reloadTableViewData];
 
     [self checkIfEmptyView];
@@ -622,6 +628,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 #pragma mark - Table View Data Source
 
+// Returns YES IFF this value changes.
+- (BOOL)updateHasArchivedThreadsRow
+{
+    BOOL hasArchivedThreadsRow = (self.homeViewMode == HomeViewMode_Inbox && self.numberOfArchivedThreads > 0);
+    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
+        return NO;
+    }
+    self.hasArchivedThreadsRow = hasArchivedThreadsRow;
+
+    return YES;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return (NSInteger)[self.threadMappings numberOfSections];
@@ -630,7 +648,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-    if (self.homeViewMode == HomeViewMode_Inbox && self.numberOfArchivedThreads > 0) {
+    if (self.hasArchivedThreadsRow) {
         // Add the "archived conversations" row.
         result++;
     }
@@ -1116,6 +1134,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self checkIfEmptyView];
 
     if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
+        return;
+    }
+
+    if ([self updateHasArchivedThreadsRow]) {
+        [self.tableView reloadData];
         return;
     }
 
