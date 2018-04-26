@@ -180,7 +180,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.view.backgroundColor = [UIColor whiteColor];
 
     // TODO: Remove this.
-    [SignalApp.sharedApp setHomeViewController:self];
+    if (self.homeViewMode == HomeViewMode_Inbox) {
+        [SignalApp.sharedApp setHomeViewController:self];
+    }
 
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
