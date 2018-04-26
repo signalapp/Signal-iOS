@@ -5,6 +5,46 @@
 import UIKit
 
 @objc
+public class AvatarImageView: UIImageView {
+
+    public init() {
+        super.init(frame: .zero)
+        self.configureView()
+    }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.configureView()
+    }
+
+    required public init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        self.configureView()
+    }
+
+    override init(image: UIImage?) {
+        super.init(image: image)
+        self.configureView()
+    }
+
+    func configureView() {
+        self.autoPinToSquareAspectRatio()
+
+        self.layer.minificationFilter = kCAFilterTrilinear
+        self.layer.magnificationFilter = kCAFilterTrilinear
+        self.layer.borderWidth = 0.5
+        self.layer.masksToBounds = true
+        self.contentMode = .scaleToFill
+    }
+
+    override public func layoutSubviews() {
+        self.layer.borderColor = UIColor.black.cgColor.copy(alpha: 0.15)
+        self.layer.cornerRadius = self.frame.size.width / 2
+    }
+}
+
+/// Avatar View which updates itself as necessary when the profile, contact, or group picture changes.
+@objc
 public class ConversationAvatarImageView: AvatarImageView {
 
     let thread: TSThread
@@ -58,8 +98,8 @@ public class ConversationAvatarImageView: AvatarImageView {
     func handleSignalAccountsChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        // It would be nice if we could do this only if *this* user changed,
-        // but currently this is a course grained notification.
+        // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
+        // but currently this is only a course grained notification.
 
         self.updateImage()
     }
@@ -78,7 +118,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        guard recipientId == recipientId else {
+        guard recipientId == changedRecipientId else {
             // not this avatar
             return
         }
@@ -114,44 +154,5 @@ public class ConversationAvatarImageView: AvatarImageView {
         Logger.debug("\(self.logTag) in \(#function) updateImage")
 
         self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter, contactsManager: contactsManager)
-    }
-}
-
-@objc
-public class AvatarImageView: UIImageView {
-
-    public init() {
-        super.init(frame: .zero)
-        self.configureView()
-    }
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.configureView()
-    }
-
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.configureView()
-    }
-
-    override init(image: UIImage?) {
-        super.init(image: image)
-        self.configureView()
-    }
-
-    func configureView() {
-        self.autoPinToSquareAspectRatio()
-
-        self.layer.minificationFilter = kCAFilterTrilinear
-        self.layer.magnificationFilter = kCAFilterTrilinear
-        self.layer.borderWidth = 0.5
-        self.layer.masksToBounds = true
-        self.contentMode = .scaleToFill
-    }
-
-    override public func layoutSubviews() {
-        self.layer.borderColor = UIColor.black.cgColor.copy(alpha: 0.15)
-        self.layer.cornerRadius = self.frame.size.width / 2
     }
 }

@@ -488,6 +488,14 @@ typedef enum : NSUInteger {
     [self createConversationScrollButtons];
     [self createHeaderViews];
 
+    if (@available(iOS 11, *)) {
+        // We use the default back button from home view, which animates nicely with interactive transitions like the
+        // interactive pop gesture and the "slide left" for info.
+    } else {
+        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
+        // with interactive transitions, but has the appropriate width.
+        [self createBackButton];
+    }
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
@@ -1122,15 +1130,27 @@ typedef enum : NSUInteger {
 
     ConversationHeaderView *headerView =
         [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
-    headerView.delegate = self;
-
     self.headerView = headerView;
 
+    headerView.delegate = self;
+    self.navigationItem.titleView = headerView;
+
+    if (@available(iOS 11, *)) {
+        // Do nothing, we use autolayout/intrinsic content size to grow
+    } else {
+        // Request "full width" title; the navigation bar will truncate this
+        // to fit between the left and right buttons.
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+        headerView.frame = headerFrame;
+    }
+
 #ifdef USE_DEBUG_UI
-    [self.headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
-                                              initWithTarget:self
-                                                      action:@selector(navigationTitleLongPressed:)]];
+    [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
+                                         initWithTarget:self
+                                                 action:@selector(navigationTitleLongPressed:)]];
 #endif
+
 
     [self updateNavigationBarSubtitleLabel];
 }
@@ -1172,20 +1192,6 @@ typedef enum : NSUInteger {
 
 - (void)updateBarButtonItems
 {
-    if (self.navigationItem.titleView == nil) {
-        if (@available(iOS 11, *)) {
-            // Do nothing, we use autolayout/intrinsic content size to grow
-        } else {
-            // Request "full width" title; the navigation bar will truncate this
-            // to fit between the left and right buttons.
-            CGSize screenSize = [UIScreen mainScreen].bounds.size;
-            CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
-            self.headerView.frame = headerFrame;
-        }
-        
-        self.navigationItem.titleView = self.headerView;
-    }
-
     if (self.userLeftGroup) {
         self.navigationItem.rightBarButtonItems = @[];
         return;

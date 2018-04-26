@@ -60,16 +60,19 @@ public class ConversationHeaderView: UIStackView {
         titleLabel.textColor = .white
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.font = titlePrimaryFont
+        titleLabel.setContentHuggingHigh()
 
         subtitleLabel = UILabel()
         subtitleLabel.textColor = .white
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.font = subtitleFont
+        subtitleLabel.setContentHuggingHigh()
 
         let textRows = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         textRows.axis = .vertical
         textRows.alignment = .leading
         textRows.distribution = .fillProportionally
+        textRows.spacing = 0
 
         textRows.layoutMargins = UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
         textRows.isLayoutMarginsRelativeArrangement = true
@@ -101,12 +104,8 @@ public class ConversationHeaderView: UIStackView {
     }
 
     public override var intrinsicContentSize: CGSize {
-        if #available(iOS 11, *) {
-            // Grow to fill as much of the navbar as possible.
-            return UILayoutFittingExpandedSize
-        } else {
-            return super.intrinsicContentSize
-        }
+        // Grow to fill as much of the navbar as possible.
+        return UILayoutFittingExpandedSize
     }
 
     // MARK: Delegate Methods

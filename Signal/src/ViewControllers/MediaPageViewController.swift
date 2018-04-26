@@ -85,21 +85,13 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
 
-        // needed for proper layout on iOS10
+        // needed for proper layout on iOS9/10
         headerView.translatesAutoresizingMaskIntoConstraints = false
 
         headerView.axis = .vertical
         headerView.alignment = .center
         headerView.addArrangedSubview(headerNameLabel)
         headerView.addArrangedSubview(headerDateLabel)
-        Logger.debug("\(self.logTag) in \(#function) 1 headerView.frame: \(headerView.frame)")
-
-//        headerView.layoutIfNeeded()
-
-        Logger.debug("\(self.logTag) in \(#function) 2 headerView.frame: \(headerView.frame)")
-//        headerView.sizeToFit()
-
-        Logger.debug("\(self.logTag) in \(#function) 3 headerView.frame: \(headerView.frame)")
 
         self.dataSource = self
         self.delegate = self
