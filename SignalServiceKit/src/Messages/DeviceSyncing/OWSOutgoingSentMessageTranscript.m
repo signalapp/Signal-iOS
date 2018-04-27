@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingSentMessageTranscript ()
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
+// sentRecipientId is the recipient of message, for contact thread messages.
+// It is used to identify the thread/conversation to desktop.
+@property (nonatomic, readonly, nullable) NSString *sentRecipientId;
 
 @end
 
@@ -39,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _message = message;
+    // This will be nil for groups.
+    _sentRecipientId = message.thread.contactIdentifier;
 
     return self;
 }
@@ -50,10 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
 
-    // Sync messages have no thread or destination.
-    OWSAssert(!self.message.thread.contactIdentifier);
-    [sentBuilder setDestination:nil];
-    [sentBuilder setMessage:[self.message buildDataMessage:nil]];
+    [sentBuilder setDestination:self.sentRecipientId];
+    [sentBuilder setMessage:[self.message buildDataMessage:self.sentRecipientId]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
     [syncMessageBuilder setSentBuilder:sentBuilder];

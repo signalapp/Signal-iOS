@@ -882,7 +882,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             dispatch_async([OWSDispatch sendingQueue], ^{
                 // This emulates the completion logic of an actual successful save (see below).
-                [recipient save];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [message updateWithSkippedRecipient:localNumber transaction:transaction];
+                    [recipient saveWithTransaction:transaction];
+                }];
                 successHandler();
             });
 
