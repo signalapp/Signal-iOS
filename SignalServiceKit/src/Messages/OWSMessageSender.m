@@ -1154,6 +1154,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         // We want the incoming message to appear after the outgoing message.
+        //
+        // TODO: We need to be careful to duplicate the attachments for
+        // quoted message and contact share.
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:(outgoingMessage.timestamp + 1)
                                                                inThread:cThread
@@ -1162,7 +1165,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                             messageBody:outgoingMessage.body
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:outgoingMessage.expiresInSeconds
-                                                          quotedMessage:outgoingMessage.quotedMessage];
+                                                          quotedMessage:outgoingMessage.quotedMessage
+                                                           contactShare:outgoingMessage.contactShare];
         [incomingMessage saveWithTransaction:transaction];
     }];
 }

@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
+#import "OWSContactShare.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
@@ -65,6 +66,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContactShare *)contactShare
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -81,6 +83,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
     _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
     _quotedMessage = quotedMessage;
+    _contactShare = contactShare;
 
     return self;
 }

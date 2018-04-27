@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContactShare *)contactShare NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

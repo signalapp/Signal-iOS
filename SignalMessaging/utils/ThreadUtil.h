@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@class OWSContactShare;
 @class OWSQuotedReplyModel;
 @class TSOutgoingMessage;
 
@@ -71,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                 quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                    contactShare:(nullable OWSContactShare *)contactShare
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;

@@ -65,7 +65,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                              attachmentIds:@[]
                           expiresInSeconds:0
                            expireStartedAt:0
-                             quotedMessage:nil];
+                             quotedMessage:nil
+                              contactShare:nil];
 
     if (!self) {
         return self;

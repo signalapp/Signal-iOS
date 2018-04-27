@@ -2948,6 +2948,7 @@ NS_ASSUME_NONNULL_BEGIN
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                          quotedReplyModel:nil
+                             contactShare:nil
                             messageSender:messageSender
                              ignoreErrors:YES
                                completion:nil];
@@ -3256,7 +3257,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     messageBody:randomText
                                                                   attachmentIds:@[]
                                                                expiresInSeconds:0
-                                                                  quotedMessage:nil];
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3294,7 +3296,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       pointer.uniqueId,
                                                                   ]
                                                                expiresInSeconds:0
-                                                                  quotedMessage:nil];
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3680,7 +3683,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       : 0)expireStartedAt:0
                               isVoiceMessage:NO
                             groupMetaMessage:TSGroupMessageUnspecified
-                               quotedMessage:nil];
+                               quotedMessage:nil
+                                contactShare:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -3745,7 +3749,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     messageBody:randomText
                                                                   attachmentIds:[NSMutableArray new]
                                                                expiresInSeconds:0
-                                                                  quotedMessage:nil];
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
@@ -3758,7 +3763,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 expireStartedAt:0
                                                                  isVoiceMessage:NO
                                                                groupMetaMessage:TSGroupMessageUnspecified
-                                                                  quotedMessage:nil];
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId transaction:transaction];
@@ -3994,7 +4000,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expireStartedAt:0
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMessageUnspecified
-                                                      quotedMessage:quotedMessage];
+                                                      quotedMessage:quotedMessage
+                                                       contactShare:nil];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4081,7 +4088,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         messageBody:messageBody
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
-                                                      quotedMessage:quotedMessage];
+                                                      quotedMessage:quotedMessage
+                                                       contactShare:nil];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
