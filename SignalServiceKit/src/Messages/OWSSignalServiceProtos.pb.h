@@ -26,6 +26,16 @@
 @class OWSSignalServiceProtosContentBuilder;
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosDataMessageBuilder;
+@class OWSSignalServiceProtosDataMessageContact;
+@class OWSSignalServiceProtosDataMessageContactBuilder;
+@class OWSSignalServiceProtosDataMessageContactEmail;
+@class OWSSignalServiceProtosDataMessageContactEmailBuilder;
+@class OWSSignalServiceProtosDataMessageContactName;
+@class OWSSignalServiceProtosDataMessageContactNameBuilder;
+@class OWSSignalServiceProtosDataMessageContactPhone;
+@class OWSSignalServiceProtosDataMessageContactPhoneBuilder;
+@class OWSSignalServiceProtosDataMessageContactPostalAddress;
+@class OWSSignalServiceProtosDataMessageContactPostalAddressBuilder;
 @class OWSSignalServiceProtosDataMessageQuote;
 @class OWSSignalServiceProtosDataMessageQuoteBuilder;
 @class OWSSignalServiceProtosDataMessageQuoteQuotedAttachment;
@@ -132,6 +142,35 @@ typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFl
 
 BOOL OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlagsIsValidValue(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value);
 NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags(OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlags value);
+
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageContactPhoneType) {
+  OWSSignalServiceProtosDataMessageContactPhoneTypeHome = 1,
+  OWSSignalServiceProtosDataMessageContactPhoneTypeMobile = 2,
+  OWSSignalServiceProtosDataMessageContactPhoneTypeWork = 3,
+  OWSSignalServiceProtosDataMessageContactPhoneTypeCustom = 4,
+};
+
+BOOL OWSSignalServiceProtosDataMessageContactPhoneTypeIsValidValue(OWSSignalServiceProtosDataMessageContactPhoneType value);
+NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPhoneType(OWSSignalServiceProtosDataMessageContactPhoneType value);
+
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageContactEmailType) {
+  OWSSignalServiceProtosDataMessageContactEmailTypeHome = 1,
+  OWSSignalServiceProtosDataMessageContactEmailTypeMobile = 2,
+  OWSSignalServiceProtosDataMessageContactEmailTypeWork = 3,
+  OWSSignalServiceProtosDataMessageContactEmailTypeCustom = 4,
+};
+
+BOOL OWSSignalServiceProtosDataMessageContactEmailTypeIsValidValue(OWSSignalServiceProtosDataMessageContactEmailType value);
+NSString *NSStringFromOWSSignalServiceProtosDataMessageContactEmailType(OWSSignalServiceProtosDataMessageContactEmailType value);
+
+typedef NS_ENUM(SInt32, OWSSignalServiceProtosDataMessageContactPostalAddressType) {
+  OWSSignalServiceProtosDataMessageContactPostalAddressTypeHome = 1,
+  OWSSignalServiceProtosDataMessageContactPostalAddressTypeWork = 2,
+  OWSSignalServiceProtosDataMessageContactPostalAddressTypeCustom = 3,
+};
+
+BOOL OWSSignalServiceProtosDataMessageContactPostalAddressTypeIsValidValue(OWSSignalServiceProtosDataMessageContactPostalAddressType value);
+NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPostalAddressType(OWSSignalServiceProtosDataMessageContactPostalAddressType value);
 
 typedef NS_ENUM(SInt32, OWSSignalServiceProtosReceiptMessageType) {
   OWSSignalServiceProtosReceiptMessageTypeDelivery = 0,
@@ -812,6 +851,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define DataMessage_profileKey @"profileKey"
 #define DataMessage_timestamp @"timestamp"
 #define DataMessage_quote @"quote"
+#define DataMessage_contact @"contact"
 @interface OWSSignalServiceProtosDataMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasTimestamp_:1;
@@ -829,6 +869,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   UInt32 flags;
   UInt32 expireTimer;
   NSMutableArray * attachmentsArray;
+  NSMutableArray * contactArray;
 }
 - (BOOL) hasBody;
 - (BOOL) hasGroup;
@@ -845,7 +886,9 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) NSData* profileKey;
 @property (readonly) UInt64 timestamp;
 @property (readonly, strong) OWSSignalServiceProtosDataMessageQuote* quote;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContact*> * contact;
 - (OWSSignalServiceProtosAttachmentPointer*)attachmentsAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContact*)contactAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1027,6 +1070,460 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageQuoteBuilder *)clearAttachments;
 @end
 
+#define Contact_name @"name"
+#define Contact_number @"number"
+#define Contact_email @"email"
+#define Contact_address @"address"
+#define Contact_avatar @"avatar"
+@interface OWSSignalServiceProtosDataMessageContact : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasName_:1;
+  BOOL hasAvatar_:1;
+  OWSSignalServiceProtosDataMessageContactName* name;
+  OWSSignalServiceProtosAttachmentPointer* avatar;
+  NSMutableArray * numberArray;
+  NSMutableArray * emailArray;
+  NSMutableArray * addressArray;
+}
+- (BOOL) hasName;
+- (BOOL) hasAvatar;
+@property (readonly, strong) OWSSignalServiceProtosDataMessageContactName* name;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPhone*> * number;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactEmail*> * email;
+@property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> * address;
+@property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* avatar;
+- (OWSSignalServiceProtosDataMessageContactPhone*)numberAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContactEmail*)emailAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContactPostalAddress*)addressAtIndex:(NSUInteger)index;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContact*) prototype;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContact*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContact*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContact*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContact*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContact*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContact*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+#define Name_givenName @"givenName"
+#define Name_familyName @"familyName"
+#define Name_prefix @"prefix"
+#define Name_suffix @"suffix"
+#define Name_middleName @"middleName"
+@interface OWSSignalServiceProtosDataMessageContactName : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasGivenName_:1;
+  BOOL hasFamilyName_:1;
+  BOOL hasPrefix_:1;
+  BOOL hasSuffix_:1;
+  BOOL hasMiddleName_:1;
+  NSString* givenName;
+  NSString* familyName;
+  NSString* prefix;
+  NSString* suffix;
+  NSString* middleName;
+}
+- (BOOL) hasGivenName;
+- (BOOL) hasFamilyName;
+- (BOOL) hasPrefix;
+- (BOOL) hasSuffix;
+- (BOOL) hasMiddleName;
+@property (readonly, strong) NSString* givenName;
+@property (readonly, strong) NSString* familyName;
+@property (readonly, strong) NSString* prefix;
+@property (readonly, strong) NSString* suffix;
+@property (readonly, strong) NSString* middleName;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactNameBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactNameBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactName*) prototype;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactName*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactNameBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContactName* resultName;
+}
+
+- (OWSSignalServiceProtosDataMessageContactName*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContactName*) build;
+- (OWSSignalServiceProtosDataMessageContactName*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactName*) other;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasGivenName;
+- (NSString*) givenName;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setGivenName:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearGivenName;
+
+- (BOOL) hasFamilyName;
+- (NSString*) familyName;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setFamilyName:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearFamilyName;
+
+- (BOOL) hasPrefix;
+- (NSString*) prefix;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setPrefix:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearPrefix;
+
+- (BOOL) hasSuffix;
+- (NSString*) suffix;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setSuffix:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearSuffix;
+
+- (BOOL) hasMiddleName;
+- (NSString*) middleName;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setMiddleName:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearMiddleName;
+@end
+
+#define Phone_value @"value"
+#define Phone_type @"type"
+#define Phone_label @"label"
+@interface OWSSignalServiceProtosDataMessageContactPhone : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasValue_:1;
+  BOOL hasLabel_:1;
+  BOOL hasType_:1;
+  NSString* value;
+  NSString* label;
+  OWSSignalServiceProtosDataMessageContactPhoneType type;
+}
+- (BOOL) hasValue;
+- (BOOL) hasType;
+- (BOOL) hasLabel;
+@property (readonly, strong) NSString* value;
+@property (readonly) OWSSignalServiceProtosDataMessageContactPhoneType type;
+@property (readonly, strong) NSString* label;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactPhone*) prototype;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactPhone*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactPhoneBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContactPhone* resultPhone;
+}
+
+- (OWSSignalServiceProtosDataMessageContactPhone*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContactPhone*) build;
+- (OWSSignalServiceProtosDataMessageContactPhone*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactPhone*) other;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasValue;
+- (NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) setValue:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) clearValue;
+
+- (BOOL) hasType;
+- (OWSSignalServiceProtosDataMessageContactPhoneType) type;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) setType:(OWSSignalServiceProtosDataMessageContactPhoneType) value;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) clearType;
+
+- (BOOL) hasLabel;
+- (NSString*) label;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) setLabel:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPhoneBuilder*) clearLabel;
+@end
+
+#define Email_value @"value"
+#define Email_type @"type"
+#define Email_label @"label"
+@interface OWSSignalServiceProtosDataMessageContactEmail : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasValue_:1;
+  BOOL hasLabel_:1;
+  BOOL hasType_:1;
+  NSString* value;
+  NSString* label;
+  OWSSignalServiceProtosDataMessageContactEmailType type;
+}
+- (BOOL) hasValue;
+- (BOOL) hasType;
+- (BOOL) hasLabel;
+@property (readonly, strong) NSString* value;
+@property (readonly) OWSSignalServiceProtosDataMessageContactEmailType type;
+@property (readonly, strong) NSString* label;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactEmailBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactEmailBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactEmail*) prototype;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactEmail*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactEmailBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContactEmail* resultEmail;
+}
+
+- (OWSSignalServiceProtosDataMessageContactEmail*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContactEmail*) build;
+- (OWSSignalServiceProtosDataMessageContactEmail*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactEmail*) other;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasValue;
+- (NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) setValue:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) clearValue;
+
+- (BOOL) hasType;
+- (OWSSignalServiceProtosDataMessageContactEmailType) type;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) setType:(OWSSignalServiceProtosDataMessageContactEmailType) value;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) clearType;
+
+- (BOOL) hasLabel;
+- (NSString*) label;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) setLabel:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactEmailBuilder*) clearLabel;
+@end
+
+#define PostalAddress_type @"type"
+#define PostalAddress_label @"label"
+#define PostalAddress_street @"street"
+#define PostalAddress_pobox @"pobox"
+#define PostalAddress_neighborhood @"neighborhood"
+#define PostalAddress_city @"city"
+#define PostalAddress_region @"region"
+#define PostalAddress_postcode @"postcode"
+#define PostalAddress_country @"country"
+@interface OWSSignalServiceProtosDataMessageContactPostalAddress : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasLabel_:1;
+  BOOL hasStreet_:1;
+  BOOL hasPobox_:1;
+  BOOL hasNeighborhood_:1;
+  BOOL hasCity_:1;
+  BOOL hasRegion_:1;
+  BOOL hasPostcode_:1;
+  BOOL hasCountry_:1;
+  BOOL hasType_:1;
+  NSString* label;
+  NSString* street;
+  NSString* pobox;
+  NSString* neighborhood;
+  NSString* city;
+  NSString* region;
+  NSString* postcode;
+  NSString* country;
+  OWSSignalServiceProtosDataMessageContactPostalAddressType type;
+}
+- (BOOL) hasType;
+- (BOOL) hasLabel;
+- (BOOL) hasStreet;
+- (BOOL) hasPobox;
+- (BOOL) hasNeighborhood;
+- (BOOL) hasCity;
+- (BOOL) hasRegion;
+- (BOOL) hasPostcode;
+- (BOOL) hasCountry;
+@property (readonly) OWSSignalServiceProtosDataMessageContactPostalAddressType type;
+@property (readonly, strong) NSString* label;
+@property (readonly, strong) NSString* street;
+@property (readonly, strong) NSString* pobox;
+@property (readonly, strong) NSString* neighborhood;
+@property (readonly, strong) NSString* city;
+@property (readonly, strong) NSString* region;
+@property (readonly, strong) NSString* postcode;
+@property (readonly, strong) NSString* country;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactPostalAddress*) prototype;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactPostalAddress*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactPostalAddressBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContactPostalAddress* resultPostalAddress;
+}
+
+- (OWSSignalServiceProtosDataMessageContactPostalAddress*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContactPostalAddress*) build;
+- (OWSSignalServiceProtosDataMessageContactPostalAddress*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactPostalAddress*) other;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasType;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressType) type;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setType:(OWSSignalServiceProtosDataMessageContactPostalAddressType) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearType;
+
+- (BOOL) hasLabel;
+- (NSString*) label;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setLabel:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearLabel;
+
+- (BOOL) hasStreet;
+- (NSString*) street;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setStreet:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearStreet;
+
+- (BOOL) hasPobox;
+- (NSString*) pobox;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setPobox:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearPobox;
+
+- (BOOL) hasNeighborhood;
+- (NSString*) neighborhood;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setNeighborhood:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearNeighborhood;
+
+- (BOOL) hasCity;
+- (NSString*) city;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setCity:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearCity;
+
+- (BOOL) hasRegion;
+- (NSString*) region;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setRegion:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearRegion;
+
+- (BOOL) hasPostcode;
+- (NSString*) postcode;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setPostcode:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearPostcode;
+
+- (BOOL) hasCountry;
+- (NSString*) country;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) setCountry:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearCountry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContact* resultContact;
+}
+
+- (OWSSignalServiceProtosDataMessageContact*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContact*) build;
+- (OWSSignalServiceProtosDataMessageContact*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContact*) other;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasName;
+- (OWSSignalServiceProtosDataMessageContactName*) name;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setName:(OWSSignalServiceProtosDataMessageContactName*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setNameBuilder:(OWSSignalServiceProtosDataMessageContactNameBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeName:(OWSSignalServiceProtosDataMessageContactName*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clearName;
+
+- (NSMutableArray<OWSSignalServiceProtosDataMessageContactPhone*> *)number;
+- (OWSSignalServiceProtosDataMessageContactPhone*)numberAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)addNumber:(OWSSignalServiceProtosDataMessageContactPhone*)value;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)setNumberArray:(NSArray<OWSSignalServiceProtosDataMessageContactPhone*> *)array;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)clearNumber;
+
+- (NSMutableArray<OWSSignalServiceProtosDataMessageContactEmail*> *)email;
+- (OWSSignalServiceProtosDataMessageContactEmail*)emailAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)addEmail:(OWSSignalServiceProtosDataMessageContactEmail*)value;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)setEmailArray:(NSArray<OWSSignalServiceProtosDataMessageContactEmail*> *)array;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)clearEmail;
+
+- (NSMutableArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> *)address;
+- (OWSSignalServiceProtosDataMessageContactPostalAddress*)addressAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)addAddress:(OWSSignalServiceProtosDataMessageContactPostalAddress*)value;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)setAddressArray:(NSArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> *)array;
+- (OWSSignalServiceProtosDataMessageContactBuilder *)clearAddress;
+
+- (BOOL) hasAvatar;
+- (OWSSignalServiceProtosAttachmentPointer*) avatar;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clearAvatar;
+@end
+
 @interface OWSSignalServiceProtosDataMessageBuilder : PBGeneratedMessageBuilder {
 @private
   OWSSignalServiceProtosDataMessage* resultDataMessage;
@@ -1088,6 +1585,12 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageBuilder*) setQuoteBuilder:(OWSSignalServiceProtosDataMessageQuoteBuilder*) builderForValue;
 - (OWSSignalServiceProtosDataMessageBuilder*) mergeQuote:(OWSSignalServiceProtosDataMessageQuote*) value;
 - (OWSSignalServiceProtosDataMessageBuilder*) clearQuote;
+
+- (NSMutableArray<OWSSignalServiceProtosDataMessageContact*> *)contact;
+- (OWSSignalServiceProtosDataMessageContact*)contactAtIndex:(NSUInteger)index;
+- (OWSSignalServiceProtosDataMessageBuilder *)addContact:(OWSSignalServiceProtosDataMessageContact*)value;
+- (OWSSignalServiceProtosDataMessageBuilder *)setContactArray:(NSArray<OWSSignalServiceProtosDataMessageContact*> *)array;
+- (OWSSignalServiceProtosDataMessageBuilder *)clearContact;
 @end
 
 #define NullMessage_padding @"padding"
