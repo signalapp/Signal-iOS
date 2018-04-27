@@ -3,22 +3,12 @@
 //
 
 #import "OWSContactShare.h"
+#import "OWSContactShare+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface OWSContactSharePhoneNumber ()
-
-@property (nonatomic) OWSContactSharePhoneType phoneType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic) NSString *phoneNumber;
-
-@end
-
-#pragma mark -
 
 @implementation OWSContactSharePhoneNumber
 
@@ -26,35 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShareEmail ()
-
-@property (nonatomic) OWSContactShareEmailType emailType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic) NSString *email;
-
-@end
-
-#pragma mark -
-
 @implementation OWSContactShareEmail
-
-@end
-
-#pragma mark -
-
-@interface OWSContactShareAddress ()
-
-@property (nonatomic) OWSContactShareAddressType addressType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic, nullable) NSString *street;
-@property (nonatomic, nullable) NSString *pobox;
-@property (nonatomic, nullable) NSString *neighborhood;
-@property (nonatomic, nullable) NSString *city;
-@property (nonatomic, nullable) NSString *region;
-@property (nonatomic, nullable) NSString *postcode;
-@property (nonatomic, nullable) NSString *country;
 
 @end
 
@@ -68,27 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactShare ()
 
-@property (nonatomic, nullable) NSString *givenName;
-@property (nonatomic, nullable) NSString *familyName;
-@property (nonatomic, nullable) NSString *nameSuffix;
-@property (nonatomic, nullable) NSString *namePrefix;
-@property (nonatomic, nullable) NSString *middleName;
-
-@property (nonatomic, nullable) NSArray<OWSContactSharePhoneNumber *> *phoneNumbers;
-@property (nonatomic, nullable) NSArray<OWSContactShareEmail *> *emails;
-@property (nonatomic, nullable) NSArray<OWSContactShareAddress *> *addresses;
-
-@property (nonatomic, nullable) TSAttachment *avatar;
-@property (nonatomic) BOOL isProfileAvatar;
-
 @end
 
 #pragma mark -
 
 @implementation OWSContactShare
 
-+ (OWSContactShare *_Nullable)contactShareMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (OWSContactShare *_Nullable)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
 

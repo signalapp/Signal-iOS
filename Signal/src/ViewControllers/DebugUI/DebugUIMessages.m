@@ -13,6 +13,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
+#import <SignalServiceKit/OWSContactShare+Private.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -43,36 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Messages";
 }
 
-- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
+- (NSArray<OWSTableItem *> *)itemsForActions:(NSArray<DebugUIMessagesAction *> *)actions
 {
-    OWSAssert(thread);
-
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
-                                     actionBlock:^{
-                                         [DebugUIMessages deleteAllMessagesInThread:thread];
-                                     }]];
-
-    for (DebugUIMessagesAction *action in @[
-             [DebugUIMessages sendMessageVariationsAction:thread],
-             // Send Media
-             [DebugUIMessages sendAllMediaAction:thread],
-             [DebugUIMessages sendRandomMediaAction:thread],
-             // Fake Media
-             [DebugUIMessages fakeAllMediaAction:thread],
-             [DebugUIMessages fakeRandomMediaAction:thread],
-             // Fake Text
-             [DebugUIMessages fakeAllTextAction:thread],
-             [DebugUIMessages fakeRandomTextAction:thread],
-             // Sequences
-             [DebugUIMessages allFakeSequencesAction:thread],
-             // Quoted Replies
-             [DebugUIMessages allQuotedReplyAction:thread],
-             // Exemplary
-             [DebugUIMessages allFakeAction:thread],
-             [DebugUIMessages allFakeBackDatedAction:thread],
-         ]) {
+    for (DebugUIMessagesAction *action in actions) {
         [items addObject:[OWSTableItem itemWithTitle:action.label
                                          actionBlock:^{
                                              // For "all in group" actions, do each subaction in the group
@@ -88,6 +64,41 @@ NS_ASSUME_NONNULL_BEGIN
                                              [DebugUIMessages performActionNTimes:action];
                                          }]];
     }
+
+    return items;
+}
+
+- (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
+{
+    OWSAssert(thread);
+
+    NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
+                                     actionBlock:^{
+                                         [DebugUIMessages deleteAllMessagesInThread:thread];
+                                     }]];
+
+    [items addObjectsFromArray:[self itemsForActions:@[
+        [DebugUIMessages sendMessageVariationsAction:thread],
+        // Send Media
+        [DebugUIMessages sendAllMediaAction:thread],
+        [DebugUIMessages sendRandomMediaAction:thread],
+        // Fake Media
+        [DebugUIMessages fakeAllMediaAction:thread],
+        [DebugUIMessages fakeRandomMediaAction:thread],
+        // Fake Text
+        [DebugUIMessages fakeAllTextAction:thread],
+        [DebugUIMessages fakeRandomTextAction:thread],
+        // Sequences
+        [DebugUIMessages allFakeSequencesAction:thread],
+        // Quoted Replies
+        [DebugUIMessages allQuotedReplyAction:thread],
+        // Exemplary
+        [DebugUIMessages allFakeAction:thread],
+        [DebugUIMessages allFakeBackDatedAction:thread],
+        [DebugUIMessages allShareContactAction:thread],
+    ]]];
 
     [items addObjectsFromArray:@[
 
@@ -809,6 +820,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isDelivered:YES
                                                           isRead:NO
                                                    quotedMessage:nil
+                                                    contactShare:nil
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
@@ -1741,6 +1753,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:NO
                                      isRead:NO
                               quotedMessage:nil
+                               contactShare:nil
                                 transaction:transaction];
         }];
 }
@@ -1788,6 +1801,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:isDelivered
                                      isRead:isRead
                               quotedMessage:nil
+                               contactShare:nil
                                 transaction:transaction];
         }];
 }
@@ -1961,6 +1975,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   isDelivered:quotedMessageIsDelivered
                                                                                        isRead:quotedMessageIsRead
                                                                                 quotedMessage:nil
+                                                                                 contactShare:nil
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForMessage:messageToQuote transaction:transaction]
@@ -1985,6 +2000,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isDelivered:replyIsDelivered
                                          isRead:replyIsRead
                                   quotedMessage:quotedMessage
+                                   contactShare:nil
                                     transaction:transaction];
             }
         }
@@ -2642,6 +2658,7 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeBackDatedActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allShareContactActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -2832,6 +2849,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
+                                                            contactShare:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
             [message saveWithTransaction:transaction];
@@ -2878,6 +2896,70 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     [self selectActionUI:[self allFakeBackDatedActions:thread includeLabels:NO] label:@"Select Back-Dated"];
+}
+
+#pragma mark -
+
+typedef OWSContactShare * (^OWSContactShareBlock)(void);
+
++ (DebugUIMessagesAction *)fakeShareContactMessageAction:(TSThread *)thread
+                                                   label:(NSString *)label
+                                       contactShareBlock:(OWSContactShareBlock)contactShareBlock
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            OWSContactShare *contactShare = contactShareBlock();
+            TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
+                                                             messageBody:nil
+                                                         fakeAssetLoader:nil
+                                                            messageState:TSOutgoingMessageStateSent
+                                                             isDelivered:NO
+                                                                  isRead:NO
+                                                           quotedMessage:nil
+                                                            contactShare:contactShare
+                                                             transaction:transaction];
+            [message saveWithTransaction:transaction];
+        }];
+}
+
++ (NSArray<DebugUIMessagesAction *> *)allShareContactActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSent
+                                                          text:@"⚠️ Share Contact ⚠️"]];
+    }
+
+    [actions addObject:[self fakeShareContactMessageAction:thread
+                                                     label:@"Name & Number"
+                                         contactShareBlock:^{
+                                             OWSContactShare *contactShare = [OWSContactShare new];
+                                             contactShare.givenName = @"Alice";
+                                             OWSContactSharePhoneNumber *phoneNumber = [OWSContactSharePhoneNumber new];
+                                             phoneNumber.phoneType = OWSContactSharePhoneType_Home;
+                                             phoneNumber.phoneNumber = @"+13213214321";
+                                             contactShare.phoneNumbers = @[
+                                                 phoneNumber,
+                                             ];
+                                             return contactShare;
+                                         }]];
+
+    return actions;
+}
+
++ (DebugUIMessagesAction *)allShareContactAction:(TSThread *)thread
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Share Contact"
+                                                    subactions:[self allShareContactActions:thread includeLabels:YES]];
 }
 
 #pragma mark -
@@ -3270,6 +3352,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isDelivered:NO
                                          isRead:NO
                                   quotedMessage:nil
+                                   contactShare:nil
                                     transaction:transaction];
                 break;
             }
@@ -3323,6 +3406,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          isRead:NO
                                  isVoiceMessage:NO
                                   quotedMessage:nil
+                                   contactShare:nil
                                     transaction:transaction];
                 break;
             }
@@ -3943,6 +4027,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      isDelivered:(BOOL)isDelivered
                                           isRead:(BOOL)isRead
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContactShare *)contactShare
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -3968,6 +4053,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isRead:isRead
                             isVoiceMessage:attachment.isVoiceMessage
                              quotedMessage:quotedMessage
+                              contactShare:contactShare
                                transaction:transaction];
 }
 
@@ -3980,6 +4066,7 @@ NS_ASSUME_NONNULL_BEGIN
                                           isRead:(BOOL)isRead
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContactShare *)contactShare
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -4001,7 +4088,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:quotedMessage
-                                                       contactShare:nil];
+                                                       contactShare:contactShare];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;

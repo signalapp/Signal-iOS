@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContactShare *)contactShare NS_UNAVAILABLE;
 
 /**
  *  Inits an incoming group message that expires.

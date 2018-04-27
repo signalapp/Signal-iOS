@@ -998,7 +998,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                             transaction:transaction];
 
                 OWSContactShare *_Nullable contactShare =
-                    [OWSContactShare contactShareMessageForDataMessage:dataMessage transaction:transaction];
+                    [OWSContactShare contactShareForDataMessage:dataMessage transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1050,7 +1050,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                           relay:envelope.relay
                                                                                     transaction:transaction];
         OWSContactShare *_Nullable contactShare =
-            [OWSContactShare contactShareMessageForDataMessage:dataMessage transaction:transaction];
+            [OWSContactShare contactShareForDataMessage:dataMessage transaction:transaction];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp

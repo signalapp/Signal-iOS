@@ -33,7 +33,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContactShare *)contactShare NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

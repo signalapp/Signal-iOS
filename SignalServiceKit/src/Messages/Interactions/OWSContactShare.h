@@ -91,8 +91,8 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (OWSContactShare *_Nullable)contactShareMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (OWSContactShare *_Nullable)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 
