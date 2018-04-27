@@ -4049,7 +4049,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlag
 @property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageContactPhone*> * numberArray;
 @property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageContactEmail*> * emailArray;
 @property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> * addressArray;
-@property (strong) OWSSignalServiceProtosAttachmentPointer* avatar;
+@property (strong) OWSSignalServiceProtosDataMessageContactAvatar* avatar;
 @end
 
 @implementation OWSSignalServiceProtosDataMessageContact
@@ -4077,7 +4077,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlag
 - (instancetype) init {
   if ((self = [super init])) {
     self.name = [OWSSignalServiceProtosDataMessageContactName defaultInstance];
-    self.avatar = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+    self.avatar = [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance];
   }
   return self;
 }
@@ -5987,6 +5987,290 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPostalAddressType(
 }
 @end
 
+@interface OWSSignalServiceProtosDataMessageContactAvatar ()
+@property (strong) OWSSignalServiceProtosAttachmentPointer* avatar;
+@property BOOL isProfile;
+@end
+
+@implementation OWSSignalServiceProtosDataMessageContactAvatar
+
+- (BOOL) hasAvatar {
+  return !!hasAvatar_;
+}
+- (void) setHasAvatar:(BOOL) _value_ {
+  hasAvatar_ = !!_value_;
+}
+@synthesize avatar;
+- (BOOL) hasIsProfile {
+  return !!hasIsProfile_;
+}
+- (void) setHasIsProfile:(BOOL) _value_ {
+  hasIsProfile_ = !!_value_;
+}
+- (BOOL) isProfile {
+  return !!isProfile_;
+}
+- (void) setIsProfile:(BOOL) _value_ {
+  isProfile_ = !!_value_;
+}
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.avatar = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+    self.isProfile = NO;
+  }
+  return self;
+}
+static OWSSignalServiceProtosDataMessageContactAvatar* defaultOWSSignalServiceProtosDataMessageContactAvatarInstance = nil;
++ (void) initialize {
+  if (self == [OWSSignalServiceProtosDataMessageContactAvatar class]) {
+    defaultOWSSignalServiceProtosDataMessageContactAvatarInstance = [[OWSSignalServiceProtosDataMessageContactAvatar alloc] init];
+  }
+}
++ (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageContactAvatarInstance;
+}
+- (instancetype) defaultInstance {
+  return defaultOWSSignalServiceProtosDataMessageContactAvatarInstance;
+}
+- (BOOL) isInitialized {
+  return YES;
+}
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
+  if (self.hasAvatar) {
+    [output writeMessage:1 value:self.avatar];
+  }
+  if (self.hasIsProfile) {
+    [output writeBool:2 value:self.isProfile];
+  }
+  [self.unknownFields writeToCodedOutputStream:output];
+}
+- (SInt32) serializedSize {
+  __block SInt32 size_ = memoizedSerializedSize;
+  if (size_ != -1) {
+    return size_;
+  }
+
+  size_ = 0;
+  if (self.hasAvatar) {
+    size_ += computeMessageSize(1, self.avatar);
+  }
+  if (self.hasIsProfile) {
+    size_ += computeBoolSize(2, self.isProfile);
+  }
+  size_ += self.unknownFields.serializedSize;
+  memoizedSerializedSize = size_;
+  return size_;
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromData:(NSData*) data {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromData:data] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromData:data extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromInputStream:(NSInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromInputStream:input] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromCodedInputStream:(PBCodedInputStream*) input {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromCodedInputStream:input] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  return (OWSSignalServiceProtosDataMessageContactAvatar*)[[[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFromCodedInputStream:input extensionRegistry:extensionRegistry] build];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builder {
+  return [[OWSSignalServiceProtosDataMessageContactAvatarBuilder alloc] init];
+}
++ (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactAvatar*) prototype {
+  return [[OWSSignalServiceProtosDataMessageContactAvatar builder] mergeFrom:prototype];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builder {
+  return [OWSSignalServiceProtosDataMessageContactAvatar builder];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) toBuilder {
+  return [OWSSignalServiceProtosDataMessageContactAvatar builderWithPrototype:self];
+}
+- (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
+  if (self.hasAvatar) {
+    [output appendFormat:@"%@%@ {\n", indent, @"avatar"];
+    [self.avatar writeDescriptionTo:output
+                         withIndent:[NSString stringWithFormat:@"%@  ", indent]];
+    [output appendFormat:@"%@}\n", indent];
+  }
+  if (self.hasIsProfile) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"isProfile", [NSNumber numberWithBool:self.isProfile]];
+  }
+  [self.unknownFields writeDescriptionTo:output withIndent:indent];
+}
+- (void) storeInDictionary:(NSMutableDictionary *)dictionary {
+  if (self.hasAvatar) {
+   NSMutableDictionary *messageDictionary = [NSMutableDictionary dictionary]; 
+   [self.avatar storeInDictionary:messageDictionary];
+   [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"avatar"];
+  }
+  if (self.hasIsProfile) {
+    [dictionary setObject: [NSNumber numberWithBool:self.isProfile] forKey: @"isProfile"];
+  }
+  [self.unknownFields storeInDictionary:dictionary];
+}
+- (BOOL) isEqual:(id)other {
+  if (other == self) {
+    return YES;
+  }
+  if (![other isKindOfClass:[OWSSignalServiceProtosDataMessageContactAvatar class]]) {
+    return NO;
+  }
+  OWSSignalServiceProtosDataMessageContactAvatar *otherMessage = other;
+  return
+      self.hasAvatar == otherMessage.hasAvatar &&
+      (!self.hasAvatar || [self.avatar isEqual:otherMessage.avatar]) &&
+      self.hasIsProfile == otherMessage.hasIsProfile &&
+      (!self.hasIsProfile || self.isProfile == otherMessage.isProfile) &&
+      (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
+}
+- (NSUInteger) hash {
+  __block NSUInteger hashCode = 7;
+  if (self.hasAvatar) {
+    hashCode = hashCode * 31 + [self.avatar hash];
+  }
+  if (self.hasIsProfile) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithBool:self.isProfile] hash];
+  }
+  hashCode = hashCode * 31 + [self.unknownFields hash];
+  return hashCode;
+}
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactAvatarBuilder()
+@property (strong) OWSSignalServiceProtosDataMessageContactAvatar* resultAvatar;
+@end
+
+@implementation OWSSignalServiceProtosDataMessageContactAvatarBuilder
+@synthesize resultAvatar;
+- (instancetype) init {
+  if ((self = [super init])) {
+    self.resultAvatar = [[OWSSignalServiceProtosDataMessageContactAvatar alloc] init];
+  }
+  return self;
+}
+- (PBGeneratedMessage*) internalGetResult {
+  return resultAvatar;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clear {
+  self.resultAvatar = [[OWSSignalServiceProtosDataMessageContactAvatar alloc] init];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clone {
+  return [OWSSignalServiceProtosDataMessageContactAvatar builderWithPrototype:resultAvatar];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatar*) defaultInstance {
+  return [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatar*) build {
+  [self checkInitialized];
+  return [self buildPartial];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatar*) buildPartial {
+  OWSSignalServiceProtosDataMessageContactAvatar* returnMe = resultAvatar;
+  self.resultAvatar = nil;
+  return returnMe;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactAvatar*) other {
+  if (other == [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance]) {
+    return self;
+  }
+  if (other.hasAvatar) {
+    [self mergeAvatar:other.avatar];
+  }
+  if (other.hasIsProfile) {
+    [self setIsProfile:other.isProfile];
+  }
+  [self mergeUnknownFields:other.unknownFields];
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input {
+  return [self mergeFromCodedInputStream:input extensionRegistry:[PBExtensionRegistry emptyRegistry]];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry {
+  PBUnknownFieldSetBuilder* unknownFields = [PBUnknownFieldSet builderWithUnknownFields:self.unknownFields];
+  while (YES) {
+    SInt32 tag = [input readTag];
+    switch (tag) {
+      case 0:
+        [self setUnknownFields:[unknownFields build]];
+        return self;
+      default: {
+        if (![self parseUnknownField:input unknownFields:unknownFields extensionRegistry:extensionRegistry tag:tag]) {
+          [self setUnknownFields:[unknownFields build]];
+          return self;
+        }
+        break;
+      }
+      case 10: {
+        OWSSignalServiceProtosAttachmentPointerBuilder* subBuilder = [OWSSignalServiceProtosAttachmentPointer builder];
+        if (self.hasAvatar) {
+          [subBuilder mergeFrom:self.avatar];
+        }
+        [input readMessage:subBuilder extensionRegistry:extensionRegistry];
+        [self setAvatar:[subBuilder buildPartial]];
+        break;
+      }
+      case 16: {
+        [self setIsProfile:[input readBool]];
+        break;
+      }
+    }
+  }
+}
+- (BOOL) hasAvatar {
+  return resultAvatar.hasAvatar;
+}
+- (OWSSignalServiceProtosAttachmentPointer*) avatar {
+  return resultAvatar.avatar;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setAvatar:(OWSSignalServiceProtosAttachmentPointer*) value {
+  resultAvatar.hasAvatar = YES;
+  resultAvatar.avatar = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setAvatarBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue {
+  return [self setAvatar:[builderForValue build]];
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeAvatar:(OWSSignalServiceProtosAttachmentPointer*) value {
+  if (resultAvatar.hasAvatar &&
+      resultAvatar.avatar != [OWSSignalServiceProtosAttachmentPointer defaultInstance]) {
+    resultAvatar.avatar =
+      [[[OWSSignalServiceProtosAttachmentPointer builderWithPrototype:resultAvatar.avatar] mergeFrom:value] buildPartial];
+  } else {
+    resultAvatar.avatar = value;
+  }
+  resultAvatar.hasAvatar = YES;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clearAvatar {
+  resultAvatar.hasAvatar = NO;
+  resultAvatar.avatar = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+  return self;
+}
+- (BOOL) hasIsProfile {
+  return resultAvatar.hasIsProfile;
+}
+- (BOOL) isProfile {
+  return resultAvatar.isProfile;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setIsProfile:(BOOL) value {
+  resultAvatar.hasIsProfile = YES;
+  resultAvatar.isProfile = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clearIsProfile {
+  resultAvatar.hasIsProfile = NO;
+  resultAvatar.isProfile = NO;
+  return self;
+}
+@end
+
 @interface OWSSignalServiceProtosDataMessageContactBuilder()
 @property (strong) OWSSignalServiceProtosDataMessageContact* resultContact;
 @end
@@ -6101,7 +6385,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPostalAddressType(
         break;
       }
       case 50: {
-        OWSSignalServiceProtosAttachmentPointerBuilder* subBuilder = [OWSSignalServiceProtosAttachmentPointer builder];
+        OWSSignalServiceProtosDataMessageContactAvatarBuilder* subBuilder = [OWSSignalServiceProtosDataMessageContactAvatar builder];
         if (self.hasAvatar) {
           [subBuilder mergeFrom:self.avatar];
         }
@@ -6208,22 +6492,22 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPostalAddressType(
 - (BOOL) hasAvatar {
   return resultContact.hasAvatar;
 }
-- (OWSSignalServiceProtosAttachmentPointer*) avatar {
+- (OWSSignalServiceProtosDataMessageContactAvatar*) avatar {
   return resultContact.avatar;
 }
-- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatar:(OWSSignalServiceProtosAttachmentPointer*) value {
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatar:(OWSSignalServiceProtosDataMessageContactAvatar*) value {
   resultContact.hasAvatar = YES;
   resultContact.avatar = value;
   return self;
 }
-- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue {
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builderForValue {
   return [self setAvatar:[builderForValue build]];
 }
-- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosAttachmentPointer*) value {
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosDataMessageContactAvatar*) value {
   if (resultContact.hasAvatar &&
-      resultContact.avatar != [OWSSignalServiceProtosAttachmentPointer defaultInstance]) {
+      resultContact.avatar != [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance]) {
     resultContact.avatar =
-      [[[OWSSignalServiceProtosAttachmentPointer builderWithPrototype:resultContact.avatar] mergeFrom:value] buildPartial];
+      [[[OWSSignalServiceProtosDataMessageContactAvatar builderWithPrototype:resultContact.avatar] mergeFrom:value] buildPartial];
   } else {
     resultContact.avatar = value;
   }
@@ -6232,7 +6516,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageContactPostalAddressType(
 }
 - (OWSSignalServiceProtosDataMessageContactBuilder*) clearAvatar {
   resultContact.hasAvatar = NO;
-  resultContact.avatar = [OWSSignalServiceProtosAttachmentPointer defaultInstance];
+  resultContact.avatar = [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance];
   return self;
 }
 @end

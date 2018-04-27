@@ -158,11 +158,16 @@ message DataMessage {
       optional string country      = 9;
     }
 
-    optional Name              name      = 1;
-    repeated Phone             number    = 3;
-    repeated Email             email     = 4;
-    repeated PostalAddress     address   = 5;
-    optional AttachmentPointer avatar    = 6;
+    message Avatar {
+      optional AttachmentPointer avatar    = 1;
+      optional bool              isProfile = 2;
+    }
+
+    optional Name              name            = 1;
+    repeated Phone             number          = 3;
+    repeated Email             email           = 4;
+    repeated PostalAddress     address         = 5;
+    optional Avatar            avatar          = 6;
   }
 
   optional string             body        = 1;

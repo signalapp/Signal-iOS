@@ -27,6 +27,8 @@
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosDataMessageBuilder;
 @class OWSSignalServiceProtosDataMessageContact;
+@class OWSSignalServiceProtosDataMessageContactAvatar;
+@class OWSSignalServiceProtosDataMessageContactAvatarBuilder;
 @class OWSSignalServiceProtosDataMessageContactBuilder;
 @class OWSSignalServiceProtosDataMessageContactEmail;
 @class OWSSignalServiceProtosDataMessageContactEmailBuilder;
@@ -1080,7 +1082,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasName_:1;
   BOOL hasAvatar_:1;
   OWSSignalServiceProtosDataMessageContactName* name;
-  OWSSignalServiceProtosAttachmentPointer* avatar;
+  OWSSignalServiceProtosDataMessageContactAvatar* avatar;
   NSMutableArray * numberArray;
   NSMutableArray * emailArray;
   NSMutableArray * addressArray;
@@ -1091,7 +1093,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPhone*> * number;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactEmail*> * email;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> * address;
-@property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* avatar;
+@property (readonly, strong) OWSSignalServiceProtosDataMessageContactAvatar* avatar;
 - (OWSSignalServiceProtosDataMessageContactPhone*)numberAtIndex:(NSUInteger)index;
 - (OWSSignalServiceProtosDataMessageContactEmail*)emailAtIndex:(NSUInteger)index;
 - (OWSSignalServiceProtosDataMessageContactPostalAddress*)addressAtIndex:(NSUInteger)index;
@@ -1474,6 +1476,68 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageContactPostalAddressBuilder*) clearCountry;
 @end
 
+#define Avatar_avatar @"avatar"
+#define Avatar_isProfile @"isProfile"
+@interface OWSSignalServiceProtosDataMessageContactAvatar : PBGeneratedMessage<GeneratedMessageProtocol> {
+@private
+  BOOL hasIsProfile_:1;
+  BOOL hasAvatar_:1;
+  BOOL isProfile_:1;
+  OWSSignalServiceProtosAttachmentPointer* avatar;
+}
+- (BOOL) hasAvatar;
+- (BOOL) hasIsProfile;
+@property (readonly, strong) OWSSignalServiceProtosAttachmentPointer* avatar;
+- (BOOL) isProfile;
+
++ (instancetype) defaultInstance;
+- (instancetype) defaultInstance;
+
+- (BOOL) isInitialized;
+- (void) writeToCodedOutputStream:(PBCodedOutputStream*) output;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builder;
++ (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builderWithPrototype:(OWSSignalServiceProtosDataMessageContactAvatar*) prototype;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) toBuilder;
+
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromData:(NSData*) data;
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromData:(NSData*) data extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromInputStream:(NSInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromInputStream:(NSInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromCodedInputStream:(PBCodedInputStream*) input;
++ (OWSSignalServiceProtosDataMessageContactAvatar*) parseFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+@end
+
+@interface OWSSignalServiceProtosDataMessageContactAvatarBuilder : PBGeneratedMessageBuilder {
+@private
+  OWSSignalServiceProtosDataMessageContactAvatar* resultAvatar;
+}
+
+- (OWSSignalServiceProtosDataMessageContactAvatar*) defaultInstance;
+
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clear;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clone;
+
+- (OWSSignalServiceProtosDataMessageContactAvatar*) build;
+- (OWSSignalServiceProtosDataMessageContactAvatar*) buildPartial;
+
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFrom:(OWSSignalServiceProtosDataMessageContactAvatar*) other;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
+
+- (BOOL) hasAvatar;
+- (OWSSignalServiceProtosAttachmentPointer*) avatar;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setAvatarBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) mergeAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clearAvatar;
+
+- (BOOL) hasIsProfile;
+- (BOOL) isProfile;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) setIsProfile:(BOOL) value;
+- (OWSSignalServiceProtosDataMessageContactAvatarBuilder*) clearIsProfile;
+@end
+
 @interface OWSSignalServiceProtosDataMessageContactBuilder : PBGeneratedMessageBuilder {
 @private
   OWSSignalServiceProtosDataMessageContact* resultContact;
@@ -1517,10 +1581,10 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageContactBuilder *)clearAddress;
 
 - (BOOL) hasAvatar;
-- (OWSSignalServiceProtosAttachmentPointer*) avatar;
-- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
-- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosAttachmentPointerBuilder*) builderForValue;
-- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosAttachmentPointer*) value;
+- (OWSSignalServiceProtosDataMessageContactAvatar*) avatar;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatar:(OWSSignalServiceProtosDataMessageContactAvatar*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builderForValue;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosDataMessageContactAvatar*) value;
 - (OWSSignalServiceProtosDataMessageContactBuilder*) clearAvatar;
 @end
 
