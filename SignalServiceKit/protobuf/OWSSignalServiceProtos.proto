@@ -105,6 +105,66 @@ message DataMessage {
     repeated QuotedAttachment  attachments = 4;
   }
 
+  message Contact {
+    message Name {
+      optional string givenName  = 1;
+      optional string familyName = 2;
+      optional string prefix     = 3;
+      optional string suffix     = 4;
+      optional string middleName = 5;
+    }
+
+    message Phone {
+      enum Type {
+        HOME   = 1;
+        MOBILE = 2;
+        WORK   = 3;
+        CUSTOM = 4;
+      }
+
+      optional string value = 1;
+      optional Type   type  = 2;
+      optional string label = 3;
+    }
+
+    message Email {
+      enum Type {
+        HOME   = 1;
+        MOBILE = 2;
+        WORK   = 3;
+        CUSTOM = 4;
+      }
+
+      optional string value = 1;
+      optional Type   type  = 2;
+      optional string label = 3;
+    }
+
+    message PostalAddress {
+      enum Type {
+        HOME   = 1;
+        WORK   = 2;
+        CUSTOM = 3;
+      }
+
+      optional Type   type         = 1;
+      optional string label        = 2;
+      optional string street       = 3;
+      optional string pobox        = 4;
+      optional string neighborhood = 5;
+      optional string city         = 6;
+      optional string region       = 7;
+      optional string postcode     = 8;
+      optional string country      = 9;
+    }
+
+    optional Name              name      = 1;
+    repeated Phone             number    = 3;
+    repeated Email             email     = 4;
+    repeated PostalAddress     address   = 5;
+    optional AttachmentPointer avatar    = 6;
+  }
+
   optional string             body        = 1;
   repeated AttachmentPointer  attachments = 2;
   optional GroupContext       group       = 3;
@@ -113,6 +173,7 @@ message DataMessage {
   optional bytes              profileKey  = 6;
   optional uint64             timestamp   = 7;
   optional Quote              quote       = 8;
+  repeated Contact            contact     = 9;
 }
 
 message NullMessage {
