@@ -546,7 +546,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             conversationPicker.attachment = attachment
             strongSelf.showPrimaryViewController(conversationPicker)
             Logger.info("\(strongSelf.logTag) showing picker with attachment: \(attachment)")
-        }.catch {[weak self]  error in
+        }.catch { [weak self]  error in
             SwiftAssertIsOnMainThread(#function)
             guard let strongSelf = self else { return }
 

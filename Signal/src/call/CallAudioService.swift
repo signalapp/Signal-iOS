@@ -418,7 +418,7 @@ protocol CallAudioServiceDelegate: class {
             return
         }
 
-        vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) {[weak self] _ in
+        vibrateTimer = WeakTimer.scheduledTimer(timeInterval: vibrateRepeatDuration, target: self, userInfo: nil, repeats: true) { [weak self] _ in
             self?.ringVibration()
         }
         vibrateTimer?.fire()
