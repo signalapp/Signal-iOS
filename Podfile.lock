@@ -20,11 +20,11 @@ PODS:
     - Curve25519Kit (~> 2.1.0)
     - HKDFKit (~> 0.0.3)
     - ProtocolBuffers (~> 1.9.8)
-  - CocoaLumberjack (3.4.1):
-    - CocoaLumberjack/Default (= 3.4.1)
-    - CocoaLumberjack/Extensions (= 3.4.1)
-  - CocoaLumberjack/Default (3.4.1)
-  - CocoaLumberjack/Extensions (3.4.1):
+  - CocoaLumberjack (3.4.2):
+    - CocoaLumberjack/Default (= 3.4.2)
+    - CocoaLumberjack/Extensions (= 3.4.2)
+  - CocoaLumberjack/Default (3.4.2)
+  - CocoaLumberjack/Extensions (3.4.2):
     - CocoaLumberjack/Default
   - Curve25519Kit (2.1.0)
   - GRKOpenSSLFramework (1.0.2.12)
@@ -59,7 +59,7 @@ PODS:
   - SQLCipher/common (3.4.2)
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
-  - SSZipArchive (2.1.1)
+  - SSZipArchive (2.1.2)
   - TwistedOakCollapsingFutures (1.0.0):
     - UnionFind (~> 1.0)
   - UnionFind (1.0.1)
@@ -216,7 +216,7 @@ SPEC CHECKSUMS:
   AFNetworking: 8ac6017b94ea105479f7776e5288e48ae9c59bb4
   ATAppUpdater: a9f7027060959d47e58733d3b48f6b9a28cb8de1
   AxolotlKit: 7cfd2e71329b8dc398734e95b936450a2081fd60
-  CocoaLumberjack: 2e258a064cacc8eb9a2aca318e24d02a0a7fd56d
+  CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   Curve25519Kit: 76d0859ecb34704f7732847812363f83b23a6a59
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3fb424060aaf69795bc8ab34c4c233b98dc6303b
@@ -231,7 +231,7 @@ SPEC CHECKSUMS:
   SignalServiceKit: 5cc6e8e249f381c5eaee8693c0dff20fc1a3eee0
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
-  SSZipArchive: 14401ade5f8e82aba1ff03e9f88e9de60937ae60
+  SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
   TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
   UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 299a32de9d350d37a9ac5b0532609d87d5d2a5de
