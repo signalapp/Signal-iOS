@@ -261,6 +261,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
+    } else if (self.contactShare) {
+        // TODO: Include properly formatted name.
+        return @"👤";
     } else {
         OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
         // TODO: We should do better here.

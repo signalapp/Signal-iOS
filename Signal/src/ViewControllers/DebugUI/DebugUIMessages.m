@@ -2950,6 +2950,83 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                              ];
                                              return contactShare;
                                          }]];
+    [actions addObject:[self fakeShareContactMessageAction:thread
+                                                     label:@"Name & Email"
+                                         contactShareBlock:^{
+                                             OWSContactShare *contactShare = [OWSContactShare new];
+                                             contactShare.givenName = @"Bob";
+                                             OWSContactShareEmail *email = [OWSContactShareEmail new];
+                                             email.emailType = OWSContactShareEmailType_Home;
+                                             email.email = @"a@b.com";
+                                             contactShare.emails = @[
+                                                 email,
+                                             ];
+                                             return contactShare;
+                                         }]];
+    [actions
+        addObject:[self fakeShareContactMessageAction:thread
+                                                label:@"Complicated"
+                                    contactShareBlock:^{
+                                        OWSContactShare *contactShare = [OWSContactShare new];
+                                        contactShare.givenName = @"Alice";
+                                        contactShare.familyName = @"Carol";
+                                        contactShare.middleName = @"Bob";
+                                        contactShare.namePrefix = @"Ms.";
+                                        contactShare.nameSuffix = @"Esq.";
+
+                                        OWSContactSharePhoneNumber *phoneNumber1 = [OWSContactSharePhoneNumber new];
+                                        phoneNumber1.phoneType = OWSContactSharePhoneType_Home;
+                                        phoneNumber1.phoneNumber = @"+13213214321";
+                                        OWSContactSharePhoneNumber *phoneNumber2 = [OWSContactSharePhoneNumber new];
+                                        phoneNumber2.phoneType = OWSContactSharePhoneType_Custom;
+                                        phoneNumber2.label = @"Carphone";
+                                        phoneNumber2.phoneNumber = @"+13332221111";
+                                        contactShare.phoneNumbers = @[
+                                            phoneNumber1,
+                                            phoneNumber2,
+                                        ];
+
+                                        OWSContactShareEmail *email1 = [OWSContactShareEmail new];
+                                        email1.emailType = OWSContactShareEmailType_Home;
+                                        email1.email = @"a@b.com";
+                                        OWSContactShareEmail *email2 = [OWSContactShareEmail new];
+                                        email2.emailType = OWSContactShareEmailType_Custom;
+                                        email2.label = @"customer support";
+                                        email2.email = @"a@b.com";
+                                        contactShare.emails = @[
+                                            email1,
+                                            email2,
+                                        ];
+
+                                        OWSContactShareAddress *address1 = [OWSContactShareAddress new];
+                                        address1.addressType = OWSContactShareAddressType_Home;
+                                        address1.street = @"123 home st.";
+                                        address1.neighborhood = @"round the bend.";
+                                        address1.city = @"homeville";
+                                        address1.region = @"HO";
+                                        address1.postcode = @"12345";
+                                        address1.country = @"USA";
+                                        OWSContactShareAddress *address2 = [OWSContactShareAddress new];
+                                        address2.addressType = OWSContactShareAddressType_Custom;
+                                        address2.label = @"Otra casa";
+                                        address2.pobox = @"caja 123";
+                                        address2.street = @"123 casa calle";
+                                        address2.city = @"barrio norte";
+                                        address2.region = @"AB";
+                                        address2.postcode = @"53421";
+                                        address2.country = @"MX";
+                                        contactShare.addresses = @[
+                                            address1,
+                                            address2,
+                                        ];
+
+                                        //                                             @property (nonatomic, nullable)
+                                        //                                             NSArray<OWSContactShareAddress *>
+                                        //                                             *addresses;
+
+                                        // TODO: Avatar
+                                        return contactShare;
+                                    }]];
 
     return actions;
 }
