@@ -153,19 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
         OWSSignalServiceProtosDataMessageContactName *nameProto = contactProto.name;
 
         if (nameProto.hasGivenName) {
-            contactShare.givenName = nameProto.givenName;
+            contactShare.givenName = nameProto.givenName.ows_stripped;
         }
         if (nameProto.hasFamilyName) {
-            contactShare.familyName = nameProto.familyName;
+            contactShare.familyName = nameProto.familyName.ows_stripped;
         }
         if (nameProto.hasPrefix) {
-            contactShare.namePrefix = nameProto.prefix;
+            contactShare.namePrefix = nameProto.prefix.ows_stripped;
         }
         if (nameProto.hasSuffix) {
-            contactShare.nameSuffix = nameProto.suffix;
+            contactShare.nameSuffix = nameProto.suffix.ows_stripped;
         }
         if (nameProto.hasMiddleName) {
-            contactShare.middleName = nameProto.middleName;
+            contactShare.middleName = nameProto.middleName.ows_stripped;
         }
     }
 
@@ -196,6 +196,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     contactShare.addresses = [addresses copy];
 
+    // TODO: Avatar
+
     return contactShare;
 }
 
@@ -220,11 +222,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     if (phoneNumberProto.hasLabel) {
-        result.label = phoneNumberProto.label;
+        result.label = phoneNumberProto.label.ows_stripped;
     }
     if (phoneNumberProto.hasValue) {
-        result.phoneNumber = phoneNumberProto.value;
+        result.phoneNumber = phoneNumberProto.value.ows_stripped;
     } else {
+        return nil;
+    }
+    if (!result.isValid) {
         return nil;
     }
     return result;
@@ -250,11 +255,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     if (emailProto.hasLabel) {
-        result.label = emailProto.label;
+        result.label = emailProto.label.ows_stripped;
     }
     if (emailProto.hasValue) {
-        result.email = emailProto.value;
+        result.email = emailProto.value.ows_stripped;
     } else {
+        return nil;
+    }
+    if (!result.isValid) {
         return nil;
     }
     return result;
@@ -278,28 +286,31 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     if (addressProto.hasLabel) {
-        result.label = addressProto.label;
+        result.label = addressProto.label.ows_stripped;
     }
     if (addressProto.hasStreet) {
-        result.street = addressProto.street;
+        result.street = addressProto.street.ows_stripped;
     }
     if (addressProto.hasPobox) {
-        result.pobox = addressProto.pobox;
+        result.pobox = addressProto.pobox.ows_stripped;
     }
     if (addressProto.hasNeighborhood) {
-        result.neighborhood = addressProto.neighborhood;
+        result.neighborhood = addressProto.neighborhood.ows_stripped;
     }
     if (addressProto.hasCity) {
-        result.city = addressProto.city;
+        result.city = addressProto.city.ows_stripped;
     }
     if (addressProto.hasRegion) {
-        result.region = addressProto.region;
+        result.region = addressProto.region.ows_stripped;
     }
     if (addressProto.hasPostcode) {
-        result.postcode = addressProto.postcode;
+        result.postcode = addressProto.postcode.ows_stripped;
     }
     if (addressProto.hasCountry) {
-        result.country = addressProto.country;
+        result.country = addressProto.country.ows_stripped;
+    }
+    if (!result.isValid) {
+        return nil;
     }
     return result;
 }
