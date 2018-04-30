@@ -3,8 +3,10 @@
 //
 
 #import "OWSContactShare.h"
+#import "NSString+SSK.h"
 #import "OWSContactShare+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "PhoneNumber.h"
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -23,6 +25,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactSharePhoneNumber
 
+- (BOOL)isValid
+{
+    if (![PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber]) {
+        return NO;
+    }
+    switch (self.phoneType) {
+        case OWSContactSharePhoneType_Home:
+        case OWSContactSharePhoneType_Mobile:
+        case OWSContactSharePhoneType_Work:
+            return YES;
+        default:
+            return self.label.ows_stripped.length > 0;
+    }
+}
+
 @end
 
 #pragma mark -
@@ -39,6 +56,21 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSContactShareEmail
+
+- (BOOL)isValid
+{
+    if (self.email.ows_stripped.length < 1) {
+        return NO;
+    }
+    switch (self.emailType) {
+        case OWSContactShareEmailType_Home:
+        case OWSContactShareEmailType_Mobile:
+        case OWSContactShareEmailType_Work:
+            return YES;
+        default:
+            return self.label.ows_stripped.length > 0;
+    }
+}
 
 @end
 
@@ -62,6 +94,23 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSContactShareAddress
+
+- (BOOL)isValid
+{
+    if (self.street.ows_stripped.length < 1 && self.pobox.ows_stripped.length < 1
+        && self.neighborhood.ows_stripped.length < 1 && self.city.ows_stripped.length < 1
+        && self.region.ows_stripped.length < 1 && self.postcode.ows_stripped.length < 1
+        && self.country.ows_stripped.length < 1) {
+        return NO;
+    }
+    switch (self.addressType) {
+        case OWSContactShareAddressType_Home:
+        case OWSContactShareAddressType_Work:
+            return YES;
+        default:
+            return self.label.ows_stripped.length > 0;
+    }
+}
 
 @end
 
@@ -253,6 +302,30 @@ NS_ASSUME_NONNULL_BEGIN
         result.country = addressProto.country;
     }
     return result;
+}
+
+- (BOOL)isValid
+{
+    if (self.givenName.ows_stripped.length < 1 && self.familyName.ows_stripped.length) {
+        return NO;
+    }
+
+    for (OWSContactSharePhoneNumber *phoneNumber in self.phoneNumbers) {
+        if (phoneNumber.isValid) {
+            return YES;
+        }
+    }
+    for (OWSContactShareEmail *email in self.emails) {
+        if (email.isValid) {
+            return YES;
+        }
+    }
+    for (OWSContactShareAddress *address in self.addresses) {
+        if (address.isValid) {
+            return YES;
+        }
+    }
+    return NO;
 }
 
 @end

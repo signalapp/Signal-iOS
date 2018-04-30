@@ -25,6 +25,8 @@ typedef NS_ENUM(NSUInteger, OWSContactSharePhoneType) {
 
 @property (nonatomic, readonly) NSString *phoneNumber;
 
+- (BOOL)isValid;
+
 @end
 
 #pragma mark -
@@ -43,6 +45,8 @@ typedef NS_ENUM(NSUInteger, OWSContactShareEmailType) {
 @property (nonatomic, readonly, nullable) NSString *label;
 
 @property (nonatomic, readonly) NSString *email;
+
+- (BOOL)isValid;
 
 @end
 
@@ -67,6 +71,8 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 @property (nonatomic, readonly, nullable) NSString *region;
 @property (nonatomic, readonly, nullable) NSString *postcode;
 @property (nonatomic, readonly, nullable) NSString *country;
+
+- (BOOL)isValid;
 
 @end
 
@@ -93,6 +99,8 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 
 + (OWSContactShare *_Nullable)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (BOOL)isValid;
 
 @end
 

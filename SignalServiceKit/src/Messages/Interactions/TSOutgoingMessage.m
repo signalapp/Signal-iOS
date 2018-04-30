@@ -4,6 +4,8 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
+#import "OWSContactShare.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
@@ -784,46 +786,198 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         }
         [builder setAttachmentsArray:attachments];
     }
-    
-    // Quoted Attachment
+
+    // Quoted Reply
+    OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
+    if (quotedMessageBuilder) {
+        [builder setQuoteBuilder:quotedMessageBuilder];
+    }
+
+    // Contact Share
+    OWSSignalServiceProtosDataMessageContact *_Nullable contactShare = self.contactShareBuilder;
+    if (contactShare) {
+        [builder addContact:contactShare];
+    }
+
+    return builder;
+}
+
+- (nullable OWSSignalServiceProtosDataMessageQuoteBuilder *)quotedMessageBuilder
+{
+    if (!self.quotedMessage) {
+        return nil;
+    }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
-    if (quotedMessage) {
-        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
-        [quoteBuilder setId:quotedMessage.timestamp];
-        [quoteBuilder setAuthor:quotedMessage.authorId];
-        
-        BOOL hasQuotedText = NO;
-        BOOL hasQuotedAttachment = NO;
-        if (self.quotedMessage.body.length > 0) {
-            hasQuotedText = YES;
-            [quoteBuilder setText:quotedMessage.body];
-        }
 
-        if (quotedMessage.quotedAttachments) {
-            for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
-                hasQuotedAttachment = YES;
+    OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+    [quoteBuilder setId:quotedMessage.timestamp];
+    [quoteBuilder setAuthor:quotedMessage.authorId];
 
-                OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder = [OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder new];
-                
-                quotedAttachmentBuilder.contentType = attachment.contentType;
-                quotedAttachmentBuilder.fileName = attachment.sourceFilename;
-                if (attachment.thumbnailAttachmentStreamId) {
-                    quotedAttachmentBuilder.thumbnail =
-                        [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
-                }
+    BOOL hasQuotedText = NO;
+    BOOL hasQuotedAttachment = NO;
+    if (self.quotedMessage.body.length > 0) {
+        hasQuotedText = YES;
+        [quoteBuilder setText:quotedMessage.body];
+    }
 
-                [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
+    if (quotedMessage.quotedAttachments) {
+        for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
+            hasQuotedAttachment = YES;
+
+            OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
+                [OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder new];
+
+            quotedAttachmentBuilder.contentType = attachment.contentType;
+            quotedAttachmentBuilder.fileName = attachment.sourceFilename;
+            if (attachment.thumbnailAttachmentStreamId) {
+                quotedAttachmentBuilder.thumbnail =
+                    [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
             }
-        }
-        
-        if (hasQuotedText || hasQuotedAttachment) {
-            [builder setQuoteBuilder:quoteBuilder];
-        } else {
-            OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+
+            [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
         }
     }
-    
-    return builder;
+
+    if (hasQuotedText || hasQuotedAttachment) {
+        return quoteBuilder;
+    } else {
+        OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+        return nil;
+    }
+}
+
+- (nullable OWSSignalServiceProtosDataMessageContact *)contactShareBuilder
+{
+    if (!self.contactShare) {
+        return nil;
+    }
+    OWSContactShare *contactShare = self.contactShare;
+    if (!contactShare.isValid) {
+        OWSProdLogAndFail(@"%@ contact share is invalid.", self.logTag);
+        return nil;
+    }
+
+    OWSSignalServiceProtosDataMessageContactBuilder *contactBuilder =
+        [OWSSignalServiceProtosDataMessageContactBuilder new];
+
+    // TODO: Should we normalize/validate values here?
+    OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
+        [OWSSignalServiceProtosDataMessageContactNameBuilder new];
+    if (contactShare.givenName.ows_stripped.length > 0) {
+        nameBuilder.givenName = contactShare.givenName.ows_stripped;
+    }
+    if (contactShare.familyName.ows_stripped.length > 0) {
+        nameBuilder.familyName = contactShare.familyName.ows_stripped;
+    }
+    if (contactShare.middleName.ows_stripped.length > 0) {
+        nameBuilder.middleName = contactShare.middleName.ows_stripped;
+    }
+    if (contactShare.namePrefix.ows_stripped.length > 0) {
+        nameBuilder.prefix = contactShare.namePrefix.ows_stripped;
+    }
+    if (contactShare.nameSuffix.ows_stripped.length > 0) {
+        nameBuilder.suffix = contactShare.nameSuffix.ows_stripped;
+    }
+    [contactBuilder setNameBuilder:nameBuilder];
+
+    for (OWSContactSharePhoneNumber *phoneNumber in contactShare.phoneNumbers) {
+        if (!phoneNumber.isValid) {
+            OWSProdLogAndFail(@"%@ phone number is invalid.", self.logTag);
+            continue;
+        }
+        OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
+            [OWSSignalServiceProtosDataMessageContactPhoneBuilder new];
+        phoneBuilder.value = phoneNumber.phoneNumber;
+        if (phoneBuilder.label.ows_stripped.length > 0) {
+            phoneBuilder.label = phoneBuilder.label.ows_stripped;
+        }
+        switch (phoneNumber.phoneType) {
+            case OWSContactSharePhoneType_Home:
+                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeHome;
+                break;
+            case OWSContactSharePhoneType_Mobile:
+                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeMobile;
+                break;
+            case OWSContactSharePhoneType_Work:
+                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeWork;
+                break;
+            default:
+                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeCustom;
+                break;
+        }
+        [contactBuilder addNumber:phoneBuilder.build];
+    }
+
+    for (OWSContactShareEmail *email in contactShare.emails) {
+        if (!email.isValid) {
+            OWSProdLogAndFail(@"%@ email is invalid.", self.logTag);
+            continue;
+        }
+        OWSSignalServiceProtosDataMessageContactEmailBuilder *emailBuilder =
+            [OWSSignalServiceProtosDataMessageContactEmailBuilder new];
+        emailBuilder.value = email.email;
+        if (emailBuilder.label.ows_stripped.length > 0) {
+            emailBuilder.label = emailBuilder.label.ows_stripped;
+        }
+        switch (email.emailType) {
+            case OWSContactShareEmailType_Home:
+                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeHome;
+                break;
+            case OWSContactShareEmailType_Mobile:
+                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeMobile;
+                break;
+            case OWSContactShareEmailType_Work:
+                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeWork;
+                break;
+            default:
+                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeCustom;
+                break;
+        }
+        [contactBuilder addEmail:emailBuilder.build];
+    }
+
+    for (OWSContactShareAddress *address in contactShare.addresses) {
+        if (!address.isValid) {
+            OWSProdLogAndFail(@"%@ address is invalid.", self.logTag);
+            continue;
+        }
+        OWSSignalServiceProtosDataMessageContactPostalAddressBuilder *addressBuilder =
+            [OWSSignalServiceProtosDataMessageContactPostalAddressBuilder new];
+        if (addressBuilder.label.ows_stripped.length > 0) {
+            addressBuilder.label = addressBuilder.label.ows_stripped;
+        }
+        if (addressBuilder.street.ows_stripped.length > 0) {
+            addressBuilder.street = addressBuilder.street.ows_stripped;
+        }
+        if (addressBuilder.pobox.ows_stripped.length > 0) {
+            addressBuilder.pobox = addressBuilder.pobox.ows_stripped;
+        }
+        if (addressBuilder.neighborhood.ows_stripped.length > 0) {
+            addressBuilder.neighborhood = addressBuilder.neighborhood.ows_stripped;
+        }
+        if (addressBuilder.city.ows_stripped.length > 0) {
+            addressBuilder.city = addressBuilder.city.ows_stripped;
+        }
+        if (addressBuilder.region.ows_stripped.length > 0) {
+            addressBuilder.region = addressBuilder.region.ows_stripped;
+        }
+        if (addressBuilder.postcode.ows_stripped.length > 0) {
+            addressBuilder.postcode = addressBuilder.postcode.ows_stripped;
+        }
+        if (addressBuilder.country.ows_stripped.length > 0) {
+            addressBuilder.country = addressBuilder.country.ows_stripped;
+        }
+        [contactBuilder addAddress:addressBuilder.build];
+    }
+
+    // TODO: avatar
+
+    OWSSignalServiceProtosDataMessageContact *contact = [contactBuilder build];
+    if (contact.number.count < 1 && contact.email.count < 1 && contact.address.count < 1) {
+        OWSProdLogAndFail(@"%@ contact has neither phone, email or address.", self.logTag);
+        return nil;
+    }
+    return contact;
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.

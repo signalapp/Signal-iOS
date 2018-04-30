@@ -3020,10 +3020,6 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                             address2,
                                         ];
 
-                                        //                                             @property (nonatomic, nullable)
-                                        //                                             NSArray<OWSContactShareAddress *>
-                                        //                                             *addresses;
-
                                         // TODO: Avatar
                                         return contactShare;
                                     }]];
