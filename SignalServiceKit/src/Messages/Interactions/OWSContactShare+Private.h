@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// These private interfaces expose setter accessors to facilitate
+// construction of fake messages, etc.
 @interface OWSContactSharePhoneNumber (Private)
 
 @property (nonatomic) OWSContactSharePhoneType phoneType;
