@@ -21,7 +21,8 @@ typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
     TSOutgoingMessageStateSent,
 };
 
-// Used
+NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value);
+
 typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     // Message could not be sent to recipient.
     OWSOutgoingMessageRecipientStateFailed = 0,
@@ -36,6 +37,8 @@ typedef NS_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     OWSOutgoingMessageRecipientStateMin = OWSOutgoingMessageRecipientStateFailed,
     OWSOutgoingMessageRecipientStateMax = OWSOutgoingMessageRecipientStateSent,
 };
+
+NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value);
 
 typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMessageUnspecified,
@@ -222,6 +225,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (nullable NSNumber *)firstRecipientReadTimestamp;
+
+- (NSString *)statusDescription;
 
 @end
 
