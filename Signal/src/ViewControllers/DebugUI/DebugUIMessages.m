@@ -4071,7 +4071,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
 {
     OWSAssert(thread);
     OWSAssert(transaction);
-    OWSAssert(messageBody.length > 0 || attachmentId.length > 0);
+    OWSAssert(messageBody.length > 0 || attachmentId.length > 0 || contactShare);
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
