@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
     }];
 
-    CGFloat maxTitleWidth = (viewWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
+    CGFloat maxTitleWidth = (contentWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
@@ -315,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
     return action == @selector(delete:);
 }
 
-- (void) delete:(nullable id)sender
+- (void)delete:(nullable id)sender
 {
     DDLogInfo(@"%@ chose delete", self.logTag);
 
