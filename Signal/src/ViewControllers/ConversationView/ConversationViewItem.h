@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Video,
     OWSMessageCellType_GenericAttachment,
     OWSMessageCellType_DownloadingAttachment,
+    OWSMessageCellType_ShareContact,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -26,6 +27,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ConversationViewCell;
 @class DisplayableText;
 @class OWSAudioMessageView;
+@class OWSContactShare;
 @class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -100,6 +102,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
 @property (nonatomic) BOOL didCellMediaFailToLoad;
+
+- (nullable OWSContactShare *)contactShare;
+- (nullable NSString *)contactShareName;
 
 #pragma mark - UIMenuController
 
