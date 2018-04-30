@@ -186,7 +186,9 @@ void AssertIsOnSendingQueue()
 
 - (void)didSucceed
 {
-    OWSAssert(self.message.messageState == TSOutgoingMessageStateSent);
+    if (self.message.messageState != TSOutgoingMessageStateSent) {
+        OWSProdLogAndFail(@"%@ unexpected message status: %@", self.logTag, self.message.statusDescription);
+    }
 
     self.successHandler();
 }
@@ -423,7 +425,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssert(error);
 
-    error = nil;
+    *error = nil;
 
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
 

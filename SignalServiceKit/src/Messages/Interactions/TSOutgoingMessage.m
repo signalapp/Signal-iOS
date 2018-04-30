@@ -23,6 +23,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRecipientAll";
 
+NSString *NSStringForOutgoingMessageState(TSOutgoingMessageState value)
+{
+    switch (value) {
+        case TSOutgoingMessageStateSending:
+            return @"TSOutgoingMessageStateSending";
+        case TSOutgoingMessageStateFailed:
+            return @"TSOutgoingMessageStateFailed";
+        case TSOutgoingMessageStateSent_OBSOLETE:
+            return @"TSOutgoingMessageStateSent_OBSOLETE";
+        case TSOutgoingMessageStateDelivered_OBSOLETE:
+            return @"TSOutgoingMessageStateDelivered_OBSOLETE";
+        case TSOutgoingMessageStateSent:
+            return @"TSOutgoingMessageStateSent";
+    }
+}
+
+NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientState value)
+{
+    switch (value) {
+        case OWSOutgoingMessageRecipientStateFailed:
+            return @"OWSOutgoingMessageRecipientStateFailed";
+        case OWSOutgoingMessageRecipientStateSending:
+            return @"OWSOutgoingMessageRecipientStateSending";
+        case OWSOutgoingMessageRecipientStateSkipped:
+            return @"OWSOutgoingMessageRecipientStateSkipped";
+        case OWSOutgoingMessageRecipientStateSent:
+            return @"OWSOutgoingMessageRecipientStateSent";
+    }
+}
+
 @interface TSOutgoingMessageRecipientState ()
 
 @property (atomic) OWSOutgoingMessageRecipientState state;
@@ -868,6 +898,18 @@ NSString *const kTSOutgoingMessageSentRecipientAll = @"kTSOutgoingMessageSentRec
     }
 
     return [builder build];
+}
+
+- (NSString *)statusDescription
+{
+    NSMutableString *result = [NSMutableString new];
+    [result appendFormat:@"[status: %@", NSStringForOutgoingMessageState(self.messageState)];
+    for (NSString *recipientId in self.recipientStateMap) {
+        TSOutgoingMessageRecipientState *recipientState = self.recipientStateMap[recipientId];
+        [result appendFormat:@", %@: %@", recipientId, NSStringForOutgoingMessageRecipientState(recipientState.state)];
+    }
+    [result appendString:@"]"];
+    return [result copy];
 }
 
 @end

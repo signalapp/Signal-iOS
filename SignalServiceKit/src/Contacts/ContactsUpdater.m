@@ -40,6 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
 {
+    OWSAssert(error);
+
+    DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, identifier);
+
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
 
     __block SignalRecipient *recipient;
