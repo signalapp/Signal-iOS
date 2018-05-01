@@ -379,11 +379,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         videoModeMuteButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_MUTE_LABEL", comment: "Accessibility label for muting the microphone")
         videoModeMuteButton.alpha = 0.9
 
-        // TODO proper asset
-        videoModeFlipCameraButton = createButton(image: #imageLiteral(resourceName: "btnRefresh--white"),
+        videoModeFlipCameraButton = createButton(image: #imageLiteral(resourceName: "video-switch-camera-unselected"),
                                                  action: #selector(didPressFlipCamera))
-        videoModeFlipCameraButton.setImage(#imageLiteral(resourceName: "btnRefresh--white"),
-                                           for: .selected)
+
         videoModeFlipCameraButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_SWITCH_CAMERA_DIRECTION", comment: "Accessibility label to toggle front vs. rear facing camera")
         videoModeFlipCameraButton.alpha = 0.9
 
