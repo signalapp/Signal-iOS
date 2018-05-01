@@ -4050,6 +4050,7 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlag
 @property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageContactEmail*> * emailArray;
 @property (strong) NSMutableArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> * addressArray;
 @property (strong) OWSSignalServiceProtosDataMessageContactAvatar* avatar;
+@property (strong) NSString* organization;
 @end
 
 @implementation OWSSignalServiceProtosDataMessageContact
@@ -4074,10 +4075,18 @@ NSString *NSStringFromOWSSignalServiceProtosDataMessageQuoteQuotedAttachmentFlag
   hasAvatar_ = !!_value_;
 }
 @synthesize avatar;
+- (BOOL) hasOrganization {
+  return !!hasOrganization_;
+}
+- (void) setHasOrganization:(BOOL) _value_ {
+  hasOrganization_ = !!_value_;
+}
+@synthesize organization;
 - (instancetype) init {
   if ((self = [super init])) {
     self.name = [OWSSignalServiceProtosDataMessageContactName defaultInstance];
     self.avatar = [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance];
+    self.organization = @"";
   }
   return self;
 }
@@ -4130,6 +4139,9 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
   if (self.hasAvatar) {
     [output writeMessage:6 value:self.avatar];
   }
+  if (self.hasOrganization) {
+    [output writeString:7 value:self.organization];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4153,6 +4165,9 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
   }];
   if (self.hasAvatar) {
     size_ += computeMessageSize(6, self.avatar);
+  }
+  if (self.hasOrganization) {
+    size_ += computeStringSize(7, self.organization);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -4219,6 +4234,9 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
                          withIndent:[NSString stringWithFormat:@"%@  ", indent]];
     [output appendFormat:@"%@}\n", indent];
   }
+  if (self.hasOrganization) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"organization", self.organization];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4247,6 +4265,9 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
    [self.avatar storeInDictionary:messageDictionary];
    [dictionary setObject:[NSDictionary dictionaryWithDictionary:messageDictionary] forKey:@"avatar"];
   }
+  if (self.hasOrganization) {
+    [dictionary setObject: self.organization forKey: @"organization"];
+  }
   [self.unknownFields storeInDictionary:dictionary];
 }
 - (BOOL) isEqual:(id)other {
@@ -4265,6 +4286,8 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
       [self.addressArray isEqualToArray:otherMessage.addressArray] &&
       self.hasAvatar == otherMessage.hasAvatar &&
       (!self.hasAvatar || [self.avatar isEqual:otherMessage.avatar]) &&
+      self.hasOrganization == otherMessage.hasOrganization &&
+      (!self.hasOrganization || [self.organization isEqual:otherMessage.organization]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4284,6 +4307,9 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
   if (self.hasAvatar) {
     hashCode = hashCode * 31 + [self.avatar hash];
   }
+  if (self.hasOrganization) {
+    hashCode = hashCode * 31 + [self.organization hash];
+  }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
 }
@@ -4295,6 +4321,7 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
 @property (strong) NSString* prefix;
 @property (strong) NSString* suffix;
 @property (strong) NSString* middleName;
+@property (strong) NSString* displayName;
 @end
 
 @implementation OWSSignalServiceProtosDataMessageContactName
@@ -4334,6 +4361,13 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
   hasMiddleName_ = !!_value_;
 }
 @synthesize middleName;
+- (BOOL) hasDisplayName {
+  return !!hasDisplayName_;
+}
+- (void) setHasDisplayName:(BOOL) _value_ {
+  hasDisplayName_ = !!_value_;
+}
+@synthesize displayName;
 - (instancetype) init {
   if ((self = [super init])) {
     self.givenName = @"";
@@ -4341,6 +4375,7 @@ static OWSSignalServiceProtosDataMessageContact* defaultOWSSignalServiceProtosDa
     self.prefix = @"";
     self.suffix = @"";
     self.middleName = @"";
+    self.displayName = @"";
   }
   return self;
 }
@@ -4375,6 +4410,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   if (self.hasMiddleName) {
     [output writeString:5 value:self.middleName];
   }
+  if (self.hasDisplayName) {
+    [output writeString:6 value:self.displayName];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -4398,6 +4436,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   }
   if (self.hasMiddleName) {
     size_ += computeStringSize(5, self.middleName);
+  }
+  if (self.hasDisplayName) {
+    size_ += computeStringSize(6, self.displayName);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -4449,6 +4490,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   if (self.hasMiddleName) {
     [output appendFormat:@"%@%@: %@\n", indent, @"middleName", self.middleName];
   }
+  if (self.hasDisplayName) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"displayName", self.displayName];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -4466,6 +4510,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   }
   if (self.hasMiddleName) {
     [dictionary setObject: self.middleName forKey: @"middleName"];
+  }
+  if (self.hasDisplayName) {
+    [dictionary setObject: self.displayName forKey: @"displayName"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -4488,6 +4535,8 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
       (!self.hasSuffix || [self.suffix isEqual:otherMessage.suffix]) &&
       self.hasMiddleName == otherMessage.hasMiddleName &&
       (!self.hasMiddleName || [self.middleName isEqual:otherMessage.middleName]) &&
+      self.hasDisplayName == otherMessage.hasDisplayName &&
+      (!self.hasDisplayName || [self.displayName isEqual:otherMessage.displayName]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -4506,6 +4555,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   }
   if (self.hasMiddleName) {
     hashCode = hashCode * 31 + [self.middleName hash];
+  }
+  if (self.hasDisplayName) {
+    hashCode = hashCode * 31 + [self.displayName hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -4565,6 +4617,9 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
   if (other.hasMiddleName) {
     [self setMiddleName:other.middleName];
   }
+  if (other.hasDisplayName) {
+    [self setDisplayName:other.displayName];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -4604,6 +4659,10 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
       }
       case 42: {
         [self setMiddleName:[input readString]];
+        break;
+      }
+      case 50: {
+        [self setDisplayName:[input readString]];
         break;
       }
     }
@@ -4687,6 +4746,22 @@ static OWSSignalServiceProtosDataMessageContactName* defaultOWSSignalServiceProt
 - (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearMiddleName {
   resultName.hasMiddleName = NO;
   resultName.middleName = @"";
+  return self;
+}
+- (BOOL) hasDisplayName {
+  return resultName.hasDisplayName;
+}
+- (NSString*) displayName {
+  return resultName.displayName;
+}
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setDisplayName:(NSString*) value {
+  resultName.hasDisplayName = YES;
+  resultName.displayName = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearDisplayName {
+  resultName.hasDisplayName = NO;
+  resultName.displayName = @"";
   return self;
 }
 @end
@@ -6336,6 +6411,9 @@ static OWSSignalServiceProtosDataMessageContactAvatar* defaultOWSSignalServicePr
   if (other.hasAvatar) {
     [self mergeAvatar:other.avatar];
   }
+  if (other.hasOrganization) {
+    [self setOrganization:other.organization];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -6391,6 +6469,10 @@ static OWSSignalServiceProtosDataMessageContactAvatar* defaultOWSSignalServicePr
         }
         [input readMessage:subBuilder extensionRegistry:extensionRegistry];
         [self setAvatar:[subBuilder buildPartial]];
+        break;
+      }
+      case 58: {
+        [self setOrganization:[input readString]];
         break;
       }
     }
@@ -6517,6 +6599,22 @@ static OWSSignalServiceProtosDataMessageContactAvatar* defaultOWSSignalServicePr
 - (OWSSignalServiceProtosDataMessageContactBuilder*) clearAvatar {
   resultContact.hasAvatar = NO;
   resultContact.avatar = [OWSSignalServiceProtosDataMessageContactAvatar defaultInstance];
+  return self;
+}
+- (BOOL) hasOrganization {
+  return resultContact.hasOrganization;
+}
+- (NSString*) organization {
+  return resultContact.organization;
+}
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setOrganization:(NSString*) value {
+  resultContact.hasOrganization = YES;
+  resultContact.organization = value;
+  return self;
+}
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clearOrganization {
+  resultContact.hasOrganization = NO;
+  resultContact.organization = @"";
   return self;
 }
 @end

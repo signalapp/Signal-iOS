@@ -1077,10 +1077,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Contact_email @"email"
 #define Contact_address @"address"
 #define Contact_avatar @"avatar"
+#define Contact_organization @"organization"
 @interface OWSSignalServiceProtosDataMessageContact : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
+  BOOL hasOrganization_:1;
   BOOL hasName_:1;
   BOOL hasAvatar_:1;
+  NSString* organization;
   OWSSignalServiceProtosDataMessageContactName* name;
   OWSSignalServiceProtosDataMessageContactAvatar* avatar;
   NSMutableArray * numberArray;
@@ -1089,11 +1092,13 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 }
 - (BOOL) hasName;
 - (BOOL) hasAvatar;
+- (BOOL) hasOrganization;
 @property (readonly, strong) OWSSignalServiceProtosDataMessageContactName* name;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPhone*> * number;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactEmail*> * email;
 @property (readonly, strong) NSArray<OWSSignalServiceProtosDataMessageContactPostalAddress*> * address;
 @property (readonly, strong) OWSSignalServiceProtosDataMessageContactAvatar* avatar;
+@property (readonly, strong) NSString* organization;
 - (OWSSignalServiceProtosDataMessageContactPhone*)numberAtIndex:(NSUInteger)index;
 - (OWSSignalServiceProtosDataMessageContactEmail*)emailAtIndex:(NSUInteger)index;
 - (OWSSignalServiceProtosDataMessageContactPostalAddress*)addressAtIndex:(NSUInteger)index;
@@ -1121,6 +1126,7 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define Name_prefix @"prefix"
 #define Name_suffix @"suffix"
 #define Name_middleName @"middleName"
+#define Name_displayName @"displayName"
 @interface OWSSignalServiceProtosDataMessageContactName : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasGivenName_:1;
@@ -1128,22 +1134,26 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
   BOOL hasPrefix_:1;
   BOOL hasSuffix_:1;
   BOOL hasMiddleName_:1;
+  BOOL hasDisplayName_:1;
   NSString* givenName;
   NSString* familyName;
   NSString* prefix;
   NSString* suffix;
   NSString* middleName;
+  NSString* displayName;
 }
 - (BOOL) hasGivenName;
 - (BOOL) hasFamilyName;
 - (BOOL) hasPrefix;
 - (BOOL) hasSuffix;
 - (BOOL) hasMiddleName;
+- (BOOL) hasDisplayName;
 @property (readonly, strong) NSString* givenName;
 @property (readonly, strong) NSString* familyName;
 @property (readonly, strong) NSString* prefix;
 @property (readonly, strong) NSString* suffix;
 @property (readonly, strong) NSString* middleName;
+@property (readonly, strong) NSString* displayName;
 
 + (instancetype) defaultInstance;
 - (instancetype) defaultInstance;
@@ -1204,6 +1214,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (NSString*) middleName;
 - (OWSSignalServiceProtosDataMessageContactNameBuilder*) setMiddleName:(NSString*) value;
 - (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearMiddleName;
+
+- (BOOL) hasDisplayName;
+- (NSString*) displayName;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) setDisplayName:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactNameBuilder*) clearDisplayName;
 @end
 
 #define Phone_value @"value"
@@ -1586,6 +1601,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (OWSSignalServiceProtosDataMessageContactBuilder*) setAvatarBuilder:(OWSSignalServiceProtosDataMessageContactAvatarBuilder*) builderForValue;
 - (OWSSignalServiceProtosDataMessageContactBuilder*) mergeAvatar:(OWSSignalServiceProtosDataMessageContactAvatar*) value;
 - (OWSSignalServiceProtosDataMessageContactBuilder*) clearAvatar;
+
+- (BOOL) hasOrganization;
+- (NSString*) organization;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) setOrganization:(NSString*) value;
+- (OWSSignalServiceProtosDataMessageContactBuilder*) clearOrganization;
 @end
 
 @interface OWSSignalServiceProtosDataMessageBuilder : PBGeneratedMessageBuilder {

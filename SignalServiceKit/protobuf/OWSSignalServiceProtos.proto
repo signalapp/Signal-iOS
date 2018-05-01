@@ -107,11 +107,12 @@ message DataMessage {
 
   message Contact {
     message Name {
-      optional string givenName  = 1;
-      optional string familyName = 2;
-      optional string prefix     = 3;
-      optional string suffix     = 4;
-      optional string middleName = 5;
+      optional string givenName   = 1;
+      optional string familyName  = 2;
+      optional string prefix      = 3;
+      optional string suffix      = 4;
+      optional string middleName  = 5;
+      optional string displayName = 6;
     }
 
     message Phone {
@@ -168,6 +169,7 @@ message DataMessage {
     repeated Email             email           = 4;
     repeated PostalAddress     address         = 5;
     optional Avatar            avatar          = 6;
+    optional string            organization    = 7;
   }
 
   optional string             body        = 1;
