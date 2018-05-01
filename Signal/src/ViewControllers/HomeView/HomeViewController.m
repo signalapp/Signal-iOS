@@ -70,6 +70,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 @property (nonatomic) TSThread *lastThread;
 
+@property (nonatomic) BOOL hasArchivedThreadsRow;
+
 @end
 
 #pragma mark -
@@ -461,6 +463,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [self checkIfEmptyView];
     [self applyDefaultBackButton];
+    if ([self updateHasArchivedThreadsRow]) {
+        [self.tableView reloadData];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -525,6 +530,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         }];
     }
 
+    [self updateHasArchivedThreadsRow];
     [self reloadTableViewData];
 
     [self checkIfEmptyView];
@@ -622,6 +628,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 #pragma mark - Table View Data Source
 
+// Returns YES IFF this value changes.
+- (BOOL)updateHasArchivedThreadsRow
+{
+    BOOL hasArchivedThreadsRow = (self.homeViewMode == HomeViewMode_Inbox && self.numberOfArchivedThreads > 0);
+    if (self.hasArchivedThreadsRow == hasArchivedThreadsRow) {
+        return NO;
+    }
+    self.hasArchivedThreadsRow = hasArchivedThreadsRow;
+
+    return YES;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return (NSInteger)[self.threadMappings numberOfSections];
@@ -630,7 +648,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-    if (self.homeViewMode == HomeViewMode_Inbox) {
+    if (self.hasArchivedThreadsRow) {
         // Add the "archived conversations" row.
         result++;
     }
@@ -1119,6 +1137,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         return;
     }
 
+    if ([self updateHasArchivedThreadsRow]) {
+        [self.tableView reloadData];
+        return;
+    }
+
     [self.tableView beginUpdates];
 
     for (YapDatabaseViewSectionChange *sectionChange in sectionChanges) {
@@ -1173,17 +1196,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView endUpdates];
 }
 
-- (void)checkIfEmptyView
+- (NSUInteger)numberOfThreadsInGroup:(NSString *)group
 {
     // We need to consult the db view, not the mapping since the mapping only knows about
     // the current group.
-    __block NSUInteger inboxCount;
-    __block NSUInteger archiveCount;
+    __block NSUInteger result;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSThreadDatabaseViewExtensionName];
-        inboxCount = [viewTransaction numberOfItemsInGroup:TSInboxGroup];
-        archiveCount = [viewTransaction numberOfItemsInGroup:TSArchiveGroup];
+        result = [viewTransaction numberOfItemsInGroup:group];
     }];
+    return result;
+}
+
+- (NSUInteger)numberOfInboxThreads
+{
+    return [self numberOfThreadsInGroup:TSInboxGroup];
+}
+
+- (NSUInteger)numberOfArchivedThreads
+{
+    return [self numberOfThreadsInGroup:TSArchiveGroup];
+}
+
+- (void)checkIfEmptyView
+{
+    NSUInteger inboxCount = self.numberOfInboxThreads;
+    NSUInteger archiveCount = self.numberOfArchivedThreads;
 
     if (self.homeViewMode == HomeViewMode_Inbox && inboxCount == 0 && archiveCount == 0) {
         [self updateEmptyBoxText];
