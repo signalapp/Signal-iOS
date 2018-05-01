@@ -30,6 +30,8 @@ typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
 
 - (BOOL)ows_isValid;
 
+- (NSString *)labelString;
+
 @end
 
 #pragma mark -
@@ -50,6 +52,8 @@ typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
 @property (nonatomic, readonly) NSString *email;
 
 - (BOOL)ows_isValid;
+
+- (NSString *)labelString;
 
 @end
 
@@ -76,6 +80,8 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 @property (nonatomic, readonly, nullable) NSString *country;
 
 - (BOOL)ows_isValid;
+
+- (NSString *)labelString;
 
 @end
 
