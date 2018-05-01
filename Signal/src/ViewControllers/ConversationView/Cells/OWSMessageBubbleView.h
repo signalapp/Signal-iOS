@@ -40,6 +40,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
+- (void)didTapContactShareViewItem:(ConversationViewItem *)viewItem;
+
 @end
 
 @interface OWSMessageBubbleView : UIView

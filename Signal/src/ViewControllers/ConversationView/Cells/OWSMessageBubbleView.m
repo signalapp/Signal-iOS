@@ -1203,7 +1203,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case OWSMessageCellType_ContactShare:
-            // TODO:
+            [self.delegate didTapContactShareViewItem:self.viewItem];
             break;
     }
 }

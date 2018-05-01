@@ -615,6 +615,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         mediaGalleryViewController.presentDetailView(fromViewController: self, mediaMessage: self.message, replacingView: imageView)
     }
 
+    func didTapContactShare(_ viewItem: ConversationViewItem) {
+        guard let contact = viewItem.contactShare() else {
+            owsFail("\(logTag) missing contact.")
+            return
+        }
+        let contactViewController = ContactViewController(contact: contact)
+        self.navigationController?.pushViewController(contactViewController, animated: true)
+    }
+
     var audioAttachmentPlayer: OWSAudioPlayer?
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {

@@ -2073,6 +2073,17 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
+- (void)didTapContactShareViewItem:(ConversationViewItem *)conversationItem
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(conversationItem);
+    OWSAssert(conversationItem.contactShare);
+    OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
+
+    ContactViewController *view = [[ContactViewController alloc] initWithContact:conversationItem.contactShare];
+    [self.navigationController pushViewController:view animated:YES];
+}
+
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
                      attachmentPointer:(TSAttachmentPointer *)attachmentPointer
 {
