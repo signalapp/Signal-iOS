@@ -794,9 +794,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     // Contact Share
-    OWSSignalServiceProtosDataMessageContact *_Nullable contact = self.contactBuilder;
-    if (contact) {
-        [builder addContact:contact];
+    if (self.contact) {
+        OWSSignalServiceProtosDataMessageContact *_Nullable contactProto = [OWSContacts protoForContact:self.contact];
+        if (contactProto) {
+            [builder addContact:contactProto];
+        }
     }
 
     return builder;
@@ -844,140 +846,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         OWSFail(@"%@ Invalid quoted message data.", self.logTag);
         return nil;
     }
-}
-
-- (nullable OWSSignalServiceProtosDataMessageContact *)contactBuilder
-{
-    if (!self.contact) {
-        return nil;
-    }
-    OWSContact *contact = self.contact;
-    if (!contact.isValid) {
-        OWSProdLogAndFail(@"%@ contact share is invalid.", self.logTag);
-        return nil;
-    }
-
-    OWSSignalServiceProtosDataMessageContactBuilder *contactBuilder =
-        [OWSSignalServiceProtosDataMessageContactBuilder new];
-
-    // TODO: Should we normalize/validate values here?
-    OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
-        [OWSSignalServiceProtosDataMessageContactNameBuilder new];
-    if (contact.givenName.ows_stripped.length > 0) {
-        nameBuilder.givenName = contact.givenName.ows_stripped;
-    }
-    if (contact.familyName.ows_stripped.length > 0) {
-        nameBuilder.familyName = contact.familyName.ows_stripped;
-    }
-    if (contact.middleName.ows_stripped.length > 0) {
-        nameBuilder.middleName = contact.middleName.ows_stripped;
-    }
-    if (contact.namePrefix.ows_stripped.length > 0) {
-        nameBuilder.prefix = contact.namePrefix.ows_stripped;
-    }
-    if (contact.nameSuffix.ows_stripped.length > 0) {
-        nameBuilder.suffix = contact.nameSuffix.ows_stripped;
-    }
-    [contactBuilder setNameBuilder:nameBuilder];
-
-    for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        if (!phoneNumber.isValid) {
-            OWSProdLogAndFail(@"%@ phone number is invalid.", self.logTag);
-            continue;
-        }
-        OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
-            [OWSSignalServiceProtosDataMessageContactPhoneBuilder new];
-        phoneBuilder.value = phoneNumber.phoneNumber;
-        if (phoneBuilder.label.ows_stripped.length > 0) {
-            phoneBuilder.label = phoneBuilder.label.ows_stripped;
-        }
-        switch (phoneNumber.phoneType) {
-            case OWSContactPhoneType_Home:
-                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeHome;
-                break;
-            case OWSContactPhoneType_Mobile:
-                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeMobile;
-                break;
-            case OWSContactPhoneType_Work:
-                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeWork;
-                break;
-            default:
-                phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeCustom;
-                break;
-        }
-        [contactBuilder addNumber:phoneBuilder.build];
-    }
-
-    for (OWSContactEmail *email in contact.emails) {
-        if (!email.isValid) {
-            OWSProdLogAndFail(@"%@ email is invalid.", self.logTag);
-            continue;
-        }
-        OWSSignalServiceProtosDataMessageContactEmailBuilder *emailBuilder =
-            [OWSSignalServiceProtosDataMessageContactEmailBuilder new];
-        emailBuilder.value = email.email;
-        if (emailBuilder.label.ows_stripped.length > 0) {
-            emailBuilder.label = emailBuilder.label.ows_stripped;
-        }
-        switch (email.emailType) {
-            case OWSContactEmailType_Home:
-                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeHome;
-                break;
-            case OWSContactEmailType_Mobile:
-                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeMobile;
-                break;
-            case OWSContactEmailType_Work:
-                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeWork;
-                break;
-            default:
-                emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeCustom;
-                break;
-        }
-        [contactBuilder addEmail:emailBuilder.build];
-    }
-
-    for (OWSContactAddress *address in contact.addresses) {
-        if (!address.isValid) {
-            OWSProdLogAndFail(@"%@ address is invalid.", self.logTag);
-            continue;
-        }
-        OWSSignalServiceProtosDataMessageContactPostalAddressBuilder *addressBuilder =
-            [OWSSignalServiceProtosDataMessageContactPostalAddressBuilder new];
-        if (addressBuilder.label.ows_stripped.length > 0) {
-            addressBuilder.label = addressBuilder.label.ows_stripped;
-        }
-        if (addressBuilder.street.ows_stripped.length > 0) {
-            addressBuilder.street = addressBuilder.street.ows_stripped;
-        }
-        if (addressBuilder.pobox.ows_stripped.length > 0) {
-            addressBuilder.pobox = addressBuilder.pobox.ows_stripped;
-        }
-        if (addressBuilder.neighborhood.ows_stripped.length > 0) {
-            addressBuilder.neighborhood = addressBuilder.neighborhood.ows_stripped;
-        }
-        if (addressBuilder.city.ows_stripped.length > 0) {
-            addressBuilder.city = addressBuilder.city.ows_stripped;
-        }
-        if (addressBuilder.region.ows_stripped.length > 0) {
-            addressBuilder.region = addressBuilder.region.ows_stripped;
-        }
-        if (addressBuilder.postcode.ows_stripped.length > 0) {
-            addressBuilder.postcode = addressBuilder.postcode.ows_stripped;
-        }
-        if (addressBuilder.country.ows_stripped.length > 0) {
-            addressBuilder.country = addressBuilder.country.ows_stripped;
-        }
-        [contactBuilder addAddress:addressBuilder.build];
-    }
-
-    // TODO: avatar
-
-    OWSSignalServiceProtosDataMessageContact *contactProto = [contactBuilder build];
-    if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
-        OWSProdLogAndFail(@"%@ contact has neither phone, email or address.", self.logTag);
-        return nil;
-    }
-    return contactProto;
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.

@@ -2972,6 +2972,8 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   contact.middleName = @"Bob";
                                                   contact.namePrefix = @"Ms.";
                                                   contact.nameSuffix = @"Esq.";
+                                                  contact.organizationName = @"Falafel Hut";
+                                                  contact.displayName = @"Ms. Alice Bob Carol Esq.";
 
                                                   OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
                                                   phoneNumber1.phoneType = OWSContactPhoneType_Home;

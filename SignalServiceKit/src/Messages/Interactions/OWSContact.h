@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosDataMessage;
+@class OWSSignalServiceProtosDataMessageContact;
 @class TSAttachment;
 @class YapDatabaseReadWriteTransaction;
 
@@ -86,6 +88,8 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 @property (nonatomic, readonly, nullable) NSString *nameSuffix;
 @property (nonatomic, readonly, nullable) NSString *namePrefix;
 @property (nonatomic, readonly, nullable) NSString *middleName;
+@property (nonatomic, readonly, nullable) NSString *organizationName;
+@property (nonatomic, readonly, nullable) NSString *displayName;
 
 @property (nonatomic, readonly, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic, readonly, nullable) NSArray<OWSContactEmail *> *emails;
@@ -97,9 +101,6 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 @property (nonatomic, readonly) BOOL isProfileAvatar;
 
 - (instancetype)init NS_UNAVAILABLE;
-
-+ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)isValid;
 
@@ -123,6 +124,11 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 
 + (nullable OWSContact *)contactForVCardData:(NSData *)data;
 + (nullable NSData *)vCardDataContact:(OWSContact *)contact;
+
+#pragma mark - Proto Serialization
+
++ (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
++ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
 
 @end
 
