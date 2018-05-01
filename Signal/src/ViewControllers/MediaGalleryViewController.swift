@@ -199,6 +199,10 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
     // we start with a small range size for quick loading.
     private let fetchRangeSize: UInt = 10
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     deinit {
         Logger.debug("\(logTag) deinit")
     }
@@ -244,6 +248,18 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         presentationView.layer.minificationFilter = kCAFilterTrilinear
         presentationView.layer.magnificationFilter = kCAFilterTrilinear
         presentationView.contentMode = .scaleAspectFit
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        self.becomeFirstResponder()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        self.becomeFirstResponder()
     }
 
     // MARK: Present/Dismiss
