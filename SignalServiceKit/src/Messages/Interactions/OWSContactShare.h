@@ -104,4 +104,10 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 
 @end
 
+#pragma mark -
+
+@interface OWSContacts : NSObject
+
+@end
+
 NS_ASSUME_NONNULL_END

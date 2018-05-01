@@ -10,6 +10,8 @@
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
+@import Contacts;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactSharePhoneNumber ()
@@ -337,6 +339,136 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     return NO;
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSContacts
+
++ (nullable CNContact *)systemContactForVCardData:(NSData *)data
+{
+    OWSAssert(data);
+
+    NSError *error;
+    NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
+    if (!contacts || error) {
+        OWSProdLogAndFail(@"%@ could not parse vcard: %@", self.logTag, error);
+        return nil;
+    }
+    if (contacts.count < 1) {
+        OWSProdLogAndFail(@"%@ empty vcard: %@", self.logTag, error);
+        return nil;
+    }
+    if (contacts.count > 1) {
+        OWSProdLogAndFail(@"%@ more than one contact in vcard: %@", self.logTag, error);
+    }
+    return contacts.firstObject;
+}
+
++ (nullable OWSContactShare *)contactShareForSystemContact:(CNContact *)contact
+{
+    if (!contact) {
+        OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
+        return nil;
+    }
+
+    OWSContactShare *contactShare = [OWSContactShare new];
+    contactShare.givenName = contact.givenName.ows_stripped;
+    contactShare.middleName = contact.middleName.ows_stripped;
+    contactShare.familyName = contact.familyName.ows_stripped;
+    contactShare.namePrefix = contact.namePrefix.ows_stripped;
+    contactShare.nameSuffix = contact.nameSuffix.ows_stripped;
+    // TODO: Display name.
+    //    contactShare.displayName = [CNContactFormatter stringFromContact:contact
+    //    style:CNContactFormatterStyleFullName]; contactShare.organizationName = contact.organizationName.ows_stripped;
+
+    NSMutableArray<OWSContactSharePhoneNumber *> *phoneNumbers = [NSMutableArray new];
+    for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in contact.phoneNumbers) {
+        OWSContactSharePhoneNumber *phoneNumber = [OWSContactSharePhoneNumber new];
+        phoneNumber.phoneNumber = phoneNumberField.value.stringValue;
+        if ([phoneNumberField.label isEqualToString:CNLabelHome]) {
+            phoneNumber.phoneType = OWSContactSharePhoneType_Home;
+        } else if ([phoneNumberField.label isEqualToString:CNLabelWork]) {
+            phoneNumber.phoneType = OWSContactSharePhoneType_Work;
+        } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
+            phoneNumber.phoneType = OWSContactSharePhoneType_Mobile;
+        } else {
+            phoneNumber.phoneType = OWSContactSharePhoneType_Custom;
+            phoneNumber.label = phoneNumberField.label;
+        }
+        if (phoneNumber.isValid) {
+            [phoneNumbers addObject:phoneNumber];
+        }
+    }
+    contactShare.phoneNumbers = phoneNumbers;
+
+    NSMutableArray<OWSContactShareEmail *> *emails = [NSMutableArray new];
+    for (CNLabeledValue *emailField in contact.emailAddresses) {
+        OWSContactShareEmail *email = [OWSContactShareEmail new];
+        email.email = emailField.value;
+        if ([emailField.label isEqualToString:CNLabelHome]) {
+            email.emailType = OWSContactShareEmailType_Home;
+        } else if ([emailField.label isEqualToString:CNLabelWork]) {
+            email.emailType = OWSContactShareEmailType_Work;
+        } else {
+            email.emailType = OWSContactShareEmailType_Custom;
+            email.label = emailField.label;
+        }
+        if (email.isValid) {
+            [emails addObject:email];
+        }
+    }
+    contactShare.emails = emails;
+
+    NSMutableArray<OWSContactShareAddress *> *addresses = [NSMutableArray new];
+    for (CNLabeledValue<CNPostalAddress *> *addressField in contact.postalAddresses) {
+        OWSContactShareAddress *address = [OWSContactShareAddress new];
+        address.street = addressField.value.street;
+        // TODO: Is this the correct mapping?
+        //        address.neighborhood = addressField.value.subLocality;
+        address.city = addressField.value.city;
+        // TODO: Is this the correct mapping?
+        //        address.region = addressField.value.subAdministrativeArea;
+        address.region = addressField.value.state;
+        address.postcode = addressField.value.postalCode;
+        // TODO: Should we be using 2-letter codes, 3-letter codes or names?
+        address.country = addressField.value.ISOCountryCode;
+
+        if ([addressField.label isEqualToString:CNLabelHome]) {
+            address.addressType = OWSContactShareAddressType_Home;
+        } else if ([addressField.label isEqualToString:CNLabelWork]) {
+            address.addressType = OWSContactShareAddressType_Work;
+        } else {
+            address.addressType = OWSContactShareAddressType_Custom;
+            address.label = addressField.label;
+        }
+        if (address.isValid) {
+            [addresses addObject:address];
+        }
+    }
+    contactShare.addresses = addresses;
+
+    // TODO: Avatar
+
+    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
+    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
+
+    if (contactShare.isValid) {
+        return contactShare;
+    } else {
+        return nil;
+    }
+}
+
++ (nullable OWSContactShare *)contactShareForVCardData:(NSData *)data
+{
+    CNContact *_Nullable systemContact = [self systemContactForVCardData:data];
+    if (!systemContact) {
+        return nil;
+    }
+    return [self contactShareForSystemContact:systemContact];
 }
 
 @end
