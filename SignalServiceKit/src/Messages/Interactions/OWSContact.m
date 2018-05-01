@@ -141,28 +141,49 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContact
 
+- (void)normalize
+{
+    self.phoneNumbers = [self.phoneNumbers
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(OWSContactPhoneNumber *value,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return value.ows_isValid;
+        }]];
+    self.emails = [self.emails filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(OWSContactEmail *value,
+                                                               NSDictionary<NSString *, id> *_Nullable bindings) {
+        return value.ows_isValid;
+    }]];
+    self.addresses =
+        [self.addresses filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(OWSContactAddress *value,
+                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return value.ows_isValid;
+        }]];
+}
+
 - (BOOL)ows_isValid
 {
     if (self.displayName.ows_stripped.length) {
         return NO;
     }
-    // Contact is valid if at least one entry is valid.
+    BOOL hasValue = NO;
     for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
-        if (phoneNumber.ows_isValid) {
-            return YES;
+        if (!phoneNumber.ows_isValid) {
+            return NO;
         }
+        hasValue = YES;
     }
     for (OWSContactEmail *email in self.emails) {
-        if (email.ows_isValid) {
-            return YES;
+        if (!email.ows_isValid) {
+            return NO;
         }
+        hasValue = YES;
     }
     for (OWSContactAddress *address in self.addresses) {
-        if (address.ows_isValid) {
-            return YES;
+        if (!address.ows_isValid) {
+            return NO;
         }
+        hasValue = YES;
     }
-    return NO;
+    return hasValue;
 }
 
 @end
@@ -246,9 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
             phoneNumber.phoneType = OWSContactPhoneType_Custom;
             phoneNumber.label = phoneNumberField.label;
         }
-        if (phoneNumber.ows_isValid) {
-            [phoneNumbers addObject:phoneNumber];
-        }
+        [phoneNumbers addObject:phoneNumber];
     }
     contact.phoneNumbers = phoneNumbers;
 
@@ -264,9 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
             email.emailType = OWSContactEmailType_Custom;
             email.label = emailField.label;
         }
-        if (email.ows_isValid) {
-            [emails addObject:email];
-        }
+        [emails addObject:email];
     }
     contact.emails = emails;
 
@@ -292,9 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
             address.addressType = OWSContactAddressType_Custom;
             address.label = addressField.label;
         }
-        if (address.ows_isValid) {
-            [addresses addObject:address];
-        }
+        [addresses addObject:address];
     }
     contact.addresses = addresses;
 
@@ -303,21 +318,13 @@ NS_ASSUME_NONNULL_BEGIN
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
 
-    if (contact.ows_isValid) {
-        return contact;
-    } else {
-        return nil;
-    }
+    return contact;
 }
 
 + (nullable CNContact *)systemContactForContact:(OWSContact *)contact
 {
     if (!contact) {
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
-        return nil;
-    }
-    if (!contact.ows_isValid) {
-        OWSProdLogAndFail(@"%@ Invalid contact.", self.logTag);
         return nil;
     }
 
@@ -332,10 +339,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *systemPhoneNumbers = [NSMutableArray new];
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        if (!phoneNumber.ows_isValid) {
-            OWSProdLogAndFail(@"%@ invalid phone number.", self.logTag);
-            continue;
-        }
         switch (phoneNumber.phoneType) {
             case OWSContactPhoneType_Home:
                 [systemPhoneNumbers
@@ -371,10 +374,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<NSString *> *> *systemEmails = [NSMutableArray new];
     for (OWSContactEmail *email in contact.emails) {
-        if (!email.ows_isValid) {
-            OWSProdLogAndFail(@"%@ invalid email.", self.logTag);
-            continue;
-        }
         switch (email.emailType) {
             case OWSContactEmailType_Home:
                 [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:CNLabelHome value:email.email]];
@@ -394,10 +393,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<CNPostalAddress *> *> *systemAddresses = [NSMutableArray new];
     for (OWSContactAddress *address in contact.addresses) {
-        if (!address.ows_isValid) {
-            OWSProdLogAndFail(@"%@ invalid address.", self.logTag);
-            continue;
-        }
         CNMutablePostalAddress *systemAddress = [CNMutablePostalAddress new];
         systemAddress.street = address.street;
         // TODO: Is this the correct mapping?
@@ -462,11 +457,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(contact);
 
-    if (!contact.ows_isValid) {
-        OWSProdLogAndFail(@"%@ contact share is invalid.", self.logTag);
-        return nil;
-    }
-
     OWSSignalServiceProtosDataMessageContactBuilder *contactBuilder =
         [OWSSignalServiceProtosDataMessageContactBuilder new];
 
@@ -490,15 +480,11 @@ NS_ASSUME_NONNULL_BEGIN
     [contactBuilder setNameBuilder:nameBuilder];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        if (!phoneNumber.ows_isValid) {
-            OWSProdLogAndFail(@"%@ phone number is invalid.", self.logTag);
-            continue;
-        }
         OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
             [OWSSignalServiceProtosDataMessageContactPhoneBuilder new];
         phoneBuilder.value = phoneNumber.phoneNumber;
-        if (phoneBuilder.label.ows_stripped.length > 0) {
-            phoneBuilder.label = phoneBuilder.label.ows_stripped;
+        if (phoneNumber.label.ows_stripped.length > 0) {
+            phoneBuilder.label = phoneNumber.label.ows_stripped;
         }
         switch (phoneNumber.phoneType) {
             case OWSContactPhoneType_Home:
@@ -518,15 +504,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (OWSContactEmail *email in contact.emails) {
-        if (!email.ows_isValid) {
-            OWSProdLogAndFail(@"%@ email is invalid.", self.logTag);
-            continue;
-        }
         OWSSignalServiceProtosDataMessageContactEmailBuilder *emailBuilder =
             [OWSSignalServiceProtosDataMessageContactEmailBuilder new];
         emailBuilder.value = email.email;
-        if (emailBuilder.label.ows_stripped.length > 0) {
-            emailBuilder.label = emailBuilder.label.ows_stripped;
+        if (email.label.ows_stripped.length > 0) {
+            emailBuilder.label = email.label.ows_stripped;
         }
         switch (email.emailType) {
             case OWSContactEmailType_Home:
@@ -546,35 +528,31 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (OWSContactAddress *address in contact.addresses) {
-        if (!address.ows_isValid) {
-            OWSProdLogAndFail(@"%@ address is invalid.", self.logTag);
-            continue;
-        }
         OWSSignalServiceProtosDataMessageContactPostalAddressBuilder *addressBuilder =
             [OWSSignalServiceProtosDataMessageContactPostalAddressBuilder new];
-        if (addressBuilder.label.ows_stripped.length > 0) {
-            addressBuilder.label = addressBuilder.label.ows_stripped;
+        if (address.label.ows_stripped.length > 0) {
+            addressBuilder.label = address.label.ows_stripped;
         }
-        if (addressBuilder.street.ows_stripped.length > 0) {
-            addressBuilder.street = addressBuilder.street.ows_stripped;
+        if (address.street.ows_stripped.length > 0) {
+            addressBuilder.street = address.street.ows_stripped;
         }
-        if (addressBuilder.pobox.ows_stripped.length > 0) {
-            addressBuilder.pobox = addressBuilder.pobox.ows_stripped;
+        if (address.pobox.ows_stripped.length > 0) {
+            addressBuilder.pobox = address.pobox.ows_stripped;
         }
-        if (addressBuilder.neighborhood.ows_stripped.length > 0) {
-            addressBuilder.neighborhood = addressBuilder.neighborhood.ows_stripped;
+        if (address.neighborhood.ows_stripped.length > 0) {
+            addressBuilder.neighborhood = address.neighborhood.ows_stripped;
         }
-        if (addressBuilder.city.ows_stripped.length > 0) {
-            addressBuilder.city = addressBuilder.city.ows_stripped;
+        if (address.city.ows_stripped.length > 0) {
+            addressBuilder.city = address.city.ows_stripped;
         }
-        if (addressBuilder.region.ows_stripped.length > 0) {
-            addressBuilder.region = addressBuilder.region.ows_stripped;
+        if (address.region.ows_stripped.length > 0) {
+            addressBuilder.region = address.region.ows_stripped;
         }
-        if (addressBuilder.postcode.ows_stripped.length > 0) {
-            addressBuilder.postcode = addressBuilder.postcode.ows_stripped;
+        if (address.postcode.ows_stripped.length > 0) {
+            addressBuilder.postcode = address.postcode.ows_stripped;
         }
-        if (addressBuilder.country.ows_stripped.length > 0) {
-            addressBuilder.country = addressBuilder.country.ows_stripped;
+        if (address.country.ows_stripped.length > 0) {
+            addressBuilder.country = address.country.ows_stripped;
         }
         [contactBuilder addAddress:addressBuilder.build];
     }
@@ -688,9 +666,6 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return nil;
     }
-    if (!result.ows_isValid) {
-        return nil;
-    }
     return result;
 }
 
@@ -719,9 +694,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (emailProto.hasValue) {
         result.email = emailProto.value.ows_stripped;
     } else {
-        return nil;
-    }
-    if (!result.ows_isValid) {
         return nil;
     }
     return result;
@@ -766,9 +738,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (addressProto.hasCountry) {
         result.country = addressProto.country.ows_stripped;
-    }
-    if (!result.ows_isValid) {
-        return nil;
     }
     return result;
 }

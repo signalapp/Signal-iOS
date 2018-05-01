@@ -102,6 +102,8 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (void)normalize;
+
 - (BOOL)ows_isValid;
 
 @end
