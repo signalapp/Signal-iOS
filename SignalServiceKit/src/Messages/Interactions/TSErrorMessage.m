@@ -66,7 +66,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                           expiresInSeconds:0
                            expireStartedAt:0
                              quotedMessage:nil
-                              contactShare:nil];
+                                   contact:nil];
 
     if (!self) {
         return self;

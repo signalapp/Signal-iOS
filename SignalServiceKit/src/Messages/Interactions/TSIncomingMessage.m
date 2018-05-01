@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContactShare *)contactShare
+                                         contact:(nullable OWSContact *)contact
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:0
                              quotedMessage:quotedMessage
-                              contactShare:contactShare];
+                                   contact:contact];
 
     if (!self) {
         return self;

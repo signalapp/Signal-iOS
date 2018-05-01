@@ -10,17 +10,17 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class YapDatabaseReadWriteTransaction;
 
-typedef NS_ENUM(NSUInteger, OWSContactSharePhoneType) {
-    OWSContactSharePhoneType_Home = 1,
-    OWSContactSharePhoneType_Mobile,
-    OWSContactSharePhoneType_Work,
-    OWSContactSharePhoneType_Custom,
+typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
+    OWSContactPhoneType_Home = 1,
+    OWSContactPhoneType_Mobile,
+    OWSContactPhoneType_Work,
+    OWSContactPhoneType_Custom,
 };
 
-@interface OWSContactSharePhoneNumber : MTLModel
+@interface OWSContactPhoneNumber : MTLModel
 
-@property (nonatomic, readonly) OWSContactSharePhoneType phoneType;
-// Applies in the OWSContactSharePhoneType_Custom case.
+@property (nonatomic, readonly) OWSContactPhoneType phoneType;
+// Applies in the OWSContactPhoneType_Custom case.
 @property (nonatomic, readonly, nullable) NSString *label;
 
 @property (nonatomic, readonly) NSString *phoneNumber;
@@ -31,17 +31,17 @@ typedef NS_ENUM(NSUInteger, OWSContactSharePhoneType) {
 
 #pragma mark -
 
-typedef NS_ENUM(NSUInteger, OWSContactShareEmailType) {
-    OWSContactShareEmailType_Home = 1,
-    OWSContactShareEmailType_Mobile,
-    OWSContactShareEmailType_Work,
-    OWSContactShareEmailType_Custom,
+typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
+    OWSContactEmailType_Home = 1,
+    OWSContactEmailType_Mobile,
+    OWSContactEmailType_Work,
+    OWSContactEmailType_Custom,
 };
 
-@interface OWSContactShareEmail : MTLModel
+@interface OWSContactEmail : MTLModel
 
-@property (nonatomic, readonly) OWSContactShareEmailType emailType;
-// Applies in the OWSContactShareEmailType_Custom case.
+@property (nonatomic, readonly) OWSContactEmailType emailType;
+// Applies in the OWSContactEmailType_Custom case.
 @property (nonatomic, readonly, nullable) NSString *label;
 
 @property (nonatomic, readonly) NSString *email;
@@ -52,16 +52,16 @@ typedef NS_ENUM(NSUInteger, OWSContactShareEmailType) {
 
 #pragma mark -
 
-typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
-    OWSContactShareAddressType_Home = 1,
-    OWSContactShareAddressType_Work,
-    OWSContactShareAddressType_Custom,
+typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
+    OWSContactAddressType_Home = 1,
+    OWSContactAddressType_Work,
+    OWSContactAddressType_Custom,
 };
 
-@interface OWSContactShareAddress : MTLModel
+@interface OWSContactAddress : MTLModel
 
-@property (nonatomic, readonly) OWSContactShareAddressType addressType;
-// Applies in the OWSContactShareAddressType_Custom case.
+@property (nonatomic, readonly) OWSContactAddressType addressType;
+// Applies in the OWSContactAddressType_Custom case.
 @property (nonatomic, readonly, nullable) NSString *label;
 
 @property (nonatomic, readonly, nullable) NSString *street;
@@ -78,7 +78,7 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 
 #pragma mark -
 
-@interface OWSContactShare : MTLModel
+@interface OWSContact : MTLModel
 
 @property (nonatomic, readonly, nullable) NSString *givenName;
 @property (nonatomic, readonly, nullable) NSString *familyName;
@@ -86,9 +86,9 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 @property (nonatomic, readonly, nullable) NSString *namePrefix;
 @property (nonatomic, readonly, nullable) NSString *middleName;
 
-@property (nonatomic, readonly, nullable) NSArray<OWSContactSharePhoneNumber *> *phoneNumbers;
-@property (nonatomic, readonly, nullable) NSArray<OWSContactShareEmail *> *emails;
-@property (nonatomic, readonly, nullable) NSArray<OWSContactShareAddress *> *addresses;
+@property (nonatomic, readonly, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic, readonly, nullable) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic, readonly, nullable) NSArray<OWSContactAddress *> *addresses;
 
 // TODO: This is provisional.
 @property (nonatomic, readonly, nullable) TSAttachment *avatar;
@@ -97,8 +97,8 @@ typedef NS_ENUM(NSUInteger, OWSContactShareAddressType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (OWSContactShare *_Nullable)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)isValid;
 

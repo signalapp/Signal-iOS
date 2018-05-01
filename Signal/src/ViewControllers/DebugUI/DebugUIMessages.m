@@ -13,7 +13,7 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSContactShare+Private.h>
+#import <SignalServiceKit/OWSContact+Private.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -820,7 +820,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isDelivered:YES
                                                           isRead:NO
                                                    quotedMessage:nil
-                                                    contactShare:nil
+                                                         contact:nil
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
@@ -1753,7 +1753,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:NO
                                      isRead:NO
                               quotedMessage:nil
-                               contactShare:nil
+                                    contact:nil
                                 transaction:transaction];
         }];
 }
@@ -1801,7 +1801,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:isDelivered
                                      isRead:isRead
                               quotedMessage:nil
-                               contactShare:nil
+                                    contact:nil
                                 transaction:transaction];
         }];
 }
@@ -1975,7 +1975,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   isDelivered:quotedMessageIsDelivered
                                                                                        isRead:quotedMessageIsRead
                                                                                 quotedMessage:nil
-                                                                                 contactShare:nil
+                                                                                      contact:nil
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForMessage:messageToQuote transaction:transaction]
@@ -2000,7 +2000,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isDelivered:replyIsDelivered
                                          isRead:replyIsRead
                                   quotedMessage:quotedMessage
-                                   contactShare:nil
+                                        contact:nil
                                     transaction:transaction];
             }
         }
@@ -2849,7 +2849,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
-                                                            contactShare:nil
+                                                                 contact:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
             [message saveWithTransaction:transaction];
@@ -2900,18 +2900,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-typedef OWSContactShare * (^OWSContactShareBlock)(void);
+typedef OWSContact * (^OWSContactBlock)(void);
 
 + (DebugUIMessagesAction *)fakeShareContactMessageAction:(TSThread *)thread
                                                    label:(NSString *)label
-                                       contactShareBlock:(OWSContactShareBlock)contactShareBlock
+                                            contactBlock:(OWSContactBlock)contactBlock
 {
     OWSAssert(thread);
 
     return [DebugUIMessagesSingleAction
                actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
-            OWSContactShare *contactShare = contactShareBlock();
+            OWSContact *contact = contactBlock();
             TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
                                                              messageBody:nil
                                                          fakeAssetLoader:nil
@@ -2919,7 +2919,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
-                                                            contactShare:contactShare
+                                                                 contact:contact
                                                              transaction:transaction];
             [message saveWithTransaction:transaction];
         }];
@@ -2939,90 +2939,89 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
 
     [actions addObject:[self fakeShareContactMessageAction:thread
                                                      label:@"Name & Number"
-                                         contactShareBlock:^{
-                                             OWSContactShare *contactShare = [OWSContactShare new];
-                                             contactShare.givenName = @"Alice";
-                                             OWSContactSharePhoneNumber *phoneNumber = [OWSContactSharePhoneNumber new];
-                                             phoneNumber.phoneType = OWSContactSharePhoneType_Home;
-                                             phoneNumber.phoneNumber = @"+13213214321";
-                                             contactShare.phoneNumbers = @[
-                                                 phoneNumber,
-                                             ];
-                                             return contactShare;
-                                         }]];
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Alice";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Home;
+                                                  phoneNumber.phoneNumber = @"+13213214321";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
     [actions addObject:[self fakeShareContactMessageAction:thread
                                                      label:@"Name & Email"
-                                         contactShareBlock:^{
-                                             OWSContactShare *contactShare = [OWSContactShare new];
-                                             contactShare.givenName = @"Bob";
-                                             OWSContactShareEmail *email = [OWSContactShareEmail new];
-                                             email.emailType = OWSContactShareEmailType_Home;
-                                             email.email = @"a@b.com";
-                                             contactShare.emails = @[
-                                                 email,
-                                             ];
-                                             return contactShare;
-                                         }]];
-    [actions
-        addObject:[self fakeShareContactMessageAction:thread
-                                                label:@"Complicated"
-                                    contactShareBlock:^{
-                                        OWSContactShare *contactShare = [OWSContactShare new];
-                                        contactShare.givenName = @"Alice";
-                                        contactShare.familyName = @"Carol";
-                                        contactShare.middleName = @"Bob";
-                                        contactShare.namePrefix = @"Ms.";
-                                        contactShare.nameSuffix = @"Esq.";
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bob";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Home;
+                                                  email.email = @"a@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self fakeShareContactMessageAction:thread
+                                                     label:@"Complicated"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Alice";
+                                                  contact.familyName = @"Carol";
+                                                  contact.middleName = @"Bob";
+                                                  contact.namePrefix = @"Ms.";
+                                                  contact.nameSuffix = @"Esq.";
 
-                                        OWSContactSharePhoneNumber *phoneNumber1 = [OWSContactSharePhoneNumber new];
-                                        phoneNumber1.phoneType = OWSContactSharePhoneType_Home;
-                                        phoneNumber1.phoneNumber = @"+13213214321";
-                                        OWSContactSharePhoneNumber *phoneNumber2 = [OWSContactSharePhoneNumber new];
-                                        phoneNumber2.phoneType = OWSContactSharePhoneType_Custom;
-                                        phoneNumber2.label = @"Carphone";
-                                        phoneNumber2.phoneNumber = @"+13332221111";
-                                        contactShare.phoneNumbers = @[
-                                            phoneNumber1,
-                                            phoneNumber2,
-                                        ];
+                                                  OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
+                                                  phoneNumber1.phoneType = OWSContactPhoneType_Home;
+                                                  phoneNumber1.phoneNumber = @"+13213214321";
+                                                  OWSContactPhoneNumber *phoneNumber2 = [OWSContactPhoneNumber new];
+                                                  phoneNumber2.phoneType = OWSContactPhoneType_Custom;
+                                                  phoneNumber2.label = @"Carphone";
+                                                  phoneNumber2.phoneNumber = @"+13332221111";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber1,
+                                                      phoneNumber2,
+                                                  ];
 
-                                        OWSContactShareEmail *email1 = [OWSContactShareEmail new];
-                                        email1.emailType = OWSContactShareEmailType_Home;
-                                        email1.email = @"a@b.com";
-                                        OWSContactShareEmail *email2 = [OWSContactShareEmail new];
-                                        email2.emailType = OWSContactShareEmailType_Custom;
-                                        email2.label = @"customer support";
-                                        email2.email = @"a@b.com";
-                                        contactShare.emails = @[
-                                            email1,
-                                            email2,
-                                        ];
+                                                  OWSContactEmail *email1 = [OWSContactEmail new];
+                                                  email1.emailType = OWSContactEmailType_Home;
+                                                  email1.email = @"a@b.com";
+                                                  OWSContactEmail *email2 = [OWSContactEmail new];
+                                                  email2.emailType = OWSContactEmailType_Custom;
+                                                  email2.label = @"customer support";
+                                                  email2.email = @"a@b.com";
+                                                  contact.emails = @[
+                                                      email1,
+                                                      email2,
+                                                  ];
 
-                                        OWSContactShareAddress *address1 = [OWSContactShareAddress new];
-                                        address1.addressType = OWSContactShareAddressType_Home;
-                                        address1.street = @"123 home st.";
-                                        address1.neighborhood = @"round the bend.";
-                                        address1.city = @"homeville";
-                                        address1.region = @"HO";
-                                        address1.postcode = @"12345";
-                                        address1.country = @"USA";
-                                        OWSContactShareAddress *address2 = [OWSContactShareAddress new];
-                                        address2.addressType = OWSContactShareAddressType_Custom;
-                                        address2.label = @"Otra casa";
-                                        address2.pobox = @"caja 123";
-                                        address2.street = @"123 casa calle";
-                                        address2.city = @"barrio norte";
-                                        address2.region = @"AB";
-                                        address2.postcode = @"53421";
-                                        address2.country = @"MX";
-                                        contactShare.addresses = @[
-                                            address1,
-                                            address2,
-                                        ];
+                                                  OWSContactAddress *address1 = [OWSContactAddress new];
+                                                  address1.addressType = OWSContactAddressType_Home;
+                                                  address1.street = @"123 home st.";
+                                                  address1.neighborhood = @"round the bend.";
+                                                  address1.city = @"homeville";
+                                                  address1.region = @"HO";
+                                                  address1.postcode = @"12345";
+                                                  address1.country = @"USA";
+                                                  OWSContactAddress *address2 = [OWSContactAddress new];
+                                                  address2.addressType = OWSContactAddressType_Custom;
+                                                  address2.label = @"Otra casa";
+                                                  address2.pobox = @"caja 123";
+                                                  address2.street = @"123 casa calle";
+                                                  address2.city = @"barrio norte";
+                                                  address2.region = @"AB";
+                                                  address2.postcode = @"53421";
+                                                  address2.country = @"MX";
+                                                  contact.addresses = @[
+                                                      address1,
+                                                      address2,
+                                                  ];
 
-                                        // TODO: Avatar
-                                        return contactShare;
-                                    }]];
+                                                  // TODO: Avatar
+                                                  return contact;
+                                              }]];
 
     return actions;
 }
@@ -3103,7 +3102,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                          quotedReplyModel:nil
-                             contactShare:nil
+                                  contact:nil
                             messageSender:messageSender
                              ignoreErrors:YES
                                completion:nil];
@@ -3413,7 +3412,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                                   attachmentIds:@[]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                   contactShare:nil];
+                                                                        contact:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3425,7 +3424,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                     isDelivered:NO
                                          isRead:NO
                                   quotedMessage:nil
-                                   contactShare:nil
+                                        contact:nil
                                     transaction:transaction];
                 break;
             }
@@ -3453,7 +3452,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                                   ]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                   contactShare:nil];
+                                                                        contact:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3479,7 +3478,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                          isRead:NO
                                  isVoiceMessage:NO
                                   quotedMessage:nil
-                                   contactShare:nil
+                                        contact:nil
                                     transaction:transaction];
                 break;
             }
@@ -3841,7 +3840,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                               isVoiceMessage:NO
                             groupMetaMessage:TSGroupMessageUnspecified
                                quotedMessage:nil
-                                contactShare:nil];
+                                     contact:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -3907,7 +3906,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                                   attachmentIds:[NSMutableArray new]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                   contactShare:nil];
+                                                                        contact:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
@@ -3921,7 +3920,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                                  isVoiceMessage:NO
                                                                groupMetaMessage:TSGroupMessageUnspecified
                                                                   quotedMessage:nil
-                                                                   contactShare:nil];
+                                                                        contact:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId transaction:transaction];
@@ -4100,7 +4099,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                      isDelivered:(BOOL)isDelivered
                                           isRead:(BOOL)isRead
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContactShare *)contactShare
+                                         contact:(nullable OWSContact *)contact
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -4126,7 +4125,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                     isRead:isRead
                             isVoiceMessage:attachment.isVoiceMessage
                              quotedMessage:quotedMessage
-                              contactShare:contactShare
+                                   contact:contact
                                transaction:transaction];
 }
 
@@ -4139,12 +4138,12 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                           isRead:(BOOL)isRead
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContactShare *)contactShare
+                                         contact:(nullable OWSContact *)contact
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
     OWSAssert(transaction);
-    OWSAssert(messageBody.length > 0 || attachmentId.length > 0 || contactShare);
+    OWSAssert(messageBody.length > 0 || attachmentId.length > 0 || contact);
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -4161,7 +4160,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:quotedMessage
-                                                       contactShare:contactShare];
+                                                            contact:contact];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4249,7 +4248,7 @@ typedef OWSContactShare * (^OWSContactShareBlock)(void);
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
                                                       quotedMessage:quotedMessage
-                                                       contactShare:nil];
+                                                            contact:nil];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }

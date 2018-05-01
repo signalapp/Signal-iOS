@@ -2,15 +2,15 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactShare.h"
+#import "OWSContact.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 // These private interfaces expose setter accessors to facilitate
 // construction of fake messages, etc.
-@interface OWSContactSharePhoneNumber (Private)
+@interface OWSContactPhoneNumber (Private)
 
-@property (nonatomic) OWSContactSharePhoneType phoneType;
+@property (nonatomic) OWSContactPhoneType phoneType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic) NSString *phoneNumber;
@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShareEmail (Private)
+@interface OWSContactEmail (Private)
 
-@property (nonatomic) OWSContactShareEmailType emailType;
+@property (nonatomic) OWSContactEmailType emailType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic) NSString *email;
@@ -30,9 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShareAddress (Private)
+@interface OWSContactAddress (Private)
 
-@property (nonatomic) OWSContactShareAddressType addressType;
+@property (nonatomic) OWSContactAddressType addressType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic, nullable) NSString *street;
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShare (Private)
+@interface OWSContact (Private)
 
 @property (nonatomic, nullable) NSString *givenName;
 @property (nonatomic, nullable) NSString *familyName;
@@ -55,9 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
 
-@property (nonatomic, nullable) NSArray<OWSContactSharePhoneNumber *> *phoneNumbers;
-@property (nonatomic, nullable) NSArray<OWSContactShareEmail *> *emails;
-@property (nonatomic, nullable) NSArray<OWSContactShareAddress *> *addresses;
+@property (nonatomic, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic, nullable) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic, nullable) NSArray<OWSContactAddress *> *addresses;
 
 @property (nonatomic, nullable) TSAttachment *avatar;
 @property (nonatomic) BOOL isProfileAvatar;

@@ -14,7 +14,7 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
-#import "OWSContactShare.h"
+#import "OWSContact.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -997,8 +997,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                   relay:envelope.relay
                                                                                             transaction:transaction];
 
-                OWSContactShare *_Nullable contactShare =
-                    [OWSContactShare contactShareForDataMessage:dataMessage transaction:transaction];
+                OWSContact *_Nullable contact = [OWSContact contactForDataMessage:dataMessage transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1015,7 +1014,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:attachmentIds
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
-                                                                   contactShare:contactShare];
+                                                                        contact:contact];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1049,8 +1048,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                           relay:envelope.relay
                                                                                     transaction:transaction];
-        OWSContactShare *_Nullable contactShare =
-            [OWSContactShare contactShareForDataMessage:dataMessage transaction:transaction];
+        OWSContact *_Nullable contact = [OWSContact contactForDataMessage:dataMessage transaction:transaction];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1061,7 +1059,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
-                                                           contactShare:contactShare];
+                                                                contact:contact];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

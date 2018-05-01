@@ -2,9 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactShare.h"
+#import "OWSContact.h"
 #import "NSString+SSK.h"
-#import "OWSContactShare+Private.h"
+#import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
 #import "TSAttachment.h"
@@ -14,9 +14,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSContactSharePhoneNumber ()
+@interface OWSContactPhoneNumber ()
 
-@property (nonatomic) OWSContactSharePhoneType phoneType;
+@property (nonatomic) OWSContactPhoneType phoneType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic) NSString *phoneNumber;
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSContactSharePhoneNumber
+@implementation OWSContactPhoneNumber
 
 - (BOOL)isValid
 {
@@ -33,9 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     switch (self.phoneType) {
-        case OWSContactSharePhoneType_Home:
-        case OWSContactSharePhoneType_Mobile:
-        case OWSContactSharePhoneType_Work:
+        case OWSContactPhoneType_Home:
+        case OWSContactPhoneType_Mobile:
+        case OWSContactPhoneType_Work:
             return YES;
         default:
             return self.label.ows_stripped.length > 0;
@@ -46,9 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShareEmail ()
+@interface OWSContactEmail ()
 
-@property (nonatomic) OWSContactShareEmailType emailType;
+@property (nonatomic) OWSContactEmailType emailType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic) NSString *email;
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSContactShareEmail
+@implementation OWSContactEmail
 
 - (BOOL)isValid
 {
@@ -65,9 +65,9 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     switch (self.emailType) {
-        case OWSContactShareEmailType_Home:
-        case OWSContactShareEmailType_Mobile:
-        case OWSContactShareEmailType_Work:
+        case OWSContactEmailType_Home:
+        case OWSContactEmailType_Mobile:
+        case OWSContactEmailType_Work:
             return YES;
         default:
             return self.label.ows_stripped.length > 0;
@@ -78,9 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShareAddress ()
+@interface OWSContactAddress ()
 
-@property (nonatomic) OWSContactShareAddressType addressType;
+@property (nonatomic) OWSContactAddressType addressType;
 @property (nonatomic, nullable) NSString *label;
 
 @property (nonatomic, nullable) NSString *street;
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSContactShareAddress
+@implementation OWSContactAddress
 
 - (BOOL)isValid
 {
@@ -106,8 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     switch (self.addressType) {
-        case OWSContactShareAddressType_Home:
-        case OWSContactShareAddressType_Work:
+        case OWSContactAddressType_Home:
+        case OWSContactAddressType_Work:
             return YES;
         default:
             return self.label.ows_stripped.length > 0;
@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSContactShare ()
+@interface OWSContact ()
 
 @property (nonatomic, nullable) NSString *givenName;
 @property (nonatomic, nullable) NSString *familyName;
@@ -126,9 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
 
-@property (nonatomic, nullable) NSArray<OWSContactSharePhoneNumber *> *phoneNumbers;
-@property (nonatomic, nullable) NSArray<OWSContactShareEmail *> *emails;
-@property (nonatomic, nullable) NSArray<OWSContactShareAddress *> *addresses;
+@property (nonatomic, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic, nullable) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic, nullable) NSArray<OWSContactAddress *> *addresses;
 
 @property (nonatomic, nullable) TSAttachment *avatar;
 @property (nonatomic) BOOL isProfileAvatar;
@@ -137,10 +137,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSContactShare
+@implementation OWSContact
 
-+ (OWSContactShare *_Nullable)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                             transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
 
@@ -150,74 +150,74 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(dataMessage.contact.count == 1);
     OWSSignalServiceProtosDataMessageContact *contactProto = dataMessage.contact.firstObject;
 
-    OWSContactShare *contactShare = [OWSContactShare new];
+    OWSContact *contact = [OWSContact new];
     if (contactProto.hasName) {
         OWSSignalServiceProtosDataMessageContactName *nameProto = contactProto.name;
 
         if (nameProto.hasGivenName) {
-            contactShare.givenName = nameProto.givenName.ows_stripped;
+            contact.givenName = nameProto.givenName.ows_stripped;
         }
         if (nameProto.hasFamilyName) {
-            contactShare.familyName = nameProto.familyName.ows_stripped;
+            contact.familyName = nameProto.familyName.ows_stripped;
         }
         if (nameProto.hasPrefix) {
-            contactShare.namePrefix = nameProto.prefix.ows_stripped;
+            contact.namePrefix = nameProto.prefix.ows_stripped;
         }
         if (nameProto.hasSuffix) {
-            contactShare.nameSuffix = nameProto.suffix.ows_stripped;
+            contact.nameSuffix = nameProto.suffix.ows_stripped;
         }
         if (nameProto.hasMiddleName) {
-            contactShare.middleName = nameProto.middleName.ows_stripped;
+            contact.middleName = nameProto.middleName.ows_stripped;
         }
     }
 
-    NSMutableArray<OWSContactSharePhoneNumber *> *phoneNumbers = [NSMutableArray new];
+    NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (OWSSignalServiceProtosDataMessageContactPhone *phoneNumberProto in contactProto.number) {
-        OWSContactSharePhoneNumber *_Nullable phoneNumber = [self phoneNumberForProto:phoneNumberProto];
+        OWSContactPhoneNumber *_Nullable phoneNumber = [self phoneNumberForProto:phoneNumberProto];
         if (phoneNumber) {
             [phoneNumbers addObject:phoneNumber];
         }
     }
-    contactShare.phoneNumbers = [phoneNumbers copy];
+    contact.phoneNumbers = [phoneNumbers copy];
 
-    NSMutableArray<OWSContactShareEmail *> *emails = [NSMutableArray new];
+    NSMutableArray<OWSContactEmail *> *emails = [NSMutableArray new];
     for (OWSSignalServiceProtosDataMessageContactEmail *emailProto in contactProto.email) {
-        OWSContactShareEmail *_Nullable email = [self emailForProto:emailProto];
+        OWSContactEmail *_Nullable email = [self emailForProto:emailProto];
         if (email) {
             [emails addObject:email];
         }
     }
-    contactShare.emails = [emails copy];
+    contact.emails = [emails copy];
 
-    NSMutableArray<OWSContactShareAddress *> *addresses = [NSMutableArray new];
+    NSMutableArray<OWSContactAddress *> *addresses = [NSMutableArray new];
     for (OWSSignalServiceProtosDataMessageContactPostalAddress *addressProto in contactProto.address) {
-        OWSContactShareAddress *_Nullable address = [self addressForProto:addressProto];
+        OWSContactAddress *_Nullable address = [self addressForProto:addressProto];
         if (address) {
             [addresses addObject:address];
         }
     }
-    contactShare.addresses = [addresses copy];
+    contact.addresses = [addresses copy];
 
     // TODO: Avatar
 
-    return contactShare;
+    return contact;
 }
 
-+ (nullable OWSContactSharePhoneNumber *)phoneNumberForProto:
++ (nullable OWSContactPhoneNumber *)phoneNumberForProto:
     (OWSSignalServiceProtosDataMessageContactPhone *)phoneNumberProto
 {
-    OWSContactSharePhoneNumber *result = [OWSContactSharePhoneNumber new];
-    result.phoneType = OWSContactSharePhoneType_Custom;
+    OWSContactPhoneNumber *result = [OWSContactPhoneNumber new];
+    result.phoneType = OWSContactPhoneType_Custom;
     if (phoneNumberProto.hasType) {
         switch (phoneNumberProto.type) {
             case OWSSignalServiceProtosDataMessageContactPhoneTypeHome:
-                result.phoneType = OWSContactSharePhoneType_Home;
+                result.phoneType = OWSContactPhoneType_Home;
                 break;
             case OWSSignalServiceProtosDataMessageContactPhoneTypeMobile:
-                result.phoneType = OWSContactSharePhoneType_Mobile;
+                result.phoneType = OWSContactPhoneType_Mobile;
                 break;
             case OWSSignalServiceProtosDataMessageContactPhoneTypeWork:
-                result.phoneType = OWSContactSharePhoneType_Work;
+                result.phoneType = OWSContactPhoneType_Work;
                 break;
             default:
                 break;
@@ -237,20 +237,20 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-+ (nullable OWSContactShareEmail *)emailForProto:(OWSSignalServiceProtosDataMessageContactEmail *)emailProto
++ (nullable OWSContactEmail *)emailForProto:(OWSSignalServiceProtosDataMessageContactEmail *)emailProto
 {
-    OWSContactShareEmail *result = [OWSContactShareEmail new];
-    result.emailType = OWSContactShareEmailType_Custom;
+    OWSContactEmail *result = [OWSContactEmail new];
+    result.emailType = OWSContactEmailType_Custom;
     if (emailProto.hasType) {
         switch (emailProto.type) {
             case OWSSignalServiceProtosDataMessageContactEmailTypeHome:
-                result.emailType = OWSContactShareEmailType_Home;
+                result.emailType = OWSContactEmailType_Home;
                 break;
             case OWSSignalServiceProtosDataMessageContactEmailTypeMobile:
-                result.emailType = OWSContactShareEmailType_Mobile;
+                result.emailType = OWSContactEmailType_Mobile;
                 break;
             case OWSSignalServiceProtosDataMessageContactEmailTypeWork:
-                result.emailType = OWSContactShareEmailType_Work;
+                result.emailType = OWSContactEmailType_Work;
                 break;
             default:
                 break;
@@ -270,18 +270,17 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-+ (nullable OWSContactShareAddress *)addressForProto:
-    (OWSSignalServiceProtosDataMessageContactPostalAddress *)addressProto
++ (nullable OWSContactAddress *)addressForProto:(OWSSignalServiceProtosDataMessageContactPostalAddress *)addressProto
 {
-    OWSContactShareAddress *result = [OWSContactShareAddress new];
-    result.addressType = OWSContactShareAddressType_Custom;
+    OWSContactAddress *result = [OWSContactAddress new];
+    result.addressType = OWSContactAddressType_Custom;
     if (addressProto.hasType) {
         switch (addressProto.type) {
             case OWSSignalServiceProtosDataMessageContactPostalAddressTypeHome:
-                result.addressType = OWSContactShareAddressType_Home;
+                result.addressType = OWSContactAddressType_Home;
                 break;
             case OWSSignalServiceProtosDataMessageContactPostalAddressTypeWork:
-                result.addressType = OWSContactShareAddressType_Work;
+                result.addressType = OWSContactAddressType_Work;
                 break;
             default:
                 break;
@@ -323,17 +322,17 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    for (OWSContactSharePhoneNumber *phoneNumber in self.phoneNumbers) {
+    for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
         if (phoneNumber.isValid) {
             return YES;
         }
     }
-    for (OWSContactShareEmail *email in self.emails) {
+    for (OWSContactEmail *email in self.emails) {
         if (email.isValid) {
             return YES;
         }
     }
-    for (OWSContactShareAddress *address in self.addresses) {
+    for (OWSContactAddress *address in self.addresses) {
         if (address.isValid) {
             return YES;
         }
@@ -367,64 +366,64 @@ NS_ASSUME_NONNULL_BEGIN
     return contacts.firstObject;
 }
 
-+ (nullable OWSContactShare *)contactShareForSystemContact:(CNContact *)contact
++ (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
 {
-    if (!contact) {
+    if (!systemContact) {
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
-    OWSContactShare *contactShare = [OWSContactShare new];
-    contactShare.givenName = contact.givenName.ows_stripped;
-    contactShare.middleName = contact.middleName.ows_stripped;
-    contactShare.familyName = contact.familyName.ows_stripped;
-    contactShare.namePrefix = contact.namePrefix.ows_stripped;
-    contactShare.nameSuffix = contact.nameSuffix.ows_stripped;
+    OWSContact *contact = [OWSContact new];
+    contact.givenName = systemContact.givenName.ows_stripped;
+    contact.middleName = systemContact.middleName.ows_stripped;
+    contact.familyName = systemContact.familyName.ows_stripped;
+    contact.namePrefix = systemContact.namePrefix.ows_stripped;
+    contact.nameSuffix = systemContact.nameSuffix.ows_stripped;
     // TODO: Display name.
-    //    contactShare.displayName = [CNContactFormatter stringFromContact:contact
-    //    style:CNContactFormatterStyleFullName]; contactShare.organizationName = contact.organizationName.ows_stripped;
+    //    contact.displayName = [CNContactFormatter stringFromContact:contact
+    //    style:CNContactFormatterStyleFullName]; contact.organizationName = contact.organizationName.ows_stripped;
 
-    NSMutableArray<OWSContactSharePhoneNumber *> *phoneNumbers = [NSMutableArray new];
-    for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in contact.phoneNumbers) {
-        OWSContactSharePhoneNumber *phoneNumber = [OWSContactSharePhoneNumber new];
+    NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
+    for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in systemContact.phoneNumbers) {
+        OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
         phoneNumber.phoneNumber = phoneNumberField.value.stringValue;
         if ([phoneNumberField.label isEqualToString:CNLabelHome]) {
-            phoneNumber.phoneType = OWSContactSharePhoneType_Home;
+            phoneNumber.phoneType = OWSContactPhoneType_Home;
         } else if ([phoneNumberField.label isEqualToString:CNLabelWork]) {
-            phoneNumber.phoneType = OWSContactSharePhoneType_Work;
+            phoneNumber.phoneType = OWSContactPhoneType_Work;
         } else if ([phoneNumberField.label isEqualToString:CNLabelPhoneNumberMobile]) {
-            phoneNumber.phoneType = OWSContactSharePhoneType_Mobile;
+            phoneNumber.phoneType = OWSContactPhoneType_Mobile;
         } else {
-            phoneNumber.phoneType = OWSContactSharePhoneType_Custom;
+            phoneNumber.phoneType = OWSContactPhoneType_Custom;
             phoneNumber.label = phoneNumberField.label;
         }
         if (phoneNumber.isValid) {
             [phoneNumbers addObject:phoneNumber];
         }
     }
-    contactShare.phoneNumbers = phoneNumbers;
+    contact.phoneNumbers = phoneNumbers;
 
-    NSMutableArray<OWSContactShareEmail *> *emails = [NSMutableArray new];
-    for (CNLabeledValue *emailField in contact.emailAddresses) {
-        OWSContactShareEmail *email = [OWSContactShareEmail new];
+    NSMutableArray<OWSContactEmail *> *emails = [NSMutableArray new];
+    for (CNLabeledValue *emailField in systemContact.emailAddresses) {
+        OWSContactEmail *email = [OWSContactEmail new];
         email.email = emailField.value;
         if ([emailField.label isEqualToString:CNLabelHome]) {
-            email.emailType = OWSContactShareEmailType_Home;
+            email.emailType = OWSContactEmailType_Home;
         } else if ([emailField.label isEqualToString:CNLabelWork]) {
-            email.emailType = OWSContactShareEmailType_Work;
+            email.emailType = OWSContactEmailType_Work;
         } else {
-            email.emailType = OWSContactShareEmailType_Custom;
+            email.emailType = OWSContactEmailType_Custom;
             email.label = emailField.label;
         }
         if (email.isValid) {
             [emails addObject:email];
         }
     }
-    contactShare.emails = emails;
+    contact.emails = emails;
 
-    NSMutableArray<OWSContactShareAddress *> *addresses = [NSMutableArray new];
-    for (CNLabeledValue<CNPostalAddress *> *addressField in contact.postalAddresses) {
-        OWSContactShareAddress *address = [OWSContactShareAddress new];
+    NSMutableArray<OWSContactAddress *> *addresses = [NSMutableArray new];
+    for (CNLabeledValue<CNPostalAddress *> *addressField in systemContact.postalAddresses) {
+        OWSContactAddress *address = [OWSContactAddress new];
         address.street = addressField.value.street;
         // TODO: Is this the correct mapping?
         //        address.neighborhood = addressField.value.subLocality;
@@ -437,38 +436,38 @@ NS_ASSUME_NONNULL_BEGIN
         address.country = addressField.value.ISOCountryCode;
 
         if ([addressField.label isEqualToString:CNLabelHome]) {
-            address.addressType = OWSContactShareAddressType_Home;
+            address.addressType = OWSContactAddressType_Home;
         } else if ([addressField.label isEqualToString:CNLabelWork]) {
-            address.addressType = OWSContactShareAddressType_Work;
+            address.addressType = OWSContactAddressType_Work;
         } else {
-            address.addressType = OWSContactShareAddressType_Custom;
+            address.addressType = OWSContactAddressType_Custom;
             address.label = addressField.label;
         }
         if (address.isValid) {
             [addresses addObject:address];
         }
     }
-    contactShare.addresses = addresses;
+    contact.addresses = addresses;
 
     // TODO: Avatar
 
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
 
-    if (contactShare.isValid) {
-        return contactShare;
+    if (contact.isValid) {
+        return contact;
     } else {
         return nil;
     }
 }
 
-+ (nullable OWSContactShare *)contactShareForVCardData:(NSData *)data
++ (nullable OWSContact *)contactForVCardData:(NSData *)data
 {
     CNContact *_Nullable systemContact = [self systemContactForVCardData:data];
     if (!systemContact) {
         return nil;
     }
-    return [self contactShareForSystemContact:systemContact];
+    return [self contactForSystemContact:systemContact];
 }
 
 @end

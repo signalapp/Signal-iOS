@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self sendMessageWithAttachment:attachment
                                   inThread:thread
                           quotedReplyModel:quotedReplyModel
-                              contactShare:nil
+                                   contact:nil
                              messageSender:messageSender
                               ignoreErrors:NO
                                 completion:completion];
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                 quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                    contactShare:(nullable OWSContactShare *)contactShare
+                                         contact:(nullable OWSContact *)contact
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:[attachment isVoiceMessage]
                                                    groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:[quotedReplyModel buildQuotedMessage]
-                                                       contactShare:contactShare];
+                                                            contact:contact];
 
     [messageSender enqueueAttachment:attachment.dataSource
         contentType:attachment.mimeType

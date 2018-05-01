@@ -5,7 +5,7 @@
 #import "TSOutgoingMessage.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
-#import "OWSContactShare.h"
+#import "OWSContact.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
@@ -245,7 +245,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMessageUnspecified
                                                          quotedMessage:quotedMessage
-                                                          contactShare:nil];
+                                                               contact:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -260,7 +260,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
-                                                          contactShare:nil];
+                                                               contact:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -272,7 +272,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContactShare *)contactShare
+                                         contact:(nullable OWSContact *)contact
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -281,7 +281,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
-                              contactShare:contactShare];
+                                   contact:contact];
     if (!self) {
         return self;
     }
@@ -794,9 +794,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     // Contact Share
-    OWSSignalServiceProtosDataMessageContact *_Nullable contactShare = self.contactShareBuilder;
-    if (contactShare) {
-        [builder addContact:contactShare];
+    OWSSignalServiceProtosDataMessageContact *_Nullable contact = self.contactBuilder;
+    if (contact) {
+        [builder addContact:contact];
     }
 
     return builder;
@@ -846,13 +846,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 }
 
-- (nullable OWSSignalServiceProtosDataMessageContact *)contactShareBuilder
+- (nullable OWSSignalServiceProtosDataMessageContact *)contactBuilder
 {
-    if (!self.contactShare) {
+    if (!self.contact) {
         return nil;
     }
-    OWSContactShare *contactShare = self.contactShare;
-    if (!contactShare.isValid) {
+    OWSContact *contact = self.contact;
+    if (!contact.isValid) {
         OWSProdLogAndFail(@"%@ contact share is invalid.", self.logTag);
         return nil;
     }
@@ -863,24 +863,24 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // TODO: Should we normalize/validate values here?
     OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
         [OWSSignalServiceProtosDataMessageContactNameBuilder new];
-    if (contactShare.givenName.ows_stripped.length > 0) {
-        nameBuilder.givenName = contactShare.givenName.ows_stripped;
+    if (contact.givenName.ows_stripped.length > 0) {
+        nameBuilder.givenName = contact.givenName.ows_stripped;
     }
-    if (contactShare.familyName.ows_stripped.length > 0) {
-        nameBuilder.familyName = contactShare.familyName.ows_stripped;
+    if (contact.familyName.ows_stripped.length > 0) {
+        nameBuilder.familyName = contact.familyName.ows_stripped;
     }
-    if (contactShare.middleName.ows_stripped.length > 0) {
-        nameBuilder.middleName = contactShare.middleName.ows_stripped;
+    if (contact.middleName.ows_stripped.length > 0) {
+        nameBuilder.middleName = contact.middleName.ows_stripped;
     }
-    if (contactShare.namePrefix.ows_stripped.length > 0) {
-        nameBuilder.prefix = contactShare.namePrefix.ows_stripped;
+    if (contact.namePrefix.ows_stripped.length > 0) {
+        nameBuilder.prefix = contact.namePrefix.ows_stripped;
     }
-    if (contactShare.nameSuffix.ows_stripped.length > 0) {
-        nameBuilder.suffix = contactShare.nameSuffix.ows_stripped;
+    if (contact.nameSuffix.ows_stripped.length > 0) {
+        nameBuilder.suffix = contact.nameSuffix.ows_stripped;
     }
     [contactBuilder setNameBuilder:nameBuilder];
 
-    for (OWSContactSharePhoneNumber *phoneNumber in contactShare.phoneNumbers) {
+    for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         if (!phoneNumber.isValid) {
             OWSProdLogAndFail(@"%@ phone number is invalid.", self.logTag);
             continue;
@@ -892,13 +892,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             phoneBuilder.label = phoneBuilder.label.ows_stripped;
         }
         switch (phoneNumber.phoneType) {
-            case OWSContactSharePhoneType_Home:
+            case OWSContactPhoneType_Home:
                 phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeHome;
                 break;
-            case OWSContactSharePhoneType_Mobile:
+            case OWSContactPhoneType_Mobile:
                 phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeMobile;
                 break;
-            case OWSContactSharePhoneType_Work:
+            case OWSContactPhoneType_Work:
                 phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeWork;
                 break;
             default:
@@ -908,7 +908,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         [contactBuilder addNumber:phoneBuilder.build];
     }
 
-    for (OWSContactShareEmail *email in contactShare.emails) {
+    for (OWSContactEmail *email in contact.emails) {
         if (!email.isValid) {
             OWSProdLogAndFail(@"%@ email is invalid.", self.logTag);
             continue;
@@ -920,13 +920,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             emailBuilder.label = emailBuilder.label.ows_stripped;
         }
         switch (email.emailType) {
-            case OWSContactShareEmailType_Home:
+            case OWSContactEmailType_Home:
                 emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeHome;
                 break;
-            case OWSContactShareEmailType_Mobile:
+            case OWSContactEmailType_Mobile:
                 emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeMobile;
                 break;
-            case OWSContactShareEmailType_Work:
+            case OWSContactEmailType_Work:
                 emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeWork;
                 break;
             default:
@@ -936,7 +936,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         [contactBuilder addEmail:emailBuilder.build];
     }
 
-    for (OWSContactShareAddress *address in contactShare.addresses) {
+    for (OWSContactAddress *address in contact.addresses) {
         if (!address.isValid) {
             OWSProdLogAndFail(@"%@ address is invalid.", self.logTag);
             continue;
@@ -972,12 +972,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     // TODO: avatar
 
-    OWSSignalServiceProtosDataMessageContact *contact = [contactBuilder build];
-    if (contact.number.count < 1 && contact.email.count < 1 && contact.address.count < 1) {
+    OWSSignalServiceProtosDataMessageContact *contactProto = [contactBuilder build];
+    if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
         OWSProdLogAndFail(@"%@ contact has neither phone, email or address.", self.logTag);
         return nil;
     }
-    return contact;
+    return contactProto;
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
