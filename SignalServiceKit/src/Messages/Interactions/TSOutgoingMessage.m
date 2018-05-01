@@ -245,7 +245,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMessageUnspecified
                                                          quotedMessage:quotedMessage
-                                                               contact:nil];
+                                                          contactShare:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -260,7 +260,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
                                                          quotedMessage:nil
-                                                               contact:nil];
+                                                          contactShare:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -272,7 +272,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                         contact:(nullable OWSContact *)contact
+                                    contactShare:(nullable OWSContact *)contactShare
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -281,7 +281,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
                              quotedMessage:quotedMessage
-                                   contact:contact];
+                              contactShare:contactShare];
     if (!self) {
         return self;
     }
@@ -794,8 +794,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     // Contact Share
-    if (self.contact) {
-        OWSSignalServiceProtosDataMessageContact *_Nullable contactProto = [OWSContacts protoForContact:self.contact];
+    if (self.contactShare) {
+        OWSSignalServiceProtosDataMessageContact *_Nullable contactProto =
+            [OWSContacts protoForContact:self.contactShare];
         if (contactProto) {
             [builder addContact:contactProto];
         }

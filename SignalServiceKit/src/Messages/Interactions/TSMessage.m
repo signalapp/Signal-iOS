@@ -66,7 +66,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                 contact:(nullable OWSContact *)contact
+                            contactShare:(nullable OWSContact *)contactShare
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -83,7 +83,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
     _receivedAtTimestamp = [NSDate ows_millisecondTimeStamp];
     _quotedMessage = quotedMessage;
-    _contact = contact;
+    _contactShare = contactShare;
 
     return self;
 }
@@ -261,7 +261,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
-    } else if (self.contact) {
+    } else if (self.contactShare) {
         // TODO: Include properly formatted name.
         return @"👤";
     } else {

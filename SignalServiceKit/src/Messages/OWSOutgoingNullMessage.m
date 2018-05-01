@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isVoiceMessage:NO
                                   groupMetaMessage:TSGroupMessageUnspecified
                                      quotedMessage:nil
-                                           contact:nil];
+                                      contactShare:nil];
     if (!self) {
         return self;
     }

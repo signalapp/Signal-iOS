@@ -53,7 +53,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                           expiresInSeconds:0
                            expireStartedAt:0
                              quotedMessage:nil
-                                   contact:nil];
+                              contactShare:nil];
 
     if (!self) {
         return self;

@@ -1014,7 +1014,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:attachmentIds
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
-                                                                        contact:contact];
+                                                                   contactShare:contact];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1059,7 +1059,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
-                                                                contact:contact];
+                                                           contactShare:contact];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

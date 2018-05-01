@@ -1166,7 +1166,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:outgoingMessage.expiresInSeconds
                                                           quotedMessage:outgoingMessage.quotedMessage
-                                                                contact:outgoingMessage.contact];
+                                                           contactShare:outgoingMessage.contactShare];
         [incomingMessage saveWithTransaction:transaction];
     }];
 }

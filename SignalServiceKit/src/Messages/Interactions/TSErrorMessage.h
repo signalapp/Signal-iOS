@@ -34,7 +34,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                 contact:(nullable OWSContact *)contact NS_UNAVAILABLE;
+                            contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

@@ -820,7 +820,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isDelivered:YES
                                                           isRead:NO
                                                    quotedMessage:nil
-                                                         contact:nil
+                                                    contactShare:nil
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
@@ -1753,7 +1753,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:NO
                                      isRead:NO
                               quotedMessage:nil
-                                    contact:nil
+                               contactShare:nil
                                 transaction:transaction];
         }];
 }
@@ -1801,7 +1801,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 isDelivered:isDelivered
                                      isRead:isRead
                               quotedMessage:nil
-                                    contact:nil
+                               contactShare:nil
                                 transaction:transaction];
         }];
 }
@@ -1975,7 +1975,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   isDelivered:quotedMessageIsDelivered
                                                                                        isRead:quotedMessageIsRead
                                                                                 quotedMessage:nil
-                                                                                      contact:nil
+                                                                                 contactShare:nil
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForMessage:messageToQuote transaction:transaction]
@@ -2000,7 +2000,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     isDelivered:replyIsDelivered
                                          isRead:replyIsRead
                                   quotedMessage:quotedMessage
-                                        contact:nil
+                                   contactShare:nil
                                     transaction:transaction];
             }
         }
@@ -2849,7 +2849,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
-                                                                 contact:nil
+                                                            contactShare:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
             [message saveWithTransaction:transaction];
@@ -2919,7 +2919,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                              isDelivered:NO
                                                                   isRead:NO
                                                            quotedMessage:nil
-                                                                 contact:contact
+                                                            contactShare:contact
                                                              transaction:transaction];
             [message saveWithTransaction:transaction];
         }];
@@ -3104,7 +3104,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                          quotedReplyModel:nil
-                                  contact:nil
+                             contactShare:nil
                             messageSender:messageSender
                              ignoreErrors:YES
                                completion:nil];
@@ -3414,7 +3414,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                                   attachmentIds:@[]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                        contact:nil];
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3426,7 +3426,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                     isDelivered:NO
                                          isRead:NO
                                   quotedMessage:nil
-                                        contact:nil
+                                   contactShare:nil
                                     transaction:transaction];
                 break;
             }
@@ -3454,7 +3454,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                                   ]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                        contact:nil];
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
@@ -3480,7 +3480,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                          isRead:NO
                                  isVoiceMessage:NO
                                   quotedMessage:nil
-                                        contact:nil
+                                   contactShare:nil
                                     transaction:transaction];
                 break;
             }
@@ -3842,7 +3842,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                               isVoiceMessage:NO
                             groupMetaMessage:TSGroupMessageUnspecified
                                quotedMessage:nil
-                                     contact:nil];
+                                contactShare:nil];
         DDLogError(@"%@ resurrectNewOutgoingMessages2 timestamp: %llu.", self.logTag, message.timestamp);
         [messages addObject:message];
     }
@@ -3908,7 +3908,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                                   attachmentIds:[NSMutableArray new]
                                                                expiresInSeconds:0
                                                                   quotedMessage:nil
-                                                                        contact:nil];
+                                                                   contactShare:nil];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
@@ -3922,7 +3922,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                                  isVoiceMessage:NO
                                                                groupMetaMessage:TSGroupMessageUnspecified
                                                                   quotedMessage:nil
-                                                                        contact:nil];
+                                                                   contactShare:nil];
                 [message saveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId transaction:transaction];
@@ -4101,7 +4101,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                      isDelivered:(BOOL)isDelivered
                                           isRead:(BOOL)isRead
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                         contact:(nullable OWSContact *)contact
+                                    contactShare:(nullable OWSContact *)contactShare
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -4127,7 +4127,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                     isRead:isRead
                             isVoiceMessage:attachment.isVoiceMessage
                              quotedMessage:quotedMessage
-                                   contact:contact
+                              contactShare:contactShare
                                transaction:transaction];
 }
 
@@ -4140,12 +4140,12 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                           isRead:(BOOL)isRead
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                         contact:(nullable OWSContact *)contact
+                                    contactShare:(nullable OWSContact *)contactShare
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
     OWSAssert(transaction);
-    OWSAssert(messageBody.length > 0 || attachmentId.length > 0 || contact);
+    OWSAssert(messageBody.length > 0 || attachmentId.length > 0 || contactShare);
 
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -4162,7 +4162,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                      isVoiceMessage:isVoiceMessage
                                                    groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:quotedMessage
-                                                            contact:contact];
+                                                       contactShare:contactShare];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4250,7 +4250,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                       attachmentIds:attachmentIds
                                                    expiresInSeconds:0
                                                       quotedMessage:quotedMessage
-                                                            contact:nil];
+                                                       contactShare:nil];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
