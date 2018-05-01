@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
 
 @property (nonatomic, readonly) NSString *phoneNumber;
 
-- (BOOL)isValid;
+- (BOOL)ows_isValid;
 
 @end
 
@@ -49,7 +49,7 @@ typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
 
 @property (nonatomic, readonly) NSString *email;
 
-- (BOOL)isValid;
+- (BOOL)ows_isValid;
 
 @end
 
@@ -75,7 +75,7 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 @property (nonatomic, readonly, nullable) NSString *postcode;
 @property (nonatomic, readonly, nullable) NSString *country;
 
-- (BOOL)isValid;
+- (BOOL)ows_isValid;
 
 @end
 
@@ -102,7 +102,7 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (BOOL)isValid;
+- (BOOL)ows_isValid;
 
 @end
 

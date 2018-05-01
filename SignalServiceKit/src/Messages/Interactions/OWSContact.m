@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactPhoneNumber
 
-- (BOOL)isValid
+- (BOOL)ows_isValid
 {
     if (![PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber]) {
         return NO;
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSContactPhoneType_Mobile:
         case OWSContactPhoneType_Work:
             return YES;
-        default:
+        case OWSContactPhoneType_Custom:
             return self.label.ows_stripped.length > 0;
     }
 }
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactEmail
 
-- (BOOL)isValid
+- (BOOL)ows_isValid
 {
     if (self.email.ows_stripped.length < 1) {
         return NO;
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSContactEmailType_Mobile:
         case OWSContactEmailType_Work:
             return YES;
-        default:
+        case OWSContactEmailType_Custom:
             return self.label.ows_stripped.length > 0;
     }
 }
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactAddress
 
-- (BOOL)isValid
+- (BOOL)ows_isValid
 {
     if (self.street.ows_stripped.length < 1 && self.pobox.ows_stripped.length < 1
         && self.neighborhood.ows_stripped.length < 1 && self.city.ows_stripped.length < 1
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSContactAddressType_Home:
         case OWSContactAddressType_Work:
             return YES;
-        default:
+        case OWSContactAddressType_Custom:
             return self.label.ows_stripped.length > 0;
     }
 }
@@ -141,24 +141,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContact
 
-- (BOOL)isValid
+- (BOOL)ows_isValid
 {
-    if (self.givenName.ows_stripped.length < 1 && self.familyName.ows_stripped.length) {
+    if (self.displayName.ows_stripped.length) {
         return NO;
     }
-
+    // Contact is valid if at least one entry is valid.
     for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
-        if (phoneNumber.isValid) {
+        if (phoneNumber.ows_isValid) {
             return YES;
         }
     }
     for (OWSContactEmail *email in self.emails) {
-        if (email.isValid) {
+        if (email.ows_isValid) {
             return YES;
         }
     }
     for (OWSContactAddress *address in self.addresses) {
-        if (address.isValid) {
+        if (address.ows_isValid) {
             return YES;
         }
     }
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
             phoneNumber.phoneType = OWSContactPhoneType_Custom;
             phoneNumber.label = phoneNumberField.label;
         }
-        if (phoneNumber.isValid) {
+        if (phoneNumber.ows_isValid) {
             [phoneNumbers addObject:phoneNumber];
         }
     }
@@ -264,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
             email.emailType = OWSContactEmailType_Custom;
             email.label = emailField.label;
         }
-        if (email.isValid) {
+        if (email.ows_isValid) {
             [emails addObject:email];
         }
     }
@@ -292,7 +292,7 @@ NS_ASSUME_NONNULL_BEGIN
             address.addressType = OWSContactAddressType_Custom;
             address.label = addressField.label;
         }
-        if (address.isValid) {
+        if (address.ows_isValid) {
             [addresses addObject:address];
         }
     }
@@ -303,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
     //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
 
-    if (contact.isValid) {
+    if (contact.ows_isValid) {
         return contact;
     } else {
         return nil;
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
-    if (!contact.isValid) {
+    if (!contact.ows_isValid) {
         OWSProdLogAndFail(@"%@ Invalid contact.", self.logTag);
         return nil;
     }
@@ -332,7 +332,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *systemPhoneNumbers = [NSMutableArray new];
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        if (!phoneNumber.isValid) {
+        if (!phoneNumber.ows_isValid) {
             OWSProdLogAndFail(@"%@ invalid phone number.", self.logTag);
             continue;
         }
@@ -358,7 +358,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   value:[CNPhoneNumber
                                                             phoneNumberWithStringValue:phoneNumber.phoneNumber]]];
                 break;
-            default:
+            case OWSContactPhoneType_Custom:
                 [systemPhoneNumbers
                     addObject:[CNLabeledValue
                                   labeledValueWithLabel:phoneNumber.label
@@ -371,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<NSString *> *> *systemEmails = [NSMutableArray new];
     for (OWSContactEmail *email in contact.emails) {
-        if (!email.isValid) {
+        if (!email.ows_isValid) {
             OWSProdLogAndFail(@"%@ invalid email.", self.logTag);
             continue;
         }
@@ -385,7 +385,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSContactEmailType_Work:
                 [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:CNLabelWork value:email.email]];
                 break;
-            default:
+            case OWSContactEmailType_Custom:
                 [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:email.label value:email.email]];
                 break;
         }
@@ -394,7 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<CNLabeledValue<CNPostalAddress *> *> *systemAddresses = [NSMutableArray new];
     for (OWSContactAddress *address in contact.addresses) {
-        if (!address.isValid) {
+        if (!address.ows_isValid) {
             OWSProdLogAndFail(@"%@ invalid address.", self.logTag);
             continue;
         }
@@ -417,7 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSContactAddressType_Work:
                 [systemAddresses addObject:[CNLabeledValue labeledValueWithLabel:CNLabelWork value:systemAddress]];
                 break;
-            default:
+            case OWSContactAddressType_Custom:
                 [systemAddresses addObject:[CNLabeledValue labeledValueWithLabel:address.label value:systemAddress]];
                 break;
         }
@@ -462,7 +462,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(contact);
 
-    if (!contact.isValid) {
+    if (!contact.ows_isValid) {
         OWSProdLogAndFail(@"%@ contact share is invalid.", self.logTag);
         return nil;
     }
@@ -470,7 +470,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosDataMessageContactBuilder *contactBuilder =
         [OWSSignalServiceProtosDataMessageContactBuilder new];
 
-    // TODO: Should we normalize/validate values here?
     OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
         [OWSSignalServiceProtosDataMessageContactNameBuilder new];
     if (contact.givenName.ows_stripped.length > 0) {
@@ -491,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
     [contactBuilder setNameBuilder:nameBuilder];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
-        if (!phoneNumber.isValid) {
+        if (!phoneNumber.ows_isValid) {
             OWSProdLogAndFail(@"%@ phone number is invalid.", self.logTag);
             continue;
         }
@@ -511,7 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSContactPhoneType_Work:
                 phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeWork;
                 break;
-            default:
+            case OWSContactPhoneType_Custom:
                 phoneBuilder.type = OWSSignalServiceProtosDataMessageContactPhoneTypeCustom;
                 break;
         }
@@ -519,7 +518,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (OWSContactEmail *email in contact.emails) {
-        if (!email.isValid) {
+        if (!email.ows_isValid) {
             OWSProdLogAndFail(@"%@ email is invalid.", self.logTag);
             continue;
         }
@@ -539,7 +538,7 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSContactEmailType_Work:
                 emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeWork;
                 break;
-            default:
+            case OWSContactEmailType_Custom:
                 emailBuilder.type = OWSSignalServiceProtosDataMessageContactEmailTypeCustom;
                 break;
         }
@@ -547,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (OWSContactAddress *address in contact.addresses) {
-        if (!address.isValid) {
+        if (!address.ows_isValid) {
             OWSProdLogAndFail(@"%@ address is invalid.", self.logTag);
             continue;
         }
@@ -689,7 +688,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return nil;
     }
-    if (!result.isValid) {
+    if (!result.ows_isValid) {
         return nil;
     }
     return result;
@@ -722,7 +721,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return nil;
     }
-    if (!result.isValid) {
+    if (!result.ows_isValid) {
         return nil;
     }
     return result;
@@ -768,7 +767,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (addressProto.hasCountry) {
         result.country = addressProto.country.ows_stripped;
     }
-    if (!result.isValid) {
+    if (!result.ows_isValid) {
         return nil;
     }
     return result;
