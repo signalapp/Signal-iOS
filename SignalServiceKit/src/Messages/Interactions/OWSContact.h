@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class CNContact;
 @class OWSSignalServiceProtosDataMessage;
 @class TSAttachment;
 @class YapDatabaseReadWriteTransaction;
@@ -107,6 +108,21 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 #pragma mark -
 
 @interface OWSContacts : NSObject
+
+#pragma mark - VCard Serialization
+
++ (nullable CNContact *)systemContactForVCardData:(NSData *)data;
++ (nullable NSData *)vCardDataForSystemContact:(CNContact *)systemContact;
+
+#pragma mark - System Contact Conversion
+
++ (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact;
++ (nullable CNContact *)systemContactForContact:(OWSContact *)contact;
+
+#pragma mark -
+
++ (nullable OWSContact *)contactForVCardData:(NSData *)data;
++ (nullable NSData *)vCardDataContact:(OWSContact *)contact;
 
 @end
 

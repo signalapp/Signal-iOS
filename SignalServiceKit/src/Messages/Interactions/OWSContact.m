@@ -346,6 +346,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContacts
 
+#pragma mark - VCard Serialization
+
 + (nullable CNContact *)systemContactForVCardData:(NSData *)data
 {
     OWSAssert(data);
@@ -365,6 +367,28 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return contacts.firstObject;
 }
+
++ (nullable NSData *)vCardDataForSystemContact:(CNContact *)systemContact
+{
+    OWSAssert(systemContact);
+
+    NSError *error;
+    NSData *_Nullable data = [CNContactVCardSerialization dataWithContacts:@[
+        systemContact,
+    ]
+                                                                     error:&error];
+    if (!data || error) {
+        OWSProdLogAndFail(@"%@ could not serialize to vcard: %@", self.logTag, error);
+        return nil;
+    }
+    if (data.length < 1) {
+        OWSProdLogAndFail(@"%@ empty vcard data: %@", self.logTag, error);
+        return nil;
+    }
+    return data;
+}
+
+#pragma mark - System Contact Conversion
 
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
 {
@@ -461,13 +485,151 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (nullable CNContact *)systemContactForContact:(OWSContact *)contact
+{
+    if (!contact) {
+        OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
+        return nil;
+    }
+    if (!contact.isValid) {
+        OWSProdLogAndFail(@"%@ Invalid contact.", self.logTag);
+        return nil;
+    }
+
+    CNMutableContact *systemContact = [CNMutableContact new];
+    systemContact.givenName = contact.givenName;
+    systemContact.middleName = contact.middleName;
+    systemContact.familyName = contact.familyName;
+    systemContact.namePrefix = contact.namePrefix;
+    systemContact.nameSuffix = contact.nameSuffix;
+    // TODO: Display name.
+    //    contact.displayName = [CNContactFormatter stringFromContact:contact
+    //    style:CNContactFormatterStyleFullName]; contact.organizationName = contact.organizationName.ows_stripped;
+
+    NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *systemPhoneNumbers = [NSMutableArray new];
+    for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
+        if (!phoneNumber.isValid) {
+            OWSProdLogAndFail(@"%@ invalid phone number.", self.logTag);
+            continue;
+        }
+        switch (phoneNumber.phoneType) {
+            case OWSContactPhoneType_Home:
+                [systemPhoneNumbers
+                    addObject:[CNLabeledValue
+                                  labeledValueWithLabel:CNLabelHome
+                                                  value:[CNPhoneNumber
+                                                            phoneNumberWithStringValue:phoneNumber.phoneNumber]]];
+                break;
+            case OWSContactPhoneType_Mobile:
+                [systemPhoneNumbers
+                    addObject:[CNLabeledValue
+                                  labeledValueWithLabel:CNLabelPhoneNumberMobile
+                                                  value:[CNPhoneNumber
+                                                            phoneNumberWithStringValue:phoneNumber.phoneNumber]]];
+                break;
+            case OWSContactPhoneType_Work:
+                [systemPhoneNumbers
+                    addObject:[CNLabeledValue
+                                  labeledValueWithLabel:CNLabelWork
+                                                  value:[CNPhoneNumber
+                                                            phoneNumberWithStringValue:phoneNumber.phoneNumber]]];
+                break;
+            default:
+                [systemPhoneNumbers
+                    addObject:[CNLabeledValue
+                                  labeledValueWithLabel:phoneNumber.label
+                                                  value:[CNPhoneNumber
+                                                            phoneNumberWithStringValue:phoneNumber.phoneNumber]]];
+                break;
+        }
+    }
+    systemContact.phoneNumbers = systemPhoneNumbers;
+
+    NSMutableArray<CNLabeledValue<NSString *> *> *systemEmails = [NSMutableArray new];
+    for (OWSContactEmail *email in contact.emails) {
+        if (!email.isValid) {
+            OWSProdLogAndFail(@"%@ invalid email.", self.logTag);
+            continue;
+        }
+        switch (email.emailType) {
+            case OWSContactEmailType_Home:
+                [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:CNLabelHome value:email.email]];
+                break;
+            case OWSContactEmailType_Mobile:
+                [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:@"Mobile" value:email.email]];
+                break;
+            case OWSContactEmailType_Work:
+                [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:CNLabelWork value:email.email]];
+                break;
+            default:
+                [systemEmails addObject:[CNLabeledValue labeledValueWithLabel:email.label value:email.email]];
+                break;
+        }
+    }
+    systemContact.emailAddresses = systemEmails;
+
+    NSMutableArray<CNLabeledValue<CNPostalAddress *> *> *systemAddresses = [NSMutableArray new];
+    for (OWSContactAddress *address in contact.addresses) {
+        if (!address.isValid) {
+            OWSProdLogAndFail(@"%@ invalid address.", self.logTag);
+            continue;
+        }
+        CNMutablePostalAddress *systemAddress = [CNMutablePostalAddress new];
+        systemAddress.street = address.street;
+        // TODO: Is this the correct mapping?
+        //        systemAddress.subLocality = address.neighborhood;
+        systemAddress.city = address.city;
+        // TODO: Is this the correct mapping?
+        //        systemAddress.subAdministrativeArea = address.region;
+        systemAddress.state = address.region;
+        systemAddress.postalCode = address.postcode;
+        // TODO: Should we be using 2-letter codes, 3-letter codes or names?
+        systemAddress.ISOCountryCode = address.country;
+
+        switch (address.addressType) {
+            case OWSContactAddressType_Home:
+                [systemAddresses addObject:[CNLabeledValue labeledValueWithLabel:CNLabelHome value:systemAddress]];
+                break;
+            case OWSContactAddressType_Work:
+                [systemAddresses addObject:[CNLabeledValue labeledValueWithLabel:CNLabelWork value:systemAddress]];
+                break;
+            default:
+                [systemAddresses addObject:[CNLabeledValue labeledValueWithLabel:address.label value:systemAddress]];
+                break;
+        }
+    }
+    systemContact.postalAddresses = systemAddresses;
+
+    // TODO: Avatar
+
+    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
+    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
+
+    return systemContact;
+}
+
+#pragma mark -
+
 + (nullable OWSContact *)contactForVCardData:(NSData *)data
 {
+    OWSAssert(data);
+
     CNContact *_Nullable systemContact = [self systemContactForVCardData:data];
     if (!systemContact) {
         return nil;
     }
     return [self contactForSystemContact:systemContact];
+}
+
++ (nullable NSData *)vCardDataContact:(OWSContact *)contact
+{
+    OWSAssert(contact);
+
+    CNContact *_Nullable systemContact = [self systemContactForContact:contact];
+    if (!systemContact) {
+        return nil;
+    }
+    return [self vCardDataForSystemContact:systemContact];
 }
 
 @end
