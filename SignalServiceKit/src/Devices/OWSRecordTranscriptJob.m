@@ -98,11 +98,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact];
 
-    // TODO: When written, desktop didn't yet support sending quotedMessages, so we didn't have a
-    // good way to test the handling of transcripts with a quotedMessage. This assertion can be delete
-    // once we've tested transcripts with quoted messages are processed correctly.
-    OWSAssert(transcript.quotedMessage == nil);
-
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
         // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
