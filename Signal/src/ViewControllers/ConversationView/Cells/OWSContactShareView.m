@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - JSQMessageMediaData protocol
+#pragma mark -
 
 - (CGFloat)iconHMargin
 {

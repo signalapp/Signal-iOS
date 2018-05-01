@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
                                : [self audioColorWithOpacity:0.4f]);
 }
 
-#pragma mark - JSQMessageMediaData protocol
+#pragma mark -
 
 - (CGFloat)audioIconHMargin
 {

@@ -332,7 +332,6 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaViewHasGreedyWidth = YES;
             break;
         case OWSMessageCellType_ShareContact:
-            // TODO:
             bodyMediaView = [self loadViewForShareContact];
             bodyMediaViewHasGreedyWidth = YES;
             break;
@@ -801,7 +800,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
                                                isIncoming:self.isIncoming];
     [contactShareView createContents];
-    //    [self addAttachmentUploadViewIfNecessary:attachmentView];
+    // TODO: Should we change appearance if contact avatar is uploading?
 
     self.loadCellContentBlock = ^{
         // Do nothing.
