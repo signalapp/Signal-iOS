@@ -3,6 +3,7 @@
 //
 
 #import "OWSIncomingSentMessageTranscript.h"
+#import "OWSContact.h"
 #import "OWSMessageManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage =
         [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread relay:relay transaction:transaction];
+    _contact = [OWSContacts contactForDataMessage:_dataMessage];
 
     return self;
 }

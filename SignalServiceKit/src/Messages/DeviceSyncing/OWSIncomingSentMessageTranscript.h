@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSContact;
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosSyncMessageSent;
@@ -30,11 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isGroupUpdate;
 @property (nonatomic, readonly) BOOL isExpirationTimerUpdate;
 @property (nonatomic, readonly) BOOL isEndSessionMessage;
-@property (nullable, nonatomic, readonly) NSData *groupId;
+@property (nonatomic, readonly, nullable) NSData *groupId;
 @property (nonatomic, readonly) NSString *body;
 @property (nonatomic, readonly) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
 @property (nonatomic, readonly) TSThread *thread;
-@property (nonatomic, readonly) TSQuotedMessage *quotedMessage;
+@property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
+@property (nonatomic, readonly, nullable) OWSContact *contact;
 
 @end
 

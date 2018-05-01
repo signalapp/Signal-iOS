@@ -95,7 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                     expireStartedAt:transcript.expirationStartedAt
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMessageUnspecified
-                                                      quotedMessage:transcript.quotedMessage];
+                                                      quotedMessage:transcript.quotedMessage
+                                                       contactShare:transcript.contact];
 
     // TODO: When written, desktop didn't yet support sending quotedMessages, so we didn't have a
     // good way to test the handling of transcripts with a quotedMessage. This assertion can be delete

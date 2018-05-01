@@ -4,6 +4,8 @@
 
 #import "TSOutgoingMessage.h"
 #import "NSDate+OWS.h"
+#import "NSString+SSK.h"
+#import "OWSContact.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
@@ -242,7 +244,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:TSGroupMessageUnspecified
-                                                         quotedMessage:quotedMessage];
+                                                         quotedMessage:quotedMessage
+                                                          contactShare:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -256,7 +259,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage
-                                                         quotedMessage:nil];
+                                                         quotedMessage:nil
+                                                          contactShare:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -268,6 +272,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContact *)contactShare
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -275,7 +280,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              attachmentIds:attachmentIds
                           expiresInSeconds:expiresInSeconds
                            expireStartedAt:expireStartedAt
-                             quotedMessage:quotedMessage];
+                             quotedMessage:quotedMessage
+                              contactShare:contactShare];
     if (!self) {
         return self;
     }
@@ -780,46 +786,67 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         }
         [builder setAttachmentsArray:attachments];
     }
-    
-    // Quoted Attachment
-    TSQuotedMessage *quotedMessage = self.quotedMessage;
-    if (quotedMessage) {
-        OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
-        [quoteBuilder setId:quotedMessage.timestamp];
-        [quoteBuilder setAuthor:quotedMessage.authorId];
-        
-        BOOL hasQuotedText = NO;
-        BOOL hasQuotedAttachment = NO;
-        if (self.quotedMessage.body.length > 0) {
-            hasQuotedText = YES;
-            [quoteBuilder setText:quotedMessage.body];
-        }
 
-        if (quotedMessage.quotedAttachments) {
-            for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
-                hasQuotedAttachment = YES;
+    // Quoted Reply
+    OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
+    if (quotedMessageBuilder) {
+        [builder setQuoteBuilder:quotedMessageBuilder];
+    }
 
-                OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder = [OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder new];
-                
-                quotedAttachmentBuilder.contentType = attachment.contentType;
-                quotedAttachmentBuilder.fileName = attachment.sourceFilename;
-                if (attachment.thumbnailAttachmentStreamId) {
-                    quotedAttachmentBuilder.thumbnail =
-                        [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
-                }
-
-                [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
-            }
-        }
-        
-        if (hasQuotedText || hasQuotedAttachment) {
-            [builder setQuoteBuilder:quoteBuilder];
-        } else {
-            OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+    // Contact Share
+    if (self.contactShare) {
+        OWSSignalServiceProtosDataMessageContact *_Nullable contactProto =
+            [OWSContacts protoForContact:self.contactShare];
+        if (contactProto) {
+            [builder addContact:contactProto];
         }
     }
-    
+
     return builder;
+}
+
+- (nullable OWSSignalServiceProtosDataMessageQuoteBuilder *)quotedMessageBuilder
+{
+    if (!self.quotedMessage) {
+        return nil;
+    }
+    TSQuotedMessage *quotedMessage = self.quotedMessage;
+
+    OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+    [quoteBuilder setId:quotedMessage.timestamp];
+    [quoteBuilder setAuthor:quotedMessage.authorId];
+
+    BOOL hasQuotedText = NO;
+    BOOL hasQuotedAttachment = NO;
+    if (self.quotedMessage.body.length > 0) {
+        hasQuotedText = YES;
+        [quoteBuilder setText:quotedMessage.body];
+    }
+
+    if (quotedMessage.quotedAttachments) {
+        for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
+            hasQuotedAttachment = YES;
+
+            OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
+                [OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder new];
+
+            quotedAttachmentBuilder.contentType = attachment.contentType;
+            quotedAttachmentBuilder.fileName = attachment.sourceFilename;
+            if (attachment.thumbnailAttachmentStreamId) {
+                quotedAttachmentBuilder.thumbnail =
+                    [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
+            }
+
+            [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
+        }
+    }
+
+    if (hasQuotedText || hasQuotedAttachment) {
+        return quoteBuilder;
+    } else {
+        OWSFail(@"%@ Invalid quoted message data.", self.logTag);
+        return nil;
+    }
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.

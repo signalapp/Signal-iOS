@@ -74,7 +74,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_UNAVAILABLE;
+                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                            contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(nullable TSThread *)thread
@@ -84,7 +85,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                  expireStartedAt:(uint64_t)expireStartedAt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage NS_DESIGNATED_INITIALIZER;
+                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+                                    contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

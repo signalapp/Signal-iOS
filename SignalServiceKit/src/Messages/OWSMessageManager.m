@@ -14,6 +14,7 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
+#import "OWSContact.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -996,6 +997,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                   relay:envelope.relay
                                                                                             transaction:transaction];
 
+                OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
+
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
                     envelopeAddress(envelope),
@@ -1010,7 +1013,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     messageBody:body
                                                                   attachmentIds:attachmentIds
                                                                expiresInSeconds:dataMessage.expireTimer
-                                                                  quotedMessage:quotedMessage];
+                                                                  quotedMessage:quotedMessage
+                                                                   contactShare:contact];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1044,6 +1048,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                           relay:envelope.relay
                                                                                     transaction:transaction];
+        OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1053,7 +1058,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                             messageBody:body
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
-                                                          quotedMessage:quotedMessage];
+                                                          quotedMessage:quotedMessage
+                                                           contactShare:contact];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
