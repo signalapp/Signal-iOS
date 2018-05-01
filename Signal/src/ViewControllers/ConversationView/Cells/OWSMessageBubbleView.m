@@ -796,11 +796,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)loadViewForShareContact
 {
     OWSAssert(self.viewItem.contactShare);
-    OWSAssert(self.viewItem.contactShareName.length > 0);
 
     OWSContactShareView *contactShareView =
         [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
-                                         contactShareName:self.viewItem.contactShareName
                                                isIncoming:self.isIncoming];
     [contactShareView createContents];
     //    [self addAttachmentUploadViewIfNecessary:attachmentView];

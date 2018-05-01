@@ -4,13 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContactShare;
+@class OWSContact;
 
 @interface OWSContactShareView : UIView
 
-- (instancetype)initWithContactShare:(OWSContactShare *)contactShare
-                    contactShareName:(NSString *)contactShareName
-                          isIncoming:(BOOL)isIncoming;
+- (instancetype)initWithContactShare:(OWSContact *)contactShare isIncoming:(BOOL)isIncoming;
 
 - (void)createContents;
 

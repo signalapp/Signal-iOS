@@ -27,7 +27,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class ConversationViewCell;
 @class DisplayableText;
 @class OWSAudioMessageView;
-@class OWSContactShare;
+@class OWSContact;
 @class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -103,8 +103,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // if a load has previously failed.
 @property (nonatomic) BOOL didCellMediaFailToLoad;
 
-- (nullable OWSContactShare *)contactShare;
-- (nullable NSString *)contactShareName;
+- (nullable OWSContact *)contactShare;
 
 #pragma mark - UIMenuController
 

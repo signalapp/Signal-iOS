@@ -2942,6 +2942,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
                                                   contact.givenName = @"Alice";
+                                                  contact.displayName = @"Alice";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Home;
                                                   phoneNumber.phoneNumber = @"+13213214321";
@@ -2955,6 +2956,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
                                                   contact.givenName = @"Bob";
+                                                  contact.displayName = @"Bob";
                                                   OWSContactEmail *email = [OWSContactEmail new];
                                                   email.emailType = OWSContactEmailType_Home;
                                                   email.email = @"a@b.com";

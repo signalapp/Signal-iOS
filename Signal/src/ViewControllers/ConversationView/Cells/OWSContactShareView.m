@@ -7,14 +7,13 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalServiceKit/OWSContactShare.h>
+#import <SignalServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactShareView ()
 
-@property (nonatomic) OWSContactShare *contactShare;
-@property (nonatomic) NSString *contactShareName;
+@property (nonatomic) OWSContact *contactShare;
 @property (nonatomic) BOOL isIncoming;
 
 @end
@@ -23,15 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactShareView
 
-- (instancetype)initWithContactShare:(OWSContactShare *)contactShare
-                    contactShareName:(NSString *)contactShareName
-                          isIncoming:(BOOL)isIncoming
+- (instancetype)initWithContactShare:(OWSContact *)contactShare isIncoming:(BOOL)isIncoming
 {
     self = [super init];
 
     if (self) {
         _contactShare = contactShare;
-        _contactShareName = contactShareName;
         _isIncoming = isIncoming;
     }
 
@@ -123,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     [imageView autoCenterInSuperview];
 
     UILabel *topLabel = [UILabel new];
-    topLabel.text = self.contactShareName;
+    topLabel.text = self.contactShare.displayName;
     topLabel.textColor = [UIColor blackColor];
     topLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     topLabel.font = [UIFont ows_dynamicTypeBodyFont];

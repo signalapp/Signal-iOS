@@ -11,7 +11,7 @@
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <SignalMessaging/NSString+OWS.h>
-#import <SignalServiceKit/OWSContactShare.h>
+#import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -65,8 +65,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
-@property (nonatomic, nullable) OWSContactShare *contactShare;
-@property (nonatomic, nullable) NSString *contactShareName;
+@property (nonatomic, nullable) OWSContact *contactShare;
 @property (nonatomic) CGSize mediaSize;
 
 @end
@@ -407,14 +406,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     TSMessage *message = (TSMessage *)self.interaction;
     if (message.contactShare) {
-        // TODO: Format contact share name.
-        NSString *contactShareName = @"Alice";
-        if (contactShareName.length > 0) {
-            self.contactShare = message.contactShare;
-            self.contactShareName = contactShareName;
-            self.messageCellType = OWSMessageCellType_ShareContact;
-            return;
-        }
+        self.contactShare = message.contactShare;
+        self.messageCellType = OWSMessageCellType_ShareContact;
+        return;
     }
     TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message transaction:transaction];
     if (attachment) {
