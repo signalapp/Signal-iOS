@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages selectBackDatedAction:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"Send All Contacts"
+        [OWSTableItem itemWithTitle:@"Send All Contact Shares"
                         actionBlock:^{
                             [DebugUIMessages sendAllContacts:thread];
                         }],
@@ -308,14 +308,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendNTextMessagesInThread:(TSThread *)thread
 {
     [self performActionNTimes:[self sendTextMessagesActionInThread:thread]];
-}
-
-+ (void)sendAllContacts:(TSThread *)thread
-{
-    NSArray<DebugUIMessagesAction *> *subactions = [self allSendContactShareActions:thread includeLabels:NO];
-    DebugUIMessagesAction *action =
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Share Contact" subactions:subactions];
-    [action prepareAndPerformNTimes:subactions.count];
 }
 
 + (DebugUIMessagesAction *)sendTextMessagesActionInThread:(TSThread *)thread
@@ -3095,21 +3087,24 @@ typedef OWSContact * (^OWSContactBlock)(void);
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesSingleAction
-               actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
-        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
-            OWSContact *contact = contactBlock();
-            TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
-                                                             messageBody:nil
-                                                         fakeAssetLoader:nil
-                                                            messageState:TSOutgoingMessageStateSent
-                                                             isDelivered:NO
-                                                                  isRead:NO
-                                                           quotedMessage:nil
-                                                            contactShare:contact
-                                                             transaction:transaction];
-            [message saveWithTransaction:transaction];
-        }];
+    return
+        [DebugUIMessagesSingleAction actionWithLabel:[NSString stringWithFormat:@"Send Contact Share (%@)", label]
+                                staggeredActionBlock:^(NSUInteger index,
+                                    YapDatabaseReadWriteTransaction *transaction,
+                                    ActionSuccessBlock success,
+                                    ActionFailureBlock failure) {
+                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                        OWSContact *contact = contactBlock();
+                                        DDLogVerbose(@"%@ sending contact: %@", self.logTag, contact.debugDescription);
+                                        OWSMessageSender *messageSender = [Environment current].messageSender;
+                                        [ThreadUtil sendMessageWithContactShare:contact
+                                                                       inThread:thread
+                                                                  messageSender:messageSender
+                                                                     completion:nil];
+
+                                        success();
+                                    });
+                                }];
 }
 
 + (NSArray<DebugUIMessagesAction *> *)allSendContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
@@ -3210,8 +3205,56 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   // TODO: Avatar
                                                   return contact;
                                               }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Long values"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
+                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Mobile;
+                                                  email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"System Contact w/o Signal"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+324602053911";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"System Contact w. Signal"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+32460205392";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
 
     return actions;
+}
+
++ (void)sendAllContacts:(TSThread *)thread
+{
+    NSArray<DebugUIMessagesAction *> *subactions = [self allSendContactShareActions:thread includeLabels:NO];
+    DebugUIMessagesAction *action =
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Contact Shares" subactions:subactions];
+    [action prepareAndPerformNTimes:subactions.count];
 }
 
 #pragma mark -
@@ -3282,7 +3325,6 @@ typedef OWSContact * (^OWSContactBlock)(void);
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                          quotedReplyModel:nil
-                             contactShare:nil
                             messageSender:messageSender
                              ignoreErrors:YES
                                completion:nil];

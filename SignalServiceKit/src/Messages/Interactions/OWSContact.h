@@ -22,6 +22,8 @@ typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
     OWSContactPhoneType_Custom,
 };
 
+NSString *NSStringForContactPhoneType(OWSContactPhoneType value);
+
 @interface OWSContactPhoneNumber : MTLModel
 
 @property (nonatomic, readonly) OWSContactPhoneType phoneType;
@@ -32,7 +34,9 @@ typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
 
 - (BOOL)ows_isValid;
 
-- (NSString *)labelString;
+- (NSString *)localizedLabel;
+
+- (NSString *)debugDescription;
 
 @end
 
@@ -45,6 +49,8 @@ typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
     OWSContactEmailType_Custom,
 };
 
+NSString *NSStringForContactEmailType(OWSContactEmailType value);
+
 @interface OWSContactEmail : MTLModel
 
 @property (nonatomic, readonly) OWSContactEmailType emailType;
@@ -55,7 +61,9 @@ typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
 
 - (BOOL)ows_isValid;
 
-- (NSString *)labelString;
+- (NSString *)localizedLabel;
+
+- (NSString *)debugDescription;
 
 @end
 
@@ -66,6 +74,8 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
     OWSContactAddressType_Work,
     OWSContactAddressType_Custom,
 };
+
+NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 @interface OWSContactAddress : MTLModel
 
@@ -83,7 +93,9 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 
 - (BOOL)ows_isValid;
 
-- (NSString *)labelString;
+- (NSString *)localizedLabel;
+
+- (NSString *)debugDescription;
 
 @end
 
@@ -113,6 +125,8 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 - (void)normalize;
 
 - (BOOL)ows_isValid;
+
+- (NSString *)debugDescription;
 
 @end
 

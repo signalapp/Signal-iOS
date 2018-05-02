@@ -360,7 +360,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         for phoneNumber in contact.phoneNumbers {
             // TODO: Try to format the phone number nicely.
-            addRow(createNameValueRow(name: phoneNumber.labelString(),
+            addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
                                       value: phoneNumber.phoneNumber,
                                       actionBlock: {
                                         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
@@ -372,7 +372,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         }
 
         for email in contact.emails {
-            addRow(createNameValueRow(name: email.labelString(),
+            addRow(createNameValueRow(name: email.localizedLabel(),
                                       value: email.email,
                                       actionBlock: {
                                         guard let url = NSURL(string: "mailto:\(email.email)") else {
