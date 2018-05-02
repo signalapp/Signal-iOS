@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #define COUNTRY_CODE_PREFIX @"+"
@@ -30,6 +30,7 @@
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input;
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
                                               withSpecifiedCountryCodeString:(NSString *)countryCodeString;
++ (NSString *)bestEffortFormatE164AsLocalizedPhoneNumber:(NSString *)phoneNumber;
 
 + (NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString;
 
