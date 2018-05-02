@@ -3,10 +3,14 @@
 //
 
 #import "OWSContactShareView.h"
+#import "OWSContactAvatarBuilder.h"
+#import "Signal-Swift.h"
 #import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Environment.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -101,22 +105,18 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
-    UIView *iconCircleView = [UIView containerView];
-    iconCircleView.backgroundColor = [UIColor colorWithRGBHex:0x00ffff];
-    iconCircleView.layer.cornerRadius = self.iconSize * 0.5f;
-    [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
-    [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
-    [iconCircleView setCompressionResistanceHigh];
-    [iconCircleView setContentHuggingHigh];
-
-    // TODO: Use avatar, if present and downloaded. else default.
-    UIImage *image = [UIImage imageNamed:@"attachment_file"];
-    OWSAssert(image);
-    UIImageView *imageView = [UIImageView new];
-    imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    imageView.tintColor = self.bubbleBackgroundColor;
-    [iconCircleView addSubview:imageView];
-    [imageView autoCenterInSuperview];
+    AvatarImageView *avatarView = [AvatarImageView new];
+    // TODO: What's the best colorSeed value to use?
+    OWSAvatarBuilder *avatarBuilder =
+        [[OWSContactAvatarBuilder alloc] initWithNonSignalName:self.contactShare.displayName
+                                                     colorSeed:self.contactShare.displayName
+                                                      diameter:(NSUInteger)self.iconSize
+                                               contactsManager:[Environment current].contactsManager];
+    avatarView.image = [avatarBuilder build];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [avatarView setCompressionResistanceHigh];
+    [avatarView setContentHuggingHigh];
 
     UILabel *topLabel = [UILabel new];
     topLabel.text = self.contactShare.displayName;
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
     [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
 
-    [stackView addArrangedSubview:iconCircleView];
+    [stackView addArrangedSubview:avatarView];
     [stackView addArrangedSubview:labelsView];
     [stackView addArrangedSubview:disclosureImageView];
 }
