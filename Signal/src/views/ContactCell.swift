@@ -8,29 +8,53 @@ import SignalServiceKit
 
 class ContactCell: UITableViewCell {
 
-    static let nib = UINib(nibName: "ContactCell", bundle: nil)
+    public static let kSeparatorHInset: CGFloat = CGFloat(kAvatarDiameter) + 16 + 8
 
-    @IBOutlet weak var contactTextLabel: UILabel!
-    @IBOutlet weak var contactDetailTextLabel: UILabel!
-    @IBOutlet weak var contactImageView: UIImageView!
-    @IBOutlet weak var contactContainerView: UIView!
+    static let kAvatarSpacing: CGFloat = 6
+    static let kAvatarDiameter: UInt = 40
+
+    let contactImageView: AvatarImageView
+    let textStackView: UIStackView
+    let titleLabel: UILabel
+    var subtitleLabel: UILabel
 
     var contact: Contact?
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        self.contactImageView = AvatarImageView()
+        self.textStackView = UIStackView()
+        self.titleLabel = UILabel()
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody
+        self.subtitleLabel = UILabel()
+        self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
 
-        // Initialization code
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
         selectionStyle = UITableViewCellSelectionStyle.none
 
-        contactContainerView.layer.masksToBounds = true
-        contactContainerView.layer.cornerRadius = contactContainerView.frame.size.width/2
+        textStackView.axis = .vertical
+        textStackView.addArrangedSubview(titleLabel)
+
+        contactImageView.autoSetDimensions(to: CGSize(width: CGFloat(ContactCell.kAvatarDiameter), height: CGFloat(ContactCell.kAvatarDiameter)))
+
+        let contentColumns: UIStackView = UIStackView(arrangedSubviews: [contactImageView, textStackView])
+        contentColumns.axis = .horizontal
+        contentColumns.spacing = ContactCell.kAvatarSpacing
+        contentColumns.alignment = .center
+
+        self.contentView.addSubview(contentColumns)
+        contentColumns.autoPinEdgesToSuperviewMargins()
 
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
 
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func prepareForReuse() {
         accessoryType = .none
+        self.subtitleLabel.removeFromSuperview()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -39,20 +63,19 @@ class ContactCell: UITableViewCell {
     }
 
     func didChangePreferredContentSize() {
-        contactTextLabel.font = UIFont.preferredFont(forTextStyle: .body)
-        contactDetailTextLabel.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        self.titleLabel.font = UIFont.ows_dynamicTypeBody
+        self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
 
-    func updateContactsinUI(_ contact: Contact, subtitleType: SubtitleCellValue, contactsManager: OWSContactsManager) {
+    func configure(contact: Contact, subtitleType: SubtitleCellValue, contactsManager: OWSContactsManager) {
         self.contact = contact
 
-        if contactTextLabel != nil {
-            contactTextLabel.attributedText = contact.cnContact?.formattedFullName(font: contactTextLabel.font)
-        }
+        titleLabel.attributedText = contact.cnContact?.formattedFullName(font: titleLabel.font)
+        updateSubtitle(subtitleType: subtitleType, contact: contact)
 
-        updateSubtitleBasedonType(subtitleType, contact: contact)
-
-        if contact.image == nil {
+        if let contactImage = contact.image {
+            contactImageView.image = contactImage
+        } else {
             let contactIdForDeterminingBackgroundColor: String
             if let signalId = contact.parsedPhoneNumbers.first?.toE164() {
                 contactIdForDeterminingBackgroundColor = signalId
@@ -60,32 +83,35 @@ class ContactCell: UITableViewCell {
                 contactIdForDeterminingBackgroundColor = contact.fullName
             }
 
-            let kAvatarWidth: UInt = 40
             let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
-                                                        diameter: kAvatarWidth,
+                                                        diameter: ContactCell.kAvatarDiameter,
                                                         contactsManager: contactsManager)
 
-            self.contactImageView?.image = avatarBuilder.buildDefaultImage()
-        } else {
-            self.contactImageView?.image = contact.image
+            contactImageView.image = avatarBuilder.buildDefaultImage()
         }
     }
 
-    func updateSubtitleBasedonType(_ subtitleType: SubtitleCellValue, contact: Contact) {
+    func updateSubtitle(subtitleType: SubtitleCellValue, contact: Contact) {
         switch subtitleType {
+        case .none:
+            assert(self.subtitleLabel.superview == nil)
+            break
+        case .phoneNumber:
+            self.textStackView.addArrangedSubview(self.subtitleLabel)
 
-        case SubtitleCellValue.phoneNumber:
-            if contact.userTextPhoneNumbers.count > 0 {
-                self.contactDetailTextLabel.text = "\(contact.userTextPhoneNumbers[0])"
+            if let firstPhoneNumber = contact.userTextPhoneNumbers.first {
+                self.subtitleLabel.text = firstPhoneNumber
             } else {
-                self.contactDetailTextLabel.text = NSLocalizedString("CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE", comment: "table cell subtitle when contact card has no known phone number")
+                self.subtitleLabel.text = NSLocalizedString("CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE", comment: "table cell subtitle when contact card has no known phone number")
             }
-        case SubtitleCellValue.email:
-            if contact.emails.count > 0 {
-                self.contactDetailTextLabel.text = "\(contact.emails[0])"
+        case .email:
+            self.textStackView.addArrangedSubview(self.subtitleLabel)
+
+            if let firstEmail = contact.emails.first {
+                self.subtitleLabel.text = firstEmail
             } else {
-                self.contactDetailTextLabel.text = NSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
+                self.subtitleLabel.text = NSLocalizedString("CONTACT_PICKER_NO_EMAILS_AVAILABLE", comment: "table cell subtitle when contact card has no email")
             }
         }
     }

@@ -11,50 +11,52 @@ import UIKit
 import Contacts
 import SignalServiceKit
 
-public protocol ContactsPickerDelegate {
-    func contactsPicker(_: ContactsPicker, didContactFetchFailed error: NSError)
-    func contactsPicker(_: ContactsPicker, didCancel error: NSError)
+@objc
+public protocol ContactsPickerDelegate: class {
+    func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError)
+    func contactsPickerDidCancel(_: ContactsPicker)
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact)
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact])
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool
 }
 
 public extension ContactsPickerDelegate {
-    func contactsPicker(_: ContactsPicker, didContactFetchFailed error: NSError) { }
-    func contactsPicker(_: ContactsPicker, didCancel error: NSError) { }
-    func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) { }
-    func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) { }
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool { return true }
 }
 
-public enum SubtitleCellValue {
-    case phoneNumber
-    case email
+@objc
+public enum SubtitleCellValue: Int {
+    case phoneNumber, email, none
 }
 
-open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+@objc
+public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var searchBar: UISearchBar!
 
     // MARK: - Properties
 
-    let TAG = "[ContactsPicker]"
-    let contactCellReuseIdentifier = "contactCellReuseIdentifier"
-    let contactsManager: OWSContactsManager
-    let collation = UILocalizedIndexedCollation.current()
-    let contactStore = CNContactStore()
+    private let TAG = "[ContactsPicker]"
+    private let contactCellReuseIdentifier = "contactCellReuseIdentifier"
+
+    private var contactsManager: OWSContactsManager {
+        return Environment.current().contactsManager
+    }
+
+    private let collation = UILocalizedIndexedCollation.current()
+    private let contactStore = CNContactStore()
 
     // Data Source State
-    lazy var sections = [[CNContact]]()
-    lazy var filteredSections = [[CNContact]]()
-    lazy var selectedContacts = [Contact]()
+    private lazy var sections = [[CNContact]]()
+    private lazy var filteredSections = [[CNContact]]()
+    private lazy var selectedContacts = [Contact]()
 
     // Configuration
-    open var contactsPickerDelegate: ContactsPickerDelegate?
-    var subtitleCellValue = SubtitleCellValue.phoneNumber
-    var multiSelectEnabled = false
-    let allowedContactKeys: [CNKeyDescriptor] = [
+    public weak var contactsPickerDelegate: ContactsPickerDelegate?
+    private let subtitleCellValue: SubtitleCellValue
+    private let multiSelectEnabled: Bool
+    private let allowedContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactThumbnailImageDataKey as CNKeyDescriptor,
         CNContactPhoneNumbersKey as CNKeyDescriptor,
@@ -65,10 +67,9 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
 
     override open func viewDidLoad() {
         super.viewDidLoad()
-        title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
 
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
-        // Prevent content form going under the navigation bar
+        // Prevent content from going under the navigation bar
         self.edgesForExtendedLayout = []
 
         // Auto size cells for dynamic type
@@ -76,6 +77,8 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         tableView.rowHeight = UITableViewAutomaticDimension
 
         tableView.allowsMultipleSelection = multiSelectEnabled
+
+        tableView.separatorInset = UIEdgeInsets(top: 0, left: ContactCell.kSeparatorHInset, bottom: 0, right: 16)
 
         registerContactCell()
         initializeBarButtons()
@@ -85,12 +88,13 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
     }
 
-    func didChangePreferredContentSize() {
+    @objc
+    public func didChangePreferredContentSize() {
         self.tableView.reloadData()
     }
 
-    func initializeBarButtons() {
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(onTouchCancelButton))
+    private func initializeBarButtons() {
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
         self.navigationItem.leftBarButtonItem = cancelButton
 
         if multiSelectEnabled {
@@ -99,48 +103,33 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         }
     }
 
-    fileprivate func registerContactCell() {
-        tableView.register(ContactCell.nib, forCellReuseIdentifier: contactCellReuseIdentifier)
+    private func registerContactCell() {
+        tableView.register(ContactCell.self, forCellReuseIdentifier: contactCellReuseIdentifier)
     }
 
     // MARK: - Initializers
 
-    init() {
-        contactsManager = Environment.current().contactsManager
+    @objc
+    required public init(delegate: ContactsPickerDelegate?, multiSelection: Bool, subtitleCellType: SubtitleCellValue) {
+        multiSelectEnabled = multiSelection
+        subtitleCellValue = subtitleCellType
         super.init(nibName: nil, bundle: nil)
+        contactsPickerDelegate = delegate
     }
 
     required public init?(coder aDecoder: NSCoder) {
-        contactsManager = Environment.current().contactsManager
-        super.init(coder: aDecoder)
-    }
-
-    convenience public init(delegate: ContactsPickerDelegate?) {
-        self.init(delegate: delegate, multiSelection: false)
-    }
-
-    convenience public init(delegate: ContactsPickerDelegate?, multiSelection: Bool) {
-        self.init()
-        multiSelectEnabled = multiSelection
-        contactsPickerDelegate = delegate
-    }
-
-    convenience public init(delegate: ContactsPickerDelegate?, multiSelection: Bool, subtitleCellType: SubtitleCellValue) {
-        self.init()
-        multiSelectEnabled = multiSelection
-        contactsPickerDelegate = delegate
-        subtitleCellValue = subtitleCellType
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Contact Operations
 
-    open func reloadContacts() {
+    private func reloadContacts() {
         getContacts( onError: { error in
             Logger.error("\(self.TAG) failed to reload contacts with error:\(error)")
         })
     }
 
-    func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void) {
+    private func getContacts(onError errorHandler: @escaping (_ error: Error) -> Void) {
         switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
             case CNAuthorizationStatus.denied, CNAuthorizationStatus.restricted:
                 let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
@@ -152,7 +141,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
 
                 let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
-                    self.contactsPickerDelegate?.contactsPicker(self, didContactFetchFailed: error)
+                    self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
                     errorHandler(error)
                     self.dismiss(animated: true, completion: nil)
                 })
@@ -229,7 +218,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
         let cnContact = dataSource[indexPath.section][indexPath.row]
         let contact = Contact(systemContact: cnContact)
 
-        cell.updateContactsinUI(contact, subtitleType: subtitleCellValue, contactsManager: self.contactsManager)
+        cell.configure(contact: contact, subtitleType: subtitleCellValue, contactsManager: self.contactsManager)
         let isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
         cell.isSelected = isSelected
 
@@ -302,7 +291,7 @@ open class ContactsPicker: OWSViewController, UITableViewDelegate, UITableViewDa
     // MARK: - Button Actions
 
     func onTouchCancelButton() {
-        contactsPickerDelegate?.contactsPicker(self, didCancel: NSError(domain: "contactsPickerErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey: "User Canceled Selection"]))
+        contactsPickerDelegate?.contactsPickerDidCancel(self)
         dismiss(animated: true, completion: nil)
     }
 

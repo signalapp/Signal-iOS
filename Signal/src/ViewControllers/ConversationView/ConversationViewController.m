@@ -118,9 +118,10 @@ typedef enum : NSUInteger {
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
-    ContactsViewHelperDelegate,
-    ContactEditingDelegate,
     CNContactViewControllerDelegate,
+    ContactEditingDelegate,
+    ContactsPickerDelegate,
+    ContactsViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
@@ -1562,7 +1563,7 @@ typedef enum : NSUInteger {
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
                 = (NSUInteger)[self.dynamicInteractions.unreadIndicatorPosition longValue];
-            
+
             // If there is an unread indicator, increase the initial load window
             // to include it.
             OWSAssert(unreadIndicatorPosition > 0);
@@ -1585,7 +1586,7 @@ typedef enum : NSUInteger {
     rangeLength = MIN(rangeLength, kYapDatabaseRangeMaxLength);
 
     self.lastRangeLength = rangeLength;
-    
+
     YapDatabaseViewRangeOptions *rangeOptions =
         [YapDatabaseViewRangeOptions flexibleRangeWithLength:rangeLength offset:0 from:YapDatabaseViewEnd];
 
@@ -2495,6 +2496,20 @@ typedef enum : NSUInteger {
 #endif
 }
 
+#pragma mark - Attachment Picking: Contacts
+- (void)chooseContactForSending
+{
+    ContactsPicker *contactsPicker =
+        [[ContactsPicker alloc] initWithDelegate:self multiSelection:NO subtitleCellType:SubtitleCellValueNone];
+    contactsPicker.title
+        = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:contactsPicker];
+    [self dismissKeyBoard];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark - Attachment Picking: Documents
 
 - (void)showAttachmentDocumentPickerMenu
@@ -2677,13 +2692,13 @@ typedef enum : NSUInteger {
             DDLogWarn(@"%@ camera permission denied.", self.logTag);
             return;
         }
-
+        
         UIImagePickerController *picker = [UIImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         picker.allowsEditing = NO;
         picker.delegate = self;
-
+        
         [self dismissKeyBoard];
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }];
@@ -2714,12 +2729,12 @@ typedef enum : NSUInteger {
             DDLogWarn(@"%@ Media Library permission denied.", self.logTag);
             return;
         }
-
+        
         UIImagePickerController *picker = [UIImagePickerController new];
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         picker.delegate = self;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-
+        
         [self dismissKeyBoard];
         [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
     }];
@@ -2954,8 +2969,7 @@ typedef enum : NSUInteger {
                   }];
 }
 
-
-#pragma mark Storage access
+#pragma mark - Storage access
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
@@ -3207,14 +3221,14 @@ typedef enum : NSUInteger {
     BOOL shouldAnimateUpdates = [self shouldAnimateRowUpdates:rowChanges oldViewItemCount:oldViewItemCount];
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssertIsOnMainThread();
-
-
+        
+        
         if (!finished) {
             DDLogInfo(@"%@ performBatchUpdates did not finish", self.logTag);
         }
-
+        
         [self updateLastVisibleTimestamp];
-
+        
         if (scrollToBottom) {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
         }
@@ -3334,13 +3348,13 @@ typedef enum : NSUInteger {
         if (!strongSelf) {
             return;
         }
-
+        
         if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
             // This voice message recording has been cancelled
             // before recording could begin.
             return;
         }
-
+        
         if (granted) {
             [strongSelf startRecordingVoiceMemo];
         } else {
@@ -3575,6 +3589,18 @@ typedef enum : NSUInteger {
     OWSAssert(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
+
+    UIAlertAction *chooseContactAction = [UIAlertAction
+        actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON", @"attachment menu option to send contact")
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction *_Nonnull action) {
+                    [self chooseContactForSending];
+                }];
+    // TODO - proper image
+    UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    OWSAssert(takeMediaImage);
+    [chooseContactAction setValue:chooseContactImage forKey:@"image"];
+    [actionSheetController addAction:chooseContactAction];
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
@@ -4066,7 +4092,7 @@ typedef enum : NSUInteger {
     [self updateGroupModelTo:groupModel
            successCompletion:^{
                DDLogInfo(@"Group updated, removing group creation error.");
-
+               
                [message remove];
            }];
 }
@@ -4327,9 +4353,8 @@ typedef enum : NSUInteger {
         // first item at or after the "view horizon".  See the comments below which explain
         // the "view horizon".
         ConversationViewItem *_Nullable lastViewItem = self.viewItems.lastObject;
-        BOOL hasAddedNewItems = (lastViewItem &&
-            previousLastTimestamp &&
-                                 lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
+        BOOL hasAddedNewItems = (lastViewItem && previousLastTimestamp
+            && lastViewItem.interaction.timestamp > previousLastTimestamp.unsignedLongLongValue);
 
         DDLogInfo(@"%@ hasAddedNewItems: %d", self.logTag, hasAddedNewItems);
         if (hasAddedNewItems) {
@@ -4846,6 +4871,37 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     ConversationViewCell *conversationViewCell = (ConversationViewCell *)cell;
     conversationViewCell.isCellVisible = NO;
+}
+
+#pragma mark - ContactsPickerDelegate
+
+- (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
+{
+    DDLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
+}
+
+- (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
+{
+    DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+
+    // TODO actually build contact message.
+    self.inputToolbar.messageText = contact.fullName;
+}
+
+- (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
+{
+    OWSFail(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
+}
+
+- (BOOL)contactsPicker:(ContactsPicker *)contactsPicker shouldSelectContact:(Contact *)contact
+{
+    // Any reason to preclude contacts?
+    return YES;
 }
 
 @end
