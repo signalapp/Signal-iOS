@@ -77,7 +77,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     required init(contact: OWSContact) {
         contactsManager = Environment.current().contactsManager
         self.contact = contact
-        self.scrollView = UIScrollView()
 
         super.init(nibName: nil, bundle: nil)
 
@@ -98,14 +97,14 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     // MARK: - View Lifecycle
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         UIUtil.applySignalAppearence()
+
+        if let navigationController = self.navigationController {
+            navigationController.isNavigationBarHidden = true
+        }
 
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -119,18 +118,23 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         UIUtil.applySignalAppearence()
     }
 
-    private var scrollView: UIScrollView
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            navigationController.isNavigationBarHidden = false
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
 
     override func loadView() {
         super.loadView()
 
-        self.view.addSubview(scrollView)
-        scrollView.layoutMargins = .zero
-        scrollView.autoPinWidthToSuperview()
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        scrollView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-
-        self.view.backgroundColor = UIColor.white
+        self.view.preservesSuperviewLayoutMargins = false
+        self.view.backgroundColor = UIColor(rgbHex: 0xefeff4)
 
         updateContent()
 
@@ -185,20 +189,75 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func updateContent() {
         SwiftAssertIsOnMainThread(#function)
 
-        let rootView = self.scrollView
+        guard let rootView = self.view else {
+            owsFail("\(logTag) missing root view.")
+            return
+        }
 
         for subview in rootView.subviews {
             subview.removeFromSuperview()
         }
 
-        // TODO: The design calls for no navigation bar, just a back button.
+        let topView = createTopView()
+        rootView.addSubview(topView)
+        topView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        topView.autoPinWidthToSuperview()
+
+        // This view provides a background "below the fold".
+        let bottomView = UIView.container()
+        bottomView.backgroundColor = UIColor.white
+        self.view.addSubview(bottomView)
+        bottomView.layoutMargins = .zero
+        bottomView.autoPinWidthToSuperview()
+        bottomView.autoPinEdge(.top, to: .bottom, of: topView)
+        bottomView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        let scrollView = UIScrollView()
+        scrollView.preservesSuperviewLayoutMargins = false
+        self.view.addSubview(scrollView)
+        scrollView.layoutMargins = .zero
+        scrollView.autoPinWidthToSuperview()
+        scrollView.autoPinEdge(.top, to: .bottom, of: topView)
+        scrollView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        let fieldsView = createFieldsView()
+
+        // See notes on how to use UIScrollView with iOS Auto Layout:
+        //
+        // https://developer.apple.com/library/content/releasenotes/General/RN-iOSSDK-6_0/
+        scrollView.addSubview(fieldsView)
+        fieldsView.autoPinLeadingToSuperviewMargin()
+        fieldsView.autoPinTrailingToSuperviewMargin()
+        fieldsView.autoPinEdge(toSuperviewEdge: .top)
+        fieldsView.autoPinEdge(toSuperviewEdge: .bottom)
+    }
+
+    private func createTopView() -> UIView {
+        SwiftAssertIsOnMainThread(#function)
+
         let topView = UIView.container()
         topView.backgroundColor = UIColor(rgbHex: 0xefeff4)
-        topView.preservesSuperviewLayoutMargins = true
-        rootView.addSubview(topView)
-        topView.autoPinEdge(toSuperviewEdge: .top)
-        topView.autoPinEdge(.left, to: .left, of: self.view)
-        topView.autoPinEdge(.right, to: .right, of: self.view)
+        topView.preservesSuperviewLayoutMargins = false
+
+        // Back Button
+        let backButtonSize = CGFloat(50)
+        let backButton = TappableView(actionBlock: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            strongSelf.didPressDismiss()
+        })
+        backButton.autoSetDimension(.width, toSize: backButtonSize)
+        backButton.autoSetDimension(.height, toSize: backButtonSize)
+        topView.addSubview(backButton)
+        backButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        backButton.autoPinLeadingToSuperviewMargin()
+
+        let backIconName = (self.view.isRTL() ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
+        let backIconImage = UIImage(named: backIconName)?.withRenderingMode(.alwaysTemplate)
+        let backIconView = UIImageView(image: backIconImage)
+        backIconView.contentMode = .scaleAspectFit
+        backIconView.tintColor = UIColor.black.withAlphaComponent(0.6)
+        backButton.addSubview(backIconView)
+        backIconView.autoCenterInSuperview()
 
         // TODO: Use actual avatar.
         let avatarSize = CGFloat(100)
@@ -302,16 +361,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         lastView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 15)
 
-        let bottomView = UIView.container()
-        bottomView.backgroundColor = UIColor.white
-        bottomView.layoutMargins = .zero
-        bottomView.preservesSuperviewLayoutMargins = false
-        rootView.addSubview(bottomView)
-        bottomView.autoPinEdge(.top, to: .bottom, of: topView)
-        bottomView.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomView.autoPinEdge(.left, to: .left, of: self.view)
-        bottomView.autoPinEdge(.right, to: .right, of: self.view)
-        bottomView.setContentHuggingVerticalLow()
+        return topView
+    }
+
+    private func createFieldsView() -> UIView {
+        SwiftAssertIsOnMainThread(#function)
+
+        let fieldsView = UIView.container()
+        fieldsView.layoutMargins = .zero
+        fieldsView.preservesSuperviewLayoutMargins = false
 
         var lastRow: UIView?
 
@@ -322,7 +380,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             }
             let row = UIView()
             row.backgroundColor = UIColor(rgbHex: 0xdedee1)
-            bottomView.addSubview(row)
+            fieldsView.addSubview(row)
             row.autoSetDimension(.height, toSize: 1)
             row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
             row.autoPinTrailingToSuperviewMargin()
@@ -334,7 +392,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             if lastRow != nil {
                 addSpacerRow()
             }
-            bottomView.addSubview(row)
+            fieldsView.addSubview(row)
             row.autoPinLeadingToSuperviewMargin()
             row.autoPinTrailingToSuperviewMargin()
             if let lastRow = lastRow {
@@ -393,6 +451,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         // TODO: Should we present addresses here too? How?
 
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom)
+
+        return fieldsView
     }
 
     private let hMargin = CGFloat(16)
@@ -602,6 +662,12 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         actionSheet.addAction(OWSAlerts.cancelAction)
 
         self.present(actionSheet, animated: true)
+    }
+
+    func didPressDismiss() {
+        Logger.info("\(self.logTag) \(#function)")
+
+        self.navigationController?.popViewController(animated: true)
     }
 
     // MARK: -
