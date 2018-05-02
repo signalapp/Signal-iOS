@@ -11,6 +11,7 @@
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,6 +37,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_DownloadingAttachment";
         case OWSMessageCellType_Unknown:
             return @"OWSMessageCellType_Unknown";
+        case OWSMessageCellType_ContactShare:
+            return @"OWSMessageCellType_ContactShare";
     }
 }
 
@@ -62,6 +65,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
+@property (nonatomic, nullable) OWSContact *contactShare;
 @property (nonatomic) CGSize mediaSize;
 
 @end
@@ -401,6 +405,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
+    if (message.contactShare) {
+        self.contactShare = message.contactShare;
+        self.messageCellType = OWSMessageCellType_ContactShare;
+        return;
+    }
     TSAttachment *_Nullable attachment = [self firstAttachmentIfAnyOfMessage:message transaction:transaction];
     if (attachment) {
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -712,6 +721,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             OWSFail(@"%@ No text to copy", self.logTag);
             break;
         }
+        case OWSMessageCellType_ContactShare: {
+            // TODO: Implement copy contact.
+            OWSFail(@"%@ Not implemented yet", self.logTag);
+            break;
+        }
     }
 }
 
@@ -720,7 +734,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.messageCellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage: {
+        case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare: {
             OWSFail(@"%@ No media to copy", self.logTag);
             break;
         }
@@ -802,6 +817,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -824,6 +840,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare:
             OWSFail(@"%@ Cannot save text data.", self.logTag);
             break;
         case OWSMessageCellType_StillImage:
@@ -879,6 +896,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare:
             return NO;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:

@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Exemplary
         [DebugUIMessages allFakeAction:thread],
         [DebugUIMessages allFakeBackDatedAction:thread],
-        [DebugUIMessages allShareContactAction:thread],
+        [DebugUIMessages allContactShareAction:thread],
     ]]];
 
     [items addObjectsFromArray:@[
@@ -2658,7 +2658,7 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeBackDatedActions:thread includeLabels:includeLabels]];
-    [actions addObjectsFromArray:[self allShareContactActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allContactShareActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -2902,7 +2902,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef OWSContact * (^OWSContactBlock)(void);
 
-+ (DebugUIMessagesAction *)fakeShareContactMessageAction:(TSThread *)thread
++ (DebugUIMessagesAction *)fakeContactShareMessageAction:(TSThread *)thread
                                                    label:(NSString *)label
                                             contactBlock:(OWSContactBlock)contactBlock
 {
@@ -2925,7 +2925,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
         }];
 }
 
-+ (NSArray<DebugUIMessagesAction *> *)allShareContactActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
++ (NSArray<DebugUIMessagesAction *> *)allContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
@@ -2937,7 +2937,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                           text:@"⚠️ Share Contact ⚠️"]];
     }
 
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Name & Number"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
@@ -2950,7 +2950,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   ];
                                                   return contact;
                                               }]];
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Name & Email"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
@@ -2963,7 +2963,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   ];
                                                   return contact;
                                               }]];
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Complicated"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
@@ -2973,7 +2973,6 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   contact.namePrefix = @"Ms.";
                                                   contact.nameSuffix = @"Esq.";
                                                   contact.organizationName = @"Falafel Hut";
-                                                  contact.displayName = @"Ms. Alice Bob Carol Esq.";
 
                                                   OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
                                                   phoneNumber1.phoneType = OWSContactPhoneType_Home;
@@ -3028,12 +3027,12 @@ typedef OWSContact * (^OWSContactBlock)(void);
     return actions;
 }
 
-+ (DebugUIMessagesAction *)allShareContactAction:(TSThread *)thread
++ (DebugUIMessagesAction *)allContactShareAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Share Contact"
-                                                    subactions:[self allShareContactActions:thread includeLabels:YES]];
+    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
+                                                    subactions:[self allContactShareActions:thread includeLabels:YES]];
 }
 
 #pragma mark -

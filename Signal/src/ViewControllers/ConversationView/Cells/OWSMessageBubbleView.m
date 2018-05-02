@@ -8,6 +8,7 @@
 #import "OWSAudioMessageView.h"
 #import "OWSBubbleStrokeView.h"
 #import "OWSBubbleView.h"
+#import "OWSContactShareView.h"
 #import "OWSGenericAttachmentView.h"
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
@@ -194,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (BOOL)hasNonImageBodyContent
+- (BOOL)hasBubbleBackground
 {
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
@@ -202,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
+        case OWSMessageCellType_ContactShare:
             return YES;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -226,6 +228,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_Video:
             // Is there a caption?
             return self.hasBodyText;
+        case OWSMessageCellType_ContactShare:
+            return NO;
     }
 }
 
@@ -245,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleView.isOutgoing = self.isOutgoing;
     self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail && !self.alwaysShowBubbleTail;
 
-    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasNonImageBodyContent) {
+    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasBubbleBackground) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
         self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
     } else {
@@ -325,6 +329,10 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         case OWSMessageCellType_DownloadingAttachment:
             bodyMediaView = [self loadViewForDownloadingAttachment];
+            bodyMediaViewHasGreedyWidth = YES;
+            break;
+        case OWSMessageCellType_ContactShare:
+            bodyMediaView = [self loadViewForContactShare];
             bodyMediaViewHasGreedyWidth = YES;
             break;
     }
@@ -784,6 +792,26 @@ NS_ASSUME_NONNULL_BEGIN
     return customView;
 }
 
+- (UIView *)loadViewForContactShare
+{
+    OWSAssert(self.viewItem.contactShare);
+
+    OWSContactShareView *contactShareView =
+        [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
+                                               isIncoming:self.isIncoming];
+    [contactShareView createContents];
+    // TODO: Should we change appearance if contact avatar is uploading?
+
+    self.loadCellContentBlock = ^{
+        // Do nothing.
+    };
+    self.unloadCellContentBlock = ^{
+        // Do nothing.
+    };
+
+    return contactShareView;
+}
+
 - (void)addAttachmentUploadViewIfNecessary:(UIView *)attachmentView
 {
     [self addAttachmentUploadViewIfNecessary:attachmentView
@@ -902,6 +930,8 @@ NS_ASSUME_NONNULL_BEGIN
             return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
         case OWSMessageCellType_DownloadingAttachment:
             return CGSizeMake(200, 90);
+        case OWSMessageCellType_ContactShare:
+            return CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
     }
 }
 
@@ -1020,6 +1050,10 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
+        return NO;
+    }
+    if (self.cellType == OWSMessageCellType_ContactShare) {
+        // TODO: Handle this case.
         return NO;
     }
     if (!self.attachmentStream) {
@@ -1168,6 +1202,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
             break;
         }
+        case OWSMessageCellType_ContactShare:
+            // TODO:
+            break;
     }
 }
 
