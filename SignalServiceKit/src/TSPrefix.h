@@ -6,11 +6,11 @@
 
 @import CocoaLumberjack;
 
-#ifdef DEBUG
+//#ifdef DEBUG
 static const NSUInteger ddLogLevel = DDLogLevelAll;
-#else
-static const NSUInteger ddLogLevel = DDLogLevelInfo;
-#endif
+//#else
+// static const NSUInteger ddLogLevel = DDLogLevelInfo;
+//#endif
 #import "Constraints.h"
 #import "NSObject+OWS.h"
 #import "OWSAnalytics.h"

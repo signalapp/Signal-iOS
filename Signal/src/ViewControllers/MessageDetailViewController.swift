@@ -273,6 +273,17 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                              value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp,
                                                                               isRTL: self.view.isRTL())))
 
+        // DEBUG
+        rows.append(valueRow(name: "Expiration Duration:", value: "\(message.expiresInSeconds)"))
+
+        // DEBUG
+        rows.append(valueRow(name: "Expiration Started At:",
+            value: "\(message.expireStartedAt)"))
+
+        // DEBUG
+        rows.append(valueRow(name: "Expires At:",
+                             value: "\(message.expiresAt)"))
+
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),

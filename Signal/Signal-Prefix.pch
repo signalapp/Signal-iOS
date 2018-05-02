@@ -9,11 +9,11 @@
     #import <Foundation/Foundation.h>
 
     @import CocoaLumberjack;
-    #ifdef DEBUG
+//    #ifdef DEBUG
     static const NSUInteger ddLogLevel = DDLogLevelAll;
-    #else
-    static const NSUInteger ddLogLevel = DDLogLevelInfo;
-    #endif
+//    #else
+//    static const NSUInteger ddLogLevel = DDLogLevelInfo;
+//    #endif
 
     #import <SignalServiceKit/OWSAsserts.h>
     #import <SignalServiceKit/Constraints.h>
