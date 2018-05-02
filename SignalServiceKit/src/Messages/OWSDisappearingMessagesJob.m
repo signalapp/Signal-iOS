@@ -373,7 +373,7 @@ void AssertIsOnDisappearingMessagesQueue()
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
         if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
-            OWSProdLogAndFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.");
+            OWSProdLogAndFail(@"%@ unexpectedly deleted disappearing messages via fallback timer.", self.logTag);
         }
     });
 }
