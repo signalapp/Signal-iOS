@@ -909,6 +909,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
+    OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
 
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -983,7 +984,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                if (body.length == 0 && attachmentIds.count < 1) {
+                if (body.length == 0 && attachmentIds.count < 1 && !contact) {
                     DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         self.logTag,
                         envelopeAddress(envelope),
@@ -996,8 +997,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                                  thread:oldGroupThread
                                                                                                   relay:envelope.relay
                                                                                             transaction:transaction];
-
-                OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
                     self.logTag,
@@ -1028,7 +1027,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        if (body.length == 0 && attachmentIds.count < 1) {
+        if (body.length == 0 && attachmentIds.count < 1 && !contact) {
             DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestamp: %lu",
                 self.logTag,
                 envelopeAddress(envelope),
@@ -1048,7 +1047,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          thread:thread
                                                                                           relay:envelope.relay
                                                                                     transaction:transaction];
-        OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
 
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
