@@ -124,6 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages selectBackDatedAction:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"Send All Contacts"
+                        actionBlock:^{
+                            [DebugUIMessages sendAllContacts:thread];
+                        }],
 
 #pragma mark - Misc.
 
@@ -304,6 +308,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendNTextMessagesInThread:(TSThread *)thread
 {
     [self performActionNTimes:[self sendTextMessagesActionInThread:thread]];
+}
+
++ (void)sendAllContacts:(TSThread *)thread
+{
+    NSArray<DebugUIMessagesAction *> *subactions = [self allShareContactActions:thread includeLabels:NO];
+    DebugUIMessagesAction *action =
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Share Contact" subactions:subactions];
+    [action prepareAndPerformNTimes:subactions.count];
 }
 
 + (DebugUIMessagesAction *)sendTextMessagesActionInThread:(TSThread *)thread
