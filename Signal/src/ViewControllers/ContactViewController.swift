@@ -536,40 +536,38 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     func didPressSendMessage() {
         Logger.info("\(logTag) \(#function)")
 
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
-            owsFail("\(logTag) missing Signal recipient id.")
-            return
-        }
-
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .compose)
+        presentThreadAndPeform(action: .compose)
     }
 
     func didPressAudioCall() {
         Logger.info("\(logTag) \(#function)")
 
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
-            owsFail("\(logTag) missing Signal recipient id.")
-            return
-        }
-
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .audioCall)
+        presentThreadAndPeform(action: .audioCall)
     }
 
     func didPressVideoCall() {
         Logger.info("\(logTag) \(#function)")
 
+        presentThreadAndPeform(action: .videoCall)
+    }
+
+    func presentThreadAndPeform(action: ConversationViewAction) {
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
+        let phoneNumbers = systemContactsWithSignalAccountsForContact()
+        guard phoneNumbers.count > 0 else {
             owsFail("\(logTag) missing Signal recipient id.")
             return
         }
+        guard phoneNumbers.count > 1 else {
+            let recipientId = systemContactsWithSignalAccountsForContact().first!
+            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
+            return
+        }
 
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .videoCall)
+        showPhoneNumberPicker(phoneNumbers: phoneNumbers, completion: { (recipientId) in
+            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
+        })
     }
 
     func didPressInvite() {
@@ -589,6 +587,21 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         let inviteFlow =
             InviteFlow(presentingViewController: self, contactsManager: contactsManager)
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
+    }
+
+    private func showPhoneNumberPicker(phoneNumbers: [String], completion :@escaping ((String) -> Void)) {
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        for phoneNumber in phoneNumbers {
+            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber),
+                                                          style: .default) { _ in
+                                                            completion(phoneNumber)
+            })
+        }
+        actionSheet.addAction(OWSAlerts.cancelAction)
+
+        self.present(actionSheet, animated: true)
     }
 
     // MARK: -
