@@ -160,7 +160,9 @@ NS_ASSUME_NONNULL_BEGIN
     [stackView autoPinLeadingToSuperviewMarginWithInset:self.iconHMargin];
     [stackView autoPinTrailingToSuperviewMarginWithInset:self.iconHMargin];
     [stackView autoVCenterInSuperview];
-    // NOTE: It's critical that we pin to the superview top and bottom _edge_ and not _margin_.
+    // Ensure that the cell's contents never overflow the cell bounds.
+    // We pin pin to the superview _edge_ and not _margin_ for the purposes
+    // of overflow, so that changes to the margins do not trip these safe guards.
     [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
 

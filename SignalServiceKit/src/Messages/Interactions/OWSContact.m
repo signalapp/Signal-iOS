@@ -204,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
         _displayName = self.organizationName;
     }
     if (_displayName.length < 1) {
-        DDLogError(@"%@ could not derive a valid display name.", self.logTag);
+        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
     }
 }
 

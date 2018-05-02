@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextMessage:
         case OWSMessageCellType_GenericAttachment:
         case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_ShareContact:
+        case OWSMessageCellType_ContactShare:
             return YES;
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_Video:
             // Is there a caption?
             return self.hasBodyText;
-        case OWSMessageCellType_ShareContact:
+        case OWSMessageCellType_ContactShare:
             return NO;
     }
 }
@@ -331,8 +331,8 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView = [self loadViewForDownloadingAttachment];
             bodyMediaViewHasGreedyWidth = YES;
             break;
-        case OWSMessageCellType_ShareContact:
-            bodyMediaView = [self loadViewForShareContact];
+        case OWSMessageCellType_ContactShare:
+            bodyMediaView = [self loadViewForContactShare];
             bodyMediaViewHasGreedyWidth = YES;
             break;
     }
@@ -792,7 +792,7 @@ NS_ASSUME_NONNULL_BEGIN
     return customView;
 }
 
-- (UIView *)loadViewForShareContact
+- (UIView *)loadViewForContactShare
 {
     OWSAssert(self.viewItem.contactShare);
 
@@ -930,7 +930,7 @@ NS_ASSUME_NONNULL_BEGIN
             return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
         case OWSMessageCellType_DownloadingAttachment:
             return CGSizeMake(200, 90);
-        case OWSMessageCellType_ShareContact:
+        case OWSMessageCellType_ContactShare:
             return CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
     }
 }
@@ -1052,7 +1052,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.cellType == OWSMessageCellType_DownloadingAttachment) {
         return NO;
     }
-    if (self.cellType == OWSMessageCellType_ShareContact) {
+    if (self.cellType == OWSMessageCellType_ContactShare) {
         // TODO: Handle this case.
         return NO;
     }
@@ -1202,7 +1202,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             break;
         }
-        case OWSMessageCellType_ShareContact:
+        case OWSMessageCellType_ContactShare:
             // TODO:
             break;
     }
