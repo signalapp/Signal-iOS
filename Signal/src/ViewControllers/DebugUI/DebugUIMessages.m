@@ -312,9 +312,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendAllContacts:(TSThread *)thread
 {
-    NSArray<DebugUIMessagesAction *> *subactions = [self allShareContactActions:thread includeLabels:NO];
+    NSArray<DebugUIMessagesAction *> *subactions = [self allSendContactShareActions:thread includeLabels:NO];
     DebugUIMessagesAction *action =
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Share Contact" subactions:subactions];
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"Send All Share Contact" subactions:subactions];
     [action prepareAndPerformNTimes:subactions.count];
 }
 
@@ -2670,7 +2670,7 @@ NS_ASSUME_NONNULL_BEGIN
     [actions addObjectsFromArray:[self allFakeSequenceActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeQuotedReplyActions:thread includeLabels:includeLabels]];
     [actions addObjectsFromArray:[self allFakeBackDatedActions:thread includeLabels:includeLabels]];
-    [actions addObjectsFromArray:[self allContactShareActions:thread includeLabels:includeLabels]];
+    [actions addObjectsFromArray:[self allFakeContactShareActions:thread includeLabels:includeLabels]];
     return actions;
 }
 
@@ -2910,7 +2910,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self selectActionUI:[self allFakeBackDatedActions:thread includeLabels:NO] label:@"Select Back-Dated"];
 }
 
-#pragma mark -
+#pragma mark - Contact Shares
 
 typedef OWSContact * (^OWSContactBlock)(void);
 
@@ -2937,7 +2937,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
         }];
 }
 
-+ (NSArray<DebugUIMessagesAction *> *)allContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
++ (NSArray<DebugUIMessagesAction *> *)allFakeContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
 {
     OWSAssert(thread);
 
@@ -3083,8 +3083,135 @@ typedef OWSContact * (^OWSContactBlock)(void);
 {
     OWSAssert(thread);
 
-    return [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
-                                                    subactions:[self allContactShareActions:thread includeLabels:YES]];
+    return
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
+                                                 subactions:[self allFakeContactShareActions:thread includeLabels:YES]];
+}
+
+
++ (DebugUIMessagesAction *)sendContactShareMessageAction:(TSThread *)thread
+                                                   label:(NSString *)label
+                                            contactBlock:(OWSContactBlock)contactBlock
+{
+    OWSAssert(thread);
+
+    return [DebugUIMessagesSingleAction
+               actionWithLabel:[NSString stringWithFormat:@"Fake Contact Share (%@)", label]
+        unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
+            OWSContact *contact = contactBlock();
+            TSOutgoingMessage *message = [self createFakeOutgoingMessage:thread
+                                                             messageBody:nil
+                                                         fakeAssetLoader:nil
+                                                            messageState:TSOutgoingMessageStateSent
+                                                             isDelivered:NO
+                                                                  isRead:NO
+                                                           quotedMessage:nil
+                                                            contactShare:contact
+                                                             transaction:transaction];
+            [message saveWithTransaction:transaction];
+        }];
+}
+
++ (NSArray<DebugUIMessagesAction *> *)allSendContactShareActions:(TSThread *)thread includeLabels:(BOOL)includeLabels
+{
+    OWSAssert(thread);
+
+    NSMutableArray<DebugUIMessagesAction *> *actions = [NSMutableArray new];
+
+    if (includeLabels) {
+        [actions addObject:[self fakeOutgoingTextMessageAction:thread
+                                                  messageState:TSOutgoingMessageStateSent
+                                                          text:@"⚠️ Send Share Contact ⚠️"]];
+    }
+
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Name & Number"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Alice";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Home;
+                                                  phoneNumber.phoneNumber = @"+13213214321";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Name & Email"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bob";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Home;
+                                                  email.email = @"a@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Complicated"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Alice";
+                                                  contact.familyName = @"Carol";
+                                                  contact.middleName = @"Bob";
+                                                  contact.namePrefix = @"Ms.";
+                                                  contact.nameSuffix = @"Esq.";
+                                                  contact.organizationName = @"Falafel Hut";
+
+                                                  OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
+                                                  phoneNumber1.phoneType = OWSContactPhoneType_Home;
+                                                  phoneNumber1.phoneNumber = @"+13213214321";
+                                                  OWSContactPhoneNumber *phoneNumber2 = [OWSContactPhoneNumber new];
+                                                  phoneNumber2.phoneType = OWSContactPhoneType_Custom;
+                                                  phoneNumber2.label = @"Carphone";
+                                                  phoneNumber2.phoneNumber = @"+13332221111";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber1,
+                                                      phoneNumber2,
+                                                  ];
+
+                                                  OWSContactEmail *email1 = [OWSContactEmail new];
+                                                  email1.emailType = OWSContactEmailType_Home;
+                                                  email1.email = @"a@b.com";
+                                                  OWSContactEmail *email2 = [OWSContactEmail new];
+                                                  email2.emailType = OWSContactEmailType_Custom;
+                                                  email2.label = @"customer support";
+                                                  email2.email = @"a@b.com";
+                                                  contact.emails = @[
+                                                      email1,
+                                                      email2,
+                                                  ];
+
+                                                  OWSContactAddress *address1 = [OWSContactAddress new];
+                                                  address1.addressType = OWSContactAddressType_Home;
+                                                  address1.street = @"123 home st.";
+                                                  address1.neighborhood = @"round the bend.";
+                                                  address1.city = @"homeville";
+                                                  address1.region = @"HO";
+                                                  address1.postcode = @"12345";
+                                                  address1.country = @"USA";
+                                                  OWSContactAddress *address2 = [OWSContactAddress new];
+                                                  address2.addressType = OWSContactAddressType_Custom;
+                                                  address2.label = @"Otra casa";
+                                                  address2.pobox = @"caja 123";
+                                                  address2.street = @"123 casa calle";
+                                                  address2.city = @"barrio norte";
+                                                  address2.region = @"AB";
+                                                  address2.postcode = @"53421";
+                                                  address2.country = @"MX";
+                                                  contact.addresses = @[
+                                                      address1,
+                                                      address2,
+                                                  ];
+
+                                                  // TODO: Avatar
+                                                  return contact;
+                                              }]];
+
+    return actions;
 }
 
 #pragma mark -
