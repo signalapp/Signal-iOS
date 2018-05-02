@@ -28,7 +28,7 @@ protocol CallUIAdaptee {
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
-    func startAndShowOutgoingCall(recipientId: String)
+    func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool)
 }
 
 // Shared default implementations
@@ -63,7 +63,7 @@ extension CallUIAdaptee {
         notificationsAdapter.presentMissedCall(call, callerName: callerName)
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String) {
+    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         guard self.callService.call == nil else {
@@ -73,6 +73,7 @@ extension CallUIAdaptee {
         }
 
         let call = self.startOutgoingCall(handle: recipientId)
+        call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
 }
@@ -186,10 +187,10 @@ extension CallUIAdaptee {
         }
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String) {
+    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
-        adaptee.startAndShowOutgoingCall(recipientId: recipientId)
+        adaptee.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: hasLocalVideo)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {

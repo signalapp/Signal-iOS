@@ -7,6 +7,7 @@ import SignalServiceKit
 import SignalMessaging
 import Reachability
 import ContactsUI
+import MessageUI
 
 class TappableView: UIView {
     let actionBlock : (() -> Void)
@@ -38,9 +39,7 @@ class TappableView: UIView {
 
 // MARK: -
 
-class ContactViewController: OWSViewController, CNContactViewControllerDelegate
-//, ContactsViewHelperDelegate
-{
+class ContactViewController: OWSViewController, CNContactViewControllerDelegate {
 
     let TAG = "[ContactView]"
 
@@ -74,8 +73,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
 
     private let contact: OWSContact
 
-//    private var contactsViewHelper : ContactsViewHelper!
-
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
@@ -89,8 +86,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         self.scrollView = UIScrollView()
 
         super.init(nibName: nil, bundle: nil)
-
-//        contactsViewHelper = ContactsViewHelper(delegate:self)
 
         tryToDetermineMode()
 
@@ -137,14 +132,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
     private var scrollView: UIScrollView
 
     override func loadView() {
-//        scrollView.dir
-//        self.view = scrollView
-//        let rootView = UIView()
         super.loadView()
-//        self.view.layoutMargins = .zero
 
-//        self.scrollView = scrollView
-//        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.view.addSubview(scrollView)
         scrollView.layoutMargins = .zero
         scrollView.autoPinWidthToSuperview()
@@ -161,23 +150,48 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
     private func tryToDetermineMode() {
         SwiftAssertIsOnMainThread(#function)
 
-        guard let firstPhoneNumber = contact.phoneNumbers?.first else {
+        guard phoneNumbersForContact().count > 0 else {
             viewMode = .noPhoneNumber
             return
         }
-        if contactsManager.hasSignalAccount(forRecipientId: firstPhoneNumber.phoneNumber) {
+        if systemContactsWithSignalAccountsForContact().count > 0 {
             viewMode = .systemContactWithSignal
             return
         }
-        if contactsManager.allContactsMap[firstPhoneNumber.phoneNumber] != nil {
-            // We can infer that this is _not_ a signal user because
-            // all contacts in contactsManager.allContactsMap have
-            // already been looked up. 
+        if systemContactsForContact().count > 0 {
             viewMode = .systemContactWithoutSignal
             return
         }
 
         viewMode = .nonSystemContact
+    }
+
+    private func systemContactsWithSignalAccountsForContact() -> [String] {
+        SwiftAssertIsOnMainThread(#function)
+
+        return phoneNumbersForContact().filter({ (phoneNumber) -> Bool in
+            return contactsManager.hasSignalAccount(forRecipientId: phoneNumber)
+        })
+    }
+
+    private func systemContactsForContact() -> [String] {
+        SwiftAssertIsOnMainThread(#function)
+
+        return phoneNumbersForContact().filter({ (phoneNumber) -> Bool in
+            return contactsManager.allContactsMap[phoneNumber] != nil
+        })
+    }
+
+    private func phoneNumbersForContact() -> [String] {
+        SwiftAssertIsOnMainThread(#function)
+
+        var result = [String]()
+        if let phoneNumbers = contact.phoneNumbers {
+            for phoneNumber in phoneNumbers {
+                result.append(phoneNumber.phoneNumber)
+            }
+        }
+        return result
     }
 
     private func tryToDetermineModeRetry() {
@@ -212,21 +226,21 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         avatarView.backgroundColor = UIColor.ows_materialBlue
         avatarView.layer.cornerRadius = avatarSize * 0.5
         topView.addSubview(avatarView)
-        avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 10)
+        avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()
         avatarView.autoSetDimension(.width, toSize: avatarSize)
         avatarView.autoSetDimension(.height, toSize: avatarSize)
 
         let nameLabel = UILabel()
         nameLabel.text = contact.displayName
-        nameLabel.font = UIFont.ows_dynamicTypeTitle1
+        nameLabel.font = UIFont.ows_dynamicTypeTitle2.ows_bold()
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.textAlignment = .center
         topView.addSubview(nameLabel)
         nameLabel.autoPinEdge(.top, to: .bottom, of: avatarView, withOffset: 10)
-        nameLabel.autoPinLeadingToSuperviewMargin()
-        nameLabel.autoPinTrailingToSuperviewMargin()
+        nameLabel.autoPinLeadingToSuperviewMargin(withInset: hMargin)
+        nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
 
         var lastView: UIView = nameLabel
 
@@ -239,18 +253,53 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
             phoneNumberLabel.textAlignment = .center
             topView.addSubview(phoneNumberLabel)
             phoneNumberLabel.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 5)
-            phoneNumberLabel.autoPinLeadingToSuperviewMargin()
-            phoneNumberLabel.autoPinTrailingToSuperviewMargin()
+            phoneNumberLabel.autoPinLeadingToSuperviewMargin(withInset: hMargin)
+            phoneNumberLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
             lastView = phoneNumberLabel
         }
 
         switch viewMode {
         case .systemContactWithSignal:
             // Show actions buttons for system contacts with a Signal account.
-            break
+            let stackView = UIStackView()
+            stackView.axis = .horizontal
+            stackView.distribution = .fillEqually
+            stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_SEND_MESSAGE",
+                                                                                          comment: "Label for 'sent message' button in contact view."),
+                                                                  actionBlock: { [weak self] _ in
+                                                                    guard let strongSelf = self else { return }
+                                                                    strongSelf.didPressSendMessage()
+            }))
+            stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
+                                                                                          comment: "Label for 'audio call' button in contact view."),
+                                                                  actionBlock: { [weak self] _ in
+                                                                    guard let strongSelf = self else { return }
+                                                                    strongSelf.didPressAudioCall()
+            }))
+            stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
+                                                                                          comment: "Label for 'video call' button in contact view."),
+                                                                  actionBlock: { [weak self] _ in
+                                                                    guard let strongSelf = self else { return }
+                                                                    strongSelf.didPressVideoCall()
+            }))
+            topView.addSubview(stackView)
+            stackView.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
+            stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
+            stackView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+            lastView = stackView
         case .systemContactWithoutSignal:
             // Show invite button for system contacts without a Signal account.
-            break
+            let inviteButton = createLargePillButton(text: NSLocalizedString("ACTION_INVITE",
+                                                                                          comment: "Label for 'invite' button in contact view."),
+                                                     actionBlock: { [weak self] _ in
+                                                        guard let strongSelf = self else { return }
+                                                        strongSelf.didPressInvite()
+            })
+            topView.addSubview(inviteButton)
+            inviteButton.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
+            inviteButton.autoPinLeadingToSuperviewMargin(withInset: 55)
+            inviteButton.autoPinTrailingToSuperviewMargin(withInset: 55)
+            lastView = inviteButton
         case .nonSystemContact:
             // Show no action buttons for contacts not in user's device contacts.
             break
@@ -363,12 +412,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
     }
 
-    private let hMargin = CGFloat(10)
+    private let hMargin = CGFloat(16)
 
     private func createActionRow(labelText: String, action: Selector) -> UIView {
         let row = UIView()
+        row.layoutMargins.left = 0
+        row.layoutMargins.right = 0
         row.isUserInteractionEnabled = true
         row.addGestureRecognizer(UITapGestureRecognizer(target: self, action: action))
+
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeBody
@@ -379,11 +431,14 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         label.autoPinBottomToSuperviewMargin()
         label.autoPinLeadingToSuperviewMargin(withInset: hMargin)
         label.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+
         return row
     }
 
     private func createNameValueRow(name: String, value: String, actionBlock : @escaping () -> Void) -> UIView {
         let row = TappableView(actionBlock: actionBlock)
+        row.layoutMargins.left = 0
+        row.layoutMargins.right = 0
 
         let nameLabel = UILabel()
         nameLabel.text = name
@@ -411,46 +466,60 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         return row
     }
 
-//        acceptIncomingButton = createButton(image: #imageLiteral(resourceName: "call-active-wide"),
-//                                            action: #selector(didPressAnswerCall))
-//        acceptIncomingButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-//                                                                    comment: "Accessibility label for accepting incoming calls")
+    // TODO: Use real assets.
+    private func createCircleActionButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
+        let buttonSize = CGFloat(50)
 
-//    func createButton(image: UIImage, action: Selector) -> UIButton {
-//        let button = UIButton()
-//        button.setImage(image, for: .normal)
-//        button.imageEdgeInsets = UIEdgeInsets(top: buttonInset(),
-//                                              left: buttonInset(),
-//                                              bottom: buttonInset(),
-//                                              right: buttonInset())
-//        button.addTarget(self, action: action, for: .touchUpInside)
-//        button.autoSetDimension(.width, toSize: buttonSize())
-//        button.autoSetDimension(.height, toSize: buttonSize())
-//        return button
-//    }
-//
-//    // MARK: - Layout
-//
+        let button = TappableView(actionBlock: actionBlock)
+        button.layoutMargins = .zero
+        button.autoSetDimension(.width, toSize: buttonSize, relation: .greaterThanOrEqual)
 
-//
-//    func didPressFlipCamera(sender: UIButton) {
-//        // toggle value
-//        sender.isSelected = !sender.isSelected
-//
-//        let useBackCamera = sender.isSelected
-//        Logger.info("\(TAG) in \(#function) with useBackCamera: \(useBackCamera)")
-//
-//        callUIAdapter.setCameraSource(call: call, useBackCamera: useBackCamera)
-//    }
-//
-//    internal func dismissImmediately(completion: (() -> Void)?) {
-//        if ContactView.kShowCallViewOnSeparateWindow {
-//            OWSWindowManager.shared().endCall(self)
-//            completion?()
-//        } else {
-//            self.dismiss(animated: true, completion: completion)
-//        }
-//    }
+        let circleView = UIView()
+        circleView.backgroundColor = UIColor.white
+        circleView.autoSetDimension(.width, toSize: buttonSize)
+        circleView.autoSetDimension(.height, toSize: buttonSize)
+        circleView.layer.cornerRadius = buttonSize * 0.5
+        button.addSubview(circleView)
+        circleView.autoPinEdge(toSuperviewEdge: .top)
+        circleView.autoHCenterInSuperview()
+
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont.ows_dynamicTypeCaption2
+        label.textColor = UIColor.black
+        label.lineBreakMode = .byTruncatingTail
+        label.textAlignment = .center
+        button.addSubview(label)
+        label.autoPinEdge(.top, to: .bottom, of: circleView, withOffset: 3)
+        label.autoPinEdge(toSuperviewEdge: .bottom)
+        label.autoPinLeadingToSuperviewMargin()
+        label.autoPinTrailingToSuperviewMargin()
+
+        return button
+    }
+
+    private func createLargePillButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
+        let button = TappableView(actionBlock: actionBlock)
+        button.backgroundColor = UIColor.white
+        button.layoutMargins = .zero
+        button.autoSetDimension(.height, toSize: 45)
+        button.layer.cornerRadius = 5
+
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont.ows_dynamicTypeCaption1
+        label.textColor = UIColor.ows_materialBlue
+        label.lineBreakMode = .byTruncatingTail
+        label.textAlignment = .center
+        button.addSubview(label)
+        label.autoPinLeadingToSuperviewMargin(withInset: 20)
+        label.autoPinTrailingToSuperviewMargin(withInset: 20)
+        label.autoVCenterInSuperview()
+        label.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+        label.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
+
+        return button
+    }
 
     func didPressCreateNewContact(sender: UIGestureRecognizer) {
         Logger.info("\(self.TAG) \(#function)")
@@ -479,14 +548,64 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
         // TODO:
     }
 
-    // MARK: - ContactsViewHelperDelegate
+    func didPressSendMessage() {
+        Logger.info("\(self.TAG) \(#function)")
 
-//    @objc
-//    public func contactsViewHelperDidUpdateContacts() {
-//        Logger.info("\(self.TAG) \(#function)")
-//
-//        // Do nothing
-//    }
+        // TODO: We're taking the first Signal account id. We might
+        // want to let the user select if there's more than one.
+        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
+            owsFail("\(logTag) missing Signal recipient id.")
+            return
+        }
+
+        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .compose)
+    }
+
+    func didPressAudioCall() {
+        Logger.info("\(self.TAG) \(#function)")
+
+        // TODO: We're taking the first Signal account id. We might
+        // want to let the user select if there's more than one.
+        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
+            owsFail("\(logTag) missing Signal recipient id.")
+            return
+        }
+
+        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .audioCall)
+    }
+
+    func didPressVideoCall() {
+        Logger.info("\(self.TAG) \(#function)")
+
+        // TODO: We're taking the first Signal account id. We might
+        // want to let the user select if there's more than one.
+        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
+            owsFail("\(logTag) missing Signal recipient id.")
+            return
+        }
+
+        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .videoCall)
+    }
+
+    func didPressInvite() {
+        Logger.info("\(self.TAG) \(#function)")
+
+        guard MFMessageComposeViewController.canSendText() else {
+            Logger.info("\(TAG) Device cannot send text")
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
+            return
+        }
+        let phoneNumbers =
+        phoneNumbersForContact()
+        guard phoneNumbers.count > 0 else {
+            owsFail("\(logTag) no phone numbers.")
+            return
+        }
+
+        let inviteFlow =
+            InviteFlow(presentingViewController: self, contactsManager: contactsManager)
+        inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
+    }
 
     // MARK: -
 
@@ -495,13 +614,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
             owsFail("\(self.logTag) Contact editing not supported")
             return
         }
-        //        contactsViewHelper.presentContactViewController
-        //        let contactsViewHelper = ContactsViewHelper(delegate:self)
-        //
-        //    TSContactThread *contactThread = (TSContactThread *)self.thread;
-        //    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-        //    fromViewController:self
-        //    editImmediately:YES];
 
         guard let systemContact = OWSContacts.systemContact(for: contact) else {
             owsFail("\(self.logTag) Could not derive system contact.")
@@ -537,11 +649,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contact) else {
-            owsFail("\(self.logTag) Could not derive system contact.")
-            return
-        }
-
         guard contactsManager.isSystemContactsAuthorized else {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: self)
             return
@@ -552,6 +659,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate
             return
         }
 
+        // TODO: We need to modify OWSAddToContactViewController to take a OWSContact
+        // and merge it with an existing CNContact.
         let viewController = OWSAddToContactViewController()
         viewController.configure(withRecipientId: firstPhoneNumber.phoneNumber)
         self.navigationController?.pushViewController(viewController, animated: true)

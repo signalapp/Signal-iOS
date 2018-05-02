@@ -253,7 +253,7 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
             return;
         }
 
-        [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId];
+        [self.callUIAdapter startAndShowOutgoingCallWithRecipientId:recipientId hasLocalVideo:NO];
         completionHandler();
     } else if ([identifier isEqualToString:PushManagerActionsShowThread]) {
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];

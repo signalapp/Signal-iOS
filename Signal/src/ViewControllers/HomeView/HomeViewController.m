@@ -5,7 +5,6 @@
 #import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
-#import "ConversationViewController.h"
 #import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
@@ -387,7 +386,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ConversationViewController *vc = [ConversationViewController new];
         TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
-        [vc configureForThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
+        [vc configureForThread:thread action:ConversationViewActionNone];
         [vc peekSetup];
 
         return vc;
@@ -916,17 +915,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     TSThread *thread = [self threadForIndexPath:indexPath];
-    [self presentThread:thread keyboardOnViewAppearing:NO callOnViewAppearing:NO];
+    [self presentThread:thread action:ConversationViewActionNone];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)presentThread:(TSThread *)thread
-    keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
-        callOnViewAppearing:(BOOL)callOnViewAppearing
+- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
 {
-    // At most one.
-    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
-
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
         return;
@@ -935,9 +929,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
         ConversationViewController *mvc = [ConversationViewController new];
-        [mvc configureForThread:thread
-            keyboardOnViewAppearing:keyboardOnViewAppearing
-                callOnViewAppearing:callOnViewAppearing];
+        [mvc configureForThread:thread action:action];
         self.lastThread = thread;
 
         [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
