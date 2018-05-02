@@ -14,9 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)enumerateExpiredMessagesWithBlock:(void (^_Nonnull)(TSMessage *message))block
                               transaction:(YapDatabaseReadTransaction *)transaction;
+
 - (void)enumerateUnstartedExpiringMessagesInThread:(TSThread *)thread
                                              block:(void (^_Nonnull)(TSMessage *message))block
                                        transaction:(YapDatabaseReadTransaction *)transaction;
+
+- (void)enumerateMessagesWhichFailedToStartExpiringWithBlock:(void (^_Nonnull)(TSMessage *message))block
+                                                 transaction:(YapDatabaseReadTransaction *)transaction;
 
 /**
  * @return

@@ -41,6 +41,34 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     return [messageIds copy];
 }
 
+- (NSArray<NSString *> *)fetchMessageIdsWhichFailedToStartExpiring:(YapDatabaseReadTransaction *_Nonnull)transaction
+{
+    OWSAssert(transaction);
+
+    NSMutableArray<NSString *> *messageIds = [NSMutableArray new];
+    NSString *formattedString =
+        [NSString stringWithFormat:@"WHERE %@ = 0", OWSDisappearingMessageFinderExpiresAtColumn];
+
+    YapDatabaseQuery *query = [YapDatabaseQuery queryWithFormat:formattedString];
+    [[transaction ext:OWSDisappearingMessageFinderExpiresAtIndex]
+        enumerateKeysAndObjectsMatchingQuery:query
+                                  usingBlock:^void(NSString *collection, NSString *key, id object, BOOL *stop) {
+                                      if (![object isKindOfClass:[TSMessage class]]) {
+                                          OWSFail(@"%@ in %s object was unexpected class: %@",
+                                              self.logTag,
+                                              __PRETTY_FUNCTION__,
+                                              object);
+                                          return;
+                                      }
+                                      TSMessage *message = (TSMessage *)object;
+                                      if ([message shouldStartExpireTimerWithTransaction:transaction]) {
+                                          [messageIds addObject:key];
+                                      }
+                                  }];
+
+    return [messageIds copy];
+}
+
 - (NSArray<NSString *> *)fetchExpiredMessageIdsWithTransaction:(YapDatabaseReadTransaction *_Nonnull)transaction
 {
     OWSAssert(transaction);
@@ -99,8 +127,30 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
         if ([message isKindOfClass:[TSMessage class]]) {
             block(message);
         } else {
-            DDLogError(@"%@ unexpected object: %@", self.logTag, message);
+            OWSProdLogAndFail(@"%@ unexpected object: %@", self.logTag, message);
         }
+    }
+}
+
+- (void)enumerateMessagesWhichFailedToStartExpiringWithBlock:(void (^_Nonnull)(TSMessage *message))block
+                                                 transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    for (NSString *expiringMessageId in [self fetchMessageIdsWhichFailedToStartExpiring:transaction]) {
+
+        TSMessage *_Nullable message = [TSMessage fetchObjectWithUniqueID:expiringMessageId transaction:transaction];
+        if (![message isKindOfClass:[TSMessage class]]) {
+            OWSProdLogAndFail(@"%@ unexpected object: %@", self.logTag, message);
+            continue;
+        }
+
+        if (![message shouldStartExpireTimerWithTransaction:transaction]) {
+            OWSProdLogAndFail(@"%@ object: %@ shouldn't expire.", self.logTag, message);
+            continue;
+        }
+
+        block(message);
     }
 }
 

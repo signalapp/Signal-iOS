@@ -279,6 +279,12 @@ void AssertIsOnDisappearingMessagesQueue()
         self.hasStarted = YES;
 
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+            // Theoretically this shouldn't be necessary, but there was a race condition when receiving a backlog
+            // of messages across timer changes which could cause a disappearing message's timer to never be started.
+            [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
+            }];
+
             [self runLoop];
         });
     });
@@ -385,6 +391,18 @@ void AssertIsOnDisappearingMessagesQueue()
     [self.nextDisappearanceTimer invalidate];
     self.nextDisappearanceTimer = nil;
     self.nextDisappearanceDate = nil;
+}
+
+#pragma mark - Cleanup
+
+- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self.disappearingMessagesFinder enumerateMessagesWhichFailedToStartExpiringWithBlock:^(
+        TSMessage *_Nonnull message) {
+        DDLogWarn(@"%@ starting old timer for message timestamp: %tu", self.logTag, message.timestamp);
+        [self setExpirationForMessage:message expirationStartedAt:message.timestampForSorting transaction:transaction];
+    }
+                                                                              transaction:transaction];
 }
 
 #pragma mark - Notifications
