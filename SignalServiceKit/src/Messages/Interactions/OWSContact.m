@@ -288,7 +288,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
 @property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic, nullable) NSString *displayName;
+@property (nonatomic) NSString *displayName;
 
 @property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
@@ -360,10 +360,14 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return hasValue;
 }
 
-- (nullable NSString *)displayName
+- (NSString *)displayName
 {
     [self ensureDisplayName];
 
+    if (_displayName.length < 1) {
+        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
+        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
+    }
     return _displayName;
 }
 
@@ -376,9 +380,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     if (_displayName.length < 1) {
         // Fall back to using the organization name.
         _displayName = self.organizationName;
-    }
-    if (_displayName.length < 1) {
-        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
     }
 }
 

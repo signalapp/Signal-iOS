@@ -424,6 +424,9 @@
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "Select Contact";
 
+/* Indicates that a contact has no name. */
+"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";
 

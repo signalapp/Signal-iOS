@@ -105,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
+    // TODO: Use the contact's avatar if present and downloaded.
     AvatarImageView *avatarView = [AvatarImageView new];
     // TODO: What's the best colorSeed value to use?
     OWSAvatarBuilder *avatarBuilder =

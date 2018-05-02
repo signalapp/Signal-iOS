@@ -202,9 +202,26 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         // TODO: Use actual avatar.
         let avatarSize = CGFloat(100)
-        let avatarView = UIView.container()
-        avatarView.backgroundColor = UIColor.ows_materialBlue
-        avatarView.layer.cornerRadius = avatarSize * 0.5
+
+        let avatarView = AvatarImageView()
+        // TODO: What's the best colorSeed value to use?
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.displayName,
+                                                    colorSeed: contact.displayName,
+                                                    diameter: UInt(avatarSize),
+                                                    contactsManager: contactsManager)
+//            [[OWSContactAvatarBuilder alloc] initWithNonSignalName:self.contactShare.displayName
+//                colorSeed:self.contactShare.displayName
+//                diameter:(NSUInteger)self.iconSize
+//                contactsManager:[Environment current].contactsManager];
+        avatarView.image = avatarBuilder.build()
+//        [avatarView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+//        [avatarView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+//        [avatarView setCompressionResistanceHigh];
+//        [avatarView setContentHuggingHigh];
+
+//        let avatarView = UIView.container()
+//        avatarView.backgroundColor = UIColor.ows_materialBlue
+//        avatarView.layer.cornerRadius = avatarSize * 0.5
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()

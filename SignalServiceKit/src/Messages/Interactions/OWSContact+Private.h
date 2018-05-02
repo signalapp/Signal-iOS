@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
 @property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic, nullable) NSString *displayName;
+@property (nonatomic) NSString *displayName;
 
 @property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
