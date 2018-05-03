@@ -418,6 +418,9 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Unregistered Number";
 
+/* Label for the 'edit name' button in the contact share approval view. */
+"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
 

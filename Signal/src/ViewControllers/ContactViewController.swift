@@ -690,10 +690,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         contactViewController.allowsActions = false
         contactViewController.allowsEditing = true
         contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(didFinishEditingContact))
-                contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                                                         style: .plain,
-                                                                                         target: self,
-                                                                                         action: #selector(didFinishEditingContact))
+        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
+                                                                                 style: .plain,
+                                                                                 target: self,
+                                                                                 action: #selector(didFinishEditingContact))
 
         self.navigationController?.pushViewController(contactViewController, animated: true)
 
