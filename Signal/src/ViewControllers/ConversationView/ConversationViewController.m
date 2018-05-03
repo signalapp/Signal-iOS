@@ -561,7 +561,15 @@ typedef enum : NSUInteger {
 
 - (BOOL)canBecomeFirstResponder
 {
-    return YES;
+    // Normally there'd be no mechanism for us to become first responder while presenting
+    // another view controller, however due to our screen lock window juggling, a side effect of
+    // calling `makeKeyAndVisible` is that "last known" first responder is sent "becomeFirstResponder",
+    // regardless of if it is no longer the top most VC.
+    if (self.presentedViewController) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (nullable UIView *)inputAccessoryView
