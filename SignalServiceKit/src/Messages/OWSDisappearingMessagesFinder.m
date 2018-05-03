@@ -5,8 +5,8 @@
 #import "OWSDisappearingMessagesFinder.h"
 #import "NSDate+OWS.h"
 #import "OWSPrimaryStorage.h"
+#import "TSIncomingMessage.h"
 #import "TSMessage.h"
-#import "TSOutgoingMessage.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
@@ -62,6 +62,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                       }
                                       TSMessage *message = (TSMessage *)object;
                                       if ([message shouldStartExpireTimerWithTransaction:transaction]) {
+                                          if ([message isKindOfClass:[TSIncomingMessage class]]) {
+                                              TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+                                              if (!incomingMessage.wasRead) {
+                                                  return;
+                                              }
+                                          }
                                           [messageIds addObject:key];
                                       }
                                   }];
