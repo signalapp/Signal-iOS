@@ -152,35 +152,18 @@
 
 - (void)presentConversationForRecipientId:(NSString *)recipientId
 {
-    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:YES callOnViewAppearing:NO];
+    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone];
 }
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose
+- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action
 {
-    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:compose callOnViewAppearing:NO];
-}
-
-- (void)callRecipientId:(NSString *)recipientId
-{
-    [self presentConversationForRecipientId:recipientId keyboardOnViewAppearing:NO callOnViewAppearing:YES];
-}
-
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                  keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
-                      callOnViewAppearing:(BOOL)callOnViewAppearing
-{
-    // At most one.
-    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
-
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [OWSPrimaryStorage.dbReadWriteConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
             }];
-        [self presentConversationForThread:thread
-                   keyboardOnViewAppearing:keyboardOnViewAppearing
-                       callOnViewAppearing:callOnViewAppearing];
+        [self presentConversationForThread:thread action:action];
     });
 }
 
@@ -199,21 +182,12 @@
 
 - (void)presentConversationForThread:(TSThread *)thread
 {
-    [self presentConversationForThread:thread withCompose:YES];
+    [self presentConversationForThread:thread action:ConversationViewActionNone];
 }
 
-- (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose
-{
-    [self presentConversationForThread:thread keyboardOnViewAppearing:compose callOnViewAppearing:NO];
-}
-
-- (void)presentConversationForThread:(TSThread *)thread
-             keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
-                 callOnViewAppearing:(BOOL)callOnViewAppearing
+- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action
 {
     OWSAssertIsOnMainThread();
-    // At most one.
-    OWSAssert(!keyboardOnViewAppearing || !callOnViewAppearing);
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -233,9 +207,7 @@
             }
         }
 
-        [self.homeViewController presentThread:thread
-                       keyboardOnViewAppearing:keyboardOnViewAppearing
-                           callOnViewAppearing:callOnViewAppearing];
+        [self.homeViewController presentThread:thread action:action];
     });
 }
 

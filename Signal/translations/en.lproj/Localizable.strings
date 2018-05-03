@@ -4,6 +4,21 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
 
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal Call";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Invite to Signal";
+
+/* Label for 'sent message' button in contact view. */
+"ACTION_SEND_MESSAGE" = "Send Message";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Share Contact";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Video Call";
+
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Add";
 

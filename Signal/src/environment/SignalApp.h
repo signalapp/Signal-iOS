@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
+
+#import "ConversationViewController.h"
 
 @class AccountManager;
 @class CallService;
@@ -33,11 +35,10 @@
 #pragma mark - View Convenience Methods
 
 - (void)presentConversationForRecipientId:(NSString *)recipientId;
-- (void)presentConversationForRecipientId:(NSString *)recipientId withCompose:(BOOL)compose;
-- (void)callRecipientId:(NSString *)recipientId;
+- (void)presentConversationForRecipientId:(NSString *)recipientId action:(ConversationViewAction)action;
 - (void)presentConversationForThreadId:(NSString *)threadId;
 - (void)presentConversationForThread:(TSThread *)thread;
-- (void)presentConversationForThread:(TSThread *)thread withCompose:(BOOL)compose;
+- (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action;
 
 #pragma mark - Methods
 

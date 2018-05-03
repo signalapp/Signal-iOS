@@ -35,13 +35,14 @@ import SignalMessaging
             return false
         }
 
-        return initiateCall(recipientId: recipientId)
+        return initiateCall(recipientId: recipientId, isVideo: false)
     }
 
     /**
      * |recipientId| is a e164 formatted phone number.
      */
-    public func initiateCall(recipientId: String) -> Bool {
+    public func initiateCall(recipientId: String,
+        isVideo: Bool) -> Bool {
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings
         guard let callUIAdapter = SignalApp.shared().callUIAdapter else {
@@ -58,7 +59,7 @@ import SignalMessaging
                                                                                 contactsManager: self.contactsManager,
                                                                                 completion: { didConfirmIdentity in
                                                                                     if didConfirmIdentity {
-                                                                                        _ = self.initiateCall(recipientId: recipientId)
+                                                                                        _ = self.initiateCall(recipientId: recipientId, isVideo: isVideo)
                                                                                     }
         })
         guard !showedAlert else {
@@ -81,7 +82,7 @@ import SignalMessaging
                 OWSAlerts.showNoMicrophonePermissionAlert()
                 return
             }
-            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId)
+            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: isVideo)
         })
 
         return true

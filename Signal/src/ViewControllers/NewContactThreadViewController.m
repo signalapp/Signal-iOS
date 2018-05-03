@@ -809,7 +809,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread != nil);
     [self dismissViewControllerAnimated:YES
                              completion:^() {
-                                 [SignalApp.sharedApp presentConversationForThread:thread withCompose:YES];
+                                 [SignalApp.sharedApp presentConversationForThread:thread
+                                                                            action:ConversationViewActionCompose];
                              }];
 }
 

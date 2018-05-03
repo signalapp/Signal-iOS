@@ -407,12 +407,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(recipientId.length > 0);
 
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId withCompose:YES];
+    [SignalApp.sharedApp presentConversationForRecipientId:recipientId action:ConversationViewActionCompose];
 }
 
 - (void)callMember:(NSString *)recipientId
 {
-    [SignalApp.sharedApp callRecipientId:recipientId];
+    [SignalApp.sharedApp presentConversationForRecipientId:recipientId action:ConversationViewActionAudioCall];
 }
 
 - (void)showSafetyNumberView:(NSString *)recipientId

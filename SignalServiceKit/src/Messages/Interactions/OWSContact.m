@@ -42,6 +42,20 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSString *)labelString
+{
+    switch (self.phoneType) {
+        case OWSContactPhoneType_Home:
+            return [CNLabeledValue localizedStringForLabel:CNLabelHome];
+        case OWSContactPhoneType_Mobile:
+            return [CNLabeledValue localizedStringForLabel:CNLabelPhoneNumberMobile];
+        case OWSContactPhoneType_Work:
+            return [CNLabeledValue localizedStringForLabel:CNLabelWork];
+        default:
+            return self.label;
+    }
+}
+
 @end
 
 #pragma mark -
@@ -71,6 +85,20 @@ NS_ASSUME_NONNULL_BEGIN
             return YES;
         case OWSContactEmailType_Custom:
             return self.label.ows_stripped.length > 0;
+    }
+}
+
+- (NSString *)labelString
+{
+    switch (self.emailType) {
+        case OWSContactEmailType_Home:
+            return [CNLabeledValue localizedStringForLabel:CNLabelHome];
+        case OWSContactEmailType_Mobile:
+            return [CNLabeledValue localizedStringForLabel:CNLabelPhoneNumberMobile];
+        case OWSContactEmailType_Work:
+            return [CNLabeledValue localizedStringForLabel:CNLabelWork];
+        default:
+            return self.label;
     }
 }
 
@@ -114,6 +142,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (NSString *)labelString
+{
+    switch (self.addressType) {
+        case OWSContactAddressType_Home:
+            return [CNLabeledValue localizedStringForLabel:CNLabelHome];
+        case OWSContactAddressType_Work:
+            return [CNLabeledValue localizedStringForLabel:CNLabelWork];
+        default:
+            return self.label;
+    }
+}
+
 @end
 
 #pragma mark -
@@ -128,9 +168,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *organizationName;
 @property (nonatomic, nullable) NSString *displayName;
 
-@property (nonatomic, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
-@property (nonatomic, nullable) NSArray<OWSContactEmail *> *emails;
-@property (nonatomic, nullable) NSArray<OWSContactAddress *> *addresses;
+@property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic) NSArray<OWSContactAddress *> *addresses;
 
 @property (nonatomic, nullable) TSAttachment *avatar;
 @property (nonatomic) BOOL isProfileAvatar;
@@ -140,6 +180,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSContact
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _phoneNumbers = @[];
+        _emails = @[];
+        _addresses = @[];
+    }
+
+    return self;
+}
 
 - (void)normalize
 {

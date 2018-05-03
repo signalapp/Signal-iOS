@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "ConversationViewController.h"
 #import <SignalMessaging/OWSViewController.h>
 #import <UIKit/UIKit.h>
 
@@ -9,9 +10,7 @@
 
 @interface HomeViewController : OWSViewController
 
-- (void)presentThread:(TSThread *)thread
-    keyboardOnViewAppearing:(BOOL)keyboardOnViewAppearing
-        callOnViewAppearing:(BOOL)callOnViewAppearing;
+- (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action;
 
 - (void)showNewConversationView;
 

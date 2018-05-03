@@ -2976,11 +2976,11 @@ typedef OWSContact * (^OWSContactBlock)(void);
 
                                                   OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
                                                   phoneNumber1.phoneType = OWSContactPhoneType_Home;
-                                                  phoneNumber1.phoneNumber = @"+13213214321";
+                                                  phoneNumber1.phoneNumber = @"+13213215555";
                                                   OWSContactPhoneNumber *phoneNumber2 = [OWSContactPhoneNumber new];
                                                   phoneNumber2.phoneType = OWSContactPhoneType_Custom;
                                                   phoneNumber2.label = @"Carphone";
-                                                  phoneNumber2.phoneNumber = @"+13332221111";
+                                                  phoneNumber2.phoneNumber = @"+13332226666";
                                                   contact.phoneNumbers = @[
                                                       phoneNumber1,
                                                       phoneNumber2,
@@ -2988,11 +2988,11 @@ typedef OWSContact * (^OWSContactBlock)(void);
 
                                                   OWSContactEmail *email1 = [OWSContactEmail new];
                                                   email1.emailType = OWSContactEmailType_Home;
-                                                  email1.email = @"a@b.com";
+                                                  email1.email = @"a1@b.com";
                                                   OWSContactEmail *email2 = [OWSContactEmail new];
                                                   email2.emailType = OWSContactEmailType_Custom;
                                                   email2.label = @"customer support";
-                                                  email2.email = @"a@b.com";
+                                                  email2.email = @"a2@b.com";
                                                   contact.emails = @[
                                                       email1,
                                                       email2,
@@ -3021,6 +3021,46 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   ];
 
                                                   // TODO: Avatar
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self fakeContactShareMessageAction:thread
+                                                     label:@"Long values"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
+                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Mobile;
+                                                  email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self fakeContactShareMessageAction:thread
+                                                     label:@"System Contact w/o Signal"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+324602053911";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self fakeContactShareMessageAction:thread
+                                                     label:@"System Contact w. Signal"
+                                              contactBlock:^{
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+32460205392";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
                                                   return contact;
                                               }]];
 

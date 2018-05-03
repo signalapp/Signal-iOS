@@ -6,15 +6,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, ConversationViewAction) {
+    ConversationViewActionNone,
+    ConversationViewActionCompose,
+    ConversationViewActionAudioCall,
+    ConversationViewActionVideoCall,
+};
+
 @class TSThread;
 
 @interface ConversationViewController : OWSViewController
 
 @property (nonatomic, readonly) TSThread *thread;
 
-- (void)configureForThread:(TSThread *)thread
-    keyboardOnViewAppearing:(BOOL)keyboardAppearing
-        callOnViewAppearing:(BOOL)callOnViewAppearing;
+- (void)configureForThread:(TSThread *)thread action:(ConversationViewAction)action;
 
 - (void)popKeyBoard;
 

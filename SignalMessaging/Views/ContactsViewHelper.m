@@ -265,6 +265,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
 {
+    [ContactsViewHelper presentMissingContactAccessAlertControllerFromViewController:viewController];
+}
+
++ (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController
+{
     UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:NSLocalizedString(@"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE", comment
                                                    : @"Alert title for when the user has just tried to edit a "

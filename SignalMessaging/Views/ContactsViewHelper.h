@@ -1,12 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ContactsViewHelper;
 @class Contact;
+@class ContactsViewHelper;
 @class SignalAccount;
+
 @protocol CNContactViewControllerDelegate;
 
 @protocol ContactsViewHelperDelegate <NSObject>
@@ -27,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@class OWSContactsManager;
-@class OWSBlockingManager;
 @class CNContact;
+@class OWSBlockingManager;
+@class OWSContactsManager;
 
 @interface ContactsViewHelper : NSObject
 
@@ -80,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
                             addToExistingCnContact:(CNContact *_Nullable)cnContact;
+
++ (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
 @end
 
