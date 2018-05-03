@@ -154,6 +154,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 + (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
 + (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
 
+//#pragma mark - Old Contacts
+//
+//+ (nullable OWSContact *)contactForOldContact:(Contact *)oldContact
+
 @end
 
 NS_ASSUME_NONNULL_END

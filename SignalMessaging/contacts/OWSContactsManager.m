@@ -343,10 +343,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 {
     OWSAssertIsOnMainThread();
 
-    if ([signalAccounts isEqual:self.signalAccounts]) {
-        DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
-        return;
-    }
+    //    if ([signalAccounts isEqual:self.signalAccounts]) {
+    //        DDLogDebug(@"%@ SignalAccounts unchanged.", self.logTag);
+    //        return;
+    //    }
 
     NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
     for (SignalAccount *signalAccount in signalAccounts) {

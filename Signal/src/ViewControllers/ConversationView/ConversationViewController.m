@@ -117,6 +117,7 @@ typedef enum : NSUInteger {
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
+    ApproveContactShareViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
     ContactEditingDelegate,
@@ -337,7 +338,25 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self ensureDynamicInteractions];
+
+    //    [self tryToShowContactShareUI];
 }
+
+//- (void)tryToShowContactShareUI
+//{
+//    OWSAssertIsOnMainThread();
+//
+//    Contact *_Nullable firstContact = self.contactsManager.allContacts.firstObject;
+//    DDLogInfo(@"%@ firstContact: %@ %d", self.logTag, firstContact, firstContact.cnContact != nil);
+//    [DDLog flushLog];
+//    if (!firstContact.cnContact) {
+//        return;
+//    }
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        [self contactsPicker:nil didSelectContact:firstContact];
+//    });
+//}
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
@@ -489,6 +508,11 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showPhonyContactShareApproval];
+        //        [self tryToShowContactShareUI];
+    });
 }
 
 - (void)loadView
@@ -2522,6 +2546,7 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Attachment Picking: Contacts
+
 - (void)chooseContactForSending
 {
     ContactsPicker *contactsPicker =
@@ -4903,6 +4928,79 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
 #pragma mark - ContactsPickerDelegate
 
+- (void)showPhonyContactShareApproval
+{
+    ApproveContactShareViewController *approveContactShare =
+        [[ApproveContactShareViewController alloc] initWithContactShare:self.makePhonyContact
+                                                        contactsManager:self.contactsManager
+                                                               delegate:self];
+    //    contactsPicker.title
+    //    = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:approveContactShare];
+    [self dismissKeyBoard];
+    [self presentViewController:navigationController animated:YES completion:nil];
+    //    [self contactsPicker:nil didSelectContact:self.makePhonyContact];
+}
+
+- (OWSContact *)makePhonyContact
+{
+    OWSContact *contact = [OWSContact new];
+    contact.givenName = @"Alice";
+    contact.familyName = @"Carol";
+    contact.middleName = @"Bob";
+    contact.namePrefix = @"Ms.";
+    contact.nameSuffix = @"Esq.";
+    contact.organizationName = @"Falafel Hut";
+
+    OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
+    phoneNumber1.phoneType = OWSContactPhoneType_Home;
+    phoneNumber1.phoneNumber = @"+13213214321";
+    OWSContactPhoneNumber *phoneNumber2 = [OWSContactPhoneNumber new];
+    phoneNumber2.phoneType = OWSContactPhoneType_Custom;
+    phoneNumber2.label = @"Carphone";
+    phoneNumber2.phoneNumber = @"+13332221111";
+    contact.phoneNumbers = @[
+        phoneNumber1,
+        phoneNumber2,
+    ];
+
+    NSMutableArray<OWSContactEmail *> *emails = [NSMutableArray new];
+    for (NSUInteger i = 0; i < 16; i++) {
+        OWSContactEmail *email = [OWSContactEmail new];
+        email.emailType = OWSContactEmailType_Home;
+        email.email = [NSString stringWithFormat:@"a%zd@b.com", i];
+        [emails addObject:email];
+    }
+    contact.emails = emails;
+
+    OWSContactAddress *address1 = [OWSContactAddress new];
+    address1.addressType = OWSContactAddressType_Home;
+    address1.street = @"123 home st.";
+    address1.neighborhood = @"round the bend.";
+    address1.city = @"homeville";
+    address1.region = @"HO";
+    address1.postcode = @"12345";
+    address1.country = @"USA";
+    OWSContactAddress *address2 = [OWSContactAddress new];
+    address2.addressType = OWSContactAddressType_Custom;
+    address2.label = @"Otra casa";
+    address2.pobox = @"caja 123";
+    address2.street = @"123 casa calle";
+    address2.city = @"barrio norte";
+    address2.region = @"AB";
+    address2.postcode = @"53421";
+    address2.country = @"MX";
+    contact.addresses = @[
+        address1,
+        address2,
+    ];
+
+    // TODO: Avatar
+    return contact;
+}
+
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
@@ -4915,10 +5013,32 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
+    OWSAssert(contact);
+    OWSAssert(contact.cnContact);
+
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
+    OWSContact *_Nullable contactShare = [OWSContacts contactForSystemContact:contact.cnContact];
+    if (!contactShare) {
+        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+        return;
+    }
+
     // TODO actually build contact message.
-    self.inputToolbar.messageText = contact.fullName;
+    //    self.inputToolbar.messageText = contact.fullName;
+
+    // TODO: We should probably show this in the same navigation view controller.
+    ApproveContactShareViewController *approveContactShare =
+        [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
+                                                        contactsManager:self.contactsManager
+                                                               delegate:self];
+    //    contactsPicker.title
+    //    = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:approveContactShare];
+    [self dismissKeyBoard];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
@@ -4931,6 +5051,17 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     // Any reason to preclude contacts?
     return YES;
 }
+
+#pragma mark - ApproveContactShareViewControllerDelegate
+
+- (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
+     didApproveContactShare:(OWSContact *)contactShare
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // TODO:
+}
+
 
 @end
 

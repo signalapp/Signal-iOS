@@ -7,6 +7,8 @@
 #import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
+
+//#import "Contact.h"
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -45,8 +47,8 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
 
 - (BOOL)ows_isValid
 {
-    if (![PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber]) {
-        DDLogWarn(@"%@ invalid phone number; not e164: %@.", self.logTag, self.phoneNumber);
+    if (self.phoneNumber.ows_stripped.length < 1) {
+        DDLogWarn(@"%@ invalid phone number: %@.", self.logTag, self.phoneNumber);
         return NO;
     }
     return YES;
@@ -957,6 +959,76 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     return result;
 }
+
+//#pragma mark - Old Contacts
+//
+//+ (nullable OWSContact *)contactForOldContact:(Contact *)oldContact
+//{
+//    OWSAssert(oldContact);
+//    OWSAssert(oldContact.cnContact);
+//
+////    DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+//
+//    return [self contactForSystemContact:oldContact.cnContact];
+//
+////    OWSContact *newContact = [OWSContact new];
+////
+////    newContact.givenName = oldContact.firstName;
+////    newContact.familyName = oldContact.lastName;
+////
+////    NSMutableArray<
+////    OWSContactPhoneNumber *> *newPhoneNumbers = [NSMutableArray new];
+////    for (NSString *oldPhoneNumber in oldContact.userTextPhoneNumbers) {
+////        OWSContactPhoneNumber *newPhoneNumber = [OWSContactPhoneNumber new];
+////        newPhoneNumber.phoneNumber = oldPhoneNumber;
+////        newPhoneNumber.phoneType = OWSContactPhoneType_Custom;
+////        [newPhoneNumbers addObject:newPhoneNumber];
+////    }
+////    newContact.phoneNumbers = newPhoneNumbers;
+////
+////    NSMutableArray<
+////    OWSContactEmail *> *newEmails = [NSMutableArray new];
+////    for (NSString *oldEmail in oldContact.emails) {
+////        OWSContactEmail *newEmail = [OWSContactEmail new];
+////        newEmail.email = oldEmail;
+////        newEmail.emailType = OWSContactEmailType_Custom;
+////        [newEmails addObject:newEmail];
+////    }
+////    newContact.emails = newEmails;
+////
+////    @interface Contact : MTLModel
+////
+////    @property (nullable, readonly, nonatomic) NSString *firstName;
+////    @property (nullable, readonly, nonatomic) NSString *lastName;
+////    @property (readonly, nonatomic) NSString *fullName;
+////    @property (readonly, nonatomic) NSString *comparableNameFirstLast;
+////    @property (readonly, nonatomic) NSString *comparableNameLastFirst;
+////    @property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
+////    @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
+////    @property (readonly, nonatomic) NSArray<NSString *> *emails;
+////    @property (readonly, nonatomic) NSString *uniqueId;
+////    @property (nonatomic, readonly) BOOL isSignalContact;
+////#if TARGET_OS_IOS
+////    @property (nullable, readonly, nonatomic) UIImage *image;
+////    @property (nullable, nonatomic, readonly) CNContact *cnContact;
+////#endif // TARGET_OS_IOS
+////
+////    - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+////    // TODO: Remove this method.
+////    - (NSArray<NSString *> *)textSecureIdentifiers;
+////
+////#if TARGET_OS_IOS
+////
+////    - (instancetype)initWithSystemContact:(CNContact *)contact NS_AVAILABLE_IOS(9_0);
+////
+////    - (NSString *)nameForPhoneNumber:(NSString *)recipientId;
+////
+////#endif // TARGET_OS_IOS
+////
+////    + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
+////
+////    @end
+//}
 
 @end
 

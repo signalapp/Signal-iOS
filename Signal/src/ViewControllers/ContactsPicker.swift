@@ -60,7 +60,8 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactThumbnailImageDataKey as CNKeyDescriptor,
         CNContactPhoneNumbersKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor
+        CNContactEmailAddressesKey as CNKeyDescriptor,
+        CNContactPostalAddressesKey as CNKeyDescriptor
     ]
 
     // MARK: - Lifecycle Methods
