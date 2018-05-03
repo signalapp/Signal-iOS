@@ -67,7 +67,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private let showAllMediaButton: Bool
     private let sliderEnabled: Bool
 
-    private let headerView: UIStackView
+    private let headerView: UIView
 
     init(initialItem: MediaGalleryItem, mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption) {
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
@@ -78,20 +78,29 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let kSpacingBetweenItems: CGFloat = 20
 
-        let headerView = UIStackView()
-        self.headerView = headerView
+        self.headerView = UIView()
+        headerView.layoutMargins = UIEdgeInsets(top: 2, left: 8, bottom: 4, right: 8)
 
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: [UIPageViewControllerOptionInterPageSpacingKey: kSpacingBetweenItems])
 
-        // needed for proper layout on iOS9/10
-        headerView.translatesAutoresizingMaskIntoConstraints = false
+        let headerStackView = UIStackView()
+        headerView.addSubview(headerStackView)
 
-        headerView.axis = .vertical
-        headerView.alignment = .center
-        headerView.addArrangedSubview(headerNameLabel)
-        headerView.addArrangedSubview(headerDateLabel)
+        headerStackView.axis = .vertical
+        headerStackView.alignment = .center
+        headerStackView.spacing = 0
+        headerStackView.distribution = .fillProportionally
+        headerStackView.addArrangedSubview(headerNameLabel)
+        headerStackView.addArrangedSubview(headerDateLabel)
+
+        headerStackView.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
+        headerStackView.autoPinEdge(toSuperviewMargin: .right, relation: .greaterThanOrEqual)
+        headerStackView.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        headerStackView.autoPinEdge(toSuperviewMargin: .left, relation: .greaterThanOrEqual)
+        headerStackView.setContentHuggingHigh()
+        headerStackView.autoCenterInSuperview()
 
         self.dataSource = self
         self.delegate = self
@@ -589,6 +598,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         label.font = UIFont.ows_regularFont(withSize: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.8
 
         return label
     }()
@@ -609,5 +619,19 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         let date = Date(timeIntervalSince1970: Double(item.message.timestamp) / 1000)
         let formattedDate = dateFormatter.string(from: date)
         headerDateLabel.text = formattedDate
+
+        if #available(iOS 11, *) {
+            // Do nothing, on iOS11, autolayout grows the stack view as necessary.
+        } else {
+            // Size the titleView to be large enough to fit the widest label,
+            // but no larger. If we go for a "full width" label, our title view
+            // will not be centered (since the left and right bar buttons have different widths)            
+            headerNameLabel.sizeToFit()
+            headerDateLabel.sizeToFit()
+            let maxWidth = max(headerNameLabel.frame.width, headerDateLabel.frame.width)
+
+            let headerFrame: CGRect = CGRect(x: 0, y: 0, width: maxWidth, height: 44)
+            headerView.frame = headerFrame
+        }
     }
 }
