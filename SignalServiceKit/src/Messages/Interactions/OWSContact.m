@@ -3,13 +3,15 @@
 //
 
 #import "OWSContact.h"
-#import "NSString+SSK.h"
+#import "NSString+SSK.h" OWSAttachmentInfo.h
 #import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
 
 //#import "Contact.h"
 #import "TSAttachment.h"
+#import "TSAttachmentPointer.h"
+#import "TSAttachmentStream.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 @import Contacts;
@@ -273,7 +275,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
 @property (nonatomic) NSArray<OWSContactAddress *> *addresses;
 
-@property (nonatomic, nullable) TSAttachment *avatar;
+@property (nonatomic, nullable) NSString *avatarAttachmentId;
 @property (nonatomic) BOOL isProfileAvatar;
 
 @end
@@ -454,6 +456,22 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     self.nameSuffix = nameSuffix.ows_stripped;
 
     [self updateDisplayName];
+}
+
+#pragma mark - Avatar
+// MJK
+
+- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
+}
+
+- (void)setAvatarAttachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssert(self.avatarAttachmentId == nil);
+
+    self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 
 @end
@@ -829,7 +847,13 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         [contactBuilder addAddress:addressBuilder.build];
     }
 
-    // TODO: avatar
+    if (contact.avatarAttachmentId != nil) {
+        OWSSignalServiceProtosDataMessageContactAvatarBuilder *avatarBuilder =
+            [OWSSignalServiceProtosDataMessageContactAvatarBuilder new];
+        avatarBuilder.avatar =
+            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId isVoiceMessage:NO];
+        contactBuilder.avatar = [avatarBuilder build];
+    }
 
     OWSSignalServiceProtosDataMessageContact *contactProto = [contactBuilder build];
     if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
@@ -839,7 +863,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return contactProto;
 }
 
-+ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
++ (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                         relay:(nullable NSString *)relay
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
 
@@ -905,9 +931,25 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = [addresses copy];
 
-    // TODO: Avatar
-
     [contact ensureDisplayName];
+
+    if (contactProto.hasAvatar) {
+        OWSSignalServiceProtosDataMessageContactAvatar *avatarInfo = contactProto.avatar;
+
+        if (avatarInfo.hasAvatar) {
+            OWSSignalServiceProtosAttachmentPointer *avatarAttachment = avatarInfo.avatar;
+
+            TSAttachmentPointer *attachmentPointer =
+                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment relay:relay];
+            [attachmentPointer saveWithTransaction:transaction];
+
+            contact.avatarAttachmentId = attachmentPointer.uniqueId;
+            contact.isProfileAvatar = avatarInfo.isProfile;
+        } else {
+            OWSFail(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
+        }
+    }
+
 
     return contact;
 }

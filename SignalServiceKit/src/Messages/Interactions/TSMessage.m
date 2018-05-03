@@ -332,6 +332,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self.quotedMessage setThumbnailAttachmentStream:attachmentStream];
 }
 
+- (void)setContactShareAvatarAttachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssert(self.contactShare);
+
+    [self.contactShare setAvatarAttachmentStream:attachmentStream];
+}
+
 #pragma mark - Update With... Methods
 
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
