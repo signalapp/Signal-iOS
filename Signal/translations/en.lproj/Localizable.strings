@@ -445,6 +445,21 @@
 /* Label for the 'street' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_STREET" = "Street";
 
+/* Label for the 'family name' field of a contact. */
+"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+
+/* Label for the 'given name' field of a contact. */
+"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+
+/* Label for the 'middle name' field of a contact. */
+"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+
+/* Label for the 'name prefix' field of a contact. */
+"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+
+/* Label for the 'name suffix' field of a contact. */
+"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Phone";
 
@@ -459,6 +474,9 @@
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+
+/* Title for the 'edit contact share name' view. */
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Unnamed Contact";

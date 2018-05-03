@@ -15,7 +15,7 @@ public protocol ApproveContactShareViewControllerDelegate: class {
 
 class ContactShareField: NSObject {
 
-    var isIncludedFlag = true
+    private var isIncludedFlag = true
 
     func localizedLabel() -> String {
         preconditionFailure("This method must be overridden")
@@ -25,8 +25,12 @@ class ContactShareField: NSObject {
         return isIncludedFlag
     }
 
-    func setIsIncluded(isIncluded: Bool) {
+    func setIsIncluded(_ isIncluded: Bool) {
         isIncludedFlag = isIncluded
+    }
+
+    func applyToContact(contact: OWSContact) {
+        preconditionFailure("This method must be overridden")
     }
 }
 
@@ -45,6 +49,17 @@ class ContactSharePhoneNumber: ContactShareField {
     override func localizedLabel() -> String {
         return value.localizedLabel()
     }
+
+    override func applyToContact(contact: OWSContact) {
+        assert(isIncluded())
+
+        var values = [OWSContactPhoneNumber]()
+        if let oldValues = contact.phoneNumbers {
+            values += oldValues
+        }
+        values.append(value)
+        contact.phoneNumbers = values
+    }
 }
 
 // MARK: -
@@ -62,6 +77,17 @@ class ContactShareEmail: ContactShareField {
     override func localizedLabel() -> String {
         return value.localizedLabel()
     }
+
+    override func applyToContact(contact: OWSContact) {
+        assert(isIncluded())
+
+        var values = [OWSContactEmail]()
+        if let oldValues = contact.emails {
+            values += oldValues
+        }
+        values.append(value)
+        contact.emails = values
+    }
 }
 
 // MARK: -
@@ -78,6 +104,17 @@ class ContactShareAddress: ContactShareField {
 
     override func localizedLabel() -> String {
         return value.localizedLabel()
+    }
+
+    override func applyToContact(contact: OWSContact) {
+        assert(isIncluded())
+
+        var values = [OWSContactAddress]()
+        if let oldValues = contact.addresses {
+            values += oldValues
+        }
+        values.append(value)
+        contact.addresses = values
     }
 }
 
@@ -158,22 +195,24 @@ class ContactShareFieldView: UIView {
         guard sender.state == .recognized else {
             return
         }
-        checkbox.isSelected = !checkbox.isSelected
+        field.setIsIncluded(!field.isIncluded())
+        checkbox.isSelected = field.isIncluded()
     }
 }
 
 // MARK: -
 
 @objc
-public class ApproveContactShareViewController: OWSViewController {
+public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate {
     weak var delegate: ApproveContactShareViewControllerDelegate?
 
-        let contactsManager: OWSContactsManager
+    let contactsManager: OWSContactsManager
 
-    let contactShare: OWSContact
+    var contactShare: OWSContact
 
-    var fields = [ContactShareField]()
     var fieldViews = [ContactShareFieldView]()
+
+    var nameLabel: UILabel!
 
     // MARK: Initializers
 
@@ -194,7 +233,6 @@ public class ApproveContactShareViewController: OWSViewController {
     }
 
     func buildFields() {
-        var fields = [ContactShareField]()
         var fieldViews = [ContactShareFieldView]()
 
         // TODO: Avatar
@@ -202,7 +240,6 @@ public class ApproveContactShareViewController: OWSViewController {
         if let phoneNumbers = contactShare.phoneNumbers {
             for phoneNumber in phoneNumbers {
                 let field = ContactSharePhoneNumber(phoneNumber)
-                fields.append(field)
                 let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
                     guard let strongSelf = self else { return UIView() }
                     return strongSelf.previewView(forPhoneNumber: phoneNumber)
@@ -214,7 +251,6 @@ public class ApproveContactShareViewController: OWSViewController {
         if let emails = contactShare.emails {
             for email in emails {
                 let field = ContactShareEmail(email)
-                fields.append(field)
                 let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
                     guard let strongSelf = self else { return UIView() }
                     return strongSelf.previewView(forEmail: email)
@@ -226,7 +262,6 @@ public class ApproveContactShareViewController: OWSViewController {
         if let addresses = contactShare.addresses {
             for address in addresses {
                 let field = ContactShareAddress(address)
-                fields.append(field)
                 let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
                     guard let strongSelf = self else { return UIView() }
                     return strongSelf.previewView(forAddress: address)
@@ -235,7 +270,6 @@ public class ApproveContactShareViewController: OWSViewController {
             }
         }
 
-        self.fields = fields
         self.fieldViews = fieldViews
     }
 
@@ -290,7 +324,7 @@ public class ApproveContactShareViewController: OWSViewController {
         if canShareContact() {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
                                                                                               comment: "Label for 'send' button in the 'attachment approval' dialog."),
-                style: .plain, target: self, action: #selector(didPressSendButton))
+                                                                     style: .plain, target: self, action: #selector(didPressSendButton))
         } else {
             self.navigationItem.rightBarButtonItem = nil
         }
@@ -391,6 +425,7 @@ public class ApproveContactShareViewController: OWSViewController {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.layoutMargins = .zero
+        stackView.spacing = 10
         row.addSubview(stackView)
         stackView.autoPinLeadingToSuperviewMargin()
         stackView.autoPinTrailingToSuperviewMargin()
@@ -398,6 +433,7 @@ public class ApproveContactShareViewController: OWSViewController {
         stackView.autoPinBottomToSuperviewMargin()
 
         let nameLabel = UILabel()
+        self.nameLabel = nameLabel
         nameLabel.text = contactShare.displayName
         nameLabel.font = UIFont.ows_dynamicTypeBody
         nameLabel.textColor = UIColor.ows_materialBlue
@@ -518,6 +554,24 @@ public class ApproveContactShareViewController: OWSViewController {
 
     // MARK: -
 
+    func filteredContactShare() -> OWSContact {
+        let result = self.contactShare.newContact(withNamePrefix: self.contactShare.namePrefix,
+                                                  givenName: self.contactShare.givenName,
+                                                  middleName: self.contactShare.middleName,
+                                                  familyName: self.contactShare.familyName,
+                                                  nameSuffix: self.contactShare.nameSuffix)
+
+        for fieldView in fieldViews {
+            if fieldView.field.isIncluded() {
+                fieldView.field.applyToContact(contact: result)
+            }
+        }
+
+        return result
+    }
+
+    // MARK: -
+
     func didPressSendButton() {
         Logger.info("\(logTag) \(#function)")
 
@@ -526,7 +580,10 @@ public class ApproveContactShareViewController: OWSViewController {
             return
         }
 
-        delegate.approveContactShare(self, didApproveContactShare: contactShare)
+        let filteredContactShare = self.filteredContactShare()
+        assert(filteredContactShare.ows_isValid())
+
+        delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
     }
 
     func didPressCancel() {
@@ -543,6 +600,17 @@ public class ApproveContactShareViewController: OWSViewController {
     func didPressEditName() {
         Logger.info("\(logTag) \(#function)")
 
-        // TODO:
+        let view = EditContactShareNameViewController(contactShare: contactShare, delegate: self)
+        self.navigationController?.pushViewController(view, animated: true)
+    }
+
+    // MARK: - EditContactShareNameViewControllerDelegate
+
+    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: OWSContact) {
+        self.contactShare = contactShare
+
+        nameLabel.text = contactShare.displayName
+
+        self.updateNavigationBar()
     }
 }

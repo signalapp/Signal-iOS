@@ -128,6 +128,20 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 - (NSString *)debugDescription;
 
+#pragma mark - Creation and Derivation
+
+- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
+                               givenName:(nullable NSString *)givenName
+                              middleName:(nullable NSString *)middleName
+                              familyName:(nullable NSString *)familyName
+                              nameSuffix:(nullable NSString *)nameSuffix;
+
+- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
+                                givenName:(nullable NSString *)givenName
+                               middleName:(nullable NSString *)middleName
+                               familyName:(nullable NSString *)familyName
+                               nameSuffix:(nullable NSString *)nameSuffix;
+
 @end
 
 #pragma mark -
@@ -153,10 +167,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 + (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
 + (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
-
-//#pragma mark - Old Contacts
-//
-//+ (nullable OWSContact *)contactForOldContact:(Contact *)oldContact
 
 @end
 

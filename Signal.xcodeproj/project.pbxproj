@@ -49,6 +49,7 @@
 		34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
 		34382266209A4E400094FEB7 /* ApproveContactShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34382265209A4E3F0094FEB7 /* ApproveContactShareViewController.swift */; };
+		3438226A209B63500094FEB7 /* EditContactShareNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34382269209B63500094FEB7 /* EditContactShareNameViewController.swift */; };
 		34386A51207D0C01009F5D9C /* HomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A4D207D0C01009F5D9C /* HomeViewController.m */; };
 		34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 34386A50207D0C01009F5D9C /* HomeViewCell.m */; };
 		34386A54207D271D009F5D9C /* NeverClearView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34386A53207D271C009F5D9C /* NeverClearView.swift */; };
@@ -632,6 +633,7 @@
 		34330AA11E79686200DF2FB9 /* OWSProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSProgressView.h; sourceTree = "<group>"; };
 		34330AA21E79686200DF2FB9 /* OWSProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProgressView.m; sourceTree = "<group>"; };
 		34382265209A4E3F0094FEB7 /* ApproveContactShareViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ApproveContactShareViewController.swift; path = SignalMessaging/attachments/ApproveContactShareViewController.swift; sourceTree = SOURCE_ROOT; };
+		34382269209B63500094FEB7 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EditContactShareNameViewController.swift; path = SignalMessaging/attachments/EditContactShareNameViewController.swift; sourceTree = SOURCE_ROOT; };
 		34386A4D207D0C01009F5D9C /* HomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeViewController.m; sourceTree = "<group>"; };
 		34386A4E207D0C01009F5D9C /* HomeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewCell.h; sourceTree = "<group>"; };
 		34386A4F207D0C01009F5D9C /* HomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeViewController.h; sourceTree = "<group>"; };
@@ -1602,6 +1604,7 @@
 				344F2498200FD03200CFB4F4 /* AttachmentApprovalViewController.swift */,
 				344F248220069E9B00CFB4F4 /* CountryCodeViewController.h */,
 				344F248320069E9B00CFB4F4 /* CountryCodeViewController.m */,
+				34382269209B63500094FEB7 /* EditContactShareNameViewController.swift */,
 				346129DC1FD5C02900532771 /* LockInteractionController.h */,
 				346129DD1FD5C02900532771 /* LockInteractionController.m */,
 				344F2496200FD03200CFB4F4 /* MessageApprovalViewController.swift */,
@@ -3098,6 +3101,7 @@
 				451F8A481FD715BA005CB9DA /* OWSContactAvatarBuilder.m in Sources */,
 				34382266209A4E400094FEB7 /* ApproveContactShareViewController.swift in Sources */,
 				4503F1C3204711D300CEE724 /* OWS107LegacySounds.m in Sources */,
+				3438226A209B63500094FEB7 /* EditContactShareNameViewController.swift in Sources */,
 				346129A61FD1F09100532771 /* OWSContactsManager.m in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
 				346129D21FD2085A00532771 /* CommonStrings.swift in Sources */,

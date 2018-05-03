@@ -14,7 +14,7 @@ class TappableView: UIView {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("Unimplemented")
     }
