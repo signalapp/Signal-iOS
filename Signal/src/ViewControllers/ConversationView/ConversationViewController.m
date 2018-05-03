@@ -1028,10 +1028,10 @@ typedef enum : NSUInteger {
             [self popKeyBoard];
             break;
         case ConversationViewActionAudioCall:
-            [self audioCallAction];
+            [self startAudioCall];
             break;
         case ConversationViewActionVideoCall:
-            [self videoCallAction];
+            [self startVideoCall];
             break;
     }
 
@@ -1223,7 +1223,7 @@ typedef enum : NSUInteger {
         imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
         callButton.imageEdgeInsets = imageEdgeInsets;
         callButton.accessibilityLabel = NSLocalizedString(@"CALL_LABEL", "Accessibility label for placing call button");
-        [callButton addTarget:self action:@selector(audioCallAction) forControlEvents:UIControlEventTouchUpInside];
+        [callButton addTarget:self action:@selector(startAudioCall) forControlEvents:UIControlEventTouchUpInside];
         callButton.frame = CGRectMake(0,
             0,
             round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
@@ -1358,12 +1358,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - Calls
 
-- (void)audioCallAction
+- (void)startAudioCall
 {
     [self callWithVideo:NO];
 }
 
-- (void)videoCallAction
+- (void)startVideoCall
 {
     [self callWithVideo:YES];
 }
@@ -1881,7 +1881,7 @@ typedef enum : NSUInteger {
     UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *_Nonnull action) {
-                                                           [weakSelf audioCallAction];
+                                                           [weakSelf startAudioCall];
                                                        }];
     [alertController addAction:callAction];
     [alertController addAction:[OWSAlerts cancelAction]];

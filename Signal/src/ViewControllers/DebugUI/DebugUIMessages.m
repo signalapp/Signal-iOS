@@ -3023,7 +3023,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   // TODO: Avatar
                                                   return contact;
                                               }]];
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Long values"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
@@ -3037,7 +3037,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   ];
                                                   return contact;
                                               }]];
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"System Contact w/o Signal"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];
@@ -3050,7 +3050,7 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                   ];
                                                   return contact;
                                               }]];
-    [actions addObject:[self fakeShareContactMessageAction:thread
+    [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"System Contact w. Signal"
                                               contactBlock:^{
                                                   OWSContact *contact = [OWSContact new];

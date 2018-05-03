@@ -168,9 +168,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *organizationName;
 @property (nonatomic, nullable) NSString *displayName;
 
-@property (nonatomic, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
-@property (nonatomic, nullable) NSArray<OWSContactEmail *> *emails;
-@property (nonatomic, nullable) NSArray<OWSContactAddress *> *addresses;
+@property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic) NSArray<OWSContactAddress *> *addresses;
 
 @property (nonatomic, nullable) TSAttachment *avatar;
 @property (nonatomic) BOOL isProfileAvatar;
@@ -180,6 +180,17 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSContact
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _phoneNumbers = @[];
+        _emails = @[];
+        _addresses = @[];
+    }
+
+    return self;
+}
 
 - (void)normalize
 {

@@ -97,9 +97,9 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 @property (nonatomic, readonly, nullable) NSString *organizationName;
 @property (nonatomic, readonly, nullable) NSString *displayName;
 
-@property (nonatomic, readonly, nullable) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
-@property (nonatomic, readonly, nullable) NSArray<OWSContactEmail *> *emails;
-@property (nonatomic, readonly, nullable) NSArray<OWSContactAddress *> *addresses;
+@property (nonatomic, readonly) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
+@property (nonatomic, readonly) NSArray<OWSContactEmail *> *emails;
+@property (nonatomic, readonly) NSArray<OWSContactAddress *> *addresses;
 
 // TODO: This is provisional.
 @property (nonatomic, readonly, nullable) TSAttachment *avatar;

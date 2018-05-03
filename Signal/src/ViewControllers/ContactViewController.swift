@@ -28,7 +28,7 @@ class TappableView: UIView {
     }
 
     func wasTapped(sender: UIGestureRecognizer) {
-        Logger.info("\(self.logTag) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         guard sender.state == .recognized else {
             return
@@ -40,8 +40,6 @@ class TappableView: UIView {
 // MARK: -
 
 class ContactViewController: OWSViewController, CNContactViewControllerDelegate {
-
-    let TAG = "[ContactView]"
 
     enum ContactViewMode {
         case systemContactWithSignal,
@@ -67,10 +65,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     var reachability: Reachability?
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     private let contact: OWSContact
 
     // MARK: - Initializers
@@ -87,18 +81,18 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         super.init(nibName: nil, bundle: nil)
 
-        tryToDetermineMode()
+        updateMode()
 
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.tryToDetermineMode()
+            strongSelf.updateMode()
         }
 
         reachability = Reachability.forInternetConnection()
 
         NotificationCenter.default.addObserver(forName: .reachabilityChanged, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.tryToDetermineMode()
+            strongSelf.updateMode()
         }
     }
 
@@ -113,11 +107,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         UIUtil.applySignalAppearence()
 
-        self.becomeFirstResponder()
-
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
-            strongSelf.tryToDetermineMode()
+            strongSelf.updateMode()
         })
     }
 
@@ -125,8 +117,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         super.viewDidAppear(animated)
 
         UIUtil.applySignalAppearence()
-
-        self.becomeFirstResponder()
     }
 
     private var scrollView: UIScrollView
@@ -147,7 +137,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         hasLoadedView = true
     }
 
-    private func tryToDetermineMode() {
+    private func updateMode() {
         SwiftAssertIsOnMainThread(#function)
 
         guard phoneNumbersForContact().count > 0 else {
@@ -186,20 +176,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         SwiftAssertIsOnMainThread(#function)
 
         var result = [String]()
-        if let phoneNumbers = contact.phoneNumbers {
-            for phoneNumber in phoneNumbers {
-                result.append(phoneNumber.phoneNumber)
-            }
+        for phoneNumber in contact.phoneNumbers {
+            result.append(phoneNumber.phoneNumber)
         }
         return result
-    }
-
-    private func tryToDetermineModeRetry() {
-        // Try again after a minute.
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 60.0) { [weak self] in
-            guard let strongSelf = self else { return }
-            strongSelf.tryToDetermineMode()
-        }
     }
 
     private func updateContent() {
@@ -217,8 +197,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         topView.preservesSuperviewLayoutMargins = true
         rootView.addSubview(topView)
         topView.autoPinEdge(toSuperviewEdge: .top)
-        topView.autoPinEdge(.left, to: .left, of: self.view, withOffset: 0)
-        topView.autoPinEdge(.right, to: .right, of: self.view, withOffset: 0)
+        topView.autoPinEdge(.left, to: .left, of: self.view)
+        topView.autoPinEdge(.right, to: .right, of: self.view)
 
         // TODO: Use actual avatar.
         let avatarSize = CGFloat(100)
@@ -244,7 +224,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         var lastView: UIView = nameLabel
 
-        if let firstPhoneNumber = contact.phoneNumbers?.first {
+        if let firstPhoneNumber = contact.phoneNumbers.first {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = firstPhoneNumber.phoneNumber
             phoneNumberLabel.font = UIFont.ows_dynamicTypeCaption2
@@ -322,10 +302,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         bottomView.layoutMargins = .zero
         bottomView.preservesSuperviewLayoutMargins = false
         rootView.addSubview(bottomView)
-        bottomView.autoPinEdge(.top, to: .bottom, of: topView, withOffset: 0)
+        bottomView.autoPinEdge(.top, to: .bottom, of: topView)
         bottomView.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomView.autoPinEdge(.left, to: .left, of: self.view, withOffset: 0)
-        bottomView.autoPinEdge(.right, to: .right, of: self.view, withOffset: 0)
+        bottomView.autoPinEdge(.left, to: .left, of: self.view)
+        bottomView.autoPinEdge(.right, to: .right, of: self.view)
         bottomView.setContentHuggingVerticalLow()
 
         var lastRow: UIView?
@@ -341,7 +321,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             row.autoSetDimension(.height, toSize: 1)
             row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
             row.autoPinTrailingToSuperviewMargin()
-            row.autoPinEdge(.top, to: .bottom, of: prevRow, withOffset: 0)
+            row.autoPinEdge(.top, to: .bottom, of: prevRow)
             lastRow = row
         }
 
@@ -353,9 +333,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             row.autoPinLeadingToSuperviewMargin()
             row.autoPinTrailingToSuperviewMargin()
             if let lastRow = lastRow {
-                row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 0)
+                row.autoPinEdge(.top, to: .bottom, of: lastRow)
             } else {
-                row.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
+                row.autoPinEdge(toSuperviewEdge: .top)
             }
             lastRow = row
         }
@@ -378,38 +358,34 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //                                   action:#selector(didPressShareContact)))
 //        }
 
-        if let phoneNumbers = contact.phoneNumbers {
-            for phoneNumber in phoneNumbers {
-                // TODO: Try to format the phone number nicely.
-                addRow(createNameValueRow(name: phoneNumber.labelString(),
-                                          value: phoneNumber.phoneNumber,
-                                          actionBlock: {
-                                            guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-                                                owsFail("\(ContactViewController.logTag) could not open phone number.")
-                                                return
-                                            }
-                                            UIApplication.shared.openURL(url as URL)
-                }))
-            }
+        for phoneNumber in contact.phoneNumbers {
+            // TODO: Try to format the phone number nicely.
+            addRow(createNameValueRow(name: phoneNumber.labelString(),
+                                      value: phoneNumber.phoneNumber,
+                                      actionBlock: {
+                                        guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
+                                            owsFail("\(ContactViewController.logTag) could not open phone number.")
+                                            return
+                                        }
+                                        UIApplication.shared.openURL(url as URL)
+            }))
         }
 
-        if let emails = contact.emails {
-            for email in emails {
-                addRow(createNameValueRow(name: email.labelString(),
-                                          value: email.email,
-                                          actionBlock: {
-                                            guard let url = NSURL(string: "mailto:\(email.email)") else {
-                                                owsFail("\(ContactViewController.logTag) could not open email.")
-                                                return
-                                            }
-                                            UIApplication.shared.openURL(url as URL)
-                }))
-            }
+        for email in contact.emails {
+            addRow(createNameValueRow(name: email.labelString(),
+                                      value: email.email,
+                                      actionBlock: {
+                                        guard let url = NSURL(string: "mailto:\(email.email)") else {
+                                            owsFail("\(ContactViewController.logTag) could not open email.")
+                                            return
+                                        }
+                                        UIApplication.shared.openURL(url as URL)
+            }))
         }
 
         // TODO: Should we present addresses here too? How?
 
-        lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
+        lastRow?.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
     private let hMargin = CGFloat(16)
@@ -522,7 +498,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressCreateNewContact(sender: UIGestureRecognizer) {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         guard sender.state == .recognized else {
             return
@@ -531,7 +507,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressAddToExistingContact(sender: UIGestureRecognizer) {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         guard sender.state == .recognized else {
             return
@@ -540,7 +516,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressShareContact(sender: UIGestureRecognizer) {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         guard sender.state == .recognized else {
             return
@@ -549,7 +525,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressSendMessage() {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
@@ -562,7 +538,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressAudioCall() {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
@@ -575,7 +551,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressVideoCall() {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
@@ -588,15 +564,14 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     func didPressInvite() {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         guard MFMessageComposeViewController.canSendText() else {
-            Logger.info("\(TAG) Device cannot send text")
+            Logger.info("\(logTag) Device cannot send text")
             OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
             return
         }
-        let phoneNumbers =
-        phoneNumbersForContact()
+        let phoneNumbers = phoneNumbersForContact()
         guard phoneNumbers.count > 0 else {
             owsFail("\(logTag) no phone numbers.")
             return
@@ -611,12 +586,12 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     private func presentNewContactView() {
         guard contactsManager.supportsContactEditing else {
-            owsFail("\(self.logTag) Contact editing not supported")
+            owsFail("\(logTag) Contact editing not supported")
             return
         }
 
         guard let systemContact = OWSContacts.systemContact(for: contact) else {
-            owsFail("\(self.logTag) Could not derive system contact.")
+            owsFail("\(logTag) Could not derive system contact.")
             return
         }
 
@@ -645,7 +620,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     private func presentSelectAddToExistingContactView() {
         guard contactsManager.supportsContactEditing else {
-            owsFail("\(self.logTag) Contact editing not supported")
+            owsFail("\(logTag) Contact editing not supported")
             return
         }
 
@@ -654,8 +629,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             return
         }
 
-        guard let firstPhoneNumber = contact.phoneNumbers?.first else {
-            owsFail("\(self.logTag) Missing phone number.")
+        guard let firstPhoneNumber = contact.phoneNumbers.first else {
+            owsFail("\(logTag) Missing phone number.")
             return
         }
 
@@ -669,7 +644,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     // MARK: - CNContactViewControllerDelegate
 
     @objc public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         self.navigationController?.popToViewController(self, animated: true)
 
@@ -677,7 +652,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     @objc public func didFinishEditingContact() {
-        Logger.info("\(self.TAG) \(#function)")
+        Logger.info("\(logTag) \(#function)")
 
         self.navigationController?.popToViewController(self, animated: true)
 
