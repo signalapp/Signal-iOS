@@ -3615,17 +3615,20 @@ typedef enum : NSUInteger {
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheetController addAction:gifAction];
 
-    UIAlertAction *chooseContactAction = [UIAlertAction
-        actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON", @"attachment menu option to send contact")
-                  style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
-                    [self chooseContactForSending];
-                }];
-    // TODO - proper image
-    UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_camera_black"];
-    OWSAssert(takeMediaImage);
-    [chooseContactAction setValue:chooseContactImage forKey:@"image"];
-    [actionSheetController addAction:chooseContactAction];
+    if (kIsSendingContactSharesEnabled) {
+        UIAlertAction *chooseContactAction =
+            [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
+                                               @"attachment menu option to send contact")
+                                     style:UIAlertActionStyleDefault
+                                   handler:^(UIAlertAction *_Nonnull action) {
+                                       [self chooseContactForSending];
+                                   }];
+        // TODO - proper image
+        UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+        OWSAssert(takeMediaImage);
+        [chooseContactAction setValue:chooseContactImage forKey:@"image"];
+        [actionSheetController addAction:chooseContactAction];
+    }
 
     [self dismissKeyBoard];
     [self presentViewController:actionSheetController animated:true completion:nil];
