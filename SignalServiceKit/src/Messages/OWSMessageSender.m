@@ -11,6 +11,7 @@
 #import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
+#import "OWSContact.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"
@@ -293,6 +294,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
         __block NSArray<TSAttachmentStream *> *quotedThumbnailAttachments = @[];
+        __block TSAttachmentStream *_Nullable contactShareAvatarAttachment;
 
         // This method will use a read/write transaction. This transaction
         // will block until any open read/write transactions are complete.
@@ -312,6 +314,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
             }
 
+            // MJK TODO - don't generate the avatar attachment until here, when we've committed to sending it.
+            if (message.contactShare.avatarAttachmentId != nil) {
+                //                contactShareAvatarAttachment = [message.contactShare
+                //                createAvatarForUploadWithTransaction:transaction];
+                // TODO generate and save the attachment for upload here.
+                TSAttachment *avatarAttachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
+                if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                    contactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
+                } else {
+                    OWSFail(@"%@ in %s unexpected avatarAttachment: %@",
+                        self.logTag,
+                        __PRETTY_FUNCTION__,
+                        avatarAttachment);
+                }
+            }
+
             // All outgoing messages should be saved at the time they are enqueued.
             [message saveWithTransaction:transaction];
             // When we start a message send, all "failed" recipients should be marked as "sending".
@@ -325,6 +343,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                 dbConnection:self.dbConnection
                                                      success:successHandler
                                                      failure:failureHandler];
+
+        // TODO de-dupe attachment enque logic.
         if (message.hasAttachments) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:message.attachmentIds.firstObject
@@ -347,6 +367,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // TODO put attachment uploads on a (lowly) concurrent queue
             [sendMessageOperation addDependency:uploadQuoteThumbnailOperation];
             [sendingQueue addOperation:uploadQuoteThumbnailOperation];
+        }
+
+        if (contactShareAvatarAttachment != nil) {
+            OWSAssert(message.contactShare);
+            OWSUploadOperation *uploadAvatarOperation =
+                [[OWSUploadOperation alloc] initWithAttachmentId:contactShareAvatarAttachment.uniqueId
+                                                    dbConnection:self.dbConnection];
+
+            // TODO put attachment uploads on a (lowly) concurrent queue
+            [sendMessageOperation addDependency:uploadAvatarOperation];
+            [sendingQueue addOperation:uploadAvatarOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];

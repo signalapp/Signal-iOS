@@ -909,7 +909,8 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
-    OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage];
+    OWSContact *_Nullable contact =
+        [OWSContacts contactForDataMessage:dataMessage relay:envelope.relay transaction:transaction];
 
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -1127,6 +1128,35 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    OWSContact *_Nullable contact = incomingMessage.contactShare;
+    if (contact && contact.avatarAttachmentId) {
+        TSAttachmentPointer *attachmentPointer =
+            [TSAttachmentPointer fetchObjectWithUniqueID:contact.avatarAttachmentId transaction:transaction];
+
+        if (![attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+            OWSFail(@"%@ in %s avatar attachmentPointer was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        } else {
+            OWSAttachmentsProcessor *attachmentProcessor =
+                [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
+                                                            networkManager:self.networkManager];
+
+            DDLogDebug(@"%@ downloading contact avatar for message: %tu", self.logTag, incomingMessage.timestamp);
+            [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
+                transaction:transaction
+                success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                    [self.dbConnection
+                        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                            [incomingMessage touchWithTransaction:transaction];
+                        }];
+                }
+                failure:^(NSError *_Nonnull error) {
+                    DDLogWarn(@"%@ failed to fetch contact avatar for message: %tu with error: %@",
+                        self.logTag,
+                        incomingMessage.timestamp,
+                        error);
+                }];
+        }
+    }
     // In case we already have a read receipt for this new message (this happens sometimes).
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];

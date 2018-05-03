@@ -13,6 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSSignalServiceProtosAttachmentPointer;
 @class TSAttachmentPointer;
 @class YapDatabaseReadWriteTransaction;
 
@@ -78,6 +79,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateWithLazyRestoreComplete;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
+
+#pragma mark - Protobuf
+
++ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)filename
+                                                                 isVoiceMessage:(BOOL)isVoiceMessage;
+
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoWithFilename:(nullable NSString *)filename
+                                                     isVoiceMessage:(BOOL)isVoiceMessage;
 
 @end
 

@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
-@interface OWSAttachmentInfo: MTLModel
+@interface OWSAttachmentInfo : MTLModel
 
 @property (nonatomic, readonly, nullable) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                          contentType:(NSString *)contentType
                       sourceFilename:(NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithAttachment:(TSAttachment *)attachment;
+- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
 @end
 

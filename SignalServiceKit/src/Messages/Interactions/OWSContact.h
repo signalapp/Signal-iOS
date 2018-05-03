@@ -7,10 +7,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
+@class OWSAttachmentInfo;
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosDataMessageContact;
 @class TSAttachment;
+@class TSAttachmentStream;
+@class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
 
 extern BOOL kIsSendingContactSharesEnabled;
@@ -109,8 +112,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, readonly) NSArray<OWSContactEmail *> *emails;
 @property (nonatomic, readonly) NSArray<OWSContactAddress *> *addresses;
 
-// TODO: This is provisional.
-@property (nonatomic, readonly, nullable) TSAttachment *avatar;
+// MJK
+@property (nonatomic, readonly, nullable) NSString *avatarAttachmentId;
+- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)setAvatarAttachmentStream:(TSAttachmentStream *)attachmentStream;
 // "Profile" avatars should _not_ be saved to device contacts.
 @property (nonatomic, readonly) BOOL isProfileAvatar;
 
@@ -160,7 +165,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 #pragma mark - Proto Serialization
 
 + (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
-+ (OWSContact *_Nullable)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
+
++ (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                         relay:(nullable NSString *)relay
+                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

@@ -53,8 +53,9 @@
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
-        
+        TSAttachment *attachment =
+            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
+
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             attachmentPointer = (TSAttachmentPointer *)attachment;
             if (attachmentPointer.state == TSAttachmentPointerStateFailed) {
