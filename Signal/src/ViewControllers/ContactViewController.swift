@@ -733,11 +733,11 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         addAddressPart(address.country)
         let mapAddress = addressParts.joined(separator: ", ")
         guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            owsFail("\(ContactViewController.logTag) could not open email.")
+            owsFail("\(ContactViewController.logTag) could not open address.")
             return
         }
         guard let url = NSURL(string: "http://maps.apple.com/?address=\(escapedMapAddress)") else {
-            owsFail("\(ContactViewController.logTag) could not open email.")
+            owsFail("\(ContactViewController.logTag) could not open address.")
             return
         }
 
