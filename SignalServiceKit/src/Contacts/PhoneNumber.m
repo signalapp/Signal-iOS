@@ -40,7 +40,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     OWSAssert(text != nil);
     OWSAssert(regionCode != nil);
 
-    PhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedUtil];
+    PhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedThreadLocal];
 
     NSError *parseError   = nil;
     NBPhoneNumber *number = [phoneUtil parse:text defaultRegion:regionCode error:&parseError];
@@ -71,7 +71,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
     NSString *_Nullable countryCode = nil;
 #if TARGET_OS_IPHONE
-    countryCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil countryCodeByCarrier];
+    countryCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil countryCodeByCarrier];
 
     if ([countryCode isEqualToString:@"ZZ"]) {
         countryCode = [locale objectForKey:NSLocaleCountryCode];
@@ -164,7 +164,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 + (NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString {
-    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedUtil].nbPhoneNumberUtil;
+    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil;
     NSString *regionCode =
         [phoneUtil getRegionCodeForCountryCode:@([[countryCodeString substringFromIndex:1] integerValue])];
     return regionCode;
@@ -381,11 +381,11 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 }
 
 - (BOOL)isValid {
-    return [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil isValidNumber:self.phoneNumber];
+    return [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil isValidNumber:self.phoneNumber];
 }
 
 - (NSString *)localizedDescriptionForUser {
-    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedUtil].nbPhoneNumberUtil;
+    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil;
 
     NSError *formatError = nil;
     NSString *pretty =
