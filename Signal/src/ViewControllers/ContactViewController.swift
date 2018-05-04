@@ -283,7 +283,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         let nameLabel = UILabel()
         nameLabel.text = contact.displayName
-        nameLabel.font = UIFont.ows_dynamicTypeTitle2.ows_bold()
+        nameLabel.font = UIFont.ows_dynamicTypeTitle1
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.textAlignment = .center
@@ -294,10 +294,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         var lastView: UIView = nameLabel
 
-        if let firstPhoneNumber = contact.phoneNumbers.first {
+        for phoneNumber in systemContactsWithSignalAccountsForContact() {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber.phoneNumber)
-            phoneNumberLabel.font = UIFont.ows_dynamicTypeCaption2
+            phoneNumberLabel.font = UIFont.ows_dynamicTypeFootnote
             phoneNumberLabel.textColor = UIColor.black
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
             phoneNumberLabel.textAlignment = .center
@@ -340,7 +340,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         case .systemContactWithoutSignal:
             // Show invite button for system contacts without a Signal account.
             let inviteButton = createLargePillButton(text: NSLocalizedString("ACTION_INVITE",
-                                                                                          comment: "Label for 'invite' button in contact view."),
+                                                                             comment: "Label for 'invite' button in contact view."),
                                                      actionBlock: { [weak self] _ in
                                                         guard let strongSelf = self else { return }
                                                         strongSelf.didPressInvite()
@@ -351,7 +351,18 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             inviteButton.autoPinTrailingToSuperviewMargin(withInset: 55)
             lastView = inviteButton
         case .nonSystemContact:
-            // Show no action buttons for contacts not in user's device contacts.
+            // Show "add to contacts" button for non-system contacts.
+            let addToContactsButton = createLargePillButton(text: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+                                                                                    comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
+                                                     actionBlock: { [weak self] _ in
+                                                        guard let strongSelf = self else { return }
+                                                        strongSelf.didPressAddToContacts()
+            })
+            topView.addSubview(addToContactsButton)
+            addToContactsButton.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
+            addToContactsButton.autoPinLeadingToSuperviewMargin(withInset: 55)
+            addToContactsButton.autoPinTrailingToSuperviewMargin(withInset: 55)
+            lastView = addToContactsButton
             break
         case .noPhoneNumber:
             // Show no action buttons for contacts without a phone number.
@@ -409,16 +420,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             lastRow = row
         }
 
-        if viewMode == .nonSystemContact {
-            addRow(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
-                                                               comment: "Label for 'new contact' button in conversation settings view."),
-                                   action: #selector(didPressCreateNewContact)))
-
-            addRow(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                               comment: "Label for 'new contact' button in conversation settings view."),
-                                   action: #selector(didPressAddToExistingContact)))
-        }
-
         // TODO: Not designed yet.
 //        if viewMode == .systemContactWithSignal ||
 //           viewMode == .systemContactWithoutSignal {
@@ -430,7 +431,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         for phoneNumber in contact.phoneNumbers {
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
 
-            addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
+            addRow(createSimpleFieldRow(name: phoneNumber.localizedLabel(),
                                       value: formattedPhoneNumber,
                                       actionBlock: {
                                         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
@@ -442,18 +443,25 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         }
 
         for email in contact.emails {
-            addRow(createNameValueRow(name: email.localizedLabel(),
-                                      value: email.email,
-                                      actionBlock: {
-                                        guard let url = NSURL(string: "mailto:\(email.email)") else {
-                                            owsFail("\(ContactViewController.logTag) could not open email.")
-                                            return
-                                        }
-                                        UIApplication.shared.openURL(url as URL)
+            addRow(createSimpleFieldRow(name: email.localizedLabel(),
+                                        value: email.email,
+                                        actionBlock: {
+                                            guard let url = NSURL(string: "mailto:\(email.email)") else {
+                                                owsFail("\(ContactViewController.logTag) could not open email.")
+                                                return
+                                            }
+                                            UIApplication.shared.openURL(url as URL)
             }))
         }
 
-        // TODO: Should we present addresses here too? How?
+        for address in contact.addresses {
+            addRow(createAddressFieldRow(name: address.localizedLabel(),
+                                        address: address,
+                                        actionBlock: { [weak self] _ in
+                                            guard let strongSelf = self else { return }
+                                            strongSelf.didPressAddress(address: address)
+            }))
+        }
 
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom)
 
@@ -483,33 +491,108 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         return row
     }
 
-    private func createNameValueRow(name: String, value: String?, actionBlock : @escaping () -> Void) -> UIView {
+    private func createSimpleFieldRow(name: String, value: String?, actionBlock : @escaping () -> Void) -> UIView {
         let row = TappableView(actionBlock: actionBlock)
         row.layoutMargins.left = 0
         row.layoutMargins.right = 0
 
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        row.addSubview(stackView)
+        stackView.autoPinTopToSuperviewMargin()
+        stackView.autoPinBottomToSuperviewMargin()
+        stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+
         let nameLabel = UILabel()
         nameLabel.text = name
-        nameLabel.font = UIFont.ows_dynamicTypeCaption1
+        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
-        row.addSubview(nameLabel)
-        nameLabel.autoPinTopToSuperviewMargin()
-        nameLabel.autoPinLeadingToSuperviewMargin(withInset: hMargin)
-        nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+        stackView.addArrangedSubview(nameLabel)
 
         let valueLabel = UILabel()
         valueLabel.text = value
-        valueLabel.font = UIFont.ows_dynamicTypeCaption1
+        valueLabel.font = UIFont.ows_dynamicTypeBody
         valueLabel.textColor = UIColor.ows_materialBlue
         valueLabel.lineBreakMode = .byTruncatingTail
-        row.addSubview(valueLabel)
-        valueLabel.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: 3)
-        valueLabel.autoPinBottomToSuperviewMargin()
-        valueLabel.autoPinLeadingToSuperviewMargin(withInset: hMargin)
-        valueLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+        stackView.addArrangedSubview(valueLabel)
 
-        // TODO: Should there be a disclosure icon here?
+        return row
+    }
+
+    private func createAddressFieldRow(name: String, address: OWSContactAddress, actionBlock : @escaping () -> Void) -> UIView {
+        let row = TappableView(actionBlock: actionBlock)
+        row.layoutMargins.left = 0
+        row.layoutMargins.right = 0
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        stackView.layoutMargins = .zero
+        row.addSubview(stackView)
+        stackView.autoPinTopToSuperviewMargin()
+        stackView.autoPinBottomToSuperviewMargin()
+        stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
+        stackView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+
+        let nameLabel = UILabel()
+        nameLabel.text = name
+        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
+        nameLabel.textColor = UIColor.black
+        nameLabel.lineBreakMode = .byTruncatingTail
+        stackView.addArrangedSubview(nameLabel)
+
+        let tryToAddNameValue: ((String, String?) -> Void) = { (propertyName, propertyValue) in
+            guard let propertyValue = propertyValue else {
+                return
+            }
+            guard propertyValue.count > 0 else {
+                return
+            }
+
+            let row = UIStackView()
+            row.axis = .horizontal
+            row.alignment = .leading
+            row.spacing = 10
+            row.layoutMargins = .zero
+
+            let nameLabel = UILabel()
+            nameLabel.text = propertyName
+            nameLabel.font = UIFont.ows_dynamicTypeBody
+            nameLabel.textColor = UIColor.black
+            nameLabel.lineBreakMode = .byTruncatingTail
+            row.addArrangedSubview(nameLabel)
+            nameLabel.setContentHuggingHigh()
+            nameLabel.setCompressionResistanceHigh()
+
+            let valueLabel = UILabel()
+            valueLabel.text = propertyValue
+            valueLabel.font = UIFont.ows_dynamicTypeBody
+            valueLabel.textColor = UIColor.ows_materialBlue
+            valueLabel.lineBreakMode = .byTruncatingTail
+            row.addArrangedSubview(valueLabel)
+
+            stackView.addArrangedSubview(row)
+        }
+
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
+                          address.street)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
+                          address.pobox)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
+                          address.neighborhood)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
+                          address.city)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
+                          address.region)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
+                          address.postcode)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
+                          address.country)
 
         return row
     }
@@ -555,7 +638,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         let label = UILabel()
         label.text = text
-        label.font = UIFont.ows_dynamicTypeCaption1
+        label.font = UIFont.ows_dynamicTypeBody
         label.textColor = UIColor.ows_materialBlue
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
@@ -569,21 +652,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         return button
     }
 
-    func didPressCreateNewContact(sender: UIGestureRecognizer) {
+    func didPressCreateNewContact() {
         Logger.info("\(logTag) \(#function)")
 
-        guard sender.state == .recognized else {
-            return
-        }
         presentNewContactView()
     }
 
-    func didPressAddToExistingContact(sender: UIGestureRecognizer) {
+    func didPressAddToExistingContact() {
         Logger.info("\(logTag) \(#function)")
 
-        guard sender.state == .recognized else {
-            return
-        }
         presentSelectAddToExistingContactView()
     }
 
@@ -652,6 +729,26 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
+    func didPressAddToContacts() {
+        Logger.info("\(logTag) \(#function)")
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
+                                                                     comment: "Label for 'new contact' button in conversation settings view."),
+                                            style: .default) { _ in
+                                                self.didPressCreateNewContact()
+        })
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                                                                     comment: "Label for 'new contact' button in conversation settings view."),
+                                            style: .default) { _ in
+                                                self.didPressAddToExistingContact()
+        })
+        actionSheet.addAction(OWSAlerts.cancelAction)
+
+        self.present(actionSheet, animated: true)
+    }
+
     private func showPhoneNumberPicker(phoneNumbers: [String], completion :@escaping ((String) -> Void)) {
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -671,6 +768,39 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         Logger.info("\(self.logTag) \(#function)")
 
         self.navigationController?.popViewController(animated: true)
+    }
+
+    func didPressAddress(address: OWSContactAddress) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        // Open address in Apple Maps app.
+        var addressParts = [String]()
+        let addAddressPart: ((String?) -> Void) = { (part) in
+            guard let part = part else {
+                return
+            }
+            guard part.count > 0 else {
+                return
+            }
+            addressParts.append(part)
+        }
+        addAddressPart(address.street)
+        addAddressPart(address.neighborhood)
+        addAddressPart(address.city)
+        addAddressPart(address.region)
+        addAddressPart(address.postcode)
+        addAddressPart(address.country)
+        let mapAddress = addressParts.joined(separator: ", ")
+        guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            owsFail("\(ContactViewController.logTag) could not open email.")
+            return
+        }
+        guard let url = NSURL(string: "http://maps.apple.com/?address=\(escapedMapAddress)") else {
+            owsFail("\(ContactViewController.logTag) could not open email.")
+            return
+        }
+
+        UIApplication.shared.openURL(url as URL)
     }
 
     // MARK: -
