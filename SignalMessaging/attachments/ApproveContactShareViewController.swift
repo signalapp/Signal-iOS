@@ -339,9 +339,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         let fieldsView = createFieldsView()
 
-        // See notes on how to use UIScrollView with iOS Auto Layout:
-        //
-        // https://developer.apple.com/library/content/releasenotes/General/RN-iOSSDK-6_0/
         scrollView.addSubview(fieldsView)
         fieldsView.autoPinLeadingToSuperviewMargin()
         fieldsView.autoPinTrailingToSuperviewMargin()
@@ -437,8 +434,11 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         // Icon
         let iconName = (self.view.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-        let iconImage = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
-        let iconView = UIImageView(image: iconImage)
+        guard let iconImage = UIImage(named: iconName) else {
+            owsFail("\(logTag) missing icon.")
+            return row
+        }
+        let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
         iconView.contentMode = .scaleAspectFit
         iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
         stackView.addArrangedSubview(iconView)
@@ -457,7 +457,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         label.font = UIFont.ows_dynamicTypeCaption1
         label.textColor = UIColor.ows_materialBlue
         label.lineBreakMode = .byTruncatingTail
-        //        label.textAlignment = .center
         return label
     }
 
@@ -467,24 +466,17 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         label.font = UIFont.ows_dynamicTypeCaption1
         label.textColor = UIColor.ows_materialBlue
         label.lineBreakMode = .byTruncatingTail
-        //        label.textAlignment = .center
         return label
     }
 
     func previewView(forAddress address: OWSContactAddress) -> UIView {
-        let previewView = UIView.container()
-        var lastRow: UIView?
-        let addRow: ((UIView) -> Void) = { (row) in
-            previewView.addSubview(row)
-            row.autoPinLeadingToSuperviewMargin()
-            row.autoPinTrailingToSuperviewMargin()
-            if let lastRow = lastRow {
-                row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 0)
-            } else {
-                row.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            }
-            lastRow = row
-        }
+
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 0
+        stackView.layoutMargins = .zero
+
         let tryToAddNameValue: ((String, String?) -> Void) = { (name, value) in
             guard let value = value else {
                 return
@@ -515,7 +507,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             valueLabel.autoPinTrailingToSuperviewMargin()
             valueLabel.autoPinHeightToSuperview()
 
-            addRow(row)
+            stackView.addArrangedSubview(row)
         }
 
         tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
@@ -533,9 +525,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
                           address.country)
 
-        lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
-
-        return previewView
+        return stackView
     }
 
     // MARK: -
