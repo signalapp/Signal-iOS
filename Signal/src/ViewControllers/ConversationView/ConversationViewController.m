@@ -4958,19 +4958,19 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     BOOL isProfileAvatar = NO;
     UIImage *_Nullable avatarImage = contact.image;
-    if (!avatarImage) {
-        NSString *firstSignalId = contact.textSecureIdentifiers.firstObject;
-        if (firstSignalId) {
-            avatarImage = [self.contactsManager profileImageForPhoneIdentifier:firstSignalId];
-            if (avatarImage) {
-                isProfileAvatar = YES;
-            }
+    for (NSString *recipientId in contact.textSecureIdentifiers) {
+        if (avatarImage) {
+            break;
+        }
+        avatarImage = [self.contactsManager profileImageForPhoneIdentifier:recipientId];
+        if (avatarImage) {
+            isProfileAvatar = YES;
         }
     }
+    contactShareRecord.isProfileAvatar = isProfileAvatar;
 
     ContactShareViewModel *contactShare =
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImage:avatarImage];
-    contactShareRecord.isProfileAvatar = isProfileAvatar;
 
     // TODO: We should probably show this in the same navigation view controller.
     ApproveContactShareViewController *approveContactShare =

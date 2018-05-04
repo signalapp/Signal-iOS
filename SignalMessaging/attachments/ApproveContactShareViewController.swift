@@ -97,7 +97,15 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
 // MARK: -
 
+protocol ContactShareFieldViewDelegate: class {
+    func contactShareFieldViewDidChangeSelectedState()
+}
+
+// MARK: -
+
 class ContactShareFieldView: UIStackView {
+
+    weak var delegate: ContactShareFieldViewDelegate?
 
     let field: ContactShareField
 
@@ -112,9 +120,10 @@ class ContactShareFieldView: UIStackView {
         fatalError("Unimplemented")
     }
 
-    required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView)) {
+    required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
         self.field = field
         self.previewViewBlock = previewViewBlock
+        self.delegate = delegate
 
         super.init(frame: CGRect.zero)
 
@@ -161,6 +170,10 @@ class ContactShareFieldView: UIStackView {
         }
         field.setIsIncluded(!field.isIncluded())
         checkbox.isSelected = field.isIncluded()
+
+        if let delegate = delegate {
+            delegate.contactShareFieldViewDidChangeSelectedState()
+        }
     }
 }
 
@@ -168,7 +181,8 @@ class ContactShareFieldView: UIStackView {
 
 // TODO: Rename to ContactShareApprovalViewController
 @objc
-public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate {
+public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
+
     weak var delegate: ApproveContactShareViewControllerDelegate?
 
     let contactsManager: OWSContactsManager
@@ -208,21 +222,26 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             let field = ContactSharePhoneNumber(phoneNumber)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber, layoutMargins: previewInsets, actionBlock: nil)
-            })
+            },
+                                                  delegate: self)
             fieldViews.append(fieldView)
         }
+
         for email in contactShare.emails {
             let field = ContactShareEmail(email)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forEmail: email, layoutMargins: previewInsets, actionBlock: nil)
-            })
+            },
+                                                  delegate: self)
             fieldViews.append(fieldView)
         }
+
         for address in contactShare.addresses {
             let field = ContactShareAddress(address)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forAddress: address, layoutMargins: previewInsets, actionBlock: nil)
-            })
+            },
+                                                  delegate: self)
             fieldViews.append(fieldView)
         }
 
@@ -264,7 +283,16 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // TODO: Surface error with resolution to user if not.
     func canShareContact() -> Bool {
-        return contactShare.ows_isValid
+        return contactShare.ows_isValid && isAtLeastOneFieldSelected()
+    }
+
+    func isAtLeastOneFieldSelected() -> Bool {
+        for fieldView in fieldViews {
+            if fieldView.field.isIncluded() {
+                return true
+            }
+        }
+        return false
     }
 
     func updateNavigationBar() {
@@ -384,6 +412,9 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     // MARK: -
 
     func didPressSendButton() {
+        SwiftAssertIsOnMainThread(#function)
+        assert(canShareContact())
+
         Logger.info("\(logTag) \(#function)")
 
         guard let delegate = self.delegate else {
@@ -422,6 +453,12 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         nameLabel.text = contactShare.displayName
 
+        self.updateNavigationBar()
+    }
+
+    // MARK: - ContactShareFieldViewDelegate
+
+    public func contactShareFieldViewDidChangeSelectedState() {
         self.updateNavigationBar()
     }
 }
