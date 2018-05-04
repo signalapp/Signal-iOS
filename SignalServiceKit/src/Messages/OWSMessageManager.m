@@ -730,7 +730,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-    [[[TSInfoMessage alloc] initWithTimestamp:envelope.timestamp
+    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
@@ -772,7 +772,7 @@ NS_ASSUME_NONNULL_BEGIN
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
     NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
     OWSDisappearingConfigurationUpdateInfoMessage *message =
-        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:envelope.timestamp
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:name];
@@ -954,7 +954,7 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
 
-                [[[TSInfoMessage alloc] initWithTimestamp:timestamp
+                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  inThread:newGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
@@ -972,7 +972,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *nameString = [self.contactsManager displayNameForPhoneIdentifier:envelope.source];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
-                [[[TSInfoMessage alloc] initWithTimestamp:timestamp
+                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
