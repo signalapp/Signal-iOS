@@ -121,6 +121,9 @@ public enum ContactStoreAuthorizationStatus {
 public class SystemContactsFetcher: NSObject {
 
     private let TAG = "[SystemContactsFetcher]"
+
+    private let serialQueue = DispatchQueue(label: "SystemContactsFetcherQueue")
+
     var lastContactUpdateHash: Int?
     var lastDelegateNotificationDate: Date?
     let contactStoreAdapter: ContactsFrameworkContactStoreAdaptee
@@ -280,7 +283,7 @@ public class SystemContactsFetcher: NSObject {
         systemContactsHaveBeenRequestedAtLeastOnce = true
         setupObservationIfNecessary()
 
-        DispatchQueue.global().async {
+        serialQueue.async {
 
             Logger.info("\(self.TAG) fetching contacts")
 
