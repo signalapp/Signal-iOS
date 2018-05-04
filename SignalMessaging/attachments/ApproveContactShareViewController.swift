@@ -179,6 +179,7 @@ class ContactShareFieldView: UIView {
 
 // MARK: -
 
+// TODO: Rename to ContactShareApprovalViewController
 @objc
 public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate {
     weak var delegate: ApproveContactShareViewControllerDelegate?

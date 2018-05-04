@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)audioIconHSpacing
 {
-    return 10.f;
+    return 8.f;
 }
 
 + (CGFloat)audioIconVMargin

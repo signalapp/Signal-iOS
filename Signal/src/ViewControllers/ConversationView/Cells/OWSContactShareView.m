@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)iconHSpacing
 {
-    return 10.f;
+    return 8.f;
 }
 
 + (CGFloat)iconVMargin
