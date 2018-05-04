@@ -146,6 +146,9 @@ public class SystemContactsFetcher: NSObject {
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
+    private var isFetching = false
+    private var hasQueuedFetch = false
+
     override init() {
         self.contactStoreAdapter = ContactsFrameworkContactStoreAdaptee()
 
@@ -232,6 +235,7 @@ public class SystemContactsFetcher: NSObject {
     @objc
     public func fetchOnceIfAlreadyAuthorized() {
         SwiftAssertIsOnMainThread(#function)
+
         guard authorizationStatus == .authorized else {
             return
         }
@@ -269,11 +273,25 @@ public class SystemContactsFetcher: NSObject {
             Logger.error("background task time ran out contacts fetch completed.")
         })
 
+        guard !isFetching else {
+            Logger.info("\(self.TAG) queuing contact fetch; contact fetch already in flight.")
+            hasQueuedFetch = true
+            return
+        }
+        isFetching = true
+
         // Ensure completion is invoked on main thread.
         let completion: (Error?) -> Void = { error in
             DispatchMainThreadSafe({
+                self.isFetching = false
+
                 completionParam?(error)
                 backgroundTask = nil
+
+                if self.hasQueuedFetch {
+                    self.hasQueuedFetch = false
+                    self.fetchOnceIfAlreadyAuthorized()
+                }
             })
         }
 
