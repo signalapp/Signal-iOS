@@ -163,6 +163,7 @@
 		3478506C1FD9B78A007B8332 /* NoopNotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */; };
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		348BB254209CD4B80047AEC2 /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB253209CD4B80047AEC2 /* ContactFieldView.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
@@ -759,6 +760,7 @@
 		347850681FD9B78A007B8332 /* NoopNotificationsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoopNotificationsManager.swift; sourceTree = "<group>"; };
 		3478506F1FDAEB16007B8332 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
+		348BB253209CD4B80047AEC2 /* ContactFieldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactFieldView.swift; path = SignalMessaging/attachments/ContactFieldView.swift; sourceTree = SOURCE_ROOT; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
@@ -1602,6 +1604,7 @@
 			children = (
 				34382265209A4E3F0094FEB7 /* ApproveContactShareViewController.swift */,
 				344F2498200FD03200CFB4F4 /* AttachmentApprovalViewController.swift */,
+				348BB253209CD4B80047AEC2 /* ContactFieldView.swift */,
 				344F248220069E9B00CFB4F4 /* CountryCodeViewController.h */,
 				344F248320069E9B00CFB4F4 /* CountryCodeViewController.m */,
 				34382269209B63500094FEB7 /* EditContactShareNameViewController.swift */,
@@ -3057,6 +3060,7 @@
 				346129E61FD5C0C600532771 /* OWSDatabaseMigrationRunner.m in Sources */,
 				346129AB1FD1F0EE00532771 /* OWSFormat.m in Sources */,
 				344F249C200FD03300CFB4F4 /* AttachmentApprovalViewController.swift in Sources */,
+				348BB254209CD4B80047AEC2 /* ContactFieldView.swift in Sources */,
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				347850591FD9972E007B8332 /* SwiftSingletons.swift in Sources */,
 				344F248720069ECB00CFB4F4 /* ModalActivityIndicatorViewController.swift in Sources */,

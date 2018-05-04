@@ -349,51 +349,15 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     private func createFieldsView() -> UIView {
         SwiftAssertIsOnMainThread(#function)
 
-        let fieldsView = UIView.container()
-        fieldsView.layoutMargins = .zero
-        fieldsView.preservesSuperviewLayoutMargins = false
+        var rows = [UIView]()
 
-        var lastRow: UIView?
-
-        let addSpacerRow = {
-            guard let prevRow = lastRow else {
-                owsFail("\(self.logTag) missing last row")
-                return
-            }
-            let row = UIView()
-            row.backgroundColor = UIColor(rgbHex: 0xdedee1)
-            fieldsView.addSubview(row)
-            row.autoSetDimension(.height, toSize: 1)
-            row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
-            row.autoPinTrailingToSuperviewMargin()
-            row.autoPinEdge(.top, to: .bottom, of: prevRow, withOffset: 0)
-            lastRow = row
-        }
-
-        let addRow: ((UIView) -> Void) = { (row) in
-            if lastRow != nil {
-                addSpacerRow()
-            }
-            fieldsView.addSubview(row)
-            row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
-            row.autoPinTrailingToSuperviewMargin(withInset: self.hMargin)
-            if let lastRow = lastRow {
-                row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 0)
-            } else {
-                row.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
-            }
-            lastRow = row
-        }
-
-        addRow(createNameRow())
+        rows.append(createNameRow())
 
         for fieldView in fieldViews {
-            addRow(fieldView)
+            rows.append(fieldView)
         }
 
-        lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
-
-        return fieldsView
+        return ContactFieldView(rows: rows, hMargin: hMargin)
     }
 
     private let hMargin = CGFloat(16)
