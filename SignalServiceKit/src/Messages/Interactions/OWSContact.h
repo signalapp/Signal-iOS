@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class YapDatabaseReadWriteTransaction;
 
+extern BOOL kIsSendingContactSharesEnabled;
+
 typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
     OWSContactPhoneType_Home = 1,
     OWSContactPhoneType_Mobile,

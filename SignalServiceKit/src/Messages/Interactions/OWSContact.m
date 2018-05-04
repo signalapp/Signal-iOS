@@ -14,6 +14,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+BOOL kIsSendingContactSharesEnabled = YES;
+
 @interface OWSContactPhoneNumber ()
 
 @property (nonatomic) OWSContactPhoneType phoneType;
