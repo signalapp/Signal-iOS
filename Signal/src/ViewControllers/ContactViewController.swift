@@ -134,7 +134,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         super.loadView()
 
         self.view.preservesSuperviewLayoutMargins = false
-        self.view.backgroundColor = UIColor(rgbHex: 0xefeff4)
+        self.view.backgroundColor = heroBackgroundColor()
 
         updateContent()
 
@@ -222,9 +222,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         let fieldsView = createFieldsView()
 
-        // See notes on how to use UIScrollView with iOS Auto Layout:
-        //
-        // https://developer.apple.com/library/content/releasenotes/General/RN-iOSSDK-6_0/
         scrollView.addSubview(fieldsView)
         fieldsView.autoPinLeadingToSuperviewMargin()
         fieldsView.autoPinTrailingToSuperviewMargin()
@@ -232,11 +229,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         fieldsView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
+    private func heroBackgroundColor() -> UIColor {
+        return UIColor(rgbHex: 0xefeff4)
+    }
+
     private func createTopView() -> UIView {
         SwiftAssertIsOnMainThread(#function)
 
         let topView = UIView.container()
-        topView.backgroundColor = UIColor(rgbHex: 0xefeff4)
+        topView.backgroundColor = heroBackgroundColor()
         topView.preservesSuperviewLayoutMargins = false
 
         // Back Button
@@ -422,8 +423,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //        }
 
         for phoneNumber in contact.phoneNumbers {
-            let formattedPhoneNumber =
-        PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber.phoneNumber)
+            let formattedPhoneNumber = PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber.phoneNumber)
 
             addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
                                       value: formattedPhoneNumber,
