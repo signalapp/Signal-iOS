@@ -54,9 +54,7 @@ class ContactSharePhoneNumber: ContactShareField {
         assert(isIncluded())
 
         var values = [OWSContactPhoneNumber]()
-        if let oldValues = contact.phoneNumbers {
-            values += oldValues
-        }
+        values += contact.phoneNumbers
         values.append(value)
         contact.phoneNumbers = values
     }
@@ -82,9 +80,7 @@ class ContactShareEmail: ContactShareField {
         assert(isIncluded())
 
         var values = [OWSContactEmail]()
-        if let oldValues = contact.emails {
-            values += oldValues
-        }
+        values += contact.emails
         values.append(value)
         contact.emails = values
     }
@@ -110,9 +106,7 @@ class ContactShareAddress: ContactShareField {
         assert(isIncluded())
 
         var values = [OWSContactAddress]()
-        if let oldValues = contact.addresses {
-            values += oldValues
-        }
+        values += contact.addresses
         values.append(value)
         contact.addresses = values
     }
@@ -237,37 +231,29 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         // TODO: Avatar
 
-        if let phoneNumbers = contactShare.phoneNumbers {
-            for phoneNumber in phoneNumbers {
-                let field = ContactSharePhoneNumber(phoneNumber)
-                let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                    guard let strongSelf = self else { return UIView() }
-                    return strongSelf.previewView(forPhoneNumber: phoneNumber)
-                })
-                fieldViews.append(fieldView)
-            }
+        for phoneNumber in contactShare.phoneNumbers {
+            let field = ContactSharePhoneNumber(phoneNumber)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
+                guard let strongSelf = self else { return UIView() }
+                return strongSelf.previewView(forPhoneNumber: phoneNumber)
+            })
+            fieldViews.append(fieldView)
         }
-
-        if let emails = contactShare.emails {
-            for email in emails {
-                let field = ContactShareEmail(email)
-                let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                    guard let strongSelf = self else { return UIView() }
-                    return strongSelf.previewView(forEmail: email)
-                })
-                fieldViews.append(fieldView)
-            }
+        for email in contactShare.emails {
+            let field = ContactShareEmail(email)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
+                guard let strongSelf = self else { return UIView() }
+                return strongSelf.previewView(forEmail: email)
+            })
+            fieldViews.append(fieldView)
         }
-
-        if let addresses = contactShare.addresses {
-            for address in addresses {
-                let field = ContactShareAddress(address)
-                let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                    guard let strongSelf = self else { return UIView() }
-                    return strongSelf.previewView(forAddress: address)
-                })
-                fieldViews.append(fieldView)
-            }
+        for address in contactShare.addresses {
+            let field = ContactShareAddress(address)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
+                guard let strongSelf = self else { return UIView() }
+                return strongSelf.previewView(forAddress: address)
+            })
+            fieldViews.append(fieldView)
         }
 
         self.fieldViews = fieldViews
@@ -467,7 +453,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     func previewView(forPhoneNumber phoneNumber: OWSContactPhoneNumber) -> UIView {
         let label = UILabel()
-        label.text = PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber.phoneNumber)
+        label.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
         label.font = UIFont.ows_dynamicTypeCaption1
         label.textColor = UIColor.ows_materialBlue
         label.lineBreakMode = .byTruncatingTail
