@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1) {
+    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1 && !outgoingMessage.contactShare) {
         OWSFail(@"Ignoring message transcript for empty message.");
         return;
     }
