@@ -72,10 +72,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageWithAttachment:(SignalAttachment *)attachment
                                         inThread:(TSThread *)thread
                                 quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                    contactShare:(nullable OWSContact *)contactShare
                                    messageSender:(OWSMessageSender *)messageSender
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;
+
++ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContact *)contactShare
+                                          inThread:(TSThread *)thread
+                                     messageSender:(OWSMessageSender *)messageSender
+                                        completion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
 // This method will create and/or remove any offers and indicators
 // necessary for this thread.  This includes:
