@@ -102,10 +102,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         UIUtil.applySignalAppearence()
 
-        if let navigationController = self.navigationController {
-            owsFail("\(logTag) missing navigationController")
-            navigationController.isNavigationBarHidden = true
-        }
+        navigationController?.isNavigationBarHidden = true
 
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -122,10 +119,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let navigationController = self.navigationController {
-            owsFail("\(logTag) missing navigationController")
-            navigationController.isNavigationBarHidden = false
-        }
+        navigationController?.isNavigationBarHidden = false
     }
 
     override func viewDidDisappear(_ animated: Bool) {
