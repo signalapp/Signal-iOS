@@ -27,6 +27,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface TSIncomingMessage (DebugUI)
+
+@property (nonatomic, getter=wasRead) BOOL read;
+
+@end
+
 @interface TSOutgoingMessage (PostDatingDebug)
 
 - (void)setReceivedAtTimestamp:(uint64_t)value;
@@ -232,6 +238,10 @@ NS_ASSUME_NONNULL_BEGIN
                               @"%@ Failed to send Request Group Info message with error: %@", self.logTag, error);
                       }];
               }],
+        [OWSTableItem itemWithTitle:@"Message with stalled timer"
+                        actionBlock:^{
+                            [DebugUIMessages createDisappearingMessagesWhichFailedToStartInThread:thread];
+                        }],
         [OWSTableItem itemWithTitle:@"Inject 10 fake incoming messages"
                         actionBlock:^{
                             [DebugUIMessages injectFakeIncomingMessages:10 thread:thread];
@@ -4153,6 +4163,24 @@ typedef OWSContact * (^OWSContactBlock)(void);
             }
         }
     }];
+}
+
++ (void)createDisappearingMessagesWhichFailedToStartInThread:(TSThread *)thread
+{
+    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    TSIncomingMessage *message = [[TSIncomingMessage alloc]
+        initIncomingMessageWithTimestamp:now
+                                inThread:thread
+                                authorId:thread.recipientIdentifiers.firstObject
+                          sourceDeviceId:0
+                             messageBody:[NSString stringWithFormat:@"Should disappear 60s after %tu", now]
+                           attachmentIds:[NSMutableArray new]
+                        expiresInSeconds:60
+                           quotedMessage:nil
+                            contactShare:nil];
+    // private setter to avoid starting expire machinery.
+    message.read = YES;
+    [message save];
 }
 
 + (void)testIndicScriptsInThread:(TSThread *)thread

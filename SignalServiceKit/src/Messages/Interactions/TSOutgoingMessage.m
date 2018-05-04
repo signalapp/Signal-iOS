@@ -391,7 +391,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return NO;
 }
 
-- (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
     // (which could never occur if one group member is unregistered) or only wait until

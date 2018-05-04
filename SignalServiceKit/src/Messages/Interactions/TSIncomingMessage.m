@@ -118,7 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     return OWSInteractionType_IncomingMessage;
 }
 
-- (BOOL)shouldStartExpireTimer:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *_Nullable attachment =
