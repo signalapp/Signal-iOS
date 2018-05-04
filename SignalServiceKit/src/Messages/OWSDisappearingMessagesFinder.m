@@ -7,6 +7,7 @@
 #import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
+#import "TSOutgoingMessage.h"
 #import "TSThread.h"
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
@@ -60,6 +61,10 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                               object);
                                           return;
                                       }
+                                      
+                                      // We'll need to update if we ever support expiring other message types
+                                      OWSAssert([object isKindOfClass:[TSOutgoingMessage class]] || [object isKindOfClass:[TSIncomingMessage class]]);
+                                      
                                       TSMessage *message = (TSMessage *)object;
                                       if ([message shouldStartExpireTimerWithTransaction:transaction]) {
                                           if ([message isKindOfClass:[TSIncomingMessage class]]) {
@@ -67,9 +72,6 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                               if (!incomingMessage.wasRead) {
                                                   return;
                                               }
-                                          } else {
-                                              // update if we ever support other disappearing message types
-                                              OWSProdLogAndFail([message isKindOfClass:[TSOutgoingMessage class]]);
                                           }
                                           [messageIds addObject:key];
                                       }
