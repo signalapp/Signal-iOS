@@ -103,6 +103,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         UIUtil.applySignalAppearence()
 
         if let navigationController = self.navigationController {
+            owsFail("\(logTag) missing navigationController")
             navigationController.isNavigationBarHidden = true
         }
 
@@ -122,6 +123,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         super.viewWillDisappear(animated)
 
         if let navigationController = self.navigationController {
+            owsFail("\(logTag) missing navigationController")
             navigationController.isNavigationBarHidden = false
         }
     }
@@ -253,8 +255,11 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         backButton.autoPinLeadingToSuperviewMargin()
 
         let backIconName = (self.view.isRTL() ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
-        let backIconImage = UIImage(named: backIconName)?.withRenderingMode(.alwaysTemplate)
-        let backIconView = UIImageView(image: backIconImage)
+        guard let backIconImage = UIImage(named: backIconName) else {
+            owsFail("\(logTag) missing icon.")
+            return topView
+        }
+        let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
         backIconView.contentMode = .scaleAspectFit
         backIconView.tintColor = UIColor.black.withAlphaComponent(0.6)
         backButton.addSubview(backIconView)
@@ -291,7 +296,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         if let firstPhoneNumber = contact.phoneNumbers.first {
             let phoneNumberLabel = UILabel()
-            phoneNumberLabel.text = PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: firstPhoneNumber.phoneNumber)
+            phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber.phoneNumber)
             phoneNumberLabel.font = UIFont.ows_dynamicTypeCaption2
             phoneNumberLabel.textColor = UIColor.black
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
@@ -423,7 +428,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //        }
 
         for phoneNumber in contact.phoneNumbers {
-            let formattedPhoneNumber = PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber.phoneNumber)
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
 
             addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
                                       value: formattedPhoneNumber,
@@ -494,9 +499,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
 
         let valueLabel = UILabel()
-        if let value = value {
-            valueLabel.text = value
-        }
+        valueLabel.text = value
         valueLabel.font = UIFont.ows_dynamicTypeCaption1
         valueLabel.textColor = UIColor.ows_materialBlue
         valueLabel.lineBreakMode = .byTruncatingTail
@@ -654,7 +657,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
         for phoneNumber in phoneNumbers {
-            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortFormatE164(asLocalizedPhoneNumber: phoneNumber),
+            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
                                                           style: .default) { _ in
                                                             completion(phoneNumber)
             })

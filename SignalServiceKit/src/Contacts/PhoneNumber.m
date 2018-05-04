@@ -130,7 +130,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return [formatter stringFromNumber:@(value)];
 }
 
-+ (NSString *)bestEffortFormatE164AsLocalizedPhoneNumber:(NSString *)phoneNumber
++ (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber
 {
     OWSAssert(phoneNumber);
 

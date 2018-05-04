@@ -110,8 +110,11 @@ class ReminderView: UIView {
 
         // Icon
         let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-        let iconImage = UIImage(named: iconName)?.withRenderingMode(.alwaysTemplate)
-        let iconView = UIImageView(image: iconImage)
+        guard let iconImage = UIImage(named: iconName) else {
+            owsFail("\(logTag) missing icon.")
+            return
+        }
+        let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
         iconView.contentMode = .scaleAspectFit
         iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
         container.addSubview(iconView)

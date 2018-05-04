@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable firstPhoneNumber = self.contactShare.phoneNumbers.firstObject.phoneNumber;
     if (firstPhoneNumber.length > 0) {
         UILabel *bottomLabel = [UILabel new];
-        bottomLabel.text = [PhoneNumber bestEffortFormatE164AsLocalizedPhoneNumber:firstPhoneNumber];
+        bottomLabel.text = [PhoneNumber bestEffortLocalizedPhoneNumberWithE164:firstPhoneNumber];
         // TODO:
         bottomLabel.textColor = [UIColor ows_darkGrayColor];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingTail;

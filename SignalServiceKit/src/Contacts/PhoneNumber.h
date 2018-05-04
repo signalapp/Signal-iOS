@@ -30,7 +30,7 @@
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input;
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
                                               withSpecifiedCountryCodeString:(NSString *)countryCodeString;
-+ (NSString *)bestEffortFormatE164AsLocalizedPhoneNumber:(NSString *)phoneNumber;
++ (NSString *)bestEffortLocalizedPhoneNumberWithE164:(NSString *)phoneNumber;
 
 + (NSString *)regionCodeFromCountryCodeString:(NSString *)countryCodeString;
 
