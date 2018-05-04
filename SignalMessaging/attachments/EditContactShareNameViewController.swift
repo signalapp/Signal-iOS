@@ -252,9 +252,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
         let fieldsView = createFieldsView()
 
-        // See notes on how to use UIScrollView with iOS Auto Layout:
-        //
-        // https://developer.apple.com/library/content/releasenotes/General/RN-iOSSDK-6_0/
         scrollView.addSubview(fieldsView)
         fieldsView.autoPinLeadingToSuperviewMargin()
         fieldsView.autoPinTrailingToSuperviewMargin()
