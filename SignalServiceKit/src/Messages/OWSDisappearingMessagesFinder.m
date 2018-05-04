@@ -67,6 +67,9 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                               if (!incomingMessage.wasRead) {
                                                   return;
                                               }
+                                          } else {
+                                              // update if we ever support other disappearing message types
+                                              OWSProdLogAndFail([message isKindOfClass:[TSOutgoingMessage class]]);
                                           }
                                           [messageIds addObject:key];
                                       }
