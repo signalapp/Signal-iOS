@@ -501,6 +501,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }];
             }
 
+            if (sendingRecipientIds.count < 1) {
+                // All recipients are already sent or can be skipped.
+                successHandler();
+                return;
+            }
+
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
                 [self getRecipientsForRecipientIds:sendingRecipientIds.allObjects error:&error];
