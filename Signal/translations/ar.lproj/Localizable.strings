@@ -4,6 +4,21 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
 
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal Call";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Invite to Signal";
+
+/* Label for 'sent message' button in contact view. */
+"ACTION_SEND_MESSAGE" = "Send Message";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Share Contact";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Video Call";
+
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "إضافة";
 
@@ -139,6 +154,9 @@
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "المرفق";
 
+/* attachment menu option to send contact */
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
+
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "فشل في اختيار الوثيقة ";
 
@@ -260,7 +278,7 @@
 "BUTTON_DONE" = "تم";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Select";
+"BUTTON_SELECT" = "حدد";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "من أجل إجراء المكالمات وتسجيل الرسائل الصوتية يحتاج تطبيق سجنال السماح بإستخدام الميكروفون. بإمكانك منح هذا الإذن من خلال تطبيق الإعدادات.";
@@ -287,13 +305,13 @@
 "CALL_USER_ALERT_TITLE" = "إتصال؟";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accept incoming call";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "قبول مكالمة واردة";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "صوت";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "رفض مكالمة واردة";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "End call";
@@ -353,13 +371,13 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "المقارنة مع الحافظة";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Contacts";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "جهات الاتصال";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "مجموعة";
 
 /* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "توجيه دعوة";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "لمعرفة أي من جهات الاتصال الخاصة بك هي من مستخدمي تطبيق سجنال، برجاء السماح بالوصول إلى جهات الاتصال من خلال إعدادات النظام.";
@@ -402,6 +420,9 @@
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "لا يوجد رقم هاتف.";
+
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "Select Contact";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "إعدادات المحادثة";
@@ -479,7 +500,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "إضغط لألمزيد";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "حجب هذا المستخدم";
@@ -500,13 +521,13 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "قد يستغرق ذلك بضع دقائق.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "جار تحديث قاعدة البيانات";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* The current day. */
-"DATE_TODAY" = "Today";
+"DATE_TODAY" = "اليوم";
 
 /* The day before today. */
-"DATE_YESTERDAY" = "Yesterday";
+"DATE_YESTERDAY" = "البارحة";
 
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
@@ -539,7 +560,7 @@
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";
 
 /* Label for the 'Share' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SHARE" = "Share";
+"DEBUG_LOG_ALERT_OPTION_SHARE" = "شارك";
 
 /* Title of the alert shown for failures while uploading debug logs.
    Title of the debug log alert. */
@@ -615,10 +636,10 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Delete";
+"EDIT_ITEM_DELETE_ACTION" = "حذف";
 
 /* Short name for edit menu item to show message metadata. */
-"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Info";
+"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "معلومات";
 
 /* Short name for edit menu item to save contents of media message. */
 "EDIT_ITEM_SAVE_ACTION" = "حفظ";
@@ -678,7 +699,7 @@
 "ENABLE_2FA_VIEW_ENABLE_2FA" = "Enable";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Next";
+"ENABLE_2FA_VIEW_NEXT_BUTTON" = "التالي\n";
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
@@ -693,7 +714,7 @@
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registration Lock is enabled. You'll need to enter your PIN when registering your phone number with Signal again.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
+"ENABLE_2FA_VIEW_TITLE" = "قفل التسجيل";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "مشغول.";
@@ -804,16 +825,16 @@
 "GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Search";
+"GIF_PICKER_VIEW_TITLE" = "بحث GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "خطأ. انقر لإعادة المحاولة.";
 
 /* Indicates that the user's search had no results. */
-"GIF_VIEW_SEARCH_NO_RESULTS" = "No Results.";
+"GIF_VIEW_SEARCH_NO_RESULTS" = "لا توجد أي نتائج.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Enter your search";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "أدخل بحثك";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "تغيرت الصورة الرمزية.";
@@ -879,16 +900,16 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "محظور";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "الأرشيف";
 
 /* Title for the home view's default mode. */
-"HOME_VIEW_TITLE_INBOX" = "Signal";
+"HOME_VIEW_TITLE_INBOX" = "سجنال";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "جار الربط…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "إعادة الاتصال...\n";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "رنين…";
@@ -1008,22 +1029,22 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Delete Message";
 
 /* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "You";
+"MEDIA_GALLERY_SENDER_NAME_YOU" = "أنت\n";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
 
 /* Title for the 'message approval' dialog. */
-"MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
+"MESSAGE_APPROVAL_DIALOG_TITLE" = "رسالة";
 
 /* Label for the recipient name in the 'message approval' dialog. */
-"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "To:";
+"MESSAGE_APPROVAL_RECIPIENT_LABEL" = "إلى:";
 
 /* No comment provided by engineer. */
 "MESSAGE_COMPOSEVIEW_TITLE" = "رسالة جديدة";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "File Size";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "حجم الملف";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME type";
@@ -1250,7 +1271,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name and Content";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Name Only";
+"NOTIFICATIONS_SENDER_ONLY" = "الاسم فقط";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "عرض";
@@ -1562,7 +1583,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
 
 /* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "Reply";
+"REPLY_ITEM_ACTION" = "رد";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "إعادة الإشتراك في خدمة الإشعارات اللحظية";
@@ -2087,7 +2108,7 @@
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "إعادة ارسال الشفرة عبر الرسائل النصية";
 
 /* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Submit";
+"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "إرسال";
 
 /* Label indicating the phone number currently being verified. */
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "ادخال شفرة التحقق التي أرسلناها إلى %@.";

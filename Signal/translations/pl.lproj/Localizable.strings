@@ -4,6 +4,21 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Zaakceptuj nowy kod bezpieczeństwa";
 
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal Call";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Invite to Signal";
+
+/* Label for 'sent message' button in contact view. */
+"ACTION_SEND_MESSAGE" = "Send Message";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Share Contact";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Video Call";
+
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Dodaj";
 
@@ -53,7 +68,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ w grupie %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal can't launch. Please send your debug logs to our team so that we can try to resolve this issue.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal nie może się uruchomić. Prosimy o przesłanie logów debugowania do naszego zespołu w celu rozwiązania problemu.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Błąd";
@@ -139,6 +154,9 @@
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Załącznik";
 
+/* attachment menu option to send contact */
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
+
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nie udało się wybrać dokumentu.";
 
@@ -158,19 +176,19 @@
 "BACK_BUTTON" = "Cofnij";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Nie udało się eksportować kopii zapasowej.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Nieprawidłowa odpowiedź serwera";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Backup data could not be uploaded.";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Nie udało się wysłać kopii zapasowej.";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Czyszczenie kopii zapasowych";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Uruchamianie kopii zapasowej";
 
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Eksportowanie danych";
@@ -191,7 +209,7 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Pobieranie kopii zapasowej";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizowanie kopii zapasowej";
 
 /* Indicates that the backup import data is being imported. */
 "BACKUP_IMPORT_PHASE_IMPORT" = "Importowanie kopii zapasowej.";
@@ -293,7 +311,7 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Audio";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Decline incoming call";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Odrzuć połączenie przychodzące";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Zakończ rozmowę ";
@@ -314,16 +332,16 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Pokaż ustawienia prywatności";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Przełączenie kamery";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Przełącz na połączenie głosowe";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Przełącz na połączenie wideo";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Dotknij by powrócić do połączenia";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Oddzwoń";
@@ -332,7 +350,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Użytkownik Signal";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "This user can't be verified until you've exchanged messages with them.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ten użytkownik nie może zostać zweryfikowany póki nie napiszecie do siebie";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Błąd";
@@ -341,10 +359,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Wybierz kraj";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Wystąpił błąd połączenia z iCloud by wykonać kopię zapasową";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nie posiadasz konta iCloud dla kopii zapasowej";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
@@ -398,10 +416,13 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Niezarejestrowany numer";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Email niedostępny.";
 
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Brak dostępnego numeru telefonu.";
+
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "Select Contact";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Ustawienia konwersacji";
@@ -479,13 +500,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Wczytywanie kolejnych wiadomości...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap For More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Dotknij po więcej.";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokuj tego użytkownika";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Zresetowanie sesji pozwoli otrzymywać przyszłe wiadomości od %@, ale nie przywróci dotychczasowych uszkodzonych wiadomości.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Wybierz kod kraju";
@@ -500,7 +521,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "To może zająć kilka minut.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Aktualizowanie bazy danych";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* The current day. */
 "DATE_TODAY" = "Dziś";
@@ -509,28 +530,28 @@
 "DATE_YESTERDAY" = "Wczoraj";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Kopiowanie logów nieudane.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Pakowanie logów nieudane.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Wysyłanie logów nieudane.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Co chciałbyś zrobić z linkiem do twojego logu debugowania?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Nie znaleziono logów.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Otwórz raport błędów";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopiuj odnośnik";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Wyślij log emailem";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
@@ -576,7 +597,7 @@
 "DISMISS_BUTTON_TEXT" = "Odrzucić";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Censorship Circumvention Location";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokalizacja dla omijania cenzury";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can give access in the Settings app.";
@@ -711,7 +732,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Wysyłanie wiadomości nie powiodło się ponieważ zablokowałeś/aś tego użytkownika.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Błąd z powodu nieudanego zapisu załącznika.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nie mógł połączyć się z internetem. Spróbuj użyć innej sieci WiFi lub danych komórkowych.";
@@ -732,7 +753,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Osoba nie jest użytkownikiem Signal.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Failure: Ask sender to update Signal and resend.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Błąd: poproś nadawcę o zaktualizowanie Signala i ponowne przesłanie.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Otrzymano zduplikowaną wiadomość.";
@@ -774,7 +795,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Oznacz jako zweryfikowane";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Session";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset sesji";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Zakończ tworzenie grupy";
@@ -792,7 +813,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Załącznik";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Nie udało się pobrać GIFu. Sprawdź połączenie z Internetem.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Wystąpił nieznany błąd.";
@@ -801,13 +822,13 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Nie udało się wybrać GIFa";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Please enter your search.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Wprowadź wyszukiwanie";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Wyszukiwarka GIF'ów";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Error. Tap to Retry.";
+"GIF_VIEW_SEARCH_ERROR" = "Błąd. Dotknij by ponowić.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Brak wyników";
@@ -822,7 +843,7 @@
 "GROUP_CREATED" = "Grupa została stworzona.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Not all members could be added to the group. Tap to retry.";
+"GROUP_CREATION_FAILED" = "Nie wszystkie osoby udało się dodać do grupy. Dotknij by ponowić.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Zarządzanie grupą";
@@ -873,7 +894,7 @@
 "GROUP_YOU_LEFT" = "Opuściłeś grupę.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Zarchiwizowane rozmowy";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Zablokowany";
@@ -888,7 +909,7 @@
 "IN_CALL_CONNECTING" = "Łączenie...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting...";
+"IN_CALL_RECONNECTING" = "Ponowne łączenie...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Ringing…";
@@ -903,7 +924,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "To see the names of your contacts, update your system settings to allow contact access.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "By zobaczyć nazwy kontaktów zezwól w ustawieniach na dostęp do kontaktów zapisanych na telefonie";
 
 /* notification body */
 "INCOMING_CALL" = "Połączenie przychodzące";
@@ -912,7 +933,7 @@
 "INCOMING_CALL_FROM" = "Połączenie od %@.";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "You declined a call";
+"INCOMING_DECLINED_CALL" = "Odrzuciłeś połączenie";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
@@ -990,7 +1011,7 @@
 "LONG_TEXT_VIEW_TITLE" = "Wiadomość";
 
 /* nav bar button item */
-"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "All Media";
+"MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Pliki";
 
 /* media picker option to take photo or video */
 "MEDIA_FROM_CAMERA_BUTTON" = "Aparat";
@@ -1166,7 +1187,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Osiągnąłeś maksymalną liczbę urządzeń, które możesz obecnie sparować ze swoim kontem. Usuń urządzenie lub spróbuj sparować je później.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Nie będziesz otrzymywać powiadomień dla konwersacji wyciszonych.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Pomiń";
@@ -1175,7 +1196,7 @@
 "NETWORK_ERROR_RECOVERY" = "Sprawdź czy jesteś online i spróbuj ponownie.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Censorship Circumvention: On";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Omijanie cenzury: WŁ";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Połączony/a";
@@ -1271,7 +1292,7 @@
 "OUTGOING_CALL" = "Połączenie wychodzące";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Unanswered outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Nieodebrane połączenie wychodzące";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ...";
@@ -1319,7 +1340,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ nie jest oznaczony jako zweryfikowany.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Zweryfikowany";
@@ -1358,13 +1379,13 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number code. Are you both on an up-to-date version of Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "By zweryfikować bezpieczeństwo połączenia z %@ porównaj powyższy numer z numerem na jej/jego urządzeniu.\n\n\nAlternatywnie, można zeskanować kod QR jednego z urządzeń drugim.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Zweryfikuj kod zabezpieczenia.";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Mark as Verified";
+"PRIVACY_VERIFY_BUTTON" = "Oznacz jako zweryfikowany";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Kontynuuj";
@@ -1394,7 +1415,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Awatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Twój Profil Signal będzie widoczny dla twoich kontaktów, gdy rozpoczniesz nowe konwersacje, a także gdy udostępnisz go innym użytkownikom i grupom.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
@@ -1670,25 +1691,25 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Zablokuj";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Omijanie cenzury";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Lokalizacja: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Gdy włączone uruchamia dodatkowe mechanizmy omijania cenzury. Nie włączaj jeśli kraj w którym się znajdujesz nie blokuje Signala.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Omijanie cenzury włączone dla twojego numeru telefonu i konta Signal. ";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Aktywacja omijania cenzury wymaga połączenia z Internetem.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Omijanie cenzury niewymagane, jesteś połączony z usługami Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Omijanie cenzury";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Włącz logi debugowania";
@@ -1766,7 +1787,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Skasuj konto";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Potwierdź usunięcie całej historii (wiadomości, załączniki, rejestr połączeń i inne). Po usunięciu tych danych przywrócenie ich będzie niemożliwe.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Skasuj wszystko";
@@ -1793,10 +1814,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ustawienia";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Powiadomienia o połączeniach i wiadomościach będą pojawiać się na ekranie blokady. Możesz ograniczyć treść tych powiadomień.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Treść powiadomień";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Powiadomienia";
@@ -1817,16 +1838,16 @@
 "SETTINGS_PRIVACY_TITLE" = "Prywatność";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Read Receipts";
+"SETTINGS_READ_RECEIPT" = "Potwierdzenia odczytania";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Widoczność potwierdzeń odczytania wiadomości. To ustawienie jest opcjonalne i dotyczy wszystkich konwersacji.";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Opóźnienie ekranu blokady";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Odblokowanie ekranu Signala przy pomocy Touch ID, Face ID lub systemowego kodu PIN. Przy aktywnej blokadzie nadal można odbierać połączenia i otrzymywać powiadomienia o wiadomościach. Ustawienia powiadomień Signala pozwalają kontrolować jaka treść jest na nich widoczna. ";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Blokada ekranu";
@@ -1865,10 +1886,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Włączone";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Blokada rejestracji";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registration Lock";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blokada rejestracji";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Wersja";
@@ -1925,7 +1946,7 @@
 "SOUNDS_NONE" = "None";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Kod zabezpieczający %@ zgodny. Można oznaczyć kontakt jako zweryfikowany.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
@@ -2054,7 +2075,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "You now have the option of seeing and sharing when messages have been read.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Enable read receipts in your privacy settings.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Włącz potwierdzenia odczytania w ustawieniach prywatności.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducing Read Receipts";
@@ -2093,13 +2114,13 @@
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Wprowadź kod weryfikacyjny który wysłaliśmy do %@.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ oznaczony jako niezweryfikowany.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@ oznaczony jako niezweryfikowany na innym urządzeniu.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ oznaczony jako zweryfikowany.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";

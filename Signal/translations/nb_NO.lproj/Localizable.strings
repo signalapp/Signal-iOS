@@ -4,6 +4,21 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Godkjenn nytt sikkerhetsnummer";
 
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal Call";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Invite to Signal";
+
+/* Label for 'sent message' button in contact view. */
+"ACTION_SEND_MESSAGE" = "Send Message";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Share Contact";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Video Call";
+
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Legg til";
 
@@ -80,7 +95,7 @@
 "ATTACHMENT" = "Vedlegg";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Meldingens makslengde nådd.";
 
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Vedlegg";
@@ -138,6 +153,9 @@
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Vedlegg";
+
+/* attachment menu option to send contact */
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Kunne ikke velge dokument.";
@@ -403,6 +421,9 @@
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Ingen telefonnummer tilgjengelig.";
 
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "Select Contact";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Samtaleinnstillinger";
 
@@ -500,7 +521,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dette kan ta noen minutter.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Oppdaterer database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* The current day. */
 "DATE_TODAY" = "I dag";
@@ -873,13 +894,13 @@
 "GROUP_YOU_LEFT" = "Du har forlatt gruppen.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverte Samtaler";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blokkert";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "Arkivér";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -900,7 +921,7 @@
 "IN_CALL_TERMINATED" = "Samtalen er over.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Disse samtalene er arkiverte. De vil igjen vises i innboksen dersom du får nye meldinger som hører til disse samtalene.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "For å se navnene på kontaktene dine, oppdater systeminnstillingene for å tillate kontakttilgang.";
@@ -987,7 +1008,7 @@
 "LOGGING_SECTION" = "Logger";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "Melding";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alle mediefiler";
@@ -1436,16 +1457,16 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Attachment";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Vedlegg";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+"QUOTED_REPLY_TYPE_AUDIO" = "Lyd";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
 
 /* Indicates this message is a quoted reply to an image file. */
-"QUOTED_REPLY_TYPE_IMAGE" = "Image";
+"QUOTED_REPLY_TYPE_IMAGE" = "Bilde";
 
 /* Indicates this message is a quoted reply to a video file. */
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
@@ -1562,7 +1583,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Det var ikke riktig PIN-kode.";
 
 /* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "Reply";
+"REPLY_ITEM_ACTION" = "Svar";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Registrer om igjen for push-varsler";

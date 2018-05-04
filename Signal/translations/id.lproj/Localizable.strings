@@ -4,6 +4,21 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Terima Nomor Keamanan Baru";
 
+/* Label for 'audio call' button in contact view. */
+"ACTION_AUDIO_CALL" = "Signal Call";
+
+/* Label for 'invite' button in contact view. */
+"ACTION_INVITE" = "Invite to Signal";
+
+/* Label for 'sent message' button in contact view. */
+"ACTION_SEND_MESSAGE" = "Send Message";
+
+/* Label for 'share contact' button. */
+"ACTION_SHARE_CONTACT" = "Share Contact";
+
+/* Label for 'video call' button in contact view. */
+"ACTION_VIDEO_CALL" = "Video Call";
+
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Tambahkan";
 
@@ -138,6 +153,9 @@
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Lampiran";
+
+/* attachment menu option to send contact */
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Gagal memilih dokumen.";
@@ -403,6 +421,9 @@
 /* table cell subtitle when contact card has no known phone number */
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nomor telepon tidak tersedia.";
 
+/* navbar title for contact picker when sharing a contact */
+"CONTACT_PICKER_TITLE" = "Select Contact";
+
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Setelan Percakapan";
 
@@ -500,7 +521,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ini akan memerlukan beberapa menit.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Perbarui Basis Data";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* The current day. */
 "DATE_TODAY" = "Today";
