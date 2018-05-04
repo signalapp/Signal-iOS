@@ -77,7 +77,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     required init(contact: OWSContact) {
         contactsManager = Environment.current().contactsManager
         self.contact = contact
-        self.scrollView = UIScrollView()
 
         super.init(nibName: nil, bundle: nil)
 
@@ -98,14 +97,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     // MARK: - View Lifecycle
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         UIUtil.applySignalAppearence()
+
+        if let navigationController = self.navigationController {
+            owsFail("\(logTag) missing navigationController")
+            navigationController.isNavigationBarHidden = true
+        }
 
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -119,18 +119,24 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         UIUtil.applySignalAppearence()
     }
 
-    private var scrollView: UIScrollView
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let navigationController = self.navigationController {
+            owsFail("\(logTag) missing navigationController")
+            navigationController.isNavigationBarHidden = false
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
 
     override func loadView() {
         super.loadView()
 
-        self.view.addSubview(scrollView)
-        scrollView.layoutMargins = .zero
-        scrollView.autoPinWidthToSuperview()
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        scrollView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-
-        self.view.backgroundColor = UIColor.white
+        self.view.preservesSuperviewLayoutMargins = false
+        self.view.backgroundColor = heroBackgroundColor()
 
         updateContent()
 
@@ -185,26 +191,90 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func updateContent() {
         SwiftAssertIsOnMainThread(#function)
 
-        let rootView = self.scrollView
+        guard let rootView = self.view else {
+            owsFail("\(logTag) missing root view.")
+            return
+        }
 
         for subview in rootView.subviews {
             subview.removeFromSuperview()
         }
 
-        // TODO: The design calls for no navigation bar, just a back button.
-        let topView = UIView.container()
-        topView.backgroundColor = UIColor(rgbHex: 0xefeff4)
-        topView.preservesSuperviewLayoutMargins = true
+        let topView = createTopView()
         rootView.addSubview(topView)
-        topView.autoPinEdge(toSuperviewEdge: .top)
-        topView.autoPinEdge(.left, to: .left, of: self.view)
-        topView.autoPinEdge(.right, to: .right, of: self.view)
+        topView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        topView.autoPinWidthToSuperview()
+
+        // This view provides a background "below the fold".
+        let bottomView = UIView.container()
+        bottomView.backgroundColor = UIColor.white
+        self.view.addSubview(bottomView)
+        bottomView.layoutMargins = .zero
+        bottomView.autoPinWidthToSuperview()
+        bottomView.autoPinEdge(.top, to: .bottom, of: topView)
+        bottomView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        let scrollView = UIScrollView()
+        scrollView.preservesSuperviewLayoutMargins = false
+        self.view.addSubview(scrollView)
+        scrollView.layoutMargins = .zero
+        scrollView.autoPinWidthToSuperview()
+        scrollView.autoPinEdge(.top, to: .bottom, of: topView)
+        scrollView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        let fieldsView = createFieldsView()
+
+        scrollView.addSubview(fieldsView)
+        fieldsView.autoPinLeadingToSuperviewMargin()
+        fieldsView.autoPinTrailingToSuperviewMargin()
+        fieldsView.autoPinEdge(toSuperviewEdge: .top)
+        fieldsView.autoPinEdge(toSuperviewEdge: .bottom)
+    }
+
+    private func heroBackgroundColor() -> UIColor {
+        return UIColor(rgbHex: 0xefeff4)
+    }
+
+    private func createTopView() -> UIView {
+        SwiftAssertIsOnMainThread(#function)
+
+        let topView = UIView.container()
+        topView.backgroundColor = heroBackgroundColor()
+        topView.preservesSuperviewLayoutMargins = false
+
+        // Back Button
+        let backButtonSize = CGFloat(50)
+        let backButton = TappableView(actionBlock: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            strongSelf.didPressDismiss()
+        })
+        backButton.autoSetDimension(.width, toSize: backButtonSize)
+        backButton.autoSetDimension(.height, toSize: backButtonSize)
+        topView.addSubview(backButton)
+        backButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        backButton.autoPinLeadingToSuperviewMargin()
+
+        let backIconName = (self.view.isRTL() ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
+        guard let backIconImage = UIImage(named: backIconName) else {
+            owsFail("\(logTag) missing icon.")
+            return topView
+        }
+        let backIconView = UIImageView(image: backIconImage.withRenderingMode(.alwaysTemplate))
+        backIconView.contentMode = .scaleAspectFit
+        backIconView.tintColor = UIColor.black.withAlphaComponent(0.6)
+        backButton.addSubview(backIconView)
+        backIconView.autoCenterInSuperview()
 
         // TODO: Use actual avatar.
         let avatarSize = CGFloat(100)
-        let avatarView = UIView.container()
-        avatarView.backgroundColor = UIColor.ows_materialBlue
-        avatarView.layer.cornerRadius = avatarSize * 0.5
+
+        let avatarView = AvatarImageView()
+        // TODO: What's the best colorSeed value to use?
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.displayName,
+                                                    colorSeed: contact.displayName,
+                                                    diameter: UInt(avatarSize),
+                                                    contactsManager: contactsManager)
+        avatarView.image = avatarBuilder.build()
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()
@@ -226,7 +296,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         if let firstPhoneNumber = contact.phoneNumbers.first {
             let phoneNumberLabel = UILabel()
-            phoneNumberLabel.text = firstPhoneNumber.phoneNumber
+            phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber.phoneNumber)
             phoneNumberLabel.font = UIFont.ows_dynamicTypeCaption2
             phoneNumberLabel.textColor = UIColor.black
             phoneNumberLabel.lineBreakMode = .byTruncatingTail
@@ -297,16 +367,15 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         lastView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 15)
 
-        let bottomView = UIView.container()
-        bottomView.backgroundColor = UIColor.white
-        bottomView.layoutMargins = .zero
-        bottomView.preservesSuperviewLayoutMargins = false
-        rootView.addSubview(bottomView)
-        bottomView.autoPinEdge(.top, to: .bottom, of: topView)
-        bottomView.autoPinEdge(toSuperviewEdge: .bottom)
-        bottomView.autoPinEdge(.left, to: .left, of: self.view)
-        bottomView.autoPinEdge(.right, to: .right, of: self.view)
-        bottomView.setContentHuggingVerticalLow()
+        return topView
+    }
+
+    private func createFieldsView() -> UIView {
+        SwiftAssertIsOnMainThread(#function)
+
+        let fieldsView = UIView.container()
+        fieldsView.layoutMargins = .zero
+        fieldsView.preservesSuperviewLayoutMargins = false
 
         var lastRow: UIView?
 
@@ -317,7 +386,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             }
             let row = UIView()
             row.backgroundColor = UIColor(rgbHex: 0xdedee1)
-            bottomView.addSubview(row)
+            fieldsView.addSubview(row)
             row.autoSetDimension(.height, toSize: 1)
             row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
             row.autoPinTrailingToSuperviewMargin()
@@ -329,7 +398,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             if lastRow != nil {
                 addSpacerRow()
             }
-            bottomView.addSubview(row)
+            fieldsView.addSubview(row)
             row.autoPinLeadingToSuperviewMargin()
             row.autoPinTrailingToSuperviewMargin()
             if let lastRow = lastRow {
@@ -359,9 +428,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //        }
 
         for phoneNumber in contact.phoneNumbers {
-            // TODO: Try to format the phone number nicely.
+            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
+
             addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
-                                      value: phoneNumber.phoneNumber,
+                                      value: formattedPhoneNumber,
                                       actionBlock: {
                                         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
                                             owsFail("\(ContactViewController.logTag) could not open phone number.")
@@ -386,6 +456,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         // TODO: Should we present addresses here too? How?
 
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom)
+
+        return fieldsView
     }
 
     private let hMargin = CGFloat(16)
@@ -411,7 +483,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         return row
     }
 
-    private func createNameValueRow(name: String, value: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createNameValueRow(name: String, value: String?, actionBlock : @escaping () -> Void) -> UIView {
         let row = TappableView(actionBlock: actionBlock)
         row.layoutMargins.left = 0
         row.layoutMargins.right = 0
@@ -527,40 +599,38 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     func didPressSendMessage() {
         Logger.info("\(logTag) \(#function)")
 
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
-            owsFail("\(logTag) missing Signal recipient id.")
-            return
-        }
-
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .compose)
+        presentThreadAndPeform(action: .compose)
     }
 
     func didPressAudioCall() {
         Logger.info("\(logTag) \(#function)")
 
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
-            owsFail("\(logTag) missing Signal recipient id.")
-            return
-        }
-
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .audioCall)
+        presentThreadAndPeform(action: .audioCall)
     }
 
     func didPressVideoCall() {
         Logger.info("\(logTag) \(#function)")
 
+        presentThreadAndPeform(action: .videoCall)
+    }
+
+    func presentThreadAndPeform(action: ConversationViewAction) {
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
-        guard let recipientId = systemContactsWithSignalAccountsForContact().first else {
+        let phoneNumbers = systemContactsWithSignalAccountsForContact()
+        guard phoneNumbers.count > 0 else {
             owsFail("\(logTag) missing Signal recipient id.")
             return
         }
+        guard phoneNumbers.count > 1 else {
+            let recipientId = systemContactsWithSignalAccountsForContact().first!
+            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
+            return
+        }
 
-        SignalApp.shared().presentConversation(forRecipientId: recipientId, action: .videoCall)
+        showPhoneNumberPicker(phoneNumbers: phoneNumbers, completion: { (recipientId) in
+            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
+        })
     }
 
     func didPressInvite() {
@@ -580,6 +650,27 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         let inviteFlow =
             InviteFlow(presentingViewController: self, contactsManager: contactsManager)
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
+    }
+
+    private func showPhoneNumberPicker(phoneNumbers: [String], completion :@escaping ((String) -> Void)) {
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        for phoneNumber in phoneNumbers {
+            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
+                                                          style: .default) { _ in
+                                                            completion(phoneNumber)
+            })
+        }
+        actionSheet.addAction(OWSAlerts.cancelAction)
+
+        self.present(actionSheet, animated: true)
+    }
+
+    func didPressDismiss() {
+        Logger.info("\(self.logTag) \(#function)")
+
+        self.navigationController?.popViewController(animated: true)
     }
 
     // MARK: -

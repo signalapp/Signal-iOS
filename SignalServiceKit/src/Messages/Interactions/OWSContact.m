@@ -49,18 +49,7 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
         DDLogWarn(@"%@ invalid phone number; not e164: %@.", self.logTag, self.phoneNumber);
         return NO;
     }
-    switch (self.phoneType) {
-        case OWSContactPhoneType_Home:
-        case OWSContactPhoneType_Mobile:
-        case OWSContactPhoneType_Work:
-            return YES;
-        case OWSContactPhoneType_Custom:
-            if (self.label.ows_stripped.length < 1) {
-                DDLogWarn(@"%@ invalid phone number; missing custom label: %@.", self.logTag, self.label);
-                return NO;
-            }
-            return YES;
-    }
+    return YES;
 }
 
 - (NSString *)localizedLabel
@@ -73,7 +62,10 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
         case OWSContactPhoneType_Work:
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
-            return self.label;
+            if (self.label.ows_stripped.length < 1) {
+                return NSLocalizedString(@"CONTACT_PHONE", @"Label for a contact's phone number.");
+            }
+            return self.label.ows_stripped;
     }
 }
 
@@ -130,18 +122,7 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
         DDLogWarn(@"%@ invalid email: %@.", self.logTag, self.email);
         return NO;
     }
-    switch (self.emailType) {
-        case OWSContactEmailType_Home:
-        case OWSContactEmailType_Mobile:
-        case OWSContactEmailType_Work:
             return YES;
-        case OWSContactEmailType_Custom:
-            if (self.label.ows_stripped.length < 1) {
-                DDLogWarn(@"%@ invalid email; missing custom label: %@.", self.logTag, self.label);
-                return NO;
-            }
-            return YES;
-    }
 }
 
 - (NSString *)localizedLabel
@@ -154,7 +135,10 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
         case OWSContactEmailType_Work:
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
-            return self.label;
+            if (self.label.ows_stripped.length < 1) {
+                return NSLocalizedString(@"CONTACT_EMAIL", @"Label for a contact's email address.");
+            }
+            return self.label.ows_stripped;
     }
 }
 
@@ -217,17 +201,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         DDLogWarn(@"%@ invalid address; empty.", self.logTag);
         return NO;
     }
-    switch (self.addressType) {
-        case OWSContactAddressType_Home:
-        case OWSContactAddressType_Work:
             return YES;
-        case OWSContactAddressType_Custom:
-            if (self.label.ows_stripped.length < 1) {
-                DDLogWarn(@"%@ invalid address; missing custom label: %@.", self.logTag, self.label);
-                return NO;
-            }
-            return YES;
-    }
 }
 
 - (NSString *)localizedLabel
@@ -238,7 +212,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         case OWSContactAddressType_Work:
             return [CNLabeledValue localizedStringForLabel:CNLabelWork];
         default:
-            return self.label;
+            if (self.label.ows_stripped.length < 1) {
+                return NSLocalizedString(@"CONTACT_ADDRESS", @"Label for a contact's postal address.");
+            }
+            return self.label.ows_stripped;
     }
 }
 
@@ -288,7 +265,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
 @property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic, nullable) NSString *displayName;
+@property (nonatomic) NSString *displayName;
 
 @property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
@@ -360,10 +337,14 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return hasValue;
 }
 
-- (nullable NSString *)displayName
+- (NSString *)displayName
 {
     [self ensureDisplayName];
 
+    if (_displayName.length < 1) {
+        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
+        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
+    }
     return _displayName;
 }
 
@@ -376,9 +357,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     if (_displayName.length < 1) {
         // Fall back to using the organization name.
         _displayName = self.organizationName;
-    }
-    if (_displayName.length < 1) {
-        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
     }
 }
 

@@ -3000,17 +3000,14 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                       phoneNumber2,
                                                   ];
 
-                                                  OWSContactEmail *email1 = [OWSContactEmail new];
-                                                  email1.emailType = OWSContactEmailType_Home;
-                                                  email1.email = @"a1@b.com";
-                                                  OWSContactEmail *email2 = [OWSContactEmail new];
-                                                  email2.emailType = OWSContactEmailType_Custom;
-                                                  email2.label = @"customer support";
-                                                  email2.email = @"a2@b.com";
-                                                  contact.emails = @[
-                                                      email1,
-                                                      email2,
-                                                  ];
+                                                  NSMutableArray<OWSContactEmail *> *emails = [NSMutableArray new];
+                                                  for (NSUInteger i = 0; i < 16; i++) {
+                                                      OWSContactEmail *email = [OWSContactEmail new];
+                                                      email.emailType = OWSContactEmailType_Home;
+                                                      email.email = [NSString stringWithFormat:@"a%zd@b.com", i];
+                                                      [emails addObject:email];
+                                                  }
+                                                  contact.emails = emails;
 
                                                   OWSContactAddress *address1 = [OWSContactAddress new];
                                                   address1.addressType = OWSContactAddressType_Home;
@@ -3178,17 +3175,14 @@ typedef OWSContact * (^OWSContactBlock)(void);
                                                       phoneNumber2,
                                                   ];
 
-                                                  OWSContactEmail *email1 = [OWSContactEmail new];
-                                                  email1.emailType = OWSContactEmailType_Home;
-                                                  email1.email = @"a@b.com";
-                                                  OWSContactEmail *email2 = [OWSContactEmail new];
-                                                  email2.emailType = OWSContactEmailType_Custom;
-                                                  email2.label = @"customer support";
-                                                  email2.email = @"a@b.com";
-                                                  contact.emails = @[
-                                                      email1,
-                                                      email2,
-                                                  ];
+                                                  NSMutableArray<OWSContactEmail *> *emails = [NSMutableArray new];
+                                                  for (NSUInteger i = 0; i < 16; i++) {
+                                                      OWSContactEmail *email = [OWSContactEmail new];
+                                                      email.emailType = OWSContactEmailType_Home;
+                                                      email.email = [NSString stringWithFormat:@"a%zd@b.com", i];
+                                                      [emails addObject:email];
+                                                  }
+                                                  contact.emails = emails;
 
                                                   OWSContactAddress *address1 = [OWSContactAddress new];
                                                   address1.addressType = OWSContactAddressType_Home;

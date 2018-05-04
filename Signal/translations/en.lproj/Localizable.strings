@@ -406,6 +406,9 @@
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Confirm";
 
+/* Label for a contact's postal address. */
+"CONTACT_ADDRESS" = "Address";
+
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blocked";
 
@@ -415,6 +418,12 @@
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Unregistered Number";
 
+/* Label for a contact's email address. */
+"CONTACT_EMAIL" = "Email";
+
+/* Label for a contact's phone number. */
+"CONTACT_PHONE" = "Phone";
+
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "No email available.";
 
@@ -423,6 +432,9 @@
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "Select Contact";
+
+/* Indicates that a contact has no name. */
+"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Conversation Settings";
