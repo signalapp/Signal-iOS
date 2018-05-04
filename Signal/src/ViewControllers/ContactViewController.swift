@@ -9,36 +9,6 @@ import Reachability
 import ContactsUI
 import MessageUI
 
-class TappableView: UIView {
-    let actionBlock : (() -> Void)
-
-    // MARK: - Initializers
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("Unimplemented")
-    }
-
-    required init(actionBlock : @escaping () -> Void) {
-        self.actionBlock = actionBlock
-        super.init(frame: CGRect.zero)
-
-        self.isUserInteractionEnabled = true
-        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(wasTapped)))
-    }
-
-    func wasTapped(sender: UIGestureRecognizer) {
-        Logger.info("\(logTag) \(#function)")
-
-        guard sender.state == .recognized else {
-            return
-        }
-        actionBlock()
-    }
-}
-
-// MARK: -
-
 class ContactViewController: OWSViewController, CNContactViewControllerDelegate {
 
     enum ContactViewMode {
@@ -372,37 +342,35 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //        }
 
         for phoneNumber in contactShare.phoneNumbers {
-            let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
-
-            rows.append(createSimpleFieldRow(name: phoneNumber.localizedLabel(),
-                                             value: formattedPhoneNumber,
-                                             actionBlock: {
-                                                guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-                                                    owsFail("\(ContactViewController.logTag) could not open phone number.")
-                                                    return
-                                                }
-                                                UIApplication.shared.openURL(url as URL)
+            rows.append(ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber,
+                                                          layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
+                                                          actionBlock: {
+                                                            guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
+                                                                owsFail("\(ContactViewController.logTag) could not open phone number.")
+                                                                return
+                                                            }
+                                                            UIApplication.shared.openURL(url as URL)
             }))
         }
 
         for email in contactShare.emails {
-            rows.append(createSimpleFieldRow(name: email.localizedLabel(),
-                                        value: email.email,
-                                        actionBlock: {
-                                            guard let url = NSURL(string: "mailto:\(email.email)") else {
-                                                owsFail("\(ContactViewController.logTag) could not open email.")
-                                                return
-                                            }
-                                            UIApplication.shared.openURL(url as URL)
+            rows.append(ContactFieldView.contactFieldView(forEmail: email,
+                                                          layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
+                                                          actionBlock: {
+                                                            guard let url = NSURL(string: "mailto:\(email.email)") else {
+                                                                owsFail("\(ContactViewController.logTag) could not open email.")
+                                                                return
+                                                            }
+                                                            UIApplication.shared.openURL(url as URL)
             }))
         }
 
         for address in contactShare.addresses {
-            rows.append(createAddressFieldRow(name: address.localizedLabel(),
-                                        address: address,
-                                        actionBlock: { [weak self] _ in
-                                            guard let strongSelf = self else { return }
-                                            strongSelf.didPressAddress(address: address)
+            rows.append(ContactFieldView.contactFieldView(forAddress: address,
+                                                          layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
+                                                          actionBlock: { [weak self] _ in
+                                                            guard let strongSelf = self else { return }
+                                                            strongSelf.didPressAddress(address: address)
             }))
         }
 
@@ -428,112 +396,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         label.autoPinBottomToSuperviewMargin()
         label.autoPinLeadingToSuperviewMargin(withInset: hMargin)
         label.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-
-        return row
-    }
-
-    private func createSimpleFieldRow(name: String, value: String?, actionBlock : @escaping () -> Void) -> UIView {
-        let row = TappableView(actionBlock: actionBlock)
-        row.layoutMargins.left = 0
-        row.layoutMargins.right = 0
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .leading
-        stackView.spacing = 3
-        row.addSubview(stackView)
-        stackView.autoPinTopToSuperviewMargin()
-        stackView.autoPinBottomToSuperviewMargin()
-        stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
-        stackView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-
-        let nameLabel = UILabel()
-        nameLabel.text = name
-        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = UIColor.black
-        nameLabel.lineBreakMode = .byTruncatingTail
-        stackView.addArrangedSubview(nameLabel)
-
-        let valueLabel = UILabel()
-        valueLabel.text = value
-        valueLabel.font = UIFont.ows_dynamicTypeBody
-        valueLabel.textColor = UIColor.ows_materialBlue
-        valueLabel.lineBreakMode = .byTruncatingTail
-        stackView.addArrangedSubview(valueLabel)
-
-        return row
-    }
-
-    private func createAddressFieldRow(name: String, address: OWSContactAddress, actionBlock : @escaping () -> Void) -> UIView {
-        let row = TappableView(actionBlock: actionBlock)
-        row.layoutMargins.left = 0
-        row.layoutMargins.right = 0
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .leading
-        stackView.spacing = 3
-        stackView.layoutMargins = .zero
-        row.addSubview(stackView)
-        stackView.autoPinTopToSuperviewMargin()
-        stackView.autoPinBottomToSuperviewMargin()
-        stackView.autoPinLeadingToSuperviewMargin(withInset: hMargin)
-        stackView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-
-        let nameLabel = UILabel()
-        nameLabel.text = name
-        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = UIColor.black
-        nameLabel.lineBreakMode = .byTruncatingTail
-        stackView.addArrangedSubview(nameLabel)
-
-        let tryToAddNameValue: ((String, String?) -> Void) = { (propertyName, propertyValue) in
-            guard let propertyValue = propertyValue else {
-                return
-            }
-            guard propertyValue.count > 0 else {
-                return
-            }
-
-            let row = UIStackView()
-            row.axis = .horizontal
-            row.alignment = .leading
-            row.spacing = 10
-            row.layoutMargins = .zero
-
-            let nameLabel = UILabel()
-            nameLabel.text = propertyName
-            nameLabel.font = UIFont.ows_dynamicTypeBody
-            nameLabel.textColor = UIColor.black
-            nameLabel.lineBreakMode = .byTruncatingTail
-            row.addArrangedSubview(nameLabel)
-            nameLabel.setContentHuggingHigh()
-            nameLabel.setCompressionResistanceHigh()
-
-            let valueLabel = UILabel()
-            valueLabel.text = propertyValue
-            valueLabel.font = UIFont.ows_dynamicTypeBody
-            valueLabel.textColor = UIColor.ows_materialBlue
-            valueLabel.lineBreakMode = .byTruncatingTail
-            row.addArrangedSubview(valueLabel)
-
-            stackView.addArrangedSubview(row)
-        }
-
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
-                          address.street)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
-                          address.pobox)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
-                          address.neighborhood)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
-                          address.city)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
-                          address.region)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
-                          address.postcode)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
-                          address.country)
 
         return row
     }

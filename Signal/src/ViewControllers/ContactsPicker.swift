@@ -244,6 +244,8 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        Logger.verbose("\(logTag) \(#function)")
+
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
 

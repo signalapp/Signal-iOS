@@ -459,12 +459,13 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (void)logFrameWithLabel:(NSString *)label
 {
-    DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f",
+    DDLogVerbose(@"%@ %@ frame: %@, hidden: %d, opacity: %f, layoutMargins: %@",
         self.logTag,
         label,
         NSStringFromCGRect(self.frame),
         self.hidden,
-        self.layer.opacity);
+        self.layer.opacity,
+        NSStringFromUIEdgeInsets(self.layoutMargins));
 }
 
 - (void)logFrameLater
