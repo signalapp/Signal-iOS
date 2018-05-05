@@ -61,8 +61,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
 @property (nonatomic) NSArray<OWSContactAddress *> *addresses;
 
-@property (nonatomic, nullable) OWSAttachmentInfo *avatarAttachmentInfo;
-
 @property (nonatomic) BOOL isProfileAvatar;
 
 @end
