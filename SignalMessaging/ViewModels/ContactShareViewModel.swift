@@ -23,6 +23,19 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
+    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
+        if let avatarImage = avatarImage {
+            return avatarImage
+        }
+
+        // TODO: What's the best colorSeed value to use?
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
+                                                    colorSeed: displayName,
+                                                    diameter: UInt(diameter),
+                                                    contactsManager: contactsManager)
+        return avatarBuilder.build()
+    }
+
     // MARK: Delegated -> dbRecord
 
     public var addresses: [OWSContactAddress] {
