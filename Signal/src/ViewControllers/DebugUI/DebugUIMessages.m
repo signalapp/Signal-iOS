@@ -84,13 +84,12 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMessages deleteAllMessagesInThread:thread];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Send All Contact Shares"
+    [items addObject:[OWSTableItem itemWithTitle:@"👷 Send All Contact Shares"
                                      actionBlock:^{
                                          [DebugUIMessages sendAllContacts:thread];
                                      }]];
-
     [items addObjectsFromArray:[self itemsForActions:@[
-
+        [DebugUIMessages fakeAllContactShareAction:thread],
         [DebugUIMessages sendMessageVariationsAction:thread],
         // Send Media
         [DebugUIMessages sendAllMediaAction:thread],
@@ -108,7 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
         // Exemplary
         [DebugUIMessages allFakeAction:thread],
         [DebugUIMessages allFakeBackDatedAction:thread],
-        [DebugUIMessages allContactShareAction:thread],
     ]]];
 
     [items addObjectsFromArray:@[
@@ -3033,7 +3031,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                       address2,
                                                   ];
 
-                                                  // MJK
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
                                                   NSData *avatarImageData
@@ -3043,15 +3040,13 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                 byteCount:avatarImageData.length
                                                            sourceFilename:nil];
 
-
                                                   NSError *error;
                                                   BOOL success =
                                                       [attachmentStream writeData:avatarImageData error:&error];
                                                   OWSAssert(success && !error);
                                                   [attachmentStream saveWithTransaction:transaction];
+                                                  [contact setAvatarAttachmentStream:attachmentStream];
 
-                                                  contact.avatarAttachmentInfo = [[OWSAttachmentInfo alloc]
-                                                      initWithAttachmentStream:attachmentStream];
                                                   return contact;
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
@@ -3098,12 +3093,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     return actions;
 }
 
-+ (DebugUIMessagesAction *)allContactShareAction:(TSThread *)thread
++ (DebugUIMessagesAction *)fakeAllContactShareAction:(TSThread *)thread
 {
     OWSAssert(thread);
 
     return
-        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"All Fake Contact Shares"
+        [DebugUIMessagesGroupAction allGroupActionWithLabel:@"👷 All Fake Contact Shares"
                                                  subactions:[self allFakeContactShareActions:thread includeLabels:YES]];
 }
 
@@ -3120,14 +3115,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             YapDatabaseReadWriteTransaction *transaction,
             ActionSuccessBlock success,
             ActionFailureBlock failure) {
-            //                                    dispatch_async(dispatch_get_main_queue(), ^{
             OWSContact *contact = contactBlock(transaction);
             DDLogVerbose(@"%@ sending contact: %@", self.logTag, contact.debugDescription);
             OWSMessageSender *messageSender = [Environment current].messageSender;
             [ThreadUtil sendMessageWithContactShare:contact inThread:thread messageSender:messageSender completion:nil];
 
             success();
-            //                                    });
         }];
 }
 
@@ -3143,32 +3136,32 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                           text:@"⚠️ Send Share Contact ⚠️"]];
     }
 
-    //    [actions addObject:[self sendContactShareMessageAction:thread
-    //                                                     label:@"Name & Number"
-    //                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
-    //                                                  OWSContact *contact = [OWSContact new];
-    //                                                  contact.givenName = @"Alice";
-    //                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber
-    //                                                  new]; phoneNumber.phoneType = OWSContactPhoneType_Home;
-    //                                                  phoneNumber.phoneNumber = @"+13213214321";
-    //                                                  contact.phoneNumbers = @[
-    //                                                      phoneNumber,
-    //                                                  ];
-    //                                                  return contact;
-    //                                              }]];
-    //    [actions addObject:[self sendContactShareMessageAction:thread
-    //                                                     label:@"Name & Email"
-    //                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
-    //                                                  OWSContact *contact = [OWSContact new];
-    //                                                  contact.givenName = @"Bob";
-    //                                                  OWSContactEmail *email = [OWSContactEmail new];
-    //                                                  email.emailType = OWSContactEmailType_Home;
-    //                                                  email.email = @"a@b.com";
-    //                                                  contact.emails = @[
-    //                                                      email,
-    //                                                  ];
-    //                                                  return contact;
-    //                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Name & Number"
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Alice";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Home;
+                                                  phoneNumber.phoneNumber = @"+13213214321";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Name & Email"
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bob";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Home;
+                                                  email.email = @"a@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
     [actions addObject:[self sendContactShareMessageAction:thread
                                                      label:@"Complicated"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
@@ -3223,7 +3216,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                       address2,
                                                   ];
 
-                                                  // MJK
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
                                                   NSData *avatarImageData
@@ -3232,7 +3224,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                       initWithContentType:OWSMimeTypeImageJpeg
                                                                 byteCount:avatarImageData.length
                                                            sourceFilename:nil];
-
 
                                                   NSError *error;
                                                   BOOL success =
@@ -3243,46 +3234,46 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
                                                   return contact;
                                               }]];
-    //    [actions addObject:[self sendContactShareMessageAction:thread
-    //                                                     label:@"Long values"
-    //                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
-    //                                                  OWSContact *contact = [OWSContact new];
-    //                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
-    //                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
-    //                                                  OWSContactEmail *email = [OWSContactEmail new];
-    //                                                  email.emailType = OWSContactEmailType_Mobile;
-    //                                                  email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
-    //                                                  contact.emails = @[
-    //                                                      email,
-    //                                                  ];
-    //                                                  return contact;
-    //                                              }]];
-    //    [actions addObject:[self sendContactShareMessageAction:thread
-    //                                                     label:@"System Contact w/o Signal"
-    //                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
-    //                                                  OWSContact *contact = [OWSContact new];
-    //                                                  contact.givenName = @"Add Me To Your Contacts";
-    //                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber
-    //                                                  new]; phoneNumber.phoneType = OWSContactPhoneType_Work;
-    //                                                  phoneNumber.phoneNumber = @"+324602053911";
-    //                                                  contact.phoneNumbers = @[
-    //                                                      phoneNumber,
-    //                                                  ];
-    //                                                  return contact;
-    //                                              }]];
-    //    [actions addObject:[self sendContactShareMessageAction:thread
-    //                                                     label:@"System Contact w. Signal"
-    //                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
-    //                                                  OWSContact *contact = [OWSContact new];
-    //                                                  contact.givenName = @"Add Me To Your Contacts";
-    //                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber
-    //                                                  new]; phoneNumber.phoneType = OWSContactPhoneType_Work;
-    //                                                  phoneNumber.phoneNumber = @"+32460205392";
-    //                                                  contact.phoneNumbers = @[
-    //                                                      phoneNumber,
-    //                                                  ];
-    //                                                  return contact;
-    //                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"Long values"
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
+                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
+                                                  OWSContactEmail *email = [OWSContactEmail new];
+                                                  email.emailType = OWSContactEmailType_Mobile;
+                                                  email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
+                                                  contact.emails = @[
+                                                      email,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"System Contact w/o Signal"
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+324602053911";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
+    [actions addObject:[self sendContactShareMessageAction:thread
+                                                     label:@"System Contact w. Signal"
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                                  OWSContact *contact = [OWSContact new];
+                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
+                                                  phoneNumber.phoneType = OWSContactPhoneType_Work;
+                                                  phoneNumber.phoneNumber = @"+32460205392";
+                                                  contact.phoneNumbers = @[
+                                                      phoneNumber,
+                                                  ];
+                                                  return contact;
+                                              }]];
 
     return actions;
 }
