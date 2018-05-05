@@ -3039,11 +3039,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                   NSData *avatarImageData
                                                       = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
                                                   TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc]
-                                                      initWithContentType:@"image/jpg"
+                                                      initWithContentType:OWSMimeTypeImageJpeg
                                                                 byteCount:avatarImageData.length
                                                            sourceFilename:nil];
-                                                  
-                                                  
+
+
                                                   NSError *error;
                                                   BOOL success =
                                                       [attachmentStream writeData:avatarImageData error:&error];
@@ -3229,7 +3229,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                   NSData *avatarImageData
                                                       = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
                                                   TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc]
-                                                      initWithContentType:@"image/jpg"
+                                                      initWithContentType:OWSMimeTypeImageJpeg
                                                                 byteCount:avatarImageData.length
                                                            sourceFilename:nil];
 
