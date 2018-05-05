@@ -249,16 +249,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         backButton.addSubview(backIconView)
         backIconView.autoCenterInSuperview()
 
-        // TODO: Use actual avatar.
-        let avatarSize = CGFloat(100)
-
+        let avatarSize: CGFloat = 100
         let avatarView = AvatarImageView()
-        // TODO: What's the best colorSeed value to use?
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contactShare.displayName,
-                                                    colorSeed: contactShare.displayName,
-                                                    diameter: UInt(avatarSize),
-                                                    contactsManager: contactsManager)
-        avatarView.image = avatarBuilder.build()
+        avatarView.image = contactShare.getAvatarImage(diameter: avatarSize, contactsManager: contactsManager)
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()

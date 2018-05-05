@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (OWSContactsManager *)contactsManager
+{
+    return [Environment current].contactsManager;
+}
+
 #pragma mark -
 
 - (CGFloat)iconHMargin
@@ -107,18 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Use the contact's avatar if present and downloaded.
     AvatarImageView *avatarView = [AvatarImageView new];
-    // TODO: What's the best colorSeed value to use?
-
-    UIImage *_Nullable avatarImage = self.contactShare.avatarImage;
-    if (!avatarImage) {
-        OWSAvatarBuilder *avatarBuilder =
-            [[OWSContactAvatarBuilder alloc] initWithNonSignalName:self.contactShare.displayName
-                                                         colorSeed:self.contactShare.displayName
-                                                          diameter:(NSUInteger)self.iconSize
-                                                   contactsManager:[Environment current].contactsManager];
-        avatarImage = [avatarBuilder build];
-    }
-    avatarView.image = avatarImage;
+    avatarView.image =
+        [self.contactShare getAvatarImageWithDiameter:self.iconSize contactsManager:self.contactsManager];
 
     [avatarView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
