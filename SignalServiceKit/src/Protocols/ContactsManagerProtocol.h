@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 @class Contact;
@@ -11,9 +11,5 @@
 
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
 - (NSArray<SignalAccount *> * _Nonnull)signalAccounts;
-
-#if TARGET_OS_IPHONE
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
-#endif
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/Contact.h>
@@ -76,6 +76,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 - (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId;
 - (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId;
+
+- (nullable UIImage *)systemContactImageForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier;
 
 - (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *_Nonnull)font;

@@ -65,6 +65,7 @@
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
+#import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -2948,7 +2949,7 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)sendContactShare:(OWSContact *)contactShare
+- (void)sendContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
@@ -2956,12 +2957,20 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"%@ Sending contact share.", self.logTag);
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare
-                                                                inThread:self.thread
-                                                           messageSender:self.messageSender
-                                                              completion:nil];
 
-    [self messageWasSent:message];
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        if (contactShare.avatarImage) {
+            [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+        }
+    }
+        completionBlock:^{
+            TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
+                                                                        inThread:self.thread
+                                                                   messageSender:self.messageSender
+                                                                      completion:nil];
+            [self messageWasSent:message];
+        }];
+
 
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
@@ -4942,11 +4951,27 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    OWSContact *_Nullable contactShare = [OWSContacts contactForSystemContact:contact.cnContact];
-    if (!contactShare) {
+    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
+    if (!contactShareRecord) {
         DDLogError(@"%@ Could not convert system contact.", self.logTag);
         return;
     }
+
+    BOOL isProfileAvatar = NO;
+    UIImage *_Nullable avatarImage = contact.image;
+    if (!avatarImage) {
+        NSString *firstSignalId = contact.textSecureIdentifiers.firstObject;
+        if (firstSignalId) {
+            avatarImage = [self.contactsManager profileImageForPhoneIdentifier:firstSignalId];
+            if (avatarImage) {
+                isProfileAvatar = YES;
+            }
+        }
+    }
+
+    ContactShareViewModel *contactShare =
+        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImage:avatarImage];
+    contactShareRecord.isProfileAvatar = isProfileAvatar;
 
     // TODO: We should probably show this in the same navigation view controller.
     ApproveContactShareViewController *approveContactShare =
@@ -4974,7 +4999,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 #pragma mark - ApproveContactShareViewControllerDelegate
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
-     didApproveContactShare:(OWSContact *)contactShare
+     didApproveContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -4985,7 +5010,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
-      didCancelContactShare:(OWSContact *)contactShare
+      didCancelContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
