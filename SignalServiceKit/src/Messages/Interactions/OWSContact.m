@@ -3,12 +3,11 @@
 //
 
 #import "OWSContact.h"
-#import "NSString+SSK.h" OWSAttachmentInfo.h
+#import "MimeTypeUtil.h"
+#import "NSString+SSK.h"
 #import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
-
-//#import "Contact.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
@@ -459,18 +458,26 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 }
 
 #pragma mark - Avatar
-// MJK
 
 - (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
 }
 
-- (void)setAvatarAttachmentStream:(TSAttachmentStream *)attachmentStream
-{
-    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
-    OWSAssert(self.avatarAttachmentId == nil);
 
+- (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSData *imageData = UIImageJPEGRepresentation(image, (CGFloat)0.9);
+
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
+                                                                                 byteCount:imageData.length
+                                                                            sourceFilename:nil];
+
+    NSError *error;
+    BOOL success = [attachmentStream writeData:imageData error:&error];
+    OWSAssert(success && !error);
+
+    [attachmentStream saveWithTransaction:transaction];
     self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 

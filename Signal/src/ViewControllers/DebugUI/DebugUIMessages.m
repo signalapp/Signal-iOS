@@ -3033,19 +3033,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  NSData *avatarImageData
-                                                      = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
-                                                  TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc]
-                                                      initWithContentType:OWSMimeTypeImageJpeg
-                                                                byteCount:avatarImageData.length
-                                                           sourceFilename:nil];
-
-                                                  NSError *error;
-                                                  BOOL success =
-                                                      [attachmentStream writeData:avatarImageData error:&error];
-                                                  OWSAssert(success && !error);
-                                                  [attachmentStream saveWithTransaction:transaction];
-                                                  [contact setAvatarAttachmentStream:attachmentStream];
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];
@@ -3218,19 +3206,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  NSData *avatarImageData
-                                                      = UIImageJPEGRepresentation(avatarImage, (CGFloat)0.9);
-                                                  TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc]
-                                                      initWithContentType:OWSMimeTypeImageJpeg
-                                                                byteCount:avatarImageData.length
-                                                           sourceFilename:nil];
-
-                                                  NSError *error;
-                                                  BOOL success =
-                                                      [attachmentStream writeData:avatarImageData error:&error];
-                                                  OWSAssert(success && !error);
-                                                  [attachmentStream saveWithTransaction:transaction];
-                                                  [contact setAvatarAttachmentStream:attachmentStream];
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];

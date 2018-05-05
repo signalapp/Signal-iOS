@@ -314,11 +314,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
             }
 
-            // MJK TODO - don't generate the avatar attachment until here, when we've committed to sending it.
             if (message.contactShare.avatarAttachmentId != nil) {
-                //                contactShareAvatarAttachment = [message.contactShare
-                //                createAvatarForUploadWithTransaction:transaction];
-                // TODO generate and save the attachment for upload here.
                 TSAttachment *avatarAttachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
                 if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
                     contactShareAvatarAttachment = (TSAttachmentStream *)avatarAttachment;
