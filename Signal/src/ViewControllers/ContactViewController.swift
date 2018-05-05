@@ -65,7 +65,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     var reachability: Reachability?
 
-    private let contact: OWSContact
+    // TODO rename this property to contactShare
+    private let contact: ContactShareViewModel
 
     // MARK: - Initializers
 
@@ -74,9 +75,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         fatalError("Unimplemented")
     }
 
-    required init(contact: OWSContact) {
+    required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.current().contactsManager
-        self.contact = contact
+        self.contact = contactShare
 
         super.init(nibName: nil, bundle: nil)
 
@@ -639,7 +640,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contact) else {
+        guard let systemContact = OWSContacts.systemContact(for: contact.dbRecord) else {
             owsFail("\(logTag) Could not derive system contact.")
             return
         }

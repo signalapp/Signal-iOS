@@ -2087,7 +2087,7 @@ typedef enum : NSUInteger {
     OWSAssert(conversationItem.contactShare);
     OWSAssert([conversationItem.interaction isKindOfClass:[TSMessage class]]);
 
-    ContactViewController *view = [[ContactViewController alloc] initWithContact:conversationItem.contactShare];
+    ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
     [self.navigationController pushViewController:view animated:YES];
 }
 
