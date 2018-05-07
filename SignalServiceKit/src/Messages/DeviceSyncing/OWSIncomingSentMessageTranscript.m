@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _quotedMessage =
         [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread relay:relay transaction:transaction];
-    _contact = [OWSContacts contactForDataMessage:_dataMessage];
+    _contact = [OWSContacts contactForDataMessage:_dataMessage relay:relay transaction:transaction];
 
     return self;
 }

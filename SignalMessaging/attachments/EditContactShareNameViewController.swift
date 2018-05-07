@@ -109,7 +109,7 @@ class ContactNameFieldView: UIView {
 
 @objc
 public protocol EditContactShareNameViewControllerDelegate: class {
-    func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: OWSContact)
+    func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: ContactShareViewModel)
 }
 
 // MARK: -
@@ -118,7 +118,7 @@ public protocol EditContactShareNameViewControllerDelegate: class {
 public class EditContactShareNameViewController: OWSViewController, ContactNameFieldViewDelegate {
     weak var delegate: EditContactShareNameViewControllerDelegate?
 
-    let contactShare: OWSContact
+    let contactShare: ContactShareViewModel
 
     var namePrefixView: ContactNameFieldView!
     var givenNameView: ContactNameFieldView!
@@ -136,7 +136,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     @objc
-    required public init(contactShare: OWSContact, delegate: EditContactShareNameViewControllerDelegate) {
+    required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShare = contactShare
         self.delegate = delegate
 

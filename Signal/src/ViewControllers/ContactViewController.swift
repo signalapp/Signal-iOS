@@ -65,7 +65,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     var reachability: Reachability?
 
-    private let contact: OWSContact
+    private let contactShare: ContactShareViewModel
 
     // MARK: - Initializers
 
@@ -74,9 +74,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         fatalError("Unimplemented")
     }
 
-    required init(contact: OWSContact) {
+    required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.current().contactsManager
-        self.contact = contact
+        self.contactShare = contactShare
 
         super.init(nibName: nil, bundle: nil)
 
@@ -140,7 +140,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func updateMode() {
         SwiftAssertIsOnMainThread(#function)
 
-        guard phoneNumbersForContact().count > 0 else {
+        guard contactShare.phoneNumberStrings.count > 0 else {
             viewMode = .noPhoneNumber
             return
         }
@@ -159,7 +159,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func systemContactsWithSignalAccountsForContact() -> [String] {
         SwiftAssertIsOnMainThread(#function)
 
-        return phoneNumbersForContact().filter({ (phoneNumber) -> Bool in
+        return contactShare.phoneNumberStrings.filter({ (phoneNumber) -> Bool in
             return contactsManager.hasSignalAccount(forRecipientId: phoneNumber)
         })
     }
@@ -167,19 +167,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func systemContactsForContact() -> [String] {
         SwiftAssertIsOnMainThread(#function)
 
-        return phoneNumbersForContact().filter({ (phoneNumber) -> Bool in
+        return contactShare.phoneNumberStrings.filter({ (phoneNumber) -> Bool in
             return contactsManager.allContactsMap[phoneNumber] != nil
         })
-    }
-
-    private func phoneNumbersForContact() -> [String] {
-        SwiftAssertIsOnMainThread(#function)
-
-        var result = [String]()
-        for phoneNumber in contact.phoneNumbers {
-            result.append(phoneNumber.phoneNumber)
-        }
-        return result
     }
 
     private func updateContent() {
@@ -259,16 +249,9 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         backButton.addSubview(backIconView)
         backIconView.autoCenterInSuperview()
 
-        // TODO: Use actual avatar.
-        let avatarSize = CGFloat(100)
-
+        let avatarSize: CGFloat = 100
         let avatarView = AvatarImageView()
-        // TODO: What's the best colorSeed value to use?
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.displayName,
-                                                    colorSeed: contact.displayName,
-                                                    diameter: UInt(avatarSize),
-                                                    contactsManager: contactsManager)
-        avatarView.image = avatarBuilder.build()
+        avatarView.image = contactShare.getAvatarImage(diameter: avatarSize, contactsManager: contactsManager)
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()
@@ -276,7 +259,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         avatarView.autoSetDimension(.height, toSize: avatarSize)
 
         let nameLabel = UILabel()
-        nameLabel.text = contact.displayName
+        nameLabel.text = contactShare.displayName
         nameLabel.font = UIFont.ows_dynamicTypeTitle2.ows_bold()
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
@@ -288,7 +271,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         var lastView: UIView = nameLabel
 
-        if let firstPhoneNumber = contact.phoneNumbers.first {
+        if let firstPhoneNumber = contactShare.phoneNumbers.first {
             let phoneNumberLabel = UILabel()
             phoneNumberLabel.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: firstPhoneNumber.phoneNumber)
             phoneNumberLabel.font = UIFont.ows_dynamicTypeCaption2
@@ -387,7 +370,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 //                                   action:#selector(didPressShareContact)))
 //        }
 
-        for phoneNumber in contact.phoneNumbers {
+        for phoneNumber in contactShare.phoneNumbers {
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
 
             rows.append(createNameValueRow(name: phoneNumber.localizedLabel(),
@@ -401,7 +384,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             }))
         }
 
-        for email in contact.emails {
+        for email in contactShare.emails {
             rows.append(createNameValueRow(name: email.localizedLabel(),
                                       value: email.email,
                                       actionBlock: {
@@ -599,7 +582,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
             return
         }
-        let phoneNumbers = phoneNumbersForContact()
+        let phoneNumbers = contactShare.phoneNumberStrings
         guard phoneNumbers.count > 0 else {
             owsFail("\(logTag) no phone numbers.")
             return
@@ -639,8 +622,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contact) else {
-            owsFail("\(logTag) Could not derive system contact.")
+        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord) else {
+            owsFail("\(logTag) Could not derive system contactShare.")
             return
         }
 
@@ -678,7 +661,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             return
         }
 
-        guard let firstPhoneNumber = contact.phoneNumbers.first else {
+        guard let firstPhoneNumber = contactShare.phoneNumbers.first else {
             owsFail("\(logTag) Missing phone number.")
             return
         }

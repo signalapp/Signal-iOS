@@ -613,11 +613,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
-        guard let contact = viewItem.contactShare() else {
+        guard let contactShare = viewItem.contactShare else {
             owsFail("\(logTag) missing contact.")
             return
         }
-        let contactViewController = ContactViewController(contact: contact)
+        let contactViewController = ContactViewController(contactShare: contactShare)
         self.navigationController?.pushViewController(contactViewController, animated: true)
     }
 
