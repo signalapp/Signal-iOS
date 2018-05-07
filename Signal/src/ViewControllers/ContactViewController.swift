@@ -600,7 +600,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         }
         // Note that we use "q" (i.e. query) rather than "address" since we can't assume
         // this is a well-formed address.
-        guard let url = NSURL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
+        guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
             owsFail("\(ContactViewController.logTag) could not open address.")
             return
         }
