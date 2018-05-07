@@ -171,9 +171,7 @@ class ContactShareFieldView: UIStackView {
         field.setIsIncluded(!field.isIncluded())
         checkbox.isSelected = field.isIncluded()
 
-        if let delegate = delegate {
-            delegate.contactShareFieldViewDidChangeSelectedState()
-        }
+        delegate?.contactShareFieldViewDidChangeSelectedState()
     }
 }
 
