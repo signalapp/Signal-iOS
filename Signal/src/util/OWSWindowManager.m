@@ -346,8 +346,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
-    // In the normal case, that means the SignalViewController will call `becomeFirstResponder` on the vc on top of it's
-    // navigation stack.
+    // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
+    // on the vc on top of its navigation stack.
     [self.rootWindow makeKeyAndVisible];
 
 }
