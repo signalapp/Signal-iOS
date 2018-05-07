@@ -142,6 +142,10 @@ public class SignalAttachment: NSObject {
     @objc
     public var isConvertibleToTextMessage = false
 
+    // This flag should be set for attachments that can be sent as contact shares.
+    @objc
+    public var isConvertibleToContactShare = false
+
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
@@ -826,14 +830,14 @@ public class SignalAttachment: NSObject {
 
         let removeMetadataProperties: [String: AnyObject] =
         [
-            kCGImagePropertyExifDictionary as String : kCFNull,
-            kCGImagePropertyExifAuxDictionary as String : kCFNull,
-            kCGImagePropertyGPSDictionary as String : kCFNull,
-            kCGImagePropertyTIFFDictionary as String : kCFNull,
-            kCGImagePropertyJFIFDictionary as String : kCFNull,
-            kCGImagePropertyPNGDictionary as String : kCFNull,
-            kCGImagePropertyIPTCDictionary as String : kCFNull,
-            kCGImagePropertyMakerAppleDictionary as String : kCFNull
+            kCGImagePropertyExifDictionary as String: kCFNull,
+            kCGImagePropertyExifAuxDictionary as String: kCFNull,
+            kCGImagePropertyGPSDictionary as String: kCFNull,
+            kCGImagePropertyTIFFDictionary as String: kCFNull,
+            kCGImagePropertyJFIFDictionary as String: kCFNull,
+            kCGImagePropertyPNGDictionary as String: kCFNull,
+            kCGImagePropertyIPTCDictionary as String: kCFNull,
+            kCGImagePropertyMakerAppleDictionary as String: kCFNull
         ]
 
         for index in 0...count-1 {

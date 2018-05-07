@@ -23,7 +23,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 @interface SharingThreadPickerViewController () <SelectThreadViewControllerDelegate,
     AttachmentApprovalViewControllerDelegate,
-    MessageApprovalViewControllerDelegate>
+    MessageApprovalViewControllerDelegate,
+    ApproveContactShareViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -123,8 +124,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 #pragma mark - SelectThreadViewControllerDelegate
 
-// If the attachment is textual (e.g. text or URL), returns the message text
-// for the attachment.  Returns nil otherwise.
 - (nullable NSString *)convertAttachmentToMessageTextIfPossible
 {
     if (!self.attachment.isConvertibleToTextMessage) {
@@ -144,7 +143,35 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSAssert(self.attachment);
     OWSAssert(thread);
+
     self.thread = thread;
+
+    if (self.attachment.isConvertibleToContactShare) {
+        NSData *data = self.attachment.data;
+        OWSContact *_Nullable contact = [OWSContacts contactForVCardData:data];
+
+        if (!contact) {
+            // This should never happen since we verify that the contact can be parsed when building the attachment.
+            OWSFail(@"%@ could not parse contact share.", self.logTag);
+            [self.shareViewDelegate shareViewWasCancelled];
+            return;
+        }
+
+        // TODO: Populate avatar image.
+        BOOL isProfileAvatar = NO;
+        UIImage *_Nullable avatarImage = nil;
+        contact.isProfileAvatar = isProfileAvatar;
+
+        ContactShareViewModel *contactShare =
+            [[ContactShareViewModel alloc] initWithContactShareRecord:contact avatarImage:avatarImage];
+
+        ApproveContactShareViewController *approvalVC =
+            [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
+                                                            contactsManager:self.contactsManager
+                                                                   delegate:self];
+        [self.navigationController pushViewController:approvalVC animated:YES];
+        return;
+    }
 
     NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
 
@@ -249,6 +276,38 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
 - (void)messageApprovalDidCancel:(MessageApprovalViewController *)approvalViewController
 {
+    [self cancelShareExperience];
+}
+
+#pragma mark - ApproveContactShareViewControllerDelegate
+
+- (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
+     didApproveContactShare:(OWSContact *)contactShare
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
+        OWSAssertIsOnMainThread();
+
+        __block TSOutgoingMessage *outgoingMessage = nil;
+        outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare
+                                                         inThread:self.thread
+                                                    messageSender:self.messageSender
+                                                       completion:^(NSError *_Nullable error) {
+                                                           sendCompletion(error, outgoingMessage);
+                                                       }];
+        // This is necessary to show progress.
+        self.outgoingMessage = outgoingMessage;
+    }
+                 fromViewController:approvalViewController];
+}
+
+- (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
+      didCancelContactShare:(OWSContact *)contactShare
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
     [self cancelShareExperience];
 }
 

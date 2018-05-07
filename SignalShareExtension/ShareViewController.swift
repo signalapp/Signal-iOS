@@ -694,6 +694,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         var customFileName: String?
         var isConvertibleToTextMessage = false
+        var isConvertibleToContactShare = false
 
         let loadCompletion: NSItemProvider.CompletionHandler = { [weak self]
             (value, error) in
@@ -719,6 +720,15 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                 if ShareViewController.itemMatchesSpecificUtiType(itemProvider: itemProvider,
                                                                   utiType: kUTTypeVCard as String) {
                     customFileName = "Contact.vcf"
+
+                    if let contactShare = OWSContacts.contact(forVCardData: data) {
+                        isConvertibleToContactShare = true
+                    } else {
+                        Logger.error("\(strongSelf.logTag) could not parse vcard.")
+                        let writeError = ShareViewControllerError.assertionError(description: "Could not parse vcard data.")
+                        reject(writeError)
+                        return
+                    }
                 }
 
                 let customFileExtension = MIMETypeUtil.fileExtension(forUTIType: srcUtiType)
@@ -844,7 +854,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
 
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: specificUTIType, imageQuality: .medium)
-            if isConvertibleToTextMessage {
+            if isConvertibleToContactShare {
+                Logger.info("\(strongSelf.logTag) isConvertibleToContactShare")
+                attachment.isConvertibleToContactShare = isConvertibleToContactShare
+            } else if isConvertibleToTextMessage {
                 Logger.info("\(strongSelf.logTag) isConvertibleToTextMessage")
                 attachment.isConvertibleToTextMessage = isConvertibleToTextMessage
             }

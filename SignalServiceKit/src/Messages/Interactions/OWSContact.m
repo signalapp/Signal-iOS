@@ -17,6 +17,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// NOTE: When changing the value of this feature flag, you also need
+// to update the filtering in the SAE's info.plist.
 BOOL kIsSendingContactSharesEnabled = YES;
 
 NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
