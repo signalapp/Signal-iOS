@@ -34,6 +34,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactPhoneNumbersKey as CNKeyDescriptor,
         CNContactEmailAddressesKey as CNKeyDescriptor,
+        CNContactPostalAddressesKey as CNKeyDescriptor,
         CNContactViewController.descriptorForRequiredKeys()
     ]
 

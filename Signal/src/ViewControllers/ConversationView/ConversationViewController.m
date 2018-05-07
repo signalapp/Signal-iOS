@@ -117,6 +117,7 @@ typedef enum : NSUInteger {
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
+    ApproveContactShareViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
     ContactEditingDelegate,
@@ -2522,6 +2523,7 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Attachment Picking: Contacts
+
 - (void)chooseContactForSending
 {
     ContactsPicker *contactsPicker =
@@ -2938,6 +2940,26 @@ typedef enum : NSUInteger {
                                                       quotedReplyModel:self.inputToolbar.quotedReply
                                                          messageSender:self.messageSender
                                                             completion:nil];
+
+    [self messageWasSent:message];
+
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
+    }
+}
+
+- (void)sendContactShare:(OWSContact *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    DDLogVerbose(@"%@ Sending contact share.", self.logTag);
+
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare
+                                                                inThread:self.thread
+                                                           messageSender:self.messageSender
+                                                              completion:nil];
 
     [self messageWasSent:message];
 
@@ -4915,10 +4937,27 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
+    OWSAssert(contact);
+    OWSAssert(contact.cnContact);
+
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    // TODO actually build contact message.
-    self.inputToolbar.messageText = contact.fullName;
+    OWSContact *_Nullable contactShare = [OWSContacts contactForSystemContact:contact.cnContact];
+    if (!contactShare) {
+        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+        return;
+    }
+
+    // TODO: We should probably show this in the same navigation view controller.
+    ApproveContactShareViewController *approveContactShare =
+        [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
+                                                        contactsManager:self.contactsManager
+                                                               delegate:self];
+
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:approveContactShare];
+    [self dismissKeyBoard];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
@@ -4930,6 +4969,27 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 {
     // Any reason to preclude contacts?
     return YES;
+}
+
+#pragma mark - ApproveContactShareViewControllerDelegate
+
+- (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
+     didApproveContactShare:(OWSContact *)contactShare
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 [self sendContactShare:contactShare];
+                             }];
+}
+
+- (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
+      didCancelContactShare:(OWSContact *)contactShare
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

@@ -120,9 +120,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         scrollView.autoPinWidthToSuperview(withMargin: 0)
         scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
-        // See notes on how to use UIScrollView with iOS Auto Layout:
-        //
-        // https://developer.apple.com/library/content/releasenotes/General/RN-iOSSDK-6_0/
         let contentView = UIView.container()
         self.contentView = contentView
         scrollView.addSubview(contentView)

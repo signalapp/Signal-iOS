@@ -24,19 +24,25 @@ typedef NS_ENUM(NSUInteger, OWSContactPhoneType) {
 
 NSString *NSStringForContactPhoneType(OWSContactPhoneType value);
 
-@interface OWSContactPhoneNumber : MTLModel
-
-@property (nonatomic, readonly) OWSContactPhoneType phoneType;
-// Applies in the OWSContactPhoneType_Custom case.
-@property (nonatomic, readonly, nullable) NSString *label;
-
-@property (nonatomic, readonly) NSString *phoneNumber;
+@protocol OWSContactField <NSObject>
 
 - (BOOL)ows_isValid;
 
 - (NSString *)localizedLabel;
 
 - (NSString *)debugDescription;
+
+@end
+
+#pragma mark -
+
+@interface OWSContactPhoneNumber : MTLModel <OWSContactField>
+
+@property (nonatomic, readonly) OWSContactPhoneType phoneType;
+// Applies in the OWSContactPhoneType_Custom case.
+@property (nonatomic, readonly, nullable) NSString *label;
+
+@property (nonatomic, readonly) NSString *phoneNumber;
 
 @end
 
@@ -51,19 +57,13 @@ typedef NS_ENUM(NSUInteger, OWSContactEmailType) {
 
 NSString *NSStringForContactEmailType(OWSContactEmailType value);
 
-@interface OWSContactEmail : MTLModel
+@interface OWSContactEmail : MTLModel <OWSContactField>
 
 @property (nonatomic, readonly) OWSContactEmailType emailType;
 // Applies in the OWSContactEmailType_Custom case.
 @property (nonatomic, readonly, nullable) NSString *label;
 
 @property (nonatomic, readonly) NSString *email;
-
-- (BOOL)ows_isValid;
-
-- (NSString *)localizedLabel;
-
-- (NSString *)debugDescription;
 
 @end
 
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSUInteger, OWSContactAddressType) {
 
 NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
-@interface OWSContactAddress : MTLModel
+@interface OWSContactAddress : MTLModel <OWSContactField>
 
 @property (nonatomic, readonly) OWSContactAddressType addressType;
 // Applies in the OWSContactAddressType_Custom case.
@@ -90,12 +90,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, readonly, nullable) NSString *region;
 @property (nonatomic, readonly, nullable) NSString *postcode;
 @property (nonatomic, readonly, nullable) NSString *country;
-
-- (BOOL)ows_isValid;
-
-- (NSString *)localizedLabel;
-
-- (NSString *)debugDescription;
 
 @end
 
@@ -127,6 +121,20 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 - (BOOL)ows_isValid;
 
 - (NSString *)debugDescription;
+
+#pragma mark - Creation and Derivation
+
+- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
+                               givenName:(nullable NSString *)givenName
+                              middleName:(nullable NSString *)middleName
+                              familyName:(nullable NSString *)familyName
+                              nameSuffix:(nullable NSString *)nameSuffix;
+
+- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
+                                givenName:(nullable NSString *)givenName
+                               middleName:(nullable NSString *)middleName
+                               familyName:(nullable NSString *)familyName
+                               nameSuffix:(nullable NSString *)nameSuffix;
 
 @end
 

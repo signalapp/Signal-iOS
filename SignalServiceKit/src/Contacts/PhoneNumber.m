@@ -134,6 +134,10 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 {
     OWSAssert(phoneNumber);
 
+    if (![phoneNumber hasPrefix:COUNTRY_CODE_PREFIX]) {
+        return phoneNumber;
+    }
+
     PhoneNumber *_Nullable parsedPhoneNumber = [self tryParsePhoneNumberFromE164:phoneNumber];
     if (!parsedPhoneNumber) {
         DDLogWarn(@"%@ could not parse phone number.", self.logTag);
@@ -356,6 +360,9 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 + (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text {
     OWSAssert(text != nil);
+    if (![text hasPrefix:COUNTRY_CODE_PREFIX]) {
+        return nil;
+    }
 
     return [self phoneNumberFromE164:text];
 }

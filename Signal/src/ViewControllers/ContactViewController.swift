@@ -14,7 +14,7 @@ class TappableView: UIView {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
+    @available(*, unavailable, message: "use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         fatalError("Unimplemented")
     }
@@ -367,48 +367,14 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func createFieldsView() -> UIView {
         SwiftAssertIsOnMainThread(#function)
 
-        let fieldsView = UIView.container()
-        fieldsView.layoutMargins = .zero
-        fieldsView.preservesSuperviewLayoutMargins = false
-
-        var lastRow: UIView?
-
-        let addSpacerRow = {
-            guard let prevRow = lastRow else {
-                owsFail("\(self.logTag) missing last row")
-                return
-            }
-            let row = UIView()
-            row.backgroundColor = UIColor(rgbHex: 0xdedee1)
-            fieldsView.addSubview(row)
-            row.autoSetDimension(.height, toSize: 1)
-            row.autoPinLeadingToSuperviewMargin(withInset: self.hMargin)
-            row.autoPinTrailingToSuperviewMargin()
-            row.autoPinEdge(.top, to: .bottom, of: prevRow)
-            lastRow = row
-        }
-
-        let addRow: ((UIView) -> Void) = { (row) in
-            if lastRow != nil {
-                addSpacerRow()
-            }
-            fieldsView.addSubview(row)
-            row.autoPinLeadingToSuperviewMargin()
-            row.autoPinTrailingToSuperviewMargin()
-            if let lastRow = lastRow {
-                row.autoPinEdge(.top, to: .bottom, of: lastRow)
-            } else {
-                row.autoPinEdge(toSuperviewEdge: .top)
-            }
-            lastRow = row
-        }
+        var rows = [UIView]()
 
         if viewMode == .nonSystemContact {
-            addRow(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
+            rows.append(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                comment: "Label for 'new contact' button in conversation settings view."),
                                    action: #selector(didPressCreateNewContact)))
 
-            addRow(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+            rows.append(createActionRow(labelText: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                comment: "Label for 'new contact' button in conversation settings view."),
                                    action: #selector(didPressAddToExistingContact)))
         }
@@ -424,7 +390,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         for phoneNumber in contact.phoneNumbers {
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
 
-            addRow(createNameValueRow(name: phoneNumber.localizedLabel(),
+            rows.append(createNameValueRow(name: phoneNumber.localizedLabel(),
                                       value: formattedPhoneNumber,
                                       actionBlock: {
                                         guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
@@ -436,7 +402,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         }
 
         for email in contact.emails {
-            addRow(createNameValueRow(name: email.localizedLabel(),
+            rows.append(createNameValueRow(name: email.localizedLabel(),
                                       value: email.email,
                                       actionBlock: {
                                         guard let url = NSURL(string: "mailto:\(email.email)") else {
@@ -449,9 +415,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
         // TODO: Should we present addresses here too? How?
 
-        lastRow?.autoPinEdge(toSuperviewEdge: .bottom)
-
-        return fieldsView
+        return ContactFieldView(rows: rows, hMargin: hMargin)
     }
 
     private let hMargin = CGFloat(16)
@@ -690,10 +654,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         contactViewController.allowsActions = false
         contactViewController.allowsEditing = true
         contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(didFinishEditingContact))
-                contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                                                         style: .plain,
-                                                                                         target: self,
-                                                                                         action: #selector(didFinishEditingContact))
+        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
+                                                                                 style: .plain,
+                                                                                 target: self,
+                                                                                 action: #selector(didFinishEditingContact))
 
         self.navigationController?.pushViewController(contactViewController, animated: true)
 

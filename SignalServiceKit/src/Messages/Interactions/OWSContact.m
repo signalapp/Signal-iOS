@@ -7,6 +7,8 @@
 #import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
+
+//#import "Contact.h"
 #import "TSAttachment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -45,8 +47,8 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
 
 - (BOOL)ows_isValid
 {
-    if (![PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber]) {
-        DDLogWarn(@"%@ invalid phone number; not e164: %@.", self.logTag, self.phoneNumber);
+    if (self.phoneNumber.ows_stripped.length < 1) {
+        DDLogWarn(@"%@ invalid phone number: %@.", self.logTag, self.phoneNumber);
         return NO;
     }
     return YES;
@@ -122,7 +124,7 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
         DDLogWarn(@"%@ invalid email: %@.", self.logTag, self.email);
         return NO;
     }
-            return YES;
+    return YES;
 }
 
 - (NSString *)localizedLabel
@@ -201,7 +203,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         DDLogWarn(@"%@ invalid address; empty.", self.logTag);
         return NO;
     }
-            return YES;
+    return YES;
 }
 
 - (NSString *)localizedLabel
@@ -360,6 +362,13 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 }
 
+- (void)updateDisplayName
+{
+    _displayName = nil;
+
+    [self ensureDisplayName];
+}
+
 - (NSString *)debugDescription
 {
     NSMutableString *result = [NSMutableString new];
@@ -396,6 +405,55 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     [result appendString:@"]"];
     return result;
+}
+
+- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
+                               givenName:(nullable NSString *)givenName
+                              middleName:(nullable NSString *)middleName
+                              familyName:(nullable NSString *)familyName
+                              nameSuffix:(nullable NSString *)nameSuffix
+{
+    OWSContact *newContact = [OWSContact new];
+
+    [newContact setNamePrefix:namePrefix
+                    givenName:givenName
+                   middleName:middleName
+                   familyName:familyName
+                   nameSuffix:nameSuffix];
+
+    return newContact;
+}
+
+- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
+                                givenName:(nullable NSString *)givenName
+                               middleName:(nullable NSString *)middleName
+                               familyName:(nullable NSString *)familyName
+                               nameSuffix:(nullable NSString *)nameSuffix
+{
+    OWSContact *contactCopy = [self copy];
+
+    [contactCopy setNamePrefix:namePrefix
+                     givenName:givenName
+                    middleName:middleName
+                    familyName:familyName
+                    nameSuffix:nameSuffix];
+
+    return contactCopy;
+}
+
+- (void)setNamePrefix:(nullable NSString *)namePrefix
+            givenName:(nullable NSString *)givenName
+           middleName:(nullable NSString *)middleName
+           familyName:(nullable NSString *)familyName
+           nameSuffix:(nullable NSString *)nameSuffix
+{
+    self.namePrefix = namePrefix.ows_stripped;
+    self.givenName = givenName.ows_stripped;
+    self.middleName = middleName.ows_stripped;
+    self.familyName = familyName.ows_stripped;
+    self.nameSuffix = nameSuffix.ows_stripped;
+
+    [self updateDisplayName];
 }
 
 @end
