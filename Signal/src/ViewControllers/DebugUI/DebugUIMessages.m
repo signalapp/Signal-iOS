@@ -3584,9 +3584,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
                   TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
                   [self sendFakeMessages:messageCount thread:contactThread];
-                  DDLogError(@"Create fake thread: %@, interactions: %tu",
+                  DDLogError(@"Create fake thread: %@, interactions: %lu",
                       phoneNumber.toE164,
-                      contactThread.numberOfInteractions);
+                      (unsigned long)contactThread.numberOfInteractions);
               }];
 }
 
@@ -3612,7 +3612,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
                     }];
                 remainder -= batchSize;
-                DDLogInfo(@"%@ sendFakeMessages %td / %tu", self.logTag, counter - remainder, counter);
+                DDLogInfo(@"%@ sendFakeMessages %lu / %lu",
+                    self.logTag,
+                    (unsigned long)(counter - remainder),
+                    (unsigned long)counter);
             }
         });
     }
@@ -3624,7 +3627,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
               isTextOnly:(BOOL)isTextOnly
              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    DDLogInfo(@"%@ sendFakeMessages: %tu", self.logTag, counter);
+    DDLogInfo(@"%@ sendFakeMessages: %lu", self.logTag, (unsigned long)counter);
 
     for (NSUInteger i = 0; i < counter; i++) {
         NSString *randomText = [self randomText];
@@ -3776,7 +3779,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 {
     OWSAssert(thread);
 
-    DDLogInfo(@"%@ injectIncomingMessageInThread: %tu", self.logTag, counter);
+    DDLogInfo(@"%@ injectIncomingMessageInThread: %lu", self.logTag, (unsigned long)counter);
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
@@ -4168,7 +4171,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                 inThread:thread
                                 authorId:thread.recipientIdentifiers.firstObject
                           sourceDeviceId:0
-                             messageBody:[NSString stringWithFormat:@"Should disappear 60s after %tu", now]
+                             messageBody:[NSString
+                                             stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
                            attachmentIds:[NSMutableArray new]
                         expiresInSeconds:60
                            quotedMessage:nil

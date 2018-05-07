@@ -1109,7 +1109,8 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            DDLogDebug(@"%@ downloading thumbnail for message: %tu", self.logTag, incomingMessage.timestamp);
+            DDLogDebug(
+                @"%@ downloading thumbnail for message: %lu", self.logTag, (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1120,9 +1121,9 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    DDLogWarn(@"%@ failed to fetch thumbnail for message: %tu with error: %@",
+                    DDLogWarn(@"%@ failed to fetch thumbnail for message: %lu with error: %@",
                         self.logTag,
-                        incomingMessage.timestamp,
+                        (unsigned long)incomingMessage.timestamp,
                         error);
                 }];
         }
@@ -1140,7 +1141,9 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            DDLogDebug(@"%@ downloading contact avatar for message: %tu", self.logTag, incomingMessage.timestamp);
+            DDLogDebug(@"%@ downloading contact avatar for message: %lu",
+                self.logTag,
+                (unsigned long)incomingMessage.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:incomingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -1150,9 +1153,9 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    DDLogWarn(@"%@ failed to fetch contact avatar for message: %tu with error: %@",
+                    DDLogWarn(@"%@ failed to fetch contact avatar for message: %lu with error: %@",
                         self.logTag,
-                        incomingMessage.timestamp,
+                        (unsigned long)incomingMessage.timestamp,
                         error);
                 }];
         }

@@ -89,14 +89,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    OWSRaiseException(
-        NSInternalInconsistencyException, @"You must override %@ in a subclass", NSStringFromSelector(_cmd));
+    OWS_ABSTRACT_METHOD();
+    return nil;
 }
 
 - (UIImage *)buildDefaultImage
 {
-    OWSRaiseException(
-        NSInternalInconsistencyException, @"You must override %@ in a subclass", NSStringFromSelector(_cmd));
+    OWS_ABSTRACT_METHOD();
+    return [UIImage new];
 }
 
 @end

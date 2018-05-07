@@ -110,7 +110,6 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
 
-    // TODO: Use the contact's avatar if present and downloaded.
     AvatarImageView *avatarView = [AvatarImageView new];
     avatarView.image =
         [self.contactShare getAvatarImageWithDiameter:self.iconSize contactsManager:self.contactsManager];

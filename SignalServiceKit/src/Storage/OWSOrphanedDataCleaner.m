@@ -83,18 +83,20 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ fileCount: %tu", self.logTag, fileCount);
+    CleanupLogDebug(@"%@ fileCount: %lu", self.logTag, (unsigned long)fileCount);
     CleanupLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize);
     CleanupLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
-    CleanupLogDebug(@"%@ attachmentStreams with file paths: %tu", self.logTag, attachmentFilePaths.count);
+    CleanupLogDebug(
+        @"%@ attachmentStreams with file paths: %lu", self.logTag, (unsigned long)attachmentFilePaths.count);
 
     NSMutableSet<NSString *> *orphanDiskFilePaths = [diskFilePaths mutableCopy];
     [orphanDiskFilePaths minusSet:attachmentFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:diskFilePaths];
 
-    CleanupLogDebug(@"%@ orphan disk file paths: %tu", self.logTag, orphanDiskFilePaths.count);
-    CleanupLogDebug(@"%@ missing attachment file paths: %tu", self.logTag, missingAttachmentFilePaths.count);
+    CleanupLogDebug(@"%@ orphan disk file paths: %lu", self.logTag, (unsigned long)orphanDiskFilePaths.count);
+    CleanupLogDebug(
+        @"%@ missing attachment file paths: %lu", self.logTag, (unsigned long)missingAttachmentFilePaths.count);
 
     [self printPaths:orphanDiskFilePaths.allObjects label:@"orphan disk file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
@@ -140,10 +142,13 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ attachmentIds: %tu", self.logTag, attachmentIds.count);
-    CleanupLogDebug(@"%@ messageAttachmentIds: %tu", self.logTag, messageAttachmentIds.count);
-    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %tu", self.logTag, quotedReplyThumbnailAttachmentIds.count);
-    CleanupLogDebug(@"%@ contactShareAvatarAttachmentIds: %tu", self.logTag, contactShareAvatarAttachmentIds.count);
+    CleanupLogDebug(@"%@ attachmentIds: %lu", self.logTag, (unsigned long)attachmentIds.count);
+    CleanupLogDebug(@"%@ messageAttachmentIds: %lu", self.logTag, (unsigned long)messageAttachmentIds.count);
+    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %lu",
+        self.logTag,
+        (unsigned long)quotedReplyThumbnailAttachmentIds.count);
+    CleanupLogDebug(
+        @"%@ contactShareAvatarAttachmentIds: %lu", self.logTag, (unsigned long)contactShareAvatarAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:messageAttachmentIds];
@@ -152,9 +157,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:attachmentIds];
 
-    CleanupLogDebug(@"%@ orphan attachmentIds: %tu", self.logTag, orphanAttachmentIds.count);
-    CleanupLogDebug(@"%@ missing attachmentIds: %tu", self.logTag, missingAttachmentIds.count);
-    CleanupLogDebug(@"%@ orphan interactions: %tu", self.logTag, orphanInteractionIds.count);
+    CleanupLogDebug(@"%@ orphan attachmentIds: %lu", self.logTag, (unsigned long)orphanAttachmentIds.count);
+    CleanupLogDebug(@"%@ missing attachmentIds: %lu", self.logTag, (unsigned long)missingAttachmentIds.count);
+    CleanupLogDebug(@"%@ orphan interactions: %lu", self.logTag, (unsigned long)orphanInteractionIds.count);
 
     // We need to avoid cleaning up new attachments and files that are still in the process of
     // being created/written, so we don't clean up anything recent.

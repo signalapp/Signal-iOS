@@ -129,8 +129,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)description
 {
-    return [NSString
-        stringWithFormat:@"%@ in thread: %@ timestamp: %tu", [super description], self.uniqueThreadId, self.timestamp];
+    return [NSString stringWithFormat:@"%@ in thread: %@ timestamp: %lu",
+                     [super description],
+                     self.uniqueThreadId,
+                     (unsigned long)self.timestamp];
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction {

@@ -738,9 +738,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         OWSFail(@"%@ message body length too long.", self.logTag);
         NSString *truncatedBody = [self.body copy];
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            DDLogError(@"%@ truncating body which is too long: %tu",
+            DDLogError(@"%@ truncating body which is too long: %lu",
                 self.logTag,
-                [truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+                (unsigned long)[truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
             truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
         }
         [builder setBody:truncatedBody];
@@ -800,7 +800,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         if (contactProto) {
             [builder addContact:contactProto];
         } else {
-            OWSFail(@"%@ in %s <# thing #> was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+            OWSFail(@"%@ in %s contactProto was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         }
     }
 

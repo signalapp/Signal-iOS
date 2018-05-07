@@ -153,19 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                   transaction:transaction];
 
         if (thumbnailStream) {
-            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%tu",
+            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
-                timestamp);
+                (unsigned long)timestamp);
 
             [thumbnailStream saveWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
         } else if (quotedAttachment.hasThumbnail) {
-            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%tu",
+            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
-                timestamp);
+                (unsigned long)timestamp);
 
             OWSSignalServiceProtosAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *thumbnailPointer =
@@ -174,7 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
         } else {
-            DDLogDebug(@"%@ No thumbnail for quoted message: %@:%tu", self.logTag, thread.uniqueId, timestamp);
+            DDLogDebug(
+                @"%@ No thumbnail for quoted message: %@:%lu", self.logTag, thread.uniqueId, (unsigned long)timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];

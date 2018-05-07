@@ -135,7 +135,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                                transaction:transaction];
     }];
 
-    DDLogDebug(@"%@ Removed %tu expired messages", self.logTag, expirationCount);
+    DDLogDebug(@"%@ Removed %lu expired messages", self.logTag, (unsigned long)expirationCount);
 
     backgroundTask = nil;
     return expirationCount;
@@ -398,7 +398,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     [self.disappearingMessagesFinder enumerateMessagesWhichFailedToStartExpiringWithBlock:^(
         TSMessage *_Nonnull message) {
-        DDLogWarn(@"%@ starting old timer for message timestamp: %tu", self.logTag, message.timestamp);
+        DDLogWarn(@"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
         [self setExpirationForMessage:message expirationStartedAt:message.timestampForSorting transaction:transaction];
     }
                                                                               transaction:transaction];

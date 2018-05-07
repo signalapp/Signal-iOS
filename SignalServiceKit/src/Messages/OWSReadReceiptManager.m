@@ -559,9 +559,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
     
     if (wasLocal) {
-        DDLogError(@"Marking %zu messages as read locally.", newlyReadList.count);
+        DDLogError(@"Marking %lu messages as read locally.", (unsigned long)newlyReadList.count);
     } else {
-        DDLogError(@"Marking %zu messages as read by linked device.", newlyReadList.count);
+        DDLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
     }
     for (id<OWSReadTracking> readItem in newlyReadList) {
         [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];

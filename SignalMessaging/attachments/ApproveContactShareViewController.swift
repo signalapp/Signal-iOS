@@ -19,7 +19,7 @@ protocol ContactShareField: class {
 
     func setIsIncluded(_ isIncluded: Bool)
 
-    func applyToContact(contact: OWSContact)
+    func applyToContact(contact: ContactShareViewModel)
 }
 
 // MARK: -

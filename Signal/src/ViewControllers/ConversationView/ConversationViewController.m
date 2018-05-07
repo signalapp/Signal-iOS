@@ -2969,12 +2969,11 @@ typedef enum : NSUInteger {
                                                                    messageSender:self.messageSender
                                                                       completion:nil];
             [self messageWasSent:message];
+
+            if (didAddToProfileWhitelist) {
+                [self ensureDynamicInteractions];
+            }
         }];
-
-
-    if (didAddToProfileWhitelist) {
-        [self ensureDynamicInteractions];
-    }
 }
 
 - (NSURL *)videoTempFolder

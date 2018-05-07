@@ -710,8 +710,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(attachmentId.length > 0);
 
-    // TODO we should hoist this transaction to make sure we're getting a consistent view in the message sending process
-    // A brief glance shows it touches quite a bit of code, but should be straight forward.
+    // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
+    // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
+    // but should be straight forward.
     TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
     if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
         DDLogError(@"Unexpected type for attachment builder: %@", attachment);
