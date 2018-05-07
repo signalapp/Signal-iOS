@@ -15,6 +15,7 @@
 #import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
+#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -225,27 +226,25 @@ void AssertIsOnDisappearingMessagesQueue()
     [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
                                                                transaction:transaction];
     
-    BOOL changed = NO;
     if (message.expiresInSeconds == 0) {
-        if (disappearingMessagesConfiguration.isEnabled) {
-            changed = YES;
-            DDLogWarn(@"%@ Received remote message which had no expiration set, disabling our expiration to become "
-                      @"consistent.",
-                      self.logTag);
-            disappearingMessagesConfiguration.enabled = NO;
-            [disappearingMessagesConfiguration saveWithTransaction:transaction];
-        }
-    } else if (message.expiresInSeconds != disappearingMessagesConfiguration.durationSeconds) {
-        changed = YES;
-        DDLogInfo(@"%@ Received remote message with different expiration set, updating our expiration to become "
-                  @"consistent.",
-                  self.logTag);
+        disappearingMessagesConfiguration.enabled = NO;
+    } else {
         disappearingMessagesConfiguration.enabled = YES;
         disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
-        [disappearingMessagesConfiguration saveWithTransaction:transaction];
     }
-    
-    if (!changed) {
+
+    if (!disappearingMessagesConfiguration.dictionaryValueDidChange) {
+        return;
+    }
+    DDLogInfo(@"%@ becoming consistent message configuration: %@",
+        self.logTag,
+        disappearingMessagesConfiguration.dictionaryValue);
+    [disappearingMessagesConfiguration saveWithTransaction:transaction];
+
+    TSThread *_Nullable thread = [message threadWithTransaction:transaction];
+    if (!thread) {
+        // If there's not yet a message thread, we don't create one.
+        OWSFail(@"%@ in %s thread was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
     
@@ -255,14 +254,14 @@ void AssertIsOnDisappearingMessagesQueue()
         
         // We want the info message to appear _before_ the message.
         [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
-                                                                           thread:message.thread
+                                                                           thread:thread
                                                                     configuration:disappearingMessagesConfiguration
                                                               createdByRemoteName:contactName]
             saveWithTransaction:transaction];
     } else {
         // We want the info message to appear _before_ the message.
         [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
-                                                                           thread:message.thread
+                                                                           thread:thread
                                                                     configuration:disappearingMessagesConfiguration]
             saveWithTransaction:transaction];
     }
