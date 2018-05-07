@@ -52,10 +52,7 @@ class ContactNameFieldView: UIView {
         stackView.layoutMargins = .zero
         stackView.spacing = 10
         self.addSubview(stackView)
-        stackView.autoPinTopToSuperviewMargin()
-        stackView.autoPinBottomToSuperviewMargin()
-        stackView.autoPinLeadingToSuperviewMargin()
-        stackView.autoPinTrailingToSuperviewMargin()
+        stackView.autoPinEdgesToSuperviewMargins()
 
         let nameLabel = UILabel()
         nameLabel.text = name
@@ -291,13 +288,21 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
         delegate.editContactShareNameView(self, didEditContactShare: modifiedContactShare)
 
-        self.navigationController?.popViewController(animated: true)
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) Missing navigationController.")
+            return
+        }
+        navigationController.popViewController(animated: true)
     }
 
     func didPressCancel() {
         Logger.info("\(logTag) \(#function)")
 
-        self.navigationController?.popViewController(animated: true)
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) Missing navigationController.")
+            return
+        }
+        navigationController.popViewController(animated: true)
     }
 
     // MARK: - ContactNameFieldViewDelegate

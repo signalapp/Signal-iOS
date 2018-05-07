@@ -11,14 +11,33 @@ public protocol ApproveContactShareViewControllerDelegate: class {
     func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didCancelContactShare contactShare: OWSContact)
 }
 
+protocol ContactShareField: class {
+
+    func localizedLabel() -> String
+
+    func isIncluded() -> Bool
+
+    func setIsIncluded(_ isIncluded: Bool)
+
+    func applyToContact(contact: OWSContact)
+}
+
 // MARK: -
 
-class ContactShareField: NSObject {
+class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, ContactShareField {
+
+    let value: ContactFieldType
 
     private var isIncludedFlag = true
 
+    required init(_ value: ContactFieldType) {
+        self.value = value
+
+        super.init()
+    }
+
     func localizedLabel() -> String {
-        preconditionFailure("This method must be overridden")
+        return value.localizedLabel()
     }
 
     func isIncluded() -> Bool {
@@ -36,19 +55,7 @@ class ContactShareField: NSObject {
 
 // MARK: -
 
-class ContactSharePhoneNumber: ContactShareField {
-
-    let value: OWSContactPhoneNumber
-
-    required init(_ value: OWSContactPhoneNumber) {
-        self.value = value
-
-        super.init()
-    }
-
-    override func localizedLabel() -> String {
-        return value.localizedLabel()
-    }
+class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
     override func applyToContact(contact: OWSContact) {
         assert(isIncluded())
@@ -62,19 +69,7 @@ class ContactSharePhoneNumber: ContactShareField {
 
 // MARK: -
 
-class ContactShareEmail: ContactShareField {
-
-    let value: OWSContactEmail
-
-    required init(_ value: OWSContactEmail) {
-        self.value = value
-
-        super.init()
-    }
-
-    override func localizedLabel() -> String {
-        return value.localizedLabel()
-    }
+class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
     override func applyToContact(contact: OWSContact) {
         assert(isIncluded())
@@ -88,19 +83,7 @@ class ContactShareEmail: ContactShareField {
 
 // MARK: -
 
-class ContactShareAddress: ContactShareField {
-
-    let value: OWSContactAddress
-
-    required init(_ value: OWSContactAddress) {
-        self.value = value
-
-        super.init()
-    }
-
-    override func localizedLabel() -> String {
-        return value.localizedLabel()
-    }
+class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
     override func applyToContact(contact: OWSContact) {
         assert(isIncluded())
@@ -259,10 +242,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         self.fieldViews = fieldViews
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     // MARK: - View Lifecycle
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -289,7 +268,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         self.navigationItem.title = NSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
                                                       comment: "Title for the 'Approve contact share' view.")
 
-        self.view.preservesSuperviewLayoutMargins = false
         self.view.backgroundColor = UIColor.white
 
         updateContent()
@@ -340,10 +318,13 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         let fieldsView = createFieldsView()
 
         scrollView.addSubview(fieldsView)
+        // Use layoutMarginsGuide for views inside UIScrollView
+        // that should have same width as scroll view.
         fieldsView.autoPinLeadingToSuperviewMargin()
         fieldsView.autoPinTrailingToSuperviewMargin()
         fieldsView.autoPinEdge(toSuperviewEdge: .top)
         fieldsView.autoPinEdge(toSuperviewEdge: .bottom)
+        fieldsView.setContentHuggingHorizontalLow()
     }
 
     private func createFieldsView() -> UIView {
@@ -374,10 +355,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         stackView.layoutMargins = .zero
         stackView.spacing = 10
         row.addSubview(stackView)
-        stackView.autoPinLeadingToSuperviewMargin()
-        stackView.autoPinTrailingToSuperviewMargin()
-        stackView.autoPinTopToSuperviewMargin()
-        stackView.autoPinBottomToSuperviewMargin()
+        stackView.autoPinEdgesToSuperviewMargins()
 
         let nameLabel = UILabel()
         self.nameLabel = nameLabel
@@ -386,7 +364,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         nameLabel.textColor = UIColor.ows_materialBlue
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
-        nameLabel.setContentHuggingHigh()
 
         let editNameLabel = UILabel()
         editNameLabel.text = NSLocalizedString("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
