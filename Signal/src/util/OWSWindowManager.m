@@ -67,9 +67,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 @property (nonatomic, nullable) UIViewController *callViewController;
 
-@property (nonatomic, nullable) UIResponder *rootWindowResponder;
-@property (nonatomic, nullable, weak) UIViewController *rootFrontmostViewController;
-
 @end
 
 #pragma mark -
@@ -348,37 +345,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         DDLogInfo(@"%@ showing root window.", self.logTag);
     }
 
-    BOOL shouldTryToRestoreFirstResponder = self.rootWindow.hidden;
-
+    // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
+    // In the normal case, that means the SignalViewController will call `becomeFirstResponder` on the vc on top of it's
+    // navigation stack.
     [self.rootWindow makeKeyAndVisible];
 
-    // When we hide the block window, try to restore the first
-    // responder of the root window.
-    //
-    // It's important we restore first responder status once the user completes
-    // In some cases, (RegistrationLock Reminder) it just puts the keyboard back where
-    // the user needs it, saving them a tap.
-    // But in the case of an inputAccessoryView, like the ConversationViewController,
-    // failing to restore firstResponder could hide the input toolbar.
-    if (shouldTryToRestoreFirstResponder) {
-        UIViewController *rootFrontmostViewController =
-            [UIApplication.sharedApplication frontmostViewControllerIgnoringAlerts];
-
-        DDLogInfo(@"%@ trying to restore self.rootWindowResponder: %@ (%@ ? %@ == %d)",
-            self.logTag,
-            self.rootWindowResponder,
-            [self.rootFrontmostViewController class],
-            rootFrontmostViewController,
-            self.rootFrontmostViewController == rootFrontmostViewController);
-        if (self.rootFrontmostViewController == rootFrontmostViewController) {
-            [self.rootWindowResponder becomeFirstResponder];
-        } else {
-            [rootFrontmostViewController becomeFirstResponder];
-        }
-    }
-
-    self.rootWindowResponder = nil;
-    self.rootFrontmostViewController = nil;
 }
 
 - (void)ensureRootWindowHidden
@@ -387,17 +358,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     if (!self.rootWindow.hidden) {
         DDLogInfo(@"%@ hiding root window.", self.logTag);
-    }
-
-    // When we hide the root window, try to capture its first responder and
-    // current vc before it is hidden.
-    if (!self.rootWindow.hidden) {
-        self.rootWindowResponder = [UIResponder currentFirstResponder];
-        self.rootFrontmostViewController = [UIApplication.sharedApplication frontmostViewControllerIgnoringAlerts];
-        DDLogInfo(@"%@ trying to capture self.rootWindowResponder: %@ (%@)",
-            self.logTag,
-            self.rootWindowResponder,
-            [self.rootFrontmostViewController class]);
     }
 
     self.rootWindow.hidden = YES;
@@ -450,7 +410,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     [self.callViewWindow makeKeyAndVisible];
-    [self.callViewWindow.rootViewController becomeFirstResponder];
 }
 
 - (void)ensureCallViewWindowHidden
@@ -473,7 +432,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     self.screenBlockingWindow.windowLevel = UIWindowLevel_ScreenBlocking();
-    [self.screenBlockingWindow.rootViewController becomeFirstResponder];
+    [self.screenBlockingWindow makeKeyAndVisible];
 }
 
 - (void)ensureScreenBlockWindowHidden
@@ -488,7 +447,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // Instead, manipulate its window level to move it in front of
     // or behind the root window.
     self.screenBlockingWindow.windowLevel = UIWindowLevel_Background;
-    [self.screenBlockingWindow resignFirstResponder];
 }
 
 #pragma mark - Events

@@ -33,9 +33,6 @@ import LocalAuthentication
     private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
     private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
 
-    // We temporarily resign any first responder while the Screen Lock is presented.
-    weak var firstResponderBeforeLockscreen: UIResponder?
-
     // MARK - Singleton class
 
     @objc(sharedManager)
