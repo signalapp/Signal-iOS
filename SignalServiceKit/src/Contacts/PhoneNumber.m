@@ -217,7 +217,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
         if (localCallingCode != nil) {
             NSString *localCallingCodePrefix = [NSString stringWithFormat:@"+%@", localCallingCode];
             NSString *localCountryCode =
-                [PhoneNumberUtil.sharedUtil probableCountryCodeForCallingCode:localCallingCodePrefix];
+                [PhoneNumberUtil.sharedThreadLocal probableCountryCodeForCallingCode:localCallingCodePrefix];
             if (localCountryCode && ![localCountryCode isEqualToString:[self defaultCountryCode]]) {
                 NBMetadataHelper *helper = [[NBMetadataHelper alloc] init];
                 NBPhoneMetaData *localNumberRegionMetadata = [helper getMetadataForRegion:localCountryCode];
@@ -332,7 +332,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
             // Italian phone number but use French region/language for their
             // phone. They're likely to have both Italian and French contacts.
             NSString *localCountryCode =
-                [PhoneNumberUtil.sharedUtil probableCountryCodeForCallingCode:callingCodePrefix];
+                [PhoneNumberUtil.sharedThreadLocal probableCountryCodeForCallingCode:callingCodePrefix];
             if (localCountryCode && ![localCountryCode isEqualToString:[self defaultCountryCode]]) {
                 tryParsingWithCountryCode(
                     [callingCodePrefix stringByAppendingString:sanitizedString], localCountryCode);

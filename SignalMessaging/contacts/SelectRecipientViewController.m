@@ -218,13 +218,13 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         OWSAssert(callingCode);
         if (callingCode) {
             NSString *prefix = [NSString stringWithFormat:@"+%d", callingCode.intValue];
-            countryCode = [[PhoneNumberUtil sharedUtil] probableCountryCodeForCallingCode:prefix];
+            countryCode = [[PhoneNumberUtil sharedThreadLocal] probableCountryCodeForCallingCode:prefix];
         }
     }
 
     if (!countryCode || !callingCode) {
         countryCode = [PhoneNumber defaultCountryCode];
-        callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+        callingCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
     }
 
     NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];

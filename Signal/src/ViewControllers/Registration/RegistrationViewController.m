@@ -253,7 +253,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     self.phoneNumberTextField.text = [self lastRegisteredPhoneNumber];
 #endif
 
-    NSNumber *callingCode = [[PhoneNumberUtil sharedUtil].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
+    NSNumber *callingCode = [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil getCountryCodeForRegion:countryCode];
     NSString *countryName = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
     [self updateCountryWithName:countryName
                     callingCode:[NSString stringWithFormat:@"%@%@", COUNTRY_CODE_PREFIX, callingCode]
