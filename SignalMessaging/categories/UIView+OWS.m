@@ -516,4 +516,18 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 @end
 
+#pragma mark -
+
+@implementation UIStackView (OWS)
+
+- (void)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor
+{
+    UIView *subview = [UIView new];
+    subview.backgroundColor = backgroundColor;
+    [self addSubview:subview];
+    [subview autoPinEdgesToSuperviewEdges];
+}
+
+@end
+
 NS_ASSUME_NONNULL_END

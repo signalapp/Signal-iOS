@@ -135,6 +135,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @end
 
+#pragma mark -
+
+@interface UIStackView (OWS)
+
+- (void)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
+
+@end
+
 #pragma mark - Macros
 
 CG_INLINE CGSize CGSizeCeil(CGSize size)

@@ -14,7 +14,6 @@
 
 + (PhoneNumber *)phoneNumberFromE164:(NSString *)text;
 
-+ (PhoneNumber *)tryParsePhoneNumberFromText:(NSString *)text fromRegion:(NSString *)regionCode;
 + (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
 + (PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
 

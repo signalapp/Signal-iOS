@@ -3,6 +3,7 @@
 //
 
 #import <Mantle/MTLModel.h>
+#import <SignalServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -140,10 +141,19 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
                                familyName:(nullable NSString *)familyName
                                nameSuffix:(nullable NSString *)nameSuffix;
 
+#pragma mark - Phone Numbers and Recipient IDs
+
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+    NS_SWIFT_NAME(systemContactsWithSignalAccountPhoneNumbers(_:));
+- (NSArray<NSString *> *)systemContactPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+    NS_SWIFT_NAME(systemContactPhoneNumbers(_:));
+- (NSArray<NSString *> *)e164PhoneNumbers NS_SWIFT_NAME(e164PhoneNumbers());
+
 @end
 
 #pragma mark -
 
+// TODO: Move to separate source file, rename to OWSContactConversion.
 @interface OWSContacts : NSObject
 
 #pragma mark - VCard Serialization

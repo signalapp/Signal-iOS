@@ -12,7 +12,7 @@ enum MessageMetadataViewMode: UInt {
     case focusOnMetadata
 }
 
-class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate {
+class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDelegate, OWSMessageBubbleViewDelegate, ContactShareViewHelperDelegate {
 
     // MARK: Properties
 
@@ -39,6 +39,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var dataSource: DataSource?
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
+
+    private var contactShareViewHelper: ContactShareViewHelper?
 
     // MARK: Initializers
 
@@ -621,6 +623,30 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.navigationController?.pushViewController(contactViewController, animated: true)
     }
 
+    func sendMessage(toContactShare contactShare: ContactShareViewModel) {
+        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
+                                                        contactsManager: contactsManager,
+                                                        fromViewController: self,
+                                                        delegate: self)
+        contactShareViewHelper?.sendMessageToContact()
+    }
+
+    func sendInvite(toContactShare contactShare: ContactShareViewModel) {
+        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
+                                                        contactsManager: contactsManager,
+                                                        fromViewController: self,
+                                                        delegate: self)
+        contactShareViewHelper?.inviteContact()
+    }
+
+    func showAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
+        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
+                                                        contactsManager: contactsManager,
+                                                        fromViewController: self,
+                                                        delegate: self)
+        contactShareViewHelper?.addToContacts()
+    }
+
     var audioAttachmentPlayer: OWSAudioPlayer?
 
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
@@ -699,5 +725,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.dismiss(animated: true) {
             self.navigationController?.popViewController(animated: true)
         }
+    }
+
+    // MARK: - ContactShareViewHelperDelegate
+
+    public func didCreateOrEditContact() {
+        updateContent()
     }
 }

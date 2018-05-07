@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -378,7 +378,8 @@ NS_ASSUME_NONNULL_BEGIN
         lastSubview = bodyMediaView;
         bottomMargin = 0;
 
-        BOOL shouldStrokeMediaView = [bodyMediaView isKindOfClass:[UIImageView class]];
+        BOOL shouldStrokeMediaView = ([bodyMediaView isKindOfClass:[UIImageView class]] ||
+            [bodyMediaView isKindOfClass:[OWSContactShareView class]]);
         if (shouldStrokeMediaView) {
             OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
             bubbleStrokeView.strokeThickness = 1.f;
@@ -796,9 +797,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.viewItem.contactShare);
 
-    OWSContactShareView *contactShareView =
-        [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
-                                               isIncoming:self.isIncoming];
+    OWSContactShareView *contactShareView = [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
+                                                                                   isIncoming:self.isIncoming
+                                                                                     delegate:self];
     [contactShareView createContents];
     // TODO: Should we change appearance if contact avatar is uploading?
 
@@ -931,7 +932,10 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_DownloadingAttachment:
             return CGSizeMake(200, 90);
         case OWSMessageCellType_ContactShare:
-            return CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
+            OWSAssert(self.viewItem.contactShare);
+
+            return CGSizeMake(
+                maxMessageWidth, [OWSContactShareView bubbleHeightForContactShare:self.viewItem.contactShare]);
     }
 }
 
@@ -1127,6 +1131,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    if ([self.bodyMediaView isKindOfClass:[OWSContactShareView class]]) {
+        OWSContactShareView *contactShareView = (OWSContactShareView *)self.bodyMediaView;
+        if ([contactShareView handleTapGesture:sender]) {
+            return;
+        }
+    }
+
     CGPoint locationInMessageBubble = [sender locationInView:self];
     switch ([self gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -1245,6 +1256,32 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate didTapConversationItem:self.viewItem
                                      quotedReply:quotedReply
         failedThumbnailDownloadAttachmentPointer:attachmentPointer];
+}
+
+#pragma mark - OWSContactShareViewDelegate
+
+- (void)sendMessageToContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    [self.delegate sendMessageToContactShare:contactShare];
+}
+
+- (void)sendInviteToContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    [self.delegate sendInviteToContactShare:contactShare];
+}
+
+- (void)showAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    [self.delegate showAddToContactUIForContactShare:contactShare];
 }
 
 @end

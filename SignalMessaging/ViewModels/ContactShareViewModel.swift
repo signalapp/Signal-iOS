@@ -65,8 +65,16 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
-    public var phoneNumberStrings: [String] {
-        return phoneNumbers.map { $0.phoneNumber }
+    public func systemContactsWithSignalAccountPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
+        return dbRecord.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+    }
+
+    public func systemContactPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
+        return dbRecord.systemContactPhoneNumbers(contactsManager)
+    }
+
+    public func e164PhoneNumbers() -> [String] {
+        return dbRecord.e164PhoneNumbers()
     }
 
     public var displayName: String {
