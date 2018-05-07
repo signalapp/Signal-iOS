@@ -860,7 +860,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         OWSSignalServiceProtosDataMessageContactAvatarBuilder *avatarBuilder =
             [OWSSignalServiceProtosDataMessageContactAvatarBuilder new];
         avatarBuilder.avatar =
-            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId isVoiceMessage:NO];
+            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
         contactBuilder.avatar = [avatarBuilder build];
     }
 

@@ -7,6 +7,7 @@
 #import "OWSGroupsOutputStream.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
+#import "TSAttachmentStream.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 
@@ -35,8 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    OWSSignalServiceProtosAttachmentPointer *attachmentProto =
-        [self buildProtoForAttachmentId:self.attachmentIds[0] filename:nil];
+    OWSSignalServiceProtosAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
 
     OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
         [OWSSignalServiceProtosSyncMessageGroupsBuilder new];

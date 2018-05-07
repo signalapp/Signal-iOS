@@ -143,19 +143,6 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  */
 - (BOOL)shouldSyncTranscript;
 
-/**
- * @param attachmentId
- *   id of an AttachmentStream containing the meta data used when populating the attachment proto
- *
- * @param filename
- *   optional filename of the attachment.
- *
- * @return
- *      An attachment pointer protobuf suitable for including in various container protobuf builders
- */
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
-                                                              filename:(nullable NSString *)filename;
-
 - (BOOL)shouldBeSaved;
 
 // All recipients of this message.

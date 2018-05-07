@@ -82,11 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Protobuf
 
-+ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)filename
-                                                                 isVoiceMessage:(BOOL)isVoiceMessage;
++ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
 
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoWithFilename:(nullable NSString *)filename
-                                                     isVoiceMessage:(BOOL)isVoiceMessage;
+- (OWSSignalServiceProtosAttachmentPointer *)buildProto;
 
 @end
 

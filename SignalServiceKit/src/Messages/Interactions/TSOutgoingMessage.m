@@ -761,7 +761,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             case TSGroupMessageNew: {
                 if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                     attachmentWasGroupAvatar = YES;
-                    [groupBuilder setAvatar:[self buildProtoForAttachmentId:self.attachmentIds[0] filename:nil]];
+                    [groupBuilder setAvatar:[TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject]];
                 }
 
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
@@ -781,8 +781,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (!attachmentWasGroupAvatar) {
         NSMutableArray *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
-            NSString *_Nullable sourceFilename = self.attachmentFilenameMap[attachmentId];
-            [attachments addObject:[self buildProtoForAttachmentId:attachmentId filename:sourceFilename]];
+            [attachments addObject:[TSAttachmentStream buildProtoForAttachmentId:attachmentId]];
         }
         [builder setAttachmentsArray:attachments];
     }
@@ -836,8 +835,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             quotedAttachmentBuilder.fileName = attachment.sourceFilename;
             if (attachment.thumbnailAttachmentStreamId) {
                 quotedAttachmentBuilder.thumbnail =
-                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId
-                                                   isVoiceMessage:NO];
+                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
             }
 
             [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
