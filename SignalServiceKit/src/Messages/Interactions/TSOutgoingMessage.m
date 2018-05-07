@@ -738,9 +738,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         OWSFail(@"%@ message body length too long.", self.logTag);
         NSString *truncatedBody = [self.body copy];
         while ([truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding] > kOversizeTextMessageSizeThreshold) {
-            DDLogError(@"%@ truncating body which is too long: %tu",
+            DDLogError(@"%@ truncating body which is too long: %lu",
                 self.logTag,
-                [truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+                (unsigned long)[truncatedBody lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
             truncatedBody = [truncatedBody substringToIndex:truncatedBody.length / 2];
         }
         [builder setBody:truncatedBody];
@@ -799,6 +799,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             [OWSContacts protoForContact:self.contactShare];
         if (contactProto) {
             [builder addContact:contactProto];
+        } else {
+            OWSFail(@"%@ in %s contactProto was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         }
     }
 
@@ -834,7 +836,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             quotedAttachmentBuilder.fileName = attachment.sourceFilename;
             if (attachment.thumbnailAttachmentStreamId) {
                 quotedAttachmentBuilder.thumbnail =
-                    [self buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId];
+                    [TSAttachmentStream buildProtoForAttachmentId:attachment.thumbnailAttachmentStreamId
+                                                   isVoiceMessage:NO];
             }
 
             [quoteBuilder addAttachments:[quotedAttachmentBuilder build]];
@@ -869,62 +872,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (BOOL)shouldSyncTranscript
 {
     return !self.hasSyncedTranscript;
-}
-
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
-{
-    OWSAssert(attachmentId.length > 0);
-
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
-        return nil;
-    }
-    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-    return [self buildProtoForAttachmentStream:attachmentStream filename:attachmentStream.sourceFilename];
-}
-
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
-                                                              filename:(nullable NSString *)filename
-{
-    OWSAssert(attachmentId.length > 0);
-
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
-        return nil;
-    }
-    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-    return [self buildProtoForAttachmentStream:attachmentStream filename:filename];
-}
-
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentStream:(TSAttachmentStream *)attachmentStream
-                                                                  filename:(nullable NSString *)filename
-{
-    OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
-    [builder setId:attachmentStream.serverId];
-    OWSAssert(attachmentStream.contentType.length > 0);
-    [builder setContentType:attachmentStream.contentType];
-    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, filename);
-    [builder setFileName:filename];
-    [builder setSize:attachmentStream.byteCount];
-    [builder setKey:attachmentStream.encryptionKey];
-    [builder setDigest:attachmentStream.digest];
-    [builder setFlags:(self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0)];
-
-    if ([attachmentStream shouldHaveImageSize]) {
-        CGSize imageSize = [attachmentStream imageSize];
-        if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
-            NSInteger imageWidth = (NSInteger)round(imageSize.width);
-            NSInteger imageHeight = (NSInteger)round(imageSize.height);
-            if (imageWidth > 0 && imageHeight > 0) {
-                [builder setWidth:(UInt32)imageWidth];
-                [builder setHeight:(UInt32)imageHeight];
-            }
-        }
-    }
-
-    return [builder build];
 }
 
 - (NSString *)statusDescription

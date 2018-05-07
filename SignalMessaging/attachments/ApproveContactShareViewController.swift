@@ -7,8 +7,8 @@ import SignalServiceKit
 
 @objc
 public protocol ApproveContactShareViewControllerDelegate: class {
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didApproveContactShare contactShare: OWSContact)
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didCancelContactShare contactShare: OWSContact)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didCancelContactShare contactShare: ContactShareViewModel)
 }
 
 protocol ContactShareField: class {
@@ -19,7 +19,7 @@ protocol ContactShareField: class {
 
     func setIsIncluded(_ isIncluded: Bool)
 
-    func applyToContact(contact: OWSContact)
+    func applyToContact(contact: ContactShareViewModel)
 }
 
 // MARK: -
@@ -48,7 +48,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
         isIncludedFlag = isIncluded
     }
 
-    func applyToContact(contact: OWSContact) {
+    func applyToContact(contact: ContactShareViewModel) {
         preconditionFailure("This method must be overridden")
     }
 }
@@ -57,7 +57,7 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
 
 class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
-    override func applyToContact(contact: OWSContact) {
+    override func applyToContact(contact: ContactShareViewModel) {
         assert(isIncluded())
 
         var values = [OWSContactPhoneNumber]()
@@ -71,7 +71,7 @@ class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
 class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
-    override func applyToContact(contact: OWSContact) {
+    override func applyToContact(contact: ContactShareViewModel) {
         assert(isIncluded())
 
         var values = [OWSContactEmail]()
@@ -85,7 +85,7 @@ class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
 class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
-    override func applyToContact(contact: OWSContact) {
+    override func applyToContact(contact: ContactShareViewModel) {
         assert(isIncluded())
 
         var values = [OWSContactAddress]()
@@ -185,7 +185,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     let contactsManager: OWSContactsManager
 
-    var contactShare: OWSContact
+    var contactShare: ContactShareViewModel
 
     var fieldViews = [ContactShareFieldView]()
 
@@ -199,7 +199,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     }
 
     @objc
-    required public init(contactShare: OWSContact, contactsManager: OWSContactsManager, delegate: ApproveContactShareViewControllerDelegate) {
+    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ApproveContactShareViewControllerDelegate) {
         self.contactsManager = contactsManager
         self.contactShare = contactShare
         self.delegate = delegate
@@ -277,7 +277,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // TODO: Surface error with resolution to user if not.
     func canShareContact() -> Bool {
-        return contactShare.ows_isValid()
+        return contactShare.ows_isValid
     }
 
     func updateNavigationBar() {
@@ -471,7 +471,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // MARK: -
 
-    func filteredContactShare() -> OWSContact {
+    func filteredContactShare() -> ContactShareViewModel {
         let result = self.contactShare.newContact(withNamePrefix: self.contactShare.namePrefix,
                                                   givenName: self.contactShare.givenName,
                                                   middleName: self.contactShare.middleName,
@@ -498,7 +498,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         }
 
         let filteredContactShare = self.filteredContactShare()
-        assert(filteredContactShare.ows_isValid())
+        assert(filteredContactShare.ows_isValid)
 
         delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
     }
@@ -523,7 +523,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // MARK: - EditContactShareNameViewControllerDelegate
 
-    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: OWSContact) {
+    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
         nameLabel.text = contactShare.displayName

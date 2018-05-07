@@ -120,15 +120,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
 }
 
-#if TARGET_OS_IPHONE
-
-- (nullable UIImage *)image
-{
-    UIImage *image = [[TextSecureKitEnv sharedEnv].contactsManager imageForPhoneIdentifier:self.contactIdentifier];
-    return image;
-}
-
-#endif
 
 + (NSString *)threadIdFromContactId:(NSString *)contactId {
     return [TSContactThreadPrefix stringByAppendingString:contactId];

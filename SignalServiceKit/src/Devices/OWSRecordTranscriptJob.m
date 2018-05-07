@@ -110,7 +110,8 @@ NS_ASSUME_NONNULL_BEGIN
                 [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                             networkManager:self.networkManager];
 
-            DDLogDebug(@"%@ downloading thumbnail for transcript: %tu", self.logTag, transcript.timestamp);
+            DDLogDebug(
+                @"%@ downloading thumbnail for transcript: %lu", self.logTag, (unsigned long)transcript.timestamp);
             [attachmentProcessor fetchAttachmentsForMessage:outgoingMessage
                 transaction:transaction
                 success:^(TSAttachmentStream *_Nonnull attachmentStream) {
@@ -121,9 +122,9 @@ NS_ASSUME_NONNULL_BEGIN
                         }];
                 }
                 failure:^(NSError *_Nonnull error) {
-                    DDLogWarn(@"%@ failed to fetch thumbnail for transcript: %tu with error: %@",
+                    DDLogWarn(@"%@ failed to fetch thumbnail for transcript: %lu with error: %@",
                         self.logTag,
-                        transcript.timestamp,
+                        (unsigned long)transcript.timestamp,
                         error);
                 }];
         }

@@ -356,10 +356,10 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     backgroundTask = nil;
 
-    DDLogVerbose(@"%@ completed %zu/%zu jobs. %zd jobs left.",
+    DDLogVerbose(@"%@ completed %lu/%lu jobs. %zd jobs left.",
         self.logTag,
-        processedJobs.count,
-        batchJobs.count,
+        (unsigned long)processedJobs.count,
+        (unsigned long)batchJobs.count,
         [OWSMessageContentJob numberOfKeysInCollection]);
 
     // Wait a bit in hopes of increasing the batch size.

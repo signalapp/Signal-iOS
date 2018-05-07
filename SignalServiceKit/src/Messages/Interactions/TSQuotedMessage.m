@@ -18,14 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAttachmentInfo
 
-- (instancetype)initWithAttachment:(TSAttachment *)attachment
+- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 {
-    OWSAssert(attachment.uniqueId);
-    OWSAssert(attachment.contentType);
+    OWSAssert([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
+    OWSAssert(attachmentStream.uniqueId);
+    OWSAssert(attachmentStream.contentType);
 
-    return [self initWithAttachmentId:attachment.uniqueId
-                          contentType:attachment.contentType
-                       sourceFilename:attachment.sourceFilename];
+    return [self initWithAttachmentId:attachmentStream.uniqueId
+                          contentType:attachmentStream.contentType
+                       sourceFilename:attachmentStream.sourceFilename];
 }
 
 - (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
@@ -94,8 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
     _body = body;
     
     NSMutableArray *attachmentInfos = [NSMutableArray new];
-    for (TSAttachment *attachment in attachments) {
-        [attachmentInfos addObject:[[OWSAttachmentInfo alloc] initWithAttachment:attachment]];
+    for (TSAttachmentStream *attachmentStream in attachments) {
+        [attachmentInfos addObject:[[OWSAttachmentInfo alloc] initWithAttachmentStream:attachmentStream]];
     }
     _quotedAttachments = [attachmentInfos copy];
 
@@ -152,19 +153,19 @@ NS_ASSUME_NONNULL_BEGIN
                                                   transaction:transaction];
 
         if (thumbnailStream) {
-            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%tu",
+            DDLogDebug(@"%@ Generated local thumbnail for quoted quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
-                timestamp);
+                (unsigned long)timestamp);
 
             [thumbnailStream saveWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
         } else if (quotedAttachment.hasThumbnail) {
-            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%tu",
+            DDLogDebug(@"%@ Saving reference for fetching remote thumbnail for quoted message: %@:%lu",
                 self.logTag,
                 thread.uniqueId,
-                timestamp);
+                (unsigned long)timestamp);
 
             OWSSignalServiceProtosAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *thumbnailPointer =
@@ -173,7 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
 
             attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
         } else {
-            DDLogDebug(@"%@ No thumbnail for quoted message: %@:%tu", self.logTag, thread.uniqueId, timestamp);
+            DDLogDebug(
+                @"%@ No thumbnail for quoted message: %@:%lu", self.logTag, thread.uniqueId, (unsigned long)timestamp);
         }
 
         [attachmentInfos addObject:attachmentInfo];

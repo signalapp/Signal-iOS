@@ -4,6 +4,7 @@
 
 #import "OWSOrphanedDataCleaner.h"
 #import "NSDate+OWS.h"
+#import "OWSContact.h"
 #import "OWSPrimaryStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
@@ -82,18 +83,20 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ fileCount: %zd", self.logTag, fileCount);
+    CleanupLogDebug(@"%@ fileCount: %lu", self.logTag, (unsigned long)fileCount);
     CleanupLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize);
     CleanupLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
-    CleanupLogDebug(@"%@ attachmentStreams with file paths: %zd", self.logTag, attachmentFilePaths.count);
+    CleanupLogDebug(
+        @"%@ attachmentStreams with file paths: %lu", self.logTag, (unsigned long)attachmentFilePaths.count);
 
     NSMutableSet<NSString *> *orphanDiskFilePaths = [diskFilePaths mutableCopy];
     [orphanDiskFilePaths minusSet:attachmentFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:diskFilePaths];
 
-    CleanupLogDebug(@"%@ orphan disk file paths: %zd", self.logTag, orphanDiskFilePaths.count);
-    CleanupLogDebug(@"%@ missing attachment file paths: %zd", self.logTag, missingAttachmentFilePaths.count);
+    CleanupLogDebug(@"%@ orphan disk file paths: %lu", self.logTag, (unsigned long)orphanDiskFilePaths.count);
+    CleanupLogDebug(
+        @"%@ missing attachment file paths: %lu", self.logTag, (unsigned long)missingAttachmentFilePaths.count);
 
     [self printPaths:orphanDiskFilePaths.allObjects label:@"orphan disk file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
@@ -106,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *messageAttachmentIds = [NSMutableSet new];
     NSMutableSet<NSString *> *quotedReplyThumbnailAttachmentIds = [NSMutableSet new];
+    NSMutableSet<NSString *> *contactShareAvatarAttachmentIds = [NSMutableSet new];
 
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         [transaction enumerateKeysAndObjectsInCollection:TSMessage.collection
@@ -129,22 +133,33 @@ NS_ASSUME_NONNULL_BEGIN
                                                           addObjectsFromArray:quotedMessage
                                                                                   .thumbnailAttachmentStreamIds];
                                                   }
+
+                                                  OWSContact *_Nullable contactShare = message.contactShare;
+                                                  if (contactShare && contactShare.avatarAttachmentId) {
+                                                      [contactShareAvatarAttachmentIds
+                                                          addObject:contactShare.avatarAttachmentId];
+                                                  }
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ attachmentIds: %zd", self.logTag, attachmentIds.count);
-    CleanupLogDebug(@"%@ messageAttachmentIds: %zd", self.logTag, messageAttachmentIds.count);
-    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %zd", self.logTag, quotedReplyThumbnailAttachmentIds.count);
+    CleanupLogDebug(@"%@ attachmentIds: %lu", self.logTag, (unsigned long)attachmentIds.count);
+    CleanupLogDebug(@"%@ messageAttachmentIds: %lu", self.logTag, (unsigned long)messageAttachmentIds.count);
+    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %lu",
+        self.logTag,
+        (unsigned long)quotedReplyThumbnailAttachmentIds.count);
+    CleanupLogDebug(
+        @"%@ contactShareAvatarAttachmentIds: %lu", self.logTag, (unsigned long)contactShareAvatarAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
     [orphanAttachmentIds minusSet:messageAttachmentIds];
     [orphanAttachmentIds minusSet:quotedReplyThumbnailAttachmentIds];
+    [orphanAttachmentIds minusSet:contactShareAvatarAttachmentIds];
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:attachmentIds];
 
-    CleanupLogDebug(@"%@ orphan attachmentIds: %zd", self.logTag, orphanAttachmentIds.count);
-    CleanupLogDebug(@"%@ missing attachmentIds: %zd", self.logTag, missingAttachmentIds.count);
-    CleanupLogDebug(@"%@ orphan interactions: %zd", self.logTag, orphanInteractionIds.count);
+    CleanupLogDebug(@"%@ orphan attachmentIds: %lu", self.logTag, (unsigned long)orphanAttachmentIds.count);
+    CleanupLogDebug(@"%@ missing attachmentIds: %lu", self.logTag, (unsigned long)missingAttachmentIds.count);
+    CleanupLogDebug(@"%@ orphan interactions: %lu", self.logTag, (unsigned long)orphanInteractionIds.count);
 
     // We need to avoid cleaning up new attachments and files that are still in the process of
     // being created/written, so we don't clean up anything recent.

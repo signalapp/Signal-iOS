@@ -65,7 +65,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
-@property (nonatomic, nullable) OWSContact *contactShare;
+@property (nonatomic, nullable) ContactShareViewModel *contactShare;
 @property (nonatomic) CGSize mediaSize;
 
 @end
@@ -406,7 +406,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     TSMessage *message = (TSMessage *)self.interaction;
     if (message.contactShare) {
-        self.contactShare = message.contactShare;
+        self.contactShare =
+            [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare transaction:transaction];
         self.messageCellType = OWSMessageCellType_ContactShare;
         return;
     }

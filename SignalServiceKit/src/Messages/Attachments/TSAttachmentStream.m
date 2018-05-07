@@ -703,6 +703,76 @@ NS_ASSUME_NONNULL_BEGIN
     return thumbnailAttachment;
 }
 
+// MARK: Protobuf serialization
+
++ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                                 isVoiceMessage:(BOOL)isVoiceMessage
+{
+    OWSAssert(attachmentId.length > 0);
+
+    // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
+    // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
+    // but should be straight forward.
+    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
+        return nil;
+    }
+
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+    return [attachmentStream buildProtoWithFilename:attachmentStream.sourceFilename isVoiceMessage:isVoiceMessage];
+}
+
+// MJK can we get rid of the filename / isVoiceMessage pararms?
+// They seem to live (redundantly) on attachmentStream...
++ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
+                                                                       filename:(nullable NSString *)filename
+                                                                 isVoiceMessage:(BOOL)isVoiceMessage
+{
+    OWSAssert(attachmentId.length > 0);
+
+    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
+    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
+        return nil;
+    }
+    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+    return [attachmentStream buildProtoWithFilename:filename isVoiceMessage:isVoiceMessage];
+}
+
+- (OWSSignalServiceProtosAttachmentPointer *)buildProtoWithFilename:(nullable NSString *)filename
+                                                     isVoiceMessage:(BOOL)isVoiceMessage
+{
+    OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
+
+    builder.id = self.serverId;
+
+    OWSAssert(self.contentType.length > 0);
+    builder.contentType = self.contentType;
+
+    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, filename);
+    builder.fileName = filename;
+
+    builder.size = self.byteCount;
+    builder.key = self.encryptionKey;
+    builder.digest = self.digest;
+    builder.flags = isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0;
+
+    if (self.shouldHaveImageSize) {
+        CGSize imageSize = self.imageSize;
+        if (imageSize.width < NSIntegerMax && imageSize.height < NSIntegerMax) {
+            NSInteger imageWidth = (NSInteger)round(imageSize.width);
+            NSInteger imageHeight = (NSInteger)round(imageSize.height);
+            if (imageWidth > 0 && imageHeight > 0) {
+                builder.width = (UInt32)imageWidth;
+                builder.height = (UInt32)imageHeight;
+            }
+        }
+    }
+
+    return [builder build];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

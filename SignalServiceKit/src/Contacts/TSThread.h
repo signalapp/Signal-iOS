@@ -43,16 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
 
-#if TARGET_OS_IOS
-
-/**
- *  Returns the image representing the thread. Nil if not available.
- *
- *  @return UIImage of the thread, or nil.
- */
-- (nullable UIImage *)image;
-#endif
-
 #pragma mark Interactions
 
 /**
