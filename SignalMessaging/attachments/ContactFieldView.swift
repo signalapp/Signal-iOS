@@ -44,8 +44,8 @@ public class ContactFieldView: UIView {
                 addSpacerRow()
             }
             self.addSubview(row)
-            row.autoPinLeadingToSuperviewMargin(withInset: hMargin)
-            row.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+            row.autoPinLeadingToSuperviewMargin()
+            row.autoPinTrailingToSuperviewMargin()
             if let lastRow = lastRow {
                 row.autoPinEdge(.top, to: .bottom, of: lastRow, withOffset: 0)
             } else {
@@ -59,5 +59,115 @@ public class ContactFieldView: UIView {
         }
 
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
+    }
+
+    public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+        let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
+        return simpleFieldView(name: phoneNumber.localizedLabel(), value: formattedPhoneNumber, layoutMargins: layoutMargins, actionBlock: actionBlock)
+    }
+
+    public class func contactFieldView(forEmail email: OWSContactEmail, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+        return simpleFieldView(name: email.localizedLabel(), value: email.email, layoutMargins: layoutMargins, actionBlock: actionBlock)
+    }
+
+    private class func simpleFieldView(name: String, value: String?, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+        var stackView: UIStackView
+        if let actionBlock = actionBlock {
+            stackView = TappableStackView(actionBlock: actionBlock)
+        } else {
+            stackView = UIStackView()
+        }
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        stackView.layoutMargins = layoutMargins
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        let nameLabel = UILabel()
+        nameLabel.text = name
+        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
+        nameLabel.textColor = UIColor.black
+        nameLabel.lineBreakMode = .byTruncatingTail
+        stackView.addArrangedSubview(nameLabel)
+
+        let valueLabel = UILabel()
+        valueLabel.text = value
+        valueLabel.font = UIFont.ows_dynamicTypeBody
+        valueLabel.textColor = UIColor.ows_materialBlue
+        valueLabel.lineBreakMode = .byTruncatingTail
+        stackView.addArrangedSubview(valueLabel)
+
+        return stackView
+    }
+
+    public class func contactFieldView(forAddress address: OWSContactAddress, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+        var stackView: UIStackView
+        if let actionBlock = actionBlock {
+             stackView = TappableStackView(actionBlock: actionBlock)
+        } else {
+            stackView = UIStackView()
+        }
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        stackView.layoutMargins = layoutMargins
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        let nameLabel = UILabel()
+        nameLabel.text = address.localizedLabel()
+        nameLabel.font = UIFont.ows_dynamicTypeSubheadline
+        nameLabel.textColor = UIColor.black
+        nameLabel.lineBreakMode = .byTruncatingTail
+        stackView.addArrangedSubview(nameLabel)
+
+        let tryToAddNameValue: ((String, String?) -> Void) = { (propertyName, propertyValue) in
+            guard let propertyValue = propertyValue else {
+                return
+            }
+            guard propertyValue.count > 0 else {
+                return
+            }
+
+            let row = UIStackView()
+            row.axis = .horizontal
+            row.alignment = .leading
+            row.spacing = 10
+            row.layoutMargins = .zero
+
+            let nameLabel = UILabel()
+            nameLabel.text = propertyName
+            nameLabel.font = UIFont.ows_dynamicTypeBody
+            nameLabel.textColor = UIColor.black
+            nameLabel.lineBreakMode = .byTruncatingTail
+            row.addArrangedSubview(nameLabel)
+            nameLabel.setContentHuggingHigh()
+            nameLabel.setCompressionResistanceHigh()
+
+            let valueLabel = UILabel()
+            valueLabel.text = propertyValue
+            valueLabel.font = UIFont.ows_dynamicTypeBody
+            valueLabel.textColor = UIColor.ows_materialBlue
+            valueLabel.lineBreakMode = .byTruncatingTail
+            row.addArrangedSubview(valueLabel)
+
+            stackView.addArrangedSubview(row)
+        }
+
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
+                          address.street)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
+                          address.pobox)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
+                          address.neighborhood)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
+                          address.city)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
+                          address.region)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
+                          address.postcode)
+        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
+                          address.country)
+
+        return stackView
     }
 }

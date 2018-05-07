@@ -97,7 +97,7 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
 // MARK: -
 
-class ContactShareFieldView: UIView {
+class ContactShareFieldView: UIStackView {
 
     let field: ContactShareField
 
@@ -108,7 +108,7 @@ class ContactShareFieldView: UIView {
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         fatalError("Unimplemented")
     }
 
@@ -125,11 +125,14 @@ class ContactShareFieldView: UIView {
     }
 
     let hSpacing = CGFloat(10)
-    let hMargin = CGFloat(0)
+    let hMargin = CGFloat(16)
 
     func createContents() {
-        self.layoutMargins.left = 0
-        self.layoutMargins.right = 0
+        self.axis = .horizontal
+        self.spacing = hSpacing
+        self.alignment = .center
+        self.layoutMargins = UIEdgeInsets(top: 0, left: hMargin, bottom: 0, right: hMargin)
+        self.isLayoutMarginsRelativeArrangement = true
 
         let checkbox = UIButton(type: .custom)
         self.checkbox = checkbox
@@ -142,28 +145,12 @@ class ContactShareFieldView: UIView {
         checkbox.isSelected = field.isIncluded()
         // Disable the checkbox; the entire row is hot.
         checkbox.isUserInteractionEnabled = false
-        addSubview(checkbox)
-        checkbox.autoPinEdge(toSuperviewEdge: .leading, withInset: hMargin)
-        checkbox.autoVCenterInSuperview()
+        self.addArrangedSubview(checkbox)
         checkbox.setCompressionResistanceHigh()
         checkbox.setContentHuggingHigh()
 
-        let nameLabel = UILabel()
-        nameLabel.text = field.localizedLabel()
-        nameLabel.font = UIFont.ows_dynamicTypeCaption1
-        nameLabel.textColor = UIColor.black
-        nameLabel.lineBreakMode = .byTruncatingTail
-        addSubview(nameLabel)
-        nameLabel.autoPinTopToSuperviewMargin()
-        nameLabel.autoPinLeading(toTrailingEdgeOf: checkbox, offset: hSpacing)
-        nameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-
         let previewView = previewViewBlock()
-        addSubview(previewView)
-        previewView.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: 3)
-        previewView.autoPinBottomToSuperviewMargin()
-        previewView.autoPinLeading(toTrailingEdgeOf: checkbox, offset: hSpacing)
-        previewView.autoPinTrailingToSuperviewMargin(withInset: hMargin)
+        self.addArrangedSubview(previewView)
     }
 
     func wasTapped(sender: UIGestureRecognizer) {
@@ -179,6 +166,7 @@ class ContactShareFieldView: UIView {
 
 // MARK: -
 
+// TODO: Rename to ContactShareApprovalViewController
 @objc
 public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate {
     weak var delegate: ApproveContactShareViewControllerDelegate?
@@ -214,27 +202,26 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         // TODO: Avatar
 
+        let previewInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+
         for phoneNumber in contactShare.phoneNumbers {
             let field = ContactSharePhoneNumber(phoneNumber)
-            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                guard let strongSelf = self else { return UIView() }
-                return strongSelf.previewView(forPhoneNumber: phoneNumber)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
+                return ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber, layoutMargins: previewInsets, actionBlock: nil)
             })
             fieldViews.append(fieldView)
         }
         for email in contactShare.emails {
             let field = ContactShareEmail(email)
-            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                guard let strongSelf = self else { return UIView() }
-                return strongSelf.previewView(forEmail: email)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
+                return ContactFieldView.contactFieldView(forEmail: email, layoutMargins: previewInsets, actionBlock: nil)
             })
             fieldViews.append(fieldView)
         }
         for address in contactShare.addresses {
             let field = ContactShareAddress(address)
-            let fieldView = ContactShareFieldView(field: field, previewViewBlock: { [weak self] _ in
-                guard let strongSelf = self else { return UIView() }
-                return strongSelf.previewView(forAddress: address)
+            let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
+                return ContactFieldView.contactFieldView(forAddress: address, layoutMargins: previewInsets, actionBlock: nil)
             })
             fieldViews.append(fieldView)
         }
@@ -346,125 +333,32 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     func createNameRow() -> UIView {
         let nameVMargin = CGFloat(16)
 
-        let row = UIView()
-        row.layoutMargins = UIEdgeInsets(top: nameVMargin, left: 0, bottom: nameVMargin, right: 0)
+        let stackView = TappableStackView(actionBlock: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            strongSelf.didPressEditName()
+        })
 
-        let stackView = UIStackView()
         stackView.axis = .horizontal
         stackView.alignment = .center
-        stackView.layoutMargins = .zero
+        stackView.layoutMargins = UIEdgeInsets(top: nameVMargin, left: hMargin, bottom: nameVMargin, right: hMargin)
         stackView.spacing = 10
-        row.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
+        stackView.isLayoutMarginsRelativeArrangement = true
 
         let nameLabel = UILabel()
         self.nameLabel = nameLabel
         nameLabel.text = contactShare.displayName
-        nameLabel.font = UIFont.ows_dynamicTypeBody
-        nameLabel.textColor = UIColor.ows_materialBlue
+        nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
         let editNameLabel = UILabel()
         editNameLabel.text = NSLocalizedString("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
-        editNameLabel.font = UIFont.ows_dynamicTypeCaption1
-        editNameLabel.textColor = UIColor.black
+        editNameLabel.font = UIFont.ows_dynamicTypeBody
+        editNameLabel.textColor = UIColor.ows_materialBlue
         stackView.addArrangedSubview(editNameLabel)
         editNameLabel.setContentHuggingHigh()
         editNameLabel.setCompressionResistanceHigh()
-
-        // Icon
-        let iconName = (self.view.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-        guard let iconImage = UIImage(named: iconName) else {
-            owsFail("\(logTag) missing icon.")
-            return row
-        }
-        let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
-        iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
-        stackView.addArrangedSubview(iconView)
-        iconView.setContentHuggingHigh()
-        iconView.setCompressionResistanceHigh()
-
-        row.isUserInteractionEnabled = true
-        row.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didPressEditName)))
-
-        return row
-    }
-
-    func previewView(forPhoneNumber phoneNumber: OWSContactPhoneNumber) -> UIView {
-        let label = UILabel()
-        label.text = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
-        label.font = UIFont.ows_dynamicTypeCaption1
-        label.textColor = UIColor.ows_materialBlue
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }
-
-    func previewView(forEmail email: OWSContactEmail) -> UIView {
-        let label = UILabel()
-        label.text = email.email
-        label.font = UIFont.ows_dynamicTypeCaption1
-        label.textColor = UIColor.ows_materialBlue
-        label.lineBreakMode = .byTruncatingTail
-        return label
-    }
-
-    func previewView(forAddress address: OWSContactAddress) -> UIView {
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .leading
-        stackView.spacing = 0
-        stackView.layoutMargins = .zero
-
-        let tryToAddNameValue: ((String, String?) -> Void) = { (name, value) in
-            guard let value = value else {
-                return
-            }
-            guard value.count > 0 else {
-                return
-            }
-            let row = UIView.container()
-
-            let nameLabel = UILabel()
-            nameLabel.text = name
-            nameLabel.font = UIFont.ows_dynamicTypeCaption1
-            nameLabel.textColor = UIColor.black
-            nameLabel.lineBreakMode = .byTruncatingTail
-            row.addSubview(nameLabel)
-            nameLabel.autoPinLeadingToSuperviewMargin()
-            nameLabel.autoPinHeightToSuperview()
-            nameLabel.setContentHuggingHigh()
-            nameLabel.setCompressionResistanceHigh()
-
-            let valueLabel = UILabel()
-            valueLabel.text = value
-            valueLabel.font = UIFont.ows_dynamicTypeCaption1
-            valueLabel.textColor = UIColor.ows_materialBlue
-            valueLabel.lineBreakMode = .byTruncatingTail
-            row.addSubview(valueLabel)
-            valueLabel.autoPinLeading(toTrailingEdgeOf: nameLabel, offset: 10)
-            valueLabel.autoPinTrailingToSuperviewMargin()
-            valueLabel.autoPinHeightToSuperview()
-
-            stackView.addArrangedSubview(row)
-        }
-
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_STREET", comment: "Label for the 'street' field of a contact's address."),
-                          address.street)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POBOX", comment: "Label for the 'pobox' field of a contact's address."),
-                          address.pobox)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_NEIGHBORHOOD", comment: "Label for the 'neighborhood' field of a contact's address."),
-                          address.neighborhood)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_CITY", comment: "Label for the 'city' field of a contact's address."),
-                          address.city)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_REGION", comment: "Label for the 'region' field of a contact's address."),
-                          address.region)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_POSTCODE", comment: "Label for the 'postcode' field of a contact's address."),
-                          address.postcode)
-        tryToAddNameValue(NSLocalizedString("CONTACT_FIELD_ADDRESS_COUNTRY", comment: "Label for the 'country' field of a contact's address."),
-                          address.country)
 
         return stackView
     }

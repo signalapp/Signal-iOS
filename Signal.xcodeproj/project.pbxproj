@@ -164,6 +164,8 @@
 		347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 3478506F1FDAEB16007B8332 /* OWSUserProfile.m */; };
 		347850721FDAEB17007B8332 /* OWSUserProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 347850701FDAEB16007B8332 /* OWSUserProfile.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		348BB254209CD4B80047AEC2 /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB253209CD4B80047AEC2 /* ContactFieldView.swift */; };
+		348BB25A209CF8E50047AEC2 /* TappableStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB258209CF8E40047AEC2 /* TappableStackView.swift */; };
+		348BB25B209CF8E50047AEC2 /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB259209CF8E50047AEC2 /* TappableView.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
@@ -762,6 +764,8 @@
 		3478506F1FDAEB16007B8332 /* OWSUserProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSUserProfile.m; sourceTree = "<group>"; };
 		347850701FDAEB16007B8332 /* OWSUserProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSUserProfile.h; sourceTree = "<group>"; };
 		348BB253209CD4B80047AEC2 /* ContactFieldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactFieldView.swift; path = SignalMessaging/attachments/ContactFieldView.swift; sourceTree = SOURCE_ROOT; };
+		348BB258209CF8E40047AEC2 /* TappableStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableStackView.swift; path = SignalMessaging/Views/TappableStackView.swift; sourceTree = SOURCE_ROOT; };
+		348BB259209CF8E50047AEC2 /* TappableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableView.swift; path = SignalMessaging/Views/TappableView.swift; sourceTree = SOURCE_ROOT; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
@@ -1586,15 +1590,17 @@
 			isa = PBXGroup;
 			children = (
 				45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */,
-				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
-				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
+				346129D11FD2085A00532771 /* CommonStrings.swift */,
 				340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */,
 				340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */,
-				346129D11FD2085A00532771 /* CommonStrings.swift */,
+				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
+				76EB052F18170B33006006FC /* ContactTableViewCell.m */,
 				45BE4EA12012AD2000935E59 /* DisappearingTimerConfigurationView.swift */,
 				451573952061B49500803601 /* GradientView.swift */,
 				346129CF1FD207F200532771 /* OWSAlerts.swift */,
 				454A965E1FD60EA2008D2A0E /* OWSFlatButton.swift */,
+				348BB258209CF8E40047AEC2 /* TappableStackView.swift */,
+				348BB259209CF8E50047AEC2 /* TappableView.swift */,
 				3400C7971EAFB772008A8584 /* ThreadViewHelper.h */,
 				3400C7981EAFB772008A8584 /* ThreadViewHelper.m */,
 			);
@@ -3083,6 +3089,8 @@
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
 				347850591FD9972E007B8332 /* SwiftSingletons.swift in Sources */,
 				344F248720069ECB00CFB4F4 /* ModalActivityIndicatorViewController.swift in Sources */,
+				348BB25B209CF8E50047AEC2 /* TappableView.swift in Sources */,
+				348BB25A209CF8E50047AEC2 /* TappableStackView.swift in Sources */,
 				346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */,
 				344D6CEC20069E070042AF96 /* NewNonContactConversationViewController.m in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
