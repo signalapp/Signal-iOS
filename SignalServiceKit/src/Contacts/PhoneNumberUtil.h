@@ -1,13 +1,17 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 #import "PhoneNumber.h"
+#import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
 
 @interface PhoneNumberUtil : NSObject
 
 @property (nonatomic, retain) NBPhoneNumberUtil *nbPhoneNumberUtil;
+
+- (instancetype)init NS_UNAVAILABLE;
+
++ (instancetype)sharedThreadLocal;
 
 + (BOOL)name:(NSString *)nameString matchesQuery:(NSString *)queryString;
 
@@ -27,8 +31,6 @@
                     stickingRightward:(bool)preferHigh;
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode;
-
-+ (instancetype)sharedUtil;
 
 - (NBPhoneNumber *)parse:(NSString *)numberToParse defaultRegion:(NSString *)defaultRegion error:(NSError **)error;
 - (NSString *)format:(NBPhoneNumber *)phoneNumber

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
@@ -18,13 +18,28 @@
 
 @implementation PhoneNumberUtil
 
-+ (instancetype)sharedUtil {
++ (NSObject *)sharedLock
+{
     static dispatch_once_t onceToken;
-    static id sharedInstance = nil;
+    static NSObject *lock = nil;
     dispatch_once(&onceToken, ^{
-      sharedInstance = [self.class new];
+        lock = [NSObject new];
     });
-    return sharedInstance;
+    return lock;
+}
+
++ (PhoneNumberUtil *)sharedThreadLocal
+{
+    @synchronized(self.sharedLock)
+    {
+        NSString *key = PhoneNumberUtil.logTag;
+        PhoneNumberUtil *_Nullable threadLocal = NSThread.currentThread.threadDictionary[key];
+        if (!threadLocal) {
+            threadLocal = [PhoneNumberUtil new];
+            NSThread.currentThread.threadDictionary[key] = threadLocal;
+        }
+        return threadLocal;
+    }
 }
 
 - (instancetype)init {
@@ -138,9 +153,10 @@
         return @"+1";
     }
 
-    NSString *callingCode = [NSString stringWithFormat:@"%@%@",
-                                      COUNTRY_CODE_PREFIX,
-                                      [[[self sharedUtil] nbPhoneNumberUtil] getCountryCodeForRegion:countryCode]];
+    NSString *callingCode =
+        [NSString stringWithFormat:@"%@%@",
+                  COUNTRY_CODE_PREFIX,
+                  [[[self sharedThreadLocal] nbPhoneNumberUtil] getCountryCodeForRegion:countryCode]];
     return callingCode;
 }
 
@@ -578,26 +594,24 @@
 
 + (NSString *)examplePhoneNumberForCountryCode:(NSString *)countryCode
 {
+    PhoneNumberUtil *sharedUtil = [self sharedThreadLocal];
+
     // Signal users are very likely using mobile devices, so prefer that kind of example.
     NSError *error;
     NBPhoneNumber *nbPhoneNumber =
-        [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
-                                                                  type:NBEPhoneNumberTypeMOBILE
-                                                                 error:&error];
+        [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode type:NBEPhoneNumberTypeMOBILE error:&error];
     OWSAssert(!error);
     if (!nbPhoneNumber) {
         // For countries that with similar mobile and land lines, use "line or mobile"
         // examples.
-        nbPhoneNumber =
-            [[[self sharedUtil] nbPhoneNumberUtil] getExampleNumberForType:countryCode
-                                                                      type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
-                                                                     error:&error];
+        nbPhoneNumber = [sharedUtil.nbPhoneNumberUtil getExampleNumberForType:countryCode
+                                                                         type:NBEPhoneNumberTypeFIXED_LINE_OR_MOBILE
+                                                                        error:&error];
         OWSAssert(!error);
     }
-    NSString *result = (nbPhoneNumber ? [[[self sharedUtil] nbPhoneNumberUtil] format:nbPhoneNumber
-                                                                         numberFormat:NBEPhoneNumberFormatE164
-                                                                                error:&error]
-                                      : nil);
+    NSString *result = (nbPhoneNumber
+            ? [sharedUtil.nbPhoneNumberUtil format:nbPhoneNumber numberFormat:NBEPhoneNumberFormatE164 error:&error]
+            : nil);
     OWSAssert(!error);
     return result;
 }
