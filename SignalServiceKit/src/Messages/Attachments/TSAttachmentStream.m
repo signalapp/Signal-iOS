@@ -706,7 +706,6 @@ NS_ASSUME_NONNULL_BEGIN
 // MARK: Protobuf serialization
 
 + (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
-                                                                 isVoiceMessage:(BOOL)isVoiceMessage
 {
     OWSAssert(attachmentId.length > 0);
 
@@ -720,28 +719,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-    return [attachmentStream buildProtoWithFilename:attachmentStream.sourceFilename isVoiceMessage:isVoiceMessage];
+    return [attachmentStream buildProto];
 }
 
-// MJK can we get rid of the filename / isVoiceMessage pararms?
-// They seem to live (redundantly) on attachmentStream...
-+ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(NSString *)attachmentId
-                                                                       filename:(nullable NSString *)filename
-                                                                 isVoiceMessage:(BOOL)isVoiceMessage
-{
-    OWSAssert(attachmentId.length > 0);
 
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        DDLogError(@"Unexpected type for attachment builder: %@", attachment);
-        return nil;
-    }
-    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-    return [attachmentStream buildProtoWithFilename:filename isVoiceMessage:isVoiceMessage];
-}
-
-- (OWSSignalServiceProtosAttachmentPointer *)buildProtoWithFilename:(nullable NSString *)filename
-                                                     isVoiceMessage:(BOOL)isVoiceMessage
+- (OWSSignalServiceProtosAttachmentPointer *)buildProto
 {
     OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
 
@@ -750,13 +732,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.contentType.length > 0);
     builder.contentType = self.contentType;
 
-    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, filename);
-    builder.fileName = filename;
+    DDLogVerbose(@"%@ Sending attachment with filename: '%@'", self.logTag, self.sourceFilename);
+    builder.fileName = self.sourceFilename;
 
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
-    builder.flags = isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0;
+    builder.flags = self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0;
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;
