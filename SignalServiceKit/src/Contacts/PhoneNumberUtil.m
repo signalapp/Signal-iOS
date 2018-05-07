@@ -49,8 +49,6 @@
         _nbPhoneNumberUtil = [[NBPhoneNumberUtil alloc] init];
         _countryCodesFromCallingCodeCache = [NSMutableDictionary new];
         _parsedPhoneNumberCache = [NSCache new];
-
-        OWSSingletonAssert();
     }
 
     return self;
