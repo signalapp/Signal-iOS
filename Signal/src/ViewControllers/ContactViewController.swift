@@ -9,7 +9,7 @@ import Reachability
 import ContactsUI
 import MessageUI
 
-class ContactViewController: OWSViewController, CNContactViewControllerDelegate {
+class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     enum ContactViewMode {
         case systemContactWithSignal,
@@ -37,6 +37,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
 
     private let contactShare: ContactShareViewModel
 
+    private var helper: ContactShareViewHelper!
+
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
@@ -49,6 +51,8 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         self.contactShare = contactShare
 
         super.init(nibName: nil, bundle: nil)
+
+        self.helper = ContactShareViewHelper(contactShare: contactShare, contactsManager: contactsManager, fromViewController: self, delegate: self)
 
         updateMode()
 
@@ -110,7 +114,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func updateMode() {
         SwiftAssertIsOnMainThread(#function)
 
-        guard contactShare.phoneNumberStrings.count > 0 else {
+        guard contactShare.e164PhoneNumbers().count > 0 else {
             viewMode = .noPhoneNumber
             return
         }
@@ -129,17 +133,13 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     private func systemContactsWithSignalAccountsForContact() -> [String] {
         SwiftAssertIsOnMainThread(#function)
 
-        return contactShare.phoneNumberStrings.filter({ (phoneNumber) -> Bool in
-            return contactsManager.hasSignalAccount(forRecipientId: phoneNumber)
-        })
+        return contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
     }
 
     private func systemContactsForContact() -> [String] {
         SwiftAssertIsOnMainThread(#function)
 
-        return contactShare.phoneNumberStrings.filter({ (phoneNumber) -> Bool in
-            return contactsManager.allContactsMap[phoneNumber] != nil
-        })
+        return contactShare.systemContactPhoneNumbers(contactsManager)
     }
 
     private func updateContent() {
@@ -466,18 +466,6 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         return button
     }
 
-    func didPressCreateNewContact() {
-        Logger.info("\(logTag) \(#function)")
-
-        presentNewContactView()
-    }
-
-    func didPressAddToExistingContact() {
-        Logger.info("\(logTag) \(#function)")
-
-        presentSelectAddToExistingContactView()
-    }
-
     func didPressShareContact(sender: UIGestureRecognizer) {
         Logger.info("\(logTag) \(#function)")
 
@@ -490,92 +478,31 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     func didPressSendMessage() {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .compose)
+        self.helper.sendMessageToContact()
     }
 
     func didPressAudioCall() {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .audioCall)
+        self.helper.audioCallToContact()
     }
 
     func didPressVideoCall() {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .videoCall)
-    }
-
-    func presentThreadAndPeform(action: ConversationViewAction) {
-        // TODO: We're taking the first Signal account id. We might
-        // want to let the user select if there's more than one.
-        let phoneNumbers = systemContactsWithSignalAccountsForContact()
-        guard phoneNumbers.count > 0 else {
-            owsFail("\(logTag) missing Signal recipient id.")
-            return
-        }
-        guard phoneNumbers.count > 1 else {
-            let recipientId = systemContactsWithSignalAccountsForContact().first!
-            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
-            return
-        }
-
-        showPhoneNumberPicker(phoneNumbers: phoneNumbers, completion: { (recipientId) in
-            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action)
-        })
+        self.helper.videoCallToContact()
     }
 
     func didPressInvite() {
         Logger.info("\(logTag) \(#function)")
 
-        guard MFMessageComposeViewController.canSendText() else {
-            Logger.info("\(logTag) Device cannot send text")
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
-            return
-        }
-        let phoneNumbers = contactShare.phoneNumberStrings
-        guard phoneNumbers.count > 0 else {
-            owsFail("\(logTag) no phone numbers.")
-            return
-        }
-
-        let inviteFlow =
-            InviteFlow(presentingViewController: self, contactsManager: contactsManager)
-        inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
+        self.helper.inviteContact()
     }
 
     func didPressAddToContacts() {
         Logger.info("\(logTag) \(#function)")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
-                                                                     comment: "Label for 'new contact' button in conversation settings view."),
-                                            style: .default) { _ in
-                                                self.didPressCreateNewContact()
-        })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                                                     comment: "Label for 'new contact' button in conversation settings view."),
-                                            style: .default) { _ in
-                                                self.didPressAddToExistingContact()
-        })
-        actionSheet.addAction(OWSAlerts.cancelAction)
-
-        self.present(actionSheet, animated: true)
-    }
-
-    private func showPhoneNumberPicker(phoneNumbers: [String], completion :@escaping ((String) -> Void)) {
-
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-
-        for phoneNumber in phoneNumbers {
-            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
-                                                          style: .default) { _ in
-                                                            completion(phoneNumber)
-            })
-        }
-        actionSheet.addAction(OWSAlerts.cancelAction)
-
-        self.present(actionSheet, animated: true)
+        self.helper.addToContacts()
     }
 
     func didPressDismiss() {
@@ -619,79 +546,10 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         UIApplication.shared.openURL(url as URL)
     }
 
-    // MARK: -
+    // MARK: - ContactShareViewHelperDelegate
 
-    private func presentNewContactView() {
-        guard contactsManager.supportsContactEditing else {
-            owsFail("\(logTag) Contact editing not supported")
-            return
-        }
-
-        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord) else {
-            owsFail("\(logTag) Could not derive system contactShare.")
-            return
-        }
-
-        guard contactsManager.isSystemContactsAuthorized else {
-            ContactsViewHelper.presentMissingContactAccessAlertController(from: self)
-            return
-        }
-
-        let contactViewController = CNContactViewController(forNewContact: systemContact)
-        contactViewController.delegate = self
-        contactViewController.allowsActions = false
-        contactViewController.allowsEditing = true
-        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(didFinishEditingContact))
-        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
-                                                                                 style: .plain,
-                                                                                 target: self,
-                                                                                 action: #selector(didFinishEditingContact))
-
-        self.navigationController?.pushViewController(contactViewController, animated: true)
-
-        // HACK otherwise CNContactViewController Navbar is shown as black.
-        // RADAR rdar://28433898 http://www.openradar.me/28433898
-        // CNContactViewController incompatible with opaque navigation bar
-        UIUtil.applyDefaultSystemAppearence()
-    }
-
-    private func presentSelectAddToExistingContactView() {
-        guard contactsManager.supportsContactEditing else {
-            owsFail("\(logTag) Contact editing not supported")
-            return
-        }
-
-        guard contactsManager.isSystemContactsAuthorized else {
-            ContactsViewHelper.presentMissingContactAccessAlertController(from: self)
-            return
-        }
-
-        guard let firstPhoneNumber = contactShare.phoneNumbers.first else {
-            owsFail("\(logTag) Missing phone number.")
-            return
-        }
-
-        // TODO: We need to modify OWSAddToContactViewController to take a OWSContact
-        // and merge it with an existing CNContact.
-        let viewController = OWSAddToContactViewController()
-        viewController.configure(withRecipientId: firstPhoneNumber.phoneNumber)
-        self.navigationController?.pushViewController(viewController, animated: true)
-    }
-
-    // MARK: - CNContactViewControllerDelegate
-
-    @objc public func contactViewController(_ viewController: CNContactViewController, didCompleteWith contact: CNContact?) {
+    public func didCreateOrEditContact() {
         Logger.info("\(logTag) \(#function)")
-
-        self.navigationController?.popToViewController(self, animated: true)
-
-        updateContent()
-    }
-
-    @objc public func didFinishEditingContact() {
-        Logger.info("\(logTag) \(#function)")
-
-        self.navigationController?.popToViewController(self, animated: true)
 
         updateContent()
     }

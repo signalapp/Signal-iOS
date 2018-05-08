@@ -123,6 +123,7 @@ typedef enum : NSUInteger {
     CNContactViewControllerDelegate,
     ContactEditingDelegate,
     ContactsPickerDelegate,
+    ContactShareViewHelperDelegate,
     ContactsViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
     OWSConversationSettingsViewDelegate,
@@ -231,6 +232,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *previousLastTimestamp;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
+@property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 
 @end
 
@@ -2104,6 +2106,42 @@ typedef enum : NSUInteger {
 
     ContactViewController *view = [[ContactViewController alloc] initWithContactShare:conversationItem.contactShare];
     [self.navigationController pushViewController:view animated:YES];
+}
+
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
+                                                                       contactsManager:self.contactsManager
+                                                                    fromViewController:self
+                                                                              delegate:self];
+    [self.contactShareViewHelper sendMessageToContact];
+}
+
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
+                                                                       contactsManager:self.contactsManager
+                                                                    fromViewController:self
+                                                                              delegate:self];
+    [self.contactShareViewHelper inviteContact];
+}
+
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
+    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
+                                                                       contactsManager:self.contactsManager
+                                                                    fromViewController:self
+                                                                              delegate:self];
+    [self.contactShareViewHelper addToContacts];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
@@ -5028,6 +5066,15 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - ContactShareViewHelperDelegate
+
+- (void)didCreateOrEditContact
+{
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    // Do nothing.
 }
 
 @end

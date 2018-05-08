@@ -5,14 +5,31 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
+@class OWSContact;
+@class OWSContactsManager;
+
+@protocol OWSContactShareViewDelegate <NSObject>
+
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare;
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare;
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare;
+
+@end
+
+#pragma mark -
 
 @interface OWSContactShareView : UIView
 
-- (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare isIncoming:(BOOL)isIncoming;
+- (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare
+                          isIncoming:(BOOL)isIncoming
+                            delegate:(id<OWSContactShareViewDelegate>)delegate;
 
 - (void)createContents;
 
-+ (CGFloat)bubbleHeight;
++ (CGFloat)bubbleHeightForContactShare:(ContactShareViewModel *)contactShare;
+
+// Returns YES IFF the tap was handled.
+- (BOOL)handleTapGesture:(UITapGestureRecognizer *)sender;
 
 @end
 

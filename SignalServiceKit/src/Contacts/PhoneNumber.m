@@ -170,14 +170,6 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return regionCode;
 }
 
-
-+ (PhoneNumber *)tryParsePhoneNumberFromText:(NSString *)text fromRegion:(NSString *)regionCode {
-    OWSAssert(text != nil);
-    OWSAssert(regionCode != nil);
-
-    return [self phoneNumberFromText:text andRegion:regionCode];
-}
-
 + (PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text {
     OWSAssert(text != nil);
 

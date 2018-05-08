@@ -459,6 +459,20 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 #pragma mark - Whisper User Management
 
+- (BOOL)isSystemContact:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return self.allContactsMap[recipientId] != nil;
+}
+
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    return [self hasSignalAccountForRecipientId:recipientId];
+}
+
 - (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId
 {
     return [self cachedContactNameForRecipientId:recipientId].length > 0;

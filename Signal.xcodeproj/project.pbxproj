@@ -166,6 +166,7 @@
 		348BB254209CD4B80047AEC2 /* ContactFieldView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB253209CD4B80047AEC2 /* ContactFieldView.swift */; };
 		348BB25A209CF8E50047AEC2 /* TappableStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB258209CF8E40047AEC2 /* TappableStackView.swift */; };
 		348BB25B209CF8E50047AEC2 /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB259209CF8E50047AEC2 /* TappableView.swift */; };
+		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		34A55F3720485465002CC6DE /* OWS2FARegistrationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A55F3520485464002CC6DE /* OWS2FARegistrationViewController.m */; };
@@ -766,6 +767,7 @@
 		348BB253209CD4B80047AEC2 /* ContactFieldView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ContactFieldView.swift; path = SignalMessaging/attachments/ContactFieldView.swift; sourceTree = SOURCE_ROOT; };
 		348BB258209CF8E40047AEC2 /* TappableStackView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableStackView.swift; path = SignalMessaging/Views/TappableStackView.swift; sourceTree = SOURCE_ROOT; };
 		348BB259209CF8E50047AEC2 /* TappableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableView.swift; path = SignalMessaging/Views/TappableView.swift; sourceTree = SOURCE_ROOT; };
+		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
@@ -1641,6 +1643,7 @@
 				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
 				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
 				34B3F83B1E8DF1700035BE1A /* CallViewController.swift */,
+				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
 				34B3F83F1E8DF1700035BE1A /* ContactsPicker.xib */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
@@ -1651,6 +1654,7 @@
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
+				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 				3496744E2076ACCE00080B5F /* LongTextViewController.swift */,
 				45B9EE9A200E91FB005D2F2D /* MediaDetailViewController.h */,
 				45B9EE9B200E91FB005D2F2D /* MediaDetailViewController.m */,
@@ -1677,7 +1681,6 @@
 				34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
-				4542DF53208D40AC007B4E76 /* LoadingViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -3249,6 +3252,7 @@
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
 				34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */,
+				348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */,
 				34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				340FC8D0205BF2FA007AEB0F /* OWSBackupIO.m in Sources */,

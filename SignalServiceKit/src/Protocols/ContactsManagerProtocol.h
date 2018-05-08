@@ -12,4 +12,7 @@
 - (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber;
 - (NSArray<SignalAccount *> * _Nonnull)signalAccounts;
 
+- (BOOL)isSystemContact:(NSString *)recipientId;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
+
 @end

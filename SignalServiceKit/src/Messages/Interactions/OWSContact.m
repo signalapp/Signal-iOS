@@ -279,6 +279,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 @property (nonatomic, nullable) NSString *avatarAttachmentId;
 @property (nonatomic) BOOL isProfileAvatar;
 
+@property (nonatomic, nullable) NSArray<NSString *> *e164PhoneNumbersCached;
+
 @end
 
 #pragma mark -
@@ -483,6 +485,50 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 
+#pragma mark - Phone Numbers and Recipient IDs
+
+- (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+{
+    OWSAssert(contactsManager);
+
+    return [self.e164PhoneNumbers
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return [contactsManager isSystemContactWithSignalAccount:recipientId];
+        }]];
+}
+
+- (NSArray<NSString *> *)systemContactPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager
+{
+    OWSAssert(contactsManager);
+
+    return [self.e164PhoneNumbers
+        filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(NSString *_Nullable recipientId,
+                                        NSDictionary<NSString *, id> *_Nullable bindings) {
+            return [contactsManager isSystemContact:recipientId];
+        }]];
+}
+
+- (NSArray<NSString *> *)e164PhoneNumbers
+{
+    if (self.e164PhoneNumbersCached) {
+        return self.e164PhoneNumbersCached;
+    }
+    NSMutableArray<NSString *> *e164PhoneNumbers = [NSMutableArray new];
+    for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
+        PhoneNumber *_Nullable parsedPhoneNumber;
+        parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:phoneNumber.phoneNumber];
+        if (!parsedPhoneNumber) {
+            parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber.phoneNumber];
+        }
+        if (parsedPhoneNumber) {
+            [e164PhoneNumbers addObject:parsedPhoneNumber.toE164];
+        }
+    }
+    self.e164PhoneNumbersCached = e164PhoneNumbers;
+    return e164PhoneNumbers;
+}
+
 @end
 
 #pragma mark -
@@ -553,7 +599,20 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in systemContact.phoneNumbers) {
         OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
-        phoneNumber.phoneNumber = phoneNumberField.value.stringValue;
+
+        // Make a best effort to parse the phone number to e164.
+        NSString *unparsedPhoneNumber = phoneNumberField.value.stringValue;
+        PhoneNumber *_Nullable parsedPhoneNumber;
+        parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:unparsedPhoneNumber];
+        if (!parsedPhoneNumber) {
+            parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:unparsedPhoneNumber];
+        }
+        if (parsedPhoneNumber) {
+            phoneNumber.phoneNumber = parsedPhoneNumber.toE164;
+        } else {
+            phoneNumber.phoneNumber = unparsedPhoneNumber;
+        }
+
         if ([phoneNumberField.label isEqualToString:CNLabelHome]) {
             phoneNumber.phoneType = OWSContactPhoneType_Home;
         } else if ([phoneNumberField.label isEqualToString:CNLabelWork]) {

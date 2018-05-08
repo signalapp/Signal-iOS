@@ -4,6 +4,7 @@
 
 import Foundation
 
+@objc
 public class TappableStackView: UIStackView {
     let actionBlock : (() -> Void)
 

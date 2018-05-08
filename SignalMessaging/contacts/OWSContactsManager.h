@@ -60,6 +60,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - Util
 
+- (BOOL)isSystemContact:(NSString *)recipientId;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
 - (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
 - (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)identifier;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
