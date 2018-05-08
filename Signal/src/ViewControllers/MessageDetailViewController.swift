@@ -623,7 +623,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.navigationController?.pushViewController(contactViewController, animated: true)
     }
 
-    func sendMessage(toContactShare contactShare: ContactShareViewModel) {
+    func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
         contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
                                                         contactsManager: contactsManager,
                                                         fromViewController: self,
@@ -631,7 +631,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         contactShareViewHelper?.sendMessageToContact()
     }
 
-    func sendInvite(toContactShare contactShare: ContactShareViewModel) {
+    func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
         contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
                                                         contactsManager: contactsManager,
                                                         fromViewController: self,
@@ -639,7 +639,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         contactShareViewHelper?.inviteContact()
     }
 
-    func showAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
+    func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
         contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
                                                         contactsManager: contactsManager,
                                                         fromViewController: self,

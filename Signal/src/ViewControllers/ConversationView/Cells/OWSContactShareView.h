@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol OWSContactShareViewDelegate <NSObject>
 
-- (void)sendMessageToContactShare:(ContactShareViewModel *)contactShare;
-- (void)sendInviteToContactShare:(ContactShareViewModel *)contactShare;
-- (void)showAddToContactUIForContactShare:(ContactShareViewModel *)contactShare;
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare;
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare;
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare;
 
 @end
 

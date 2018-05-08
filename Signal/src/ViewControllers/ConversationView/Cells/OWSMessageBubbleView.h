@@ -44,10 +44,12 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 - (void)didTapContactShareViewItem:(ConversationViewItem *)viewItem;
 
-- (void)sendMessageToContactShare:(ContactShareViewModel *)contactShare NS_SWIFT_NAME(sendMessage(toContactShare:));
-- (void)sendInviteToContactShare:(ContactShareViewModel *)contactShare NS_SWIFT_NAME(sendInvite(toContactShare:));
-- (void)showAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
-    NS_SWIFT_NAME(showAddToContactUI(forContactShare:));
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
+    NS_SWIFT_NAME(didTapSendMessage(toContactShare:));
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
+    NS_SWIFT_NAME(didTapSendInvite(toContactShare:));
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
+    NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
 @end
 

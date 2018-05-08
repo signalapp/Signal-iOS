@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactShareView ()
 
-@property (nonatomic) ContactShareViewModel *contactShare;
+@property (nonatomic, readonly) ContactShareViewModel *contactShare;
 @property (nonatomic, weak) id<OWSContactShareViewDelegate> delegate;
 
-@property (nonatomic) BOOL isIncoming;
-@property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic, readonly) BOOL isIncoming;
+@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
 @property (nonatomic, nullable) UIView *buttonView;
 
@@ -38,18 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super init];
 
     if (self) {
-        self.delegate = delegate;
-        self.contactShare = contactShare;
-        self.isIncoming = isIncoming;
-        self.contactsManager = [Environment current].contactsManager;
+        _delegate = delegate;
+        _contactShare = contactShare;
+        _isIncoming = isIncoming;
+        _contactsManager = [Environment current].contactsManager;
     }
 
     return self;
-}
-
-- (OWSContactsManager *)contactsManager
-{
-    return [Environment current].contactsManager;
 }
 
 #pragma mark -
@@ -223,19 +218,8 @@ NS_ASSUME_NONNULL_BEGIN
     [stackView addArrangedSubview:disclosureImageView];
 
     if ([OWSContactShareView hasAnyButton:self.contactShare contactsManager:self.contactsManager]) {
-        UIStackView *buttonView = [UIStackView new];
-        self.buttonView = buttonView;
-        buttonView.layoutMargins = UIEdgeInsetsZero;
-        [buttonView addBackgroundViewWithBackgroundColor:[UIColor whiteColor]];
-        buttonView.axis = UILayoutConstraintAxisHorizontal;
-        buttonView.alignment = UIStackViewAlignmentCenter;
-        [self addSubview:buttonView];
-        [buttonView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contentView withOffset:self.vMargin];
-        [buttonView autoPinWidthToSuperview];
-        [buttonView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-        [buttonView autoSetDimension:ALDimensionHeight toSize:OWSContactShareView.buttonHeight];
-
         UILabel *label = [UILabel new];
+        self.buttonView = label;
         if ([OWSContactShareView hasSendTextButton:self.contactShare contactsManager:self.contactsManager]) {
             label.text = NSLocalizedString(@"ACTION_SEND_MESSAGE", @"Label for 'sent message' button in contact view.");
         } else if ([OWSContactShareView hasInviteButton:self.contactShare contactsManager:self.contactsManager]) {
@@ -249,10 +233,12 @@ NS_ASSUME_NONNULL_BEGIN
         label.font = [UIFont ows_dynamicTypeBodyFont];
         label.textColor = UIColor.ows_materialBlueColor;
         label.textAlignment = NSTextAlignmentCenter;
-        [buttonView addArrangedSubview:label];
-
-        [buttonView logFrameLaterWithLabel:@"buttonView"];
-        [label logFrameLaterWithLabel:@"label"];
+        label.backgroundColor = [UIColor whiteColor];
+        [self addSubview:label];
+        [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contentView withOffset:self.vMargin];
+        [label autoPinWidthToSuperview];
+        [label autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareView.buttonHeight];
     } else {
         [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
     }
@@ -269,11 +255,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([OWSContactShareView hasSendTextButton:self.contactShare contactsManager:self.contactsManager]) {
-        [self.delegate sendMessageToContactShare:self.contactShare];
+        [self.delegate didTapSendMessageToContactShare:self.contactShare];
     } else if ([OWSContactShareView hasInviteButton:self.contactShare contactsManager:self.contactsManager]) {
-        [self.delegate sendInviteToContactShare:self.contactShare];
+        [self.delegate didTapSendInviteToContactShare:self.contactShare];
     } else if ([OWSContactShareView hasAddToContactsButton:self.contactShare]) {
-        [self.delegate showAddToContactUIForContactShare:self.contactShare];
+        [self.delegate didTapShowAddToContactUIForContactShare:self.contactShare];
     } else {
         OWSFail(@"%@ unexpected button tap.", self.logTag);
     }

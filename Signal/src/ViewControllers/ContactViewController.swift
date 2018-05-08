@@ -142,12 +142,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         return contactShare.systemContactPhoneNumbers(contactsManager)
     }
 
-    private func phoneNumbersForContact() -> [String] {
-        SwiftAssertIsOnMainThread(#function)
-
-        return contactShare.e164PhoneNumbers()
-    }
-
     private func updateContent() {
         SwiftAssertIsOnMainThread(#function)
 

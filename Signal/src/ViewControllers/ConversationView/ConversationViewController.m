@@ -2108,7 +2108,7 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-- (void)sendMessageToContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
@@ -2120,7 +2120,7 @@ typedef enum : NSUInteger {
     [self.contactShareViewHelper sendMessageToContact];
 }
 
-- (void)sendInviteToContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
@@ -2132,7 +2132,7 @@ typedef enum : NSUInteger {
     [self.contactShareViewHelper inviteContact];
 }
 
-- (void)showAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);

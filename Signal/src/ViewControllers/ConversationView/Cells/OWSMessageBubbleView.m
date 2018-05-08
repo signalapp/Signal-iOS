@@ -1260,28 +1260,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - OWSContactShareViewDelegate
 
-- (void)sendMessageToContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.delegate sendMessageToContactShare:contactShare];
+    [self.delegate didTapSendMessageToContactShare:contactShare];
 }
 
-- (void)sendInviteToContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.delegate sendInviteToContactShare:contactShare];
+    [self.delegate didTapSendInviteToContactShare:contactShare];
 }
 
-- (void)showAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
+- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.delegate showAddToContactUIForContactShare:contactShare];
+    [self.delegate didTapShowAddToContactUIForContactShare:contactShare];
 }
 
 @end
