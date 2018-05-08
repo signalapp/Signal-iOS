@@ -263,18 +263,21 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
             stackView.distribution = .fillEqually
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_SEND_MESSAGE",
                                                                                           comment: "Label for 'sent message' button in contact view."),
+                                                                  imageName: "contact_view_message",
                                                                   actionBlock: { [weak self] _ in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressSendMessage()
             }))
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                                           comment: "Label for 'audio call' button in contact view."),
+                                                                  imageName: "contact_view_audio_call",
                                                                   actionBlock: { [weak self] _ in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressAudioCall()
             }))
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
                                                                                           comment: "Label for 'video call' button in contact view."),
+                                                                  imageName: "contact_view_video_call",
                                                                   actionBlock: { [weak self] _ in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressVideoCall()
@@ -401,7 +404,7 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
     }
 
     // TODO: Use real assets.
-    private func createCircleActionButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createCircleActionButton(text: String, imageName: String, actionBlock : @escaping () -> Void) -> UIView {
         let buttonSize = CGFloat(50)
 
         let button = TappableView(actionBlock: actionBlock)
@@ -416,6 +419,14 @@ class ContactViewController: OWSViewController, CNContactViewControllerDelegate 
         button.addSubview(circleView)
         circleView.autoPinEdge(toSuperviewEdge: .top)
         circleView.autoHCenterInSuperview()
+
+        guard let image = UIImage(named: imageName) else {
+            owsFail("\(logTag) missing image.")
+            return button
+        }
+        let imageView = UIImageView(image: image)
+        circleView.addSubview(imageView)
+        imageView.autoCenterInSuperview()
 
         let label = UILabel()
         label.text = text
