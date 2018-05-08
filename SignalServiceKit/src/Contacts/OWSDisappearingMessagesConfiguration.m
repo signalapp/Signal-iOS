@@ -44,8 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _enabled = isEnabled;
     _durationSeconds = seconds;
-    _originalDictionaryValue = [NSDictionary new];
     _newRecord = YES;
+    _originalDictionaryValue = self.dictionaryValue;
 
     return self;
 }
