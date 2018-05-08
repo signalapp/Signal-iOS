@@ -552,15 +552,7 @@ typedef enum : NSUInteger {
 
 - (BOOL)canBecomeFirstResponder
 {
-    // Normally there'd be no mechanism for us to become first responder while presenting
-    // another view controller, however due to our screen lock window juggling, a side effect of
-    // calling `makeKeyAndVisible` is that "last known" first responder is sent "becomeFirstResponder",
-    // regardless of if it is no longer the top most VC.
-    if (self.presentedViewController) {
-        return NO;
-    } else {
-        return YES;
-    }
+    return YES;
 }
 
 - (nullable UIView *)inputAccessoryView
@@ -604,6 +596,28 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
+    [self dismissPresentedViewControllerIfNecessary];
+}
+
+- (void)dismissPresentedViewControllerIfNecessary
+{
+    UIViewController *_Nullable presentedViewController = self.presentedViewController;
+    if (!presentedViewController) {
+        DDLogDebug(@"%@ presentedViewController was nil", self.logTag);
+        return;
+    }
+
+    if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
+        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        [self dismissViewControllerAnimated:NO completion:nil];
+        return;
+    }
+
+    if ([presentedViewController isKindOfClass:[UIImagePickerController class]]) {
+        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        [self dismissViewControllerAnimated:NO completion:nil];
+        return;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated

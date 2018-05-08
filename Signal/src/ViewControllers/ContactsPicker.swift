@@ -44,6 +44,24 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         return Environment.current().contactsManager
     }
 
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return true
+    }
+
+    override public func becomeFirstResponder() -> Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return super.becomeFirstResponder()
+    }
+
+    override public func resignFirstResponder() -> Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return super.resignFirstResponder()
+    }
+
     private let collation = UILocalizedIndexedCollation.current()
     private let contactStore = CNContactStore()
 

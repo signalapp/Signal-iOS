@@ -220,6 +220,24 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         fatalError("init(coder:) has not been implemented")
     }
 
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return true
+    }
+
+    override public func becomeFirstResponder() -> Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return super.becomeFirstResponder()
+    }
+
+    override public func resignFirstResponder() -> Bool {
+        Logger.debug("\(self.logTag) in \(#function)")
+        return super.resignFirstResponder()
+    }
+
     // MARK: View Lifecyle
 
     override func viewDidLoad() {
@@ -296,7 +314,7 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         self.applyInitialMediaViewConstraints()
 
         // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
-        pageViewController.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.setNavigationBarHidden(false, animated: false)
         self.presentationView.alpha = 1
 
         // We want to animate the tapped media from it's position in the previous VC
@@ -362,6 +380,15 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
                             self.view.isUserInteractionEnabled = true
 
                             pageViewController.wasPresented()
+
+                            // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
+                            //
+                            // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
+                            // OWSWindowManager window juggling calls `[rootWindow makeKeyAndVisible]`.
+                            //
+                            // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
+                            // presenting directly from ConversationVC.
+                            _ = self.becomeFirstResponder()
             })
         }
     }
