@@ -4,137 +4,215 @@
 
 import Foundation
 
+//@objc
+//public protocol BaseContactShareViewModel {
+//    func name() -> OWSContactName
+//    func phoneNumbers() -> [OWSContactPhoneNumber]
+//    func emails() -> [OWSContactEmail]
+//    func addresses() -> [OWSContactAddress]
+//
+//    func avatarData() -> Data?
+//    func avatarImage() -> UIImage?
+//
+//    func systemContactsWithSignalAccountPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String]
+//    func systemContactPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String]
+//    func e164PhoneNumbers() -> [String]
+//}
+
+// MARK: -
+
 @objc
-public class ContactShareViewModel: NSObject {
+public class ContactShareViewUtils: NSObject {
 
-    public let dbRecord: OWSContact
-    public let avatarImage: UIImage?
-
-    public required init(contactShareRecord: OWSContact, avatarImage: UIImage?) {
-        self.dbRecord = contactShareRecord
-        self.avatarImage = avatarImage
-    }
-
-    public convenience init(contactShareRecord: OWSContact, transaction: YapDatabaseReadTransaction) {
-        if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction) as? TSAttachmentStream {
-            self.init(contactShareRecord: contactShareRecord, avatarImage: avatarAttachment.image())
-        } else {
-            self.init(contactShareRecord: contactShareRecord, avatarImage: nil)
-        }
-    }
-
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
-        if let avatarImage = avatarImage {
+    @objc
+    public class func avatarOrDefaultImage(forContactShareViewModel contactShareViewModel: BaseContactShareViewModel,
+                                           diameter: CGFloat,
+                                           contactsManager: OWSContactsManager) -> UIImage {
+        if let avatarImage = contactShareViewModel.avatarImage() {
             return avatarImage
         }
 
-        // TODO: What's the best colorSeed value to use?
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
-                                                    colorSeed: displayName,
+        var colorSeed = contactShareViewModel.name().displayName
+        let recipientIds = contactShareViewModel.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+        if let firstRecipientId = recipientIds.first {
+            // Try to use the first signal id as the default
+            // avatar's color seed, so that it is as consistent
+            // as possible with the user's avatar in other views.
+            colorSeed = firstRecipientId
+        }
+
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contactShareViewModel.name().displayName,
+                                                    colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
                                                     contactsManager: contactsManager)
         return avatarBuilder.build()
     }
+}
 
-    // MARK: Delegated -> dbRecord
+// MARK: -
 
-    public var addresses: [OWSContactAddress] {
-        get {
-            return dbRecord.addresses
-        }
-        set {
-            return dbRecord.addresses = newValue
-        }
+@objc
+public class BaseContactShareViewModel: NSObject {
+
+    private let contactShareBase: OWSContactShareBase
+    private let avatarDataCached: Data?
+    private var avatarImageCached: UIImage?
+
+    init(contactShareBase: OWSContactShareBase, avatarData: Data?, avatarImage: UIImage? = nil) {
+        self.contactShareBase = contactShareBase
+        self.avatarDataCached = avatarData
+        self.avatarImageCached = avatarImage
+
+        super.init()
     }
 
-    public var emails: [OWSContactEmail] {
-        get {
-            return dbRecord.emails
-        }
-        set {
-            dbRecord.emails = newValue
-        }
+    public func avatarData() -> Data? {
+        return avatarDataCached
     }
 
-    public var phoneNumbers: [OWSContactPhoneNumber] {
-        get {
-            return dbRecord.phoneNumbers
+    public func avatarImage() -> UIImage? {
+        guard let avatarDataCached = avatarDataCached else {
+            return nil
         }
-        set {
-            dbRecord.phoneNumbers = newValue
+        if let avatarImageCached = avatarImageCached {
+            return avatarImageCached
         }
+        avatarImageCached = UIImage(data: avatarDataCached)
+        assert(avatarImageCached != nil)
+        return avatarImageCached
+    }
+
+    // MARK: -
+
+    public func name() -> OWSContactName {
+        return contactShareBase.name
+    }
+
+    public func phoneNumbers() -> [OWSContactPhoneNumber] {
+        return contactShareBase.phoneNumbers
+    }
+
+    public func emails() -> [OWSContactEmail] {
+        return contactShareBase.emails
+    }
+
+    public func addresses() -> [OWSContactAddress] {
+        return contactShareBase.addresses
     }
 
     public func systemContactsWithSignalAccountPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
-        return dbRecord.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+        return contactShareBase.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
     }
 
     public func systemContactPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
-        return dbRecord.systemContactPhoneNumbers(contactsManager)
+        return contactShareBase.systemContactPhoneNumbers(contactsManager)
     }
 
     public func e164PhoneNumbers() -> [String] {
-        return dbRecord.e164PhoneNumbers()
+        return contactShareBase.e164PhoneNumbers()
     }
 
-    public var displayName: String {
-        return dbRecord.displayName
+    public func displayName() -> String {
+        return contactShareBase.name.displayName
     }
 
-    public var ows_isValid: Bool {
-        return dbRecord.ows_isValid()
+    public func ows_isValid() -> Bool {
+        return contactShareBase.ows_isValid()
+    }
+}
+
+// MARK: -
+
+// Immutable view model for contact shares.
+@objc
+public class ContactShareViewModel: BaseContactShareViewModel {
+
+    private let contactShare: OWSContactShare
+
+    public init(contactShare: OWSContactShare, avatarData: Data?, avatarImage: UIImage? = nil) {
+        self.contactShare = contactShare
+
+        super.init(contactShareBase: contactShare, avatarData: avatarData, avatarImage: avatarImage)
     }
 
-    public var namePrefix: String? {
-        return dbRecord.namePrefix
+    public init(contactShare: OWSContactShare, transaction: YapDatabaseReadTransaction) {
+        self.contactShare = contactShare
+
+        var avatarData: Data?
+        if let avatarAttachment = contactShare.avatarAttachment(with: transaction) as? TSAttachmentStream {
+            do {
+                try avatarData = avatarAttachment.readDataFromFile()
+            } catch {
+                owsFail("\(ContactShareViewModel.logTag) \(#function) failed to load attachment data with error: \(error)")
+            }
+        }
+
+        super.init(contactShareBase: contactShare, avatarData: avatarData)
     }
 
-    public var givenName: String? {
-        return dbRecord.givenName
+    // MARK : -
+
+    public func convertToSystemContact(transaction: YapDatabaseReadTransaction) -> CNContact? {
+        return OWSContactConversion.systemContact(for: contactShare, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+@objc
+public class ProposedContactShareViewModel: BaseContactShareViewModel {
+
+    private let contactShare: OWSContactShareProposed
+
+    public init(contactShare: OWSContactShareProposed, avatarImage: UIImage? = nil) {
+        self.contactShare = contactShare
+
+        super.init(contactShareBase: contactShare, avatarData: contactShare.avatarData, avatarImage: avatarImage)
     }
 
-    public var middleName: String? {
-        return dbRecord.middleName
+    public required init(contactShare: OWSContactShareProposed) {
+        self.contactShare = contactShare
+
+        super.init(contactShareBase: contactShare, avatarData: contactShare.avatarData)
     }
 
-    public var familyName: String? {
-        return dbRecord.familyName
+    // MARK: -
+
+    public func copy(withName name: OWSContactName) -> ProposedContactShareViewModel? {
+        guard let contactShareCopy = contactShare.copy() as? OWSContactShareProposed else {
+            return nil
+        }
+
+        contactShareCopy.name = name
+
+        return ProposedContactShareViewModel(contactShare: contactShareCopy, avatarImage: avatarImage())
     }
 
-    public var nameSuffix: String? {
-        return dbRecord.nameSuffix
+    public func newProposedContactShare(withName name: OWSContactName) -> OWSContactShareProposed? {
+        guard let newContactShare = OWSContactShareProposed() else {
+            return nil
+        }
+
+        newContactShare.name = name
+
+        return newContactShare
     }
 
-    public var isProfileAvatar: Bool {
-        return dbRecord.isProfileAvatar
+    public func convertForSending(transaction: YapDatabaseReadWriteTransaction) -> OWSContactShare? {
+        guard let newContactShare = OWSContactShare() else {
+            return nil
+        }
+
+        newContactShare.name = contactShare.name.copy() as! OWSContactName
+        newContactShare.phoneNumbers = contactShare.phoneNumbers
+        newContactShare.emails = contactShare.emails
+        newContactShare.addresses = contactShare.addresses
+        newContactShare.isProfileAvatar = contactShare.isProfileAvatar
+
+        if let avatarData = contactShare.avatarData {
+            newContactShare.saveAvatarData(avatarData, transaction: transaction)
+        }
+
+        return newContactShare
     }
-
-    public func copy(withNamePrefix namePrefix: String?,
-                     givenName: String?,
-                     middleName: String?,
-                     familyName: String?,
-                     nameSuffix: String?) -> ContactShareViewModel {
-
-        // TODO move the `copy` logic into the view model?
-        let newDbRecord = dbRecord.copy(withNamePrefix: namePrefix, givenName: givenName, middleName: middleName, familyName: familyName, nameSuffix: nameSuffix)
-
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImage: self.avatarImage)
-    }
-
-    public func newContact(withNamePrefix namePrefix: String?,
-                           givenName: String?,
-                           middleName: String?,
-                           familyName: String?,
-                           nameSuffix: String?) -> ContactShareViewModel {
-
-        // TODO move the `newContact` logic into the view model?
-        let newDbRecord = dbRecord.newContact(withNamePrefix: namePrefix,
-                                              givenName: givenName,
-                                              middleName: middleName,
-                                              familyName: familyName,
-                                              nameSuffix: nameSuffix)
-
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImage: self.avatarImage)
-    }
-
 }

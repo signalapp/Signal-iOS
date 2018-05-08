@@ -186,7 +186,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 - (nullable UIImage *)localProfileAvatarImage
 {
-    return [self loadProfileAvatarWithFilename:self.localUserProfile.avatarFileName];
+    return [self loadProfileAvatarImageWithFilename:self.localUserProfile.avatarFileName];
 }
 
 - (void)updateLocalProfileName:(nullable NSString *)profileName
@@ -765,7 +765,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return userProfile.profileName;
 }
 
-- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
+- (nullable UIImage *)profileAvatarImageForRecipientId:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
 
@@ -773,7 +773,25 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
 
     if (userProfile.avatarFileName.length > 0) {
-        return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
+        return [self loadProfileAvatarImageWithFilename:userProfile.avatarFileName];
+    }
+
+    if (userProfile.avatarUrlPath.length > 0) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
+
+    return nil;
+}
+
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    OWSUserProfile *userProfile =
+        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
+    if (userProfile.avatarFileName.length > 0) {
+        return [self loadProfileAvatarDataWithFilename:userProfile.avatarFileName];
     }
 
     if (userProfile.avatarUrlPath.length > 0) {
@@ -1051,34 +1069,28 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Avatar Disk Cache
 
-- (nullable NSData *)loadProfileDataWithFilename:(NSString *)filename
-{
-    OWSAssert(filename.length > 0);
-
-    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
-    return [NSData dataWithContentsOfFile:filePath];
-}
-
-- (nullable UIImage *)loadProfileAvatarWithFilename:(NSString *)filename
+- (nullable NSData *)loadProfileAvatarDataWithFilename:(NSString *)filename
 {
     if (filename.length == 0) {
         return nil;
     }
 
-    UIImage *_Nullable image = nil;
-    @synchronized(self.profileAvatarImageCache)
-    {
-        image = [self.profileAvatarImageCache objectForKey:filename];
-    }
-    if (image) {
-        return image;
-    }
-
-    NSData *data = [self loadProfileDataWithFilename:filename];
+    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath];
     if (![data ows_isValidImage]) {
         return nil;
     }
-    image = [UIImage imageWithData:data];
+    return data;
+}
+
+- (nullable UIImage *)loadProfileAvatarImageWithFilename:(NSString *)filename
+{
+    NSData *_Nullable data = [self loadProfileAvatarDataWithFilename:filename];
+    if (!data) {
+        return nil;
+    }
+    UIImage *_Nullable image = [UIImage imageWithData:data];
+    OWSAssert(image);
     [self updateProfileAvatarCache:image filename:filename];
     return image;
 }

@@ -50,6 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
+        [NSKeyedUnarchiver setClass:[OWSContactShare class] forClassName:@"OWSContact"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             // Don't start database migrations until storage is ready.

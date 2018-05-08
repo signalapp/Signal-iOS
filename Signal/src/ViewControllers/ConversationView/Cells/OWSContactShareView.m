@@ -11,7 +11,7 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/OWSContactShare.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -160,8 +160,9 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
 
     AvatarImageView *avatarView = [AvatarImageView new];
-    avatarView.image =
-        [self.contactShare getAvatarImageWithDiameter:self.iconSize contactsManager:self.contactsManager];
+    avatarView.image = [ContactShareViewUtils avatarOrDefaultImageForContactShareViewModel:self.contactShare
+                                                                                  diameter:self.iconSize
+                                                                           contactsManager:self.contactsManager];
 
     [avatarView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:self.iconSize];

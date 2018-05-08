@@ -232,7 +232,9 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let avatarSize: CGFloat = 100
         let avatarView = AvatarImageView()
-        avatarView.image = contactShare.getAvatarImage(diameter: avatarSize, contactsManager: contactsManager)
+        avatarView.image = ContactShareViewUtils.avatarOrDefaultImage(forContactShareViewModel: contactShare,
+                                                                      diameter: avatarSize,
+                                                                      contactsManager: contactsManager)
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()
@@ -240,7 +242,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         avatarView.autoSetDimension(.height, toSize: avatarSize)
 
         let nameLabel = UILabel()
-        nameLabel.text = contactShare.displayName
+        nameLabel.text = contactShare.displayName()
         nameLabel.font = UIFont.ows_dynamicTypeTitle1
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
@@ -355,7 +357,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 //                                   action:#selector(didPressShareContact)))
 //        }
 
-        for phoneNumber in contactShare.phoneNumbers {
+        for phoneNumber in contactShare.phoneNumbers() {
             rows.append(ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
                                                           actionBlock: {
@@ -367,7 +369,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             }))
         }
 
-        for email in contactShare.emails {
+        for email in contactShare.emails() {
             rows.append(ContactFieldView.contactFieldView(forEmail: email,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
                                                           actionBlock: {
@@ -379,7 +381,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             }))
         }
 
-        for address in contactShare.addresses {
+        for address in contactShare.addresses() {
             rows.append(ContactFieldView.contactFieldView(forAddress: address,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
                                                           actionBlock: { [weak self] _ in

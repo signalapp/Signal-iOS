@@ -5,11 +5,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSBlockingManager;
+@class OWSContactShare;
 @class OWSContactsManager;
 @class OWSMessageSender;
+@class OWSQuotedReplyModel;
 @class SignalAttachment;
 @class TSContactThread;
 @class TSInteraction;
+@class TSOutgoingMessage;
 @class TSThread;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
@@ -44,10 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@class OWSContact;
-@class OWSQuotedReplyModel;
-@class TSOutgoingMessage;
-
 @interface ThreadUtil : NSObject
 
 + (TSOutgoingMessage *)sendMessageWithText:(NSString *)text
@@ -76,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     ignoreErrors:(BOOL)ignoreErrors
                                       completion:(void (^_Nullable)(NSError *_Nullable error))completion;
 
-+ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContact *)contactShare
++ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContactShare *)contactShare
                                           inThread:(TSThread *)thread
                                      messageSender:(OWSMessageSender *)messageSender
                                         completion:(void (^_Nullable)(NSError *_Nullable error))completion;

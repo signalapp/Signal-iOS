@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
 @class ConversationViewItem;
-@class OWSContact;
 @class OWSQuotedReplyModel;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;

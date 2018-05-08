@@ -61,6 +61,31 @@ public class ContactFieldView: UIView {
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
     }
 
+    public class func contactFieldView(forAvatarImage avatarImage: UIImage, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+        var stackView: UIStackView
+        if let actionBlock = actionBlock {
+            stackView = TappableStackView(actionBlock: actionBlock)
+        } else {
+            stackView = UIStackView()
+        }
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        stackView.layoutMargins = layoutMargins
+        stackView.isLayoutMarginsRelativeArrangement = true
+
+        let avatarView = AvatarImageView()
+        avatarView.image = avatarImage
+        let avatarSize = CGFloat(50)
+        avatarView.autoSetDimension(.width, toSize: avatarSize)
+        avatarView.autoSetDimension(.height, toSize: avatarSize)
+        avatarView.setCompressionResistanceHigh()
+        avatarView.setContentHuggingHigh()
+        stackView.addArrangedSubview(avatarView)
+
+        return stackView
+    }
+
     public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
         return simpleFieldView(name: phoneNumber.localizedLabel(), value: formattedPhoneNumber, layoutMargins: layoutMargins, actionBlock: actionBlock)

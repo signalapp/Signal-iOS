@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
     return message;
 }
 
-+ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContact *)contactShare
++ (TSOutgoingMessage *)sendMessageWithContactShare:(OWSContactShare *)contactShare
                                           inThread:(TSThread *)thread
                                      messageSender:(OWSMessageSender *)messageSender
                                         completion:(void (^_Nullable)(NSError *_Nullable error))completion

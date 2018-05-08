@@ -148,25 +148,34 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     if (self.attachment.isConvertibleToContactShare) {
         NSData *data = self.attachment.data;
-        OWSContact *_Nullable contact = [OWSContacts contactForVCardData:data];
+        __block OWSContactShareProposed *_Nullable contactShare;
+        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                contactShare = [OWSContactConversion contactShareForVCardData:data];
+            }];
 
-        if (!contact) {
+        if (!contactShare) {
             // This should never happen since we verify that the contact can be parsed when building the attachment.
             OWSFail(@"%@ could not parse contact share.", self.logTag);
             [self.shareViewDelegate shareViewWasCancelled];
             return;
         }
 
-        // TODO: Populate avatar image.
-        BOOL isProfileAvatar = NO;
-        UIImage *_Nullable avatarImage = nil;
-        contact.isProfileAvatar = isProfileAvatar;
+        for (NSString *recipientId in contactShare.e164PhoneNumbers) {
+            if (contactShare.avatarData) {
+                break;
+            }
+            contactShare.avatarData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+            if (contactShare.avatarData) {
+                contactShare.isProfileAvatar = YES;
+            }
+        }
 
-        ContactShareViewModel *contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:contact avatarImage:avatarImage];
+        ProposedContactShareViewModel *contactShareVM =
+            [[ProposedContactShareViewModel alloc] initWithContactShare:contactShare];
 
         ApproveContactShareViewController *approvalVC =
-            [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
+            [[ApproveContactShareViewController alloc] initWithContactShare:contactShareVM
                                                             contactsManager:self.contactsManager
                                                                    delegate:self];
         [self.navigationController pushViewController:approvalVC animated:YES];
@@ -282,16 +291,26 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 #pragma mark - ApproveContactShareViewControllerDelegate
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-     didApproveContactShare:(OWSContact *)contactShare
+     didApproveContactShare:(ProposedContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
+    __block OWSContactShare *convertedContactShare;
+    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            convertedContactShare = [contactShare convertForSendingWithTransaction:transaction];
+        }];
+    if (!convertedContactShare) {
+        OWSFail(@"%@ could not convert contact share for sending.", self.logTag);
+        return;
+    }
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
 
         __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare
+        outgoingMessage = [ThreadUtil sendMessageWithContactShare:convertedContactShare
                                                          inThread:self.thread
                                                     messageSender:self.messageSender
                                                        completion:^(NSError *_Nullable error) {
@@ -304,7 +323,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-      didCancelContactShare:(OWSContact *)contactShare
+      didCancelContactShare:(ProposedContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
