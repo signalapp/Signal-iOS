@@ -624,27 +624,25 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
-                                                        contactsManager: contactsManager,
+        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
                                                         fromViewController: self,
                                                         delegate: self)
-        contactShareViewHelper?.sendMessageToContact()
+
+        contactShareViewHelper?.sendMessage(contactShare: contactShare)
     }
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
-                                                        contactsManager: contactsManager,
+        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
                                                         fromViewController: self,
                                                         delegate: self)
-        contactShareViewHelper?.inviteContact()
+        contactShareViewHelper?.inviteContact(contactShare: contactShare)
     }
 
     func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactShare: contactShare,
-                                                        contactsManager: contactsManager,
+        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
                                                         fromViewController: self,
                                                         delegate: self)
-        contactShareViewHelper?.addToContacts()
+        contactShareViewHelper?.addToContacts(contactShare: contactShare)
     }
 
     var audioAttachmentPlayer: OWSAudioPlayer?

@@ -52,7 +52,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         super.init(nibName: nil, bundle: nil)
 
-        self.helper = ContactShareViewHelper(contactShare: contactShare, contactsManager: contactsManager, fromViewController: self, delegate: self)
+        self.helper = ContactShareViewHelper(contactsManager: contactsManager, fromViewController: self, delegate: self)
 
         updateMode()
 
@@ -478,31 +478,31 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressSendMessage() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.sendMessageToContact()
+        self.helper.sendMessage(contactShare: self.contactShare)
     }
 
     func didPressAudioCall() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.audioCallToContact()
+        self.helper.audioCall(contactShare: self.contactShare)
     }
 
     func didPressVideoCall() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.videoCallToContact()
+        self.helper.videoCall(contactShare: self.contactShare)
     }
 
     func didPressInvite() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.inviteContact()
+        self.helper.inviteContact(contactShare: self.contactShare)
     }
 
     func didPressAddToContacts() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.addToContacts()
+        self.helper.addToContacts(contactShare: self.contactShare)
     }
 
     func didPressDismiss() {

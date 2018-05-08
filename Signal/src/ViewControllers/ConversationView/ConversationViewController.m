@@ -276,6 +276,10 @@ typedef enum : NSUInteger {
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
+    _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager
+                                                                   fromViewController:self
+                                                                             delegate:self];
+
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
     _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
 }
@@ -2113,11 +2117,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
-                                                                       contactsManager:self.contactsManager
-                                                                    fromViewController:self
-                                                                              delegate:self];
-    [self.contactShareViewHelper sendMessageToContact];
+    [self.contactShareViewHelper sendMessageWithContactShare:contactShare];
 }
 
 - (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
@@ -2125,11 +2125,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
-                                                                       contactsManager:self.contactsManager
-                                                                    fromViewController:self
-                                                                              delegate:self];
-    [self.contactShareViewHelper inviteContact];
+    [self.contactShareViewHelper inviteContactWithContactShare:contactShare];
 }
 
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
@@ -2137,11 +2133,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    self.contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactShare:contactShare
-                                                                       contactsManager:self.contactsManager
-                                                                    fromViewController:self
-                                                                              delegate:self];
-    [self.contactShareViewHelper addToContacts];
+    [self.contactShareViewHelper addToContactsWithContactShare:contactShare];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem

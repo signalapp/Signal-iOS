@@ -17,14 +17,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
     weak var delegate: ContactShareViewHelperDelegate?
 
-    let contactShare: ContactShareViewModel
     let contactsManager: OWSContactsManager
     weak var fromViewController: UIViewController?
 
-    public required init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, fromViewController: UIViewController, delegate: ContactShareViewHelperDelegate) {
+    public required init(contactsManager: OWSContactsManager, fromViewController: UIViewController, delegate: ContactShareViewHelperDelegate) {
         SwiftAssertIsOnMainThread(#function)
 
-        self.contactShare = contactShare
         self.contactsManager = contactsManager
         self.fromViewController = fromViewController
         self.delegate = delegate
@@ -35,27 +33,27 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     // MARK: Actions
 
     @objc
-    public func sendMessageToContact() {
+    public func sendMessage(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .compose)
+        presentThreadAndPeform(action: .compose, contactShare: contactShare)
     }
 
     @objc
-    public func audioCallToContact() {
+    public func audioCall(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .audioCall)
+        presentThreadAndPeform(action: .audioCall, contactShare: contactShare)
     }
 
     @objc
-    public func videoCallToContact() {
+    public func videoCall(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
-        presentThreadAndPeform(action: .videoCall)
+        presentThreadAndPeform(action: .videoCall, contactShare: contactShare)
     }
 
-    private func presentThreadAndPeform(action: ConversationViewAction) {
+    private func presentThreadAndPeform(action: ConversationViewAction, contactShare: ContactShareViewModel) {
         // TODO: We're taking the first Signal account id. We might
         // want to let the user select if there's more than one.
         let phoneNumbers = contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
@@ -75,7 +73,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     @objc
-    public func inviteContact() {
+    public func inviteContact(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
         guard let fromViewController = fromViewController else {
@@ -99,7 +97,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
-    func addToContacts() {
+    func addToContacts(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
         guard let fromViewController = fromViewController else {
@@ -112,12 +110,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
-                                                self.didPressCreateNewContact()
+                                                self.didPressCreateNewContact(contactShare: contactShare)
         })
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
-                                                self.didPressAddToExistingContact()
+                                                self.didPressAddToExistingContact(contactShare: contactShare)
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
 
@@ -144,21 +142,21 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         fromViewController.present(actionSheet, animated: true)
     }
 
-    func didPressCreateNewContact() {
+    func didPressCreateNewContact(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
-        presentNewContactView()
+        presentNewContactView(contactShare: contactShare)
     }
 
-    func didPressAddToExistingContact() {
+    func didPressAddToExistingContact(contactShare: ContactShareViewModel) {
         Logger.info("\(logTag) \(#function)")
 
-        presentSelectAddToExistingContactView()
+        presentSelectAddToExistingContactView(contactShare: contactShare)
     }
 
     // MARK: -
 
-    private func presentNewContactView() {
+    private func presentNewContactView(contactShare: ContactShareViewModel) {
 
         guard let fromViewController = fromViewController else {
             owsFail("\(logTag) missing fromViewController")
@@ -203,7 +201,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         UIUtil.applyDefaultSystemAppearence()
     }
 
-    private func presentSelectAddToExistingContactView() {
+    private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel) {
 
         guard let fromViewController = fromViewController else {
             owsFail("\(logTag) missing fromViewController")
