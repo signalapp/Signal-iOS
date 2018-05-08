@@ -220,7 +220,10 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
         fatalError("init(coder:) has not been implemented")
     }
 
-    override var canBecomeFirstResponder: Bool {
+    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
+    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
+    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
+    override public var canBecomeFirstResponder: Bool {
         Logger.debug("\(self.logTag) in \(#function)")
         return true
     }

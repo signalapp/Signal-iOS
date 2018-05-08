@@ -596,6 +596,28 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
+    [self dismissPresentedViewControllerIfNecessary];
+}
+
+- (void)dismissPresentedViewControllerIfNecessary
+{
+    UIViewController *_Nullable presentedViewController = self.presentedViewController;
+    if (!presentedViewController) {
+        DDLogDebug(@"%@ presentedViewController was nil", self.logTag);
+        return;
+    }
+
+    if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
+        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        [self dismissViewControllerAnimated:NO completion:nil];
+        return;
+    }
+
+    if ([presentedViewController isKindOfClass:[UIImagePickerController class]]) {
+        DDLogDebug(@"%@ dismissing presentedViewController: %@", self.logTag, presentedViewController);
+        [self dismissViewControllerAnimated:NO completion:nil];
+        return;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
