@@ -118,6 +118,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)shareTextAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
+
+- (SEL)replyActionSelector;
 - (SEL)metadataActionSelector;
 
 @end

@@ -432,6 +432,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (action == self.viewItem.metadataActionSelector) {
         return NO;
     }
+
+    // Reply is not supported from MediaDetailView.
+    // TODO implement a "scroll to message" action which would
+    // let users scroll back to the media message in their message history.
+    if (action == self.viewItem.replyActionSelector) {
+        return NO;
+    }
+
     return [self.viewItem canPerformAction:action];
 }
 
