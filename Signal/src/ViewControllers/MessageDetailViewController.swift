@@ -40,7 +40,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
-    private var contactShareViewHelper: ContactShareViewHelper?
+    private var contactShareViewHelper: ContactShareViewHelper
 
     // MARK: Initializers
 
@@ -55,8 +55,10 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.message = message
         self.mode = mode
         self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-
+        self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
         super.init(nibName: nil, bundle: nil)
+
+        contactShareViewHelper.delegate = self
     }
 
     // MARK: View Lifecycle
@@ -624,25 +626,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     func didTapSendMessage(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
-                                                        fromViewController: self,
-                                                        delegate: self)
-
-        contactShareViewHelper?.sendMessage(contactShare: contactShare)
+        contactShareViewHelper.sendMessage(contactShare: contactShare, fromViewController: self)
     }
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
-                                                        fromViewController: self,
-                                                        delegate: self)
-        contactShareViewHelper?.inviteContact(contactShare: contactShare)
+        contactShareViewHelper.inviteContact(contactShare: contactShare, fromViewController: self)
     }
 
     func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager,
-                                                        fromViewController: self,
-                                                        delegate: self)
-        contactShareViewHelper?.addToContacts(contactShare: contactShare)
+        contactShareViewHelper.addToContacts(contactShare: contactShare, fromViewController: self)
     }
 
     var audioAttachmentPlayer: OWSAudioPlayer?
@@ -728,6 +720,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: - ContactShareViewHelperDelegate
 
     public func didCreateOrEditContact() {
+        navigationController?.popToViewController(self, animated: true)
         updateContent()
     }
 }

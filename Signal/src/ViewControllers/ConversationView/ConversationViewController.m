@@ -276,9 +276,8 @@ typedef enum : NSUInteger {
     _networkManager = [TSNetworkManager sharedManager];
     _blockingManager = [OWSBlockingManager sharedManager];
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager
-                                                                   fromViewController:self
-                                                                             delegate:self];
+    _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
+    _contactShareViewHelper.delegate = self;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ voice note", self.logTag];
     _voiceNoteAudioActivity = [[AudioActivity alloc] initWithAudioDescription:audioActivityDescription];
@@ -2117,7 +2116,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper sendMessageWithContactShare:contactShare];
+    [self.contactShareViewHelper sendMessageWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
@@ -2125,7 +2124,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper inviteContactWithContactShare:contactShare];
+    [self.contactShareViewHelper inviteContactWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
@@ -2133,7 +2132,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper addToContactsWithContactShare:contactShare];
+    [self.contactShareViewHelper addToContactsWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
@@ -5066,7 +5065,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
-    // Do nothing.
+    [self.navigationController popToViewController:self animated:true];
 }
 
 @end
