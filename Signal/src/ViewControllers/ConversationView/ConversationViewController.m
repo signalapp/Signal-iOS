@@ -2124,7 +2124,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper inviteContactWithContactShare:contactShare fromViewController:self];
+    [self.contactShareViewHelper showInviteContactWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
@@ -2132,7 +2132,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper addToContactsWithContactShare:contactShare fromViewController:self];
+    [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem

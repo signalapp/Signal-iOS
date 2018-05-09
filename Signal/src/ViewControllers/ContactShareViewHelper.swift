@@ -70,7 +70,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     @objc
-    public func inviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    public func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("\(logTag) \(#function)")
 
         guard MFMessageComposeViewController.canSendText() else {
@@ -89,7 +89,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
-    func addToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("\(logTag) \(#function)")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
