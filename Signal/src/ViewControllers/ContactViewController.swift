@@ -37,7 +37,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     private let contactShare: ContactShareViewModel
 
-    private var helper: ContactShareViewHelper!
+    private var contactShareViewHelper: ContactShareViewHelper
 
     // MARK: - Initializers
 
@@ -49,10 +49,11 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.current().contactsManager
         self.contactShare = contactShare
+        self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
 
         super.init(nibName: nil, bundle: nil)
 
-        self.helper = ContactShareViewHelper(contactShare: contactShare, contactsManager: contactsManager, fromViewController: self, delegate: self)
+        contactShareViewHelper.delegate = self
 
         updateMode()
 
@@ -478,31 +479,31 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressSendMessage() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.sendMessageToContact()
+        self.contactShareViewHelper.sendMessage(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressAudioCall() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.audioCallToContact()
+        self.contactShareViewHelper.audioCall(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressVideoCall() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.videoCallToContact()
+        self.contactShareViewHelper.videoCall(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressInvite() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.inviteContact()
+        self.contactShareViewHelper.inviteContact(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressAddToContacts() {
         Logger.info("\(logTag) \(#function)")
 
-        self.helper.addToContacts()
+        self.contactShareViewHelper.addToContacts(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressDismiss() {
@@ -551,6 +552,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     public func didCreateOrEditContact() {
         Logger.info("\(logTag) \(#function)")
 
+        navigationController?.popToViewController(self, animated: true)
         updateContent()
     }
 }

@@ -835,7 +835,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     if (contact.nameSuffix.ows_stripped.length > 0) {
         nameBuilder.suffix = contact.nameSuffix.ows_stripped;
     }
+    nameBuilder.displayName = contact.displayName;
     [contactBuilder setNameBuilder:nameBuilder];
+
+    if (contact.organizationName.ows_stripped.length > 0) {
+        contactBuilder.organization = contact.organizationName.ows_stripped;
+    }
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
