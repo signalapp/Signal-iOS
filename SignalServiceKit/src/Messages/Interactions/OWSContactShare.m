@@ -2,10 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "MimeTypeUtil.h"
 #import "NSString+SSK.h"
-#import "OWSContact+Private.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "PhoneNumber.h"
 #import "TSAttachment.h"
@@ -16,6 +15,14 @@
 @import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface OWSContactConversion ()
+
++ (nullable CNContact *)systemContactForContactName:(OWSContactName *)contactName;
+
+@end
+
+#pragma mark -
 
 // NOTE: When changing the value of this feature flag, you also need
 // to update the filtering in the SAE's info.plist.
@@ -34,15 +41,6 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
             return @"Custom";
     }
 }
-
-@interface OWSContactPhoneNumber ()
-
-@property (nonatomic) OWSContactPhoneType phoneType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic) NSString *phoneNumber;
-
-@end
 
 #pragma mark -
 
@@ -74,7 +72,7 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
     }
 }
 
-- (NSString *)debugDescription
+- (NSString *)logDescription
 {
     NSMutableString *result = [NSMutableString new];
     [result appendFormat:@"[Phone Number: %@, ", NSStringForContactPhoneType(self.phoneType)];
@@ -108,15 +106,6 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
     }
 }
 
-@interface OWSContactEmail ()
-
-@property (nonatomic) OWSContactEmailType emailType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic) NSString *email;
-
-@end
-
 #pragma mark -
 
 @implementation OWSContactEmail
@@ -147,7 +136,7 @@ NSString *NSStringForContactEmailType(OWSContactEmailType value)
     }
 }
 
-- (NSString *)debugDescription
+- (NSString *)logDescription
 {
     NSMutableString *result = [NSMutableString new];
     [result appendFormat:@"[Email: %@, ", NSStringForContactEmailType(self.emailType)];
@@ -178,20 +167,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             return @"Custom";
     }
 }
-@interface OWSContactAddress ()
-
-@property (nonatomic) OWSContactAddressType addressType;
-@property (nonatomic, nullable) NSString *label;
-
-@property (nonatomic, nullable) NSString *street;
-@property (nonatomic, nullable) NSString *pobox;
-@property (nonatomic, nullable) NSString *neighborhood;
-@property (nonatomic, nullable) NSString *city;
-@property (nonatomic, nullable) NSString *region;
-@property (nonatomic, nullable) NSString *postcode;
-@property (nonatomic, nullable) NSString *country;
-
-@end
 
 #pragma mark -
 
@@ -224,7 +199,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 }
 
-- (NSString *)debugDescription
+- (NSString *)logDescription
 {
     NSMutableString *result = [NSMutableString new];
     [result appendFormat:@"[Address: %@, ", NSStringForContactAddressType(self.addressType)];
@@ -262,22 +237,71 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark -
 
-@interface OWSContact ()
+@implementation OWSContactName
 
-@property (nonatomic, nullable) NSString *givenName;
-@property (nonatomic, nullable) NSString *familyName;
-@property (nonatomic, nullable) NSString *nameSuffix;
-@property (nonatomic, nullable) NSString *namePrefix;
-@property (nonatomic, nullable) NSString *middleName;
-@property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic) NSString *displayName;
+- (NSString *)logDescription
+{
+    NSMutableString *result = [NSMutableString new];
+    [result appendString:@"["];
 
-@property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
-@property (nonatomic) NSArray<OWSContactEmail *> *emails;
-@property (nonatomic) NSArray<OWSContactAddress *> *addresses;
+    if (self.givenName.length > 0) {
+        [result appendFormat:@"givenName: %@, ", self.givenName];
+    }
+    if (self.familyName.length > 0) {
+        [result appendFormat:@"familyName: %@, ", self.familyName];
+    }
+    if (self.middleName.length > 0) {
+        [result appendFormat:@"middleName: %@, ", self.middleName];
+    }
+    if (self.namePrefix.length > 0) {
+        [result appendFormat:@"namePrefix: %@, ", self.namePrefix];
+    }
+    if (self.nameSuffix.length > 0) {
+        [result appendFormat:@"nameSuffix: %@, ", self.nameSuffix];
+    }
+    if (self.displayName.length > 0) {
+        [result appendFormat:@"displayName: %@, ", self.displayName];
+    }
 
-@property (nonatomic, nullable) NSString *avatarAttachmentId;
-@property (nonatomic) BOOL isProfileAvatar;
+    [result appendString:@"]"];
+    return result;
+}
+
+- (NSString *)displayName
+{
+    [self ensureDisplayName];
+
+    if (_displayName.length < 1) {
+        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
+        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
+    }
+    return _displayName;
+}
+
+- (void)ensureDisplayName
+{
+    if (_displayName.length < 1) {
+        CNContact *_Nullable systemContact = [OWSContactConversion systemContactForContactName:self];
+        _displayName = [CNContactFormatter stringFromContact:systemContact style:CNContactFormatterStyleFullName];
+    }
+    if (_displayName.length < 1) {
+        // Fall back to using the organization name.
+        _displayName = self.organizationName;
+    }
+}
+
+- (void)updateDisplayName
+{
+    _displayName = nil;
+
+    [self ensureDisplayName];
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSContactShareBase ()
 
 @property (nonatomic, nullable) NSArray<NSString *> *e164PhoneNumbersCached;
 
@@ -285,11 +309,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark -
 
-@implementation OWSContact
+@implementation OWSContactShareBase
 
 - (instancetype)init
 {
     if (self = [super init]) {
+        _name = [OWSContactName new];
         _phoneNumbers = @[];
         _emails = @[];
         _addresses = @[];
@@ -318,7 +343,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (BOOL)ows_isValid
 {
-    if (self.displayName.ows_stripped.length < 1) {
+    if (self.name.displayName.ows_stripped.length < 1) {
         DDLogWarn(@"%@ invalid contact; no display name.", self.logTag);
         return NO;
     }
@@ -344,145 +369,25 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return hasValue;
 }
 
-- (NSString *)displayName
-{
-    [self ensureDisplayName];
-
-    if (_displayName.length < 1) {
-        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
-        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
-    }
-    return _displayName;
-}
-
-- (void)ensureDisplayName
-{
-    if (_displayName.length < 1) {
-        CNContact *_Nullable systemContact = [OWSContacts systemContactForContact:self];
-        _displayName = [CNContactFormatter stringFromContact:systemContact style:CNContactFormatterStyleFullName];
-    }
-    if (_displayName.length < 1) {
-        // Fall back to using the organization name.
-        _displayName = self.organizationName;
-    }
-}
-
-- (void)updateDisplayName
-{
-    _displayName = nil;
-
-    [self ensureDisplayName];
-}
-
-- (NSString *)debugDescription
+- (NSString *)logDescription
 {
     NSMutableString *result = [NSMutableString new];
     [result appendString:@"["];
 
-    if (self.givenName.length > 0) {
-        [result appendFormat:@"givenName: %@, ", self.givenName];
-    }
-    if (self.familyName.length > 0) {
-        [result appendFormat:@"familyName: %@, ", self.familyName];
-    }
-    if (self.middleName.length > 0) {
-        [result appendFormat:@"middleName: %@, ", self.middleName];
-    }
-    if (self.namePrefix.length > 0) {
-        [result appendFormat:@"namePrefix: %@, ", self.namePrefix];
-    }
-    if (self.nameSuffix.length > 0) {
-        [result appendFormat:@"nameSuffix: %@, ", self.nameSuffix];
-    }
-    if (self.displayName.length > 0) {
-        [result appendFormat:@"displayName: %@, ", self.displayName];
-    }
+    [result appendFormat:@"%@, ", self.name.logDescription];
 
     for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
-        [result appendFormat:@"%@, ", phoneNumber.debugDescription];
+        [result appendFormat:@"%@, ", phoneNumber.logDescription];
     }
     for (OWSContactEmail *email in self.emails) {
-        [result appendFormat:@"%@, ", email.debugDescription];
+        [result appendFormat:@"%@, ", email.logDescription];
     }
     for (OWSContactAddress *address in self.addresses) {
-        [result appendFormat:@"%@, ", address.debugDescription];
+        [result appendFormat:@"%@, ", address.logDescription];
     }
 
     [result appendString:@"]"];
     return result;
-}
-
-- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
-                               givenName:(nullable NSString *)givenName
-                              middleName:(nullable NSString *)middleName
-                              familyName:(nullable NSString *)familyName
-                              nameSuffix:(nullable NSString *)nameSuffix
-{
-    OWSContact *newContact = [OWSContact new];
-
-    [newContact setNamePrefix:namePrefix
-                    givenName:givenName
-                   middleName:middleName
-                   familyName:familyName
-                   nameSuffix:nameSuffix];
-
-    return newContact;
-}
-
-- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
-                                givenName:(nullable NSString *)givenName
-                               middleName:(nullable NSString *)middleName
-                               familyName:(nullable NSString *)familyName
-                               nameSuffix:(nullable NSString *)nameSuffix
-{
-    OWSContact *contactCopy = [self copy];
-
-    [contactCopy setNamePrefix:namePrefix
-                     givenName:givenName
-                    middleName:middleName
-                    familyName:familyName
-                    nameSuffix:nameSuffix];
-
-    return contactCopy;
-}
-
-- (void)setNamePrefix:(nullable NSString *)namePrefix
-            givenName:(nullable NSString *)givenName
-           middleName:(nullable NSString *)middleName
-           familyName:(nullable NSString *)familyName
-           nameSuffix:(nullable NSString *)nameSuffix
-{
-    self.namePrefix = namePrefix.ows_stripped;
-    self.givenName = givenName.ows_stripped;
-    self.middleName = middleName.ows_stripped;
-    self.familyName = familyName.ows_stripped;
-    self.nameSuffix = nameSuffix.ows_stripped;
-
-    [self updateDisplayName];
-}
-
-#pragma mark - Avatar
-
-- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
-}
-
-
-- (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    NSData *imageData = UIImageJPEGRepresentation(image, (CGFloat)0.9);
-
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
-                                                                                 byteCount:imageData.length
-                                                                            sourceFilename:nil];
-
-    NSError *error;
-    BOOL success = [attachmentStream writeData:imageData error:&error];
-    OWSAssert(success && !error);
-
-    [attachmentStream saveWithTransaction:transaction];
-    self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 
 #pragma mark - Phone Numbers and Recipient IDs
@@ -533,7 +438,74 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark -
 
-@implementation OWSContacts
+@implementation OWSContactShare
+
+- (BOOL)hasAvatar
+{
+    return self.avatarAttachmentId != nil;
+}
+
+#pragma mark - Avatar
+
+- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
+}
+
+- (void)saveAvatarData:(NSData *)rawAvatarData transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(rawAvatarData);
+    OWSAssert(transaction);
+
+    // Always convert avatar to ensure that it is JPEG.
+    //
+    // TODO: Consider scaling large avatars.
+    // TODO: Consider skipping conversion if already JPEG.
+    UIImage *_Nullable avatarImage = [UIImage imageWithData:rawAvatarData];
+    if (!avatarImage) {
+        OWSFail(@"%@ could not load avatar data.", self.logTag);
+        return;
+    }
+    [self saveAvatarImage:avatarImage transaction:transaction];
+}
+
+- (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    NSData *imageData = UIImageJPEGRepresentation(image, (CGFloat)0.9);
+
+    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
+                                                                                 byteCount:(UInt32)imageData.length
+                                                                            sourceFilename:nil];
+
+    NSError *error;
+    BOOL success = [attachmentStream writeData:imageData error:&error];
+    OWSAssert(success && !error);
+
+    [attachmentStream saveWithTransaction:transaction];
+    self.avatarAttachmentId = attachmentStream.uniqueId;
+}
+
+- (void)setAvatarAttachmentId:(nullable NSString *)avatarAttachmentId
+{
+    _avatarAttachmentId = avatarAttachmentId;
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSContactShareProposed
+
+- (BOOL)hasAvatar
+{
+    return self.avatarData != nil;
+}
+
+@end
+
+#pragma mark -
+
+@implementation OWSContactConversion
 
 #pragma mark - VCard Serialization
 
@@ -579,22 +551,24 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark - System Contact Conversion
 
-+ (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
++ (nullable OWSContactShareProposed *)contactShareForSystemContact:(CNContact *)systemContact
 {
     if (!systemContact) {
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
-    OWSContact *contact = [OWSContact new];
-    contact.givenName = systemContact.givenName.ows_stripped;
-    contact.middleName = systemContact.middleName.ows_stripped;
-    contact.familyName = systemContact.familyName.ows_stripped;
-    contact.namePrefix = systemContact.namePrefix.ows_stripped;
-    contact.nameSuffix = systemContact.nameSuffix.ows_stripped;
-    // TODO: Verify.
-    contact.displayName = [CNContactFormatter stringFromContact:systemContact style:CNContactFormatterStyleFullName];
-    contact.organizationName = systemContact.organizationName.ows_stripped;
+    OWSContactShareProposed *contact = [OWSContactShareProposed new];
+
+    OWSContactName *contactName = [OWSContactName new];
+    contactName.givenName = systemContact.givenName.ows_stripped;
+    contactName.middleName = systemContact.middleName.ows_stripped;
+    contactName.familyName = systemContact.familyName.ows_stripped;
+    contactName.namePrefix = systemContact.namePrefix.ows_stripped;
+    contactName.nameSuffix = systemContact.nameSuffix.ows_stripped;
+    contactName.organizationName = systemContact.organizationName.ows_stripped;
+    [contactName ensureDisplayName];
+    contact.name = contactName;
 
     NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in systemContact.phoneNumbers) {
@@ -669,31 +643,64 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = addresses;
 
-    // TODO: Avatar
-
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
-
-    [contact ensureDisplayName];
+    // Avatar
+    contact.avatarData = [self avatarDataForSystemContact:systemContact];
 
     return contact;
 }
 
-+ (nullable CNContact *)systemContactForContact:(OWSContact *)contact
++ (nullable NSData *)avatarDataForSystemContact:(CNContact *)systemContact
 {
+    if (!systemContact) {
+        OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
+        return nil;
+    }
+
+    // Avatar
+    NSData *_Nullable imageData = systemContact.thumbnailImageData;
+    if (!imageData) {
+        imageData = systemContact.imageData;
+    }
+    return imageData;
+}
+
++ (nullable CNContact *)systemContactForContactName:(OWSContactName *)contactName
+{
+    if (!contactName) {
+        OWSProdLogAndFail(@"%@ Missing contact name.", self.logTag);
+        return nil;
+    }
+
+    CNMutableContact *systemContact = [CNMutableContact new];
+    systemContact.givenName = contactName.givenName;
+    systemContact.middleName = contactName.middleName;
+    systemContact.familyName = contactName.familyName;
+    systemContact.namePrefix = contactName.namePrefix;
+    systemContact.nameSuffix = contactName.nameSuffix;
+    // We don't need to set display name, it's implicit for system contacts.
+    systemContact.organizationName = contactName.organizationName;
+
+    return systemContact;
+}
+
++ (nullable CNContact *)systemContactForContactShare:(OWSContactShare *)contact
+                                         transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction);
+
     if (!contact) {
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
         return nil;
     }
 
     CNMutableContact *systemContact = [CNMutableContact new];
-    systemContact.givenName = contact.givenName;
-    systemContact.middleName = contact.middleName;
-    systemContact.familyName = contact.familyName;
-    systemContact.namePrefix = contact.namePrefix;
-    systemContact.nameSuffix = contact.nameSuffix;
+    systemContact.givenName = contact.name.givenName;
+    systemContact.middleName = contact.name.middleName;
+    systemContact.familyName = contact.name.familyName;
+    systemContact.namePrefix = contact.name.namePrefix;
+    systemContact.nameSuffix = contact.name.nameSuffix;
     // We don't need to set display name, it's implicit for system contacts.
-    systemContact.organizationName = contact.organizationName;
+    systemContact.organizationName = contact.name.organizationName;
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *systemPhoneNumbers = [NSMutableArray new];
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
@@ -777,17 +784,29 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     systemContact.postalAddresses = systemAddresses;
 
-    // TODO: Avatar
-
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
+    // Avatar
+    //
+    // NOTE: We don't want to write profile avatars to system contacts.
+    if (!contact.isProfileAvatar) {
+        TSAttachment *_Nullable avatarAttachment = [contact avatarAttachmentWithTransaction:transaction];
+        if ([avatarAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *avatarAttachmentStream = (TSAttachmentStream *)avatarAttachment;
+            NSError *error;
+            NSData *_Nullable avatarData = [avatarAttachmentStream readDataFromFileWithError:&error];
+            if (error || !avatarData) {
+                OWSProdLogAndFail(@"%@ could not read avatar data: %@", self.logTag, error);
+            } else {
+                systemContact.imageData = avatarData;
+            }
+        }
+    }
 
     return systemContact;
 }
 
 #pragma mark -
 
-+ (nullable OWSContact *)contactForVCardData:(NSData *)data
++ (nullable OWSContactShareProposed *)contactShareForVCardData:(NSData *)data
 {
     OWSAssert(data);
 
@@ -795,14 +814,16 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     if (!systemContact) {
         return nil;
     }
-    return [self contactForSystemContact:systemContact];
+    return [self contactShareForSystemContact:systemContact];
 }
 
-+ (nullable NSData *)vCardDataContact:(OWSContact *)contact
++ (nullable NSData *)vCardDataForContactShare:(OWSContactShare *)contact
+                                  transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(contact);
+    OWSAssert(transaction);
 
-    CNContact *_Nullable systemContact = [self systemContactForContact:contact];
+    CNContact *_Nullable systemContact = [self systemContactForContactShare:contact transaction:transaction];
     if (!systemContact) {
         return nil;
     }
@@ -811,7 +832,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark - Proto Serialization
 
-+ (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact
++ (nullable OWSSignalServiceProtosDataMessageContact *)protoForContactShare:(OWSContactShare *)contact
 {
     OWSAssert(contact);
 
@@ -820,27 +841,28 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
         [OWSSignalServiceProtosDataMessageContactNameBuilder new];
-    if (contact.givenName.ows_stripped.length > 0) {
-        nameBuilder.givenName = contact.givenName.ows_stripped;
-    }
-    if (contact.familyName.ows_stripped.length > 0) {
-        nameBuilder.familyName = contact.familyName.ows_stripped;
-    }
-    if (contact.middleName.ows_stripped.length > 0) {
-        nameBuilder.middleName = contact.middleName.ows_stripped;
-    }
-    if (contact.namePrefix.ows_stripped.length > 0) {
-        nameBuilder.prefix = contact.namePrefix.ows_stripped;
-    }
-    if (contact.nameSuffix.ows_stripped.length > 0) {
-        nameBuilder.suffix = contact.nameSuffix.ows_stripped;
-    }
-    nameBuilder.displayName = contact.displayName;
-    [contactBuilder setNameBuilder:nameBuilder];
 
-    if (contact.organizationName.ows_stripped.length > 0) {
-        contactBuilder.organization = contact.organizationName.ows_stripped;
+    OWSContactName *contactName = contact.name;
+    if (contactName.givenName.ows_stripped.length > 0) {
+        nameBuilder.givenName = contactName.givenName.ows_stripped;
     }
+    if (contactName.familyName.ows_stripped.length > 0) {
+        nameBuilder.familyName = contactName.familyName.ows_stripped;
+    }
+    if (contactName.middleName.ows_stripped.length > 0) {
+        nameBuilder.middleName = contactName.middleName.ows_stripped;
+    }
+    if (contactName.namePrefix.ows_stripped.length > 0) {
+        nameBuilder.prefix = contactName.namePrefix.ows_stripped;
+    }
+    if (contactName.nameSuffix.ows_stripped.length > 0) {
+        nameBuilder.suffix = contactName.nameSuffix.ows_stripped;
+    }
+    if (contactName.organizationName.ows_stripped.length > 0) {
+        contactBuilder.organization = contactName.organizationName.ows_stripped;
+    }
+    nameBuilder.displayName = contactName.displayName;
+    [contactBuilder setNameBuilder:nameBuilder];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
@@ -923,8 +945,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     if (contact.avatarAttachmentId != nil) {
         OWSSignalServiceProtosDataMessageContactAvatarBuilder *avatarBuilder =
             [OWSSignalServiceProtosDataMessageContactAvatarBuilder new];
-        avatarBuilder.avatar =
-            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
+        avatarBuilder.avatar = [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
         contactBuilder.avatar = [avatarBuilder build];
     }
 
@@ -936,9 +957,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return contactProto;
 }
 
-+ (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                         relay:(nullable NSString *)relay
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (nullable OWSContactShare *)contactShareForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
+                                                   relay:(nullable NSString *)relay
+                                             transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
 
@@ -948,34 +969,36 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     OWSAssert(dataMessage.contact.count == 1);
     OWSSignalServiceProtosDataMessageContact *contactProto = dataMessage.contact.firstObject;
 
-    OWSContact *contact = [OWSContact new];
+    OWSContactShare *contact = [OWSContactShare new];
 
-    if (contactProto.hasOrganization) {
-        contact.organizationName = contactProto.organization.ows_stripped;
-    }
-
+    OWSContactName *contactName = [OWSContactName new];
     if (contactProto.hasName) {
         OWSSignalServiceProtosDataMessageContactName *nameProto = contactProto.name;
 
         if (nameProto.hasGivenName) {
-            contact.givenName = nameProto.givenName.ows_stripped;
+            contactName.givenName = nameProto.givenName.ows_stripped;
         }
         if (nameProto.hasFamilyName) {
-            contact.familyName = nameProto.familyName.ows_stripped;
+            contactName.familyName = nameProto.familyName.ows_stripped;
         }
         if (nameProto.hasPrefix) {
-            contact.namePrefix = nameProto.prefix.ows_stripped;
+            contactName.namePrefix = nameProto.prefix.ows_stripped;
         }
         if (nameProto.hasSuffix) {
-            contact.nameSuffix = nameProto.suffix.ows_stripped;
+            contactName.nameSuffix = nameProto.suffix.ows_stripped;
         }
         if (nameProto.hasMiddleName) {
-            contact.middleName = nameProto.middleName.ows_stripped;
+            contactName.middleName = nameProto.middleName.ows_stripped;
         }
         if (nameProto.hasDisplayName) {
-            contact.displayName = nameProto.displayName.ows_stripped;
+            contactName.displayName = nameProto.displayName.ows_stripped;
         }
     }
+    if (contactProto.hasOrganization) {
+        contactName.organizationName = contactProto.organization.ows_stripped;
+    }
+    [contactName ensureDisplayName];
+    contact.name = contactName;
 
     NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (OWSSignalServiceProtosDataMessageContactPhone *phoneNumberProto in contactProto.number) {
@@ -1004,8 +1027,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = [addresses copy];
 
-    [contact ensureDisplayName];
-
     if (contactProto.hasAvatar) {
         OWSSignalServiceProtosDataMessageContactAvatar *avatarInfo = contactProto.avatar;
 
@@ -1022,7 +1043,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             OWSFail(@"%@ in %s avatarInfo.hasAvatar was unexpectedly false", self.logTag, __PRETTY_FUNCTION__);
         }
     }
-
 
     return contact;
 }

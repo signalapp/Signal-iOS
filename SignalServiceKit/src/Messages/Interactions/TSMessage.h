@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Abstract message class.
  */
 
-@class OWSContact;
+@class OWSContactShare;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t expiresAt;
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
-@property (nonatomic, readonly, nullable) OWSContact *contactShare;
+@property (nonatomic, readonly, nullable) OWSContactShare *contactShare;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
+                            contactShare:(nullable OWSContactShare *)contactShare NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

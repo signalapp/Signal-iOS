@@ -232,7 +232,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let avatarSize: CGFloat = 100
         let avatarView = AvatarImageView()
-        avatarView.image = contactShare.getAvatarImage(diameter: avatarSize, contactsManager: contactsManager)
+        avatarView.image = contactShare.avatarOrDefaultImage(diameter: avatarSize,
+                                                             contactsManager: contactsManager)
         topView.addSubview(avatarView)
         avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
         avatarView.autoHCenterInSuperview()

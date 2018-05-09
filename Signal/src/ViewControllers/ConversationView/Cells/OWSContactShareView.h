@@ -5,7 +5,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
-@class OWSContact;
 @class OWSContactsManager;
 
 @protocol OWSContactShareViewDelegate <NSObject>

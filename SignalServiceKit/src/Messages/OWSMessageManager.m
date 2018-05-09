@@ -14,7 +14,7 @@
 #import "OWSAttachmentsProcessor.h"
 #import "OWSBlockingManager.h"
 #import "OWSCallMessageHandler.h"
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -705,7 +705,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasBlocked) {
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
+            [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
         });
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.logTag, (u_long)syncMessage.read.count);
@@ -909,8 +909,8 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
-    OWSContact *_Nullable contact =
-        [OWSContacts contactForDataMessage:dataMessage relay:envelope.relay transaction:transaction];
+    OWSContactShare *_Nullable contactShare =
+        [OWSContactConversion contactShareForDataMessage:dataMessage relay:envelope.relay transaction:transaction];
 
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -985,7 +985,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
 
-                if (body.length == 0 && attachmentIds.count < 1 && !contact) {
+                if (body.length == 0 && attachmentIds.count < 1 && !contactShare) {
                     DDLogWarn(@"%@ ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         self.logTag,
                         envelopeAddress(envelope),
@@ -1014,7 +1014,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   attachmentIds:attachmentIds
                                                                expiresInSeconds:dataMessage.expireTimer
                                                                   quotedMessage:quotedMessage
-                                                                   contactShare:contact];
+                                                                   contactShare:contactShare];
 
                 [self finalizeIncomingMessage:incomingMessage
                                        thread:oldGroupThread
@@ -1028,7 +1028,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        if (body.length == 0 && attachmentIds.count < 1 && !contact) {
+        if (body.length == 0 && attachmentIds.count < 1 && !contactShare) {
             DDLogWarn(@"%@ ignoring empty incoming message from: %@ with timestamp: %lu",
                 self.logTag,
                 envelopeAddress(envelope),
@@ -1058,7 +1058,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           attachmentIds:attachmentIds
                                                        expiresInSeconds:dataMessage.expireTimer
                                                           quotedMessage:quotedMessage
-                                                           contactShare:contact];
+                                                           contactShare:contactShare];
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
@@ -1129,7 +1129,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSContact *_Nullable contact = incomingMessage.contactShare;
+    OWSContactShare *_Nullable contact = incomingMessage.contactShare;
     if (contact && contact.avatarAttachmentId) {
         TSAttachmentPointer *attachmentPointer =
             [TSAttachmentPointer fetchObjectWithUniqueID:contact.avatarAttachmentId transaction:transaction];

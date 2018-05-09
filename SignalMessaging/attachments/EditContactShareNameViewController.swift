@@ -111,7 +111,8 @@ class ContactNameFieldView: UIView {
 
 @objc
 public protocol EditContactShareNameViewControllerDelegate: class {
-    func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: ContactShareViewModel)
+    func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
+                                  didEditContactShare contactShare: ProposedContactShareViewModel)
 }
 
 // MARK: -
@@ -120,13 +121,14 @@ public protocol EditContactShareNameViewControllerDelegate: class {
 public class EditContactShareNameViewController: OWSViewController, ContactNameFieldViewDelegate {
     weak var delegate: EditContactShareNameViewControllerDelegate?
 
-    let contactShare: ContactShareViewModel
+    let contactShare: ProposedContactShareViewModel
 
     var namePrefixView: ContactNameFieldView!
     var givenNameView: ContactNameFieldView!
     var middleNameView: ContactNameFieldView!
     var familyNameView: ContactNameFieldView!
     var nameSuffixView: ContactNameFieldView!
+    var organizationNameView: ContactNameFieldView!
 
     var fieldViews = [ContactNameFieldView]()
 
@@ -138,7 +140,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     @objc
-    required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
+    required public init(contactShare: ProposedContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShare = contactShare
         self.delegate = delegate
 
@@ -148,22 +150,31 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     }
 
     func buildFields() {
-        namePrefixView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_NAME_PREFIX", comment: "Label for the 'name prefix' field of a contact."),
-                                              value: contactShare.namePrefix, delegate: self)
-        givenNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_GIVEN_NAME", comment: "Label for the 'given name' field of a contact."),
-                                             value: contactShare.givenName, delegate: self)
-        middleNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_MIDDLE_NAME", comment: "Label for the 'middle name' field of a contact."),
-                                              value: contactShare.middleName, delegate: self)
-        familyNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_FAMILY_NAME", comment: "Label for the 'family name' field of a contact."),
-                                              value: contactShare.familyName, delegate: self)
-        nameSuffixView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_NAME_SUFFIX", comment: "Label for the 'name suffix' field of a contact."),
-                                              value: contactShare.nameSuffix, delegate: self)
+        namePrefixView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_NAME_PREFIX",
+                                                                      comment: "Label for the 'name prefix' field of a contact."),
+                                              value: contactShare.name.namePrefix, delegate: self)
+        givenNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_GIVEN_NAME",
+                                                                     comment: "Label for the 'given name' field of a contact."),
+                                             value: contactShare.name.givenName, delegate: self)
+        middleNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_MIDDLE_NAME",
+                                                                      comment: "Label for the 'middle name' field of a contact."),
+                                              value: contactShare.name.middleName, delegate: self)
+        familyNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_FAMILY_NAME",
+                                                                      comment: "Label for the 'family name' field of a contact."),
+                                              value: contactShare.name.familyName, delegate: self)
+        nameSuffixView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_NAME_SUFFIX",
+                                                                      comment: "Label for the 'name suffix' field of a contact."),
+                                              value: contactShare.name.nameSuffix, delegate: self)
+        organizationNameView = ContactNameFieldView(name: NSLocalizedString("CONTACT_FIELD_ORGANIZATION",
+                                                                            comment: "Label for the 'organization' field of a contact."),
+                                              value: contactShare.name.organizationName, delegate: self)
         fieldViews = [
             namePrefixView ,
             givenNameView ,
             middleNameView ,
             familyNameView ,
-            nameSuffixView
+            nameSuffixView,
+            organizationNameView
         ]
     }
 
@@ -277,11 +288,21 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
     func didPressSave() {
         Logger.info("\(logTag) \(#function)")
 
-        let modifiedContactShare = contactShare.copy(withNamePrefix: namePrefixView.value(),
-                                                     givenName: givenNameView.value(),
-                                                     middleName: middleNameView.value(),
-                                                     familyName: familyNameView.value(),
-                                                     nameSuffix: nameSuffixView.value())
+        guard let newName = OWSContactName() else {
+            owsFail("\(logTag) could not create a new name.")
+            return
+        }
+        newName.namePrefix = namePrefixView.value().ows_stripped()
+        newName.givenName = givenNameView.value().ows_stripped()
+        newName.middleName = middleNameView.value().ows_stripped()
+        newName.familyName = familyNameView.value().ows_stripped()
+        newName.nameSuffix = nameSuffixView.value().ows_stripped()
+        newName.organizationName = organizationNameView.value().ows_stripped()
+
+        guard let modifiedContactShare = contactShare.copy(withName: newName) else {
+            owsFail("\(logTag) couldn't derive renamed contact share.")
+            return
+        }
 
         guard let delegate = self.delegate else {
             owsFail("\(logTag) missing delegate.")

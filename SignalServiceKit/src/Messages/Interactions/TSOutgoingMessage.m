@@ -5,7 +5,7 @@
 #import "TSOutgoingMessage.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
@@ -272,7 +272,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                   isVoiceMessage:(BOOL)isVoiceMessage
                                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
+                                    contactShare:(nullable OWSContactShare *)contactShare
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -795,7 +795,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // Contact Share
     if (self.contactShare) {
         OWSSignalServiceProtosDataMessageContact *_Nullable contactProto =
-            [OWSContacts protoForContact:self.contactShare];
+            [OWSContactConversion protoForContactShare:self.contactShare];
         if (contactProto) {
             [builder addContact:contactProto];
         } else {

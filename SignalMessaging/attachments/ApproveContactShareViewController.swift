@@ -7,8 +7,10 @@ import SignalServiceKit
 
 @objc
 public protocol ApproveContactShareViewControllerDelegate: class {
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel)
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didCancelContactShare contactShare: ContactShareViewModel)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+                             didApproveContactShare contactShare: ProposedContactShareViewModel)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+                             didCancelContactShare contactShare: ProposedContactShareViewModel)
 }
 
 protocol ContactShareField: class {
@@ -19,7 +21,7 @@ protocol ContactShareField: class {
 
     func setIsIncluded(_ isIncluded: Bool)
 
-    func applyToContact(contact: ContactShareViewModel)
+    func applyToContact(contactShare: OWSContactShareProposed)
 }
 
 // MARK: -
@@ -48,8 +50,46 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
         isIncludedFlag = isIncluded
     }
 
-    func applyToContact(contact: ContactShareViewModel) {
+    func applyToContact(contactShare: OWSContactShareProposed) {
         preconditionFailure("This method must be overridden")
+    }
+}
+
+// MARK: -
+
+// Stub class so that avatars conform to OWSContactField.
+class OWSContactAvatar: NSObject, OWSContactField {
+
+    public let avatarImage: UIImage
+    public let avatarData: Data
+
+    required init(avatarImage: UIImage, avatarData: Data) {
+        self.avatarImage = avatarImage
+        self.avatarData = avatarData
+
+        super.init()
+    }
+
+    public func ows_isValid() -> Bool {
+        return true
+    }
+
+    public func localizedLabel() -> String {
+        return ""
+    }
+
+    public func logDescription() -> String {
+        return "Avatar"
+    }
+}
+
+// MARK: -
+
+class ContactShareAvatar: ContactShareFieldBase<OWSContactAvatar> {
+    override func applyToContact(contactShare: OWSContactShareProposed) {
+        assert(isIncluded())
+
+        contactShare.avatarData = value.avatarData
     }
 }
 
@@ -57,13 +97,13 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
 
 class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contactShare: OWSContactShareProposed) {
         assert(isIncluded())
 
         var values = [OWSContactPhoneNumber]()
-        values += contact.phoneNumbers
+        values += contactShare.phoneNumbers
         values.append(value)
-        contact.phoneNumbers = values
+        contactShare.phoneNumbers = values
     }
 }
 
@@ -71,13 +111,13 @@ class ContactSharePhoneNumber: ContactShareFieldBase<OWSContactPhoneNumber> {
 
 class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contactShare: OWSContactShareProposed) {
         assert(isIncluded())
 
         var values = [OWSContactEmail]()
-        values += contact.emails
+        values += contactShare.emails
         values.append(value)
-        contact.emails = values
+        contactShare.emails = values
     }
 }
 
@@ -85,13 +125,13 @@ class ContactShareEmail: ContactShareFieldBase<OWSContactEmail> {
 
 class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
 
-    override func applyToContact(contact: ContactShareViewModel) {
+    override func applyToContact(contactShare: OWSContactShareProposed) {
         assert(isIncluded())
 
         var values = [OWSContactAddress]()
-        values += contact.addresses
+        values += contactShare.addresses
         values.append(value)
-        contact.addresses = values
+        contactShare.addresses = values
     }
 }
 
@@ -184,8 +224,9 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     let contactsManager: OWSContactsManager
 
-    var contactShare: ContactShareViewModel
+    var contactShare: ProposedContactShareViewModel
 
+    var avatarField: ContactShareAvatar?
     var fieldViews = [ContactShareFieldView]()
 
     var nameLabel: UILabel!
@@ -198,7 +239,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     }
 
     @objc
-    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ApproveContactShareViewControllerDelegate) {
+    required public init(contactShare: ProposedContactShareViewModel, contactsManager: OWSContactsManager, delegate: ApproveContactShareViewControllerDelegate) {
         self.contactsManager = contactsManager
         self.contactShare = contactShare
         self.delegate = delegate
@@ -211,9 +252,21 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     func buildFields() {
         var fieldViews = [ContactShareFieldView]()
 
-        // TODO: Avatar
-
         let previewInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+
+        if let avatarData = contactShare.avatarData {
+            if let avatarImage = contactShare.avatarImage {
+                let field = ContactShareAvatar(OWSContactAvatar(avatarImage: avatarImage, avatarData: avatarData))
+                avatarField = field
+                let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
+                    return ContactFieldView.contactFieldView(forAvatarImage: avatarImage, layoutMargins: previewInsets, actionBlock: nil)
+                },
+                                                      delegate: self)
+                fieldViews.append(fieldView)
+            } else {
+                owsFail("\(logTag) could not load avatar image.")
+            }
+        }
 
         for phoneNumber in contactShare.phoneNumbers {
             let field = ContactSharePhoneNumber(phoneNumber)
@@ -361,7 +414,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         let nameLabel = UILabel()
         self.nameLabel = nameLabel
-        nameLabel.text = contactShare.displayName
+        nameLabel.text = contactShare.name.displayName
         nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
@@ -380,20 +433,18 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // MARK: -
 
-    func filteredContactShare() -> ContactShareViewModel {
-        let result = self.contactShare.newContact(withNamePrefix: self.contactShare.namePrefix,
-                                                  givenName: self.contactShare.givenName,
-                                                  middleName: self.contactShare.middleName,
-                                                  familyName: self.contactShare.familyName,
-                                                  nameSuffix: self.contactShare.nameSuffix)
+    func filteredContactShare() -> ProposedContactShareViewModel? {
+        guard let newContactShare = contactShare.newProposedContactShare(withName: contactShare.name) else {
+            return nil
+        }
 
         for fieldView in fieldViews {
             if fieldView.field.isIncluded() {
-                fieldView.field.applyToContact(contact: result)
+                fieldView.field.applyToContact(contactShare: newContactShare)
             }
         }
 
-        return result
+        return ProposedContactShareViewModel(contactShare: newContactShare, avatarImage: contactShare.avatarImage)
     }
 
     // MARK: -
@@ -419,10 +470,13 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             return
         }
 
-        let filteredContactShare = self.filteredContactShare()
-        assert(filteredContactShare.ows_isValid)
+        guard let newContactShare = self.filteredContactShare() else {
+            owsFail("\(logTag) couldn't derive filtered contact share.")
+            return
+        }
+        assert(newContactShare.ows_isValid)
 
-        delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
+        delegate.approveContactShare(self, didApproveContactShare: newContactShare)
     }
 
     func didPressCancel() {
@@ -445,10 +499,11 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // MARK: - EditContactShareNameViewControllerDelegate
 
-    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: ContactShareViewModel) {
+    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
+                                         didEditContactShare contactShare: ProposedContactShareViewModel) {
         self.contactShare = contactShare
 
-        nameLabel.text = contactShare.displayName
+        nameLabel.text = contactShare.name.displayName
 
         self.updateNavigationBar()
     }

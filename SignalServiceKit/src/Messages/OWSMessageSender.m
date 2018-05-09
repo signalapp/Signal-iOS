@@ -11,7 +11,7 @@
 #import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSError.h"

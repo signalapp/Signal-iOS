@@ -736,7 +736,12 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier
 {
-    return [self.profileManager profileAvatarForRecipientId:identifier];
+    return [self.profileManager profileAvatarImageForRecipientId:identifier];
+}
+
+- (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier
+{
+    return [self.profileManager profileAvatarDataForRecipientId:identifier];
 }
 
 - (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier

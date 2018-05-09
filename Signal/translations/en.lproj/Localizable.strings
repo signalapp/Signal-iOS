@@ -460,6 +460,9 @@
 /* Label for the 'name suffix' field of a contact. */
 "CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
 
+/* Label for the 'organization' field of a contact. */
+"CONTACT_FIELD_ORGANIZATION" = "Organization";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Phone";
 

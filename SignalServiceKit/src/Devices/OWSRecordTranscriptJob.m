@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      isVoiceMessage:NO
                                                    groupMetaMessage:TSGroupMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
-                                                       contactShare:transcript.contact];
+                                                       contactShare:transcript.contactShare];
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {

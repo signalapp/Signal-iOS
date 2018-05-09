@@ -4,7 +4,7 @@
 
 #import "OWSOrphanedDataCleaner.h"
 #import "NSDate+OWS.h"
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "OWSPrimaryStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSInteraction.h"
@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   .thumbnailAttachmentStreamIds];
                                                   }
 
-                                                  OWSContact *_Nullable contactShare = message.contactShare;
+                                                  OWSContactShare *_Nullable contactShare = message.contactShare;
                                                   if (contactShare && contactShare.avatarAttachmentId) {
                                                       [contactShareAvatarAttachmentIds
                                                           addObject:contactShare.avatarAttachmentId];

@@ -11,7 +11,7 @@
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <SignalMessaging/NSString+OWS.h>
-#import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/OWSContactShare.h>
 #import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -407,7 +407,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
     if (message.contactShare) {
         self.contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare transaction:transaction];
+            [[ContactShareViewModel alloc] initWithContactShare:message.contactShare transaction:transaction];
         self.messageCellType = OWSMessageCellType_ContactShare;
         return;
     }

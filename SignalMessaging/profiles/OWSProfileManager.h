@@ -74,7 +74,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
 
-- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
+- (nullable UIImage *)profileAvatarImageForRecipientId:(NSString *)recipientId;
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
 
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted

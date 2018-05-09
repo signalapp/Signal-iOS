@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSContact;
+@class OWSContactShare;
 @class OWSSignalServiceProtosAttachmentPointer;
 @class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosSyncMessageSent;
@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSArray<OWSSignalServiceProtosAttachmentPointer *> *attachmentPointerProtos;
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
-@property (nonatomic, readonly, nullable) OWSContact *contact;
+@property (nonatomic, readonly, nullable) OWSContactShare *contactShare;
 
 @end
 

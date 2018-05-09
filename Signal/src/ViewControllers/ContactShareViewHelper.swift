@@ -144,7 +144,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord) else {
+        var convertedSystemContact: CNContact?
+        OWSPrimaryStorage.shared().newDatabaseConnection().read({ (transaction) in
+            convertedSystemContact = contactShare.convertToSystemContact(transaction: transaction)
+        })
+
+        guard let systemContact = convertedSystemContact else {
             owsFail("\(logTag) Could not derive system contact.")
             return
         }

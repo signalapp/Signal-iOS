@@ -2992,7 +2992,27 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)sendContactShare:(ContactShareViewModel *)contactShare
+- (void)sendProposedContactShare:(ProposedContactShareViewModel *)proposedContactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(proposedContactShare);
+
+    __weak ConversationViewController *weakSelf = self;
+    __block OWSContactShare *_Nullable contactShare;
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        contactShare = [proposedContactShare convertForSendingWithTransaction:transaction];
+    }
+        completionQueue:dispatch_get_main_queue()
+        completionBlock:^{
+            if (contactShare) {
+                [weakSelf sendContactShare:contactShare];
+            } else {
+                OWSFail(@"%@ could not convert proposed contact share.", weakSelf.logTag);
+            }
+        }];
+}
+
+- (void)sendContactShare:(OWSContactShare *)contactShare
 {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
@@ -3000,23 +3020,15 @@ typedef enum : NSUInteger {
     DDLogVerbose(@"%@ Sending contact share.", self.logTag);
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare
+                                                                inThread:self.thread
+                                                           messageSender:self.messageSender
+                                                              completion:nil];
+    [self messageWasSent:message];
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        if (contactShare.avatarImage) {
-            [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
-        }
+    if (didAddToProfileWhitelist) {
+        [self ensureDynamicInteractions];
     }
-        completionBlock:^{
-            TSOutgoingMessage *message = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
-                                                                        inThread:self.thread
-                                                                   messageSender:self.messageSender
-                                                                      completion:nil];
-            [self messageWasSent:message];
-
-            if (didAddToProfileWhitelist) {
-                [self ensureDynamicInteractions];
-            }
-        }];
 }
 
 - (NSURL *)videoTempFolder
@@ -4992,31 +5004,30 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
-    if (!contactShareRecord) {
+    OWSContactShareProposed *_Nullable contactShare =
+        [OWSContactConversion contactShareForSystemContact:contact.cnContact];
+    if (!contactShare) {
         DDLogError(@"%@ Could not convert system contact.", self.logTag);
         return;
     }
 
-    BOOL isProfileAvatar = NO;
-    UIImage *_Nullable avatarImage = contact.image;
     for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImage) {
+        if (contactShare.avatarData) {
             break;
         }
-        avatarImage = [self.contactsManager profileImageForPhoneIdentifier:recipientId];
-        if (avatarImage) {
-            isProfileAvatar = YES;
+        NSData *_Nullable profileAvatarData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        if (profileAvatarData) {
+            contactShare.avatarData = profileAvatarData;
+            contactShare.isProfileAvatar = YES;
         }
     }
-    contactShareRecord.isProfileAvatar = isProfileAvatar;
 
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImage:avatarImage];
+    ProposedContactShareViewModel *contactShareVM =
+        [[ProposedContactShareViewModel alloc] initWithContactShare:contactShare];
 
     // TODO: We should probably show this in the same navigation view controller.
     ApproveContactShareViewController *approveContactShare =
-        [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
+        [[ApproveContactShareViewController alloc] initWithContactShare:contactShareVM
                                                         contactsManager:self.contactsManager
                                                                delegate:self];
 
@@ -5040,18 +5051,18 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 #pragma mark - ApproveContactShareViewControllerDelegate
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
-     didApproveContactShare:(ContactShareViewModel *)contactShare
+     didApproveContactShare:(ProposedContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [self dismissViewControllerAnimated:YES
                              completion:^{
-                                 [self sendContactShare:contactShare];
+                                 [self sendProposedContactShare:contactShare];
                              }];
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
-      didCancelContactShare:(ContactShareViewModel *)contactShare
+      didCancelContactShare:(ProposedContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 

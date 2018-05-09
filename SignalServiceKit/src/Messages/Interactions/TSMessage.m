@@ -7,7 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
-#import "OWSContact.h"
+#import "OWSContactShare.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
@@ -66,7 +66,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                         expiresInSeconds:(uint32_t)expiresInSeconds
                          expireStartedAt:(uint64_t)expireStartedAt
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
+                            contactShare:(nullable OWSContactShare *)contactShare
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -263,9 +263,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return attachmentDescription;
     } else if (self.contactShare) {
         if (CurrentAppContext().isRTL) {
-            return [self.contactShare.displayName stringByAppendingString:@" 👤"];
+            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
         } else {
-            return [@"👤 " stringByAppendingString:self.contactShare.displayName];
+            return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
         OWSFail(@"%@ message has neither body nor attachment.", self.logTag);
