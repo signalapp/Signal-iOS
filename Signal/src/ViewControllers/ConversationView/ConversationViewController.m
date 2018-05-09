@@ -3696,8 +3696,7 @@ typedef enum : NSUInteger {
                                    handler:^(UIAlertAction *_Nonnull action) {
                                        [self chooseContactForSending];
                                    }];
-        // TODO - proper image
-        UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+        UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
         OWSAssert(takeMediaImage);
         [chooseContactAction setValue:chooseContactImage forKey:@"image"];
         [actionSheetController addAction:chooseContactAction];
