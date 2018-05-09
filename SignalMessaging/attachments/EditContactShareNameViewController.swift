@@ -42,9 +42,11 @@ class ContactNameFieldView: UIView {
         createContents()
     }
 
+    private let hMargin = CGFloat(16)
+
     func createContents() {
         let vMargin = CGFloat(10)
-        self.layoutMargins = UIEdgeInsets(top: vMargin, left: 0, bottom: vMargin, right: 0)
+        self.layoutMargins = UIEdgeInsets(top: vMargin, left: hMargin, bottom: vMargin, right: hMargin)
 
         let stackView = UIStackView()
         stackView.axis = .horizontal
