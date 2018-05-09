@@ -278,11 +278,6 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         updateNavigationBar()
     }
 
-    // TODO: Surface error with resolution to user if not.
-    func canShareContact() -> Bool {
-        return contactShare.ows_isValid && isAtLeastOneFieldSelected()
-    }
-
     func isAtLeastOneFieldSelected() -> Bool {
         for fieldView in fieldViews {
             if fieldView.field.isIncluded() {
@@ -297,14 +292,9 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
                                                                 target: self,
                                                                 action: #selector(didPressCancel))
 
-        if canShareContact() {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
-                                                                                              comment: "Label for 'send' button in the 'attachment approval' dialog."),
-                                                                     style: .plain, target: self, action: #selector(didPressSendButton))
-        } else {
-            self.navigationItem.rightBarButtonItem = nil
-        }
-
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON",
+                                                                                          comment: "Label for 'send' button in the 'attachment approval' dialog."),
+                                                                 style: .plain, target: self, action: #selector(didPressSendButton))
     }
 
     private func updateContent() {
@@ -410,7 +400,17 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     func didPressSendButton() {
         SwiftAssertIsOnMainThread(#function)
-        assert(canShareContact())
+
+        guard isAtLeastOneFieldSelected() else {
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_NO_FIELDS_SELECTED",
+                                                                comment: "Error indicating that at least one contact field must be selected before sharing a contact."))
+            return
+        }
+        guard contactShare.ows_isValid else {
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
+                                                                comment: "Error indicating that an invalid contact cannot be shared."))
+            return
+        }
 
         Logger.info("\(logTag) \(#function)")
 
