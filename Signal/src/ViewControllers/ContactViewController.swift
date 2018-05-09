@@ -570,7 +570,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("\(self.logTag) \(#function)")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
                                                                      comment: "Label for 'open email in email app' button in contact view."),
                                             style: .default) { [weak self] _ in
                                                 self?.openEmailInEmailApp(email: email)
