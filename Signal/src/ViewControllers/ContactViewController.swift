@@ -31,13 +31,15 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
     }
 
-    let contactsManager: OWSContactsManager
+    private let contactsManager: OWSContactsManager
 
-    var reachability: Reachability?
+    private var reachability: Reachability?
 
     private let contactShare: ContactShareViewModel
 
     private var contactShareViewHelper: ContactShareViewHelper
+
+    private weak var postDismissNavigationController: UINavigationController?
 
     // MARK: - Initializers
 
@@ -77,7 +79,15 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         UIUtil.applySignalAppearence()
 
-        navigationController?.isNavigationBarHidden = true
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            return
+        }
+        navigationController.isNavigationBarHidden = true
+
+        // self.navigationController is nil in viewDidDisappear when transition via message/call buttons
+        // so we maintain our own reference.
+        self.postDismissNavigationController = navigationController
 
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -94,11 +104,11 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        navigationController?.isNavigationBarHidden = false
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
+        guard let strongNavigationController = postDismissNavigationController else {
+            owsFail("\(self.logTag) in \(#function) navigationController was unexpectedly nil")
+            return
+        }
+        strongNavigationController.isNavigationBarHidden = false
     }
 
     override func loadView() {
@@ -509,7 +519,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressDismiss() {
         Logger.info("\(self.logTag) \(#function)")
 
-        self.navigationController?.popViewController(animated: true)
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            return
+        }
+
+        navigationController.popViewController(animated: true)
     }
 
     func didPressAddress(address: OWSContactAddress) {
