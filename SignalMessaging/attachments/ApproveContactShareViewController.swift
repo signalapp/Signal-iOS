@@ -145,12 +145,11 @@ class ContactShareFieldView: UIStackView {
 
         let checkbox = UIButton(type: .custom)
         self.checkbox = checkbox
-        // TODO: Use real assets.
-        checkbox.setTitle("☐", for: .normal)
-        checkbox.setTitle("☒", for: .selected)
-        checkbox.setTitleColor(UIColor.black, for: .normal)
-        checkbox.setTitleColor(UIColor.black, for: .selected)
-        checkbox.titleLabel?.font = UIFont.ows_dynamicTypeBody
+
+        let checkedIcon = #imageLiteral(resourceName: "contact_checkbox_checked")
+        let uncheckedIcon = #imageLiteral(resourceName: "contact_checkbox_unchecked")
+        checkbox.setImage(uncheckedIcon, for: .normal)
+        checkbox.setImage(checkedIcon, for: .selected)
         checkbox.isSelected = field.isIncluded()
         // Disable the checkbox; the entire row is hot.
         checkbox.isUserInteractionEnabled = false
