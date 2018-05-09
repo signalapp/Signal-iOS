@@ -358,24 +358,18 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         for phoneNumber in contactShare.phoneNumbers {
             rows.append(ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
-                                                          actionBlock: {
-                                                            guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
-                                                                owsFail("\(ContactViewController.logTag) could not open phone number.")
-                                                                return
-                                                            }
-                                                            UIApplication.shared.openURL(url as URL)
+                                                          actionBlock: { [weak self] _ in
+                                                            guard let strongSelf = self else { return }
+                                                            strongSelf.didPressPhoneNumber(phoneNumber: phoneNumber)
             }))
         }
 
         for email in contactShare.emails {
             rows.append(ContactFieldView.contactFieldView(forEmail: email,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
-                                                          actionBlock: {
-                                                            guard let url = NSURL(string: "mailto:\(email.email)") else {
-                                                                owsFail("\(ContactViewController.logTag) could not open email.")
-                                                                return
-                                                            }
-                                                            UIApplication.shared.openURL(url as URL)
+                                                          actionBlock: { [weak self] _ in
+                                                            guard let strongSelf = self else { return }
+                                                            strongSelf.didPressEmail(email: email)
             }))
         }
 
@@ -527,7 +521,118 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         navigationController.popViewController(animated: true)
     }
 
+    func didPressPhoneNumber(phoneNumber: OWSContactPhoneNumber) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        if let e164 = phoneNumber.tryToConvertToE164() {
+            if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
+                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
+                                                                             comment: "Label for 'sent message' button in contact view."),
+                                                    style: .default) { _ in
+                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .compose)
+                })
+                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
+                                                                             comment: "Label for 'audio call' button in contact view."),
+                                                    style: .default) { _ in
+                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .audioCall)
+                })
+                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
+                                                                             comment: "Label for 'video call' button in contact view."),
+                                                    style: .default) { _ in
+                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .videoCall)
+                })
+            } else {
+                // TODO: We could offer callPhoneNumberWithSystemCall.
+            }
+        }
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+                                                                     comment: "Short name for edit menu item to copy contents of media message."),
+                                            style: .default) { _ in
+                                                UIPasteboard.general.string = phoneNumber.phoneNumber
+        })
+        actionSheet.addAction(OWSAlerts.cancelAction)
+        present(actionSheet, animated: true)
+    }
+
+    func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        guard let url = NSURL(string: "tel:\(phoneNumber.phoneNumber)") else {
+            owsFail("\(ContactViewController.logTag) could not open phone number.")
+            return
+        }
+        UIApplication.shared.openURL(url as URL)
+    }
+
+    func didPressEmail(email: OWSContactEmail) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
+                                                                     comment: "Label for 'open email in email app' button in contact view."),
+                                            style: .default) { [weak self] _ in
+                                                self?.openEmailInEmailApp(email: email)
+        })
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+                                                                     comment: "Short name for edit menu item to copy contents of media message."),
+                                            style: .default) { _ in
+                                                UIPasteboard.general.string = email.email
+        })
+        actionSheet.addAction(OWSAlerts.cancelAction)
+        present(actionSheet, animated: true)
+    }
+
+    func openEmailInEmailApp(email: OWSContactEmail) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        guard let url = NSURL(string: "mailto:\(email.email)") else {
+            owsFail("\(ContactViewController.logTag) could not open email.")
+            return
+        }
+        UIApplication.shared.openURL(url as URL)
+    }
+
     func didPressAddress(address: OWSContactAddress) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
+                                                                     comment: "Label for 'open address in maps app' button in contact view."),
+                                            style: .default) { [weak self] _ in
+                                                self?.openAddressInMaps(address: address)
+        })
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("EDIT_ITEM_COPY_ACTION",
+                                                                     comment: "Short name for edit menu item to copy contents of media message."),
+                                            style: .default) { [weak self] _ in
+                                                guard let strongSelf = self else { return }
+
+                                                UIPasteboard.general.string = strongSelf.formatAddressForQuery(address: address)
+        })
+        actionSheet.addAction(OWSAlerts.cancelAction)
+        present(actionSheet, animated: true)
+    }
+
+    func openAddressInMaps(address: OWSContactAddress) {
+        Logger.info("\(self.logTag) \(#function)")
+
+        let mapAddress = formatAddressForQuery(address: address)
+        guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            owsFail("\(ContactViewController.logTag) could not open address.")
+            return
+        }
+        // Note that we use "q" (i.e. query) rather than "address" since we can't assume
+        // this is a well-formed address.
+        guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
+            owsFail("\(ContactViewController.logTag) could not open address.")
+            return
+        }
+
+        UIApplication.shared.openURL(url as URL)
+    }
+
+    func formatAddressForQuery(address: OWSContactAddress) -> String {
         Logger.info("\(self.logTag) \(#function)")
 
         // Open address in Apple Maps app.
@@ -547,19 +652,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         addAddressPart(address.region)
         addAddressPart(address.postcode)
         addAddressPart(address.country)
-        let mapAddress = addressParts.joined(separator: ", ")
-        guard let escapedMapAddress = mapAddress.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            owsFail("\(ContactViewController.logTag) could not open address.")
-            return
-        }
-        // Note that we use "q" (i.e. query) rather than "address" since we can't assume
-        // this is a well-formed address.
-        guard let url = URL(string: "http://maps.apple.com/?q=\(escapedMapAddress)") else {
-            owsFail("\(ContactViewController.logTag) could not open address.")
-            return
-        }
-
-        UIApplication.shared.openURL(url as URL)
+        return addressParts.joined(separator: ", ")
     }
 
     // MARK: - ContactShareViewHelperDelegate

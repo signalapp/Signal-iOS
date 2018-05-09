@@ -90,6 +90,19 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value)
     return result;
 }
 
+- (nullable NSString *)tryToConvertToE164
+{
+    PhoneNumber *_Nullable parsedPhoneNumber;
+    parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromE164:self.phoneNumber];
+    if (!parsedPhoneNumber) {
+        parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:self.phoneNumber];
+    }
+    if (parsedPhoneNumber) {
+        return parsedPhoneNumber.toE164;
+    }
+    return nil;
+}
+
 @end
 
 #pragma mark -

@@ -48,6 +48,8 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value);
 
 @property (nonatomic, readonly) NSString *phoneNumber;
 
+- (nullable NSString *)tryToConvertToE164;
+
 @end
 
 #pragma mark -
