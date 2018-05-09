@@ -117,12 +117,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)contentHeight
 {
-    return self.iconSize + self.iconVMargin * 2;
+    CGFloat labelsHeight = (self.nameFont.lineHeight + self.labelsVSpacing + self.subtitleFont.lineHeight);
+    CGFloat contentHeight = MAX(self.iconSize, labelsHeight);
+    contentHeight += self.iconVMargin * 2;
+    return contentHeight;
 }
 
 + (CGFloat)buttonHeight
 {
-    return 44.f;
+    return MAX(44.f, self.buttonFont.lineHeight + self.buttonVMargin * 2);
 }
 
 + (CGFloat)iconSize
@@ -143,6 +146,31 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)bubbleBackgroundColor
 {
     return self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+}
+
++ (UIFont *)nameFont
+{
+    return [UIFont ows_dynamicTypeBodyFont];
+}
+
++ (UIFont *)subtitleFont
+{
+    return [UIFont ows_dynamicTypeCaption1Font];
+}
+
++ (CGFloat)labelsVSpacing
+{
+    return 2;
+}
+
++ (UIFont *)buttonFont
+{
+    return [UIFont ows_dynamicTypeBodyFont];
+}
+
++ (CGFloat)buttonVMargin
+{
+    return 5;
 }
 
 - (void)createContents
@@ -172,11 +200,11 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.text = self.contactShare.displayName;
     topLabel.textColor = [UIColor blackColor];
     topLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    topLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    topLabel.font = OWSContactShareView.nameFont;
 
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;
-    labelsView.spacing = 2;
+    labelsView.spacing = OWSContactShareView.labelsVSpacing;
     [labelsView addArrangedSubview:topLabel];
 
     NSString *_Nullable firstPhoneNumber =
@@ -186,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
         bottomLabel.text = [PhoneNumber bestEffortLocalizedPhoneNumberWithE164:firstPhoneNumber];
         bottomLabel.textColor = [UIColor ows_darkGrayColor];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        bottomLabel.font = [UIFont ows_dynamicTypeCaption1Font];
+        bottomLabel.font = OWSContactShareView.subtitleFont;
         [labelsView addArrangedSubview:bottomLabel];
     }
 
@@ -230,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             OWSFail(@"%@ unexpected button state.", self.logTag);
         }
-        label.font = [UIFont ows_dynamicTypeBodyFont];
+        label.font = OWSContactShareView.buttonFont;
         label.textColor = UIColor.ows_materialBlueColor;
         label.textAlignment = NSTextAlignmentCenter;
         label.backgroundColor = [UIColor whiteColor];
