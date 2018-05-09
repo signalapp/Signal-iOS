@@ -109,6 +109,65 @@ public class ContactShareViewModel: NSObject {
         return dbRecord.isProfileAvatar
     }
 
+    public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
+
+        guard let mergedCNContact: CNMutableContact = existingContact.cnContact?.mutableCopy() as? CNMutableContact else {
+            owsFail("\(logTag) in \(#function) mergedCNContact was unexpectedly nil")
+            return nil
+        }
+
+        guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord) else {
+            owsFail("\(logTag) in \(#function) newCNContact was unexpectedly nil")
+            return nil
+        }
+
+        let normalize = { (input: String) -> String in
+            return (input as NSString).ows_stripped()
+        }
+
+        // TODO display name - but only if existing is blank
+
+        var existingPhoneNumberSet: Set<String> = Set()
+        mergedCNContact.phoneNumbers.map { $0.value }.forEach { (existingPhoneNumber: CNPhoneNumber) in
+            // compare e164?
+            let normalizedValue = normalize(existingPhoneNumber.stringValue as String)
+            existingPhoneNumberSet.insert(normalizedValue)
+        }
+
+        newCNContact.phoneNumbers.forEach { (newLabeledPhoneNumber: CNLabeledValue<CNPhoneNumber>) in
+            let normalizedValue = normalize(newLabeledPhoneNumber.value.stringValue as String)
+            guard !existingPhoneNumberSet.contains(normalizedValue) else {
+                Logger.debug("\(self.logTag) in \(#function) ignoring matching phone number: \(normalizedValue)")
+                return
+            }
+
+            Logger.debug("\(self.logTag) in \(#function) adding new phone number: \(normalizedValue)")
+            mergedCNContact.phoneNumbers.append(newLabeledPhoneNumber)
+        }
+
+//        // TODO emails
+//        var existingEmailSet: Set<String> = Set()
+//        mergedCNContact.emailAddresses.forEach { (existingEmail: CNLabeledValue<NSString>) in
+//            existingEmailSet.insert(normalize(existingEmail.value as String))
+//        }
+
+        // TODO address
+
+//        newCNContact.emailAddresses.forEach { newEmail in
+//            let match = mergedCNContact.emailAddresses.first { existingEmail in
+//                return normalize(existingEmail) == normalize(newEmail)
+//            }
+//            if match == nil {
+//                mergedCNContact.emailAddresses.add
+//            }
+//        }
+//
+//
+//
+
+        return mergedCNContact.copy() as? CNContact
+    }
+
     public func copy(withNamePrefix namePrefix: String?,
                      givenName: String?,
                      middleName: String?,

@@ -177,6 +177,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         UIUtil.applyDefaultSystemAppearence()
     }
 
+    // MJK TODO fromNavigationController?
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         guard contactsManager.supportsContactEditing else {
             owsFail("\(logTag) Contact editing not supported")
@@ -187,22 +188,25 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             ContactsViewHelper.presentMissingContactAccessAlertController(from: fromViewController)
             return
         }
-
-        // TODO: Revisit this.
-        guard let firstPhoneNumber = contactShare.e164PhoneNumbers().first else {
-            owsFail("\(logTag) Missing phone number.")
-            return
-        }
-
-        // TODO: We need to modify OWSAddToContactViewController to take a OWSContact
-        // and merge it with an existing CNContact.
-        let viewController = OWSAddToContactViewController()
-        viewController.configure(withRecipientId: firstPhoneNumber)
+//
+//        // TODO: Revisit this.
+//        guard let firstPhoneNumber = contactShare.e164PhoneNumbers().first else {
+//            owsFail("\(logTag) Missing phone number.")
+//            return
+//        }
+//
+//        // TODO: We need to modify OWSAddToContactViewController to take a OWSContact
+//        // and merge it with an existing CNContact.
+//        let viewController = OWSAddToContactViewController()
+//        viewController.configure(withRecipientId: firstPhoneNumber)
 
         guard let navigationController = fromViewController.navigationController else {
             owsFail("\(logTag) missing navigationController")
             return
         }
+
+        let viewController = AddContactShareToExistingContactViewController(contactShare: contactShare)
+//        viewController.addToExistingContactDelegate = fromViewController
 
         navigationController.pushViewController(viewController, animated: true)
     }

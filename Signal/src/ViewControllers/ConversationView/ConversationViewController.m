@@ -2571,7 +2571,8 @@ typedef enum : NSUInteger {
 - (void)chooseContactForSending
 {
     ContactsPicker *contactsPicker =
-        [[ContactsPicker alloc] initWithDelegate:self multiSelection:NO subtitleCellType:SubtitleCellValueNone];
+        [[ContactsPicker alloc] initWithAllowsMultipleSelection:NO subtitleCellType:SubtitleCellValueNone];
+    contactsPicker.contactsPickerDelegate = self;
     contactsPicker.title
         = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
 
@@ -4978,11 +4979,13 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
 {
     DDLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
@@ -4991,6 +4994,8 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     OWSAssert(contact.cnContact);
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
+
+    [self dismissViewControllerAnimated:YES completion:nil];
 
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
     if (!contactShareRecord) {
@@ -5029,6 +5034,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
 {
     OWSFail(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)contactsPicker:(ContactsPicker *)contactsPicker shouldSelectContact:(Contact *)contact
