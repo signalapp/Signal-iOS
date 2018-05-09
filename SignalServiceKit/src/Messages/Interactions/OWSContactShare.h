@@ -109,8 +109,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, nullable) NSString *organizationName;
 @property (nonatomic) NSString *displayName;
 
-+ (OWSContactName *)emptyName;
-
 @end
 
 #pragma mark -

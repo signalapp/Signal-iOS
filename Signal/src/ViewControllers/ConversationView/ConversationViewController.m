@@ -2992,6 +2992,26 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)sendProposedContactShare:(ProposedContactShareViewModel *)proposedContactShare
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(proposedContactShare);
+
+    __weak ConversationViewController *weakSelf = self;
+    __block OWSContactShare *_Nullable contactShare;
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        contactShare = [proposedContactShare convertForSendingWithTransaction:transaction];
+    }
+        completionQueue:dispatch_get_main_queue()
+        completionBlock:^{
+            if (contactShare) {
+                [weakSelf sendContactShare:contactShare];
+            } else {
+                OWSFail(@"%@ could not convert proposed contact share.", weakSelf.logTag);
+            }
+        }];
+}
+
 - (void)sendContactShare:(OWSContactShare *)contactShare
 {
     OWSAssertIsOnMainThread();
@@ -5036,20 +5056,10 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
-    __block OWSContactShare *_Nullable convertedContactShare;
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        convertedContactShare = [contactShare convertForSendingWithTransaction:transaction];
-    }
-        completionBlock:^{
-            [self dismissViewControllerAnimated:YES
-                                     completion:^{
-                                         if (convertedContactShare) {
-                                             [self sendContactShare:convertedContactShare];
-                                         } else {
-                                             OWSFail(@"%@ could not convert contact share for sending.", self.logTag);
-                                         }
-                                     }];
-        }];
+    [self dismissViewControllerAnimated:YES
+                             completion:^{
+                                 [self sendProposedContactShare:contactShare];
+                             }];
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare

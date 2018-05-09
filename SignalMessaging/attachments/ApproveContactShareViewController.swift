@@ -255,8 +255,8 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         let previewInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
 
-        if let avatarData = contactShare.avatarData() {
-            if let avatarImage = contactShare.avatarImage() {
+        if let avatarData = contactShare.avatarData {
+            if let avatarImage = contactShare.avatarImage {
                 let field = ContactShareAvatar(OWSContactAvatar(avatarImage: avatarImage, avatarData: avatarData))
                 avatarField = field
                 let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
@@ -269,7 +269,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             }
         }
 
-        for phoneNumber in contactShare.phoneNumbers() {
+        for phoneNumber in contactShare.phoneNumbers {
             let field = ContactSharePhoneNumber(phoneNumber)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber, layoutMargins: previewInsets, actionBlock: nil)
@@ -278,7 +278,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             fieldViews.append(fieldView)
         }
 
-        for email in contactShare.emails() {
+        for email in contactShare.emails {
             let field = ContactShareEmail(email)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forEmail: email, layoutMargins: previewInsets, actionBlock: nil)
@@ -287,7 +287,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             fieldViews.append(fieldView)
         }
 
-        for address in contactShare.addresses() {
+        for address in contactShare.addresses {
             let field = ContactShareAddress(address)
             let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
                 return ContactFieldView.contactFieldView(forAddress: address, layoutMargins: previewInsets, actionBlock: nil)
@@ -334,7 +334,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // TODO: Surface error with resolution to user if not.
     func canShareContact() -> Bool {
-        return contactShare.ows_isValid() && isAtLeastOneFieldSelected()
+        return contactShare.ows_isValid && isAtLeastOneFieldSelected()
     }
 
     func isAtLeastOneFieldSelected() -> Bool {
@@ -425,7 +425,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         let nameLabel = UILabel()
         self.nameLabel = nameLabel
-        nameLabel.text = contactShare.name().displayName
+        nameLabel.text = contactShare.name.displayName
         nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
@@ -445,7 +445,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     // MARK: -
 
     func filteredContactShare() -> ProposedContactShareViewModel? {
-        guard let newContactShare = contactShare.newProposedContactShare(withName: contactShare.name()) else {
+        guard let newContactShare = contactShare.newProposedContactShare(withName: contactShare.name) else {
             return nil
         }
 
@@ -455,7 +455,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             }
         }
 
-        return ProposedContactShareViewModel(contactShare: newContactShare, avatarImage: contactShare.avatarImage())
+        return ProposedContactShareViewModel(contactShare: newContactShare, avatarImage: contactShare.avatarImage)
     }
 
     // MARK: -
@@ -475,7 +475,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
             owsFail("\(logTag) couldn't derive filtered contact share.")
             return
         }
-        assert(newContactShare.ows_isValid())
+        assert(newContactShare.ows_isValid)
 
         delegate.approveContactShare(self, didApproveContactShare: newContactShare)
     }
@@ -504,7 +504,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
                                          didEditContactShare contactShare: ProposedContactShareViewModel) {
         self.contactShare = contactShare
 
-        nameLabel.text = contactShare.name().displayName
+        nameLabel.text = contactShare.name.displayName
 
         self.updateNavigationBar()
     }

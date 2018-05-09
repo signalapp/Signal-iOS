@@ -297,11 +297,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     [self ensureDisplayName];
 }
 
-+ (OWSContactName *)emptyName
-{
-    return [OWSContactName new];
-}
-
 @end
 
 #pragma mark -

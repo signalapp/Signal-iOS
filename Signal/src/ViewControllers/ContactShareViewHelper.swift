@@ -146,7 +146,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         var convertedSystemContact: CNContact?
         OWSPrimaryStorage.shared().newDatabaseConnection().read({ (transaction) in
-            convertedSystemContact = self.contactShare.convertToSystemContact(transaction: transaction)
+            convertedSystemContact = contactShare.convertToSystemContact(transaction: transaction)
         })
 
         guard let systemContact = convertedSystemContact else {

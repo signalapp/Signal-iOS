@@ -149,36 +149,45 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     if (self.attachment.isConvertibleToContactShare) {
         NSData *data = self.attachment.data;
         __block OWSContactShareProposed *_Nullable contactShare;
+        __weak SharingThreadPickerViewController *weakSelf = self;
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 contactShare = [OWSContactConversion contactShareForVCardData:data];
+            }
+            completionQueue:dispatch_get_main_queue()
+            completionBlock:^{
+                SharingThreadPickerViewController *_Nullable strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return;
+                }
+                if (!contactShare) {
+                    // This should never happen since we verify that the contact can be parsed when building the
+                    // attachment.
+                    OWSFail(@"%@ could not parse contact share.", strongSelf.logTag);
+                    [strongSelf.shareViewDelegate shareViewWasCancelled];
+                    return;
+                }
+
+                for (NSString *recipientId in contactShare.e164PhoneNumbers) {
+                    if (contactShare.avatarData) {
+                        break;
+                    }
+                    contactShare.avatarData =
+                        [strongSelf.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+                    if (contactShare.avatarData) {
+                        contactShare.isProfileAvatar = YES;
+                    }
+                }
+
+                ProposedContactShareViewModel *contactShareVM =
+                    [[ProposedContactShareViewModel alloc] initWithContactShare:contactShare];
+
+                ApproveContactShareViewController *approvalVC =
+                    [[ApproveContactShareViewController alloc] initWithContactShare:contactShareVM
+                                                                    contactsManager:strongSelf.contactsManager
+                                                                           delegate:strongSelf];
+                [strongSelf.navigationController pushViewController:approvalVC animated:YES];
             }];
-
-        if (!contactShare) {
-            // This should never happen since we verify that the contact can be parsed when building the attachment.
-            OWSFail(@"%@ could not parse contact share.", self.logTag);
-            [self.shareViewDelegate shareViewWasCancelled];
-            return;
-        }
-
-        for (NSString *recipientId in contactShare.e164PhoneNumbers) {
-            if (contactShare.avatarData) {
-                break;
-            }
-            contactShare.avatarData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
-            if (contactShare.avatarData) {
-                contactShare.isProfileAvatar = YES;
-            }
-        }
-
-        ProposedContactShareViewModel *contactShareVM =
-            [[ProposedContactShareViewModel alloc] initWithContactShare:contactShare];
-
-        ApproveContactShareViewController *approvalVC =
-            [[ApproveContactShareViewController alloc] initWithContactShare:contactShareVM
-                                                            contactsManager:self.contactsManager
-                                                                   delegate:self];
-        [self.navigationController pushViewController:approvalVC animated:YES];
         return;
     }
 
@@ -293,24 +302,42 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
      didApproveContactShare:(ProposedContactShareViewModel *)contactShare
 {
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     __block OWSContactShare *convertedContactShare;
+    __weak SharingThreadPickerViewController *weakSelf = self;
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             convertedContactShare = [contactShare convertForSendingWithTransaction:transaction];
+        }
+        completionQueue:dispatch_get_main_queue()
+        completionBlock:^{
+            if (!convertedContactShare) {
+                OWSCFail(@"%@ could not convert contact share for sending.", weakSelf.logTag);
+                return;
+            }
+            [weakSelf sendContactShare:convertedContactShare fromViewController:approvalViewController];
         }];
-    if (!convertedContactShare) {
-        OWSFail(@"%@ could not convert contact share for sending.", self.logTag);
-        return;
-    }
+}
+
+- (void)sendContactShare:(OWSContactShare *)contactShare
+      fromViewController:(ApproveContactShareViewController *)fromViewController
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(contactShare);
+    OWSAssert(fromViewController);
+
+    DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
 
         __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithContactShare:convertedContactShare
+        outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare
                                                          inThread:self.thread
                                                     messageSender:self.messageSender
                                                        completion:^(NSError *_Nullable error) {
@@ -319,7 +346,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // This is necessary to show progress.
         self.outgoingMessage = outgoingMessage;
     }
-                 fromViewController:approvalViewController];
+                 fromViewController:fromViewController];
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
