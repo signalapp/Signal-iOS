@@ -478,6 +478,12 @@
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
 
+/* Error indicating that an invalid contact cannot be shared. */
+"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+
+/* Error indicating that at least one contact field must be selected before sharing a contact. */
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Unnamed Contact";
 
