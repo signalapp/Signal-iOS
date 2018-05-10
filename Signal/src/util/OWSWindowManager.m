@@ -156,6 +156,13 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     label.font = [UIFont ows_regularFontWithSize:14.f];
     [rootView addSubview:label];
 
+    [label autoPinBottomToSuperviewMargin];
+    [label setCompressionResistanceHigh];
+    [label setContentHuggingHigh];
+    [label autoHCenterInSuperview];
+
+    // TODO animate...
+
     // returnToCallLabel uses manual layout.
     //
     // TODO: Is there a better way to do this?
@@ -329,21 +336,21 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     } else if (self.callViewController) {
         // Show Root Window + "Return to Call".
 
-        [self ensureRootWindowShown];
+        [self ensureRootWindowShownWithActiveCall:YES];
         [self ensureReturnToCallWindowShown];
         [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
 
-        [self ensureRootWindowShown];
+        [self ensureRootWindowShownWithActiveCall:NO];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
     }
 }
 
-- (void)ensureRootWindowShown
+- (void)ensureRootWindowShownWithActiveCall:(BOOL)isActiveCall
 {
     OWSAssertIsOnMainThread();
 
@@ -351,11 +358,27 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         DDLogInfo(@"%@ showing root window.", self.logTag);
     }
 
+    static CGRect defaultFrame;
+    static CGRect frameWithActiveCall;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        defaultFrame = self.rootWindow.frame;
+
+        CGFloat callBannerHeight = self.returnToCallWindow.frame.size.height;
+        frameWithActiveCall
+            = CGRectMake(0, callBannerHeight, defaultFrame.size.width, defaultFrame.size.height - callBannerHeight);
+    });
+
+    if (isActiveCall) {
+        self.rootWindow.frame = frameWithActiveCall;
+    } else {
+        self.rootWindow.frame = defaultFrame;
+    }
+
     // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
     // on the vc on top of its navigation stack.
     [self.rootWindow makeKeyAndVisible];
-
 }
 
 - (void)ensureRootWindowHidden
