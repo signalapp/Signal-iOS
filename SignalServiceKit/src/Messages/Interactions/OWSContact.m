@@ -499,6 +499,13 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 
+- (void)removeAvatarAttachmentWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSAttachmentStream *_Nullable attachment =
+        [TSAttachmentStream fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
+    [attachment removeWithTransaction:transaction];
+}
+
 #pragma mark - Phone Numbers and Recipient IDs
 
 - (NSArray<NSString *> *)systemContactsWithSignalAccountPhoneNumbers:(id<ContactsManagerProtocol>)contactsManager

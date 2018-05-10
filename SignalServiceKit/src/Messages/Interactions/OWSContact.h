@@ -117,6 +117,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 @property (nonatomic, readonly, nullable) NSString *avatarAttachmentId;
 - (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)removeAvatarAttachmentWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 - (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction;
 // "Profile" avatars should _not_ be saved to device contacts.
 @property (nonatomic, readonly) BOOL isProfileAvatar;
