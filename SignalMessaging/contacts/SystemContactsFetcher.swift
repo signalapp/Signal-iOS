@@ -36,7 +36,8 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         CNContactPhoneNumbersKey as CNKeyDescriptor,
         CNContactEmailAddressesKey as CNKeyDescriptor,
         CNContactPostalAddressesKey as CNKeyDescriptor,
-        CNContactViewController.descriptorForRequiredKeys()
+        CNContactViewController.descriptorForRequiredKeys(),
+        CNContactVCardSerialization.descriptorForRequiredKeys()
     ]
 
     var authorizationStatus: ContactStoreAuthorizationStatus {

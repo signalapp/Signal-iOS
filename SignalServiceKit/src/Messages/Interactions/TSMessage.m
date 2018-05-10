@@ -263,9 +263,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return attachmentDescription;
     } else if (self.contactShare) {
         if (CurrentAppContext().isRTL) {
-            return [self.contactShare.displayName stringByAppendingString:@" 👤"];
+            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
         } else {
-            return [@"👤 " stringByAppendingString:self.contactShare.displayName];
+            return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
         }
     } else {
         OWSFail(@"%@ message has neither body nor attachment.", self.logTag);

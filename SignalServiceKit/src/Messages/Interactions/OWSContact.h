@@ -101,15 +101,23 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 #pragma mark -
 
+@interface OWSContactName : MTLModel
+
+@property (nonatomic, nullable) NSString *givenName;
+@property (nonatomic, nullable) NSString *familyName;
+@property (nonatomic, nullable) NSString *nameSuffix;
+@property (nonatomic, nullable) NSString *namePrefix;
+@property (nonatomic, nullable) NSString *middleName;
+@property (nonatomic, nullable) NSString *organizationName;
+@property (nonatomic) NSString *displayName;
+
+@end
+
+#pragma mark -
+
 @interface OWSContact : MTLModel
 
-@property (nonatomic, readonly, nullable) NSString *givenName;
-@property (nonatomic, readonly, nullable) NSString *familyName;
-@property (nonatomic, readonly, nullable) NSString *nameSuffix;
-@property (nonatomic, readonly, nullable) NSString *namePrefix;
-@property (nonatomic, readonly, nullable) NSString *middleName;
-@property (nonatomic, readonly, nullable) NSString *organizationName;
-@property (nonatomic, readonly) NSString *displayName;
+@property (nonatomic) OWSContactName *name;
 
 @property (nonatomic, readonly) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic, readonly) NSArray<OWSContactEmail *> *emails;
@@ -133,17 +141,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 #pragma mark - Creation and Derivation
 
-- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
-                               givenName:(nullable NSString *)givenName
-                              middleName:(nullable NSString *)middleName
-                              familyName:(nullable NSString *)familyName
-                              nameSuffix:(nullable NSString *)nameSuffix;
+- (OWSContact *)newContactWithName:(OWSContactName *)name;
 
-- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
-                                givenName:(nullable NSString *)givenName
-                               middleName:(nullable NSString *)middleName
-                               familyName:(nullable NSString *)familyName
-                               nameSuffix:(nullable NSString *)nameSuffix;
+- (OWSContact *)copyContactWithName:(OWSContactName *)name;
 
 #pragma mark - Phone Numbers and Recipient IDs
 

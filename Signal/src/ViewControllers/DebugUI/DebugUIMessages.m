@@ -13,7 +13,6 @@
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSContact+Private.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
@@ -32,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @end
+
+#pragma mark -
 
 @interface TSOutgoingMessage (PostDatingDebug)
 
@@ -2953,9 +2954,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Name & Number"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Alice";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Alice";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Home;
                                                   phoneNumber.phoneNumber = @"+13213214321";
@@ -2966,9 +2969,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Name & Email"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Bob";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Bob";
                                                   OWSContactEmail *email = [OWSContactEmail new];
                                                   email.emailType = OWSContactEmailType_Home;
                                                   email.email = @"a@b.com";
@@ -2979,14 +2984,16 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Complicated"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Alice";
-                                                  contact.familyName = @"Carol";
-                                                  contact.middleName = @"Bob";
-                                                  contact.namePrefix = @"Ms.";
-                                                  contact.nameSuffix = @"Esq.";
-                                                  contact.organizationName = @"Falafel Hut";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Alice";
+                                                  name.familyName = @"Carol";
+                                                  name.middleName = @"Bob";
+                                                  name.namePrefix = @"Ms.";
+                                                  name.nameSuffix = @"Esq.";
+                                                  name.organizationName = @"Falafel Hut";
 
                                                   OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
                                                   phoneNumber1.phoneType = OWSContactPhoneType_Home;
@@ -3039,10 +3046,12 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"Long values"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
-                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Bobasdjasdlkjasldkjas";
+                                                  name.familyName = @"Bobasdjasdlkjasldkjas";
                                                   OWSContactEmail *email = [OWSContactEmail new];
                                                   email.emailType = OWSContactEmailType_Mobile;
                                                   email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
@@ -3053,9 +3062,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"System Contact w/o Signal"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
                                                   phoneNumber.phoneNumber = @"+324602053911";
@@ -3066,9 +3077,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self fakeContactShareMessageAction:thread
                                                      label:@"System Contact w. Signal"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
                                                   phoneNumber.phoneNumber = @"+32460205392";
@@ -3128,7 +3141,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      label:@"Name & Number"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Alice";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Alice";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Home;
                                                   phoneNumber.phoneNumber = @"+13213214321";
@@ -3141,7 +3156,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      label:@"Name & Email"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Bob";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Bob";
                                                   OWSContactEmail *email = [OWSContactEmail new];
                                                   email.emailType = OWSContactEmailType_Home;
                                                   email.email = @"a@b.com";
@@ -3152,14 +3169,16 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                               }]];
     [actions addObject:[self sendContactShareMessageAction:thread
                                                      label:@"Complicated"
-                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction){
+                                              contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Alice";
-                                                  contact.familyName = @"Carol";
-                                                  contact.middleName = @"Bob";
-                                                  contact.namePrefix = @"Ms.";
-                                                  contact.nameSuffix = @"Esq.";
-                                                  contact.organizationName = @"Falafel Hut";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Alice";
+                                                  name.familyName = @"Carol";
+                                                  name.middleName = @"Bob";
+                                                  name.namePrefix = @"Ms.";
+                                                  name.nameSuffix = @"Esq.";
+                                                  name.organizationName = @"Falafel Hut";
 
                                                   OWSContactPhoneNumber *phoneNumber1 = [OWSContactPhoneNumber new];
                                                   phoneNumber1.phoneType = OWSContactPhoneType_Home;
@@ -3214,8 +3233,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      label:@"Long values"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Bobasdjasdlkjasldkjas";
-                                                  contact.familyName = @"Bobasdjasdlkjasldkjas";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Bobasdjasdlkjasldkjas";
+                                                  name.familyName = @"Bobasdjasdlkjasldkjas";
                                                   OWSContactEmail *email = [OWSContactEmail new];
                                                   email.emailType = OWSContactEmailType_Mobile;
                                                   email.email = @"asdlakjsaldkjasldkjasdlkjasdlkjasdlkajsa@b.com";
@@ -3228,7 +3249,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      label:@"System Contact w/o Signal"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
                                                   phoneNumber.phoneNumber = @"+324602053911";
@@ -3241,7 +3264,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                      label:@"System Contact w. Signal"
                                               contactBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                                   OWSContact *contact = [OWSContact new];
-                                                  contact.givenName = @"Add Me To Your Contacts";
+                                                  OWSContactName *name = [OWSContactName new];
+                                                  contact.name = name;
+                                                  name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
                                                   phoneNumber.phoneNumber = @"+32460205392";

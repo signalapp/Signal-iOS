@@ -46,6 +46,15 @@ public class ContactShareViewModel: NSObject {
 
     // MARK: Delegated -> dbRecord
 
+    public var name: OWSContactName {
+        get {
+            return dbRecord.name
+        }
+        set {
+            return dbRecord.name = newValue
+        }
+    }
+
     public var addresses: [OWSContactAddress] {
         get {
             return dbRecord.addresses
@@ -86,31 +95,11 @@ public class ContactShareViewModel: NSObject {
     }
 
     public var displayName: String {
-        return dbRecord.displayName
+        return dbRecord.name.displayName
     }
 
     public var ows_isValid: Bool {
         return dbRecord.ows_isValid()
-    }
-
-    public var namePrefix: String? {
-        return dbRecord.namePrefix
-    }
-
-    public var givenName: String? {
-        return dbRecord.givenName
-    }
-
-    public var middleName: String? {
-        return dbRecord.middleName
-    }
-
-    public var familyName: String? {
-        return dbRecord.familyName
-    }
-
-    public var nameSuffix: String? {
-        return dbRecord.nameSuffix
     }
 
     public var isProfileAvatar: Bool {
@@ -127,30 +116,18 @@ public class ContactShareViewModel: NSObject {
         return existingContact.buildCNContact(mergedWithNewContact: newCNContact)
     }
 
-    public func copy(withNamePrefix namePrefix: String?,
-                     givenName: String?,
-                     middleName: String?,
-                     familyName: String?,
-                     nameSuffix: String?) -> ContactShareViewModel {
+    public func copy(withName name: OWSContactName) -> ContactShareViewModel {
 
         // TODO move the `copy` logic into the view model?
-        let newDbRecord = dbRecord.copy(withNamePrefix: namePrefix, givenName: givenName, middleName: middleName, familyName: familyName, nameSuffix: nameSuffix)
+        let newDbRecord = dbRecord.copy(with: name)
 
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
     }
 
-    public func newContact(withNamePrefix namePrefix: String?,
-                           givenName: String?,
-                           middleName: String?,
-                           familyName: String?,
-                           nameSuffix: String?) -> ContactShareViewModel {
+    public func newContact(withName name: OWSContactName) -> ContactShareViewModel {
 
         // TODO move the `newContact` logic into the view model?
-        let newDbRecord = dbRecord.newContact(withNamePrefix: namePrefix,
-                                              givenName: givenName,
-                                              middleName: middleName,
-                                              familyName: familyName,
-                                              nameSuffix: nameSuffix)
+        let newDbRecord = dbRecord.newContact(with: name)
 
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
     }
