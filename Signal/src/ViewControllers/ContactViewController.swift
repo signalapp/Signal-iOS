@@ -318,18 +318,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             inviteButton.autoPinTrailingToSuperviewMargin(withInset: 55)
             lastView = inviteButton
         case .nonSystemContact:
-            // Show "add to contacts" button for non-system contacts.
-            let addToContactsButton = createLargePillButton(text: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
-                                                                                    comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
-                                                     actionBlock: { [weak self] _ in
-                                                        guard let strongSelf = self else { return }
-                                                        strongSelf.didPressAddToContacts()
-            })
-            topView.addSubview(addToContactsButton)
-            addToContactsButton.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
-            addToContactsButton.autoPinLeadingToSuperviewMargin(withInset: 55)
-            addToContactsButton.autoPinTrailingToSuperviewMargin(withInset: 55)
-            lastView = addToContactsButton
+            // Show no action buttons for non-system contacts.
             break
         case .noPhoneNumber:
             // Show no action buttons for contacts without a phone number.
@@ -342,6 +331,19 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             lastView = activityIndicator
             break
         }
+
+        // Always show "add to contacts" button.
+        let addToContactsButton = createLargePillButton(text: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
+                                                                                comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
+                                                        actionBlock: { [weak self] _ in
+                                                            guard let strongSelf = self else { return }
+                                                            strongSelf.didPressAddToContacts()
+        })
+        topView.addSubview(addToContactsButton)
+        addToContactsButton.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 20)
+        addToContactsButton.autoPinLeadingToSuperviewMargin(withInset: 55)
+        addToContactsButton.autoPinTrailingToSuperviewMargin(withInset: 55)
+        lastView = addToContactsButton
 
         lastView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 15)
 
