@@ -106,9 +106,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (contact.thumbnailImageData) {
         _imageData = [contact.thumbnailImageData copy];
+    } else if (contact.imageData) {
+        // This only occurs when sharing a contact via the share extension
+        _imageData = [contact.imageData copy];
     }
 
     return self;
+}
+
++ (nullable Contact *)contactWithVCardData:(NSData *)data
+{
+    CNContact *_Nullable cnContact = [self cnContactWithVCardData:data];
+
+    if (!cnContact) {
+        return nil;
+    }
+
+    return [[self alloc] initWithSystemContact:cnContact];
 }
 
 - (nullable UIImage *)image
@@ -288,6 +302,28 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return hash;
+}
+
+#pragma mark - CNContactConverters
+
++ (nullable CNContact *)cnContactWithVCardData:(NSData *)data
+{
+    OWSAssert(data);
+
+    NSError *error;
+    NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
+    if (!contacts || error) {
+        OWSProdLogAndFail(@"%@ could not parse vcard: %@", self.logTag, error);
+        return nil;
+    }
+    if (contacts.count < 1) {
+        OWSProdLogAndFail(@"%@ empty vcard: %@", self.logTag, error);
+        return nil;
+    }
+    if (contacts.count > 1) {
+        OWSProdLogAndFail(@"%@ more than one contact in vcard: %@", self.logTag, error);
+    }
+    return contacts.firstObject;
 }
 
 - (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact

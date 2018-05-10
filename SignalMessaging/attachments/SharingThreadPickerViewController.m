@@ -31,6 +31,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
 @property (nonatomic, readonly) UIProgressView *progressView;
+@property (nonatomic, readonly) YapDatabaseConnection *editingDBConnection;
 @property (atomic, nullable) TSOutgoingMessage *outgoingMessage;
 
 @end
@@ -46,6 +47,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return self;
     }
 
+    _editingDBConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     _shareViewDelegate = shareViewDelegate;
     self.selectThreadViewDelegate = self;
 
@@ -148,22 +150,30 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     if (self.attachment.isConvertibleToContactShare) {
         NSData *data = self.attachment.data;
-        OWSContact *_Nullable contact = [OWSContacts contactForVCardData:data];
 
-        if (!contact) {
-            // This should never happen since we verify that the contact can be parsed when building the attachment.
-            OWSFail(@"%@ could not parse contact share.", self.logTag);
-            [self.shareViewDelegate shareViewWasCancelled];
+        Contact *_Nullable contact = [Contact contactWithVCardData:data];
+        OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
+        if (!contactShareRecord) {
+            DDLogError(@"%@ Could not convert system contact.", self.logTag);
             return;
         }
 
-        // TODO: Populate avatar image.
         BOOL isProfileAvatar = NO;
-        NSData *_Nullable avatarImageData = nil;
-        contact.isProfileAvatar = isProfileAvatar;
+        NSData *_Nullable avatarImageData = contact.imageData;
+        for (NSString *recipientId in contact.textSecureIdentifiers) {
+            if (avatarImageData) {
+                break;
+            }
+            avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+            if (avatarImageData) {
+                isProfileAvatar = YES;
+            }
+        }
+        contactShareRecord.isProfileAvatar = isProfileAvatar;
 
         ContactShareViewModel *contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:contact avatarImageData:avatarImageData];
+            [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord
+                                                      avatarImageData:avatarImageData];
 
         ApproveContactShareViewController *approvalVC =
             [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
@@ -282,29 +292,37 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 #pragma mark - ApproveContactShareViewControllerDelegate
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-     didApproveContactShare:(OWSContact *)contactShare
+     didApproveContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
-
-        __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare
-                                                         inThread:self.thread
-                                                    messageSender:self.messageSender
-                                                       completion:^(NSError *_Nullable error) {
-                                                           sendCompletion(error, outgoingMessage);
-                                                       }];
-        // This is necessary to show progress.
-        self.outgoingMessage = outgoingMessage;
+        [self.editingDBConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (contactShare.avatarImage) {
+                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+            }
+        }
+            completionBlock:^{
+                __block TSOutgoingMessage *outgoingMessage = nil;
+                outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
+                                                                 inThread:self.thread
+                                                            messageSender:self.messageSender
+                                                               completion:^(NSError *_Nullable error) {
+                                                                   sendCompletion(error, outgoingMessage);
+                                                               }];
+                // This is necessary to show progress.
+                self.outgoingMessage = outgoingMessage;
+            }];
+                                                    
+        
     }
                  fromViewController:approvalViewController];
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-      didCancelContactShare:(OWSContact *)contactShare
+      didCancelContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
