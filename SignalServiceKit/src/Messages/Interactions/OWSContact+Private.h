@@ -49,14 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContact (Private)
 
-@property (nonatomic, nullable) NSString *givenName;
-@property (nonatomic, nullable) NSString *familyName;
-@property (nonatomic, nullable) NSString *nameSuffix;
-@property (nonatomic, nullable) NSString *namePrefix;
-@property (nonatomic, nullable) NSString *middleName;
-@property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic) NSString *displayName;
-
 @property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
 @property (nonatomic) NSArray<OWSContactAddress *> *addresses;

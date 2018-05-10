@@ -7,8 +7,10 @@ import SignalServiceKit
 
 @objc
 public protocol ApproveContactShareViewControllerDelegate: class {
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didApproveContactShare contactShare: ContactShareViewModel)
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController, didCancelContactShare contactShare: ContactShareViewModel)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+                             didApproveContactShare contactShare: ContactShareViewModel)
+    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+                             didCancelContactShare contactShare: ContactShareViewModel)
 }
 
 protocol ContactShareField: class {
@@ -361,7 +363,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
         let nameLabel = UILabel()
         self.nameLabel = nameLabel
-        nameLabel.text = contactShare.displayName
+        nameLabel.text = contactShare.name.displayName
         nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
@@ -381,11 +383,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     // MARK: -
 
     func filteredContactShare() -> ContactShareViewModel {
-        let result = self.contactShare.newContact(withNamePrefix: self.contactShare.namePrefix,
-                                                  givenName: self.contactShare.givenName,
-                                                  middleName: self.contactShare.middleName,
-                                                  familyName: self.contactShare.familyName,
-                                                  nameSuffix: self.contactShare.nameSuffix)
+        let result = self.contactShare.newContact(withName: self.contactShare.name)
 
         for fieldView in fieldViews {
             if fieldView.field.isIncluded() {
@@ -445,10 +443,11 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
 
     // MARK: - EditContactShareNameViewControllerDelegate
 
-    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController, didEditContactShare contactShare: ContactShareViewModel) {
+    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
+                                         didEditContactShare contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
-        nameLabel.text = contactShare.displayName
+        nameLabel.text = contactShare.name.displayName
 
         self.updateNavigationBar()
     }

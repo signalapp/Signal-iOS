@@ -276,15 +276,91 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark -
 
-@interface OWSContact ()
+@implementation OWSContactName
 
-@property (nonatomic, nullable) NSString *givenName;
-@property (nonatomic, nullable) NSString *familyName;
-@property (nonatomic, nullable) NSString *nameSuffix;
-@property (nonatomic, nullable) NSString *namePrefix;
-@property (nonatomic, nullable) NSString *middleName;
-@property (nonatomic, nullable) NSString *organizationName;
-@property (nonatomic) NSString *displayName;
+- (NSString *)logDescription
+{
+    NSMutableString *result = [NSMutableString new];
+    [result appendString:@"["];
+
+    if (self.givenName.length > 0) {
+        [result appendFormat:@"givenName: %@, ", self.givenName];
+    }
+    if (self.familyName.length > 0) {
+        [result appendFormat:@"familyName: %@, ", self.familyName];
+    }
+    if (self.middleName.length > 0) {
+        [result appendFormat:@"middleName: %@, ", self.middleName];
+    }
+    if (self.namePrefix.length > 0) {
+        [result appendFormat:@"namePrefix: %@, ", self.namePrefix];
+    }
+    if (self.nameSuffix.length > 0) {
+        [result appendFormat:@"nameSuffix: %@, ", self.nameSuffix];
+    }
+    if (self.displayName.length > 0) {
+        [result appendFormat:@"displayName: %@, ", self.displayName];
+    }
+
+    [result appendString:@"]"];
+    return result;
+}
+
+- (NSString *)displayName
+{
+    [self ensureDisplayName];
+
+    if (_displayName.length < 1) {
+        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
+        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
+    }
+    return _displayName;
+}
+
+- (void)ensureDisplayName
+{
+    if (_displayName.length < 1) {
+        CNContact *_Nullable cnContact = [self systemContactForName];
+        _displayName = [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName];
+    }
+    if (_displayName.length < 1) {
+        // Fall back to using the organization name.
+        _displayName = self.organizationName;
+    }
+}
+
+- (void)updateDisplayName
+{
+    _displayName = nil;
+
+    [self ensureDisplayName];
+}
+
+- (nullable CNContact *)systemContactForName
+{
+    CNMutableContact *systemContact = [CNMutableContact new];
+    systemContact.givenName = self.givenName.ows_stripped;
+    systemContact.middleName = self.middleName.ows_stripped;
+    systemContact.familyName = self.familyName.ows_stripped;
+    systemContact.namePrefix = self.namePrefix.ows_stripped;
+    systemContact.nameSuffix = self.nameSuffix.ows_stripped;
+    // We don't need to set display name, it's implicit for system contacts.
+    systemContact.organizationName = self.organizationName.ows_stripped;
+    return systemContact;
+}
+
+- (BOOL)hasAnyNamePart
+{
+    return (self.givenName.ows_stripped.length > 0 || self.middleName.ows_stripped.length > 0
+        || self.familyName.ows_stripped.length > 0 || self.namePrefix.ows_stripped.length > 0
+        || self.nameSuffix.ows_stripped.length > 0);
+}
+
+@end
+
+#pragma mark -
+
+@interface OWSContact ()
 
 @property (nonatomic) NSArray<OWSContactPhoneNumber *> *phoneNumbers;
 @property (nonatomic) NSArray<OWSContactEmail *> *emails;
@@ -304,6 +380,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (instancetype)init
 {
     if (self = [super init]) {
+        _name = [OWSContactName new];
         _phoneNumbers = @[];
         _emails = @[];
         _addresses = @[];
@@ -332,7 +409,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (BOOL)ows_isValid
 {
-    if (self.displayName.ows_stripped.length < 1) {
+    if (self.name.displayName.ows_stripped.length < 1) {
         DDLogWarn(@"%@ invalid contact; no display name.", self.logTag);
         return NO;
     }
@@ -358,59 +435,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return hasValue;
 }
 
-- (NSString *)displayName
-{
-    [self ensureDisplayName];
-
-    if (_displayName.length < 1) {
-        OWSProdLogAndFail(@"%@ could not derive a valid display name.", self.logTag);
-        return NSLocalizedString(@"CONTACT_WITHOUT_NAME", @"Indicates that a contact has no name.");
-    }
-    return _displayName;
-}
-
-- (void)ensureDisplayName
-{
-    if (_displayName.length < 1) {
-        CNContact *_Nullable cnContact = [OWSContacts systemContactForContact:self imageData:nil];
-        _displayName = [Contact formattedFullNameWithCNContact:cnContact];
-    }
-    if (_displayName.length < 1) {
-        // Fall back to using the organization name.
-        _displayName = self.organizationName;
-    }
-}
-
-- (void)updateDisplayName
-{
-    _displayName = nil;
-
-    [self ensureDisplayName];
-}
-
 - (NSString *)debugDescription
 {
     NSMutableString *result = [NSMutableString new];
     [result appendString:@"["];
 
-    if (self.givenName.length > 0) {
-        [result appendFormat:@"givenName: %@, ", self.givenName];
-    }
-    if (self.familyName.length > 0) {
-        [result appendFormat:@"familyName: %@, ", self.familyName];
-    }
-    if (self.middleName.length > 0) {
-        [result appendFormat:@"middleName: %@, ", self.middleName];
-    }
-    if (self.namePrefix.length > 0) {
-        [result appendFormat:@"namePrefix: %@, ", self.namePrefix];
-    }
-    if (self.nameSuffix.length > 0) {
-        [result appendFormat:@"nameSuffix: %@, ", self.nameSuffix];
-    }
-    if (self.displayName.length > 0) {
-        [result appendFormat:@"displayName: %@, ", self.displayName];
-    }
+    [result appendFormat:@"%@, ", self.name.logDescription];
 
     for (OWSContactPhoneNumber *phoneNumber in self.phoneNumbers) {
         [result appendFormat:@"%@, ", phoneNumber.debugDescription];
@@ -426,53 +456,30 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return result;
 }
 
-- (OWSContact *)newContactWithNamePrefix:(nullable NSString *)namePrefix
-                               givenName:(nullable NSString *)givenName
-                              middleName:(nullable NSString *)middleName
-                              familyName:(nullable NSString *)familyName
-                              nameSuffix:(nullable NSString *)nameSuffix
+- (OWSContact *)newContactWithName:(OWSContactName *)name
 {
+    OWSAssert(name);
+
     OWSContact *newContact = [OWSContact new];
 
-    [newContact setNamePrefix:namePrefix
-                    givenName:givenName
-                   middleName:middleName
-                   familyName:familyName
-                   nameSuffix:nameSuffix];
+    newContact.name = name;
+
+    [name updateDisplayName];
 
     return newContact;
 }
 
-- (OWSContact *)copyContactWithNamePrefix:(nullable NSString *)namePrefix
-                                givenName:(nullable NSString *)givenName
-                               middleName:(nullable NSString *)middleName
-                               familyName:(nullable NSString *)familyName
-                               nameSuffix:(nullable NSString *)nameSuffix
+- (OWSContact *)copyContactWithName:(OWSContactName *)name
 {
+    OWSAssert(name);
+
     OWSContact *contactCopy = [self copy];
 
-    [contactCopy setNamePrefix:namePrefix
-                     givenName:givenName
-                    middleName:middleName
-                    familyName:familyName
-                    nameSuffix:nameSuffix];
+    contactCopy.name = name;
+
+    [name updateDisplayName];
 
     return contactCopy;
-}
-
-- (void)setNamePrefix:(nullable NSString *)namePrefix
-            givenName:(nullable NSString *)givenName
-           middleName:(nullable NSString *)middleName
-           familyName:(nullable NSString *)familyName
-           nameSuffix:(nullable NSString *)nameSuffix
-{
-    self.namePrefix = namePrefix.ows_stripped;
-    self.givenName = givenName.ows_stripped;
-    self.middleName = middleName.ows_stripped;
-    self.familyName = familyName.ows_stripped;
-    self.nameSuffix = nameSuffix.ows_stripped;
-
-    [self updateDisplayName];
 }
 
 #pragma mark - Avatar
@@ -567,14 +574,16 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 
     OWSContact *contact = [OWSContact new];
-    contact.givenName = systemContact.givenName.ows_stripped;
-    contact.middleName = systemContact.middleName.ows_stripped;
-    contact.familyName = systemContact.familyName.ows_stripped;
-    contact.namePrefix = systemContact.namePrefix.ows_stripped;
-    contact.nameSuffix = systemContact.nameSuffix.ows_stripped;
-    // TODO: Verify.
-    contact.displayName = [CNContactFormatter stringFromContact:systemContact style:CNContactFormatterStyleFullName];
-    contact.organizationName = systemContact.organizationName.ows_stripped;
+
+    OWSContactName *contactName = [OWSContactName new];
+    contactName.givenName = systemContact.givenName.ows_stripped;
+    contactName.middleName = systemContact.middleName.ows_stripped;
+    contactName.familyName = systemContact.familyName.ows_stripped;
+    contactName.namePrefix = systemContact.namePrefix.ows_stripped;
+    contactName.nameSuffix = systemContact.nameSuffix.ows_stripped;
+    contactName.organizationName = systemContact.organizationName.ows_stripped;
+    [contactName ensureDisplayName];
+    contact.name = contactName;
 
     NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (CNLabeledValue<CNPhoneNumber *> *phoneNumberField in systemContact.phoneNumbers) {
@@ -649,8 +658,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = addresses;
 
-    [contact ensureDisplayName];
-
     return contact;
 }
 
@@ -662,13 +669,14 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
 
     CNMutableContact *systemContact = [CNMutableContact new];
-    systemContact.givenName = contact.givenName;
-    systemContact.middleName = contact.middleName;
-    systemContact.familyName = contact.familyName;
-    systemContact.namePrefix = contact.namePrefix;
-    systemContact.nameSuffix = contact.nameSuffix;
+
+    systemContact.givenName = contact.name.givenName;
+    systemContact.middleName = contact.name.middleName;
+    systemContact.familyName = contact.name.familyName;
+    systemContact.namePrefix = contact.name.namePrefix;
+    systemContact.nameSuffix = contact.name.nameSuffix;
     // We don't need to set display name, it's implicit for system contacts.
-    systemContact.organizationName = contact.organizationName;
+    systemContact.organizationName = contact.name.organizationName;
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *systemPhoneNumbers = [NSMutableArray new];
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
@@ -767,27 +775,28 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     OWSSignalServiceProtosDataMessageContactNameBuilder *nameBuilder =
         [OWSSignalServiceProtosDataMessageContactNameBuilder new];
-    if (contact.givenName.ows_stripped.length > 0) {
-        nameBuilder.givenName = contact.givenName.ows_stripped;
-    }
-    if (contact.familyName.ows_stripped.length > 0) {
-        nameBuilder.familyName = contact.familyName.ows_stripped;
-    }
-    if (contact.middleName.ows_stripped.length > 0) {
-        nameBuilder.middleName = contact.middleName.ows_stripped;
-    }
-    if (contact.namePrefix.ows_stripped.length > 0) {
-        nameBuilder.prefix = contact.namePrefix.ows_stripped;
-    }
-    if (contact.nameSuffix.ows_stripped.length > 0) {
-        nameBuilder.suffix = contact.nameSuffix.ows_stripped;
-    }
-    nameBuilder.displayName = contact.displayName;
-    [contactBuilder setNameBuilder:nameBuilder];
 
-    if (contact.organizationName.ows_stripped.length > 0) {
-        contactBuilder.organization = contact.organizationName.ows_stripped;
+    OWSContactName *contactName = contact.name;
+    if (contactName.givenName.ows_stripped.length > 0) {
+        nameBuilder.givenName = contactName.givenName.ows_stripped;
     }
+    if (contactName.familyName.ows_stripped.length > 0) {
+        nameBuilder.familyName = contactName.familyName.ows_stripped;
+    }
+    if (contactName.middleName.ows_stripped.length > 0) {
+        nameBuilder.middleName = contactName.middleName.ows_stripped;
+    }
+    if (contactName.namePrefix.ows_stripped.length > 0) {
+        nameBuilder.prefix = contactName.namePrefix.ows_stripped;
+    }
+    if (contactName.nameSuffix.ows_stripped.length > 0) {
+        nameBuilder.suffix = contactName.nameSuffix.ows_stripped;
+    }
+    if (contactName.organizationName.ows_stripped.length > 0) {
+        contactBuilder.organization = contactName.organizationName.ows_stripped;
+    }
+    nameBuilder.displayName = contactName.displayName;
+    [contactBuilder setNameBuilder:nameBuilder];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         OWSSignalServiceProtosDataMessageContactPhoneBuilder *phoneBuilder =
@@ -897,32 +906,34 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     OWSContact *contact = [OWSContact new];
 
-    if (contactProto.hasOrganization) {
-        contact.organizationName = contactProto.organization.ows_stripped;
-    }
-
+    OWSContactName *contactName = [OWSContactName new];
     if (contactProto.hasName) {
         OWSSignalServiceProtosDataMessageContactName *nameProto = contactProto.name;
 
         if (nameProto.hasGivenName) {
-            contact.givenName = nameProto.givenName.ows_stripped;
+            contactName.givenName = nameProto.givenName.ows_stripped;
         }
         if (nameProto.hasFamilyName) {
-            contact.familyName = nameProto.familyName.ows_stripped;
+            contactName.familyName = nameProto.familyName.ows_stripped;
         }
         if (nameProto.hasPrefix) {
-            contact.namePrefix = nameProto.prefix.ows_stripped;
+            contactName.namePrefix = nameProto.prefix.ows_stripped;
         }
         if (nameProto.hasSuffix) {
-            contact.nameSuffix = nameProto.suffix.ows_stripped;
+            contactName.nameSuffix = nameProto.suffix.ows_stripped;
         }
         if (nameProto.hasMiddleName) {
-            contact.middleName = nameProto.middleName.ows_stripped;
+            contactName.middleName = nameProto.middleName.ows_stripped;
         }
         if (nameProto.hasDisplayName) {
-            contact.displayName = nameProto.displayName.ows_stripped;
+            contactName.displayName = nameProto.displayName.ows_stripped;
         }
     }
+    if (contactProto.hasOrganization) {
+        contactName.organizationName = contactProto.organization.ows_stripped;
+    }
+    [contactName ensureDisplayName];
+    contact.name = contactName;
 
     NSMutableArray<OWSContactPhoneNumber *> *phoneNumbers = [NSMutableArray new];
     for (OWSSignalServiceProtosDataMessageContactPhone *phoneNumberProto in contactProto.number) {
@@ -950,8 +961,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
     }
     contact.addresses = [addresses copy];
-
-    [contact ensureDisplayName];
 
     if (contactProto.hasAvatar) {
         OWSSignalServiceProtosDataMessageContactAvatar *avatarInfo = contactProto.avatar;

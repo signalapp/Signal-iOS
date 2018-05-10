@@ -355,6 +355,14 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 //                                   action:#selector(didPressShareContact)))
 //        }
 
+        if let organizationName = contactShare.name.organizationName?.ows_stripped() {
+            if (contactShare.name.hasAnyNamePart() &&
+                organizationName.count > 0) {
+                rows.append(ContactFieldView.contactFieldView(forOrganizationName: organizationName,
+                                                              layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin)))
+            }
+        }
+
         for phoneNumber in contactShare.phoneNumbers {
             rows.append(ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
