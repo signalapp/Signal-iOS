@@ -558,6 +558,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark - System Contact Conversion
 
+// `contactForSystemContact` does *not* handle avatars. That must be delt with by the caller
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
 {
     if (!systemContact) {
