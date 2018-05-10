@@ -3,6 +3,8 @@
 //
 
 #import "OWSQuotedReplyModel.h"
+#import "ConversationViewItem.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -29,6 +31,22 @@
                        contentType:attachmentStream.contentType
                     sourceFilename:attachmentStream.sourceFilename
                   attachmentStream:attachmentStream
+        thumbnailAttachmentPointer:nil
+           thumbnailDownloadFailed:NO];
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                   thumbnailImage:(nullable UIImage *)thumbnailImage;
+{
+    return [self initWithTimestamp:timestamp
+                          authorId:authorId
+                              body:body
+                    thumbnailImage:thumbnailImage
+                       contentType:nil
+                    sourceFilename:nil
+                  attachmentStream:nil
         thumbnailAttachmentPointer:nil
            thumbnailDownloadFailed:NO];
 }
@@ -113,14 +131,22 @@
                           quotedAttachmentsForSending:attachments];
 }
 
-+ (nullable OWSQuotedReplyModel *)quotedReplyForMessage:(TSMessage *)message
-                                            transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)quotedReplyForConversationViewItem:(ConversationViewItem *)conversationItem
+                                                transaction:(YapDatabaseReadTransaction *)transaction;
 {
-    OWSAssert(message);
+    OWSAssert(conversationItem);
     OWSAssert(transaction);
+
+    TSMessage *message = (TSMessage *)conversationItem.interaction;
+    if (![message isKindOfClass:[TSMessage class]]) {
+        OWSFail(@"%@ unexpected reply message: %@", self.logTag, message);
+        return nil;
+    }
 
     TSThread *thread = [message threadWithTransaction:transaction];
     OWSAssert(thread);
+
+    uint64_t timestamp = message.timestamp;
 
     NSString *_Nullable authorId = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
@@ -133,8 +159,21 @@
         }
     }();
     OWSAssert(authorId.length > 0);
+    
+    if (conversationItem.contactShare) {
+        ContactShareViewModel *contactShare = conversationItem.contactShare;
+        
+        // TODO We deliberately always pass `nil` for `thumbnailImage`, even though we might have a contactShare.avatarImage
+        // because the QuotedReplyViewModel has some hardcoded assumptions that only quoted attachments have
+        // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
+        // contactShare avatar in the quoted reply.
+        return [[OWSQuotedReplyModel alloc] initWithTimestamp:timestamp
+                                                     authorId:authorId
+                                                         body:[@"👤 " stringByAppendingString:contactShare.displayName]
+                                               thumbnailImage:nil];
+        
+    }
 
-    uint64_t timestamp = message.timestamp;
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
     BOOL hasAttachment = NO;

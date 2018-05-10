@@ -2341,15 +2341,9 @@ typedef enum : NSUInteger {
 {
     DDLogDebug(@"%@ user did tap reply", self.logTag);
 
-    TSMessage *message = (TSMessage *)conversationItem.interaction;
-    if (![message isKindOfClass:[TSMessage class]]) {
-        OWSFail(@"%@ unexpected reply message: %@", self.logTag, message);
-        return;
-    }
-
     __block OWSQuotedReplyModel *quotedReply;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        quotedReply = [OWSQuotedReplyModel quotedReplyForMessage:message transaction:transaction];
+        quotedReply = [OWSQuotedReplyModel quotedReplyForConversationViewItem:conversationItem transaction:transaction];
     }];
 
     if (![quotedReply isKindOfClass:[OWSQuotedReplyModel class]]) {

@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+@class ConversationViewItem;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
@@ -32,19 +33,25 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) UIImage *thumbnailImage;
 
-// Used for building an outgoing quoted reply preview, before it's sent
+// Convenience initializer for building an outgoing quoted reply preview, before it's sent
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          authorId:(NSString *)authorId
                              body:(NSString *_Nullable)body
-                 attachmentStream:(nullable TSAttachmentStream *)attachment;
+                 attachmentStream:(nullable TSAttachmentStream *)attachment; //TODO quotedAttachmentStream?
+
+// Convenience initializer for building an outgoing quoted reply preview, before it's sent
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         authorId:(NSString *)authorId
+                             body:(NSString *_Nullable)body
+                   thumbnailImage:(nullable UIImage *)thumbnailImage;
 
 // Used for persisted quoted replies, both incoming and outgoing.
 - (instancetype)initWithQuotedMessage:(TSQuotedMessage *)quotedMessage
                           transaction:(YapDatabaseReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
-+ (nullable instancetype)quotedReplyForMessage:(TSMessage *)message
-                                   transaction:(YapDatabaseReadTransaction *)transaction;
++ (nullable instancetype)quotedReplyForConversationViewItem:(ConversationViewItem *)conversationItem
+                                                transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessage;
 
