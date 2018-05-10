@@ -87,7 +87,8 @@ public class ContactFieldView: UIView {
     }
         
     public class func contactFieldView(forOrganizationName organizationName: String, layoutMargins: UIEdgeInsets) -> UIView {
-        return simpleFieldView(name: NSLocalizedString("CONTACT_FIELD_ORGANIZATION_NAME", comment: "Label for the 'organization name' field of a contact."),
+        return simpleFieldView(name: NSLocalizedString("CONTACT_FIELD_ORGANIZATION",
+                                                       comment: "Label for the 'organization' field of a contact."),
                                value: organizationName,
                                layoutMargins: layoutMargins, actionBlock: nil)
     }
