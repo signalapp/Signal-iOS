@@ -9,14 +9,25 @@ public class ContactShareViewModel: NSObject {
 
     public let dbRecord: OWSContact
 
-    public let avatarImageData: Data?
-    lazy var avatarImage: UIImage? = {
+    public var avatarImageData: Data? {
+        didSet {
+            self.cachedAvatarImage = nil
+        }
+    }
+
+    var cachedAvatarImage: UIImage?
+    var avatarImage: UIImage? {
+        if self.cachedAvatarImage != nil {
+            return self.cachedAvatarImage
+        }
+
         guard let avatarImageData = self.avatarImageData else {
             return nil
         }
 
-       return UIImage(data: avatarImageData)
-    }()
+        self.cachedAvatarImage = UIImage(data: avatarImageData)
+        return cachedAvatarImage
+    }
 
     public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
         self.dbRecord = contactShareRecord
@@ -129,7 +140,8 @@ public class ContactShareViewModel: NSObject {
         // TODO move the `newContact` logic into the view model?
         let newDbRecord = dbRecord.newContact(with: name)
 
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
+        // If we want to keep the avatar image, the caller will need to re-apply it.
+        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
     }
 
 }

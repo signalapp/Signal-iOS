@@ -97,6 +97,40 @@ class ContactShareAddress: ContactShareFieldBase<OWSContactAddress> {
     }
 }
 
+// Stub class so that avatars conform to OWSContactField.
+class OWSContactAvatar: NSObject, OWSContactField {
+
+    public let avatarImage: UIImage
+    public let avatarData: Data
+
+    required init(avatarImage: UIImage, avatarData: Data) {
+        self.avatarImage = avatarImage
+        self.avatarData = avatarData
+
+        super.init()
+    }
+
+    public func ows_isValid() -> Bool {
+        return true
+    }
+
+    public func localizedLabel() -> String {
+        return ""
+    }
+
+    override public var debugDescription: String {
+        return "Avatar"
+    }
+}
+
+class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
+    override func applyToContact(contact: ContactShareViewModel) {
+        assert(isIncluded())
+
+        contact.avatarImageData = value.avatarData
+    }
+}
+
 // MARK: -
 
 protocol ContactShareFieldViewDelegate: class {
@@ -213,9 +247,20 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     func buildFields() {
         var fieldViews = [ContactShareFieldView]()
 
-        // TODO: Avatar
-
         let previewInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 0)
+
+        if let avatarData = contactShare.avatarImageData {
+            if let avatarImage = contactShare.avatarImage {
+                let field = ContactShareAvatarField(OWSContactAvatar(avatarImage: avatarImage, avatarData: avatarData))
+                let fieldView = ContactShareFieldView(field: field, previewViewBlock: {
+                    return ContactFieldView.contactFieldView(forAvatarImage: avatarImage, layoutMargins: previewInsets, actionBlock: nil)
+                },
+                                                      delegate: self)
+                fieldViews.append(fieldView)
+            } else {
+                owsFail("\(logTag) could not load avatar image.")
+            }
+        }
 
         for phoneNumber in contactShare.phoneNumbers {
             let field = ContactSharePhoneNumber(phoneNumber)
