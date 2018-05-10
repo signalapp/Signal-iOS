@@ -167,7 +167,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
         return;
     }
 
-    if ([TSAccountManager sharedInstance]) {
+    if ([TSAccountManager sharedInstance].isRegistered) {
         [self sendSyncContactsMessageIfNecessary];
     }
 }

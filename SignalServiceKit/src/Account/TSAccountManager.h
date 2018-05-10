@@ -34,6 +34,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
  *  @return registered or not
  */
 + (BOOL)isRegistered;
+- (BOOL)isRegistered;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
