@@ -8,8 +8,12 @@ import ContactsUI
 
 class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPickerDelegate, CNContactViewControllerDelegate {
 
-    // TODO actual protocol?
-    weak var addToExistingContactDelegate: UIViewController?
+    // TODO - there are some hard coded assumptions in this VC that assume we are *pushed* onto a
+    // navigation controller. That seems fine for now, but if we need to be presented as a modal,
+    // or need to notify our presenter about our dismisall or other contact actions, a delegate
+    // would be helpful. It seems like this would require some broad changes to the ContactShareViewHelper,
+    // so I've left it as is for now, since it happens to work.
+    // weak var addToExistingContactDelegate: AddContactShareToExistingContactViewControllerDelegate?
 
     let contactShare: ContactShareViewModel
 
@@ -55,8 +59,7 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard let mergedContact: CNContact = self.contactShare.cnContact(mergedWithExistingContact: contact) else {
-            // TODO maybe this should not be optional and return a blank contact so we can still save the (not-actually merged) contact
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            owsFail("\(logTag) in \(#function) mergedContact was unexpectedly nil")
             return
         }
 
@@ -104,7 +107,16 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
             return
         }
 
-        // We want to pop *this* view and the still presented CNContactViewController in a single animation.
+        // TODO this is weird - ideally we'd do something like
+        //     self.delegate?.didFinishAddingContact
+        // and the delegate, which knows about our presentation context could do the right thing.
+        //
+        // As it is, we happen to always be *pushing* this view controller onto a navcontroller, so the
+        // following works in all current cases.
+        //
+        // If we ever wanted to do something different, like present this in a modal, we'd have to rethink.
+
+        // We want to pop *this* view *and* the still presented CNContactViewController in a single animation.
         // Note this happens for *cancel* and for *done*. Unfortunately, I don't know of a way to detect the difference
         // between the two, since both just call this method.
         guard let myIndex = navigationController.viewControllers.index(of: self) else {

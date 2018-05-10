@@ -3,6 +3,7 @@
 //
 
 #import "OWSContact.h"
+#import "Contact.h"
 #import "MimeTypeUtil.h"
 #import "NSString+SSK.h"
 #import "OWSContact+Private.h"
@@ -371,8 +372,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (void)ensureDisplayName
 {
     if (_displayName.length < 1) {
-        CNContact *_Nullable systemContact = [OWSContacts systemContactForContact:self];
-        _displayName = [CNContactFormatter stringFromContact:systemContact style:CNContactFormatterStyleFullName];
+        
+        CNContact *_Nullable cnContact = [OWSContacts systemContactForContact:self];
+        _displayName = [Contact formattedFullNameWithCNContact:cnContact];
     }
     if (_displayName.length < 1) {
         // Fall back to using the organization name.

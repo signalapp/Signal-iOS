@@ -4,6 +4,7 @@
 
 #import "Contact.h"
 #import "Cryptography.h"
+#import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
@@ -38,9 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _cnContact = contact;
-    _firstName = [self trimName:contact.givenName];
-    _lastName = [self trimName:contact.familyName];
-    _fullName = [CNContactFormatter stringFromContact:contact style:CNContactFormatterStyleFullName];
+    _firstName = contact.givenName.ows_stripped;
+    _lastName = contact.familyName.ows_stripped;
+    _fullName = [Contact formattedFullNameWithCNContact:contact];
     _uniqueId = contact.identifier;
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
@@ -123,11 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _image = [UIImage imageWithData:self.imageData];
     return _image;
-}
-
-- (NSString *)trimName:(NSString *)name
-{
-    return [name stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 + (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
@@ -250,6 +246,11 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
++ (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact
+{
+    return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
+}
+
 - (NSString *)nameForPhoneNumber:(NSString *)recipientId
 {
     OWSAssert(recipientId.length > 0);
@@ -288,6 +289,62 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return hash;
+}
+
+- (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact
+{
+    CNMutableContact *_Nullable mergedCNContact = [self.cnContact mutableCopy];
+    if (!mergedCNContact) {
+        OWSFail(@"%@ in %s mergedCNContact was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
+        return [CNContact new];
+    }
+    
+    // Name
+    NSString *formattedFullName =  [self.class formattedFullNameWithCNContact:mergedCNContact];
+
+    // merged all or nothing - do not try to piece-meal merge.
+    if (formattedFullName.length == 0) {
+        mergedCNContact.namePrefix = newCNContact.namePrefix.ows_stripped;
+        mergedCNContact.givenName = newCNContact.givenName.ows_stripped;
+        mergedCNContact.middleName = newCNContact.middleName.ows_stripped;
+        mergedCNContact.familyName = newCNContact.familyName.ows_stripped;
+        mergedCNContact.nameSuffix = newCNContact.nameSuffix.ows_stripped;
+    }
+    
+    // Phone Numbers
+    NSSet<PhoneNumber *> *existingPhoneNumberSet = [NSSet setWithArray:self.parsedPhoneNumbers];
+    
+    NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *mergedPhoneNumbers = [mergedCNContact.phoneNumbers mutableCopy];
+    for (CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber in newCNContact.phoneNumbers) {
+        PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:labeledPhoneNumber.value.stringValue];
+        if (parsedPhoneNumber && ![existingPhoneNumberSet containsObject:parsedPhoneNumber]) {
+            [mergedPhoneNumbers addObject:labeledPhoneNumber];
+        }
+    }
+    mergedCNContact.phoneNumbers = mergedPhoneNumbers;
+    
+    // Emails
+    NSSet<NSString *> *existingEmailSet = [NSSet setWithArray:self.emails];
+    NSMutableArray<CNLabeledValue<NSString *> *> *mergedEmailAddresses = [mergedCNContact.emailAddresses mutableCopy];
+    for (CNLabeledValue<NSString *> *labeledEmail in newCNContact.emailAddresses) {
+        NSString *normalizedValue = labeledEmail.value.ows_stripped;
+        if (![existingEmailSet containsObject:normalizedValue]) {
+            [mergedEmailAddresses addObject:labeledEmail];
+        }
+    }
+    mergedCNContact.emailAddresses = mergedEmailAddresses;
+    
+    // Address
+    // merged all or nothing - do not try to piece-meal merge.
+    BOOL hasExistingAddress = NO;
+    for (CNLabeledValue<CNPostalAddress *> *labeledPostalAddress in mergedCNContact.postalAddresses) {
+        hasExistingAddress = YES;
+    }
+    if (!hasExistingAddress) {
+        mergedCNContact.postalAddresses = newCNContact.postalAddresses;
+    }
+
+    return [mergedCNContact copy];
 }
 
 @end
