@@ -61,6 +61,12 @@ public class ContactFieldView: UIView {
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
     }
 
+    public class func contactFieldView(forOrganizationName organizationName: String, layoutMargins: UIEdgeInsets) -> UIView {
+        return simpleFieldView(name: NSLocalizedString("CONTACT_FIELD_ORGANIZATION_NAME", comment: "Label for the 'organization name' field of a contact."),
+                               value: organizationName,
+                               layoutMargins: layoutMargins, actionBlock: nil)
+    }
+
     public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
         return simpleFieldView(name: phoneNumber.localizedLabel(), value: formattedPhoneNumber, layoutMargins: layoutMargins, actionBlock: actionBlock)

@@ -103,13 +103,20 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 
 @interface OWSContactName : MTLModel
 
+// The "name parts".
 @property (nonatomic, nullable) NSString *givenName;
 @property (nonatomic, nullable) NSString *familyName;
 @property (nonatomic, nullable) NSString *nameSuffix;
 @property (nonatomic, nullable) NSString *namePrefix;
 @property (nonatomic, nullable) NSString *middleName;
+
 @property (nonatomic, nullable) NSString *organizationName;
+
 @property (nonatomic) NSString *displayName;
+
+// Returns true if any of the name parts (which doesn't include
+// organization name) is non-empty.
+- (BOOL)hasAnyNamePart;
 
 @end
 

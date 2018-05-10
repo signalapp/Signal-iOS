@@ -339,14 +339,21 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (nullable CNContact *)systemContactForName
 {
     CNMutableContact *systemContact = [CNMutableContact new];
-    systemContact.givenName = self.givenName;
-    systemContact.middleName = self.middleName;
-    systemContact.familyName = self.familyName;
-    systemContact.namePrefix = self.namePrefix;
-    systemContact.nameSuffix = self.nameSuffix;
+    systemContact.givenName = self.givenName.ows_stripped;
+    systemContact.middleName = self.middleName.ows_stripped;
+    systemContact.familyName = self.familyName.ows_stripped;
+    systemContact.namePrefix = self.namePrefix.ows_stripped;
+    systemContact.nameSuffix = self.nameSuffix.ows_stripped;
     // We don't need to set display name, it's implicit for system contacts.
-    systemContact.organizationName = self.organizationName;
+    systemContact.organizationName = self.organizationName.ows_stripped;
     return systemContact;
+}
+
+- (BOOL)hasAnyNamePart
+{
+    return (self.givenName.ows_stripped.length > 0 || self.middleName.ows_stripped.length > 0
+        || self.familyName.ows_stripped.length > 0 || self.namePrefix.ows_stripped.length > 0
+        || self.nameSuffix.ows_stripped.length > 0);
 }
 
 @end
