@@ -2124,7 +2124,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper inviteContactWithContactShare:contactShare fromViewController:self];
+    [self.contactShareViewHelper showInviteContactWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
@@ -2132,7 +2132,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssert(contactShare);
 
-    [self.contactShareViewHelper addToContactsWithContactShare:contactShare fromViewController:self];
+    [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
 
 - (void)didTapFailedIncomingAttachment:(ConversationViewItem *)viewItem
@@ -2571,7 +2571,8 @@ typedef enum : NSUInteger {
 - (void)chooseContactForSending
 {
     ContactsPicker *contactsPicker =
-        [[ContactsPicker alloc] initWithDelegate:self multiSelection:NO subtitleCellType:SubtitleCellValueNone];
+        [[ContactsPicker alloc] initWithAllowsMultipleSelection:NO subtitleCellType:SubtitleCellValueNone];
+    contactsPicker.contactsPickerDelegate = self;
     contactsPicker.title
         = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
 
@@ -4978,11 +4979,13 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPickerDidCancel:(ContactsPicker *)contactsPicker
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker contactFetchDidFail:(NSError *)error
 {
     DDLogDebug(@"%@ in %s with error %@", self.logTag, __PRETTY_FUNCTION__, error);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
@@ -4992,6 +4995,8 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
+    [self dismissViewControllerAnimated:YES completion:nil];
+
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
     if (!contactShareRecord) {
         DDLogError(@"%@ Could not convert system contact.", self.logTag);
@@ -4999,20 +5004,20 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     }
 
     BOOL isProfileAvatar = NO;
-    UIImage *_Nullable avatarImage = contact.image;
+    NSData *_Nullable avatarImageData = contact.imageData;
     for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImage) {
+        if (avatarImageData) {
             break;
         }
-        avatarImage = [self.contactsManager profileImageForPhoneIdentifier:recipientId];
-        if (avatarImage) {
+        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        if (avatarImageData) {
             isProfileAvatar = YES;
         }
     }
     contactShareRecord.isProfileAvatar = isProfileAvatar;
 
     ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImage:avatarImage];
+        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
     // TODO: We should probably show this in the same navigation view controller.
     ApproveContactShareViewController *approveContactShare =
@@ -5029,6 +5034,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
 {
     OWSFail(@"%@ in %s with contacts: %@", self.logTag, __PRETTY_FUNCTION__, contacts);
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (BOOL)contactsPicker:(ContactsPicker *)contactsPicker shouldSelectContact:(Contact *)contact

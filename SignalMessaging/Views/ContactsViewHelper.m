@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)addToExistingCnContact
+                            addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
     SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
 
@@ -325,8 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     CNContactViewController *_Nullable contactViewController;
     CNContact *_Nullable cnContact = nil;
-    if (addToExistingCnContact) {
-        CNMutableContact *updatedContact = [addToExistingCnContact mutableCopy];
+    if (existingContact) {
+        CNMutableContact *updatedContact = [existingContact mutableCopy];
         NSMutableArray<CNLabeledValue *> *phoneNumbers
             = (updatedContact.phoneNumbers ? [updatedContact.phoneNumbers mutableCopy] : [NSMutableArray new]);
         // Only add recipientId as a phone number for the existing contact

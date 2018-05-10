@@ -20,10 +20,6 @@ public protocol ContactsPickerDelegate: class {
     func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool
 }
 
-public extension ContactsPickerDelegate {
-    func contactsPicker(_: ContactsPicker, shouldSelectContact contact: Contact) -> Bool { return true }
-}
-
 @objc
 public enum SubtitleCellValue: Int {
     case phoneNumber, email, none
@@ -72,15 +68,22 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     // Configuration
     public weak var contactsPickerDelegate: ContactsPickerDelegate?
-    private let subtitleCellValue: SubtitleCellValue
-    private let multiSelectEnabled: Bool
-    private let allowedContactKeys: [CNKeyDescriptor] = [
-        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-        CNContactThumbnailImageDataKey as CNKeyDescriptor,
-        CNContactPhoneNumbersKey as CNKeyDescriptor,
-        CNContactEmailAddressesKey as CNKeyDescriptor,
-        CNContactPostalAddressesKey as CNKeyDescriptor
-    ]
+    private let subtitleCellType: SubtitleCellValue
+    private let allowsMultipleSelection: Bool
+    private let allowedContactKeys: [CNKeyDescriptor] = ContactsFrameworkContactStoreAdaptee.allowedContactKeys
+
+    // MARK: - Initializers
+
+    @objc
+    required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
+        self.allowsMultipleSelection = allowsMultipleSelection
+        self.subtitleCellType = subtitleCellType
+        super.init(nibName: "ContactsPicker", bundle: nil)
+    }
+
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Lifecycle Methods
 
@@ -95,7 +98,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         tableView.estimatedRowHeight = 60.0
         tableView.rowHeight = UITableViewAutomaticDimension
 
-        tableView.allowsMultipleSelection = multiSelectEnabled
+        tableView.allowsMultipleSelection = allowsMultipleSelection
 
         tableView.separatorInset = UIEdgeInsets(top: 0, left: ContactCell.kSeparatorHInset, bottom: 0, right: 16)
 
@@ -116,7 +119,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(onTouchCancelButton))
         self.navigationItem.leftBarButtonItem = cancelButton
 
-        if multiSelectEnabled {
+        if allowsMultipleSelection {
             let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(onTouchDoneButton))
             self.navigationItem.rightBarButtonItem = doneButton
         }
@@ -124,20 +127,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     private func registerContactCell() {
         tableView.register(ContactCell.self, forCellReuseIdentifier: contactCellReuseIdentifier)
-    }
-
-    // MARK: - Initializers
-
-    @objc
-    required public init(delegate: ContactsPickerDelegate?, multiSelection: Bool, subtitleCellType: SubtitleCellValue) {
-        multiSelectEnabled = multiSelection
-        subtitleCellValue = subtitleCellType
-        super.init(nibName: nil, bundle: nil)
-        contactsPickerDelegate = delegate
-    }
-
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Contact Operations
@@ -162,7 +151,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
                     errorHandler(error)
-                    self.dismiss(animated: true, completion: nil)
                 })
                 alert.addAction(cancelAction)
 
@@ -231,13 +219,16 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     // MARK: - Table View Delegates
 
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as! ContactCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: contactCellReuseIdentifier, for: indexPath) as? ContactCell else {
+            owsFail("\(logTag) in \(#function) cell had unexpected type")
+            return UITableViewCell()
+        }
 
         let dataSource = filteredSections
         let cnContact = dataSource[indexPath.section][indexPath.row]
         let contact = Contact(systemContact: cnContact)
 
-        cell.configure(contact: contact, subtitleType: subtitleCellValue, contactsManager: self.contactsManager)
+        cell.configure(contact: contact, subtitleType: subtitleCellType, showsWhenSelected: self.allowsMultipleSelection, contactsManager: self.contactsManager)
         let isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
         cell.isSelected = isSelected
 
@@ -274,11 +265,9 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
         selectedContacts.append(selectedContact)
 
-        if !multiSelectEnabled {
-            //Single selection code
-            self.dismiss(animated: true) {
-                self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact)
-            }
+        if !allowsMultipleSelection {
+            // Single selection code
+            self.contactsPickerDelegate?.contactsPicker(self, didSelectContact: selectedContact)
         }
     }
 
@@ -313,12 +302,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     func onTouchCancelButton() {
         contactsPickerDelegate?.contactsPickerDidCancel(self)
-        dismiss(animated: true, completion: nil)
     }
 
     func onTouchDoneButton() {
         contactsPickerDelegate?.contactsPicker(self, didSelectMultipleContacts: selectedContacts)
-        dismiss(animated: true, completion: nil)
     }
 
     // MARK: - Search Actions

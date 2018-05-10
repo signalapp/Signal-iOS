@@ -20,6 +20,7 @@ protocol ContactStoreAdaptee {
     func startObservingChanges(changeHandler: @escaping () -> Void)
 }
 
+public
 class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     let TAG = "[ContactsFrameworkContactStoreAdaptee]"
     private let contactStore = CNContactStore()
@@ -29,7 +30,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
 
     let supportsContactEditing = true
 
-    private let allowedContactKeys: [CNKeyDescriptor] = [
+    public static let allowedContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactPhoneNumbersKey as CNKeyDescriptor,
@@ -92,7 +93,7 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     func fetchContacts() -> Result<[Contact], Error> {
         var systemContacts = [CNContact]()
         do {
-            let contactFetchRequest = CNContactFetchRequest(keysToFetch: self.allowedContactKeys)
+            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 systemContacts.append(contact)

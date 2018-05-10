@@ -88,6 +88,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         Logger.debug("\(TAG) didSelectContacts:\(contacts)")
 
+        self.presentingViewController.dismiss(animated: true)
+
         guard let inviteChannel = channel else {
             Logger.error("\(TAG) unexpected nil channel after returning from contact picker.")
             return
@@ -124,14 +126,17 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("\(self.logTag) in \(#function) with error: \(error)")
+        self.presentingViewController.dismiss(animated: true)
     }
 
     func contactsPickerDidCancel(_: ContactsPicker) {
         Logger.debug("\(self.logTag) in \(#function)")
+        self.presentingViewController.dismiss(animated: true)
     }
 
     func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
         owsFail("\(logTag) in \(#function) InviteFlow only supports multi-select")
+        self.presentingViewController.dismiss(animated: true)
     }
 
     // MARK: SMS
@@ -146,7 +151,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         return UIAlertAction(title: messageTitle, style: .default) { _ in
             Logger.debug("\(self.TAG) Chose message.")
             self.channel = .message
-            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .phoneNumber)
+            let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
+            picker.contactsPickerDelegate = self
             picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
             let navigationController = UINavigationController(rootViewController: picker)
             self.presentingViewController.present(navigationController, animated: true)
@@ -209,7 +215,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             Logger.debug("\(self.TAG) Chose mail.")
             self.channel = .mail
 
-            let picker = ContactsPicker(delegate: self, multiSelection: true, subtitleCellType: .email)
+            let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
+            picker.contactsPickerDelegate = self
             picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
             let navigationController = UINavigationController(rootViewController: picker)
             self.presentingViewController.present(navigationController, animated: true)

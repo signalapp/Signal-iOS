@@ -501,13 +501,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     func didPressInvite() {
         Logger.info("\(logTag) \(#function)")
 
-        self.contactShareViewHelper.inviteContact(contactShare: self.contactShare, fromViewController: self)
+        self.contactShareViewHelper.showInviteContact(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressAddToContacts() {
         Logger.info("\(logTag) \(#function)")
 
-        self.contactShareViewHelper.addToContacts(contactShare: self.contactShare, fromViewController: self)
+        self.contactShareViewHelper.showAddToContacts(contactShare: self.contactShare, fromViewController: self)
     }
 
     func didPressDismiss() {

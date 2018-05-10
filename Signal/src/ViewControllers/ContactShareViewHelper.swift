@@ -70,7 +70,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     }
 
     @objc
-    public func inviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    public func showInviteContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("\(logTag) \(#function)")
 
         guard MFMessageComposeViewController.canSendText() else {
@@ -89,7 +89,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
-    func addToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
+    func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("\(logTag) \(#function)")
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -144,7 +144,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord) else {
+        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
             owsFail("\(logTag) Could not derive system contact.")
             return
         }
@@ -188,21 +188,12 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        // TODO: Revisit this.
-        guard let firstPhoneNumber = contactShare.e164PhoneNumbers().first else {
-            owsFail("\(logTag) Missing phone number.")
-            return
-        }
-
-        // TODO: We need to modify OWSAddToContactViewController to take a OWSContact
-        // and merge it with an existing CNContact.
-        let viewController = OWSAddToContactViewController()
-        viewController.configure(withRecipientId: firstPhoneNumber)
-
         guard let navigationController = fromViewController.navigationController else {
             owsFail("\(logTag) missing navigationController")
             return
         }
+
+        let viewController = AddContactShareToExistingContactViewController(contactShare: contactShare)
 
         navigationController.pushViewController(viewController, animated: true)
     }

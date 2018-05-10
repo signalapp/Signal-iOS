@@ -19,6 +19,7 @@ class ContactCell: UITableViewCell {
     var subtitleLabel: UILabel
 
     var contact: Contact?
+    var showsWhenSelected: Bool = false
 
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         self.contactImageView = AvatarImageView()
@@ -59,7 +60,9 @@ class ContactCell: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        accessoryType = selected ? .checkmark : .none
+        if showsWhenSelected {
+            accessoryType = selected ? .checkmark : .none
+        }
     }
 
     func didChangePreferredContentSize() {
@@ -67,8 +70,9 @@ class ContactCell: UITableViewCell {
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
 
-    func configure(contact: Contact, subtitleType: SubtitleCellValue, contactsManager: OWSContactsManager) {
+    func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
         self.contact = contact
+        self.showsWhenSelected = showsWhenSelected
 
         titleLabel.attributedText = contact.cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)

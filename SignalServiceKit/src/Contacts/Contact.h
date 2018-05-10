@@ -7,10 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- *
- * Contact represents relevant information related to a contact from the user's
- * contact list.
- *
+ * An adapter for the system contacts
  */
 
 @class CNContact;
@@ -33,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isSignalContact;
 #if TARGET_OS_IOS
 @property (nullable, readonly, nonatomic) UIImage *image;
+@property (nullable, readonly, nonatomic) NSData *imageData;
 @property (nullable, nonatomic, readonly) CNContact *cnContact;
 #endif // TARGET_OS_IOS
 
@@ -49,6 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
 #endif // TARGET_OS_IOS
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
++ (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));
+
+- (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact NS_SWIFT_NAME(buildCNContact(mergedWithNewContact:));
 
 @end
 

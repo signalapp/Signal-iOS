@@ -783,6 +783,20 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     return nil;
 }
 
+- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
+    OWSUserProfile *userProfile =
+        [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+
+    if (userProfile.avatarFileName.length > 0) {
+        return [self loadProfileDataWithFilename:userProfile.avatarFileName];
+    }
+
+    return nil;
+}
+
 - (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
 {
     OWSAssert(userProfile);

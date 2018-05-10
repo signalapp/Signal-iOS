@@ -630,11 +630,11 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     func didTapSendInvite(toContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.inviteContact(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showInviteContact(contactShare: contactShare, fromViewController: self)
     }
 
     func didTapShowAddToContactUI(forContactShare contactShare: ContactShareViewModel) {
-        contactShareViewHelper.addToContacts(contactShare: contactShare, fromViewController: self)
+        contactShareViewHelper.showAddToContacts(contactShare: contactShare, fromViewController: self)
     }
 
     var audioAttachmentPlayer: OWSAudioPlayer?
