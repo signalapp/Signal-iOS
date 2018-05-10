@@ -814,6 +814,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
 
+        self.didTapLeaveCall()
+
         callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
     }
 
@@ -916,10 +918,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
-    func didTapLeaveCall(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
+//    func didTapLeaveCall(sender: UIGestureRecognizer) {
+    func didTapLeaveCall() {
         OWSWindowManager.shared().leaveCallView()
     }
 
