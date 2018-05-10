@@ -928,9 +928,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [mvc configureForThread:thread action:action];
         self.lastThread = thread;
 
-        // Never push more than one conversation view controller at a time.
-        [self.navigationController popToViewController:self animated:NO];
-
         [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
     });
 }
