@@ -77,7 +77,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        UIUtil.applySignalAppearence()
+        // Use "dark" style navigation bar in this view.
+        UIUtil.applyDefaultSystemAppearence()
 
         guard let navigationController = self.navigationController else {
             owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
@@ -98,11 +99,16 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        UIUtil.applySignalAppearence()
+        // Use "dark" style navigation bar in this view.
+        UIUtil.applyDefaultSystemAppearence()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        // We don't need to use UIUtil to restore appearance (e.g. of navigation bar).
+        // This view is only presented from conversation view which will restore
+        // "Signal" appearance.
 
         guard let strongNavigationController = postDismissNavigationController else {
             owsFail("\(self.logTag) in \(#function) navigationController was unexpectedly nil")
