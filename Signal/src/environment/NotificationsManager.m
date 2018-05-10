@@ -449,6 +449,11 @@
     notification.alertBody = notification.alertBody.filterStringForDisplay;
 
     DispatchMainThreadSafe(^{
+        if (UIApplication.sharedApplication.applicationState == UIApplicationStateActive) {
+            DDLogWarn(@"%@ skipping notification; app is in foreground and active.", self.logTag);
+            return;
+        }
+
         // Replace any existing notification
         // e.g. when an "Incoming Call" notification gets replaced with a "Missed Call" notification.
         if (self.currentNotifications[identifier]) {
@@ -476,6 +481,22 @@
         [[UIApplication sharedApplication] cancelLocalNotification:notification];
     });
 }
+
+#ifdef DEBUG
+
++ (void)presentDebugNotification
+{
+    OWSAssertIsOnMainThread();
+
+    UILocalNotification *notification = [UILocalNotification new];
+    notification.category = Signal_Full_New_Message_Category;
+    notification.soundName = [OWSSounds filenameForSound:OWSSound_DefaultiOSIncomingRingtone];
+    notification.alertBody = @"test";
+
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
+
+#endif
 
 - (void)clearAllNotifications
 {
