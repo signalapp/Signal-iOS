@@ -4995,8 +4995,6 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    [self dismissViewControllerAnimated:YES completion:nil];
-
     OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
     if (!contactShareRecord) {
         DDLogError(@"%@ Could not convert system contact.", self.logTag);
@@ -5024,11 +5022,8 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
         [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
                                                         contactsManager:self.contactsManager
                                                                delegate:self];
-
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:approveContactShare];
-    [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
+    OWSAssert(contactsPicker.navigationController);
+    [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
 
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectMultipleContacts:(NSArray<Contact *> *)contacts
