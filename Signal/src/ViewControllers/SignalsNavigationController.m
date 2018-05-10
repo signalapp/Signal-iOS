@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalsNavigationController.h"
+#import "Signal-Swift.h"
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -20,6 +21,14 @@ static double const STALLED_PROGRESS = 0.9;
 #pragma mark -
 
 @implementation SignalsNavigationController
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+    self = [self initWithNavigationBarClass:[SignalNavigationBar class] toolbarClass:nil];
+    [self pushViewController:rootViewController animated:NO];
+    
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
