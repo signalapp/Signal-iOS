@@ -289,6 +289,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         [attachment removeWithTransaction:transaction];
     };
 
+    if (self.contactShare.avatarAttachmentId) {
+        [self.contactShare removeAvatarAttachmentWithTransaction:transaction];
+    }
+
     // Updates inbox thread preview
     [self touchThreadWithTransaction:transaction];
 }
