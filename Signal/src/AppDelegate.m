@@ -529,6 +529,12 @@ static NSTimeInterval launchStartedAt;
     // We want to process up to one local notification per activation, so clear the flag.
     self.hasReceivedLocalNotification = NO;
 
+    // Clear all notifications whenever we become active.
+    // When opening the app from a notification,
+    // AppDelegate.didReceiveLocalNotification will always
+    // be called _before_ we become active.
+    [application cancelAllLocalNotifications];
+
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
 
@@ -645,6 +651,9 @@ static NSTimeInterval launchStartedAt;
     }
 
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
+
+    // Clear all notifications whenever we become inactive.
+    [application cancelAllLocalNotifications];
 
     [DDLog flushLog];
 }
