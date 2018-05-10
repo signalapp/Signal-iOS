@@ -351,18 +351,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Phone Numbers
-    NSMutableSet<PhoneNumber *> *existingPhoneNumberSet = [NSMutableSet setWithArray:self.parsedPhoneNumbers];
-    [existingPhoneNumberSet addObjectsFromArray:self.userTextPhoneNumbers];
+    NSSet<PhoneNumber *> *existingParsedPhoneNumberSet = [NSSet setWithArray:self.parsedPhoneNumbers];
+    NSSet<NSString *> *existingUnparsedPhoneNumberSet = [NSSet setWithArray:self.userTextPhoneNumbers];
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *mergedPhoneNumbers = [mergedCNContact.phoneNumbers mutableCopy];
     for (CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber in newCNContact.phoneNumbers) {
         NSString *_Nullable unparsedPhoneNumber = labeledPhoneNumber.value.stringValue;
-        if ([existingPhoneNumberSet containsObject:unparsedPhoneNumber]) {
+        if ([existingUnparsedPhoneNumberSet containsObject:unparsedPhoneNumber]) {
             // Skip phone number if "unparsed" form is a duplicate.
             continue;
         }
         PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:labeledPhoneNumber.value.stringValue];
-        if (parsedPhoneNumber && [existingPhoneNumberSet containsObject:parsedPhoneNumber]) {
+        if (parsedPhoneNumber && [existingParsedPhoneNumberSet containsObject:parsedPhoneNumber]) {
             // Skip phone number if "parsed" form is a duplicate.
             continue;
         }
