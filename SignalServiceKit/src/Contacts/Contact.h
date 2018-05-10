@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isSignalContact;
 #if TARGET_OS_IOS
 @property (nullable, readonly, nonatomic) UIImage *image;
+@property (nullable, readonly, nonatomic) NSData *imageData;
 @property (nullable, nonatomic, readonly) CNContact *cnContact;
 #endif // TARGET_OS_IOS
 

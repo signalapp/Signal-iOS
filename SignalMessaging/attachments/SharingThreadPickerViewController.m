@@ -159,11 +159,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
         // TODO: Populate avatar image.
         BOOL isProfileAvatar = NO;
-        UIImage *_Nullable avatarImage = nil;
+        NSData *_Nullable avatarImageData = nil;
         contact.isProfileAvatar = isProfileAvatar;
 
         ContactShareViewModel *contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:contact avatarImage:avatarImage];
+            [[ContactShareViewModel alloc] initWithContactShareRecord:contact avatarImageData:avatarImageData];
 
         ApproveContactShareViewController *approvalVC =
             [[ApproveContactShareViewController alloc] initWithContactShare:contactShare

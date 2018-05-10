@@ -372,7 +372,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (void)ensureDisplayName
 {
     if (_displayName.length < 1) {
-        CNContact *_Nullable cnContact = [OWSContacts systemContactForContact:self];
+        CNContact *_Nullable cnContact = [OWSContacts systemContactForContact:self imageData:nil];
         _displayName = [Contact formattedFullNameWithCNContact:cnContact];
     }
     if (_displayName.length < 1) {
@@ -693,7 +693,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     return contact;
 }
 
-+ (nullable CNContact *)systemContactForContact:(OWSContact *)contact
++ (nullable CNContact *)systemContactForContact:(OWSContact *)contact imageData:(nullable NSData *)imageData
 {
     if (!contact) {
         OWSProdLogAndFail(@"%@ Missing contact.", self.logTag);
@@ -790,11 +790,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         }
     }
     systemContact.postalAddresses = systemAddresses;
-
-    // TODO: Avatar
-
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
+    systemContact.imageData = imageData;
 
     return systemContact;
 }
@@ -816,7 +812,8 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 {
     OWSAssert(contact);
 
-    CNContact *_Nullable systemContact = [self systemContactForContact:contact];
+    // TODO pass in image for vcard
+    CNContact *_Nullable systemContact = [self systemContactForContact:contact imageData:nil];
     if (!systemContact) {
         return nil;
     }

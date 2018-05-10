@@ -5004,20 +5004,20 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     }
 
     BOOL isProfileAvatar = NO;
-    UIImage *_Nullable avatarImage = contact.image;
+    NSData *_Nullable avatarImageData = contact.imageData;
     for (NSString *recipientId in contact.textSecureIdentifiers) {
-        if (avatarImage) {
+        if (avatarImageData) {
             break;
         }
-        avatarImage = [self.contactsManager profileImageForPhoneIdentifier:recipientId];
-        if (avatarImage) {
+        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        if (avatarImageData) {
             isProfileAvatar = YES;
         }
     }
     contactShareRecord.isProfileAvatar = isProfileAvatar;
 
     ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImage:avatarImage];
+        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
     // TODO: We should probably show this in the same navigation view controller.
     ApproveContactShareViewController *approveContactShare =

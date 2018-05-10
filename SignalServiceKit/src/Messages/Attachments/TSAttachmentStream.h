@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIImage *)image;
 - (nullable UIImage *)thumbnailImage;
 - (nullable NSData *)thumbnailData;
+- (nullable NSData *)validStillImageData;
 #endif
 
 - (BOOL)isAnimated;

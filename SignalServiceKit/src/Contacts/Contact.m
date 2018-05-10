@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (readonly, nonatomic) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
-@property (readonly, nonatomic) NSData *imageData;
 
 @end
 
@@ -336,12 +335,13 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Address
     // merged all or nothing - do not try to piece-meal merge.
-    BOOL hasExistingAddress = NO;
-    for (CNLabeledValue<CNPostalAddress *> *labeledPostalAddress in mergedCNContact.postalAddresses) {
-        hasExistingAddress = YES;
-    }
-    if (!hasExistingAddress) {
+    if (mergedCNContact.postalAddresses.count == 0) {
         mergedCNContact.postalAddresses = newCNContact.postalAddresses;
+    }
+
+    // Avatar
+    if (!mergedCNContact.imageData) {
+        mergedCNContact.imageData = newCNContact.imageData;
     }
 
     return [mergedCNContact copy];

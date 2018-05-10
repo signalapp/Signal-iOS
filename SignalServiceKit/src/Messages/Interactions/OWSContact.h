@@ -166,7 +166,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 #pragma mark - System Contact Conversion
 
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact;
-+ (nullable CNContact *)systemContactForContact:(OWSContact *)contact;
++ (nullable CNContact *)systemContactForContact:(OWSContact *)contact imageData:(nullable NSData *)imageData;
 
 #pragma mark -
 

@@ -331,6 +331,30 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (nullable NSData *)validStillImageData
+{
+    if ([self isVideo]) {
+        OWSFail(@"%@ in %s isVideo was unexpectedly true", self.logTag, __PRETTY_FUNCTION__);
+        return nil;
+    }
+    if ([self isAnimated]) {
+        OWSFail(@"%@ in %s isAnimated was unexpectedly true", self.logTag, __PRETTY_FUNCTION__);
+        return nil;
+    }
+
+    NSURL *_Nullable mediaUrl = [self mediaURL];
+    if (!mediaUrl) {
+        return nil;
+    }
+
+    NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
+    if (![data ows_isValidImage]) {
+        return nil;
+    }
+
+    return data;
+}
+
 + (BOOL)hasThumbnailForMimeType:(NSString *)contentType
 {
     return ([MIMETypeUtil isVideo:contentType] || [MIMETypeUtil isImage:contentType] ||

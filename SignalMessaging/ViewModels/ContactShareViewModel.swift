@@ -8,18 +8,26 @@ import Foundation
 public class ContactShareViewModel: NSObject {
 
     public let dbRecord: OWSContact
-    public let avatarImage: UIImage?
 
-    public required init(contactShareRecord: OWSContact, avatarImage: UIImage?) {
+    public let avatarImageData: Data?
+    lazy var avatarImage: UIImage? = {
+        guard let avatarImageData = self.avatarImageData else {
+            return nil
+        }
+
+       return UIImage(data: avatarImageData)
+    }()
+
+    public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
         self.dbRecord = contactShareRecord
-        self.avatarImage = avatarImage
+        self.avatarImageData = avatarImageData
     }
 
     public convenience init(contactShareRecord: OWSContact, transaction: YapDatabaseReadTransaction) {
         if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction) as? TSAttachmentStream {
-            self.init(contactShareRecord: contactShareRecord, avatarImage: avatarAttachment.image())
+            self.init(contactShareRecord: contactShareRecord, avatarImageData: avatarAttachment.validStillImageData())
         } else {
-            self.init(contactShareRecord: contactShareRecord, avatarImage: nil)
+            self.init(contactShareRecord: contactShareRecord, avatarImageData: nil)
         }
     }
 
@@ -111,7 +119,7 @@ public class ContactShareViewModel: NSObject {
 
     public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
 
-        guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord) else {
+        guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord, imageData: self.avatarImageData) else {
             owsFail("\(logTag) in \(#function) newCNContact was unexpectedly nil")
             return nil
         }
@@ -128,7 +136,7 @@ public class ContactShareViewModel: NSObject {
         // TODO move the `copy` logic into the view model?
         let newDbRecord = dbRecord.copy(withNamePrefix: namePrefix, givenName: givenName, middleName: middleName, familyName: familyName, nameSuffix: nameSuffix)
 
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImage: self.avatarImage)
+        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
     }
 
     public func newContact(withNamePrefix namePrefix: String?,
@@ -144,7 +152,7 @@ public class ContactShareViewModel: NSObject {
                                               familyName: familyName,
                                               nameSuffix: nameSuffix)
 
-        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImage: self.avatarImage)
+        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
     }
 
 }

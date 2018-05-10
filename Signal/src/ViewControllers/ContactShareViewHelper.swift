@@ -144,7 +144,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord) else {
+        guard let systemContact = OWSContacts.systemContact(for: contactShare.dbRecord, imageData: contactShare.avatarImageData) else {
             owsFail("\(logTag) Could not derive system contact.")
             return
         }

@@ -739,6 +739,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return [self.profileManager profileAvatarForRecipientId:identifier];
 }
 
+- (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier
+{
+    return [self.profileManager profileAvatarDataForRecipientId:identifier];
+}
+
 - (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier
 {
     // Prefer the contact image from the local address book if available
