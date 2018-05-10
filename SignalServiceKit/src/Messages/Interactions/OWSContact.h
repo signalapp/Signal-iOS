@@ -160,20 +160,10 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 // TODO: Move to separate source file, rename to OWSContactConversion.
 @interface OWSContacts : NSObject
 
-#pragma mark - VCard Serialization
-
-+ (nullable CNContact *)systemContactForVCardData:(NSData *)data;
-+ (nullable NSData *)vCardDataForSystemContact:(CNContact *)systemContact;
-
 #pragma mark - System Contact Conversion
 
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact;
 + (nullable CNContact *)systemContactForContact:(OWSContact *)contact imageData:(nullable NSData *)imageData;
-
-#pragma mark -
-
-+ (nullable OWSContact *)contactForVCardData:(NSData *)data;
-+ (nullable NSData *)vCardDataContact:(OWSContact *)contact;
 
 #pragma mark - Proto Serialization
 

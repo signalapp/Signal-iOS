@@ -556,48 +556,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 @implementation OWSContacts
 
-#pragma mark - VCard Serialization
-
-+ (nullable CNContact *)systemContactForVCardData:(NSData *)data
-{
-    OWSAssert(data);
-
-    NSError *error;
-    NSArray<CNContact *> *_Nullable contacts = [CNContactVCardSerialization contactsWithData:data error:&error];
-    if (!contacts || error) {
-        OWSProdLogAndFail(@"%@ could not parse vcard: %@", self.logTag, error);
-        return nil;
-    }
-    if (contacts.count < 1) {
-        OWSProdLogAndFail(@"%@ empty vcard: %@", self.logTag, error);
-        return nil;
-    }
-    if (contacts.count > 1) {
-        OWSProdLogAndFail(@"%@ more than one contact in vcard: %@", self.logTag, error);
-    }
-    return contacts.firstObject;
-}
-
-+ (nullable NSData *)vCardDataForSystemContact:(CNContact *)systemContact
-{
-    OWSAssert(systemContact);
-
-    NSError *error;
-    NSData *_Nullable data = [CNContactVCardSerialization dataWithContacts:@[
-        systemContact,
-    ]
-                                                                     error:&error];
-    if (!data || error) {
-        OWSProdLogAndFail(@"%@ could not serialize to vcard: %@", self.logTag, error);
-        return nil;
-    }
-    if (data.length < 1) {
-        OWSProdLogAndFail(@"%@ empty vcard data: %@", self.logTag, error);
-        return nil;
-    }
-    return data;
-}
-
 #pragma mark - System Contact Conversion
 
 + (nullable OWSContact *)contactForSystemContact:(CNContact *)systemContact
@@ -795,31 +753,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     systemContact.imageData = imageData;
 
     return systemContact;
-}
-
-#pragma mark -
-
-+ (nullable OWSContact *)contactForVCardData:(NSData *)data
-{
-    OWSAssert(data);
-
-    CNContact *_Nullable systemContact = [self systemContactForVCardData:data];
-    if (!systemContact) {
-        return nil;
-    }
-    return [self contactForSystemContact:systemContact];
-}
-
-+ (nullable NSData *)vCardDataContact:(OWSContact *)contact
-{
-    OWSAssert(contact);
-
-    // TODO pass in image for vcard
-    CNContact *_Nullable systemContact = [self systemContactForContact:contact imageData:nil];
-    if (!systemContact) {
-        return nil;
-    }
-    return [self vCardDataForSystemContact:systemContact];
 }
 
 #pragma mark - Proto Serialization
