@@ -1980,8 +1980,8 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert(messageToQuote);
                 DDLogVerbose(@"%@ %@", self.logTag, label);
                 [DDLog flushLog];
-                quotedMessage = [[OWSQuotedReplyModel quotedReplyForMessage:messageToQuote transaction:transaction]
-                    buildQuotedMessage];
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBodyWIndex
@@ -1993,8 +1993,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  contactShare:nil
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
-                quotedMessage = [[OWSQuotedReplyModel quotedReplyForMessage:messageToQuote transaction:transaction]
-                    buildQuotedMessage];
+
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             }
             OWSAssert(quotedMessage);
 
