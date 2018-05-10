@@ -345,16 +345,28 @@ NS_ASSUME_NONNULL_BEGIN
         mergedCNContact.familyName = newCNContact.familyName.ows_stripped;
         mergedCNContact.nameSuffix = newCNContact.nameSuffix.ows_stripped;
     }
-    
+
+    if (mergedCNContact.organizationName.ows_stripped.length < 1) {
+        mergedCNContact.organizationName = newCNContact.organizationName.ows_stripped;
+    }
+
     // Phone Numbers
-    NSSet<PhoneNumber *> *existingPhoneNumberSet = [NSSet setWithArray:self.parsedPhoneNumbers];
-    
+    NSSet<PhoneNumber *> *existingParsedPhoneNumberSet = [NSSet setWithArray:self.parsedPhoneNumbers];
+    NSSet<NSString *> *existingUnparsedPhoneNumberSet = [NSSet setWithArray:self.userTextPhoneNumbers];
+
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *mergedPhoneNumbers = [mergedCNContact.phoneNumbers mutableCopy];
     for (CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber in newCNContact.phoneNumbers) {
-        PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:labeledPhoneNumber.value.stringValue];
-        if (parsedPhoneNumber && ![existingPhoneNumberSet containsObject:parsedPhoneNumber]) {
-            [mergedPhoneNumbers addObject:labeledPhoneNumber];
+        NSString *_Nullable unparsedPhoneNumber = labeledPhoneNumber.value.stringValue;
+        if ([existingUnparsedPhoneNumberSet containsObject:unparsedPhoneNumber]) {
+            // Skip phone number if "unparsed" form is a duplicate.
+            continue;
         }
+        PhoneNumber *_Nullable parsedPhoneNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:labeledPhoneNumber.value.stringValue];
+        if (parsedPhoneNumber && [existingParsedPhoneNumberSet containsObject:parsedPhoneNumber]) {
+            // Skip phone number if "parsed" form is a duplicate.
+            continue;
+        }
+        [mergedPhoneNumbers addObject:labeledPhoneNumber];
     }
     mergedCNContact.phoneNumbers = mergedPhoneNumbers;
     
