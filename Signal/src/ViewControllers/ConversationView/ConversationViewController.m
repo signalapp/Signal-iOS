@@ -5022,6 +5022,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
         [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
                                                         contactsManager:self.contactsManager
                                                                delegate:self];
+    OWSAssert(contactsPicker.navigationController);
     [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
 
