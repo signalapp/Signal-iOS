@@ -31,6 +31,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly, weak) id<ShareViewDelegate> shareViewDelegate;
 @property (nonatomic, readonly) UIProgressView *progressView;
+@property (nonatomic, readonly) YapDatabaseConnection *editingDBConnection;
 @property (atomic, nullable) TSOutgoingMessage *outgoingMessage;
 
 @end
@@ -46,6 +47,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         return self;
     }
 
+    _editingDBConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
     _shareViewDelegate = shareViewDelegate;
     self.selectThreadViewDelegate = self;
 
@@ -282,29 +284,37 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 #pragma mark - ApproveContactShareViewControllerDelegate
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-     didApproveContactShare:(OWSContact *)contactShare
+     didApproveContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
     [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
-
-        __block TSOutgoingMessage *outgoingMessage = nil;
-        outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare
-                                                         inThread:self.thread
-                                                    messageSender:self.messageSender
-                                                       completion:^(NSError *_Nullable error) {
-                                                           sendCompletion(error, outgoingMessage);
-                                                       }];
-        // This is necessary to show progress.
-        self.outgoingMessage = outgoingMessage;
+        [self.editingDBConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (contactShare.avatarImage) {
+                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+            }
+        }
+            completionBlock:^{
+                __block TSOutgoingMessage *outgoingMessage = nil;
+                outgoingMessage = [ThreadUtil sendMessageWithContactShare:contactShare.dbRecord
+                                                                 inThread:self.thread
+                                                            messageSender:self.messageSender
+                                                               completion:^(NSError *_Nullable error) {
+                                                                   sendCompletion(error, outgoingMessage);
+                                                               }];
+                // This is necessary to show progress.
+                self.outgoingMessage = outgoingMessage;
+            }];
+                                                    
+        
     }
                  fromViewController:approvalViewController];
 }
 
 - (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
-      didCancelContactShare:(OWSContact *)contactShare
+      didCancelContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
