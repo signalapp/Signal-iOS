@@ -372,7 +372,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 - (void)ensureDisplayName
 {
     if (_displayName.length < 1) {
-        
         CNContact *_Nullable cnContact = [OWSContacts systemContactForContact:self];
         _displayName = [Contact formattedFullNameWithCNContact:cnContact];
     }
