@@ -905,6 +905,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    DDLogInfo(@"%@ %s %zd %zd", self.logTag, __PRETTY_FUNCTION__, indexPath.row, indexPath.section);
+
     if ([self isIndexPathForArchivedConversations:indexPath]) {
         [self showArchivedConversations];
         return;
