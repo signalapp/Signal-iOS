@@ -690,11 +690,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     }
     contact.addresses = addresses;
 
-    // TODO: Avatar
-
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *imageData;
-    //    @property (readonly, copy, nullable, NS_NONATOMIC_IOSONLY) NSData *thumbnailImageData;
-
     [contact ensureDisplayName];
 
     return contact;
