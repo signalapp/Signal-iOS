@@ -34,8 +34,6 @@ NSString *NSStringForContactPhoneType(OWSContactPhoneType value);
 
 - (NSString *)localizedLabel;
 
-- (NSString *)debugDescription;
-
 @end
 
 #pragma mark -
