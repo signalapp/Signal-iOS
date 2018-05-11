@@ -756,26 +756,21 @@ public class SignalAttachment: NSObject {
     // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
     // crashes reliably in the share extension after screen lock's auth UI has been presented.
     // Resizing using a CGContext seems to work fine.
-    private class func imageScaled(_ uiImage: UIImage, toMaxSize size: CGFloat) -> UIImage? {
+    private class func imageScaled(_ uiImage: UIImage, toMaxSize maxSize: CGFloat) -> UIImage? {
         guard let cgImage = uiImage.cgImage else {
             owsFail("\(logTag) UIImage missing cgImage.")
             return nil
         }
 
         // It's essential that we work consistently in "CG" coordinates (which are
-        // and pixels and don't reflect orientation), not "UI" coordinates (which
-        // are in points and do reflect orientation).
-        let srcWidth = CGFloat(cgImage.width)
-        let srcHeight = CGFloat(cgImage.height)
-        var scaleFactor: CGFloat
-        let aspectRatio: CGFloat = srcWidth / srcHeight
-        if aspectRatio > 1 {
-            scaleFactor = size / srcWidth
-        } else {
-            scaleFactor = size / srcHeight
-        }
-        let newSize = CGSize(width: round(srcWidth * scaleFactor),
-                             height: round(srcHeight * scaleFactor))
+        // pixels and don't reflect orientation), not "UI" coordinates (which
+        // are points and do reflect orientation).
+        let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
+        var maxSizeRect = CGRect.zero
+        maxSizeRect.size = CGSize(width: maxSize, height: maxSize)
+        let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size
+        assert(newSize.width <= maxSize)
+        assert(newSize.height <= maxSize)
 
         let bitsPerComponent = cgImage.bitsPerComponent
         let bytesPerRow = cgImage.bytesPerRow
