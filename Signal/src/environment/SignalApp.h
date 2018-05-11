@@ -44,4 +44,6 @@
 
 + (void)resetAppData;
 
++ (void)clearAllNotifications;
+
 @end

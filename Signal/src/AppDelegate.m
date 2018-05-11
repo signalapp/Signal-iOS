@@ -87,8 +87,6 @@ static NSTimeInterval launchStartedAt;
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
-
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
@@ -533,7 +531,7 @@ static NSTimeInterval launchStartedAt;
     // When opening the app from a notification,
     // AppDelegate.didReceiveLocalNotification will always
     // be called _before_ we become active.
-    [application cancelAllLocalNotifications];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
@@ -591,7 +589,7 @@ static NSTimeInterval launchStartedAt;
             DDLogInfo(@"%@ running post launch block for unregistered user.", self.logTag);
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
-            [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+            [SignalApp clearAllNotifications];
 
             [TSSocketManager requestSocketOpen];
 
@@ -653,9 +651,19 @@ static NSTimeInterval launchStartedAt;
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     // Clear all notifications whenever we become inactive.
-    [application cancelAllLocalNotifications];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     [DDLog flushLog];
+}
+
+- (void)clearAllNotificationsAndRestoreBadgeCount
+{
+    OWSAssertIsOnMainThread();
+
+    [SignalApp clearAllNotifications];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    }];
 }
 
 - (void)application:(UIApplication *)application
