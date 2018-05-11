@@ -17,6 +17,7 @@ enum SignalAttachmentError: Error {
     case couldNotConvertToMpeg4
     case couldNotRemoveMetadata
     case invalidFileFormat
+    case couldNotResizeImage
 }
 
 extension String {
@@ -56,6 +57,8 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4", comment: "Attachment error message for video attachments which could not be converted to MP4")
         case .couldNotRemoveMetadata:
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA", comment: "Attachment error message for image attachments in which metadata could not be removed")
+        case .couldNotResizeImage:
+            return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE", comment: "Attachment error message for image attachments which could not be resized")
         }
     }
 }
@@ -700,7 +703,11 @@ public class SignalAttachment: NSObject {
             var dstImage: UIImage! = image
             if image.size.width > maxSize ||
                 image.size.height > maxSize {
-                dstImage = imageScaled(image, toMaxSize: maxSize)
+                guard let resizedImage = imageScaled(image, toMaxSize: maxSize) else {
+                    attachment.error = .couldNotResizeImage
+                    return attachment
+                }
+                dstImage = resizedImage
             }
             guard let jpgImageData = UIImageJPEGRepresentation(dstImage,
                                                                jpegCompressionQuality(imageUploadQuality: imageUploadQuality)) else {
@@ -746,20 +753,61 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    private class func imageScaled(_ image: UIImage, toMaxSize size: CGFloat) -> UIImage {
-        var scaleFactor: CGFloat
-        let aspectRatio: CGFloat = image.size.height / image.size.width
-        if aspectRatio > 1 {
-            scaleFactor = size / image.size.width
-        } else {
-            scaleFactor = size / image.size.height
+    // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
+    // crashes reliably in the share extension after screen lock's auth UI has been presented.
+    // Resizing using a CGContext seems to work fine.
+    private class func imageScaled(_ uiImage: UIImage, toMaxSize size: CGFloat) -> UIImage? {
+        guard let cgImage = uiImage.cgImage else {
+            owsFail("\(logTag) UIImage missing cgImage.")
+            return nil
         }
-        let newSize = CGSize(width: CGFloat(image.size.width * scaleFactor), height: CGFloat(image.size.height * scaleFactor))
-        UIGraphicsBeginImageContext(newSize)
-        image.draw(in: CGRect(x: CGFloat(0), y: CGFloat(0), width: CGFloat(newSize.width), height: CGFloat(newSize.height)))
-        let updatedImage: UIImage? = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return updatedImage!
+
+        // It's essential that we work consistently in "CG" coordinates (which are
+        // and pixels and don't reflect orientation), not "UI" coordinates (which
+        // are in points and do reflect orientation).
+        let srcWidth = CGFloat(cgImage.width)
+        let srcHeight = CGFloat(cgImage.height)
+        var scaleFactor: CGFloat
+        let aspectRatio: CGFloat = srcWidth / srcHeight
+        if aspectRatio > 1 {
+            scaleFactor = size / srcWidth
+        } else {
+            scaleFactor = size / srcHeight
+        }
+        let newSize = CGSize(width: round(srcWidth * scaleFactor),
+                             height: round(srcHeight * scaleFactor))
+
+        let bitsPerComponent = cgImage.bitsPerComponent
+        let bytesPerRow = cgImage.bytesPerRow
+        guard let colorSpace = cgImage.colorSpace else {
+            owsFail("\(logTag) cgImage missing colorSpace.")
+            return nil
+        }
+        let bitmapInfo = cgImage.bitmapInfo
+
+        guard let context = CGContext.init(data: nil,
+                                           width: Int(newSize.width),
+                                           height: Int(newSize.height),
+                                           bitsPerComponent: bitsPerComponent,
+                                           bytesPerRow: bytesPerRow,
+                                           space: colorSpace,
+                                           bitmapInfo: bitmapInfo.rawValue) else {
+                                            owsFail("\(logTag) could not create CGContext.")
+            return nil
+        }
+        context.interpolationQuality = .high
+
+        var drawRect = CGRect.zero
+        drawRect.size = newSize
+        context.draw(cgImage, in: drawRect)
+
+        guard let newCGImage = context.makeImage() else {
+            owsFail("\(logTag) could not create new CGImage.")
+            return nil
+        }
+        return UIImage(cgImage: newCGImage,
+                       scale: uiImage.scale,
+                       orientation: uiImage.imageOrientation)
     }
 
     private class func doesImageHaveAcceptableFileSize(dataSource: DataSource, imageQuality: TSImageQuality) -> Bool {
