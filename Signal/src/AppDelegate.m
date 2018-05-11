@@ -531,7 +531,7 @@ static NSTimeInterval launchStartedAt;
     // When opening the app from a notification,
     // AppDelegate.didReceiveLocalNotification will always
     // be called _before_ we become active.
-    [SignalApp clearAllNotifications];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
 }
@@ -651,9 +651,19 @@ static NSTimeInterval launchStartedAt;
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     // Clear all notifications whenever we become inactive.
-    [SignalApp clearAllNotifications];
+    [self clearAllNotificationsAndRestoreBadgeCount];
 
     [DDLog flushLog];
+}
+
+- (void)clearAllNotificationsAndRestoreBadgeCount
+{
+    OWSAssertIsOnMainThread();
+
+    [SignalApp clearAllNotifications];
+    [AppReadiness runNowOrWhenAppIsReady:^{
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    }];
 }
 
 - (void)application:(UIApplication *)application

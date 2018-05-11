@@ -95,7 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
     [CurrentAppContext() setMainAppBadgeNumber:numberOfItems];
 }
 
-
 @end
 
 NS_ASSUME_NONNULL_END
