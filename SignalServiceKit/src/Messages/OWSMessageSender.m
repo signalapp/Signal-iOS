@@ -1151,38 +1151,34 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // create a new transaction to avoid deadlock.
     NSString *contactId = [TSAccountManager localNumber];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread *cThread =
-            [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
+        TSContactThread *cThread = [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
         [cThread saveWithTransaction:transaction];
 
         // We need to clone any attachments for message sent to self; otherwise deleting
         // the incoming or outgoing copy of the message will break the other.
-        NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
+        NSMutableArray<NSString *> *incomingAttachmentIds = [NSMutableArray new];
         for (NSString *attachmentId in outgoingMessage.attachmentIds) {
-            TSAttachmentStream *_Nullable outgoingAttachment =
-                [TSAttachmentStream fetchObjectWithUniqueID:attachmentId transaction:transaction];
-            OWSAssert(outgoingAttachment);
-            if (!outgoingAttachment) {
-                DDLogError(@"%@ Couldn't load outgoing attachment for message sent to self.", self.logTag);
+            TSAttachment *_Nullable incomingAttachment =
+                [self cloneAttachmentForSendToMyself:attachmentId transaction:transaction];
+            if (incomingAttachment) {
+                [incomingAttachmentIds addObject:incomingAttachment.uniqueId];
             } else {
-                TSAttachmentStream *incomingAttachment =
-                    [[TSAttachmentStream alloc] initWithContentType:outgoingAttachment.contentType
-                                                          byteCount:outgoingAttachment.byteCount
-                                                     sourceFilename:outgoingAttachment.sourceFilename];
-                NSError *error;
-                NSData *_Nullable data = [outgoingAttachment readDataFromFileWithError:&error];
-                if (!data || error) {
-                    DDLogError(@"%@ Couldn't load attachment data for message sent to self: %@.", self.logTag, error);
-                } else {
-                    [incomingAttachment writeData:data error:&error];
-                    if (error) {
-                        DDLogError(
-                            @"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
-                    } else {
-                        [incomingAttachment saveWithTransaction:transaction];
-                        [attachmentIds addObject:incomingAttachment.uniqueId];
-                    }
-                }
+                DDLogError(@"%@ couldn't clone outgoing attachment for send to self.", self.logTag);
+            }
+        }
+
+        // TODO: Copy attachments for quoted messages.
+        TSQuotedMessage *_Nullable incomingQuotedMessage = [outgoingMessage.quotedMessage copy];
+
+        OWSContact *_Nullable incomingContactShare = [outgoingMessage.contactShare copy];
+        if (incomingContactShare.avatarAttachmentId) {
+            TSAttachment *_Nullable incomingAttachment =
+                [self cloneAttachmentForSendToMyself:incomingContactShare.avatarAttachmentId transaction:transaction];
+            if (incomingAttachment) {
+                incomingContactShare.avatarAttachmentId = incomingAttachment.uniqueId;
+            } else {
+                DDLogError(@"%@ couldn't clone outgoing contact share attachment for send to self.", self.logTag);
+                incomingContactShare.avatarAttachmentId = nil;
             }
         }
 
@@ -1196,12 +1192,32 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                authorId:[cThread contactIdentifier]
                                                          sourceDeviceId:[OWSDevice currentDeviceId]
                                                             messageBody:outgoingMessage.body
-                                                          attachmentIds:attachmentIds
+                                                          attachmentIds:incomingAttachmentIds
                                                        expiresInSeconds:outgoingMessage.expiresInSeconds
-                                                          quotedMessage:outgoingMessage.quotedMessage
-                                                           contactShare:outgoingMessage.contactShare];
+                                                          quotedMessage:incomingQuotedMessage
+                                                           contactShare:incomingContactShare];
         [incomingMessage saveWithTransaction:transaction];
     }];
+}
+
+- (nullable TSAttachment *)cloneAttachmentForSendToMyself:(NSString *)attachmentId
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(attachmentId.length > 0);
+    OWSAssert(transaction;)
+
+        TSAttachment *_Nullable outgoingAttachment
+        = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+    if (!outgoingAttachment) {
+        OWSFail(@"%@ Couldn't load outgoing attachment for message sent to self.", self.logTag);
+        return nil;
+    }
+    if (![outgoingAttachment isKindOfClass:[TSAttachmentStream class]]) {
+        OWSFail(@"%@ Outgoing attachment isn't a stream.", self.logTag);
+        return nil;
+    }
+    TSAttachmentStream *outgoingAttachmentStream = (TSAttachmentStream *)outgoingAttachment;
+    return [outgoingAttachmentStream cloneWithTransaction:transaction];
 }
 
 - (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message

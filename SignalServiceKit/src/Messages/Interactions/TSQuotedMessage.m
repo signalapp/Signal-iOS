@@ -47,12 +47,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @interface TSQuotedMessage ()
 
 @property (atomic) NSArray<OWSAttachmentInfo *> *quotedAttachments;
 @property (atomic) NSArray<TSAttachmentStream *> *quotedAttachmentsForSending;
 
 @end
+
+#pragma mark -
 
 @implementation TSQuotedMessage
 
@@ -243,7 +247,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     return thumbnailStream;
 }
-
 
 #pragma mark - Attachment (not necessarily with a thumbnail)
 
