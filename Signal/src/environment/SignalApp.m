@@ -227,14 +227,24 @@
     [OWSStorage resetAllStorage];
     [[OWSProfileManager sharedManager] resetProfileStorage];
     [Environment.preferences clear];
-    // Setting the app badge number from non-zero to zero has the
-    // side effect of clearing all scheduled and presented local
-    // notifications.
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+
+    [self clearAllNotifications];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
+}
+
++ (void)clearAllNotifications
+{
+    DDLogInfo(@"%@ clearAllNotifications.", self.logTag);
+
+    // This will cancel all "scheduled" local notifications that haven't
+    // been presented yet.
+    [UIApplication.sharedApplication cancelAllLocalNotifications];
+    // To clear all already presented local notifications, we need to
+    // set the app badge number to zero after setting it to a non-zero value.
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 @end
