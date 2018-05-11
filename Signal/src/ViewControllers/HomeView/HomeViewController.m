@@ -116,7 +116,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     _threadViewModelCache = [NSCache new];
 
     // Ensure ExperienceUpgradeFinder has been initialized.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
     [ExperienceUpgradeFinder sharedManager];
+#pragma GCC diagnostic pop
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(blockedPhoneNumbersDidChange:)

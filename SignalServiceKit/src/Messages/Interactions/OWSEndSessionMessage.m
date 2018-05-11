@@ -9,6 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSEndSessionMessage
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
 {
     return [super initOutgoingMessageWithTimestamp:timestamp

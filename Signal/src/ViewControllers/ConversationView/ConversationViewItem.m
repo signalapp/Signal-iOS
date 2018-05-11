@@ -786,6 +786,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_Unknown: {
             OWSFail(@"%@ No text to share", self.logTag);
+            break;
+        }
+        case OWSMessageCellType_ContactShare: {
+            OWSFail(@"%@ share contact not implemented.", self.logTag);
+            break;
         }
     }
 }
@@ -796,6 +801,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage:
+        case OWSMessageCellType_ContactShare:
             OWSFail(@"No media to share.");
             break;
         case OWSMessageCellType_StillImage:

@@ -758,13 +758,7 @@ NS_ASSUME_NONNULL_BEGIN
         case MessageComposeResultCancelled:
             break;
         case MessageComposeResultFailed: {
-            UIAlertView *warningAlert =
-                [[UIAlertView alloc] initWithTitle:@""
-                                           message:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")
-                                          delegate:nil
-                                 cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                 otherButtonTitles:nil];
-            [warningAlert show];
+            [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
             break;
         }
         case MessageComposeResultSent: {
@@ -772,13 +766,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      completion:^{
                                          DDLogDebug(@"view controller dismissed");
                                      }];
-            UIAlertView *successAlert = [[UIAlertView alloc]
-                    initWithTitle:@""
-                          message:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")
-                         delegate:nil
-                cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                otherButtonTitles:nil];
-            [successAlert show];
+            [OWSAlerts
+                showAlertWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS", @"Alert body after invite succeeded")];
             break;
         }
         default:

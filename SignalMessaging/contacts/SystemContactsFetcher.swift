@@ -185,7 +185,7 @@ public class SystemContactsFetcher: NSObject {
      * where we might need contact access, but will ensure we don't wastefully reload contacts
      * if we have already fetched contacts.
      *
-     * @param   completion  completion handler is called on main thread.
+     * @param   completionParam  completion handler is called on main thread.
      */
     @objc
     public func requestOnce(completion completionParam: ((Error?) -> Void)?) {
