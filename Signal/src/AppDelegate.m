@@ -533,9 +533,22 @@ static NSTimeInterval launchStartedAt;
     // When opening the app from a notification,
     // AppDelegate.didReceiveLocalNotification will always
     // be called _before_ we become active.
-    [application cancelAllLocalNotifications];
+    [self cancelAllNotifications];
 
     DDLogInfo(@"%@ applicationDidBecomeActive completed.", self.logTag);
+}
+
+- (void)cancelAllNotifications
+{
+    DDLogInfo(@"%@ cancelAllNotifications.", self.logTag);
+
+    // This will cancel all "scheduled" local notifications that haven't
+    // been presented yet.
+    [UIApplication.sharedApplication cancelAllLocalNotifications];
+    // To clear all already presented local notifications, we need to
+    // set the app badge number to zero after setting it to a non-zero value.
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)enableBackgroundRefreshIfNecessary
@@ -653,7 +666,7 @@ static NSTimeInterval launchStartedAt;
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
     // Clear all notifications whenever we become inactive.
-    [application cancelAllLocalNotifications];
+    [self cancelAllNotifications];
 
     [DDLog flushLog];
 }
