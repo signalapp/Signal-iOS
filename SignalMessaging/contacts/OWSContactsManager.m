@@ -19,7 +19,6 @@
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
 
-@import AddressBook;
 @import Contacts;
 
 NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
@@ -570,9 +569,9 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     NSDictionary<NSString *, id> *normalFontAttributes =
         @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_darkGrayColor] };
     NSDictionary<NSString *, id> *firstNameAttributes
-        = (ABPersonGetSortOrdering() == kABPersonSortByFirstName ? boldFontAttributes : normalFontAttributes);
+        = (self.shouldSortByGivenName ? boldFontAttributes : normalFontAttributes);
     NSDictionary<NSString *, id> *lastNameAttributes
-        = (ABPersonGetSortOrdering() == kABPersonSortByFirstName ? normalFontAttributes : boldFontAttributes);
+        = (self.shouldSortByGivenName ? normalFontAttributes : boldFontAttributes);
 
     NSString *cachedFirstName = [self cachedFirstNameForRecipientId:recipientId];
     NSString *cachedLastName = [self cachedLastNameForRecipientId:recipientId];
@@ -585,8 +584,12 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
+        CNMutableContact *formatContact = [CNMutableContact new];
+        formatContact.givenName = firstName.string;
+        formatContact.familyName = lastName.string;
+        CNContactDisplayNameOrder nameOrder = [CNContactFormatter nameOrderForContact:formatContact];
         NSAttributedString *_Nullable leftName, *_Nullable rightName;
-        if (ABPersonGetCompositeNameFormat() == kABPersonCompositeNameFormatFirstNameFirst) {
+        if (nameOrder == CNContactDisplayNameOrderGivenNameFirst) {
             leftName = firstName;
             rightName = lastName;
         } else {
@@ -812,11 +815,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     };
 }
 
+- (BOOL)shouldSortByGivenName
+{
+    return [[CNContactsUserDefaults sharedDefaults] sortOrder] == CNContactSortOrderGivenName;
+}
+
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
 {
     NSString *_Nullable name;
     if (signalAccount.contact) {
-        if (ABPersonGetSortOrdering() == kABPersonSortByFirstName) {
+        if (self.shouldSortByGivenName) {
             name = signalAccount.contact.comparableNameFirstLast;
         } else {
             name = signalAccount.contact.comparableNameLastFirst;
