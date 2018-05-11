@@ -227,6 +227,10 @@
     [OWSStorage resetAllStorage];
     [[OWSProfileManager sharedManager] resetProfileStorage];
     [Environment.preferences clear];
+    // Setting the app badge number from non-zero to zero has the
+    // side effect of clearing all scheduled and presented local
+    // notifications.
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:1];
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 
     [DebugLogger.sharedLogger wipeLogs];

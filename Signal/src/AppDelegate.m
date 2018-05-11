@@ -87,8 +87,6 @@ static NSTimeInterval launchStartedAt;
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     DDLogWarn(@"%@ applicationWillEnterForeground.", self.logTag);
-
-    [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
