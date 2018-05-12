@@ -779,6 +779,31 @@ NS_ASSUME_NONNULL_BEGIN
     return [builder build];
 }
 
+#pragma mark -
+
+- (nullable TSAttachment *)cloneWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction;)
+
+        NSError *error;
+    NSData *_Nullable data = [self readDataFromFileWithError:&error];
+    if (!data || error) {
+        OWSFail(@"%@ Couldn't read attachment data for clone: %@.", self.logTag, error);
+        return nil;
+    }
+
+    TSAttachmentStream *clonedAttachmentStream = [[TSAttachmentStream alloc] initWithContentType:self.contentType
+                                                                                       byteCount:self.byteCount
+                                                                                  sourceFilename:self.sourceFilename];
+    [clonedAttachmentStream writeData:data error:&error];
+    if (error) {
+        OWSFail(@"%@ Couldn't write attachment data for clone: %@.", self.logTag, error);
+        return nil;
+    }
+    [clonedAttachmentStream saveWithTransaction:transaction];
+    return clonedAttachmentStream;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

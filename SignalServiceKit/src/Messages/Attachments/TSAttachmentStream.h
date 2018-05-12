@@ -87,6 +87,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSSignalServiceProtosAttachmentPointer *)buildProto;
 
+#pragma mark -
+
+- (nullable TSAttachment *)cloneWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @interface TSQuotedMessage : MTLModel
 
 @property (nonatomic, readonly) uint64_t timestamp;
