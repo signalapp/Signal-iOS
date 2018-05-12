@@ -650,9 +650,6 @@ static NSTimeInterval launchStartedAt;
 
     DDLogWarn(@"%@ applicationWillResignActive.", self.logTag);
 
-    // Clear all notifications whenever we become inactive.
-    [self clearAllNotificationsAndRestoreBadgeCount];
-
     [DDLog flushLog];
 }
 
