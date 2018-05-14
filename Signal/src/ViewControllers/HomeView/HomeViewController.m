@@ -376,6 +376,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
+    if ([self isIndexPathForArchivedConversations:indexPath]) {
+        return nil;
+    }
+
     if (indexPath) {
         [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
 
@@ -831,6 +835,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if ([self isIndexPathForArchivedConversations:indexPath]) {
+        return NO;
+    }
+
     return YES;
 }
 
