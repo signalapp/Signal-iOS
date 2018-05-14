@@ -464,7 +464,7 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "Achtervoegsel";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Organisatie";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefoon";
@@ -491,10 +491,10 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open met Kaarten";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Verstuur e-mail";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Naamloos contact";
