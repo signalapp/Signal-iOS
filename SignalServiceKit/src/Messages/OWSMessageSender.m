@@ -489,7 +489,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([thread isKindOfClass:[TSContactThread class]] &&
             [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
             // Send to self.
+            OWSAssert(message.recipientIds.count == 1);
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                for (NSString *recipientId in message.sendingRecipientIds) {
+                    [message updateWithSentRecipient:recipientId transaction:transaction];
+                }
+            }];
+
             [self handleMessageSentLocally:message];
+
             successHandler();
             return;
         } else if ([thread isKindOfClass:[TSGroupThread class]]) {
