@@ -50,7 +50,7 @@ public class LoadingViewController: UIViewController {
 
     var isShowingTopLabel = false
     var isShowingBottomLabel = false
-    override public func viewDidAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         // We only show the "loading" UI if it's a slow launch. Otherwise this ViewController

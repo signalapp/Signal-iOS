@@ -130,8 +130,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self observeNotifications];
 
-    // Default to screen protection until we know otherwise.
-    [self updateScreenBlockingWindow:ScreenLockUIStateScreenProtection animated:NO];
+    // Hide the screen blocking window until "app is ready" to
+    // avoid blocking the loading view.
+    [self updateScreenBlockingWindow:ScreenLockUIStateNone animated:NO];
 
     // Initialize the screen lock state.
     //

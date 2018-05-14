@@ -76,6 +76,8 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 
     self.screenBlockingImageView = imageView;
     self.screenBlockingButton = button;
+
+    [self updateUIWithState:ScreenLockUIStateScreenProtection isLogoAtTop:NO animated:NO];
 }
 
 // The "screen blocking" window has three possible states:
@@ -88,6 +90,10 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 - (void)updateUIWithState:(ScreenLockUIState)uiState isLogoAtTop:(BOOL)isLogoAtTop animated:(BOOL)animated
 {
     OWSAssertIsOnMainThread();
+
+    if (!self.isViewLoaded) {
+        return;
+    }
 
     BOOL shouldShowBlockWindow = uiState != ScreenLockUIStateNone;
     BOOL shouldHaveScreenLock = uiState == ScreenLockUIStateScreenLock;
