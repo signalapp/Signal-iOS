@@ -60,8 +60,11 @@
                 SUBQUERY (
                 $extensionItem.attachments,
                 $attachment,
+                (
                 ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
                 || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                )
+                AND NOT (ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.vcard")
                 ).@count &gt;= 1
                 ).@count == 1
             </string>
