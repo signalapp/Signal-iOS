@@ -489,7 +489,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([thread isKindOfClass:[TSContactThread class]] &&
             [((TSContactThread *)thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]) {
             // Send to self.
-            [self handleSendToMyself:message];
+            [self handleMessageSentLocally:message];
             successHandler();
             return;
         } else if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -1129,78 +1129,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
-    }];
-}
-
-- (void)handleSendToMyself:(TSOutgoingMessage *)outgoingMessage
-{
-    [self handleMessageSentLocally:outgoingMessage];
-
-    if (!(outgoingMessage.body || outgoingMessage.hasAttachments)) {
-        // We only want to "clone" text and attachment messages.
-        //
-        // This method shouldn't be called for sync messages, so this
-        // probably represents a bug.
-        OWSFail(@"%@ Refusing to make incoming copy of non-standard message sent to self: %@",
-            self.logTag,
-            outgoingMessage);
-        return;
-    }
-
-    // Getting the local number uses a transaction, so we need to do that before we
-    // create a new transaction to avoid deadlock.
-    NSString *contactId = [TSAccountManager localNumber];
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSContactThread *cThread =
-            [TSContactThread getOrCreateThreadWithContactId:contactId transaction:transaction];
-        [cThread saveWithTransaction:transaction];
-
-        // We need to clone any attachments for message sent to self; otherwise deleting
-        // the incoming or outgoing copy of the message will break the other.
-        NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
-        for (NSString *attachmentId in outgoingMessage.attachmentIds) {
-            TSAttachmentStream *_Nullable outgoingAttachment =
-                [TSAttachmentStream fetchObjectWithUniqueID:attachmentId transaction:transaction];
-            OWSAssert(outgoingAttachment);
-            if (!outgoingAttachment) {
-                DDLogError(@"%@ Couldn't load outgoing attachment for message sent to self.", self.logTag);
-            } else {
-                TSAttachmentStream *incomingAttachment =
-                    [[TSAttachmentStream alloc] initWithContentType:outgoingAttachment.contentType
-                                                          byteCount:outgoingAttachment.byteCount
-                                                     sourceFilename:outgoingAttachment.sourceFilename];
-                NSError *error;
-                NSData *_Nullable data = [outgoingAttachment readDataFromFileWithError:&error];
-                if (!data || error) {
-                    DDLogError(@"%@ Couldn't load attachment data for message sent to self: %@.", self.logTag, error);
-                } else {
-                    [incomingAttachment writeData:data error:&error];
-                    if (error) {
-                        DDLogError(
-                            @"%@ Couldn't copy attachment data for message sent to self: %@.", self.logTag, error);
-                    } else {
-                        [incomingAttachment saveWithTransaction:transaction];
-                        [attachmentIds addObject:incomingAttachment.uniqueId];
-                    }
-                }
-            }
-        }
-
-        // We want the incoming message to appear after the outgoing message.
-        //
-        // TODO: We need to be careful to duplicate the attachments for
-        // quoted message and contact share.
-        TSIncomingMessage *incomingMessage =
-            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:(outgoingMessage.timestamp + 1)
-                                                               inThread:cThread
-                                                               authorId:[cThread contactIdentifier]
-                                                         sourceDeviceId:[OWSDevice currentDeviceId]
-                                                            messageBody:outgoingMessage.body
-                                                          attachmentIds:attachmentIds
-                                                       expiresInSeconds:outgoingMessage.expiresInSeconds
-                                                          quotedMessage:outgoingMessage.quotedMessage
-                                                           contactShare:outgoingMessage.contactShare];
-        [incomingMessage saveWithTransaction:transaction];
     }];
 }
 
