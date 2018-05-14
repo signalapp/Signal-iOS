@@ -763,7 +763,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSString *leftName = [self comparableNameForSignalAccount:left];
         NSString *rightName = [self comparableNameForSignalAccount:right];
 
-        NSComparisonResult nameComparison = [leftName compare:rightName];
+        NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
         if (nameComparison == NSOrderedSame) {
             return [left.recipientId compare:right.recipientId];
         }
