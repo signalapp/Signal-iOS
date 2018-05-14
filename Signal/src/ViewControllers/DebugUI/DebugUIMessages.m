@@ -3452,7 +3452,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                   createdByRemoteName:@"Alice"]];
         }
 
-        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread]];
+        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
 
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                           inThread:thread

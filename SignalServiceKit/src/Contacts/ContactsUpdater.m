@@ -58,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_semaphore_signal(sema);
         }
         failure:^(NSError *lookupError) {
+            DDLogError(
+                @"%@ Could not find recipient for recipientId: %@, error: %@.", self.logTag, identifier, lookupError);
+
             retainedError = lookupError;
             dispatch_semaphore_signal(sema);
         }];
