@@ -29,5 +29,4 @@ extern NSString *const kNSNotificationName_BlockedPhoneNumbersDidChange;
 
 @end
 
-
 NS_ASSUME_NONNULL_END
