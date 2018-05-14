@@ -158,23 +158,18 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         contactViewController.delegate = self
         contactViewController.allowsActions = false
         contactViewController.allowsEditing = true
-        contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton, style: .plain, target: self, action: #selector(didFinishEditingContact))
         contactViewController.navigationItem.leftBarButtonItem = UIBarButtonItem(title: CommonStrings.cancelButton,
                                                                                  style: .plain,
                                                                                  target: self,
                                                                                  action: #selector(didFinishEditingContact))
 
-        guard let navigationController = fromViewController.navigationController else {
-            owsFail("\(logTag) missing navigationController")
-            return
-        }
-
-        navigationController.pushViewController(contactViewController, animated: true)
-
         // HACK otherwise CNContactViewController Navbar is shown as black.
         // RADAR rdar://28433898 http://www.openradar.me/28433898
         // CNContactViewController incompatible with opaque navigation bar
         UIUtil.applyDefaultSystemAppearence()
+
+        let modal = UINavigationController(rootViewController: contactViewController)
+        fromViewController.present(modal, animated: true)
     }
 
     private func presentSelectAddToExistingContactView(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
@@ -208,6 +203,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
+        UIUtil.applySignalAppearence()
         delegate.didCreateOrEditContact()
     }
 
@@ -219,6 +215,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
+        UIUtil.applySignalAppearence()
         delegate.didCreateOrEditContact()
     }
 }

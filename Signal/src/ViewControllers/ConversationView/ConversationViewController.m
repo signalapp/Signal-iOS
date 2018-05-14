@@ -5058,8 +5058,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)didCreateOrEditContact
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-
-    [self.navigationController popToViewController:self animated:true];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
