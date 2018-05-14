@@ -56,7 +56,6 @@ public class ContactShareViewModel: NSObject {
             colorSeed = firstRecipientId
         }
 
-        // TODO: What's the best colorSeed value to use?
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
