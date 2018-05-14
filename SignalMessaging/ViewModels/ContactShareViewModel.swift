@@ -47,9 +47,18 @@ public class ContactShareViewModel: NSObject {
             return avatarImage
         }
 
+        var colorSeed = name.displayName
+        let recipientIds = systemContactsWithSignalAccountPhoneNumbers(contactsManager)
+        if let firstRecipientId = recipientIds.first {
+            // Try to use the first signal id as the default
+            // avatar's color seed, so that it is as consistent
+            // as possible with the user's avatar in other views.
+            colorSeed = firstRecipientId
+        }
+
         // TODO: What's the best colorSeed value to use?
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
-                                                    colorSeed: displayName,
+                                                    colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
                                                     contactsManager: contactsManager)
         return avatarBuilder.build()
