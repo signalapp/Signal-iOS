@@ -222,7 +222,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         backButton.autoSetDimension(.width, toSize: backButtonSize)
         backButton.autoSetDimension(.height, toSize: backButtonSize)
         topView.addSubview(backButton)
-        backButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        backButton.autoPinEdge(toSuperviewEdge: .top)
         backButton.autoPinLeadingToSuperviewMargin()
 
         let backIconName = (self.view.isRTL() ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
@@ -240,7 +240,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let avatarView = AvatarImageView()
         avatarView.image = contactShare.getAvatarImage(diameter: avatarSize, contactsManager: contactsManager)
         topView.addSubview(avatarView)
-        avatarView.autoPin(toTopLayoutGuideOf: self, withInset: 20)
+        avatarView.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
         avatarView.autoHCenterInSuperview()
         avatarView.autoSetDimension(.width, toSize: avatarSize)
         avatarView.autoSetDimension(.height, toSize: avatarSize)
@@ -676,7 +676,12 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     public func didCreateOrEditContact() {
         Logger.info("\(logTag) \(#function)")
 
-        navigationController?.popToViewController(self, animated: true)
+        guard let navigationController = self.navigationController else {
+            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            return
+        }
+        navigationController.popToViewController(self, animated: true)
+
         updateContent()
     }
 }
