@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
@@ -108,6 +108,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSComparisonResult)compare:(SignalRecipient *)other
 {
     return [self.recipientId compare:other.recipientId];
+}
+
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super saveWithTransaction:transaction];
+
+    DDLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
 }
 
 @end

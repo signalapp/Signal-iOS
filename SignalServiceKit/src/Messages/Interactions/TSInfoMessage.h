@@ -23,10 +23,11 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageAddGroupToProfileWhitelistOffer,
 };
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread;
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
 
 @property (atomic, readonly) TSInfoMessageType messageType;
-@property (atomic, readonly) NSString *customMessage;
+@property (atomic, readonly, nullable) NSString *customMessage;
+@property (atomic, readonly, nullable) NSString *unregisteredRecipientId;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
@@ -47,6 +48,11 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
                     customMessage:(NSString *)customMessage;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+          unregisteredRecipientId:(NSString *)unregisteredRecipientId;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread

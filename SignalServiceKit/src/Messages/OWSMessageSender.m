@@ -448,8 +448,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (NSArray<SignalRecipient *> *)getRecipientsForRecipientIds:(NSArray<NSString *> *)recipientIds error:(NSError **)error
+- (NSArray<SignalRecipient *> *)signalRecipientsForRecipientIds:(NSArray<NSString *> *)recipientIds
+                                                        message:(TSOutgoingMessage *)message
+                                                          error:(NSError **)error
 {
+    OWSAssert(recipientIds);
+    OWSAssert(message);
     OWSAssert(error);
 
     *error = nil;
@@ -465,6 +469,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             SignalRecipient *newRecipient = [self.contactsUpdater synchronousLookup:recipientId error:error];
             if (newRecipient) {
                 [recipients addObject:newRecipient];
+            } else {
+                DDLogWarn(@"%@ No SignalRecipient for recipientId: %@", self.logTag, recipientId);
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    // Mark this recipient as "skipped".
+                    [message updateWithSkippedRecipient:recipientId transaction:transaction];
+                }];
             }
         }
     }
@@ -544,7 +554,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             NSError *error;
             NSArray<SignalRecipient *> *recipients =
-                [self getRecipientsForRecipientIds:sendingRecipientIds.allObjects error:&error];
+                [self signalRecipientsForRecipientIds:sendingRecipientIds.allObjects message:message error:&error];
 
             if (recipients.count == 0) {
                 if (!error) {
@@ -753,7 +763,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         [recipient removeWithTransaction:transaction];
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread]
+        [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
             saveWithTransaction:transaction];
     }];
 }

@@ -72,7 +72,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-                    customMessage:(NSString *)customMessage {
+                    customMessage:(NSString *)customMessage
+{
     self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
     if (self) {
         _customMessage = customMessage;
@@ -80,11 +81,27 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
     return self;
 }
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+          unregisteredRecipientId:(NSString *)unregisteredRecipientId
 {
+    self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
+    if (self) {
+        _unregisteredRecipientId = unregisteredRecipientId;
+    }
+    return self;
+}
+
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
+{
+    OWSAssert(thread);
+    OWSAssert(recipientId);
+
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
-                               messageType:TSInfoMessageUserNotRegistered];
+                               messageType:TSInfoMessageUserNotRegistered
+                   unregisteredRecipientId:recipientId];
 }
 
 - (OWSInteractionType)interactionType
@@ -100,7 +117,14 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
         case TSInfoMessageTypeUnsupportedMessage:
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
-            return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
+            if (self.unregisteredRecipientId.length > 0) {
+                return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
+                                                      @"Format string for 'unregistered user' error. Embeds {{the "
+                                                      @"unregistered user's signal id}}."),
+                                 self.unregisteredRecipientId];
+            } else {
+                return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
+            }
         case TSInfoMessageTypeGroupQuit:
             return NSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
