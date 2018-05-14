@@ -91,7 +91,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.screenBlockingImageView) {
+    if (!self.isViewLoaded) {
         return;
     }
 
