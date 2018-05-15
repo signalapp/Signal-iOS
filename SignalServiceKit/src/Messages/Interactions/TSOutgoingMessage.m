@@ -856,8 +856,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     OWSAssert(self.thread);
     OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
-    
-    return [[self dataMessageBuilder] build];
+
+    return [builder build];
 }
 
 - (NSData *)buildPlainTextData:(SignalRecipient *)recipient
