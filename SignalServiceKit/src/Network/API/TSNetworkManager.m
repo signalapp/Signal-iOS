@@ -68,6 +68,20 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     OWSAssert(successBlock);
     OWSAssert(failureBlock);
 
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self makeRequestAsync:request completionQueue:completionQueue success:successBlock failure:failureBlock];
+    });
+}
+
+- (void)makeRequestAsync:(TSRequest *)request
+         completionQueue:(dispatch_queue_t)completionQueue
+                 success:(TSNetworkManagerSuccess)successBlock
+                 failure:(TSNetworkManagerFailure)failureBlock
+{
+    OWSAssert(request);
+    OWSAssert(successBlock);
+    OWSAssert(failureBlock);
+
     DDLogInfo(@"%@ Making request: %@", self.logTag, request);
 
     // TODO: Remove this logging when the call connection issues have been resolved.
