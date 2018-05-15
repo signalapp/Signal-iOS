@@ -318,6 +318,10 @@ typedef enum : NSUInteger {
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:OWSApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(cancelReadTimer)
                                                  name:OWSApplicationDidEnterBackgroundNotification
                                                object:nil];
@@ -602,6 +606,11 @@ typedef enum : NSUInteger {
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    [self startReadTimer];
 }
 
 - (void)dismissPresentedViewControllerIfNecessary
