@@ -141,6 +141,14 @@ private class SignalCallData: NSObject {
         }
     }
 
+    var peerConnectionClient: PeerConnectionClient? {
+        didSet {
+            SwiftAssertIsOnMainThread(#function)
+
+            Logger.debug("\(self.logTag) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
+        }
+    }
+
     required init(call: SignalCall) {
         self.call = call
 
@@ -186,6 +194,9 @@ private class SignalCallData: NSObject {
         // In case we're still waiting on this promise somewhere, we need to reject it to avoid a memory leak.
         // There is no harm in rejecting a previously fulfilled promise.
         rejectReadyToSendIceUpdatesPromise(CallError.obsoleteCall(description: "Terminating call"))
+
+        peerConnectionClient?.terminate()
+        Logger.debug("\(self.logTag) setting peerConnectionClient in \(#function)")
     }
 }
 
@@ -212,14 +223,6 @@ private class SignalCallData: NSObject {
     static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
 
     // MARK: Ivars
-
-    var peerConnectionClient: PeerConnectionClient? {
-        didSet {
-            SwiftAssertIsOnMainThread(#function)
-
-            Logger.debug("\(self.logTag) .peerConnectionClient setter: \(oldValue != nil) -> \(peerConnectionClient != nil) \(String(describing: peerConnectionClient))")
-        }
-    }
 
     fileprivate var callData: SignalCallData? {
         didSet {
@@ -259,6 +262,17 @@ private class SignalCallData: NSObject {
                 return nil
             }
             return callData.call
+        }
+    }
+
+    var peerConnectionClient: PeerConnectionClient? {
+        get {
+            SwiftAssertIsOnMainThread(#function)
+
+            guard let callData = callData else {
+            return nil
+            }
+            return callData.peerConnectionClient
         }
     }
 
@@ -373,7 +387,7 @@ private class SignalCallData: NSObject {
                 throw CallError.obsoleteCall(description: "obsolete call in \(#function)")
             }
 
-            guard self.peerConnectionClient == nil else {
+            guard callData.peerConnectionClient == nil else {
                 let errorDescription = "\(self.logTag) peerconnection was unexpectedly already set."
                 Logger.error(errorDescription)
                 OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionAlreadySet(), file: #file, function: #function, line: #line)
@@ -384,7 +398,7 @@ private class SignalCallData: NSObject {
 
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .outgoing, useTurnOnly: useTurnOnly)
             Logger.debug("\(self.logTag) setting peerConnectionClient in \(#function) for call: \(call.identifiersForLogs)")
-            self.peerConnectionClient = peerConnectionClient
+            callData.peerConnectionClient = peerConnectionClient
             callData.fulfillPeerConnectionClientPromise()
 
             return peerConnectionClient.createOffer()
@@ -680,7 +694,7 @@ private class SignalCallData: NSObject {
 
             Logger.debug("\(self.logTag) setting peerConnectionClient in \(#function) for: \(newCall.identifiersForLogs)")
             let peerConnectionClient = PeerConnectionClient(iceServers: iceServers, delegate: self, callDirection: .incoming, useTurnOnly: useTurnOnly)
-            self.peerConnectionClient = peerConnectionClient
+            callData.peerConnectionClient = peerConnectionClient
             callData.fulfillPeerConnectionClientPromise()
 
             let offerSessionDescription = RTCSessionDescription(type: .offer, sdp: callerSessionDescription)
@@ -1534,16 +1548,15 @@ private class SignalCallData: NSObject {
 
         Logger.debug("\(self.logTag) in \(#function)")
 
+        // Capture a reference to the current call data,
+        // then clear the call data property.
         let currentCallData = self.callData
         self.callData = nil
-
-        self.peerConnectionClient?.terminate()
-        Logger.debug("\(self.logTag) setting peerConnectionClient in \(#function)")
-        self.peerConnectionClient = nil
 
         currentCallData?.terminate()
 
         self.callUIAdapter.didTerminateCall(self.call)
+
         fireDidUpdateVideoTracks()
     }
 
