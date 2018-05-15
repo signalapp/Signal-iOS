@@ -760,7 +760,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                 callDurationTimer = WeakTimer.scheduledTimer(timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
                                                          target: self,
                                                          userInfo: nil,
-                                                         repeats: true) {[weak self] _ in
+                                                         repeats: true) { [weak self] _ in
                                                             self?.updateCallDuration()
                 }
             }
