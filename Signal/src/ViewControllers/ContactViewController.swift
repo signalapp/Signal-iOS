@@ -39,6 +39,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     private var contactShareViewHelper: ContactShareViewHelper
 
+    private weak var postDismissNavigationController: UINavigationController?
+
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
@@ -85,6 +87,10 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
             return
         }
+
+        // self.navigationController is nil in viewWillDisappear when transition via message/call buttons
+        // so we maintain our own reference to restore the navigation bars.
+        postDismissNavigationController = navigationController
         navigationController.isNavigationBarHidden = true
 
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
@@ -98,14 +104,15 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         if self.presentedViewController == nil {
             // No need to do this when we're disappearing due to a modal presentation.
-            // We'll eventually return to to this view and need to hide again. But also, there is a visible animation glitch where the navigation bar for this view controller starts to appear while the whole nav stack is about to be obscured by the modal we are presenting.
-
-            guard let navigationController = self.navigationController else {
-                owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+            // We'll eventually return to to this view and need to hide again. But also, there is a visible
+            // animation glitch where the navigation bar for this view controller starts to appear while
+            // the whole nav stack is about to be obscured by the modal we are presenting.
+            guard let postDismissNavigationController = self.postDismissNavigationController else {
+                owsFail("\(logTag) in \(#function) postDismissNavigationController was unexpectedly nil")
                 return
             }
 
-            navigationController.setNavigationBarHidden(false, animated: animated)
+            postDismissNavigationController.setNavigationBarHidden(false, animated: animated)
         }
     }
 
