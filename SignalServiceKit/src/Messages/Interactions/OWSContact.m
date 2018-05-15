@@ -610,7 +610,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             phoneNumber.phoneType = OWSContactPhoneType_Mobile;
         } else {
             phoneNumber.phoneType = OWSContactPhoneType_Custom;
-            phoneNumber.label = phoneNumberField.label;
+            if (phoneNumberField.label) {
+                phoneNumber.label = [CNLabeledValue localizedStringForLabel:phoneNumberField.label];
+            }
         }
         [phoneNumbers addObject:phoneNumber];
     }
@@ -626,7 +628,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             email.emailType = OWSContactEmailType_Work;
         } else {
             email.emailType = OWSContactEmailType_Custom;
-            email.label = emailField.label;
+            if (emailField.label) {
+                email.label = [CNLabeledValue localizedStringForLabel:emailField.label];
+            }
         }
         [emails addObject:email];
     }
@@ -652,7 +656,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             address.addressType = OWSContactAddressType_Work;
         } else {
             address.addressType = OWSContactAddressType_Custom;
-            address.label = addressField.label;
+            if (addressField.label) {
+                address.label = [CNLabeledValue localizedStringForLabel:addressField.label];
+            }
         }
         [addresses addObject:address];
     }
