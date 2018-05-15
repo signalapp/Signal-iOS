@@ -857,6 +857,9 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "လုံခြုံရေးနံပါတ် ပြောင်းသွားသည်။ အတည်ပြုဖို့ နှိပ်ပါ။";
 
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "ဤသူနှင့်ဆက်သွယ်မှု မအောင်မြင်ပါ။ ခေတ္တစောင့်ဆိုင်း၍ ပြန်လည်ပြင်ဆင်ပါ။ ";
 

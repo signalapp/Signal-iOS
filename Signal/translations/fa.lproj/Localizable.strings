@@ -857,6 +857,9 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "کلید هویت‌سنجی تغییر کرده است. برای تأیید کلید جدید این جا را لمس کنید.";
 
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "شما متعددا اقدام به ارسال پیام به این کاربر کرده‌اید. لطفا بعدا دوباره تلاش کنید.";
 

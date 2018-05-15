@@ -857,6 +857,9 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Las cifras de seguridad han cambiado. Toca para verificar.";
 
+/* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
+"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo después.";
 
@@ -1922,7 +1925,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Bloquear acceso tras";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Desbloquea Signal con Touch ID, Face ID o con el código de acceso de iOS para usarla. Con la app bloqueada, todavía puedes recibir llamadas y notificaciones de mensajes. En los ajustes de Signal puedes seleccionar que información de las notificaciones quieres que se muestre.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Usa Touch ID, Face ID o el código de acceso de iOS para abrir Signal. Con Signal bloqueado, puedes reponder llamadas y ver notificaciones de mensajes. En los ajustes de Signal puedes seleccionar la información que muestren las notificaciones.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Bloqueo de acceso";
