@@ -375,6 +375,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     AssertOnDispatchQueue(self.serialQueue);
 
+    DDLogVerbose(@"%@ %s: %zd", self.logTag, __PRETTY_FUNCTION__, jobs.count);
+
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
@@ -401,6 +403,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
             }
         }
     }];
+    DDLogVerbose(@"%@ %s complete: %zd", self.logTag, __PRETTY_FUNCTION__, processedJobs.count);
     return processedJobs;
 }
 
@@ -487,6 +490,8 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 {
     OWSAssert(envelopeData);
     OWSAssert(transaction);
+
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     // We need to persist the decrypted envelope data ASAP to prevent data loss.
     [self.processingQueue enqueueEnvelopeData:envelopeData plaintextData:plaintextData transaction:transaction];

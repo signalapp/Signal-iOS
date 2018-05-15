@@ -443,6 +443,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
 {
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
     // Drop any too-large messages on the floor. Well behaving clients should never send them.
     NSUInteger kMaxEnvelopeByteCount = 250 * 1024;
     if (envelope.serializedSize > kMaxEnvelopeByteCount) {
