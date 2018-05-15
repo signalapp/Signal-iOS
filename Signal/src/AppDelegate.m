@@ -777,10 +777,7 @@ static NSTimeInterval launchStartedAt;
 
             OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
             OWSAssert(outboundCallInitiator);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-#pragma GCC diagnostic pop
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -824,10 +821,7 @@ static NSTimeInterval launchStartedAt;
 
             OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
             OWSAssert(outboundCallInitiator);
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
             [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-#pragma GCC diagnostic pop
         }];
         return YES;
     } else {
