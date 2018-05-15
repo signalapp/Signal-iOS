@@ -175,13 +175,6 @@ void AssertIsOnDisappearingMessagesQueue()
         return;
     }
 
-    OWSDisappearingMessagesConfiguration *disappearingConfig =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:message.uniqueThreadId transaction:transaction];
-
-    if (!disappearingConfig.isEnabled) {
-        return;
-    }
-
     [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
 }
 
@@ -223,9 +216,9 @@ void AssertIsOnDisappearingMessagesQueue()
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-    [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
-                                                               transaction:transaction];
-    
+        [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
+                                                                   transaction:transaction];
+
     if (message.expiresInSeconds == 0) {
         disappearingMessagesConfiguration.enabled = NO;
     } else {
@@ -236,7 +229,7 @@ void AssertIsOnDisappearingMessagesQueue()
     if (!disappearingMessagesConfiguration.dictionaryValueDidChange) {
         return;
     }
-    DDLogInfo(@"%@ becoming consistent message configuration: %@",
+    DDLogInfo(@"%@ becoming consistent with disappearing message configuration: %@",
         self.logTag,
         disappearingMessagesConfiguration.dictionaryValue);
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
@@ -373,8 +366,8 @@ void AssertIsOnDisappearingMessagesQueue()
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
         NSUInteger deletedCount = [self runLoop];
 
-        // Normally deletions should happen via the disappearanceTimer, to make sure that they're timely.
-        // So, if we're deleting something via the fallback timer, something may have gone wrong. The
+        // Normally deletions should happen via the disappearanceTimer, to make sure that they're prompt.
+        // So, if we're deleting something via this fallback timer, something may have gone wrong. The
         // exception is if we're in close proximity to the disappearanceTimer, in which case a race condition
         // is inevitable.
         if (!recentlyScheduledDisappearanceTimer && deletedCount > 0) {
@@ -396,12 +389,16 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self.disappearingMessagesFinder enumerateMessagesWhichFailedToStartExpiringWithBlock:^(
-        TSMessage *_Nonnull message) {
-        DDLogWarn(@"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
-        [self setExpirationForMessage:message expirationStartedAt:message.timestampForSorting transaction:transaction];
-    }
-                                                                              transaction:transaction];
+    [self.disappearingMessagesFinder
+        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
+            OWSProdLogAndFail(
+                @"%@ starting old timer for message timestamp: %lu", self.logTag, (unsigned long)message.timestamp);
+
+            // We don't know when it was actually read, so assume it was read as soon as it was received.
+            uint64_t readTimeBestGuess = message.timestampForSorting;
+            [self setExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
+        }
+                                                 transaction:transaction];
 }
 
 #pragma mark - Notifications
