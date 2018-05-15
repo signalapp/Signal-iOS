@@ -39,8 +39,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     private var contactShareViewHelper: ContactShareViewHelper
 
-    private weak var postDismissNavigationController: UINavigationController?
-
     // MARK: - Initializers
 
     @available(*, unavailable, message: "use init(call:) constructor instead.")
@@ -77,8 +75,11 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Use "dark" style navigation bar in this view.
-        UIUtil.applyDefaultSystemAppearence()
+        // Use "dark" style status bar in this view,
+        // But we don't apply the entire default system UI (UIUtil.applyDefaultSystemAppearence) because
+        // doing so while pushing onto an existing nav controller who's navbars are hidden corrupts the
+        // title label/navbar items elsewhere in the stack.
+        CurrentAppContext().setStatusBarStyle(.default)
 
         guard let navigationController = self.navigationController else {
             owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
@@ -86,35 +87,26 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         }
         navigationController.isNavigationBarHidden = true
 
-        // self.navigationController is nil in viewDidDisappear when transition via message/call buttons
-        // so we maintain our own reference.
-        self.postDismissNavigationController = navigationController
-
         contactsManager.requestSystemContactsOnce(completion: { [weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateMode()
         })
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // Use "dark" style navigation bar in this view.
-        UIUtil.applyDefaultSystemAppearence()
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // We don't need to use UIUtil to restore appearance (e.g. of navigation bar).
-        // This view is only presented from conversation view which will restore
-        // "Signal" appearance.
+        if self.presentedViewController == nil {
+            // No need to do this when we're disappearing due to a modal presentation.
+            // We'll eventually return to to this view and need to hide again. But also, there is a visible animation glitch where the navigation bar for this view controller starts to appear while the whole nav stack is about to be obscured by the modal we are presenting.
 
-        guard let strongNavigationController = postDismissNavigationController else {
-            owsFail("\(self.logTag) in \(#function) navigationController was unexpectedly nil")
-            return
+            guard let navigationController = self.navigationController else {
+                owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
+                return
+            }
+
+            navigationController.setNavigationBarHidden(false, animated: animated)
         }
-        strongNavigationController.isNavigationBarHidden = false
     }
 
     override func loadView() {
@@ -675,13 +667,9 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     public func didCreateOrEditContact() {
         Logger.info("\(logTag) \(#function)")
-
-        guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
-            return
-        }
-        navigationController.popToViewController(self, animated: true)
-
         updateContent()
+
+        UIUtil.applySignalAppearence()
+        self.dismiss(animated: true)
     }
 }

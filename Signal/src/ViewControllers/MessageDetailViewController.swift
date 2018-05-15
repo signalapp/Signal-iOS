@@ -720,12 +720,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     // MARK: - ContactShareViewHelperDelegate
 
     public func didCreateOrEditContact() {
-        guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
-            return
-        }
-        navigationController.popToViewController(self, animated: true)
-
         updateContent()
+        self.dismiss(animated: true)
     }
 }
