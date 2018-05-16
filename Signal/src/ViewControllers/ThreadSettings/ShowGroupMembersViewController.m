@@ -168,7 +168,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    for (NSString *recipientId in [recipientIds sortedArrayUsingSelector:@selector(compare:)]) {
+    // Sort the group members using contacts manager.
+    NSArray<NSString *> *sortedRecipientIds =
+        [recipientIds sortedArrayUsingComparator:^NSComparisonResult(NSString *recipientIdA, NSString *recipientIdB) {
+            SignalAccount *signalAccountA = [helper.contactsManager signalAccountForRecipientId:recipientIdA];
+            SignalAccount *signalAccountB = [helper.contactsManager signalAccountForRecipientId:recipientIdB];
+            return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+        }];
+    for (NSString *recipientId in sortedRecipientIds) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             ShowGroupMembersViewController *strongSelf = weakSelf;
             OWSCAssert(strongSelf);
