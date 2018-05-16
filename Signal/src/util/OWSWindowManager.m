@@ -330,6 +330,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
 
+    if (!self.returnToCallWindow.hidden) {
+        return;
+    }
+
+    DDLogInfo(@"%@ showing 'return to call' window.", self.logTag);
     self.returnToCallWindow.hidden = NO;
     [self.returnToCallViewController startAnimating];
 }
@@ -338,10 +343,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.returnToCallWindow.hidden) {
-        DDLogInfo(@"%@ hiding 'return to call' window.", self.logTag);
+    if (self.returnToCallWindow.hidden) {
+        return;
     }
 
+    DDLogInfo(@"%@ hiding 'return to call' window.", self.logTag);
     self.returnToCallWindow.hidden = YES;
     [self.returnToCallViewController stopAnimating];
 }
