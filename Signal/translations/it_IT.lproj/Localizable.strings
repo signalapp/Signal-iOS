@@ -95,7 +95,7 @@
 "ATTACHMENT" = "Allegato";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limite per messaggi raggiunto.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Limite del messaggio raggiunto.";
 
 /* Title for the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Allegato";
@@ -137,7 +137,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Impossibile rimuovere i metadati dall'immagine.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Could not resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Impossibile ridimensionare l'immagine.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "L'allegato è troppo grande.";
@@ -437,7 +437,7 @@
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Quartiere";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "Numero civico";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Casella postale";
 
 /* Label for the 'postcode' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "Codice postale";
@@ -449,13 +449,13 @@
 "CONTACT_FIELD_ADDRESS_STREET" = "Via";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Nome famiglia";
+"CONTACT_FIELD_FAMILY_NAME" = "Cognome";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Nome";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Secondo nome";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Prefisso";
@@ -497,7 +497,7 @@
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Manda email";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Contatto innominato";
+"CONTACT_WITHOUT_NAME" = "Contatto senza nome";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Impostazioni conversazione";
@@ -858,7 +858,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Codice di sicurezza cambiato. Tocca per verificare.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Utente non registrato: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Troppi fallimenti con questo contatto. Riprovare tra un po'.";
@@ -987,7 +987,7 @@
 "IN_CALL_CONNECTING" = "Connessione...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Riconnessone...";
+"IN_CALL_RECONNECTING" = "Riconnessione...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Squilla...";
