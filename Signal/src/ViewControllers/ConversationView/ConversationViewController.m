@@ -290,6 +290,10 @@ typedef enum : NSUInteger {
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowManagerCallDidChange:)
+                                                 name:OWSWindowManagerCallDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
                                                  name:kNSNotificationName_IdentityStateDidChange
                                                object:nil];
@@ -1225,6 +1229,11 @@ typedef enum : NSUInteger {
     self.navigationItem.leftBarButtonItem = backItem;
 }
 
+- (void)windowManagerCallDidChange:(NSNotification *)notification
+{
+    [self updateBarButtonItems];
+}
+
 - (void)updateBarButtonItems
 {
     if (self.userLeftGroup) {
@@ -1239,9 +1248,21 @@ typedef enum : NSUInteger {
         // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
         // The contents of the navigation bar are cramped in this view.
         UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_phone_white"];
+        UIImage *image = [[UIImage imageNamed:@"button_phone_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [callButton setImage:image forState:UIControlStateNormal];
+        
+        if (OWSWindowManager.sharedManager.hasCall) {
+            callButton.enabled = NO;
+            callButton.userInteractionEnabled = NO;
+            callButton.tintColor = UIColor.lightGrayColor;
+        } else {
+            callButton.enabled = YES;
+            callButton.userInteractionEnabled = YES;
+            callButton.tintColor = UIColor.whiteColor;
+        }
+
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        
         // We normally would want to use left and right insets that ensure the button
         // is square and the icon is centered.  However UINavigationBar doesn't offer us
         // control over the margins and spacing of its content, and the buttons end up
