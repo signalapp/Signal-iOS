@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *signalId;
 @property (nonatomic, readonly) NSString *contactName;
 @property (nonatomic, readonly) NSUInteger diameter;
-@property (nonatomic, readonly) BOOL ignoreContactAndProfile;
 
 @end
 
@@ -34,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
                          diameter:(NSUInteger)diameter
-          ignoreContactAndProfile:(BOOL)ignoreContactAndProfile
                   contactsManager:(OWSContactsManager *)contactsManager
 {
     self = [super init];
@@ -45,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
     _signalId = contactId;
     _contactName = name;
     _diameter = diameter;
-    _ignoreContactAndProfile = ignoreContactAndProfile;
     _contactsManager = contactsManager;
 
     return self;
@@ -63,33 +60,21 @@ NS_ASSUME_NONNULL_BEGIN
     if (name.length == 0) {
         name = signalId;
     }
-    return [self initWithContactId:signalId
-                              name:name
-                          diameter:diameter
-           ignoreContactAndProfile:NO
-                   contactsManager:contactsManager];
+    return [self initWithContactId:signalId name:name diameter:diameter contactsManager:contactsManager];
 }
 
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
-              ignoreContactAndProfile:(BOOL)ignoreContactAndProfile
                       contactsManager:(OWSContactsManager *)contactsManager
 {
-    return [self initWithContactId:colorSeed
-                              name:nonSignalName
-                          diameter:diameter
-           ignoreContactAndProfile:ignoreContactAndProfile
-                   contactsManager:contactsManager];
+    return [self initWithContactId:colorSeed name:nonSignalName diameter:diameter contactsManager:contactsManager];
 }
 
 #pragma mark - Instance methods
 
 - (nullable UIImage *)buildSavedImage
 {
-    if (self.ignoreContactAndProfile) {
-        return nil;
-    }
     return [self.contactsManager imageForPhoneIdentifier:self.signalId];
 }
 

@@ -24,8 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
-              ignoreContactAndProfile:(BOOL)ignoreContactAndProfile
                       contactsManager:(OWSContactsManager *)contactsManager;
+
 
 @end
 

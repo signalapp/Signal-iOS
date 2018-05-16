@@ -90,7 +90,6 @@ class ContactCell: UITableViewCell {
             let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: ContactCell.kAvatarDiameter,
-                                                        ignoreContactAndProfile: false,
                                                         contactsManager: contactsManager)
 
             contactImageView.image = avatarBuilder.buildDefaultImage()

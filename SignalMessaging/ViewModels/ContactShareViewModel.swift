@@ -42,7 +42,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager, ignoreContactAndProfile: Bool = false) -> UIImage {
+    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
         if let avatarImage = avatarImage {
             return avatarImage
         }
@@ -59,9 +59,14 @@ public class ContactShareViewModel: NSObject {
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
-                                                    ignoreContactAndProfile: ignoreContactAndProfile,
                                                     contactsManager: contactsManager)
-        return avatarBuilder.build()
+        // Note: we use buildDefaultImage() and not build() so that contact
+        // share views always reflect the contents of the contact share.
+        // build() might return an avatar from a corresponding system
+        // contact or profile.  This could mislead the user into thinking
+        // that an avatar they did not share was in fact included in the
+        // contact share.
+        return avatarBuilder.buildDefaultImage()
     }
 
     // MARK: Delegated -> dbRecord

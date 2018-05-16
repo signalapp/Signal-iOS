@@ -188,9 +188,8 @@ NS_ASSUME_NONNULL_BEGIN
     [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
 
     AvatarImageView *avatarView = [AvatarImageView new];
-    avatarView.image = [self.contactShare getAvatarImageWithDiameter:self.iconSize
-                                                     contactsManager:self.contactsManager
-                                             ignoreContactAndProfile:YES];
+    avatarView.image =
+        [self.contactShare getAvatarImageWithDiameter:self.iconSize contactsManager:self.contactsManager];
 
     [avatarView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
