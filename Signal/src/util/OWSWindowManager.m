@@ -10,6 +10,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const CGFloat OWSWindowManagerCallScreenHeight = 40;
+
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
@@ -50,14 +52,14 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 #pragma mark -
 
-@interface OWSWindowManager ()
+@interface OWSWindowManager () <ReturnToCallViewControllerDelegate>
 
 // UIWindowLevelNormal
 @property (nonatomic) UIWindow *rootWindow;
 
 // UIWindowLevel_ReturnToCall
 @property (nonatomic) UIWindow *returnToCallWindow;
-@property (nonatomic) UILabel *returnToCallLabel;
+@property (nonatomic) ReturnToCallViewController *returnToCallViewController;
 
 // UIWindowLevel_CallView
 @property (nonatomic) UIWindow *callViewWindow;
@@ -117,8 +119,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
 
-    [self updateReturnToCallWindowLayout];
-
     [self ensureWindowState];
 }
 
@@ -128,78 +128,20 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(rootWindow);
 
     // "Return to call" should remain at the top of the screen.
-    CGRect windowFrame = rootWindow.bounds;
-    // Use zero height until updateReturnToCallWindowLayout.
-    windowFrame.size.height = 0;
+    CGRect windowFrame = UIScreen.mainScreen.bounds;
+    windowFrame.size.height = OWSWindowManagerCallScreenHeight;
     UIWindow *window = [[UIWindow alloc] initWithFrame:windowFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
     window.opaque = YES;
-    // This is the color of the iOS "return to call" banner.
-    // TODO: What's the right color to use here?
-    UIColor *backgroundColor = [UIColor colorWithRGBHex:0x4cd964];
-    window.backgroundColor = backgroundColor;
 
-    UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = backgroundColor;
-
-    UIView *rootView = viewController.view;
-    rootView.userInteractionEnabled = YES;
-    [rootView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                           action:@selector(returnToCallWasTapped:)]];
-    rootView.layoutMargins = UIEdgeInsetsZero;
-
-    UILabel *label = [UILabel new];
-    label.text = NSLocalizedString(@"CALL_WINDOW_RETURN_TO_CALL", @"Label for the 'return to call' banner.");
-    label.textColor = [UIColor whiteColor];
-    // System UI doesn't use dynamic type; neither do we.
-    label.font = [UIFont ows_regularFontWithSize:14.f];
-    [rootView addSubview:label];
-
-    [label autoPinBottomToSuperviewMargin];
-    [label setCompressionResistanceHigh];
-    [label setContentHuggingHigh];
-    [label autoHCenterInSuperview];
-
-    // TODO animate...
-
-    // returnToCallLabel uses manual layout.
-    //
-    // TODO: Is there a better way to do this?
-    label.translatesAutoresizingMaskIntoConstraints = NO;
-    self.returnToCallLabel = label;
+    ReturnToCallViewController *viewController = [ReturnToCallViewController new];
+    self.returnToCallViewController = viewController;
+    viewController.delegate = self;
 
     window.rootViewController = viewController;
 
     return window;
-}
-
-- (void)updateReturnToCallWindowLayout
-{
-    OWSAssertIsOnMainThread();
-
-    CGRect statusBarFrame = UIApplication.sharedApplication.statusBarFrame;
-    CGFloat statusBarHeight = statusBarFrame.size.height;
-
-    CGRect windowFrame = self.rootWindow.bounds;
-    windowFrame.size.height = statusBarHeight + 20.f;
-    self.returnToCallWindow.frame = windowFrame;
-    self.returnToCallWindow.rootViewController.view.frame = windowFrame;
-
-    [self.returnToCallLabel sizeToFit];
-    CGRect labelFrame = self.returnToCallLabel.frame;
-    labelFrame.origin.x = floor(windowFrame.size.width - labelFrame.size.width);
-    self.returnToCallLabel.frame = labelFrame;
-
-    UIView *rootView = self.returnToCallWindow.rootViewController.view;
-
-    [rootView setNeedsLayout];
-    [rootView layoutIfNeeded];
-
-    for (UIView *subview in rootView.subviews) {
-        [subview setNeedsLayout];
-        [subview layoutIfNeeded];
-    }
 }
 
 - (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
@@ -251,8 +193,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [self.callNavigationController pushViewController:callViewController animated:NO];
     self.isCallViewActive = YES;
 
-    [self updateReturnToCallWindowLayout];
-
     [self ensureWindowState];
 }
 
@@ -286,7 +226,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     [self ensureWindowState];
 }
 
-- (void)returnToCallView
+- (void)showCallView
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.callViewController);
@@ -358,18 +298,12 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         DDLogInfo(@"%@ showing root window.", self.logTag);
     }
 
-    static CGRect defaultFrame;
-    static CGRect frameWithActiveCall;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        defaultFrame = self.rootWindow.frame;
-
-        CGFloat callBannerHeight = self.returnToCallWindow.frame.size.height;
-        frameWithActiveCall
-            = CGRectMake(0, callBannerHeight, defaultFrame.size.width, defaultFrame.size.height - callBannerHeight);
-    });
-
+    CGRect defaultFrame = [UIScreen mainScreen].bounds;
     if (isActiveCall) {
+        CGRect frameWithActiveCall = CGRectMake(0,
+            OWSWindowManagerCallScreenHeight,
+            defaultFrame.size.width,
+            defaultFrame.size.height - OWSWindowManagerCallScreenHeight);
         self.rootWindow.frame = frameWithActiveCall;
     } else {
         self.rootWindow.frame = defaultFrame;
@@ -396,26 +330,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
 
-    if (self.returnToCallWindow.hidden) {
-        DDLogInfo(@"%@ showing 'return to call' window.", self.logTag);
-
-        [self.returnToCallLabel.layer removeAllAnimations];
-        self.returnToCallLabel.alpha = 1.f;
-        [UIView animateWithDuration:1.f
-            delay:0.f
-            options:(UIViewAnimationOptionRepeat | UIViewAnimationOptionAutoreverse
-                        | UIViewAnimationOptionBeginFromCurrentState)
-            animations:^{
-                self.returnToCallLabel.alpha = 0.f;
-            }
-            completion:^(BOOL finished) {
-                self.returnToCallLabel.alpha = 1.f;
-            }];
-    }
-
     self.returnToCallWindow.hidden = NO;
-
-    [self updateReturnToCallWindowLayout];
+    [self.returnToCallViewController startAnimating];
 }
 
 - (void)ensureReturnToCallWindowHidden
@@ -427,7 +343,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     self.returnToCallWindow.hidden = YES;
-    [self.returnToCallLabel.layer removeAllAnimations];
+    [self.returnToCallViewController stopAnimating];
 }
 
 - (void)ensureCallViewWindowShown
@@ -478,15 +394,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     self.screenBlockingWindow.windowLevel = UIWindowLevel_Background;
 }
 
-#pragma mark - Events
+#pragma mark - ReturnToCallViewControllerDelegate
 
-- (void)returnToCallWasTapped:(UIGestureRecognizer *)sender
+- (void)returnToCallWasTapped:(ReturnToCallViewController *)viewController
 {
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-
-    [self returnToCallView];
+    [self showCallView];
 }
 
 @end
