@@ -71,7 +71,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 @property (nonatomic) BOOL isScreenBlockActive;
 
-@property (nonatomic) BOOL isCallViewActive;
+@property (nonatomic) BOOL shouldShowCallView;
 
 @property (nonatomic, nullable) UIViewController *callViewController;
 
@@ -191,7 +191,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // Attach callViewController to window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
-    self.isCallViewActive = YES;
+    self.shouldShowCallView = YES;
 
     [self ensureWindowState];
 }
@@ -210,7 +210,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // Dettach callViewController from window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
-    self.isCallViewActive = NO;
+    self.shouldShowCallView = NO;
 
     [self ensureWindowState];
 }
@@ -219,9 +219,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.callViewController);
-    OWSAssert(self.isCallViewActive);
+    OWSAssert(self.shouldShowCallView);
 
-    self.isCallViewActive = NO;
+    self.shouldShowCallView = NO;
 
     [self ensureWindowState];
 }
@@ -230,9 +230,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
     OWSAssert(self.callViewController);
-    OWSAssert(!self.isCallViewActive);
+    OWSAssert(!self.shouldShowCallView);
 
-    self.isCallViewActive = YES;
+    self.shouldShowCallView = YES;
 
     [self ensureWindowState];
 }
@@ -266,7 +266,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowShown];
-    } else if (self.callViewController && self.isCallViewActive) {
+    } else if (self.callViewController && self.shouldShowCallView) {
         // Show Call View.
 
         [self ensureRootWindowHidden];
