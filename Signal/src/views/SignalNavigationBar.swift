@@ -53,6 +53,30 @@ class SignalNavigationBar: UINavigationBar {
         return result
     }
 
+    // seems unused.
+//    override var intrinsicContentSize: CGSize {
+//        return CGSize(width: UIScreen.main.bounds.width, height: navbarHeight)
+//        return CGSize(width: UIScreen.main.bounds.width, height: 20)
+//    }
+
+//    override var bounds: CGRect {
+//        get {
+//            return super.bounds
+//        }
+//        set {
+//            super.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: ios11NavbarHeight)
+//        }
+//    }
+//
+//    override var frame: CGRect {
+//        get {
+//            return super.frame
+//        }
+//        set {
+//            super.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: ios11NavbarHeight)
+//        }
+//    }
+
     override func layoutSubviews() {
         Logger.debug("\(self.logTag) in \(#function)")
 
