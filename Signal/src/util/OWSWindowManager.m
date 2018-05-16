@@ -13,19 +13,25 @@ NS_ASSUME_NONNULL_BEGIN
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
-// In front of the root window _and_ status bar
+// MJK FIXME: this *looks* right, but then we can't receive taps that
+// touch the status bar. We could: obscure status bar, but that looks wrong.
+// have *another* transparent window?
+//
+// In front of the root window, behind the status bar
 // but behind the screen blocking window.
 const UIWindowLevel UIWindowLevel_ReturnToCall(void);
 const UIWindowLevel UIWindowLevel_ReturnToCall(void)
 {
-    return UIWindowLevelStatusBar + 1.f;
+    return UIWindowLevelStatusBar - 1.f;
 }
+
 // In front of the root window, behind the screen blocking window.
 const UIWindowLevel UIWindowLevel_CallView(void);
 const UIWindowLevel UIWindowLevel_CallView(void)
 {
     return UIWindowLevelNormal + 1.f;
 }
+
 // In front of everything, including the status bar.
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void);
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
