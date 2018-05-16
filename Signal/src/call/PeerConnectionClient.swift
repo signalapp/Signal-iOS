@@ -89,13 +89,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private static let signalingQueue = DispatchQueue(label: "CallServiceSignalingQueue")
 
     // Delegate is notified of key events in the call lifecycle.
-    private weak var delegate: PeerConnectionClientDelegate!
-
-    func setDelegate(delegate: PeerConnectionClientDelegate?) {
-        PeerConnectionClient.signalingQueue.async {
-            self.delegate = delegate
-        }
-    }
+    //
+    // This property should only be accessed on the main thread.
+    private weak var delegate: PeerConnectionClientDelegate?
 
     // Connection
 
@@ -271,12 +267,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 videoCaptureSession.stopRunning()
             }
 
-            if let delegate = self.delegate {
-                DispatchQueue.main.async { [weak self, weak localVideoTrack] in
-                    guard let strongSelf = self else { return }
-                    guard let strongLocalVideoTrack = localVideoTrack else { return }
-                    delegate.peerConnectionClient(strongSelf, didUpdateLocal: enabled ? strongLocalVideoTrack : nil)
-                }
+            DispatchQueue.main.async { [weak self, weak localVideoTrack] in
+                guard let strongSelf = self else { return }
+                guard let strongLocalVideoTrack = localVideoTrack else { return }
+                guard let strongDelegate = strongSelf.delegate else { return }
+                strongDelegate.peerConnectionClient(strongSelf, didUpdateLocal: enabled ? strongLocalVideoTrack : nil)
             }
         }
     }
@@ -496,6 +491,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         SwiftAssertIsOnMainThread(#function)
         Logger.debug("\(TAG) in \(#function)")
 
+        // Clear the delegate immediately so that we can guarantee that
+        // no delegate methods are called after terminate() returns.
+        delegate = nil
+
         PeerConnectionClient.signalingQueue.async {
             assert(self.peerConnection != nil)
             self.terminateInternal()
@@ -522,6 +521,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         // See the comments on the remoteVideoTrack property.
         objc_sync_enter(self)
+
         localVideoTrack?.isEnabled = false
         remoteVideoTrack?.isEnabled = false
 
@@ -536,9 +536,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         peerConnection.delegate = nil
         peerConnection.close()
         peerConnection = nil
-        objc_sync_exit(self)
 
-        delegate = nil
+        objc_sync_exit(self)
     }
 
     // MARK: - Data Channel
@@ -608,11 +607,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
 
-            if let delegate = self.delegate {
-                DispatchQueue.main.async { [weak self] in
-                    guard let strongSelf = self else { return }
-                    delegate.peerConnectionClient(strongSelf, received: dataChannelMessage)
-                }
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                guard let strongDelegate = strongSelf.delegate else { return }
+                strongDelegate.peerConnectionClient(strongSelf, received: dataChannelMessage)
             }
         }
     }
@@ -652,22 +650,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
 
-            if let delegate = self.delegate {
-                DispatchQueue.main.async { [weak self] in
-                    guard let strongSelf = self else { return }
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                guard let strongDelegate = strongSelf.delegate else { return }
 
-                    // See the comments on the remoteVideoTrack property.
-                    //
-                    // We only access the remoteVideoTrack property if peerConnection is non-nil.
-                    var remoteVideoTrack: RTCVideoTrack?
-                    objc_sync_enter(strongSelf)
-                    if strongSelf.peerConnection != nil {
-                        remoteVideoTrack = strongSelf.remoteVideoTrack
-                    }
-                    objc_sync_exit(strongSelf)
-
-                    delegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
+                // See the comments on the remoteVideoTrack property.
+                //
+                // We only access the remoteVideoTrack property if peerConnection is non-nil.
+                var remoteVideoTrack: RTCVideoTrack?
+                objc_sync_enter(strongSelf)
+                if strongSelf.peerConnection != nil {
+                    remoteVideoTrack = strongSelf.remoteVideoTrack
                 }
+                objc_sync_exit(strongSelf)
+
+                strongDelegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
             }
         }
     }
@@ -692,27 +689,24 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             Logger.info("\(self.TAG) didChange IceConnectionState:\(newState.debugDescription)")
             switch newState {
             case .connected, .completed:
-                if let delegate = self.delegate {
-                    DispatchQueue.main.async { [weak self] in
-                        guard let strongSelf = self else { return }
-                        delegate.peerConnectionClientIceConnected(strongSelf)
-                    }
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    guard let strongDelegate = strongSelf.delegate else { return }
+                    strongDelegate.peerConnectionClientIceConnected(strongSelf)
                 }
             case .failed:
                 Logger.warn("\(self.TAG) RTCIceConnection failed.")
-                if let delegate = self.delegate {
-                    DispatchQueue.main.async { [weak self] in
-                        guard let strongSelf = self else { return }
-                        delegate.peerConnectionClientIceFailed(strongSelf)
-                    }
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    guard let strongDelegate = strongSelf.delegate else { return }
+                    strongDelegate.peerConnectionClientIceFailed(strongSelf)
                 }
             case .disconnected:
                 Logger.warn("\(self.TAG) RTCIceConnection disconnected.")
-                if let delegate = self.delegate {
-                    DispatchQueue.main.async { [weak self] in
-                        guard let strongSelf = self else { return }
-                        delegate.peerConnectionClientIceDisconnected(strongSelf)
-                    }
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    guard let strongDelegate = strongSelf.delegate else { return }
+                    strongDelegate.peerConnectionClientIceDisconnected(strongSelf)
                 }
             default:
                 Logger.debug("\(self.TAG) ignoring change IceConnectionState:\(newState.debugDescription)")
@@ -733,11 +727,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             Logger.info("\(self.TAG) adding local ICE candidate:\(candidate.sdp)")
-            if let delegate = self.delegate {
-                DispatchQueue.main.async { [weak self] in
-                    guard let strongSelf = self else { return }
-                    delegate.peerConnectionClient(strongSelf, addedLocalIceCandidate: candidate)
-                }
+            DispatchQueue.main.async { [weak self] in
+                guard let strongSelf = self else { return }
+                guard let strongDelegate = strongSelf.delegate else { return }
+                strongDelegate.peerConnectionClient(strongSelf, addedLocalIceCandidate: candidate)
             }
         }
     }
