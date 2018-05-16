@@ -10,7 +10,23 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat OWSWindowManagerCallScreenHeight = 40;
+NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
+// NSString *const OWSWindowManagerWillShowReturnToCallWindowNotification =
+// @"OWSWindowManagerWillShowReturnToCallWindowNotification";  NSString *const
+// OWSWindowManagerWillHideReturnToCallWindowNotification = @"OWSWindowManagerWillHideReturnToCallWindowNotification";
+
+
+const CGFloat OWSWindowManagerCallScreenHeight(void);
+const CGFloat OWSWindowManagerCallScreenHeight(void)
+{
+    if ([UIDevice currentDevice].isIPhoneX) {
+        // TODO - rather than a bigger banner, we should stick with iPhoneX
+        // design changes, which only apply a green circle around the clock UI.
+        return 60;
+    } else {
+        return 40;
+    }
+}
 
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
@@ -129,7 +145,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     // "Return to call" should remain at the top of the screen.
     CGRect windowFrame = UIScreen.mainScreen.bounds;
-    windowFrame.size.height = OWSWindowManagerCallScreenHeight;
+    windowFrame.size.height = OWSWindowManagerCallScreenHeight();
     UIWindow *window = [[UIWindow alloc] initWithFrame:windowFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();
@@ -188,6 +204,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(!self.callViewController);
 
     self.callViewController = callViewController;
+    // TODO move to setter?
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
+
     // Attach callViewController to window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     [self.callNavigationController pushViewController:callViewController animated:NO];
@@ -210,6 +229,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // Dettach callViewController from window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
+
     self.shouldShowCallView = NO;
 
     [self ensureWindowState];
@@ -301,9 +322,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     CGRect defaultFrame = [UIScreen mainScreen].bounds;
     if (isActiveCall) {
         CGRect frameWithActiveCall = CGRectMake(0,
-            OWSWindowManagerCallScreenHeight,
+            OWSWindowManagerCallScreenHeight(),
             defaultFrame.size.width,
-            defaultFrame.size.height - OWSWindowManagerCallScreenHeight);
+            defaultFrame.size.height - OWSWindowManagerCallScreenHeight());
         self.rootWindow.frame = frameWithActiveCall;
     } else {
         self.rootWindow.frame = defaultFrame;

@@ -43,6 +43,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var contactAvatarContainerView: UIView!
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
+    var leaveCallViewButton: UIButton!
 
     // MARK: - Ongoing Call Controls
 
@@ -254,6 +255,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createContactViews() {
+
+        leaveCallViewButton = UIButton()
+        let backButtonImage = self.view.isRTL() ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+        leaveCallViewButton.setImage(backButtonImage, for: .normal)
+        leaveCallViewButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        leaveCallViewButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
+        self.view.addSubview(leaveCallViewButton)
+
         contactNameLabel = MarqueeLabel()
 
         // marquee config
@@ -500,7 +509,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         remoteVideoView.autoPinEdgesToSuperviewEdges()
 
-        contactNameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .left)
+        leaveCallViewButton.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+
+        contactNameLabel.autoPinEdge(.top, to: .bottom, of: leaveCallViewButton, withOffset: 8)
         contactNameLabel.autoPinLeadingToSuperviewMargin()
         contactNameLabel.setContentHuggingVerticalHigh()
         contactNameLabel.setCompressionResistanceHigh()
@@ -814,8 +826,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
 
-        self.didTapLeaveCall()
-
         callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
     }
 
@@ -918,8 +928,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
-//    func didTapLeaveCall(sender: UIGestureRecognizer) {
-    func didTapLeaveCall() {
+    func didTapLeaveCall(sender: UIButton) {
         OWSWindowManager.shared().leaveCallView()
     }
 
