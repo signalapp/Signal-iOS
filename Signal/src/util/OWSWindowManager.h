@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+extern NSString *const OWSWindowManagerCallDidChangeNotification;
+
 extern const UIWindowLevel UIWindowLevel_Background;
 
 @interface OWSWindowManager : NSObject

@@ -489,7 +489,6 @@
 		FC5CDF3A1A3393DD00B47253 /* warning_white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC5CDF381A3393DD00B47253 /* warning_white@2x.png */; };
 		FC9120411A39EFB70074545C /* qr@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FC91203F1A39EFB70074545C /* qr@2x.png */; };
 		FCB11D8C1A129A76002F93FB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FCB11D8B1A129A76002F93FB /* CoreMedia.framework */; };
-		FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1190,8 +1189,6 @@
 		FC5CDF381A3393DD00B47253 /* warning_white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "warning_white@2x.png"; sourceTree = "<group>"; };
 		FC91203F1A39EFB70074545C /* qr@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qr@2x.png"; sourceTree = "<group>"; };
 		FCB11D8B1A129A76002F93FB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+TSHardwareVersion.h"; sourceTree = "<group>"; };
-		FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+TSHardwareVersion.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2122,8 +2119,6 @@
 				450DF2041E0D74AC003D14BE /* Platform.swift */,
 				4521C3BF1F59F3BA00B4C582 /* TextFieldHelper.swift */,
 				FCFA64B11A24F29E0007FB87 /* UI Categories */,
-				FCC81A961A44558300DFEC7D /* UIDevice+TSHardwareVersion.h */,
-				FCC81A971A44558300DFEC7D /* UIDevice+TSHardwareVersion.m */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -3314,7 +3309,6 @@
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
-				FCC81A981A44558300DFEC7D /* UIDevice+TSHardwareVersion.m in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,

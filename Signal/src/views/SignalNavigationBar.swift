@@ -7,60 +7,74 @@ import UIKit
 
 @objc
 class SignalNavigationBar: UINavigationBar {
-//    var isCallActive: Bool = false {
-//        didSet {
-//            guard oldValue != isCallActive else {
-//                return
-//            }
-//            
-//            if isCallActive {
-//                self.addSubview(callBanner)
-////                callBanner.autoPinEdge(toSuperviewEdge: .top)
-//                callBanner.autoPinEdge(toSuperviewEdge: .leading)
-//                callBanner.autoPinEdge(toSuperviewEdge: .trailing)
-//            } else {
-//                callBanner.removeFromSuperview()
-//            }
-//        }
-//    }
-//    
-//    let callBanner: UIView
-//    let callLabel: UILabel
-//    let callBannerHeight: CGFloat = 40
-//
-//    override init(frame: CGRect) {
-//        callBanner = UIView()
-//        callBanner.backgroundColor = .green
-//        callBanner.autoSetDimension(.height, toSize: callBannerHeight)
-//        
-//        callLabel = UILabel()
-//        callLabel.text = "Return to your call..."
-//        callLabel.textColor = .white
-//        
-//        callBanner.addSubview(callLabel)
-//        callLabel.autoPinBottomToSuperviewMargin()
-//        callLabel.autoHCenterInSuperview()
-//        callLabel.setCompressionResistanceHigh()
-//        callLabel.setContentHuggingHigh()
-//        
-//        super.init(frame: frame)
-//        
-//        let debugTap = UITapGestureRecognizer(target: self, action: #selector(didTap))
-//        self.addGestureRecognizer(debugTap)
-//    }
-//    
-//    @objc
-//    func didTap(sender: UITapGestureRecognizer) {
-//        Logger.debug("\(self.logTag) in \(#function)")
-//        self.isCallActive = !self.isCallActive
-//    }
-//
-//    
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        if OWSWindowManager.shared().hasCall() {
-            return CGSize(width: UIScreen.main.bounds.width, height: 30)
+
+    // TODO - get a more precise value
+    // TODO - test with other heights, e.g. w/ hotspot, w/ call in other app
+    let navbarHeight: CGFloat = 44
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        // TODO better place to observe?
+        NotificationCenter.default.addObserver(forName: .OWSWindowManagerCallDidChange, object: nil, queue: nil) { _ in
+            Logger.debug("\(self.logTag) in \(#function) OWSWindowManagerCallDidChange")
+
+            self.callDidChange()
+        }
+    }
+
+    private func callDidChange() {
+        if #available(iOS 11, *) {
+            self.layoutSubviews()
         } else {
-            return super.sizeThatFits(size)
+            self.sizeToFit()
+        }
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
+        // pre iOS11, sizeThatFits is repeatedly called to size the navbar, which is pretty straight forward
+        // as of iOS11, this is not true and we have to do things in layoutSubviews.
+        // FIXME: pre-iOS11, though the size is right, there's a glitch on the titleView while push/popping items.
+        let result: CGSize = {
+            if OWSWindowManager.shared().hasCall() {
+                // status bar height gets re-added
+                return CGSize(width: UIScreen.main.bounds.width, height: navbarHeight - UIApplication.shared.statusBarFrame.size.height)
+            } else {
+                return super.sizeThatFits(size)
+            }
+        }()
+
+        Logger.debug("\(self.logTag) in \(#function): \(result)")
+
+        return result
+    }
+
+    override func layoutSubviews() {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        guard #available(iOS 11.0, *), OWSWindowManager.shared().hasCall() else {
+            super.layoutSubviews()
+            return
+        }
+
+//        let rect = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: self.navbarHeightWithoutStatusBar)
+//        self.frame = CGRect(x: 0, y: 20, width: UI Screen.main.bounds.width, height: ios11NavbarHeight)
+        self.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarHeight)
+        self.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarHeight)
+
+        super.layoutSubviews()
+
+        for subview in self.subviews {
+            let stringFromClass = NSStringFromClass(subview.classForCoder)
+            if stringFromClass.contains("BarBackground") {
+                subview.frame = self.bounds
+            } else if stringFromClass.contains("BarContentView") {
+                subview.frame = self.bounds
+            }
         }
     }
 }
