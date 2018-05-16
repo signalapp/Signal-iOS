@@ -90,6 +90,7 @@ class ContactCell: UITableViewCell {
             let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: ContactCell.kAvatarDiameter,
+                                                        ignoreContactAndProfile: false,
                                                         contactsManager: contactsManager)
 
             contactImageView.image = avatarBuilder.buildDefaultImage()
@@ -135,7 +136,7 @@ fileprivate extension CNContact {
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
-            highlightedName.enumerateAttributes(in: NSMakeRange(0, highlightedName.length), options: [], using: { (attrs, range, _) in
+            highlightedName.enumerateAttributes(in: NSRange(location: 0, length: highlightedName.length), options: [], using: { (attrs, range, _) in
                 if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }

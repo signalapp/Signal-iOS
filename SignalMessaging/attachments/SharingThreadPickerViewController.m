@@ -24,7 +24,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 @interface SharingThreadPickerViewController () <SelectThreadViewControllerDelegate,
     AttachmentApprovalViewControllerDelegate,
     MessageApprovalViewControllerDelegate,
-    ApproveContactShareViewControllerDelegate>
+    ContactShareApprovalViewControllerDelegate>
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
@@ -175,10 +175,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord
                                                       avatarImageData:avatarImageData];
 
-        ApproveContactShareViewController *approvalVC =
-            [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
-                                                            contactsManager:self.contactsManager
-                                                                   delegate:self];
+        ContactShareApprovalViewController *approvalVC =
+            [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
+                                                             contactsManager:self.contactsManager
+                                                                    delegate:self];
         [self.navigationController pushViewController:approvalVC animated:YES];
         return;
     }
@@ -289,9 +289,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [self cancelShareExperience];
 }
 
-#pragma mark - ApproveContactShareViewControllerDelegate
+#pragma mark - ContactShareApprovalViewControllerDelegate
 
-- (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
+- (void)approveContactShare:(ContactShareApprovalViewController *)approvalViewController
      didApproveContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
@@ -321,7 +321,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                  fromViewController:approvalViewController];
 }
 
-- (void)approveContactShare:(ApproveContactShareViewController *)approvalViewController
+- (void)approveContactShare:(ContactShareApprovalViewController *)approvalViewController
       didCancelContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);

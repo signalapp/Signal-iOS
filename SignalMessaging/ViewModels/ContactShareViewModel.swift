@@ -42,7 +42,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
-    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager) -> UIImage {
+    public func getAvatarImage(diameter: CGFloat, contactsManager: OWSContactsManager, ignoreContactAndProfile: Bool = false) -> UIImage {
         if let avatarImage = avatarImage {
             return avatarImage
         }
@@ -59,6 +59,7 @@ public class ContactShareViewModel: NSObject {
         let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
+                                                    ignoreContactAndProfile: ignoreContactAndProfile,
                                                     contactsManager: contactsManager)
         return avatarBuilder.build()
     }
