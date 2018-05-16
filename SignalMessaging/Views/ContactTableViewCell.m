@@ -78,17 +78,14 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
     _nameLabel = [UILabel new];
     _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    _nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     [_nameContainerView addSubview:_nameLabel];
 
     _profileNameLabel = [UILabel new];
     _profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    _profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     _profileNameLabel.textColor = [UIColor grayColor];
     [_nameContainerView addSubview:_profileNameLabel];
 
     _subtitle = [UILabel new];
-    _subtitle.font = [UIFont ows_regularFontWithSize:11.f];
     _subtitle.textColor = [UIColor ows_darkGrayColor];
     [_nameContainerView addSubview:self.subtitle];
 
@@ -113,8 +110,17 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     [_nameContainerView autoPinLeadingToTrailingEdgeOfView:_avatarView offset:kContactTableViewCellAvatarTextMargin];
     [_nameContainerView autoPinTrailingToSuperviewMargin];
 
+    [self configureFonts];
+
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];
+}
+
+- (void)configureFonts
+{
+    self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
+    self.subtitle.font = [UIFont ows_regularFontWithSize:11.f];
 }
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
@@ -124,6 +130,12 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
 {
+    OWSAssert(recipientId.length > 0);
+    OWSAssert(contactsManager);
+
+    // Update fonts to reflect changes to dynamic type.
+    [self configureFonts];
+
     self.recipientId = recipientId;
     self.contactsManager = contactsManager;
 
@@ -155,6 +167,10 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(thread);
+
+    // Update fonts to reflect changes to dynamic type.
+    [self configureFonts];
+
     self.contactsManager = contactsManager;
 
     NSString *threadName = thread.name;

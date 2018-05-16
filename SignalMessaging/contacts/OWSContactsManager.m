@@ -757,6 +757,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return image;
 }
 
+- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right
+{
+    return self.signalAccountComparator(left, right);
+}
+
 - (NSComparisonResult (^)(SignalAccount *left, SignalAccount *right))signalAccountComparator
 {
     return ^NSComparisonResult(SignalAccount *left, SignalAccount *right) {
