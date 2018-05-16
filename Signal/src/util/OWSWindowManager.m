@@ -275,6 +275,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(self.callViewWindow);
     OWSAssert(self.screenBlockingWindow);
 
+    // MJK remove
+    self.rootWindow.backgroundColor = UIColor.yellowColor;
+
     // To avoid bad frames, we never want to hide the blocking window, so we manipulate
     // its window level to "hide" it behind other windows.  The other windows have fixed
     // window level and are shown/hidden as necessary.
