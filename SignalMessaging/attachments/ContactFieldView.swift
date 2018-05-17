@@ -60,7 +60,7 @@ public class ContactFieldView: UIView {
 
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
     }
-    
+
     public class func contactFieldView(forAvatarImage avatarImage: UIImage, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
         var stackView: UIStackView
         if let actionBlock = actionBlock {
@@ -73,7 +73,7 @@ public class ContactFieldView: UIView {
         stackView.spacing = 3
         stackView.layoutMargins = layoutMargins
         stackView.isLayoutMarginsRelativeArrangement = true
-        
+
         let avatarView = AvatarImageView()
         avatarView.image = avatarImage
         let avatarSize = CGFloat(50)
@@ -82,10 +82,10 @@ public class ContactFieldView: UIView {
         avatarView.setCompressionResistanceHigh()
         avatarView.setContentHuggingHigh()
         stackView.addArrangedSubview(avatarView)
-        
+
         return stackView
     }
-        
+
     public class func contactFieldView(forOrganizationName organizationName: String, layoutMargins: UIEdgeInsets) -> UIView {
         return simpleFieldView(name: NSLocalizedString("CONTACT_FIELD_ORGANIZATION",
                                                        comment: "Label for the 'organization' field of a contact."),
@@ -116,7 +116,7 @@ public class ContactFieldView: UIView {
         stackView.isLayoutMarginsRelativeArrangement = true
 
         let nameLabel = UILabel()
-        nameLabel.text = name
+        nameLabel.text = name.lowercased()
         nameLabel.font = UIFont.ows_dynamicTypeSubheadline
         nameLabel.textColor = UIColor.black
         nameLabel.lineBreakMode = .byTruncatingTail
