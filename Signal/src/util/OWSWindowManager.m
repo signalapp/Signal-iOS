@@ -323,15 +323,15 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     CGRect defaultFrame = [UIScreen mainScreen].bounds;
-    if (isActiveCall) {
-        CGRect frameWithActiveCall = CGRectMake(0,
-            OWSWindowManagerCallScreenHeight(),
-            defaultFrame.size.width,
-            defaultFrame.size.height - OWSWindowManagerCallScreenHeight());
-        self.rootWindow.frame = frameWithActiveCall;
-    } else {
-        self.rootWindow.frame = defaultFrame;
-    }
+    //    if (isActiveCall) {
+    //        CGRect frameWithActiveCall = CGRectMake(0,
+    //            OWSWindowManagerCallScreenHeight(),
+    //            defaultFrame.size.width,
+    //            defaultFrame.size.height - OWSWindowManagerCallScreenHeight());
+    //        self.rootWindow.frame = frameWithActiveCall;
+    //    } else {
+    self.rootWindow.frame = defaultFrame;
+    //    }
 
     // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`

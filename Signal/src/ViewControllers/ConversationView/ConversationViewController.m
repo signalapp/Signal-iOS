@@ -528,7 +528,7 @@ typedef enum : NSUInteger {
     [super loadView];
 
     //    extendedLayoutIncludesOpaqueBars
-    self.extendedLayoutIncludesOpaqueBars = YES;
+    //    self.extendedLayoutIncludesOpaqueBars = YES;
     self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
