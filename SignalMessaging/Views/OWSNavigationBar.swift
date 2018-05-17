@@ -15,14 +15,10 @@ class OWSNavigationBar: UINavigationBar {
 
     weak var navBarLayoutDelegate: NavBarLayoutDelegate?
 
-    // TODO - get a more precise value
-    // TODO - test with other heights, e.g. w/ hotspot, w/ call in other app
     let navbarWithoutStatusHeight: CGFloat = 44
     let callBannerHeight: CGFloat = 40
 
-    // MJK safe to hardcode? Do we even need this approach anymore?
     var statusBarHeight: CGFloat {
-        // TODO? plumb through CurrentAppContext()
         return 20
     }
 
@@ -71,8 +67,6 @@ class OWSNavigationBar: UINavigationBar {
             return
         }
 
-//        let rect = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: self.navbarHeightWithoutStatusBar)
-//        self.frame = CGRect(x: 0, y: 20, width: UI Screen.main.bounds.width, height: ios11NavbarHeight)
         self.frame = CGRect(x: 0, y: callBannerHeight, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
         self.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
 
@@ -82,13 +76,15 @@ class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        // This is only necessary on iOS11, which has some private views within the navbar
+        // This is only necessary on iOS11, which has some private views within that lay outside of the navbar.
+        // They aren't actually visible behind the call status bar, but they looks strange during present/dismiss
+        // animations for modal VC's
         for subview in self.subviews {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
             if stringFromClass.contains("BarBackground") {
-                subview.frame = self.bounds//.offsetBy(dx: 0, dy: 20)
+                subview.frame = self.bounds
             } else if stringFromClass.contains("BarContentView") {
-                subview.frame = self.bounds//.offsetBy(dx: 0, dy: 20)
+                subview.frame = self.bounds
             }
         }
     }
