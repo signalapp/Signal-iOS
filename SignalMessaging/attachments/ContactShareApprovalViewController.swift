@@ -15,6 +15,8 @@ public protocol ContactShareApprovalViewControllerDelegate: class {
 
 protocol ContactShareField: class {
 
+    var isAvatar: Bool { get }
+
     func localizedLabel() -> String
 
     func isIncluded() -> Bool
@@ -31,6 +33,8 @@ class ContactShareFieldBase<ContactFieldType: OWSContactField>: NSObject, Contac
     let value: ContactFieldType
 
     private var isIncludedFlag = true
+
+    var isAvatar: Bool { return false }
 
     required init(_ value: ContactFieldType) {
         self.value = value
@@ -124,6 +128,8 @@ class OWSContactAvatar: NSObject, OWSContactField {
 }
 
 class ContactShareAvatarField: ContactShareFieldBase<OWSContactAvatar> {
+    override var isAvatar: Bool { return true }
+
     override func applyToContact(contact: ContactShareViewModel) {
         assert(isIncluded())
 
@@ -327,7 +333,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     func isAtLeastOneFieldSelected() -> Bool {
         for fieldView in fieldViews {
-            if fieldView.field.isIncluded() {
+            if fieldView.field.isIncluded(), !fieldView.field.isAvatar {
                 return true
             }
         }
