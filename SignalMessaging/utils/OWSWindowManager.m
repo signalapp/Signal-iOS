@@ -31,16 +31,15 @@ const CGFloat OWSWindowManagerCallScreenHeight(void)
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
-// MJK FIXME: this *looks* right, but then we can't receive taps that
-// touch the status bar. We could: obscure status bar, but that looks wrong.
-// have *another* transparent window?
-//
-// In front of the root window, behind the status bar
-// but behind the screen blocking window.
+// Putting the call banner above the status bar is not ideal.
+// It obscures status bar content like the system clock
+// But being behind the status bar introduces two worse problems that'd we'd need to address
+// 1. Tap target is too small, only the 20px below the status bar are tappable
+// 2. hot-spot connected banner obscure our return-to-call banner, so the user can't see that they're in a call.
 const UIWindowLevel UIWindowLevel_ReturnToCall(void);
 const UIWindowLevel UIWindowLevel_ReturnToCall(void)
 {
-    return UIWindowLevelStatusBar - 1.f;
+    return UIWindowLevelStatusBar + 1.f;
 }
 
 // In front of the root window, behind the screen blocking window.
