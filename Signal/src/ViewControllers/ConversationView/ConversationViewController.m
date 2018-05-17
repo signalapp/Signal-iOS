@@ -118,7 +118,7 @@ typedef enum : NSUInteger {
 #pragma mark -
 
 @interface ConversationViewController () <AttachmentApprovalViewControllerDelegate,
-    ApproveContactShareViewControllerDelegate,
+    ContactShareApprovalViewControllerDelegate,
     AVAudioPlayerDelegate,
     CNContactViewControllerDelegate,
     ContactEditingDelegate,
@@ -3005,7 +3005,7 @@ typedef enum : NSUInteger {
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         if (contactShare.avatarImage) {
             [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
         }
@@ -5030,10 +5030,10 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
         [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
 
     // TODO: We should probably show this in the same navigation view controller.
-    ApproveContactShareViewController *approveContactShare =
-        [[ApproveContactShareViewController alloc] initWithContactShare:contactShare
-                                                        contactsManager:self.contactsManager
-                                                               delegate:self];
+    ContactShareApprovalViewController *approveContactShare =
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
+                                                         contactsManager:self.contactsManager
+                                                                delegate:self];
     OWSAssert(contactsPicker.navigationController);
     [contactsPicker.navigationController pushViewController:approveContactShare animated:YES];
 }
@@ -5050,9 +5050,9 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     return YES;
 }
 
-#pragma mark - ApproveContactShareViewControllerDelegate
+#pragma mark - ContactShareApprovalViewControllerDelegate
 
-- (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
+- (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
      didApproveContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
@@ -5063,7 +5063,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
                              }];
 }
 
-- (void)approveContactShare:(ApproveContactShareViewController *)approveContactShare
+- (void)approveContactShare:(ContactShareApprovalViewController *)approveContactShare
       didCancelContactShare:(ContactShareViewModel *)contactShare
 {
     DDLogInfo(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);

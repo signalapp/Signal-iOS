@@ -60,7 +60,13 @@ public class ContactShareViewModel: NSObject {
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter),
                                                     contactsManager: contactsManager)
-        return avatarBuilder.build()
+        // Note: we use buildDefaultImage() and not build() so that contact
+        // share views always reflect the contents of the contact share.
+        // build() might return an avatar from a corresponding system
+        // contact or profile.  This could mislead the user into thinking
+        // that an avatar they did not share was in fact included in the
+        // contact share.
+        return avatarBuilder.buildDefaultImage()
     }
 
     // MARK: Delegated -> dbRecord

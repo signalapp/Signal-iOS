@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactAvatarBuilder.h"
@@ -10,6 +10,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
+
 // SHARINGEXTENSION FIXME
 // intern or reimplement this so that SignalMessaging doesn't depend on JSQ
 #import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>

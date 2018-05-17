@@ -6,10 +6,10 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public protocol ApproveContactShareViewControllerDelegate: class {
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+public protocol ContactShareApprovalViewControllerDelegate: class {
+    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didApproveContactShare contactShare: ContactShareViewModel)
-    func approveContactShare(_ approveContactShare: ApproveContactShareViewController,
+    func approveContactShare(_ approveContactShare: ContactShareApprovalViewController,
                              didCancelContactShare contactShare: ContactShareViewModel)
 }
 
@@ -214,9 +214,9 @@ class ContactShareFieldView: UIStackView {
 
 // TODO: Rename to ContactShareApprovalViewController
 @objc
-public class ApproveContactShareViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
+public class ContactShareApprovalViewController: OWSViewController, EditContactShareNameViewControllerDelegate, ContactShareFieldViewDelegate {
 
-    weak var delegate: ApproveContactShareViewControllerDelegate?
+    weak var delegate: ContactShareApprovalViewControllerDelegate?
 
     let contactsManager: OWSContactsManager
 
@@ -234,7 +234,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
     }
 
     @objc
-    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ApproveContactShareViewControllerDelegate) {
+    required public init(contactShare: ContactShareViewModel, contactsManager: OWSContactsManager, delegate: ContactShareApprovalViewControllerDelegate) {
         self.contactsManager = contactsManager
         self.contactShare = contactShare
         self.delegate = delegate
@@ -463,6 +463,7 @@ public class ApproveContactShareViewController: OWSViewController, EditContactSh
         }
 
         let filteredContactShare = self.filteredContactShare()
+
         assert(filteredContactShare.ows_isValid)
 
         delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
