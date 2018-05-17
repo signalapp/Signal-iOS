@@ -14,8 +14,8 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     var pinEntryView: PinEntryView!
 
     @objc
-    public class func wrappedInNavController() -> UINavigationController {
-        let navController = UINavigationController()
+    public class func wrappedInNavController() -> OWSNavigationController {
+        let navController = OWSNavigationController()
         navController.pushViewController(OWS2FAReminderViewController(), animated: false)
 
         return navController

@@ -117,7 +117,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     [self.view addSubview:firstSection];
     [firstSection autoSetDimension:ALDimensionHeight toSize:100.f];
     [firstSection autoPinWidthToSuperview];
-    [firstSection autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [firstSection autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;

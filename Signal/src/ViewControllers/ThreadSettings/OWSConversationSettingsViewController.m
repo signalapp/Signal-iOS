@@ -1173,7 +1173,8 @@ NS_ASSUME_NONNULL_BEGIN
     // reference to it until we're dismissed.
     self.mediaGalleryViewController = vc;
 
-    [vc pushTileViewFromNavController:self.navigationController];
+    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    [vc pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
 }
 #pragma mark - Notifications
 

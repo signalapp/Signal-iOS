@@ -3,6 +3,7 @@
 //
 
 #import "OWSTableViewController.h"
+#import "OWSNavigationController.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 
@@ -652,7 +653,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     OWSAssert(fromViewController);
 
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:self];
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self

@@ -29,11 +29,13 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSLogger.h>
 #import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSTableViewController.h>
 #import <SignalMessaging/OWSUserProfile.h>
+#import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/Release.h>
 #import <SignalMessaging/SharingThreadPickerViewController.h>
 #import <SignalMessaging/SignalKeyingStorage.h>

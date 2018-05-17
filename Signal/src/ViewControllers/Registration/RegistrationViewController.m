@@ -14,6 +14,7 @@
 #import <SAMKeychain/SAMKeychain.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSNavigationController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -50,7 +51,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     // Do any additional setup after loading the view.
     [self populateDefaultCountryNameAndCode];
-    [SignalApp.sharedApp setSignUpFlowNavigationController:self.navigationController];
+    OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
+    [SignalApp.sharedApp setSignUpFlowNavigationController:(OWSNavigationController *)self.navigationController];
 }
 
 - (void)viewDidLoad
@@ -354,8 +356,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 {
     CountryCodeViewController *countryCodeController = [CountryCodeViewController new];
     countryCodeController.countryCodeDelegate = self;
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:countryCodeController];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
     [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
 }
 

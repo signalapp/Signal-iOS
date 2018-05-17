@@ -13,6 +13,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
