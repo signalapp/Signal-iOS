@@ -704,6 +704,7 @@ public class SignalAttachment: NSObject {
             if image.size.width > maxSize ||
                 image.size.height > maxSize {
                 guard let resizedImage = imageScaled(image, toMaxSize: maxSize) else {
+                    owsFail("\(logTag) resize image failed.")
                     attachment.error = .couldNotResizeImage
                     return attachment
                 }
