@@ -772,19 +772,15 @@ public class SignalAttachment: NSObject {
         assert(newSize.width <= maxSize)
         assert(newSize.height <= maxSize)
 
-        let bitsPerComponent = cgImage.bitsPerComponent
-        let bytesPerRow = cgImage.bytesPerRow
-        guard let colorSpace = cgImage.colorSpace else {
-            owsFail("\(logTag) cgImage missing colorSpace.")
-            return nil
-        }
-        let bitmapInfo = cgImage.bitmapInfo
-
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bitmapInfo: CGBitmapInfo = [
+            CGBitmapInfo(rawValue: CGImageByteOrderInfo.orderDefault.rawValue),
+            CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue)]
         guard let context = CGContext.init(data: nil,
                                            width: Int(newSize.width),
                                            height: Int(newSize.height),
-                                           bitsPerComponent: bitsPerComponent,
-                                           bytesPerRow: bytesPerRow,
+                                           bitsPerComponent: 8,
+                                           bytesPerRow: 0,
                                            space: colorSpace,
                                            bitmapInfo: bitmapInfo.rawValue) else {
                                             owsFail("\(logTag) could not create CGContext.")
