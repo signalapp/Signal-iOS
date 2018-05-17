@@ -3798,7 +3798,6 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
-    // TODO: Make sure that we're still marking messages as read when we leave this VC.
     if (self.presentedViewController) {
         DDLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
         return;
