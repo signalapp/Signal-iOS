@@ -143,8 +143,12 @@ fileprivate extension CNContact {
             return highlightedName
         }
 
-        if let emailAddress = (self.emailAddresses.first?.value as String?) {
-            return NSAttributedString(string: emailAddress, attributes: boldAttributes)
+        if let emailAddress = self.emailAddresses.first?.value {
+            return NSAttributedString(string: emailAddress as String, attributes: boldAttributes)
+        }
+
+        if let phoneNumber = self.phoneNumbers.first?.value.stringValue {
+            return NSAttributedString(string: phoneNumber, attributes: boldAttributes)
         }
 
         return nil
