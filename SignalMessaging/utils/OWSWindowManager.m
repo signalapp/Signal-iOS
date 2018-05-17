@@ -13,11 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
 
 
-const CGFloat OWSWindowManagerCallScreenHeight(void);
 const CGFloat OWSWindowManagerCallScreenHeight(void)
 {
     if ([UIDevice currentDevice].isIPhoneX) {
-        return 60;
+        return 64;
     } else {
         return 40;
     }

@@ -53,9 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
         }
+        // in iOS11 we have to ensure the position *in* layoutSubviews.
         [navbar layoutSubviews];
     } else {
-        // Pre iOS11 we have to position the frame manually
+        // Pre iOS11 we size the navbar, and position it vertically once.
         [navbar sizeToFit];
 
         if (OWSWindowManager.sharedManager.hasCall) {

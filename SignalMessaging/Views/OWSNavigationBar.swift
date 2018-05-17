@@ -16,10 +16,14 @@ class OWSNavigationBar: UINavigationBar {
     weak var navBarLayoutDelegate: NavBarLayoutDelegate?
 
     let navbarWithoutStatusHeight: CGFloat = 44
-    let callBannerHeight: CGFloat = 40
+    let callBannerHeight: CGFloat = OWSWindowManagerCallScreenHeight()
 
     var statusBarHeight: CGFloat {
         return 20
+    }
+
+    var fullWidth: CGFloat {
+        return UIScreen.main.bounds.size.width
     }
 
     override init(frame: CGRect) {
@@ -51,7 +55,7 @@ class OWSNavigationBar: UINavigationBar {
             // pre iOS11, sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
             // That is, increasing this causes the child view controller to be pushed down.
             // (as of iOS11, this is not used and instead we use additionalSafeAreaInsets)
-            let result = CGSize(width: CurrentAppContext().mainWindow!.bounds.width, height: navbarWithoutStatusHeight + statusBarHeight)
+            let result = CGSize(width: fullWidth, height: navbarWithoutStatusHeight + statusBarHeight)
 
             Logger.debug("\(self.logTag) in \(#function): \(result)")
 
@@ -60,15 +64,15 @@ class OWSNavigationBar: UINavigationBar {
     }
 
     override func layoutSubviews() {
-        Logger.debug("\(self.logTag) in \(#function)")
+        Logger.debug("\(self.logTag) in \(#function) with frame: \(frame)")
 
         guard OWSWindowManager.shared().hasCall() else {
             super.layoutSubviews()
             return
         }
 
-        self.frame = CGRect(x: 0, y: callBannerHeight, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
-        self.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
+        self.frame = CGRect(x: 0, y: callBannerHeight, width: fullWidth, height: navbarWithoutStatusHeight)
+        self.bounds = CGRect(x: 0, y: 0, width: fullWidth, height: navbarWithoutStatusHeight)
 
         super.layoutSubviews()
 
