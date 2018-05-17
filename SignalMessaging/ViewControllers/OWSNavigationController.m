@@ -23,32 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {
-    //  Attempt 1: negative additionalSafeArea
-    // Failure: additionalSafeArea insets cannot be negative
-    //    UIEdgeInsets newSafeArea = UIEdgeInsetsMake(-50, 30, 20, 30);
-    //    rootViewController.additionalSafeAreaInsets = newSafeArea;
-
-    // Attempt 2: safeAreaInsets on vc.view
-    // failure. they're already 0
-    //    UIEdgeInsets existingInsets = rootViewController.view.safeAreaInsets;
-
-    // Attempt 3: override topLayoutGuide?
-    // Failure - not called.
-    // overriding it does no good - it's not called by default layout code.
-    // presumably it just existing if you want to use it as an anchor.
-
-    // Attemp 4: sizeForChildContentConainer?
-    // Failure - not called.
-
-    // Attempt 5: autoSetDimension on navbar
-    // Failure: no effect on rendered size
-
-    // Attempt 6: manually set child frames in will/didLayoutSubviews
-    // glitchy, and viewcontrollers re-layout themselves afterwards anyway
-
-    // Attempt 7: Since we can't seem to *shrink* the navbar, maybe we can grow it.
-    // make additionalSafeAreaInsets
-
     self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     [self pushViewController:rootViewController animated:NO];
 
