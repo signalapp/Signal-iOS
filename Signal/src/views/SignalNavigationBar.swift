@@ -16,6 +16,8 @@ class SignalNavigationBar: UINavigationBar {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        self.isTranslucent = false
+
         // TODO better place to observe?
         NotificationCenter.default.addObserver(forName: .OWSWindowManagerCallDidChange, object: nil, queue: nil) { _ in
             Logger.debug("\(self.logTag) in \(#function) OWSWindowManagerCallDidChange")

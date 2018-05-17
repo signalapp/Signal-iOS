@@ -420,13 +420,6 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 #pragma mark - Methods
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];

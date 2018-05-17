@@ -463,13 +463,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];

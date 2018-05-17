@@ -80,7 +80,6 @@
 
     OWSAssert([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
-    [self.navigationController.navigationBar setTranslucent:NO];
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
