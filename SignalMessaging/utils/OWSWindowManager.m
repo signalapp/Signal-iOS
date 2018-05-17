@@ -11,17 +11,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
-// NSString *const OWSWindowManagerWillShowReturnToCallWindowNotification =
-// @"OWSWindowManagerWillShowReturnToCallWindowNotification";  NSString *const
-// OWSWindowManagerWillHideReturnToCallWindowNotification = @"OWSWindowManagerWillHideReturnToCallWindowNotification";
 
 
 const CGFloat OWSWindowManagerCallScreenHeight(void);
 const CGFloat OWSWindowManagerCallScreenHeight(void)
 {
     if ([UIDevice currentDevice].isIPhoneX) {
-        // TODO - rather than a bigger banner, we should stick with iPhoneX
-        // design changes, which only apply a green circle around the clock UI.
         return 60;
     } else {
         return 40;
@@ -274,9 +269,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(self.callViewWindow);
     OWSAssert(self.screenBlockingWindow);
 
-    // MJK remove
-    self.rootWindow.backgroundColor = UIColor.yellowColor;
-
     // To avoid bad frames, we never want to hide the blocking window, so we manipulate
     // its window level to "hide" it behind other windows.  The other windows have fixed
     // window level and are shown/hidden as necessary.
@@ -299,38 +291,27 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     } else if (self.callViewController) {
         // Show Root Window + "Return to Call".
 
-        [self ensureRootWindowShownWithActiveCall:YES];
+        [self ensureRootWindowShown];
         [self ensureReturnToCallWindowShown];
         [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
 
-        [self ensureRootWindowShownWithActiveCall:NO];
+        [self ensureRootWindowShown];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
     }
 }
 
-- (void)ensureRootWindowShownWithActiveCall:(BOOL)isActiveCall
+- (void)ensureRootWindowShown
 {
     OWSAssertIsOnMainThread();
 
     if (self.rootWindow.hidden) {
         DDLogInfo(@"%@ showing root window.", self.logTag);
     }
-
-    CGRect defaultFrame = [UIScreen mainScreen].bounds;
-    //    if (isActiveCall) {
-    //        CGRect frameWithActiveCall = CGRectMake(0,
-    //            OWSWindowManagerCallScreenHeight(),
-    //            defaultFrame.size.width,
-    //            defaultFrame.size.height - OWSWindowManagerCallScreenHeight());
-    //        self.rootWindow.frame = frameWithActiveCall;
-    //    } else {
-    self.rootWindow.frame = defaultFrame;
-    //    }
 
     // By calling makeKeyAndVisible we ensure the rootViewController becomes firt responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
