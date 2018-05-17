@@ -49,9 +49,9 @@ static double const STALLED_PROGRESS = 0.9;
 
     // Attempt 7: Since we can't seem to *shrink* the navbar, maybe we can grow it.
     // make additionalSafeAreaInsets
-//    self.additionalSafeAreaInsets = UIEdgeInsetsMake(100, 0, 0, 0);
-    
-    
+
+    [self updateAdditionalSafeAreaInsets];
+
     self = [self initWithNavigationBarClass:[SignalNavigationBar class] toolbarClass:nil];
     [self pushViewController:rootViewController animated:NO];
 
@@ -82,9 +82,15 @@ static double const STALLED_PROGRESS = 0.9;
 - (void)windowManagerCallDidChange:(NSNotification *)notification
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    if (OWSWindowManager.sharedManager.hasCall) {
+    [self updateAdditionalSafeAreaInsets];
+}
 
+- (void)updateAdditionalSafeAreaInsets
+{
+    if (OWSWindowManager.sharedManager.hasCall) {
+        self.additionalSafeAreaInsets = UIEdgeInsetsMake(64, 0, 0, 0);
     } else {
+        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
     }
 }
 
