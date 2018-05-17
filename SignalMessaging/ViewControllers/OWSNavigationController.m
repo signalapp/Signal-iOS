@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSNavigationController (OWSNavigationController) <UINavigationBarDelegate>
+@interface OWSNavigationController (OWSNavigationController) <UINavigationBarDelegate, NavBarLayoutDelegate>
 
 @end
 
@@ -51,42 +51,54 @@ NS_ASSUME_NONNULL_BEGIN
 
     self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     [self pushViewController:rootViewController animated:NO];
-    
-    [self updateNavbarCallBannerLayout];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(windowManagerCallDidChange:)
-                                                 name:OWSWindowManagerCallDidChangeNotification
-                                               object:nil];
+    if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+        OWSFail(@"%@ navigationBar was unexpected class: %@", self.logTag, self.navigationBar);
+        return self;
+    }
+
+    OWSNavigationBar *navbar = (OWSNavigationBar *)self.navigationBar;
+    navbar.navBarLayoutDelegate = self;
+    [self updateLayoutForNavbar:navbar];
 
     return self;
 }
 
-- (void)windowManagerCallDidChange:(NSNotification *)notification
+- (void)navBarCallLayoutDidChangeWithNavbar:(OWSNavigationBar *)navbar
 {
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    [self updateNavbarCallBannerLayout];
+    [self updateLayoutForNavbar:navbar];
 }
 
-- (void)updateNavbarCallBannerLayout
+- (void)updateLayoutForNavbar:(OWSNavigationBar *)navbar
 {
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+
     if (@available(iOS 11.0, *)) {
         if (OWSWindowManager.sharedManager.hasCall) {
             self.additionalSafeAreaInsets = UIEdgeInsetsMake(64, 0, 0, 0);
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
         }
+        [navbar layoutSubviews];
     } else {
-        if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
-            OWSFail(@"%@ in %s navigationBar was unexpected class", self.logTag, __PRETTY_FUNCTION__);
-            return;
+        // Pre iOS11 we have to position the frame manually
+        [navbar sizeToFit];
+
+        if (OWSWindowManager.sharedManager.hasCall) {
+            CGRect oldFrame = navbar.frame;
+            CGRect newFrame
+                = CGRectMake(oldFrame.origin.x, navbar.callBannerHeight, oldFrame.size.width, oldFrame.size.height);
+            navbar.frame = newFrame;
+        } else {
+            CGRect oldFrame = navbar.frame;
+            CGRect newFrame
+                = CGRectMake(oldFrame.origin.x, navbar.statusBarHeight, oldFrame.size.width, oldFrame.size.height);
+            navbar.frame = newFrame;
         }
 
-        OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationBar;
-        CGRect oldFrame = navBar.frame;
-        CGRect newFrame
-            = CGRectMake(oldFrame.origin.x, navBar.statusBarHeight, oldFrame.size.width, oldFrame.size.height);
-        navBar.frame = newFrame;
+        // Since the navbar's frame was updated, we need to be sure our child VC's
+        // container view is updated.
+        [self.view setNeedsLayout];
     }
 }
 
