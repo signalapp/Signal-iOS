@@ -724,6 +724,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (UIImage *_Nullable)systemContactImageForPhoneIdentifier:(NSString *_Nullable)identifier
 {
+    if (identifier.length == 0) {   
+        return nil;
+    }
+    
     Contact *contact = self.allContactsMap[identifier];
     if (!contact) {
         // If we haven't loaded system contacts yet, we may have a cached
@@ -736,16 +740,28 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier
 {
+    if (identifier.length == 0) {
+        return nil;
+    }
+    
     return [self.profileManager profileAvatarForRecipientId:identifier];
 }
 
 - (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier
 {
+    if (identifier.length == 0) {
+        return nil;
+    }
+    
     return [self.profileManager profileAvatarDataForRecipientId:identifier];
 }
 
 - (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier
 {
+    if (identifier.length == 0) {
+        return nil;
+    }
+    
     // Prefer the contact image from the local address book if available
     UIImage *_Nullable image = [self systemContactImageForPhoneIdentifier:identifier];
 

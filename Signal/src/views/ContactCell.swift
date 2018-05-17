@@ -92,7 +92,7 @@ class ContactCell: UITableViewCell {
                                                         diameter: ContactCell.kAvatarDiameter,
                                                         contactsManager: contactsManager)
 
-            contactImageView.image = avatarBuilder.buildDefaultImage()
+            contactImageView.image = avatarBuilder.build()
         }
     }
 
