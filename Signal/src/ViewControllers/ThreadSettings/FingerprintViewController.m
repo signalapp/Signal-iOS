@@ -105,8 +105,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
     [fingerprintViewController configureWithRecipientId:recipientId];
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:fingerprintViewController];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
     [viewController presentViewController:navigationController animated:YES completion:nil];
 }
 

@@ -168,7 +168,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         // CNContactViewController incompatible with opaque navigation bar
         UIUtil.applyDefaultSystemAppearence()
 
-        let modal = UINavigationController(rootViewController: contactViewController)
+        let modal = OWSNavigationController(rootViewController: contactViewController)
         fromViewController.present(modal, animated: true)
     }
 

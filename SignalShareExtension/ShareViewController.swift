@@ -26,7 +26,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     private var progressPoller: ProgressPoller?
     var loadViewController: SAELoadViewController?
 
-    let shareViewNavigationController: UINavigationController = UINavigationController()
+    let shareViewNavigationController: OWSNavigationController = OWSNavigationController()
 
     override open func loadView() {
         super.loadView()

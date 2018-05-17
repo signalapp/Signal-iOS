@@ -13,6 +13,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
@@ -75,7 +76,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     [super loadView];
 
-    [self.navigationController.navigationBar setTranslucent:NO];
     self.title = NSLocalizedString(@"PROFILE_VIEW_TITLE", @"Title for the profile view.");
 
     _avatarViewHelper = [AvatarViewHelper new];
@@ -94,7 +94,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:contentView];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [contentView autoPinWidthToSuperview];
 
     const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);

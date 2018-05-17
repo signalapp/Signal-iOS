@@ -154,7 +154,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
             picker.contactsPickerDelegate = self
             picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-            let navigationController = UINavigationController(rootViewController: picker)
+            let navigationController = OWSNavigationController(rootViewController: picker)
             self.presentingViewController.present(navigationController, animated: true)
         }
     }
@@ -218,7 +218,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
             picker.contactsPickerDelegate = self
             picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-            let navigationController = UINavigationController(rootViewController: picker)
+            let navigationController = OWSNavigationController(rootViewController: picker)
             self.presentingViewController.present(navigationController, animated: true)
         }
     }

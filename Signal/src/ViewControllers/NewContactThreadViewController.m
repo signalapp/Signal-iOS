@@ -269,8 +269,6 @@ NS_ASSUME_NONNULL_BEGIN
     // a message.
     [self.contactsViewHelper.contactsManager requestSystemContactsOnce];
 
-    [self.navigationController.navigationBar setTranslucent:NO];
-
     [self showContactAppropriateViews];
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
@@ -16,10 +16,10 @@
 @class ContactsUpdater;
 @class OWSContactsManager;
 @class OWSMessageSender;
+@class OWSNavigationController;
 @class TSGroupThread;
 @class TSNetworkManager;
 @class TSThread;
-@class UINavigationController;
 
 @interface Environment : NSObject
 

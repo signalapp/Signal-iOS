@@ -26,7 +26,6 @@
     [super loadView];
 
     self.view.backgroundColor = [UIColor whiteColor];
-    [self.navigationController.navigationBar setTranslucent:NO];
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];
