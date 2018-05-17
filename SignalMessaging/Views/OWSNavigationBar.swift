@@ -10,32 +10,34 @@ class OWSNavigationBar: UINavigationBar {
 
     // TODO - get a more precise value
     // TODO - test with other heights, e.g. w/ hotspot, w/ call in other app
-    let navbarHeight: CGFloat = 44
+    let navbarWithoutStatusHeight: CGFloat = 44
     let callBannerHeight: CGFloat = 40
+
+    // MJK safe to hardcode? Do we even need this approach anymore?
+    var statusBarHeight: CGFloat {
+        // TODO? plumb through CurrentAppContext()
+        return 20
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
         self.isTranslucent = false
 
-        // TODO better place to observe?
-        NotificationCenter.default.addObserver(forName: .OWSWindowManagerCallDidChange, object: nil, queue: nil) { _ in
-            Logger.debug("\(self.logTag) in \(#function) OWSWindowManagerCallDidChange")
-
-            self.callDidChange()
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
     }
 
-    private func callDidChange() {
-//        if OWSWindowManager.shared().hasCall() {
-//           self.bounds.origin.y = -20
-//        } else {
-//            self.bounds.origin.y = 0
-//        }
+    @objc
+    public func callDidChange() {
+        Logger.debug("\(self.logTag) in \(#function) OWSWindowManagerCallDidChange")
+
         if #available(iOS 11, *) {
             self.layoutSubviews()
         } else {
             self.sizeToFit()
+            self.frame.origin.y = statusBarHeight
+
+            self.layoutSubviews()
         }
     }
 
@@ -44,24 +46,22 @@ class OWSNavigationBar: UINavigationBar {
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
-        // pre iOS11, sizeThatFits is repeatedly called to size the navbar, which is pretty straight forward
-        // as of iOS11, this is not true and we have to do things in layoutSubviews.
-        // FIXME: pre-iOS11, though the size is right, there's a glitch on the titleView while push/popping items.
+        guard OWSWindowManager.shared().hasCall() else {
+            return super.sizeThatFits(size)
+        }
 
-        // MJK safe to hardcode? Do we even need this approach anymore?
-        let statusBarHeight: CGFloat = 20
-        let result: CGSize = {
-            if OWSWindowManager.shared().hasCall() {
-                // status bar height gets re-added
-                return CGSize(width: CurrentAppContext().mainWindow!.bounds.width, height: navbarHeight - statusBarHeight)
-            } else {
-                return super.sizeThatFits(size)
-            }
-        }()
+        if #available(iOS 11, *) {
+            return super.sizeThatFits(size)
+        } else {
+            // pre iOS11, sizeThatFits is repeatedly called to size the navbar
+            // as of iOS11, this is not true and we have to size things in layoutSubviews.
+            // FIXME: pre-iOS11, though the size is right, there's a glitch on the titleView while push/popping items.
+            let result = CGSize(width: CurrentAppContext().mainWindow!.bounds.width, height: navbarWithoutStatusHeight + statusBarHeight)
 
-        Logger.debug("\(self.logTag) in \(#function): \(result)")
+            Logger.debug("\(self.logTag) in \(#function): \(result)")
 
-        return result
+            return result
+        }
     }
 
 //    override var center: CGPoint {
@@ -83,7 +83,7 @@ class OWSNavigationBar: UINavigationBar {
 
     // seems unused.
 //    override var intrinsicContentSize: CGSize {
-//        return CGSize(width: UIScreen.main.bounds.width, height: navbarHeight)
+//        return CGSize(width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
 //        return CGSize(width: UIScreen.main.bounds.width, height: 20)
 //    }
 
@@ -108,15 +108,16 @@ class OWSNavigationBar: UINavigationBar {
     override func layoutSubviews() {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard #available(iOS 11.0, *), OWSWindowManager.shared().hasCall() else {
+        guard OWSWindowManager.shared().hasCall() else {
+//        guard #available(iOS 11.0, *), OWSWindowManager.shared().hasCall() else {
             super.layoutSubviews()
             return
         }
 
 //        let rect = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: self.navbarHeightWithoutStatusBar)
 //        self.frame = CGRect(x: 0, y: 20, width: UI Screen.main.bounds.width, height: ios11NavbarHeight)
-        self.frame = CGRect(x: 0, y: callBannerHeight, width: UIScreen.main.bounds.width, height: navbarHeight)
-        self.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarHeight)
+        self.frame = CGRect(x: 0, y: callBannerHeight, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
+        self.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
 
         super.layoutSubviews()
 
