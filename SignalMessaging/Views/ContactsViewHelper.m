@@ -392,8 +392,8 @@ NS_ASSUME_NONNULL_BEGIN
                                         target:fromViewController
                                         action:@selector(didFinishEditingContact)];
 
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:contactViewController];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
 
     // We want the presentation to imply a "replacement" in this case.
     if (shouldEditImmediately) {

@@ -10,6 +10,7 @@
 @class HomeViewController;
 @class NotificationsManager;
 @class OWSMessageFetcherJob;
+@class OWSNavigationController;
 @class OWSWebRTCCallMessageHandler;
 @class OutboundCallInitiator;
 @class TSThread;
@@ -17,7 +18,7 @@
 @interface SignalApp : NSObject
 
 @property (nonatomic, weak) HomeViewController *homeViewController;
-@property (nonatomic, weak) UINavigationController *signUpFlowNavigationController;
+@property (nonatomic, weak) OWSNavigationController *signUpFlowNavigationController;
 
 // TODO: Convert to singletons?
 @property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;

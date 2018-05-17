@@ -3,10 +3,10 @@
 //
 
 #import "OWSWindowManager.h"
-#import "Signal-Swift.h"
-#import <SignalMessaging/UIColor+OWS.h>
-#import <SignalMessaging/UIFont+OWS.h>
-#import <SignalMessaging/UIView+OWS.h>
+#import "UIColor+OWS.h"
+#import "UIFont+OWS.h"
+#import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -79,7 +79,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 // UIWindowLevel_CallView
 @property (nonatomic) UIWindow *callViewWindow;
-@property (nonatomic) UINavigationController *callNavigationController;
+@property (nonatomic) OWSNavigationController *callNavigationController;
 
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
@@ -175,8 +175,8 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     UIViewController *viewController = [OWSWindowRootViewController new];
     viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
 
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:viewController];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
     OWSAssert(!self.callNavigationController);
     self.callNavigationController = navigationController;

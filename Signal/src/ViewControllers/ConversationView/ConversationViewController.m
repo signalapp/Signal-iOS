@@ -60,6 +60,7 @@
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/ThreadUtil.h>
@@ -2614,8 +2615,8 @@ typedef enum : NSUInteger {
     contactsPicker.title
         = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
 
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:contactsPicker];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:contactsPicker];
     [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -2656,7 +2657,7 @@ typedef enum : NSUInteger {
     GifPickerViewController *view =
         [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
     view.delegate = self;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:view];
 
     [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];

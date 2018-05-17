@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 @objc
-class SignalNavigationBar: UINavigationBar {
+class OWSNavigationBar: UINavigationBar {
 
     // TODO - get a more precise value
     // TODO - test with other heights, e.g. w/ hotspot, w/ call in other app
@@ -47,10 +47,13 @@ class SignalNavigationBar: UINavigationBar {
         // pre iOS11, sizeThatFits is repeatedly called to size the navbar, which is pretty straight forward
         // as of iOS11, this is not true and we have to do things in layoutSubviews.
         // FIXME: pre-iOS11, though the size is right, there's a glitch on the titleView while push/popping items.
+
+        // MJK safe to hardcode? Do we even need this approach anymore?
+        let statusBarHeight: CGFloat = 20
         let result: CGSize = {
             if OWSWindowManager.shared().hasCall() {
                 // status bar height gets re-added
-                return CGSize(width: UIScreen.main.bounds.width, height: navbarHeight - UIApplication.shared.statusBarFrame.size.height)
+                return CGSize(width: CurrentAppContext().mainWindow!.bounds.width, height: navbarHeight - statusBarHeight)
             } else {
                 return super.sizeThatFits(size)
             }
