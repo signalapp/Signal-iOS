@@ -6,7 +6,14 @@ import Foundation
 import UIKit
 
 @objc
+protocol NavBarLayoutDelegate: class {
+    func navBarCallLayoutDidChange(navbar: OWSNavigationBar)
+}
+
+@objc
 class OWSNavigationBar: UINavigationBar {
+
+    weak var navBarLayoutDelegate: NavBarLayoutDelegate?
 
     // TODO - get a more precise value
     // TODO - test with other heights, e.g. w/ hotspot, w/ call in other app
@@ -29,16 +36,8 @@ class OWSNavigationBar: UINavigationBar {
 
     @objc
     public func callDidChange() {
-        Logger.debug("\(self.logTag) in \(#function) OWSWindowManagerCallDidChange")
-
-        if #available(iOS 11, *) {
-            self.layoutSubviews()
-        } else {
-            self.sizeToFit()
-            self.frame.origin.y = statusBarHeight
-
-            self.layoutSubviews()
-        }
+        Logger.debug("\(self.logTag) in \(#function)")
+        self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -53,9 +52,9 @@ class OWSNavigationBar: UINavigationBar {
         if #available(iOS 11, *) {
             return super.sizeThatFits(size)
         } else {
-            // pre iOS11, sizeThatFits is repeatedly called to size the navbar
-            // as of iOS11, this is not true and we have to size things in layoutSubviews.
-            // FIXME: pre-iOS11, though the size is right, there's a glitch on the titleView while push/popping items.
+            // pre iOS11, sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
+            // That is, increasing this causes the child view controller to be pushed down.
+            // (as of iOS11, this is not used and instead we use additionalSafeAreaInsets)
             let result = CGSize(width: CurrentAppContext().mainWindow!.bounds.width, height: navbarWithoutStatusHeight + statusBarHeight)
 
             Logger.debug("\(self.logTag) in \(#function): \(result)")
@@ -64,52 +63,10 @@ class OWSNavigationBar: UINavigationBar {
         }
     }
 
-//    override var center: CGPoint {
-//        get {
-//            Logger.debug("\(self.logTag) in \(#function)")
-//            return super.center
-//        }
-//        set {
-//            Logger.debug("\(self.logTag) in \(#function)")
-//            if OWSWindowManager.shared().hasCall() {
-//                var translated = newValue
-////                translated.y -= 20
-//                super.center = translated
-//            } else {
-//                super.center = newValue
-//            }
-//        }
-//    }
-
-    // seems unused.
-//    override var intrinsicContentSize: CGSize {
-//        return CGSize(width: UIScreen.main.bounds.width, height: navbarWithoutStatusHeight)
-//        return CGSize(width: UIScreen.main.bounds.width, height: 20)
-//    }
-
-//    override var bounds: CGRect {
-//        get {
-//            return super.bounds
-//        }
-//        set {
-//            super.bounds = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: ios11NavbarHeight)
-//        }
-//    }
-//
-//    override var frame: CGRect {
-//        get {
-//            return super.frame
-//        }
-//        set {
-//            super.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: ios11NavbarHeight)
-//        }
-//    }
-
     override func layoutSubviews() {
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard OWSWindowManager.shared().hasCall() else {
-//        guard #available(iOS 11.0, *), OWSWindowManager.shared().hasCall() else {
             super.layoutSubviews()
             return
         }
@@ -121,6 +78,11 @@ class OWSNavigationBar: UINavigationBar {
 
         super.layoutSubviews()
 
+        guard #available(iOS 11, *) else {
+            return
+        }
+
+        // This is only necessary on iOS11, which has some private views within the navbar
         for subview in self.subviews {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
             if stringFromClass.contains("BarBackground") {

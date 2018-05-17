@@ -45,7 +45,6 @@ static double const STALLED_PROGRESS = 0.9;
     }
 }
 
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

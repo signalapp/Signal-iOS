@@ -267,22 +267,6 @@ typedef enum : NSUInteger {
     return self;
 }
 
-- (CGSize)sizeForChildContentContainer:(id<UIContentContainer>)container
-               withParentContainerSize:(CGSize)parentSize NS_AVAILABLE_IOS(8_0);
-{
-    CGSize result = [super sizeForChildContentContainer:container withParentContainerSize:parentSize];
-    DDLogDebug(@"%@ in %s result: %@", self.logTag, __PRETTY_FUNCTION__, NSStringFromCGSize(result));
-
-    return result;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
 - (void)commonInit
 {
     _contactsManager = [Environment current].contactsManager;
