@@ -1099,8 +1099,8 @@ static NSTimeInterval launchStartedAt;
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
 #endif
-    
-    
+
+    // MJK FIXME
     OutboundCallInitiator *outboundCallInitiator = SignalApp.sharedApp.outboundCallInitiator;
     [outboundCallInitiator initiateCallWithHandle:@"+14158181337"];
 }

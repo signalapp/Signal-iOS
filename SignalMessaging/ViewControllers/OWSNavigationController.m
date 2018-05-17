@@ -7,7 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 @interface OWSNavigationController (OWSNavigationController) <UINavigationBarDelegate>
 
 @end
@@ -50,10 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Attempt 7: Since we can't seem to *shrink* the navbar, maybe we can grow it.
     // make additionalSafeAreaInsets
 
-    [self updateAdditionalSafeAreaInsets];
-
     self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     [self pushViewController:rootViewController animated:NO];
+    
+    [self updateNavbarCallBannerLayout];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(windowManagerCallDidChange:)
@@ -66,15 +65,28 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)windowManagerCallDidChange:(NSNotification *)notification
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    [self updateAdditionalSafeAreaInsets];
+    [self updateNavbarCallBannerLayout];
 }
 
-- (void)updateAdditionalSafeAreaInsets
+- (void)updateNavbarCallBannerLayout
 {
-    if (OWSWindowManager.sharedManager.hasCall) {
-        self.additionalSafeAreaInsets = UIEdgeInsetsMake(64, 0, 0, 0);
+    if (@available(iOS 11.0, *)) {
+        if (OWSWindowManager.sharedManager.hasCall) {
+            self.additionalSafeAreaInsets = UIEdgeInsetsMake(64, 0, 0, 0);
+        } else {
+            self.additionalSafeAreaInsets = UIEdgeInsetsZero;
+        }
     } else {
-        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
+        if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
+            OWSFail(@"%@ in %s navigationBar was unexpected class", self.logTag, __PRETTY_FUNCTION__);
+            return;
+        }
+
+        OWSNavigationBar *navBar = (OWSNavigationBar *)self.navigationBar;
+        CGRect oldFrame = navBar.frame;
+        CGRect newFrame
+            = CGRectMake(oldFrame.origin.x, navBar.statusBarHeight, oldFrame.size.width, oldFrame.size.height);
+        navBar.frame = newFrame;
     }
 }
 
