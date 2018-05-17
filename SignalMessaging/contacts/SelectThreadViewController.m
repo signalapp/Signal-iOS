@@ -81,12 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
-
 - (void)createViews
 {
     OWSAssert(self.selectThreadViewDelegate);

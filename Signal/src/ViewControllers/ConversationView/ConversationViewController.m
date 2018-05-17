@@ -500,10 +500,7 @@ typedef enum : NSUInteger {
 {
     [super viewDidLoad];
 
-    //    self.topLayoutGuide
     [self createContents];
-
-    [self.navigationController.navigationBar setTranslucent:NO];
 
     [self registerCellClasses];
 
@@ -527,8 +524,6 @@ typedef enum : NSUInteger {
 {
     [super loadView];
 
-    //    extendedLayoutIncludesOpaqueBars
-    //    self.extendedLayoutIncludesOpaqueBars = YES;
     self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 

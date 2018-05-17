@@ -252,7 +252,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
 
     self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
 
