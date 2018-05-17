@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering;
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));
++ (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel;
 
 - (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact NS_SWIFT_NAME(buildCNContact(mergedWithNewContact:));
 

@@ -395,6 +395,27 @@ NS_ASSUME_NONNULL_BEGIN
     return [mergedCNContact copy];
 }
 
++ (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel
+{
+    if (cnLabel.length == 0) {
+        return nil;
+    }
+
+    NSString *_Nullable localizedLabel = [CNLabeledValue localizedStringForLabel:cnLabel];
+
+    // Docs for localizedStringForLabel say it returns:
+    // > The localized string if a Contacts framework defined label, otherwise just returns the label.
+    // But in practice, at least on iOS11, if the label is not one of CNContacts known labels (like CNLabelHome)
+    // kUnlocalizedStringLabel is returned, rather than the unadultered label.
+    NSString *const kUnlocalizedStringLabel = @"__ABUNLOCALIZEDSTRING";
+
+    if ([localizedLabel isEqual:kUnlocalizedStringLabel]) {
+        return cnLabel;
+    }
+
+    return localizedLabel;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
