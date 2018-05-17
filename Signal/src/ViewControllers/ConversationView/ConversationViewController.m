@@ -3799,11 +3799,11 @@ typedef enum : NSUInteger {
 - (void)markVisibleMessagesAsRead
 {
     if (self.presentedViewController) {
-        OWSFail(@"%@ Not marking messages as read; another view is presented.", self.logTag);
+        DDLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
         return;
     }
     if (self.navigationController.topViewController != self) {
-        OWSFail(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
+        DDLogInfo(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
         return;
     }
 
