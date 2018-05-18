@@ -11,6 +11,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
+
 const NSUInteger kMin2FAPinLength = 4;
 const NSUInteger kMax2FAPinLength = 16;
 

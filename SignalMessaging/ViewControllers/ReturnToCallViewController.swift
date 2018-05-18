@@ -17,6 +17,7 @@ public class ReturnToCallViewController: UIViewController {
     let returnToCallLabel = UILabel()
 
     public func startAnimating() {
+        NotificationCenter.default.addObserver(self, selector: #selector(didTapStatusBar(notification:)), name: .TappedStatusBar, object: nil)
         self.returnToCallLabel.layer.removeAllAnimations()
         self.returnToCallLabel.alpha = 1
         UIView.animate(withDuration: 1,
@@ -27,6 +28,7 @@ public class ReturnToCallViewController: UIViewController {
     }
 
     public func stopAnimating() {
+        NotificationCenter.default.removeObserver(self, name: .TappedStatusBar, object: nil)
         self.returnToCallLabel.layer.removeAllAnimations()
     }
 
@@ -53,6 +55,11 @@ public class ReturnToCallViewController: UIViewController {
 
     @objc
     public func didTapView(gestureRecognizer: UITapGestureRecognizer) {
+        self.delegate?.returnToCallWasTapped(self)
+    }
+
+    @objc
+    public func didTapStatusBar(notification: Notification) {
         self.delegate?.returnToCallWasTapped(self)
     }
 

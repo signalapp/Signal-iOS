@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kMin2FAPinLength;
 extern const NSUInteger kMax2FAPinLength;
+extern NSString *const TappedStatusBarNotification;
 
 @interface ViewControllerUtils : NSObject
 

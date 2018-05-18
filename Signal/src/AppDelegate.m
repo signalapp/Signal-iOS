@@ -1162,4 +1162,17 @@ static NSTimeInterval launchStartedAt;
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 }
 
+#pragma mark - status bar touches
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
+    CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
+    if (CGRectContainsPoint(statusBarFrame, location)) {
+        DDLogDebug(@"%@ touched status bar", self.logTag);
+        [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
+    }
+}
+
 @end
