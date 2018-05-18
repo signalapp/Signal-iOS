@@ -74,11 +74,19 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         contactViewController.allowsEditing = true
         contactViewController.delegate = self
 
-        guard let navigationController = self.navigationController else {
-            owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
-            return
+        let modal = OWSNavigationController(rootViewController: contactViewController)
+
+        // HACK otherwise CNContactViewController Navbar is shows window background color.
+        // RADAR rdar://28433898 http://www.openradar.me/28433898
+        // CNContactViewController incompatible with opaque navigation bar
+        modal.navigationBar.isTranslucent = true
+        if #available(iOS 10, *) {
+            // Contact navbar is blue in iOS9, so our white text works,
+            // but gray on iOS10+, in which case we want the system default black text.
+            UIUtil.applyDefaultSystemAppearence()
         }
-        navigationController.pushViewController(contactViewController, animated: true)
+
+        self.present(modal, animated: true)
     }
 
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
@@ -126,8 +134,21 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
             return
         }
 
+        // HACK otherwise CNContactViewController Navbar is shows window background color.
+        // RADAR rdar://28433898 http://www.openradar.me/28433898
+        // CNContactViewController incompatible with opaque navigation bar
+        navigationController.navigationBar.isTranslucent = false
+        if #available(iOS 10, *) {
+            // Contact navbar is blue in iOS9, so our white text works,
+            // but gray on iOS10+, in which case we want the system default black text.
+            UIUtil.applySignalAppearence()
+        }
+
         let previousViewControllerIndex = navigationController.viewControllers.index(before: myIndex)
         let previousViewController = navigationController.viewControllers[previousViewControllerIndex]
-        navigationController.popToViewController(previousViewController, animated: true)
+
+        self.dismiss(animated: false) {
+            navigationController.popToViewController(previousViewController, animated: true)
+        }
     }
 }

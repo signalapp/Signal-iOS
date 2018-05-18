@@ -1099,7 +1099,6 @@ static NSTimeInterval launchStartedAt;
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
 #endif
-
 }
 
 - (void)registrationStateDidChange

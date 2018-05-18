@@ -163,12 +163,17 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
                                                                                  target: self,
                                                                                  action: #selector(didFinishEditingContact))
 
-        // HACK otherwise CNContactViewController Navbar is shown as black.
+        let modal = OWSNavigationController(rootViewController: contactViewController)
+        // HACK otherwise CNContactViewController Navbar is shows window background color.
         // RADAR rdar://28433898 http://www.openradar.me/28433898
         // CNContactViewController incompatible with opaque navigation bar
-        UIUtil.applyDefaultSystemAppearence()
+        modal.navigationBar.isTranslucent = true
+        if #available(iOS 10, *) {
+            // Contact navbar is blue in iOS9, so our white text works,
+            // but gray on iOS10+, in which case we want the system default black text.
+            UIUtil.applyDefaultSystemAppearence()
+        }
 
-        let modal = OWSNavigationController(rootViewController: contactViewController)
         fromViewController.present(modal, animated: true)
     }
 
@@ -189,7 +194,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         }
 
         let viewController = AddContactShareToExistingContactViewController(contactShare: contactShare)
-
+        UIUtil.applySignalAppearence()
         navigationController.pushViewController(viewController, animated: true)
     }
 

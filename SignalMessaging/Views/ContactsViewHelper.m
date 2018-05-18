@@ -392,19 +392,23 @@ NS_ASSUME_NONNULL_BEGIN
                                         target:fromViewController
                                         action:@selector(didFinishEditingContact)];
 
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
+    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
+
+    // HACK otherwise CNContactViewController Navbar is shows window background color.
+    // RADAR rdar://28433898 http://www.openradar.me/28433898
+    // CNContactViewController incompatible with opaque navigation bar
+    modal.navigationBar.translucent = YES;
+    if (@available(iOS 10, *)) {
+        // Contact navbar is blue in iOS9, so our white tex works,
+        // but gray on iOS10+, in which case we want the system default black text.
+        [UIUtil applyDefaultSystemAppearence];
+    }
 
     // We want the presentation to imply a "replacement" in this case.
     if (shouldEditImmediately) {
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        modal.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     }
-    [fromViewController presentViewController:navigationController animated:YES completion:nil];
-
-    // HACK otherwise CNContactViewController Navbar is shown as black.
-    // RADAR rdar://28433898 http://www.openradar.me/28433898
-    // CNContactViewController incompatible with opaque navigation bar
-    [UIUtil applyDefaultSystemAppearence];
+    [fromViewController presentViewController:modal animated:YES completion:nil];
 }
 
 @end
