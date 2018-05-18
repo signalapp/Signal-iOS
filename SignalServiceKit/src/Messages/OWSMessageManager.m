@@ -296,23 +296,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (envelope.hasContent) {
         OWSSignalServiceProtosContent *content = [OWSSignalServiceProtosContent parseFromData:plaintextData];
-        DDLogInfo(@"%@ content/sync", self.logTag);
+        DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:content]);
+
         if (content.hasSyncMessage) {
-            DDLogInfo(@"%@ handling content: <Content: %@>", self.logTag, [self descriptionForContent:content]);
             [self handleIncomingEnvelope:envelope withSyncMessage:content.syncMessage transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (content.hasDataMessage) {
-            DDLogInfo(@"%@ content/data", self.logTag);
             [self handleIncomingEnvelope:envelope withDataMessage:content.dataMessage transaction:transaction];
         } else if (content.hasCallMessage) {
-            DDLogInfo(@"%@ content/call", self.logTag);
             [self handleIncomingEnvelope:envelope withCallMessage:content.callMessage];
         } else if (content.hasNullMessage) {
-            DDLogInfo(@"%@ content/null", self.logTag);
             DDLogInfo(@"%@ Received null message.", self.logTag);
         } else if (content.hasReceiptMessage) {
-            DDLogInfo(@"%@ content/receipt", self.logTag);
             [self handleIncomingEnvelope:envelope withReceiptMessage:content.receiptMessage transaction:transaction];
         } else {
             DDLogWarn(@"%@ Ignoring envelope. Content with no known payload", self.logTag);
@@ -473,8 +469,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(envelope);
     OWSAssert(callMessage);
 
-    DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage:", self.logTag);
-
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         NSString *recipientId = envelope.source;
@@ -486,26 +480,19 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.hasOffer) {
-            DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage -> offer:", self.logTag);
             [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
         } else if (callMessage.hasAnswer) {
-            DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage -> answer:", self.logTag);
             [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.source];
         } else if (callMessage.iceUpdate.count > 0) {
-            DDLogVerbose(
-                @"%@ handleIncomingEnvelope:withCallMessage -> ice: %zd", self.logTag, callMessage.iceUpdate.count);
             for (OWSSignalServiceProtosCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
                 [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
             }
         } else if (callMessage.hasHangup) {
-            DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage -> hangup:", self.logTag);
             DDLogVerbose(@"%@ Received CallMessage with Hangup.", self.logTag);
             [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
         } else if (callMessage.hasBusy) {
-            DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage -> busy:", self.logTag);
             [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
         } else {
-            DDLogVerbose(@"%@ handleIncomingEnvelope:withCallMessage -> unknown:", self.logTag);
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }
     });

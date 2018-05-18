@@ -57,9 +57,6 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     public func receivedIceUpdate(_ iceUpdate: OWSSignalServiceProtosCallMessageIceUpdate, from callerId: String) {
         SwiftAssertIsOnMainThread(#function)
-
-        Logger.verbose("\(logTag) \(#function)")
-
         guard iceUpdate.hasId() else {
             owsFail("no callId in \(#function)")
             return
