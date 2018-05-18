@@ -654,7 +654,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
                 if (!decryptedPayload) {
                     DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
-                    [self sendWebSocketResourcesWebSocketMessageAcknowledgement:message];
+                    [self sendWebSocketMessageAcknowledgement:message];
                     backgroundTask = nil;
                     return;
                 }
@@ -676,22 +676,22 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self sendWebSocketResourcesWebSocketMessageAcknowledgement:message];
+                [self sendWebSocketMessageAcknowledgement:message];
                 backgroundTask = nil;
             });
         });
     } else if ([message.path isEqualToString:@"/api/v1/queue/empty"]) {
         // Queue is drained.
 
-        [self sendWebSocketResourcesWebSocketMessageAcknowledgement:message];
+        [self sendWebSocketMessageAcknowledgement:message];
     } else {
         DDLogWarn(@"%@ Unsupported WebSocket Request", self.logTag);
 
-        [self sendWebSocketResourcesWebSocketMessageAcknowledgement:message];
+        [self sendWebSocketMessageAcknowledgement:message];
     }
 }
 
-- (void)sendWebSocketResourcesWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request
 {
     OWSAssertIsOnMainThread();
 
