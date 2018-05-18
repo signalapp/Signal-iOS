@@ -580,8 +580,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         responseObject);
 }
 
-// didSucceedWithResponseObject:(id _Nullable)responseObject
-
 #pragma mark - Delegate methods
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
@@ -611,6 +609,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
     OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
+
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
         return;
