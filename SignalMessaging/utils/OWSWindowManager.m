@@ -16,9 +16,12 @@ NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCa
 const CGFloat OWSWindowManagerCallScreenHeight(void)
 {
     if ([UIDevice currentDevice].isIPhoneX) {
+        // On an iPhoneX, the system return-to-call banner has been replaced by a much subtler green
+        // circle behind the system clock. Instead, we mimic the old system call banner as on older devices,
+        // but it has to be taller to fit beneath the notch.
         return 64;
     } else {
-        return 40;
+        return CurrentAppContext().statusBarHeight + 20;
     }
 }
 
@@ -29,11 +32,10 @@ const UIWindowLevel UIWindowLevel_Background = -1.f;
 // It obscures status bar content like the system clock
 // But being behind the status bar introduces two worse problems that'd we'd need to address
 // 1. Tap target is too small, only the 20px below the status bar are tappable
-// 2. hot-spot connected banner obscure our return-to-call banner, so the user can't see that they're in a call.
 const UIWindowLevel UIWindowLevel_ReturnToCall(void);
 const UIWindowLevel UIWindowLevel_ReturnToCall(void)
 {
-    return UIWindowLevelStatusBar + 1.f;
+    return UIWindowLevelStatusBar - 1;
 }
 
 // In front of the root window, behind the screen blocking window.
@@ -122,13 +124,32 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(screenBlockingWindow);
     OWSAssert(!self.screenBlockingWindow);
 
+    // MJK FIXME
+    rootWindow.backgroundColor = UIColor.yellowColor;
+
     self.rootWindow = rootWindow;
     self.screenBlockingWindow = screenBlockingWindow;
 
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didChangeStatusBarFrame:)
+                                                 name:UIApplicationDidChangeStatusBarFrameNotification
+                                               object:nil];
+
     [self ensureWindowState];
+}
+
+- (void)didChangeStatusBarFrame:(NSNotification *)notification
+{
+    CGRect newFrame = self.returnToCallWindow.frame;
+    newFrame.size.height = OWSWindowManagerCallScreenHeight();
+
+    DDLogDebug(@"%@ StatusBar changed frames - updating returnToCallWindowFrame: %@",
+        self.logTag,
+        NSStringFromCGRect(newFrame));
+    self.returnToCallWindow.frame = newFrame;
 }
 
 - (UIWindow *)createReturnToCallWindow:(UIWindow *)rootWindow

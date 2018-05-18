@@ -16,14 +16,21 @@ class OWSNavigationBar: UINavigationBar {
     weak var navBarLayoutDelegate: NavBarLayoutDelegate?
 
     let navbarWithoutStatusHeight: CGFloat = 44
-    let callBannerHeight: CGFloat = OWSWindowManagerCallScreenHeight()
+
+    var callBannerHeight: CGFloat {
+        return OWSWindowManagerCallScreenHeight()
+    }
 
     var statusBarHeight: CGFloat {
-        return 20
+        return CurrentAppContext().statusBarHeight
     }
 
     var fullWidth: CGFloat {
         return UIScreen.main.bounds.size.width
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override init(frame: CGRect) {
@@ -32,6 +39,7 @@ class OWSNavigationBar: UINavigationBar {
         self.isTranslucent = false
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
     }
 
     @objc
@@ -40,8 +48,10 @@ class OWSNavigationBar: UINavigationBar {
         self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    @objc
+    public func didChangeStatusBarFrame() {
+        Logger.debug("\(self.logTag) in \(#function)")
+        self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {

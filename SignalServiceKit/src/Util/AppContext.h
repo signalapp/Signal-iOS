@@ -59,6 +59,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated;
 
+@property (nonatomic, readonly) CGFloat statusBarHeight;
+
 // Returns the VC that should be used to present alerts, modals, etc.
 - (nullable UIViewController *)frontmostViewController;
 
