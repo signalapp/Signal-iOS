@@ -344,7 +344,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Byt till videosamtal";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Tryck för att återgå till samtal";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Ring tillbaka";
@@ -437,7 +437,7 @@
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Område";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Postbox";
 
 /* Label for the 'postcode' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "Postkod";
@@ -488,7 +488,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ogiltig kontakt.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Inga kontaktfält valda";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Öppna i Kartor";
@@ -497,7 +497,7 @@
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Skicka e-post";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Okänd kontakt";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Konversationsinställningar";
@@ -858,7 +858,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Säkerhetsnumret har ändrats. Tryck för att bekräfta.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Får för många fel med den här kontakten. Försök igen senare.";
@@ -1146,7 +1146,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Skickad";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skippad";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Skickar iväg";
@@ -1182,7 +1182,7 @@
 "MESSAGE_STATUS_READ" = "Läst";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skippad";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Skickar...";

@@ -68,7 +68,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ i gruppe %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal klarer ikke starte. Vennligst send inn debug-logger til utviklerne bak appen slik at vi kan forsøke å løse dette problemet.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal klarer ikke starte. Vennligst send inn debug-logger til utviklerne av appen slik at vi kan forsøke å løse dette problemet.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Feil";
@@ -125,7 +125,7 @@
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Feil ved sending av vedlegg";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke endre størrelse for vedlagte bilde.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke endre størrelse på vedlagte bilde.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Klarte ikke behandle videoen.";
@@ -152,7 +152,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Vedlegget er tomt.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Velge eller ta et nytt bilde som skal sendes";
+"ATTACHMENT_HINT" = "Velg eller ta et nytt bilde som skal sendes";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Vedlegg";
@@ -179,13 +179,13 @@
 "BACK_BUTTON" = "Tilbake";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Sikkerhetskopier kunne ikke eksporteres.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Sikkerhetskopien kunne ikke eksporteres.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig Tjeneste Respons";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig tjenestesvar";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
-"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Sikkerhetskopier kunne ikke lastes opp.";
+"BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "Sikkerhetskopien kunne ikke lastes opp.";
 
 /* Indicates that the cloud is being cleaned up. */
 "BACKUP_EXPORT_PHASE_CLEAN_UP" = "Rydder i sikkerhetskopier";
@@ -389,7 +389,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil resette appen ved å slette dine meldinger og avregistrere deg fra serveren. Appen vil avslutte etter sletting av dataene dine.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på at du vil slette din konto?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Er du sikker på at du vil slette kontoen din?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du vil ikke lengre kunne sende eller motta meldinger i denne gruppen.";
@@ -443,7 +443,7 @@
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "Postnummer";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Fylke";
 
 /* Label for the 'street' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_STREET" = "Gate";
@@ -458,10 +458,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "Mellomnavn";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "Prefiks";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Suffiks";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Organisasjon";
@@ -723,7 +723,7 @@
 "EDIT_TXT" = "Rediger";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hei,\n\nI det siste har jeg brukt Signal for å holde iPhone-samtalene mine private. Jeg vil at du skal installere det også, så vi kan være sikre på at bare du og jeg kan lese våre meldinger eller høre våre samtaler.\n\nSignal er tilgjengelig for iPhone og Android. Få det her: %@\n\nSignal fungerer som din eksisterende meldingsapplikasjon. Vi kan sende bilder og video, ringe, og begynne gruppesamtaler. Det beste er: ingen andre kan se noe av det, selv ikke de menneskene som laget Signal!\n\nDu kan lese mer om Open Whisper Systems, og menneskene bak Signal, her: %@";
+"EMAIL_INVITE_BODY" = "Hei,\n\nI det siste har jeg brukt Signal for å holde iPhone-samtalene mine private. Jeg vil at du skal installere det også, så vi kan være sikre på at bare du og jeg kan lese våre meldinger eller høre våre samtaler.\n\nSignal er tilgjengelig for iPhone og Android. Få den her: %@\n\nSignal fungerer som din eksisterende meldingsapplikasjon. Vi kan sende bilder og video, ringe, og begynne gruppesamtaler. Det beste er: ingen andre kan se noe av det, selv ikke de menneskene som laget Signal!\n\nDu kan lese mer om Open Whisper Systems, og menneskene bak Signal, her: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "La oss bytte til Signal";
@@ -741,7 +741,7 @@
 "EMPTY_ARCHIVE_TITLE" = "Rydd i dine samtaler.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ingen av kontaktene dine har Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ingen av kontaktene dine har Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Hva med å invitere noen?";
@@ -846,7 +846,7 @@
 "ERROR_MESSAGE_NO_SESSION" = "Ingen tilgjengelig sesjon for kontakt.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sikkerhetstallene har blitt endret.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Sikkerhetsnummeret er endret.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Sikkerhetsnummeret for %@ har endret seg.";
@@ -858,7 +858,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhetstallene er endret. Trykk for å verifisere.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Uregistrert bruker: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "For mange feil med denne kontakten. Vennligst prøv igjen om kort tid.";
@@ -867,7 +867,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Sikkerhetsnummeret for %@ har nylig endret seg. Det kan derfor vært lurt å kontrollere med personen før meldingen sendes på nytt.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Verifisering av sikkerhetstall mislyktes!";
+"FAILED_VERIFICATION_TITLE" = "Verifisering av sikkerhetsnummer mislyktes!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Merk som verifisert";
@@ -918,7 +918,7 @@
 "GROUP_AVATAR_CHANGED" = "Avatar endret.";
 
 /* No comment provided by engineer. */
-"GROUP_CREATED" = "Gruppe laget.";
+"GROUP_CREATED" = "Gruppe opprettet.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Ikke alle medlemmene kunne legges til gruppen. Trykk for å forsøke på nytt.";
@@ -1053,7 +1053,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Denne QR-koden er ikke gyldig, du må skanne QR-koden som vises på enheten du vil koble til.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Godkjenningsenhet feilet";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Kobling av enhet feilet";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Denne enheten vil kunne se dine grupper og kontakter, lese alle dine meldinger i appen og sende meldinger som deg.";
@@ -1065,19 +1065,19 @@
 "LINK_DEVICE_RESTART" = "Prøv på nytt";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skann QR-koden på enheten for å godkjenne den.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skann QR-koden på enheten for å koble den.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skann QR-kode";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Godkjenn ny enhet";
+"LINK_NEW_DEVICE_TITLE" = "Koble ny enhet";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Godkjente enheter";
+"LINKED_DEVICES_TITLE" = "Koblede enheter";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Godkjenning av enhet for konto mislyktes";
+"LINKING_DEVICE_FAILED_TITLE" = "Kobling av enhet mislyktes";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppemedlemmer";
@@ -1173,7 +1173,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Levert";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending feilet. Trykk for mer info.";
+"MESSAGE_STATUS_FAILED" = "Sending feilet. Trykk for info.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Feilet";
@@ -1307,7 +1307,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Medlem";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Gi navn til denne gruppesamtalen";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngi gruppesamtalen";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andre brukere";
@@ -1382,10 +1382,10 @@
 "PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
 
 /* Label for 'Home' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME" = "Hjem";
+"PHONE_NUMBER_TYPE_HOME" = "Hjemme";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Hjem fax";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax hjemme";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
@@ -1412,7 +1412,7 @@
 "PHONE_NUMBER_TYPE_WORK" = "Arbeid";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Arbeid fax";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax arbeid";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Spill av media";
@@ -1436,16 +1436,16 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Slett verifisering";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ser ikke ut som dine sikkerhetstall som du deler med %@. Er det rett kontakt du forsøker å verifisere?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dette ser ikke ut som sikkerhetsnummeret du deler med %@. Er det rett kontakt du forsøker å verifisere?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Tallet på utklippstavlen ser ikke ut som de riktige sikkerhetstallene for denne samtalen.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Tallet på utklippstavlen ser ikke ut som det riktige sikkerhetsnummeret for denne samtalen.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunne ikke finne noen sikkerhetstall på utklippstavlen. Har du kopiert tallene riktig?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal kunne ikke finne noe sikkerhetsnummer på utklippstavlen. Har du kopiert tallene riktig?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Du deler et sett med sikkerhetstall med hver av kontaktene dine. Dobbelsjekk at %@ viser akkurat *dine* unike sikkerhetstall.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Du deler et unikt sikkerhetsnummer med hver av kontaktene dine. Dobbelsjekk at %@ viser akkurat *ditt* unike sikkerhetsnummer.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Du bruker en gammel versjon av Signal. Du må oppdatere før du kan verifisere.";
@@ -1454,13 +1454,13 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Din samtalepartner bruker en gammel versjon av Signal. Vedkommende må oppdatere før du kan verifisere.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den skannede koden ser ikke ut som sikkerhetstall. Bruker dere begge en oppdatert versjon av Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Den skannede koden ser ikke ut som et sikkerhetsnummer. Bruker dere begge en oppdatert versjon av Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Dersom du ønsker å verifisere sikkerheten i din krypterte kommunikasjon med %@, sammenlign tallene over med tallene på deres enhet.\n\nAlternativt kan du skanne koden på vedkommendes telefon, eller be vedkommende om å skanne din kode.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Verifiser sikkerhetstall";
+"PRIVACY_VERIFICATION_TITLE" = "Verifiser sikkerhetsnummer";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Merk som verifisert";
@@ -1481,7 +1481,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Fjern profilbilde";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Profilnavnet er for langt.";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Profilnavnet ditt er for langt.";
 
 /* Error message shown when a profile update fails. */
 "PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Oppdatering av profil feilet.";
@@ -1490,13 +1490,13 @@
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Skriv inn navnet ditt";
 
 /* Label for the profile avatar field of the profile view. */
-"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
+"PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Profilbilde";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal profilen din vil være synlig for kontaktene dine når du starter nye samtaler, og når du deler den med andre brukere og grupper.";
 
 /* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Trykk her for mer info.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Trykk her for å lære mer.";
 
 /* Label for the profile name field of the profile view. */
 "PROFILE_VIEW_PROFILE_NAME_FIELD" = "Profilnavn";
@@ -1517,7 +1517,7 @@
 "PUSH_MANAGER_REPLY" = "Svar";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Vellykket omregistrert for push-varslinger.";
+"PUSH_REGISTER_SUCCESS" = "Vellykket omregistrering for push-varslinger.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push-varsler";
@@ -1613,7 +1613,7 @@
 "REGISTRATION_TITLE_LABEL" = "Ditt telefonnummer";
 
 /* Alert view title */
-"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifisering Mislykket";
+"REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifisering mislykket";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Tallene du ga oss samsvarer ikke med hva vi sendte. Lyst til å dobbeltsjekke ?";
@@ -1679,10 +1679,10 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Send likevel";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Våre Signal sikkerhetstall:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Vårt Signal sikkerhetsnummer:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Dine sikkerhetstall for %@ har endret seg. Det kan være lurt å verifisere dem.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ditt sikkerhetsnummer med %@ har endret seg. Det kan være lurt å verifisere dem.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Skann QR-koden på kontaktens enhet.";
@@ -1925,7 +1925,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Tid før automatisk skjermlås";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås opp Signal ved å bruke Touch ID, Face ID eller din iOS kode. Du kan fortsatt besvare innkommende samtaler og motta meldingsvarsler når skjermen er låst. Varslingsmulighetene i Signal lar deg velge hvilken informasjon som vises.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås opp Signal ved å bruke Touch ID, Face ID eller koden på din iOS enhet. Du kan fortsatt besvare innkommende samtaler og motta meldingsvarsler når skjermen er låst. Varslingsmulighetene i Signal lar deg velge hvilken informasjon som vises.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skjermlås";
@@ -1973,7 +1973,7 @@
 "SETTINGS_VERSION" = "Versjon";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "E-Post";
+"SHARE_ACTION_MAIL" = "E-post";
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "Melding";
@@ -2024,10 +2024,10 @@
 "SOUNDS_NONE" = "Ingen";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sikkerhetsnummer for %@ stemmer. Du kan nå markere denne kontakten som verifisert.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Sikkerhetsnummeret for %@ stemmer. Du kan nå markere denne kontakten som verifisert.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Sikkerhetsnummer stemmer!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Sikkerhetsnummeret stemmer!";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dager";

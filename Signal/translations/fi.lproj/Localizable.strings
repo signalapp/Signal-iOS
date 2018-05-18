@@ -858,7 +858,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumero on vaihtunut. Varmenna napauttamalla.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Rekisteröimätön käyttäjä: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Viestien lähetys tälle yhteystiedolle epäonnistui liian monta kertaa. Yritä myöhemmin uudelleen.";
@@ -1194,13 +1194,13 @@
 "MESSAGE_STATUS_UPLOADING" = "Lähetetään...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napsauttamalla.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napauttamalla.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Olet estänyt tämän käyttäjän";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napsauttamalla.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ei ole enää merkitty varmennetuksi. Lisätietoja napauttamalla.";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "Lataaminen epäonnistui";
@@ -1218,19 +1218,19 @@
 "MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Jaa profiilisi tämän ryhmän kanssa?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Useampi kuin yksi tämän ryhmän jäsenistä ei ole enää merkitty varmennetuksi. Lisätietoja napsauttamalla.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Useampi kuin yksi tämän ryhmän jäsenistä ei ole enää merkitty varmennetuksi. Lisätietoja napauttamalla.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Napsauta tästä asetuksiin";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Napauta tästä asetuksiin";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Lukemattomia viestejä";
 
 /* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "Ylempänä on lisää lukemattomia viestejä (mukaan lukien turvanumeroiden vaihdoksia). Napsauta \"%@\" nähdäksesi ne.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "Ylempänä on lisää lukemattomia viestejä (mukaan lukien turvanumeroiden vaihdoksia). Napauta \"%@\" nähdäksesi ne.";
 
 /* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Ylempänä on lisää lukemattomia viestejä.  Napsauta \"%@\" nähdäksesi ne.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "Ylempänä on lisää lukemattomia viestejä.  Napauta \"%@\" nähdäksesi ne.";
 
 /* notification title */
 "MISSED_CALL" = "Vastaamatta jäänyt puhelu";
@@ -1307,7 +1307,7 @@
 "NEW_GROUP_MEMBER_LABEL" = "Jäsen";
 
 /* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Anna nimi tälle ryhmäkeskustelulle";
+"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nimeä tämä ryhmä";
 
 /* a title for the non-contacts section of the 'new group' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Muuta käyttäjät";
@@ -2207,7 +2207,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Varmennuksen tila vaihtui.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Näytä turvanumero.";
+"VERIFY_PRIVACY" = "Näytä turvanumero";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Näytä turvanumerot";
