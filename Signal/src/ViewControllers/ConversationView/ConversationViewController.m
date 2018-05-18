@@ -4038,8 +4038,9 @@ typedef enum : NSUInteger {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            AttachmentApprovalViewController *approvalVC = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
-            [self presentViewController:approvalVC animated:YES completion:nil];
+            OWSNavigationController *modal =
+                [AttachmentApprovalViewController wrappedInNavControllerWithAttachment:attachment delegate:self];
+            [self presentViewController:modal animated:YES completion:nil];
         }
     });
 }

@@ -55,7 +55,26 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = dialogTitle()
+        self.navigationItem.title = nil
+
+        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        cancelButton.tintColor = .white
+        self.navigationItem.leftBarButtonItem = cancelButton
+    }
+
+    @objc
+    public class func wrappedInNavController(attachment: SignalAttachment, delegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
+        let vc = AttachmentApprovalViewController(attachment: attachment, delegate: delegate)
+        let navController = OWSNavigationController(rootViewController: vc)
+
+        // Make navigationBar clear
+        navController.navigationBar.backgroundColor = .clear
+        navController.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navController.navigationBar.isTranslucent = true
+        navController.navigationBar.shadowImage = UIImage()
+        navController.navigationBar.clipsToBounds = true
+
+        return navController
     }
 
     override public func viewWillLayoutSubviews() {
@@ -64,14 +83,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
 
         // e.g. if flipping to/from landscape
         updateMinZoomScaleForSize(view.bounds.size)
-    }
-
-    private func dialogTitle() -> String {
-        guard let filename = mediaMessageView.formattedFileName() else {
-            return NSLocalizedString("ATTACHMENT_APPROVAL_DIALOG_TITLE",
-                                     comment: "Title for the 'attachment approval' dialog.")
-        }
-        return filename
     }
 
     override public func viewWillAppear(_ animated: Bool) {
@@ -150,19 +161,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             topGradient.autoSetDimension(.height, toSize: ScaleFromIPhone5(60))
         }
 
-        // Top Toolbar
-        let topToolbar = makeClearToolbar()
-
-        self.view.addSubview(topToolbar)
-        topToolbar.autoPinWidthToSuperview()
-        topToolbar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        topToolbar.setContentHuggingVerticalHigh()
-        topToolbar.setCompressionResistanceVerticalHigh()
-
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
-        cancelButton.tintColor = UIColor.white
-        topToolbar.items = [cancelButton]
-
         // Bottom Toolbar
         let captioningToolbar = CaptioningToolbar()
         captioningToolbar.captioningToolbarDelegate = self
@@ -198,7 +196,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
             // pops the keyboard.
             contentContainer.addSubview(progressBar)
 
-            progressBar.autoPinEdge(.top, to: .bottom, of: topToolbar)
+            progressBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
             progressBar.autoPinWidthToSuperview()
             progressBar.autoSetDimension(.height, toSize: 44)
 
@@ -320,7 +318,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
     }
 
     public func playerProgressBarDidStartScrubbing(_ playerProgressBar: PlayerProgressBar) {
-        //  [self.videoPlayer pause];
         guard let videoPlayer = self.videoPlayer else {
             owsFail("\(TAG) video player was unexpectedly nil")
             return
