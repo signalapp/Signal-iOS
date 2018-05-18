@@ -976,240 +976,192 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                      messages:deviceMessages
                                                                         relay:recipient.relay
                                                                     timeStamp:message.timestamp];
-    if (YES) {
+    if (TSSocketManager.sharedManager.canMakeRequests) {
         [TSSocketManager.sharedManager makeRequest:request
-            success:^{
-                DDLogInfo(@"%@ Message send succeeded.", self.logTag);
-                if (isLocalNumber && deviceMessages.count == 0) {
-                    DDLogInfo(
-                        @"%@ Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.", self.logTag);
-                    // In order to avoid skipping necessary sync messages, the default value
-                    // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
-                    // sync message with no device messages (e.g. the service has confirmed
-                    // that we have no linked devices), we can set mayHaveLinkedDevices to NO
-                    // to avoid unnecessary message sends for sync messages until we learn
-                    // of a linked device (e.g. through the device linking UI or by receiving
-                    // a sync message, etc.).
-                    [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
-                }
-
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [recipient saveWithTransaction:transaction];
-                        [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
-                    }];
-
-                    [self handleMessageSentLocally:message];
-                    successHandler();
-                });
+            success:^(id _Nullable responseObject) {
+                [self messageSendDidSucceed:message
+                                  recipient:recipient
+                              isLocalNumber:isLocalNumber
+                             deviceMessages:deviceMessages
+                                    success:successHandler];
             }
             failure:^(NSInteger statusCode, NSError *error) {
-                DDLogError(@"%@ Message send failed.", self.logTag);
-                DDLogInfo(@"%@ sending to recipient: %@, failed with error.", self.logTag, recipient.uniqueId);
-                [DDLog flushLog];
-
-                //                                               NSHTTPURLResponse *response = (NSHTTPURLResponse
-                //                                               *)task.response; long statuscode = response.statusCode;
-                NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-
-                void (^retrySend)(void) = ^void() {
-                    if (remainingAttempts <= 0) {
-                        // Since we've already repeatedly failed to send to the messaging API,
-                        // it's unlikely that repeating the whole process will succeed.
-                        [error setIsRetryable:NO];
-                        return failureHandler(error);
-                    }
-
-                    dispatch_async([OWSDispatch sendingQueue], ^{
-                        DDLogDebug(@"%@ Retrying: %@", self.logTag, message.debugDescription);
-                        [self sendMessageToService:message
-                                         recipient:recipient
-                                            thread:thread
-                                          attempts:remainingAttempts
-                                           success:successHandler
-                                           failure:failureHandler];
-                    });
-                };
-
-                switch (statusCode) {
-                    case 401: {
-                        DDLogWarn(
-                            @"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by "
-                            @"registering elsewhere?",
-                            self.logTag);
-                        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure,
-                            NSLocalizedString(@"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
-                                @"Error message when attempting to send message"));
-                        // No need to retry if we've been de-authed.
-                        [error setIsRetryable:NO];
-                        return failureHandler(error);
-                    }
-                    case 404: {
-                        DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
-
-                        [self unregisteredRecipient:recipient message:message thread:thread];
-                        NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-                        // No need to retry if the recipient is not registered.
-                        [error setIsRetryable:NO];
-                        // If one member of a group deletes their account,
-                        // the group should ignore errors when trying to send
-                        // messages to this ex-member.
-                        [error setShouldBeIgnoredForGroups:YES];
-                        return failureHandler(error);
-                    }
-                    case 409: {
-                        // Mismatched devices
-                        DDLogWarn(@"%@ Mismatch Devices for recipient: %@", self.logTag, recipient.uniqueId);
-
-                        NSError *error;
-                        NSDictionary *serializedResponse =
-                            [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
-                        if (error) {
-                            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
-                            [error setIsRetryable:YES];
-                            return failureHandler(error);
-                        }
-
-                        [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
-                        break;
-                    }
-                    case 410: {
-                        // Stale devices
-                        DDLogWarn(@"%@ Stale devices for recipient: %@", self.logTag, recipient.uniqueId);
-
-                        if (!responseData) {
-                            DDLogWarn(@"Stale devices but server didn't specify devices in response.");
-                            NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                            [error setIsRetryable:YES];
-                            return failureHandler(error);
-                        }
-
-                        [self handleStaleDevicesWithResponse:responseData
-                                                 recipientId:recipient.uniqueId
-                                                  completion:retrySend];
-                        break;
-                    }
-                    default:
-                        retrySend();
-                        break;
-                }
+                [self messageSendDidFail:message
+                               recipient:recipient
+                                  thread:thread
+                           isLocalNumber:isLocalNumber
+                          deviceMessages:deviceMessages
+                       remainingAttempts:remainingAttempts
+                              statusCode:statusCode
+                                   error:error
+                                 success:successHandler
+                                 failure:failureHandler];
             }];
-    } else
+    } else {
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
-                if (isLocalNumber && deviceMessages.count == 0) {
-                    DDLogInfo(
-                        @"%@ Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.", self.logTag);
-                    // In order to avoid skipping necessary sync messages, the default value
-                    // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
-                    // sync message with no device messages (e.g. the service has confirmed
-                    // that we have no linked devices), we can set mayHaveLinkedDevices to NO
-                    // to avoid unnecessary message sends for sync messages until we learn
-                    // of a linked device (e.g. through the device linking UI or by receiving
-                    // a sync message, etc.).
-                    [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
-                }
-
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [recipient saveWithTransaction:transaction];
-                        [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
-                    }];
-
-                    [self handleMessageSentLocally:message];
-                    successHandler();
-                });
+                [self messageSendDidSucceed:message
+                                  recipient:recipient
+                              isLocalNumber:isLocalNumber
+                             deviceMessages:deviceMessages
+                                    success:successHandler];
             }
             failure:^(NSURLSessionDataTask *task, NSError *error) {
-                DDLogInfo(@"%@ sending to recipient: %@, failed with error.", self.logTag, recipient.uniqueId);
-                [DDLog flushLog];
-
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-                long statuscode = response.statusCode;
-                NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                NSInteger statusCode = response.statusCode;
 
-                void (^retrySend)(void) = ^void() {
-                    if (remainingAttempts <= 0) {
-                        // Since we've already repeatedly failed to send to the messaging API,
-                        // it's unlikely that repeating the whole process will succeed.
-                        [error setIsRetryable:NO];
-                        return failureHandler(error);
-                    }
-
-                    dispatch_async([OWSDispatch sendingQueue], ^{
-                        DDLogDebug(@"%@ Retrying: %@", self.logTag, message.debugDescription);
-                        [self sendMessageToService:message
-                                         recipient:recipient
-                                            thread:thread
-                                          attempts:remainingAttempts
-                                           success:successHandler
-                                           failure:failureHandler];
-                    });
-                };
-
-                switch (statuscode) {
-                    case 401: {
-                        DDLogWarn(
-                            @"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by "
-                            @"registering elsewhere?",
-                            self.logTag);
-                        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure,
-                            NSLocalizedString(@"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED",
-                                @"Error message when attempting to send message"));
-                        // No need to retry if we've been de-authed.
-                        [error setIsRetryable:NO];
-                        return failureHandler(error);
-                    }
-                    case 404: {
-                        DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
-
-                        [self unregisteredRecipient:recipient message:message thread:thread];
-                        NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
-                        // No need to retry if the recipient is not registered.
-                        [error setIsRetryable:NO];
-                        // If one member of a group deletes their account,
-                        // the group should ignore errors when trying to send
-                        // messages to this ex-member.
-                        [error setShouldBeIgnoredForGroups:YES];
-                        return failureHandler(error);
-                    }
-                    case 409: {
-                        // Mismatched devices
-                        DDLogWarn(@"%@ Mismatch Devices for recipient: %@", self.logTag, recipient.uniqueId);
-
-                        NSError *error;
-                        NSDictionary *serializedResponse =
-                            [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
-                        if (error) {
-                            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
-                            [error setIsRetryable:YES];
-                            return failureHandler(error);
-                        }
-
-                        [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
-                        break;
-                    }
-                    case 410: {
-                        // Stale devices
-                        DDLogWarn(@"%@ Stale devices for recipient: %@", self.logTag, recipient.uniqueId);
-
-                        if (!responseData) {
-                            DDLogWarn(@"Stale devices but server didn't specify devices in response.");
-                            NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                            [error setIsRetryable:YES];
-                            return failureHandler(error);
-                        }
-
-                        [self handleStaleDevicesWithResponse:responseData
-                                                 recipientId:recipient.uniqueId
-                                                  completion:retrySend];
-                        break;
-                    }
-                    default:
-                        retrySend();
-                        break;
-                }
+                [self messageSendDidFail:message
+                               recipient:recipient
+                                  thread:thread
+                           isLocalNumber:isLocalNumber
+                          deviceMessages:deviceMessages
+                       remainingAttempts:remainingAttempts
+                              statusCode:statusCode
+                                   error:error
+                                 success:successHandler
+                                 failure:failureHandler];
             }];
+    }
+}
+
+- (void)messageSendDidSucceed:(TSOutgoingMessage *)message
+                    recipient:(SignalRecipient *)recipient
+                isLocalNumber:(BOOL)isLocalNumber
+               deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
+                      success:(void (^)(void))successHandler
+{
+    OWSAssert(message);
+    OWSAssert(recipient);
+    OWSAssert(deviceMessages);
+    OWSAssert(successHandler);
+
+    DDLogInfo(@"%@ Message send succeeded.", self.logTag);
+
+    if (isLocalNumber && deviceMessages.count == 0) {
+        DDLogInfo(@"%@ Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.", self.logTag);
+        // In order to avoid skipping necessary sync messages, the default value
+        // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
+        // sync message with no device messages (e.g. the service has confirmed
+        // that we have no linked devices), we can set mayHaveLinkedDevices to NO
+        // to avoid unnecessary message sends for sync messages until we learn
+        // of a linked device (e.g. through the device linking UI or by receiving
+        // a sync message, etc.).
+        [OWSDeviceManager.sharedManager clearMayHaveLinkedDevicesIfNotSet];
+    }
+
+    dispatch_async([OWSDispatch sendingQueue], ^{
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [recipient saveWithTransaction:transaction];
+            [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
+        }];
+
+        [self handleMessageSentLocally:message];
+        successHandler();
+    });
+}
+
+- (void)messageSendDidFail:(TSOutgoingMessage *)message
+                 recipient:(SignalRecipient *)recipient
+                    thread:(TSThread *)thread
+             isLocalNumber:(BOOL)isLocalNumber
+            deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
+         remainingAttempts:(int)remainingAttempts
+                statusCode:(NSInteger)statusCode
+                     error:(NSError *)error
+                   success:(void (^)(void))successHandler
+                   failure:(RetryableFailureHandler)failureHandler
+{
+    OWSAssert(message);
+    OWSAssert(recipient);
+    OWSAssert(thread);
+    OWSAssert(deviceMessages);
+    OWSAssert(error);
+    OWSAssert(successHandler);
+    OWSAssert(failureHandler);
+
+    DDLogInfo(@"%@ sending to recipient: %@, failed with error.", self.logTag, recipient.uniqueId);
+    [DDLog flushLog];
+
+    NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+
+    void (^retrySend)(void) = ^void() {
+        if (remainingAttempts <= 0) {
+            // Since we've already repeatedly failed to send to the messaging API,
+            // it's unlikely that repeating the whole process will succeed.
+            [error setIsRetryable:NO];
+            return failureHandler(error);
+        }
+
+        dispatch_async([OWSDispatch sendingQueue], ^{
+            DDLogDebug(@"%@ Retrying: %@", self.logTag, message.debugDescription);
+            [self sendMessageToService:message
+                             recipient:recipient
+                                thread:thread
+                              attempts:remainingAttempts
+                               success:successHandler
+                               failure:failureHandler];
+        });
+    };
+
+    switch (statusCode) {
+        case 401: {
+            DDLogWarn(@"%@ Unable to send due to invalid credentials. Did the user's client get de-authed by "
+                      @"registering elsewhere?",
+                self.logTag);
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeSignalServiceFailure,
+                NSLocalizedString(
+                    @"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED", @"Error message when attempting to send message"));
+            // No need to retry if we've been de-authed.
+            [error setIsRetryable:NO];
+            return failureHandler(error);
+        }
+        case 404: {
+            DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
+
+            [self unregisteredRecipient:recipient message:message thread:thread];
+            NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
+            // No need to retry if the recipient is not registered.
+            [error setIsRetryable:NO];
+            // If one member of a group deletes their account,
+            // the group should ignore errors when trying to send
+            // messages to this ex-member.
+            [error setShouldBeIgnoredForGroups:YES];
+            return failureHandler(error);
+        }
+        case 409: {
+            // Mismatched devices
+            DDLogWarn(@"%@ Mismatch Devices for recipient: %@", self.logTag, recipient.uniqueId);
+
+            NSError *error;
+            NSDictionary *serializedResponse =
+                [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+            if (error) {
+                OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
+                [error setIsRetryable:YES];
+                return failureHandler(error);
+            }
+
+            [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
+            break;
+        }
+        case 410: {
+            // Stale devices
+            DDLogWarn(@"%@ Stale devices for recipient: %@", self.logTag, recipient.uniqueId);
+
+            if (!responseData) {
+                DDLogWarn(@"Stale devices but server didn't specify devices in response.");
+                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
+                [error setIsRetryable:YES];
+                return failureHandler(error);
+            }
+
+            [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId completion:retrySend];
+            break;
+        }
+        default:
+            retrySend();
+            break;
+    }
 }
 
 - (void)handleMismatchedDevices:(NSDictionary *)dictionary

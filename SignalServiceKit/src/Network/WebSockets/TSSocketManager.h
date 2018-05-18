@@ -4,6 +4,8 @@
 
 #import <SocketRocket/SRWebSocket.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 static void *SocketManagerStateObservationContext = &SocketManagerStateObservationContext;
 
 extern NSString *const kNSNotification_SocketManagerStateDidChange;
@@ -14,7 +16,8 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
     SocketManagerStateOpen,
 };
 
-typedef void (^TSSocketMessageSuccess)(void);
+typedef void (^TSSocketMessageSuccess)(id _Nullable responseObject);
+// statusCode is zero by default, if request never made or failed.
 typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
 
 @class TSRequest;
@@ -22,6 +25,7 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
 @property (nonatomic, readonly) SocketManagerState state;
+@property (atomic, readonly) BOOL canMakeRequests;
 
 + (instancetype)sharedManager;
 
@@ -45,3 +49,5 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
             failure:(TSSocketMessageFailure)failure;
 
 @end
+
+NS_ASSUME_NONNULL_END
