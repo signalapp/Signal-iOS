@@ -37,15 +37,18 @@ static const CGFloat kSocketReconnectDelaySeconds = 5.f;
 static const CGFloat kBackgroundOpenSocketDurationSeconds = 25.f;
 // b) It has received a message over the socket in the last 15 seconds.
 static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
+// c) It is in the process of making a request.
+static const CGFloat kMakeRequestKeepSocketAliveDurationSeconds = 30.f;
 
 NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_SocketManagerStateDidChange";
 
 @interface TSSocketMessage : NSObject
 
 @property (nonatomic) UInt64 requestId;
-@property (nonatomic) TSSocketMessageSuccess success;
-@property (nonatomic) TSSocketMessageFailure failure;
+@property (nonatomic, nullable) TSSocketMessageSuccess success;
+@property (nonatomic, nullable) TSSocketMessageFailure failure;
 @property (nonatomic) BOOL hasCompleted;
+@property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 @end
 
@@ -115,9 +118,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 //
 // The first tier is the actual websocket and the timers used
 // to keep it alive and connected.
-@property (nonatomic) SRWebSocket *websocket;
-@property (nonatomic) NSTimer *heartbeatTimer;
-@property (nonatomic) NSTimer *reconnectTimer;
+@property (nonatomic, nullable) SRWebSocket *websocket;
+@property (nonatomic, nullable) NSTimer *heartbeatTimer;
+@property (nonatomic, nullable) NSTimer *reconnectTimer;
 
 #pragma mark -
 
@@ -143,13 +146,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // trying to keep the socket open), all three should be clear.
 //
 // This represents how long we're trying to keep the socket open.
-@property (nonatomic) NSDate *backgroundKeepAliveUntilDate;
+@property (nonatomic, nullable) NSDate *backgroundKeepAliveUntilDate;
 // This timer is used to check periodically whether we should
 // close the socket.
-@property (nonatomic) NSTimer *backgroundKeepAliveTimer;
+@property (nonatomic, nullable) NSTimer *backgroundKeepAliveTimer;
 // This is used to manage the iOS "background task" used to
 // keep the app alive in the background.
-@property (nonatomic) OWSBackgroundTask *backgroundTask;
+@property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
 // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
 // because UIKit only provides a "will resign active" notification, not a "did resign active"
@@ -421,6 +424,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     TSSocketMessage *socketMessage = [TSSocketMessage new];
     socketMessage.success = success;
     socketMessage.failure = failure;
+    socketMessage.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     @synchronized(self)
     {
         // TODO: Should we use another random number generator?
@@ -519,6 +524,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         DDLogError(@"%@ received incomplete WebSocket response.", self.logTag);
         return;
     }
+
+    DispatchMainThreadSafe(^{
+        [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
+    });
 
     UInt64 requestId = message.id;
     UInt32 responseStatus = 0;
