@@ -363,11 +363,12 @@ void AssertIsOnDisappearingMessagesQueue()
         recentlyScheduledDisappearanceTimer = YES;
     }
 
+    if (!CurrentAppContext().isMainAppAndActive) {
+        DDLogInfo(@"%@ Ignoring fallbacktimer for app which is not main and active.", self.logTag);
+        return;
+    }
+
     dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
-        if (!CurrentAppContext().isMainAppAndActive) {
-            DDLogInfo(@"%@ Ignoring fallbacktimer for app which is not main and active.", self.logTag);
-            return;
-        }
         NSUInteger deletedCount = [self runLoop];
 
         // Normally deletions should happen via the disappearanceTimer, to make sure that they're prompt.
