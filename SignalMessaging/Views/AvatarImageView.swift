@@ -129,7 +129,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     func handleGroupAvatarChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificaitonKey_UniqueId] as? String else {
+        guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {
             owsFail("\(logTag) in \(#function) groupThreadId was unexpectedly nil")
             return
         }

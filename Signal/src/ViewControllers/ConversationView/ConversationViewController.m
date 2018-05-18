@@ -3835,6 +3835,8 @@ typedef enum : NSUInteger {
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];
 
+    [groupThread fireAvatarChangedNotification];
+
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];

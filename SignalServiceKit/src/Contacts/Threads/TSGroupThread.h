@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class YapDatabaseReadWriteTransaction;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;
-extern NSString *const TSGroupThread_NotificaitonKey_UniqueId;
+extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 @interface TSGroupThread : TSThread
 
@@ -36,6 +36,8 @@ extern NSString *const TSGroupThread_NotificaitonKey_UniqueId;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)fireAvatarChangedNotification;
 
 @end
 
