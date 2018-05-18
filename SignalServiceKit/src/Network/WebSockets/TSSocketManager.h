@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SocketRocket/SRWebSocket.h>
@@ -13,6 +13,11 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
     SocketManagerStateConnecting,
     SocketManagerStateOpen,
 };
+
+typedef void (^TSSocketMessageSuccess)(void);
+typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
+
+@class TSRequest;
 
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
@@ -32,5 +37,11 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
 //
 // This method can be called from any thread.
 + (void)requestSocketOpen;
+
+#pragma mark - Message Sending
+
+- (void)makeRequest:(TSRequest *)request
+            success:(TSSocketMessageSuccess)success
+            failure:(TSSocketMessageFailure)failure;
 
 @end
