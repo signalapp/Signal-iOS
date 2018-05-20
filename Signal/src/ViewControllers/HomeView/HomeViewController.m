@@ -220,9 +220,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
     [self.view addSubview:emptyBoxLabel];
-    [emptyBoxLabel autoPinWidthToSuperview];
-    [emptyBoxLabel autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [emptyBoxLabel autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [emptyBoxLabel setNumberOfLines:0]; //  Let the label use as many lines as needed. It will very rarely be more than 2.
+    [emptyBoxLabel autoPinLeadingToSuperviewMargin];
+    [emptyBoxLabel autoPinTrailingToSuperviewMargin];
+    [[[emptyBoxLabel centerYAnchor] constraintEqualToAnchor:[[self view] centerYAnchor]] setActive:YES];
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
@@ -1239,23 +1240,23 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     _emptyBoxLabel.textColor = [UIColor grayColor];
     _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
     _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
-    _emptyBoxLabel.numberOfLines = 4;
 
     NSString *firstLine = @"";
     NSString *secondLine = @"";
 
     if (self.homeViewMode == HomeViewMode_Inbox) {
         if ([Environment.preferences getHasSentAMessage]) {
+            //  FIXME: This doesn't appear to ever show up as the defaults flag is never set (setHasSentAMessage: is never called).
             firstLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_FIRST_TEXT", @"");
         } else {
-            // FIXME This looks wrong. Shouldn't we be showing inbox_title/text here?
-            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"");
-            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"");
+            //  FIXME: Misleading localizable string key name.
+            firstLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TITLE", @"First (bolded) part of the label that shows up when there are neither active nor archived conversations");
+            secondLine = NSLocalizedString(@"EMPTY_ARCHIVE_FIRST_TEXT", @"Second part of the label that shows up when there are neither active nor archived conversations");
         }
     } else {
         if ([Environment.preferences getHasArchivedAMessage]) {
-            // FIXME This looks wrong. Shouldn't we be showing first_archive_title/text here?
+            //  FIXME: Shows up after the archival tab is cleared up completely by the user, the localizable string key is misleading.
             firstLine = NSLocalizedString(@"EMPTY_INBOX_TITLE", @"");
             secondLine = NSLocalizedString(@"EMPTY_INBOX_TEXT", @"");
         } else {
