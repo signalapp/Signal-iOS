@@ -346,7 +346,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         return RTCMediaConstraints(mandatoryConstraints: mandatoryConstraints, optionalConstraints: nil)
     }
 
-    // TODO: Review all self.peerConnection
     // TODO: Review all .async
     // TODO: Review all error == nil
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
@@ -416,7 +415,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
-    // TODO: Review all self.
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
 
@@ -703,8 +701,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         Logger.debug("\(logTag) didChange signalingState:\(stateChanged.debugDescription)")
     }
 
-    // TODO: Review all peerConnection params
-    // TODO: There's work being done here on the wrong queue.
     /** Called when media is received on a new stream from remote peer. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didAdd stream: RTCMediaStream) {
 
