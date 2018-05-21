@@ -749,8 +749,7 @@ private class SignalCallData: NSObject {
         Logger.verbose("\(logTag) \(#function) callId: \(callId)")
 
         guard let callData = self.callData else {
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            self.handleFailedCurrentCall(error: .obsoleteCall(description: "ignoring remote ice update, since there is no current call."))
+            Logger.info("\(logTag) ignoring remote ice update, since there is no current call.")
             return
         }
 
