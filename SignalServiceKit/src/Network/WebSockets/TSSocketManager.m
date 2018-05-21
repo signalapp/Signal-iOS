@@ -69,7 +69,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert(self.success);
     OWSAssert(self.failure);
 
-    self.success(responseObject);
+    TSSocketMessageSuccess success = self.success;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        success(responseObject);
+    });
 
     self.success = nil;
     self.failure = nil;
@@ -98,7 +101,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert(self.success);
     OWSAssert(self.failure);
 
-    self.failure(statusCode, error);
+    TSSocketMessageFailure failure = self.failure;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        failure(statusCode, error);
+    });
 
     self.success = nil;
     self.failure = nil;
@@ -133,8 +139,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // websocket's actual state, so we're defensive and distrustful of
 // this property.
 //
-// We only ever access this state on the main thread.
-@property (nonatomic) SocketManagerState state;
+// We only ever mutate this state on the main thread.
+@property (atomic) SocketManagerState state;
 
 #pragma mark -
 
@@ -164,13 +170,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // This property should only be accessed while synchronized on the socket manager.
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, TSSocketMessage *> *socketMessageMap;
 
-@property (atomic) BOOL canMakeRequests;
-
 @end
 
 #pragma mark -
 
 @implementation TSSocketManager
+
+@synthesize state = _state;
 
 - (instancetype)init
 {
@@ -369,17 +375,35 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // [SRWebSocket open] could hypothetically call a delegate method (e.g. if
             // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
-            _state = state;
-            _canMakeRequests = state == SocketManagerStateOpen;
+            @synchronized(self)
+            {
+                _state = state;
+            }
             [socket open];
+            [self failAllPendingSocketMessagesIfNecessary];
             return;
         }
     }
 
-    _state = state;
-    _canMakeRequests = state == SocketManagerStateOpen;
-
+    @synchronized(self)
+    {
+        _state = state;
+    }
+    [self failAllPendingSocketMessagesIfNecessary];
     [self notifyStatusChange];
+}
+
+- (SocketManagerState)state
+{
+    @synchronized(self)
+    {
+        return _state;
+    }
+}
+
+- (BOOL)canMakeRequests
+{
+    return self.state == SocketManagerStateOpen;
 }
 
 - (void)notifyStatusChange
@@ -428,8 +452,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     @synchronized(self)
     {
-        // TODO: Should we use another random number generator?
-        socketMessage.requestId = arc4random();
+        socketMessage.requestId = [Cryptography randomUInt64];
+
         self.socketMessageMap[@(socketMessage.requestId)] = socketMessage;
     }
 
@@ -445,7 +469,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                          error:&error];
         if (!jsonData || error) {
             OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
-            // TODO:
             [socketMessage didFailBeforeSending];
             return;
         }
@@ -495,7 +518,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         requestPath,
         jsonData.length);
 
-    // Ensure requests "timeout" after 30 seconds.
+    // Ensure requests "timeout" after 10 seconds.
     __weak TSSocketMessage *weakSocketMessage = socketMessage;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
@@ -544,14 +567,15 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
     NSArray<NSString *> *_Nullable responseHeaders = message.headers;
 
+    BOOL hasValidResponse = YES;
     id responseObject = responseBody;
     if (responseBody) {
         NSError *error;
         id _Nullable responseJson =
             [NSJSONSerialization JSONObjectWithData:responseBody options:(NSJSONReadingOptions)0 error:&error];
         if (!responseJson || error) {
-            DDLogError(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
-            // TODO: Should we require JSON parsing to succeed?
+            OWSProdLogAndFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
+            hasValidResponse = NO;
         } else {
             responseObject = responseJson;
         }
@@ -567,7 +591,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (!socketMessage) {
         DDLogError(@"%@ received response to unknown request.", self.logTag);
     } else {
-        BOOL didSucceed = 200 <= responseStatus && responseStatus <= 299;
+        BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
+        BOOL didSucceed = hasSuccessStatus && hasValidResponse;
         if (didSucceed) {
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
@@ -587,6 +612,27 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         responseHeaders,
         socketMessage != nil,
         responseObject);
+}
+
+- (void)failAllPendingSocketMessagesIfNecessary
+{
+    if (!self.canMakeRequests) {
+        [self failAllPendingSocketMessages];
+    }
+}
+
+- (void)failAllPendingSocketMessages
+{
+    NSArray<TSSocketMessage *> *socketMessages;
+    @synchronized(self)
+    {
+        socketMessages = self.socketMessageMap.allValues;
+        [self.socketMessageMap removeAllObjects];
+    }
+
+    for (TSSocketMessage *socketMessage in socketMessages) {
+        [socketMessage didFailBeforeSending];
+    }
 }
 
 #pragma mark - Delegate methods

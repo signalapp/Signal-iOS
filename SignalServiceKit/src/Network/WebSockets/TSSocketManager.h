@@ -24,7 +24,7 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
 
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
-@property (nonatomic, readonly) SocketManagerState state;
+@property (atomic, readonly) SocketManagerState state;
 @property (atomic, readonly) BOOL canMakeRequests;
 
 + (instancetype)sharedManager;
