@@ -74,7 +74,30 @@ protocol PeerConnectionClientDelegate: class {
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
-//    private class AtomicFlag
+    private class AtomicHandle<ValueType> : NSObject {
+        var value: ValueType?
+
+        func set(value: ValueType) {
+            objc_sync_enter(self)
+            self.value = value
+            objc_sync_exit(self)
+        }
+
+        func get() -> ValueType? {
+            objc_sync_enter(self)
+            let result = value
+            objc_sync_exit(self)
+            return result
+        }
+
+        func clear() {
+            Logger.info("\(logTag) \(#function)")
+
+            objc_sync_enter(self)
+            value = nil
+            objc_sync_exit(self)
+        }
+    }
 
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
@@ -125,6 +148,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
+    private let handle: AtomicHandle<PeerConnectionClient>
+
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callDirection: CallDirection, useTurnOnly: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
@@ -148,7 +173,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         audioConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         cameraConstraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
 
+        handle = AtomicHandle<PeerConnectionClient>()
+
         super.init()
+
+        handle.set(value: self)
 
         peerConnection = factory.peerConnection(with: configuration,
                                                 constraints: connectionConstraints,
@@ -167,16 +196,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         // TODO: We can demote this log level to debug once we're confident that
         // this class is always deallocated.
         Logger.info("[PeerConnectionClient] deinit")
-        Logger.flush()
     }
 
     // MARK: - Media Streams
 
     private func createSignalingDataChannel() {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
         guard let peerConnection = peerConnection else {
             Logger.debug("\(logTag) \(#function) Ignoring obsolete event in terminated client")
             return
@@ -197,10 +222,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     fileprivate func createVideoSender() {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
         Logger.debug("\(logTag) in \(#function)")
         assert(self.videoSender == nil, "\(#function) should only be called once.")
 
@@ -241,12 +262,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setCameraSource(useBackCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
+        let handle = self.handle
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let localVideoSource = strongSelf.localVideoSource else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -264,26 +282,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func setLocalVideoEnabled(enabled: Bool) {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let completion = { [weak self] in
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let localVideoTrack = strongSelf.localVideoTrack else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClient(strongSelf, didUpdateLocal: enabled ? localVideoTrack : nil)
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -315,10 +323,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     fileprivate func createAudioSender() {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
         Logger.debug("\(logTag) in \(#function)")
         assert(self.audioSender == nil, "\(#function) should only be called once.")
 
@@ -345,17 +349,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func setAudioEnabled(enabled: Bool) {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -381,17 +377,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
         let completion: ((RTCSessionDescription?, Error?) -> Void) = { [weak self] (sdp, error) in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -414,11 +403,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -437,16 +422,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         return PromiseKit.wrap { [weak self] resolve in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = peerConnection else {
@@ -461,17 +439,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func setLocalSessionDescription(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let (promise, fulfill, reject) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -495,38 +466,24 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func negotiateSessionDescription(remoteDescription: RTCSessionDescription, constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         return setRemoteSessionDescription(remoteDescription)
             .then(on: PeerConnectionClient.signalingQueue) { [weak self] in
-                guard let strongSelf = self else {
+                guard let strongSelf = handle.get() else {
                     return Promise { _, reject in
                         reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                     }
                 }
-                Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-                defer {
-                    strongSelf.ensureTeardown(#function)
-                }
-                return strongSelf.negotiateAnswerSessionDescription(constraints: constraints)
+                    return strongSelf.negotiateAnswerSessionDescription(constraints: constraints)
         }
     }
 
     public func setRemoteSessionDescription(_ sessionDescription: RTCSessionDescription) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let (promise, fulfill, reject) = Promise<Void>.pending()
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -548,17 +505,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     private func negotiateAnswerSessionDescription(constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
         assertOnSignalingQueue()
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
         let completion: ((RTCSessionDescription?, Error?) -> Void) = { [weak self] (sdp, error) in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -588,11 +538,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = strongSelf.peerConnection else {
@@ -612,16 +558,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     public func addRemoteIceCandidate(_ candidate: RTCIceCandidate) {
-        defer {
-            ensureTeardown(#function)
-        }
+        let handle = self.handle
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -633,36 +572,25 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func terminate() {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
         Logger.debug("\(logTag) in \(#function)")
-        Logger.flush()
 
         // Clear the delegate immediately so that we can guarantee that
         // no delegate methods are called after terminate() returns.
         delegate = nil
 
-        PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+        // Clear the handle immediately so that enqueued work is aborted
+        // going forward.
+        handle.clear()
 
-            strongSelf.terminateInternal()
+        // Don't use [weak self]; we always want to perform terminateInternal().
+        PeerConnectionClient.signalingQueue.async {
+            self.terminateInternal()
         }
     }
 
     private func terminateInternal() {
         assertOnSignalingQueue()
-        defer {
-            ensureTeardown(#function)
-        }
-
         Logger.debug("\(logTag) in \(#function)")
-        Logger.flush()
 
         //        Some notes on preventing crashes while disposing of peerConnection for video calls
         //        from: https://groups.google.com/forum/#!searchin/discuss-webrtc/objc$20crash$20dealloc%7Csort:relevance/discuss-webrtc/7D-vk5yLjn8/rBW2D6EW4GYJ
@@ -693,9 +621,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             peerConnection.close()
         }
         peerConnection = nil
-
-        Logger.debug("\(logTag) in \(#function) complete")
-        Logger.flush()
     }
 
     // MARK: - Data Channel
@@ -710,16 +635,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     public func sendDataChannelMessage(data: Data, description: String, isCritical: Bool) {
         SwiftAssertIsOnMainThread(#function)
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
 
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client: \(description)")
@@ -756,35 +674,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** The data channel state changed. */
     internal func dataChannelDidChangeState(_ dataChannel: RTCDataChannel) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) dataChannelDidChangeState: \(dataChannel)")
     }
 
     /** The data channel successfully received a data buffer. */
     internal func dataChannel(_ dataChannel: RTCDataChannel, didReceiveMessageWith buffer: RTCDataBuffer) {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let completion: (OWSWebRTCProtosData) -> Void = { [weak self] (dataChannelMessage) in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClient(strongSelf, received: dataChannelMessage)
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -805,9 +709,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** The data channel's |bufferedAmount| changed. */
     internal func dataChannel(_ dataChannel: RTCDataChannel, didChangeBufferedAmount amount: UInt64) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) didChangeBufferedAmount: \(amount)")
     }
 
@@ -815,24 +716,15 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when the SignalingState changed. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) didChange signalingState:\(stateChanged.debugDescription)")
     }
 
     /** Called when media is received on a new stream from remote peer. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let completion: (RTCVideoTrack) -> Void = { [weak self] (remoteVideoTrack) in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
 
             // TODO: Consider checking for termination here.
@@ -841,12 +733,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -872,61 +759,38 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when a remote peer closes a stream. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) didRemove Stream:\(stream)")
     }
 
     /** Called when negotiation is needed, for example ICE has restarted. */
     internal func peerConnectionShouldNegotiate(_ peerConnectionParam: RTCPeerConnection) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) shouldNegotiate")
     }
 
     /** Called any time the IceConnectionState changes. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let connectedCompletion : () -> Void = { [weak self] in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceConnected(strongSelf)
         }
         let failedCompletion : () -> Void = { [weak self] in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceFailed(strongSelf)
         }
         let disconnectedCompletion : () -> Void = { [weak self] in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClientIceDisconnected(strongSelf)
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -954,35 +818,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called any time the IceGatheringState changes. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.info("\(logTag) didChange IceGatheringState:\(newState.debugDescription)")
     }
 
     /** New ice candidate has been found. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let completion: (RTCIceCandidate) -> Void = { [weak self] (candidate) in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
             strongDelegate.peerConnectionClient(strongSelf, addedLocalIceCandidate: candidate)
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -1000,36 +850,22 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     /** Called when a group of local Ice candidates have been removed. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        defer {
-            ensureTeardown(#function)
-        }
         Logger.debug("\(logTag) didRemove IceCandidates:\(candidates)")
     }
 
     /** New data channel has been opened. */
     internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        defer {
-            ensureTeardown(#function)
-        }
-
+        let handle = self.handle
         let completion: ([PendingDataChannelMessage]) -> Void = { [weak self] (pendingMessages) in
             SwiftAssertIsOnMainThread(#function)
-            guard let strongSelf = self else { return }
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
+            guard let strongSelf = handle.get() else { return }
             pendingMessages.forEach { message in
                 strongSelf.sendDataChannelMessage(data: message.data, description: message.description, isCritical: message.isCritical)
             }
         }
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
-            guard let strongSelf = self else { return }
-            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
-            defer {
-                strongSelf.ensureTeardown(#function)
-            }
-
+            guard let strongSelf = handle.get() else { return }
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -1091,14 +927,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.sync {
             // Noop.
-        }
-    }
-
-    private func ensureTeardown(_ functionName: String) {
-        PeerConnectionClient.signalingQueue.async {
-//        DispatchQueue.main.async {
-            Logger.info("\(self.logTag) \(functionName) complete.")
-            Logger.flush()
         }
     }
 }
