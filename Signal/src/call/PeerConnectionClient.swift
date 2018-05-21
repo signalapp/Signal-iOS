@@ -178,7 +178,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             ensureTeardown(#function)
         }
         guard let peerConnection = peerConnection else {
-            owsFail("\(logTag) in \(#function) peerConnection was unexpectedly nil")
+            Logger.debug("\(logTag) \(#function) Ignoring obsolete event in terminated client")
             return
         }
 
@@ -209,7 +209,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             return
         }
         guard let peerConnection = peerConnection else {
-            owsFail("\(logTag) in \(#function) peerConnection was unexpectedly nil")
+            Logger.debug("\(logTag) \(#function) Ignoring obsolete event in terminated client")
             return
         }
 
@@ -248,7 +248,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 strongSelf.ensureTeardown(#function)
             }
             guard let localVideoSource = strongSelf.localVideoSource else {
-                owsFail("\(strongSelf.logTag) in \(#function) localVideoSource was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
 
@@ -289,12 +289,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard let localVideoTrack = strongSelf.localVideoTrack else {
-                let action = enabled ? "enable" : "disable"
-                Logger.error("\(strongSelf.logTag)) trying to \(action) videoTrack which doesn't exist")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             guard let videoCaptureSession = strongSelf.videoCaptureSession else {
-                Logger.debug("\(strongSelf.logTag) videoCaptureSession was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
 
@@ -324,7 +323,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         assert(self.audioSender == nil, "\(#function) should only be called once.")
 
         guard let peerConnection = peerConnection else {
-            owsFail("\(logTag) in \(#function) peerConnection was unexpectedly nil")
+            Logger.debug("\(logTag) \(#function) Ignoring obsolete event in terminated client")
             return
         }
 
@@ -362,8 +361,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             guard let audioTrack = strongSelf.audioTrack else {
-                let action = enabled ? "enable" : "disable"
-                Logger.error("\(strongSelf.logTag) trying to \(action) audioTrack which doesn't exist.")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
 
@@ -457,7 +455,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = peerConnection else {
-                owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
 
@@ -860,7 +858,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             guard let peerConnection = strongSelf.peerConnection else {
-                owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             guard peerConnection == peerConnectionParam else {
@@ -940,7 +938,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             guard let peerConnection = strongSelf.peerConnection else {
-                owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             guard peerConnection == peerConnectionParam else {
@@ -996,7 +994,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             guard let peerConnection = strongSelf.peerConnection else {
-                owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             guard peerConnection == peerConnectionParam else {
@@ -1043,7 +1041,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             guard let peerConnection = strongSelf.peerConnection else {
-                owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
+                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             guard peerConnection == peerConnectionParam else {
