@@ -74,6 +74,8 @@ protocol PeerConnectionClientDelegate: class {
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
+//    private class AtomicFlag
+
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
              videoTrack = "ARDAMSv0",
@@ -162,7 +164,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     }
 
     deinit {
-        Logger.debug("[PeerConnectionClient] deinit")
+        // TODO: We can demote this log level to debug once we're confident that
+        // this class is always deallocated.
+        Logger.info("[PeerConnectionClient] deinit")
+        Logger.flush()
     }
 
     // MARK: - Media Streams
@@ -233,6 +238,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             guard let localVideoSource = strongSelf.localVideoSource else {
                 owsFail("\(strongSelf.logTag) in \(#function) localVideoSource was unexpectedly nil")
                 return
@@ -260,6 +271,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -320,8 +337,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setAudioEnabled(enabled: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
+        Logger.info("\(self.logTag) setAudioEnabled 1.")
+        Logger.flush()
+
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
+
+            Logger.info("\(strongSelf.logTag) setAudioEnabled 2.")
+            Logger.flush()
+
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
@@ -333,6 +363,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             audioTrack.isEnabled = enabled
+
+            Logger.info("\(strongSelf.logTag) setAudioEnabled 3.")
+            Logger.flush()
         }
     }
 
@@ -351,6 +384,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let completion: ((((HardenedRTCSessionDescription) -> Void), ((Error) -> Void), RTCSessionDescription?, Error?) -> Void) = { [weak self] (fulfill, reject, sdp, error) in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -374,6 +413,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let workBlock : ((@escaping ((HardenedRTCSessionDescription) -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -400,6 +445,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         return PromiseKit.wrap { [weak self] resolve in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = peerConnection else {
@@ -417,6 +468,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let workBlock : ((@escaping (() -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -452,6 +509,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                         reject(NSError(domain: "Obsolete client", code: 0, userInfo: nil))
                     }
                 }
+                Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+                defer {
+                    DispatchQueue.main.async {
+                        Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                    }
+                }
                 return strongSelf.negotiateAnswerSessionDescription(constraints: constraints)
         }
     }
@@ -461,6 +524,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let workBlock : ((@escaping (() -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -490,6 +559,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let completion : ((@escaping ((HardenedRTCSessionDescription) -> Void), @escaping ((Error) -> Void), RTCSessionDescription?, Error?) -> Void) = { [weak self] (fulfill, reject, sdp, error) in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -520,6 +595,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         return Promise { [weak self] fulfill, reject in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
             strongSelf.assertOnSignalingQueue()
 
             guard let peerConnection = strongSelf.peerConnection else {
@@ -540,6 +621,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func addRemoteIceCandidate(_ candidate: RTCIceCandidate) {
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard let peerConnection = strongSelf.peerConnection else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -553,6 +640,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     public func terminate() {
         SwiftAssertIsOnMainThread(#function)
         Logger.debug("\(logTag) in \(#function)")
+        Logger.flush()
 
         // Clear the delegate immediately so that we can guarantee that
         // no delegate methods are called after terminate() returns.
@@ -560,6 +648,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             strongSelf.terminateInternal()
         }
@@ -569,6 +663,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         assertOnSignalingQueue()
 
         Logger.debug("\(logTag) in \(#function)")
+        Logger.flush()
 
         //        Some notes on preventing crashes while disposing of peerConnection for video calls
         //        from: https://groups.google.com/forum/#!searchin/discuss-webrtc/objc$20crash$20dealloc%7Csort:relevance/discuss-webrtc/7D-vk5yLjn8/rBW2D6EW4GYJ
@@ -599,6 +694,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             peerConnection.close()
         }
         peerConnection = nil
+
+        Logger.debug("\(logTag) in \(#function) complete")
+        Logger.flush()
     }
 
     // MARK: - Data Channel
@@ -616,6 +714,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client: \(description)")
@@ -667,6 +771,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard strongSelf.peerConnection != nil else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
@@ -713,6 +823,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard let peerConnection = strongSelf.peerConnection else {
                 owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
@@ -771,6 +887,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard let peerConnection = strongSelf.peerConnection else {
                 owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
@@ -814,6 +936,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard let peerConnection = strongSelf.peerConnection else {
                 owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
@@ -848,6 +976,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
+            Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
+            defer {
+                DispatchQueue.main.async {
+                    Logger.info("\(strongSelf.logTag) \(#function) complete."); Logger.flush()
+                }
+            }
 
             guard let peerConnection = strongSelf.peerConnection else {
                 owsFail("\(strongSelf.logTag) in \(#function) peerConnection was unexpectedly nil")
@@ -912,6 +1046,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             // Noop.
         }
     }
+
+    private func
 }
 
 /**
