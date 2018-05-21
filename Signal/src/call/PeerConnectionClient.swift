@@ -385,7 +385,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             ensureTeardown(#function)
         }
 
-        let completion: ((((HardenedRTCSessionDescription) -> Void), ((Error) -> Void), RTCSessionDescription?, Error?) -> Void) = { [weak self] (fulfill, reject, sdp, error) in
+        let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
+        let completion: ((RTCSessionDescription?, Error?) -> Void) = { [weak self] (sdp, error) in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -412,7 +413,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             fulfill(HardenedRTCSessionDescription(rtcSessionDescription: sessionDescription))
         }
 
-        let workBlock : ((@escaping ((HardenedRTCSessionDescription) -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
+        PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -427,18 +428,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             peerConnection.offer(for: strongSelf.defaultOfferConstraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
                 PeerConnectionClient.signalingQueue.async {
-                    completion(fulfill, reject, sdp, error)
+                    completion(sdp, error)
                 }
             })
         }
 
-        return Promise { fulfill, reject in
-            SwiftAssertIsOnMainThread(#function)
-
-            PeerConnectionClient.signalingQueue.async {
-                workBlock(fulfill, reject)
-            }
-        }
+        return promise
     }
 
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
@@ -470,7 +465,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             ensureTeardown(#function)
         }
 
-        let workBlock : ((@escaping (() -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -494,11 +490,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             })
         }
 
-        return Promise { fulfill, reject in
-            PeerConnectionClient.signalingQueue.async {
-                workBlock(fulfill, reject)
-            }
-        }
+        return promise
     }
 
     public func negotiateSessionDescription(remoteDescription: RTCSessionDescription, constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
@@ -528,7 +520,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             ensureTeardown(#function)
         }
 
-        let workBlock : ((@escaping (() -> Void), @escaping ((Error) -> Void)) -> Void) = { [weak self] (fulfill, reject) in
+        let (promise, fulfill, reject) = Promise<Void>.pending()
+        PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -550,12 +543,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                     fulfill()
             })
         }
-
-        return Promise { fulfill, reject in
-            PeerConnectionClient.signalingQueue.async {
-                workBlock(fulfill, reject)
-            }
-        }
+        return promise
     }
 
     private func negotiateAnswerSessionDescription(constraints: RTCMediaConstraints) -> Promise<HardenedRTCSessionDescription> {
@@ -564,7 +552,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             ensureTeardown(#function)
         }
 
-        let completion : ((@escaping ((HardenedRTCSessionDescription) -> Void), @escaping ((Error) -> Void), RTCSessionDescription?, Error?) -> Void) = { [weak self] (fulfill, reject, sdp, error) in
+        let (promise, fulfill, reject) = Promise<HardenedRTCSessionDescription>.pending()
+        let completion: ((RTCSessionDescription?, Error?) -> Void) = { [weak self] (sdp, error) in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -598,7 +587,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
         }
 
-        return Promise { [weak self] fulfill, reject in
+        PeerConnectionClient.signalingQueue.async { [weak self] in
             guard let strongSelf = self else { return }
             Logger.info("\(strongSelf.logTag) \(#function) starting."); Logger.flush()
             defer {
@@ -615,10 +604,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             peerConnection.answer(for: constraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
                 PeerConnectionClient.signalingQueue.async {
-                    completion(fulfill, reject, sdp, error)
+                    completion(sdp, error)
                 }
             })
         }
+        return promise
     }
 
     public func addRemoteIceCandidate(_ candidate: RTCIceCandidate) {
