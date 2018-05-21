@@ -412,7 +412,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             peerConnection.offer(for: strongSelf.defaultOfferConstraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
-                PeerConnectionClient.signalingQueue.async {
+                PeerConnectionClient.signalingQueue.async { [weak self] in
                     completion(sdp, error)
                 }
             })
@@ -549,7 +549,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             Logger.debug("\(strongSelf.logTag) negotiating answer session.")
 
             peerConnection.answer(for: constraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
-                PeerConnectionClient.signalingQueue.async {
+                PeerConnectionClient.signalingQueue.async { [weak self] in
                     completion(sdp, error)
                 }
             })
@@ -607,6 +607,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         localVideoTrack?.isEnabled = false
         remoteVideoTrack?.isEnabled = false
+
+        if let dataChannel = self.dataChannel {
+            dataChannel.delegate = nil
+        }
 
         dataChannel = nil
         audioSender = nil
@@ -701,7 +705,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 completion(dataChannelMessage)
             }
         }
@@ -751,7 +755,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             strongSelf.remoteVideoTrack = remoteVideoTrack
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 completion(remoteVideoTrack)
             }
         }
@@ -842,7 +846,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             Logger.info("\(strongSelf.logTag) adding local ICE candidate:\(candidate.sdp)")
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 completion(candidate)
             }
         }
@@ -883,7 +887,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             let pendingMessages = strongSelf.pendingDataChannelMessages
             strongSelf.pendingDataChannelMessages = []
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 completion(pendingMessages)
             }
         }
