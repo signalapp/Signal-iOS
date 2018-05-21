@@ -346,8 +346,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         return RTCMediaConstraints(mandatoryConstraints: mandatoryConstraints, optionalConstraints: nil)
     }
 
-    // TODO: Review all .async
-    // TODO: Review all error == nil
     public func createOffer() -> Promise<HardenedRTCSessionDescription> {
         SwiftAssertIsOnMainThread(#function)
 
@@ -399,7 +397,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
-    // TODO: Review all promises
     public func setLocalSessionDescriptionInternal(_ sessionDescription: HardenedRTCSessionDescription) -> Promise<Void> {
         return PromiseKit.wrap { [weak self] resolve in
             guard let strongSelf = self else { return }
@@ -430,8 +427,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             Logger.verbose("\(strongSelf.logTag) setting local session description: \(sessionDescription)")
             peerConnection.setLocalDescription(sessionDescription.rtcSessionDescription,
                                                completionHandler: { error in
-                                                guard error == nil else {
-                                                    reject(error!)
+                                                if let error = error {
+                                                    reject(error)
                                                     return
                                                 }
                                                 fulfill()
@@ -473,8 +470,8 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             Logger.verbose("\(strongSelf.logTag) setting remote description: \(sessionDescription)")
             peerConnection.setRemoteDescription(sessionDescription,
                                                 completionHandler: { error in
-                                                    guard error == nil else {
-                                                        reject(error!)
+                                                    if let error = error {
+                                                        reject(error)
                                                         return
                                                     }
                                                     fulfill()
