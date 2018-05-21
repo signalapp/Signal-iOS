@@ -28,10 +28,6 @@ const CGFloat OWSWindowManagerCallScreenHeight(void)
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
 
-// Putting the call banner above the status bar is not ideal.
-// It obscures status bar content like the system clock
-// But being behind the status bar introduces two worse problems that'd we'd need to address
-// 1. Tap target is too small, only the 20px below the status bar are tappable
 const UIWindowLevel UIWindowLevel_ReturnToCall(void);
 const UIWindowLevel UIWindowLevel_ReturnToCall(void)
 {
@@ -124,9 +120,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(screenBlockingWindow);
     OWSAssert(!self.screenBlockingWindow);
 
-    // MJK FIXME
-    rootWindow.backgroundColor = UIColor.yellowColor;
-
     self.rootWindow = rootWindow;
     self.screenBlockingWindow = screenBlockingWindow;
 
@@ -211,6 +204,19 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 #pragma mark - Calls
 
+- (void)setCallViewController:(nullable UIViewController *)callViewController
+{
+    OWSAssertIsOnMainThread();
+
+    if (callViewController == _callViewController) {
+        return;
+    }
+
+    _callViewController = callViewController;
+
+    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
+}
+
 - (void)startCall:(UIViewController *)callViewController
 {
     OWSAssertIsOnMainThread();
@@ -218,8 +224,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssert(!self.callViewController);
 
     self.callViewController = callViewController;
-    // TODO move to setter?
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
 
     // Attach callViewController to window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
@@ -243,7 +247,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     // Dettach callViewController from window.
     [self.callNavigationController popToRootViewControllerAnimated:NO];
     self.callViewController = nil;
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
 
     self.shouldShowCallView = NO;
 

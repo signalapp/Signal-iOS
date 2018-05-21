@@ -65,17 +65,11 @@ class OWSNavigationBar: UINavigationBar {
             // pre iOS11, sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
             // That is, increasing this causes the child view controller to be pushed down.
             // (as of iOS11, this is not used and instead we use additionalSafeAreaInsets)
-            let result = CGSize(width: fullWidth, height: navbarWithoutStatusHeight + statusBarHeight)
-
-            Logger.debug("\(self.logTag) in \(#function): \(result)")
-
-            return result
+            return CGSize(width: fullWidth, height: navbarWithoutStatusHeight + statusBarHeight)
         }
     }
 
     override func layoutSubviews() {
-        Logger.debug("\(self.logTag) in \(#function) with frame: \(frame)")
-
         guard OWSWindowManager.shared().hasCall() else {
             super.layoutSubviews()
             return
