@@ -76,14 +76,14 @@ NSString *NSStringFromWebSocketResourcesWebSocketMessageType(WebSocketResourcesW
 #define WebSocketRequestMessage_path @"path"
 #define WebSocketRequestMessage_body @"body"
 #define WebSocketRequestMessage_headers @"headers"
-#define WebSocketRequestMessage_id @"id"
+#define WebSocketRequestMessage_requestId @"requestId"
 @interface WebSocketResourcesWebSocketRequestMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasId_:1;
+  BOOL hasRequestId_:1;
   BOOL hasVerb_:1;
   BOOL hasPath_:1;
   BOOL hasBody_:1;
-  UInt64 id;
+  UInt64 requestId;
   NSString* verb;
   NSString* path;
   NSData* body;
@@ -92,12 +92,12 @@ NSString *NSStringFromWebSocketResourcesWebSocketMessageType(WebSocketResourcesW
 - (BOOL) hasVerb;
 - (BOOL) hasPath;
 - (BOOL) hasBody;
-- (BOOL) hasId;
+- (BOOL) hasRequestId;
 @property (readonly, strong) NSString* verb;
 @property (readonly, strong) NSString* path;
 @property (readonly, strong) NSData* body;
 @property (readonly, strong) NSArray * headers;
-@property (readonly) UInt64 id;
+@property (readonly) UInt64 requestId;
 - (NSString*)headersAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -156,34 +156,34 @@ NSString *NSStringFromWebSocketResourcesWebSocketMessageType(WebSocketResourcesW
 - (WebSocketResourcesWebSocketRequestMessageBuilder *)setHeadersArray:(NSArray *)array;
 - (WebSocketResourcesWebSocketRequestMessageBuilder *)clearHeaders;
 
-- (BOOL) hasId;
-- (UInt64) id;
-- (WebSocketResourcesWebSocketRequestMessageBuilder*) setId:(UInt64) value;
-- (WebSocketResourcesWebSocketRequestMessageBuilder*) clearId;
+- (BOOL) hasRequestId;
+- (UInt64) requestId;
+- (WebSocketResourcesWebSocketRequestMessageBuilder*) setRequestId:(UInt64) value;
+- (WebSocketResourcesWebSocketRequestMessageBuilder*) clearRequestId;
 @end
 
-#define WebSocketResponseMessage_id @"id"
+#define WebSocketResponseMessage_requestId @"requestId"
 #define WebSocketResponseMessage_status @"status"
 #define WebSocketResponseMessage_message @"message"
 #define WebSocketResponseMessage_headers @"headers"
 #define WebSocketResponseMessage_body @"body"
 @interface WebSocketResourcesWebSocketResponseMessage : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
-  BOOL hasId_:1;
+  BOOL hasRequestId_:1;
   BOOL hasMessage_:1;
   BOOL hasBody_:1;
   BOOL hasStatus_:1;
-  UInt64 id;
+  UInt64 requestId;
   NSString* message;
   NSData* body;
   UInt32 status;
   NSMutableArray * headersArray;
 }
-- (BOOL) hasId;
+- (BOOL) hasRequestId;
 - (BOOL) hasStatus;
 - (BOOL) hasMessage;
 - (BOOL) hasBody;
-@property (readonly) UInt64 id;
+@property (readonly) UInt64 requestId;
 @property (readonly) UInt32 status;
 @property (readonly, strong) NSString* message;
 @property (readonly, strong) NSArray * headers;
@@ -225,10 +225,10 @@ NSString *NSStringFromWebSocketResourcesWebSocketMessageType(WebSocketResourcesW
 - (WebSocketResourcesWebSocketResponseMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input;
 - (WebSocketResourcesWebSocketResponseMessageBuilder*) mergeFromCodedInputStream:(PBCodedInputStream*) input extensionRegistry:(PBExtensionRegistry*) extensionRegistry;
 
-- (BOOL) hasId;
-- (UInt64) id;
-- (WebSocketResourcesWebSocketResponseMessageBuilder*) setId:(UInt64) value;
-- (WebSocketResourcesWebSocketResponseMessageBuilder*) clearId;
+- (BOOL) hasRequestId;
+- (UInt64) requestId;
+- (WebSocketResourcesWebSocketResponseMessageBuilder*) setRequestId:(UInt64) value;
+- (WebSocketResourcesWebSocketResponseMessageBuilder*) clearRequestId;
 
 - (BOOL) hasStatus;
 - (UInt32) status;
