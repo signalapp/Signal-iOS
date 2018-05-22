@@ -6,7 +6,7 @@ PROTOC=protoc \
 		--proto_path="${HOME}/src/signal/protobuf-objc/src/compiler/google/protobuf/" \
 		--proto_path='./'
 
-all: signal_service_proto provisioning_protos fingerprint_protos
+all: signal_service_proto provisioning_protos fingerprint_protos websocket_protos
 
 signal_service_proto: OWSSignalServiceProtos.proto
 	$(PROTOC) --objc_out=../src/Messages/ \
@@ -20,3 +20,6 @@ fingerprint_protos: OWSFingerprintProtos.proto
 	$(PROTOC) --objc_out=../src/Security/ \
 		OWSFingerprintProtos.proto
 
+websocket_protos: WebSocketResources.proto
+	$(PROTOC) --objc_out=../src/Network/WebSockets/ \
+		WebSocketResources.proto

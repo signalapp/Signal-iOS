@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import <SocketRocket/SRWebSocket.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 static void *SocketManagerStateObservationContext = &SocketManagerStateObservationContext;
 
@@ -14,9 +16,16 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
     SocketManagerStateOpen,
 };
 
+typedef void (^TSSocketMessageSuccess)(id _Nullable responseObject);
+// statusCode is zero by default, if request never made or failed.
+typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
+
+@class TSRequest;
+
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
 @property (nonatomic, readonly) SocketManagerState state;
+@property (atomic, readonly) BOOL canMakeRequests;
 
 + (instancetype)sharedManager;
 
@@ -33,4 +42,12 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
 // This method can be called from any thread.
 + (void)requestSocketOpen;
 
+#pragma mark - Message Sending
+
+- (void)makeRequest:(TSRequest *)request
+            success:(TSSocketMessageSuccess)success
+            failure:(TSSocketMessageFailure)failure;
+
 @end
+
+NS_ASSUME_NONNULL_END

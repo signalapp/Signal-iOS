@@ -10,18 +10,22 @@
 #import "NSTimer+OWS.h"
 #import "NotificationsProtocol.h"
 #import "OWSBackgroundTask.h"
+#import "OWSError.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalService.h"
 #import "OWSSignalServiceProtos.pb.h"
 #import "OWSWebsocketSecurityPolicy.h"
-#import "SubProtocol.pb.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSErrorMessage.h"
+#import "TSRequest.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
+#import "WebSocketResources.pb.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 static const CGFloat kSocketHeartbeatPeriodSeconds = 30.f;
 static const CGFloat kSocketReconnectDelaySeconds = 5.f;
@@ -33,8 +37,101 @@ static const CGFloat kSocketReconnectDelaySeconds = 5.f;
 static const CGFloat kBackgroundOpenSocketDurationSeconds = 25.f;
 // b) It has received a message over the socket in the last 15 seconds.
 static const CGFloat kBackgroundKeepSocketAliveDurationSeconds = 15.f;
+// c) It is in the process of making a request.
+static const CGFloat kMakeRequestKeepSocketAliveDurationSeconds = 30.f;
 
 NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_SocketManagerStateDidChange";
+
+@interface TSSocketMessage : NSObject
+
+@property (nonatomic, readonly) UInt64 requestId;
+@property (nonatomic, nullable) TSSocketMessageSuccess success;
+@property (nonatomic, nullable) TSSocketMessageFailure failure;
+@property (nonatomic) BOOL hasCompleted;
+@property (nonatomic, readonly) OWSBackgroundTask *backgroundTask;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+#pragma mark -
+
+@implementation TSSocketMessage
+
+- (instancetype)initWithRequestId:(UInt64)requestId
+                          success:(TSSocketMessageSuccess)success
+                          failure:(TSSocketMessageFailure)failure
+{
+    if (self = [super init]) {
+        OWSAssert(success);
+        OWSAssert(failure);
+
+        _requestId = requestId;
+        _success = success;
+        _failure = failure;
+        _backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    }
+
+    return self;
+}
+
+- (void)didSucceedWithResponseObject:(id _Nullable)responseObject
+{
+    @synchronized(self)
+    {
+        if (self.hasCompleted) {
+            return;
+        }
+        self.hasCompleted = YES;
+    }
+
+    OWSAssert(self.success);
+    OWSAssert(self.failure);
+
+    TSSocketMessageSuccess success = self.success;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        success(responseObject);
+    });
+
+    self.success = nil;
+    self.failure = nil;
+}
+
+- (void)didFailBeforeSending
+{
+    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
+        NSLocalizedString(@"ERROR_DESCRIPTION_REQUEST_FAILED", @"Error indicating that a socket request failed."));
+
+    [self didFailWithStatusCode:0 error:error];
+}
+
+- (void)didFailWithStatusCode:(NSInteger)statusCode error:(NSError *)error
+{
+    OWSAssert(error);
+
+    @synchronized(self)
+    {
+        if (self.hasCompleted) {
+            return;
+        }
+        self.hasCompleted = YES;
+    }
+
+    OWSAssert(self.success);
+    OWSAssert(self.failure);
+
+    TSSocketMessageFailure failure = self.failure;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        failure(statusCode, error);
+    });
+
+    self.success = nil;
+    self.failure = nil;
+}
+
+@end
+
+#pragma mark -
 
 // TSSocketManager's properties should only be accessed from the main thread.
 @interface TSSocketManager ()
@@ -46,9 +143,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 //
 // The first tier is the actual websocket and the timers used
 // to keep it alive and connected.
-@property (nonatomic) SRWebSocket *websocket;
-@property (nonatomic) NSTimer *heartbeatTimer;
-@property (nonatomic) NSTimer *reconnectTimer;
+@property (nonatomic, nullable) SRWebSocket *websocket;
+@property (nonatomic, nullable) NSTimer *heartbeatTimer;
+@property (nonatomic, nullable) NSTimer *reconnectTimer;
 
 #pragma mark -
 
@@ -60,6 +157,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // Due to concurrency, this property can fall out of sync with the
 // websocket's actual state, so we're defensive and distrustful of
 // this property.
+//
+// We only ever access this state on the main thread.
 @property (nonatomic) SocketManagerState state;
 
 #pragma mark -
@@ -72,13 +171,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // trying to keep the socket open), all three should be clear.
 //
 // This represents how long we're trying to keep the socket open.
-@property (nonatomic) NSDate *backgroundKeepAliveUntilDate;
+@property (nonatomic, nullable) NSDate *backgroundKeepAliveUntilDate;
 // This timer is used to check periodically whether we should
 // close the socket.
-@property (nonatomic) NSTimer *backgroundKeepAliveTimer;
+@property (nonatomic, nullable) NSTimer *backgroundKeepAliveTimer;
 // This is used to manage the iOS "background task" used to
 // keep the app alive in the background.
-@property (nonatomic) OWSBackgroundTask *backgroundTask;
+@property (nonatomic, nullable) OWSBackgroundTask *backgroundTask;
 
 // We cache this value instead of consulting [UIApplication sharedApplication].applicationState,
 // because UIKit only provides a "will resign active" notification, not a "did resign active"
@@ -86,6 +185,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 @property (nonatomic) BOOL appIsActive;
 
 @property (nonatomic) BOOL hasObservedNotifications;
+
+// This property should only be accessed while synchronized on the socket manager.
+@property (nonatomic, readonly) NSMutableDictionary<NSNumber *, TSSocketMessage *> *socketMessageMap;
+
+@property (atomic) BOOL canMakeRequests;
 
 @end
 
@@ -106,6 +210,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     _signalService = [OWSSignalService sharedInstance];
     _messageReceiver = [OWSMessageReceiver sharedInstance];
     _state = SocketManagerStateClosed;
+    _socketMessageMap = [NSMutableDictionary new];
 
     OWSSingletonAssert();
 
@@ -290,13 +395,17 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
             _state = state;
+            _canMakeRequests = state == SocketManagerStateOpen;
             [socket open];
+            [self failAllPendingSocketMessagesIfNecessary];
             return;
         }
     }
 
     _state = state;
+    _canMakeRequests = state == SocketManagerStateOpen;
 
+    [self failAllPendingSocketMessagesIfNecessary];
     [self notifyStatusChange];
 }
 
@@ -330,6 +439,201 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.state = SocketManagerStateClosed;
 }
 
+#pragma mark - Message Sending
+
+- (void)makeRequest:(TSRequest *)request success:(TSSocketMessageSuccess)success failure:(TSSocketMessageFailure)failure
+{
+    OWSAssert(request);
+    OWSAssert(request.HTTPMethod.length > 0);
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    TSSocketMessage *socketMessage =
+        [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64] success:success failure:failure];
+
+    @synchronized(self)
+    {
+        self.socketMessageMap[@(socketMessage.requestId)] = socketMessage;
+    }
+
+    NSURL *requestUrl = request.URL;
+    NSString *requestPath = [@"/" stringByAppendingString:requestUrl.path];
+
+    NSData *_Nullable jsonData = nil;
+    if (request.parameters) {
+        NSError *error;
+        jsonData = [NSJSONSerialization
+            dataWithJSONObject:request.parameters
+                       options:(NSJSONWritingOptions)0
+                         error:&error];
+        if (!jsonData || error) {
+            OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+            [socketMessage didFailBeforeSending];
+            return;
+        }
+    }
+
+    WebSocketResourcesWebSocketRequestMessageBuilder *requestBuilder =
+        [WebSocketResourcesWebSocketRequestMessageBuilder new];
+    requestBuilder.id = socketMessage.requestId;
+    [requestBuilder setVerb:request.HTTPMethod];
+    [requestBuilder setPath:requestPath];
+    if (jsonData) {
+        // TODO: Do we need body & headers for requests with no parameters?
+        [requestBuilder setBody:jsonData];
+        [requestBuilder setHeadersArray:@[
+            @"content-type:application/json",
+        ]];
+    }
+
+    WebSocketResourcesWebSocketMessageBuilder *messageBuilder = [WebSocketResourcesWebSocketMessageBuilder new];
+    [messageBuilder setType:WebSocketResourcesWebSocketMessageTypeRequest];
+    [messageBuilder setRequestBuilder:requestBuilder];
+
+    NSData *messageData = [messageBuilder build].data;
+    if (!messageData) {
+        OWSProdLogAndFail(@"%@ could not serialize message.", self.logTag);
+        [socketMessage didFailBeforeSending];
+        return;
+    }
+
+    if (!self.canMakeRequests) {
+        DDLogError(@"%@ makeRequest: socket not open.", self.logTag);
+        [socketMessage didFailBeforeSending];
+        return;
+    }
+
+    NSError *error;
+    BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
+    if (!wasScheduled || error) {
+        OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+        [socketMessage didFailBeforeSending];
+        return;
+    }
+    DDLogVerbose(@"%@ message scheduled: %lld, %@, %@, %zd.",
+        self.logTag,
+        socketMessage.requestId,
+        request.HTTPMethod,
+        requestPath,
+        jsonData.length);
+
+    const int64_t kSocketTimeoutSeconds = 10;
+    __weak TSSocketMessage *weakSocketMessage = socketMessage;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+        ^{
+            [weakSocketMessage didFailBeforeSending];
+        });
+}
+
+- (void)processWebSocketResponseMessage:(WebSocketResourcesWebSocketResponseMessage *)message
+{
+    OWSAssertIsOnMainThread();
+    OWSAssert(message);
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self processWebSocketResponseMessageAsync:message];
+    });
+}
+
+- (void)processWebSocketResponseMessageAsync:(WebSocketResourcesWebSocketResponseMessage *)message
+{
+    OWSAssert(message);
+
+    DDLogInfo(@"%@ received WebSocket response.", self.logTag);
+
+    if (![message hasId]) {
+        DDLogError(@"%@ received incomplete WebSocket response.", self.logTag);
+        return;
+    }
+
+    DispatchMainThreadSafe(^{
+        [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
+    });
+
+    UInt64 requestId = message.id;
+    UInt32 responseStatus = 0;
+    if (message.hasStatus) {
+        responseStatus = message.status;
+    }
+    NSString *_Nullable responseMessage;
+    if (message.hasMessage) {
+        responseMessage = message.message;
+    }
+    NSData *_Nullable responseBody;
+    if (message.hasBody) {
+        responseBody = message.body;
+    }
+    NSArray<NSString *> *_Nullable responseHeaders = message.headers;
+
+    BOOL hasValidResponse = YES;
+    id responseObject = responseBody;
+    if (responseBody) {
+        NSError *error;
+        id _Nullable responseJson =
+            [NSJSONSerialization JSONObjectWithData:responseBody options:(NSJSONReadingOptions)0 error:&error];
+        if (!responseJson || error) {
+            OWSProdLogAndFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
+            hasValidResponse = NO;
+        } else {
+            responseObject = responseJson;
+        }
+    }
+
+    TSSocketMessage *_Nullable socketMessage;
+    @synchronized(self)
+    {
+        socketMessage = self.socketMessageMap[@(requestId)];
+        [self.socketMessageMap removeObjectForKey:@(requestId)];
+    }
+
+    if (!socketMessage) {
+        DDLogError(@"%@ received response to unknown request.", self.logTag);
+    } else {
+        BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
+        BOOL didSucceed = hasSuccessStatus && hasValidResponse;
+        if (didSucceed) {
+            [socketMessage didSucceedWithResponseObject:responseObject];
+        } else {
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
+                NSLocalizedString(
+                    @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
+            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus error:error];
+        }
+    }
+
+    DDLogVerbose(@"%@ received WebSocket response: %llu, %zd, %@, %zd, %@, %d, %@.",
+        self.logTag,
+        (unsigned long long)requestId,
+        (NSInteger)responseStatus,
+        responseMessage,
+        responseBody.length,
+        responseHeaders,
+        socketMessage != nil,
+        responseObject);
+}
+
+- (void)failAllPendingSocketMessagesIfNecessary
+{
+    if (!self.canMakeRequests) {
+        [self failAllPendingSocketMessages];
+    }
+}
+
+- (void)failAllPendingSocketMessages
+{
+    NSArray<TSSocketMessage *> *socketMessages;
+    @synchronized(self)
+    {
+        socketMessages = self.socketMessageMap.allValues;
+        [self.socketMessageMap removeAllObjects];
+    }
+
+    for (TSSocketMessage *socketMessage in socketMessages) {
+        [socketMessage didFailBeforeSending];
+    }
+}
+
 #pragma mark - Delegate methods
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket {
@@ -359,23 +663,32 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSData *)data {
     OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
+
     if (webSocket != self.websocket) {
         // Ignore events from obsolete web sockets.
         return;
     }
 
-    WebSocketMessage *wsMessage = [WebSocketMessage parseFromData:data];
+    WebSocketResourcesWebSocketMessage *wsMessage;
+    @try {
+        wsMessage = [WebSocketResourcesWebSocketMessage parseFromData:data];
+    } @catch (NSException *exception) {
+        OWSProdLogAndFail(@"%@ Received an invalid message: %@", self.logTag, exception.debugDescription);
+        // TODO: Add analytics.
+        return;
+    }
 
-    if (wsMessage.type == WebSocketMessageTypeRequest) {
+    if (wsMessage.type == WebSocketResourcesWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.type == WebSocketMessageTypeResponse) {
+    } else if (wsMessage.type == WebSocketResourcesWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
-        DDLogWarn(@"Got a WebSocketMessage of unknown type");
+        DDLogWarn(@"%@ webSocket:didReceiveMessage: unknown.", self.logTag);
     }
 }
 
-- (void)processWebSocketRequestMessage:(WebSocketRequestMessage *)message {
+- (void)processWebSocketRequestMessage:(WebSocketResourcesWebSocketRequestMessage *)message
+{
     OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ Got message with verb: %@ and path: %@", self.logTag, message.verb, message.path);
@@ -432,23 +745,18 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 }
 
-- (void)processWebSocketResponseMessage:(WebSocketResponseMessage *)message {
+- (void)sendWebSocketMessageAcknowledgement:(WebSocketResourcesWebSocketRequestMessage *)request
+{
     OWSAssertIsOnMainThread();
 
-    DDLogWarn(@"Client should not receive WebSocket Respond messages");
-}
-
-- (void)sendWebSocketMessageAcknowledgement:(WebSocketRequestMessage *)request {
-    OWSAssertIsOnMainThread();
-
-    WebSocketResponseMessageBuilder *response = [WebSocketResponseMessage builder];
+    WebSocketResourcesWebSocketResponseMessageBuilder *response = [WebSocketResourcesWebSocketResponseMessage builder];
     [response setStatus:200];
     [response setMessage:@"OK"];
     [response setId:request.id];
 
-    WebSocketMessageBuilder *message = [WebSocketMessage builder];
+    WebSocketResourcesWebSocketMessageBuilder *message = [WebSocketResourcesWebSocketMessage builder];
     [message setResponse:response.build];
-    [message setType:WebSocketMessageTypeResponse];
+    [message setType:WebSocketResourcesWebSocketMessageTypeResponse];
 
     NSError *error;
     [self.websocket sendDataNoCopy:message.build.data error:&error];
@@ -475,9 +783,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket
- didCloseWithCode:(NSInteger)code
-           reason:(NSString *)reason
-         wasClean:(BOOL)wasClean {
+    didCloseWithCode:(NSInteger)code
+              reason:(nullable NSString *)reason
+            wasClean:(BOOL)wasClean
+{
     OWSAssertIsOnMainThread();
     OWSAssert(webSocket);
     if (webSocket != self.websocket) {
@@ -730,3 +1039,5 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

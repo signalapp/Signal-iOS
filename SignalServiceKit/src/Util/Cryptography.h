@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,6 +35,9 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 };
 
 + (NSData *)generateRandomBytes:(NSUInteger)numberBytes;
+
++ (uint32_t)randomUInt32;
++ (uint64_t)randomUInt64;
 
 #pragma mark SHA and HMAC methods
 
