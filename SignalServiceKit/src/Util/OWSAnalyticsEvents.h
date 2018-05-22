@@ -76,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)callServicePeerConnectionMissing;
 
++ (NSString *)callServiceCallDataMissing;
+
 + (NSString *)contactsErrorContactsIntersectionFailed;
 
 + (NSString *)errorAttachmentRequestFailed;

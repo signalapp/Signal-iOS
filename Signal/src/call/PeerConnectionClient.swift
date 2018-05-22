@@ -166,6 +166,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
+    deinit {
+        Logger.debug("[PeerConnectionClient] deinit")
+    }
+
     // MARK: - Media Streams
 
     private func createSignalingDataChannel() {

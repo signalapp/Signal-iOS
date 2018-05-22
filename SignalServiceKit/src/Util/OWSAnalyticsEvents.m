@@ -157,6 +157,11 @@ NS_ASSUME_NONNULL_BEGIN
     return @"call_service_peer_connection_missing";
 }
 
++ (NSString *)callServiceCallDataMissing
+{
+    return @"call_service_call_data_missing";
+}
+
 + (NSString *)contactsErrorContactsIntersectionFailed
 {
     return @"contacts_error_contacts_intersection_failed";
