@@ -27,6 +27,7 @@ Describe here the issue that you are experiencing.
 - that reproduce the bug
 
 **Actual result:** Describe here what happens after you run the steps above (i.e. the buggy behaviour)
+
 **Expected result:** Describe here what should happen after you run the steps above (i.e. what would be the correct behaviour)
 
 ### Screenshots
