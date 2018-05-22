@@ -253,47 +253,32 @@ private class SignalCallData: NSObject {
         }
     }
 
-    // TODO: Remove?
     var call: SignalCall? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
-            guard let callData = callData else {
-                return nil
-            }
-            return callData.call
+            return callData?.call
         }
     }
-
     var peerConnectionClient: PeerConnectionClient? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
-            guard let callData = callData else {
-            return nil
-            }
-            return callData.peerConnectionClient
+            return callData?.peerConnectionClient
         }
     }
-
     var localVideoTrack: RTCVideoTrack? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
-            guard let callData = callData else {
-                return nil
-            }
-            return callData.localVideoTrack
+            return callData?.localVideoTrack
         }
     }
-    weak var remoteVideoTrack: RTCVideoTrack? {
+    var remoteVideoTrack: RTCVideoTrack? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
-            guard let callData = callData else {
-                return nil
-            }
-            return callData.remoteVideoTrack
+            return callData?.remoteVideoTrack
         }
     }
     var isRemoteVideoEnabled: Bool {
@@ -832,7 +817,6 @@ private class SignalCallData: NSObject {
 
             let iceUpdateMessage = OWSCallIceUpdateMessage(callId: call.signalingId, sdp: iceCandidate.sdp, sdpMLineIndex: iceCandidate.sdpMLineIndex, sdpMid: iceCandidate.sdpMid)
 
-            Logger.info("\(self.logTag) in \(#function) sending ICE Candidate.")
             Logger.info("\(self.logTag) in \(#function) sending ICE Candidate \(call.identifiersForLogs).")
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: iceUpdateMessage)
             let sendPromise = self.messageSender.sendPromise(message: callMessage)
@@ -979,13 +963,13 @@ private class SignalCallData: NSObject {
 
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard let currentCall = self.call else {
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) ignoring \(#function) since there is no current call"))
+        guard let currentCallData = self.callData else {
+            OWSProdError(OWSAnalyticsEvents.callServiceCallDataMissing(), file: #file, function: #function, line: #line)
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) callData unexpectedly nil in \(#function)"))
             return
         }
 
-        guard call == currentCall else {
+        guard call == currentCallData.call else {
             // This could conceivably happen if the other party of an old call was slow to send us their answer
             // and we've subsequently engaged in another call. Don't kill the current call, but just ignore it.
             Logger.warn("\(self.logTag) ignoring \(#function) for call other than current call")
@@ -1007,22 +991,16 @@ private class SignalCallData: NSObject {
         let message = DataChannelMessage.forConnected(callId: call.signalingId)
         peerConnectionClient.sendDataChannelMessage(data: message.asData(), description: "connected", isCritical: true)
 
-        handleConnectedCall(call)
+        handleConnectedCall(currentCallData)
     }
 
     /**
      * For outgoing call, when the callee has chosen to accept the call.
      * For incoming call, when the local user has chosen to accept the call.
      */
-    func handleConnectedCall(_ call: SignalCall) {
+    private func handleConnectedCall(_ callData: SignalCallData) {
         Logger.info("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)
-
-        guard let callData = self.callData else {
-            OWSProdError(OWSAnalyticsEvents.callServiceCallDataMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) callData unexpectedly nil in \(#function)"))
-            return
-        }
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
@@ -1030,15 +1008,15 @@ private class SignalCallData: NSObject {
             return
         }
 
-        Logger.info("\(self.logTag) handleConnectedCall: \(call.identifiersForLogs).")
+        Logger.info("\(self.logTag) handleConnectedCall: \(callData.call.identifiersForLogs).")
 
         // cancel connection timeout
         callData.fulfillCallConnectedPromise()
 
-        call.state = .connected
+        callData.call.state = .connected
 
         // We don't risk transmitting any media until the remote client has admitted to being connected.
-        ensureAudioState(call: call, peerConnectionClient: peerConnectionClient)
+        ensureAudioState(call: callData.call, peerConnectionClient: peerConnectionClient)
         peerConnectionClient.setLocalVideoEnabled(enabled: shouldHaveLocalVideoTrack())
     }
 
@@ -1326,7 +1304,7 @@ private class SignalCallData: NSObject {
             }
 
             self.callUIAdapter.recipientAcceptedCall(call)
-            handleConnectedCall(call)
+            handleConnectedCall(callData)
 
         } else if message.hasHangup() {
             Logger.debug("\(self.logTag) remote participant sent Hangup via data channel: \(call.identifiersForLogs).")
@@ -1548,8 +1526,6 @@ private class SignalCallData: NSObject {
 
         Logger.debug("\(self.logTag) in \(#function)")
 
-        // Capture a reference to the current call data,
-        // then clear the call data property.
         let currentCallData = self.callData
         self.callData = nil
 
