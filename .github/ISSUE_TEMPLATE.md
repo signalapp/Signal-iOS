@@ -37,7 +37,9 @@ Describe here the issue that you are experiencing.
 ### Device info
 <!-- replace the examples with your info -->
 **Device**: iDevice X
+
 **iOS version**: X.Y.Z
+
 **Signal version:** Z.Y
 
 ### Link to debug log
