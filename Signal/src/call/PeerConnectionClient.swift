@@ -74,6 +74,29 @@ protocol PeerConnectionClientDelegate: class {
  */
 class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
 
+    // In Swift (at least in Swift v3.3), weak variables aren't thread safe. It
+    // isn't safe to resolve/acquire/lock a weak reference into a strong reference
+    // while the instance might be being deallocated on another thread.
+    //
+    // AtomicHandle provides thread-safe access to a strong reference.
+    // PeerConnectionClient has an AtomicHandle to itself that its many async blocks
+    // (which run on more than one thread) can use to safely try to acquire a strong
+    // reference to the PeerConnectionClient. In ARC we'd normally, we'd avoid
+    // having an instance retain a strong reference to itself to avoid retain
+    // cycles, but it's safe in this case: PeerConnectionClient is owned (and only
+    // used by) a single entity CallService and CallService always calls
+    // [PeerConnectionClient terminate] when it is done with a PeerConnectionClient
+    // instance, so terminate is a reliable place where we can break the retain cycle.
+    //
+    // TODO: This should be fixed in Swift 4.  To verify, remove AtomicHandle and
+    // use [weak self] as usual.  Test using the following scenarios:
+    //
+    // * Alice and Bob place simultaneous calls to each other. Both should get busy.
+    //   Repeat 10-20x.  Then verify that they can connect a call by having just one
+    //   call the other.
+    // * Alice or Bob (randomly alternating) calls the other. Recipient (randomly)
+    //   accepts call or hangs up.  If accepted, Alice or Bob (randomly) hangs up.
+    //   Repeat immediately, as fast as you can, 10-20x.
     private class AtomicHandle<ValueType> : NSObject {
         var value: ValueType?
 
