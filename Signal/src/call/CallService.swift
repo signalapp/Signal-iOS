@@ -449,9 +449,8 @@ private class SignalCallData: NSObject {
             self.handleFailedCall(failedCall: call, error: .obsoleteCall(description:"obsolete call in \(#function)"))
             return
         }
-
         guard callData.call == call else {
-            self.handleFailedCall(failedCall: call, error: .obsoleteCall(description:"obsolete call in \(#function)"))
+            Logger.warn("\(self.logTag) ignoring \(#function) for call other than current call")
             return
         }
 
@@ -746,11 +745,11 @@ private class SignalCallData: NSObject {
      * Remote client (could be caller or callee) sent us a connectivity update
      */
     public func handleRemoteAddedIceCandidate(thread: TSContactThread, callId: UInt64, sdp: String, lineIndex: Int32, mid: String) {
+        SwiftAssertIsOnMainThread(#function)
         Logger.verbose("\(logTag) \(#function) callId: \(callId)")
 
         guard let callData = self.callData else {
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            self.handleFailedCurrentCall(error: .obsoleteCall(description: "ignoring remote ice update, since there is no current call."))
+            Logger.info("\(logTag) ignoring remote ice update, since there is no current call.")
             return
         }
 
@@ -1002,7 +1001,7 @@ private class SignalCallData: NSObject {
         Logger.info("\(self.logTag) in \(#function)")
         SwiftAssertIsOnMainThread(#function)
 
-        guard let peerConnectionClient = self.peerConnectionClient else {
+        guard let peerConnectionClient = callData.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
             handleFailedCall(failedCall: call, error: CallError.assertionError(description: "\(self.logTag) peerConnectionClient unexpectedly nil in \(#function)"))
             return
