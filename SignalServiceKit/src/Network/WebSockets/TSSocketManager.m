@@ -44,17 +44,36 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 @interface TSSocketMessage : NSObject
 
-@property (nonatomic) UInt64 requestId;
+@property (nonatomic, readonly) UInt64 requestId;
 @property (nonatomic, nullable) TSSocketMessageSuccess success;
 @property (nonatomic, nullable) TSSocketMessageFailure failure;
 @property (nonatomic) BOOL hasCompleted;
-@property (nonatomic) OWSBackgroundTask *backgroundTask;
+@property (nonatomic, readonly) OWSBackgroundTask *backgroundTask;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
 #pragma mark -
 
 @implementation TSSocketMessage
+
+- (instancetype)initWithRequestId:(UInt64)requestId
+                          success:(TSSocketMessageSuccess)success
+                          failure:(TSSocketMessageFailure)failure
+{
+    if (self = [super init]) {
+        OWSAssert(success);
+        OWSAssert(failure);
+
+        _requestId = requestId;
+        _success = success;
+        _failure = failure;
+        _backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    }
+
+    return self;
+}
 
 - (void)didSucceedWithResponseObject:(id _Nullable)responseObject
 {
@@ -139,8 +158,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // websocket's actual state, so we're defensive and distrustful of
 // this property.
 //
-// We only ever mutate this state on the main thread.
-@property (atomic) SocketManagerState state;
+// We only ever access this state on the main thread.
+@property (nonatomic) SocketManagerState state;
 
 #pragma mark -
 
@@ -170,13 +189,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 // This property should only be accessed while synchronized on the socket manager.
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, TSSocketMessage *> *socketMessageMap;
 
+@property (atomic) BOOL canMakeRequests;
+
 @end
 
 #pragma mark -
 
 @implementation TSSocketManager
-
-@synthesize state = _state;
 
 - (instancetype)init
 {
@@ -308,19 +327,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssertIsOnMainThread();
 
-    SocketManagerState oldState;
-    @synchronized(self)
-    {
-        oldState = _state;
-    }
-
     // If this state update is redundant, verify that
     // class state and socket state are aligned.
     //
     // Note: it's not safe to check the socket's readyState here as
     //       it may have been just updated on another thread. If so,
     //       we'll learn of that state change soon.
-    if (oldState == state) {
+    if (_state == state) {
         switch (state) {
             case SocketManagerStateClosed:
                 OWSAssert(!self.websocket);
@@ -337,7 +350,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     DDLogWarn(@"%@ Socket state: %@ -> %@",
         self.logTag,
-        [self stringFromSocketManagerState:oldState],
+        [self stringFromSocketManagerState:_state],
         [self stringFromSocketManagerState:state]);
 
     // If this state update is _not_ redundant,
@@ -381,35 +394,19 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // [SRWebSocket open] could hypothetically call a delegate method (e.g. if
             // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
-            @synchronized(self)
-            {
-                _state = state;
-            }
+            _state = state;
+            _canMakeRequests = state == SocketManagerStateOpen;
             [socket open];
             [self failAllPendingSocketMessagesIfNecessary];
             return;
         }
     }
 
-    @synchronized(self)
-    {
-        _state = state;
-    }
+    _state = state;
+    _canMakeRequests = state == SocketManagerStateOpen;
+
     [self failAllPendingSocketMessagesIfNecessary];
     [self notifyStatusChange];
-}
-
-- (SocketManagerState)state
-{
-    @synchronized(self)
-    {
-        return _state;
-    }
-}
-
-- (BOOL)canMakeRequests
-{
-    return self.state == SocketManagerStateOpen;
 }
 
 - (void)notifyStatusChange
@@ -451,15 +448,11 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     OWSAssert(success);
     OWSAssert(failure);
 
-    TSSocketMessage *socketMessage = [TSSocketMessage new];
-    socketMessage.success = success;
-    socketMessage.failure = failure;
-    socketMessage.backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    TSSocketMessage *socketMessage =
+        [[TSSocketMessage alloc] initWithRequestId:[Cryptography randomUInt64] success:success failure:failure];
 
     @synchronized(self)
     {
-        socketMessage.requestId = [Cryptography randomUInt64];
-
         self.socketMessageMap[@(socketMessage.requestId)] = socketMessage;
     }
 
@@ -524,9 +517,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         requestPath,
         jsonData.length);
 
-    // Ensure requests "timeout" after 10 seconds.
+    const int64_t kSocketTimeoutSeconds = 10;
     __weak TSSocketMessage *weakSocketMessage = socketMessage;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)),
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
             [weakSocketMessage didFailBeforeSending];
