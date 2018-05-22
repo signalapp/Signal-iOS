@@ -12,6 +12,7 @@ public class ProfileFetcherJob: NSObject {
     let TAG = "[ProfileFetcherJob]"
 
     let networkManager: TSNetworkManager
+    let socketManager: TSSocketManager
     let primaryStorage: OWSPrimaryStorage
 
     // This property is only accessed on the main queue.
@@ -33,6 +34,7 @@ public class ProfileFetcherJob: NSObject {
 
     public init(networkManager: TSNetworkManager, ignoreThrottling: Bool = false) {
         self.networkManager = networkManager
+        self.socketManager = TSSocketManager.shared()
         self.primaryStorage = OWSPrimaryStorage.shared()
         self.ignoreThrottling = ignoreThrottling
     }
@@ -113,24 +115,38 @@ public class ProfileFetcherJob: NSObject {
 
         let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
 
-        self.networkManager.makeRequest(
-            request,
-            success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-                do {
-                    let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
-                    fulfill(profile)
-                } catch {
+        if self.socketManager.canMakeRequests {
+            self.socketManager.make(request,
+                success: { (responseObject: Any?) -> Void in
+                    do {
+                        let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
+                        fulfill(profile)
+                    } catch {
+                        reject(error)
+                    }
+            },
+                failure: { (_: NSInteger, error: Error) in
                     reject(error)
-                }
-        },
-            failure: { (_: URLSessionDataTask?, error: Error?) in
+            })
+        } else {
+            self.networkManager.makeRequest(request,
+                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
+                    do {
+                        let profile = try SignalServiceProfile(recipientId: recipientId, rawResponse: responseObject)
+                        fulfill(profile)
+                    } catch {
+                        reject(error)
+                    }
+            },
+                failure: { (_: URLSessionDataTask?, error: Error?) in
 
-                if let error = error {
-                    reject(error)
-                }
+                    if let error = error {
+                        reject(error)
+                    }
 
-                reject(ProfileFetcherJobError.unknownNetworkError)
-        })
+                    reject(ProfileFetcherJobError.unknownNetworkError)
+            })
+        }
 
         return promise
     }
