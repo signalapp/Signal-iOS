@@ -395,7 +395,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             // the socket failed immediately for some reason), so we update the state
             // _before_ calling it, not after.
             _state = state;
-            _canMakeRequests = state == SocketManagerStateOpen;
+            self.canMakeRequests = state == SocketManagerStateOpen;
             [socket open];
             [self failAllPendingSocketMessagesIfNecessary];
             return;
@@ -403,7 +403,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     _state = state;
-    _canMakeRequests = state == SocketManagerStateOpen;
+    self.canMakeRequests = state == SocketManagerStateOpen;
 
     [self failAllPendingSocketMessagesIfNecessary];
     [self notifyStatusChange];
