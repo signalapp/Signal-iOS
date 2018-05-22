@@ -308,13 +308,19 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 {
     OWSAssertIsOnMainThread();
 
+    SocketManagerState oldState;
+    @synchronized(self)
+    {
+        oldState = _state;
+    }
+
     // If this state update is redundant, verify that
     // class state and socket state are aligned.
     //
     // Note: it's not safe to check the socket's readyState here as
     //       it may have been just updated on another thread. If so,
     //       we'll learn of that state change soon.
-    if (_state == state) {
+    if (oldState == state) {
         switch (state) {
             case SocketManagerStateClosed:
                 OWSAssert(!self.websocket);
@@ -331,7 +337,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     DDLogWarn(@"%@ Socket state: %@ -> %@",
         self.logTag,
-        [self stringFromSocketManagerState:_state],
+        [self stringFromSocketManagerState:oldState],
         [self stringFromSocketManagerState:state]);
 
     // If this state update is _not_ redundant,
