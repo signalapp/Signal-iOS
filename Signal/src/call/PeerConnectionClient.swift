@@ -412,7 +412,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             peerConnection.offer(for: strongSelf.defaultOfferConstraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
-                PeerConnectionClient.signalingQueue.async { [weak self] in
+                PeerConnectionClient.signalingQueue.async {
                     completion(sdp, error)
                 }
             })
@@ -549,7 +549,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             Logger.debug("\(strongSelf.logTag) negotiating answer session.")
 
             peerConnection.answer(for: constraints, completionHandler: { (sdp: RTCSessionDescription?, error: Error?) in
-                PeerConnectionClient.signalingQueue.async { [weak self] in
+                PeerConnectionClient.signalingQueue.async {
                     completion(sdp, error)
                 }
             })
