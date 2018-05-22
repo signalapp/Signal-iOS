@@ -18,4 +18,4 @@ https://github.com/signalapp/signal-webrtc-ios
 
 ## Translations
 
-Read more about translations in [TRANSLATIONS.md](signal/translations/TRANSLATIONS.md)
+Read more about translations in [TRANSLATIONS.md](Signal/translations/TRANSLATIONS.md)
