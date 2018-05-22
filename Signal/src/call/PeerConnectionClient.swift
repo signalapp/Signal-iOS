@@ -705,7 +705,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
 
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 completion(dataChannelMessage)
             }
         }
@@ -755,7 +755,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             strongSelf.remoteVideoTrack = remoteVideoTrack
 
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 completion(remoteVideoTrack)
             }
         }
@@ -846,7 +846,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 return
             }
             Logger.info("\(strongSelf.logTag) adding local ICE candidate:\(candidate.sdp)")
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 completion(candidate)
             }
         }
@@ -883,11 +883,11 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 owsFail("\(strongSelf.logTag) in \(#function) dataChannel unexpectedly set twice.")
             }
             strongSelf.dataChannel = dataChannel
-            dataChannel.delegate = self
+            dataChannel.delegate = strongSelf
 
             let pendingMessages = strongSelf.pendingDataChannelMessages
             strongSelf.pendingDataChannelMessages = []
-            DispatchQueue.main.async { [weak self] in
+            DispatchQueue.main.async {
                 completion(pendingMessages)
             }
         }
