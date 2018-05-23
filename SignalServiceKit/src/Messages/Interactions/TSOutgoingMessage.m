@@ -421,16 +421,6 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     [super saveWithTransaction:transaction];
 }
 
-- (BOOL)hasSentToAnyRecipient
-{
-    for (TSOutgoingMessageRecipientState *recipientState in self.recipientStateMap.allValues) {
-        if (recipientState.state == OWSOutgoingMessageRecipientStateSent) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
@@ -442,8 +432,21 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     if (!self.isExpiringMessage) {
         return NO;
+    } else if (self.messageState == TSOutgoingMessageStateSent) {
+        return YES;
     } else {
-        return self.hasSentToAnyRecipient;
+        if (self.expireStartedAt > 0) {
+            // Our initial migration to populate the recipient state map was incomplete. It's since been
+            // addressed, but it's possible there are edge cases where a previously sent message would
+            // no longer be considered sent.
+            // So here we take extra care not to stop any expiration that had previously started.
+            // This can also happen under normal cirumstances with an outgoing group message.
+            DDLogWarn(@"%@ in %s expiration previously started", self.logTag, __PRETTY_FUNCTION__);
+            
+            return YES;
+        }
+        
+        return NO;
     }
 }
 
