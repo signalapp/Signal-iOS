@@ -79,6 +79,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @property (atomic) BOOL isFromLinkedDevice;
 @property (atomic) TSGroupMetaMessage groupMetaMessage;
 
+@property (nonatomic, readonly) TSOutgoingMessageState legacyMessageState;
+@property (nonatomic, readonly) BOOL legacyWasDelivered;
+@property (nonatomic, readonly) BOOL hasLegacyMessageState;
+
 @property (atomic, nullable) NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap;
 
 @end
@@ -116,6 +120,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (messageStateValue) {
         oldMessageState = (TSOutgoingMessageState)messageStateValue.intValue;
     }
+    _hasLegacyMessageState = YES;
+    _legacyMessageState = oldMessageState;
 
     OWSOutgoingMessageRecipientState defaultState;
     switch (oldMessageState) {
@@ -140,6 +146,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     NSArray<NSString *> *_Nullable sentRecipients = [coder decodeObjectForKey:@"sentRecipients"];
 
     NSMutableDictionary<NSString *, TSOutgoingMessageRecipientState *> *recipientStateMap = [NSMutableDictionary new];
+    __block BOOL isGroupThread = NO;
     // Our default recipient list is the current thread members.
     __block NSArray<NSString *> *recipientIds = @[];
     // To avoid deadlock while migrating these records, we use a dedicated
@@ -149,12 +156,25 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // always accurate, so not using the same connection for both reads is
     // acceptable.
     [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        recipientIds = [[self threadWithTransaction:transaction] recipientIdentifiers];
+        TSThread *thread = [self threadWithTransaction:transaction];
+        recipientIds = [thread recipientIdentifiers];
+        isGroupThread = [thread isGroupThread];
     }];
-    if (sentRecipients) {
+
+    NSNumber *_Nullable wasDelivered = [coder decodeObjectForKey:@"wasDelivered"];
+    _legacyWasDelivered = wasDelivered && wasDelivered.boolValue;
+    BOOL wasDeliveredToContact = NO;
+    if (isGroupThread) {
         // If we have a `sentRecipients` list, prefer that as it is more accurate.
-        recipientIds = sentRecipients;
+        if (sentRecipients) {
+            recipientIds = sentRecipients;
+        }
+    } else {
+        // Special-case messages in contact threads; if "was delivered", we know
+        // it was delivered to the contact.
+        wasDeliveredToContact = _legacyWasDelivered;
     }
+
     NSString *_Nullable singleGroupRecipient = [coder decodeObjectForKey:@"singleGroupRecipient"];
     if (singleGroupRecipient) {
         OWSFail(@"%@ unexpected single group recipient message.", self.logTag);
@@ -179,6 +199,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
             // If we have a delivery timestamp for this recipient, mark it as delivered.
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
             recipientState.deliveryTimestamp = deliveryTimestamp;
+        } else if (wasDeliveredToContact) {
+            OWSAssert(!isGroupThread);
+            recipientState.state = OWSOutgoingMessageRecipientStateSent;
+            // Use message time as an estimate of delivery time.
+            recipientState.deliveryTimestamp = @(self.timestamp);
         } else if ([sentRecipients containsObject:recipientId]) {
             // If this recipient is in `sentRecipients`, mark it as sent.
             recipientState.state = OWSOutgoingMessageRecipientStateSent;
@@ -330,7 +355,22 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (TSOutgoingMessageState)messageState
 {
-    return [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
+    TSOutgoingMessageState newMessageState =
+        [TSOutgoingMessage messageStateForRecipientStates:self.recipientStateMap.allValues];
+    if (self.hasLegacyMessageState) {
+        if (newMessageState == TSOutgoingMessageStateSent || self.legacyMessageState == TSOutgoingMessageStateSent) {
+            return TSOutgoingMessageStateSent;
+        }
+    }
+    return newMessageState;
+}
+
+- (BOOL)wasDeliveredToAnyRecipient
+{
+    if ([self deliveredRecipientIds].count > 0) {
+        return YES;
+    }
+    return (self.hasLegacyMessageState && self.legacyWasDelivered && self.messageState == TSOutgoingMessageStateSent);
 }
 
 + (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates

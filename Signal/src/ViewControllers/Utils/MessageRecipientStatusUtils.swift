@@ -129,7 +129,7 @@ public class MessageRecipientStatusUtils: NSObject {
             if outgoingMessage.readRecipientIds().count > 0 {
                 return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "message footer for read messages"))
             }
-            if outgoingMessage.deliveredRecipientIds().count > 0 {
+            if outgoingMessage.wasDeliveredToAnyRecipient {
                 return (.delivered, NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                          comment: "message status for message delivered to their recipient."))
             }
