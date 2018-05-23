@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+// Expose that UINavigationController already secretly implements UIGestureRecognizerDelegate
+// so we can call [super navigationBar:shouldPopItem] in our own implementation to take advantage
+// of the important side effects of that method.
 @interface OWSNavigationController () <UIGestureRecognizerDelegate>
 
 @end
@@ -24,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
 {
     self = [self initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
+    if (!self) {
+        return self;
+    }
+
     [self pushViewController:rootViewController animated:NO];
 
     if (![self.navigationBar isKindOfClass:[OWSNavigationBar class]]) {
@@ -125,8 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (OWSWindowManager.sharedManager.hasCall) {
             CGRect oldFrame = navbar.frame;
-            CGRect newFrame
-                = CGRectMake(oldFrame.origin.x, navbar.callBannerHeight, oldFrame.size.width, oldFrame.size.height);
+            CGRect newFrame = oldFrame;
+            newFrame.size.height = navbar.callBannerHeight;
             navbar.frame = newFrame;
         } else {
             CGRect oldFrame = navbar.frame;
