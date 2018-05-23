@@ -48,6 +48,13 @@
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
                                                                     objectForKey:@"CFBundleVersion"]]];
+
+    [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
+                                                                         @"table cell label")
+                                                         actionBlock:^{
+                                                             [[UIApplication sharedApplication]
+                                                                 openURL:[NSURL URLWithString:kLegalTermsUrlString]];
+                                                         }]];
     [contents addSection:informationSection];
 
     OWSTableSection *helpSection = [OWSTableSection new];
