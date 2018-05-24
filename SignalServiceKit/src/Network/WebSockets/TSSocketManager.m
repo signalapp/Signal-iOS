@@ -475,7 +475,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     WebSocketResourcesWebSocketRequestMessageBuilder *requestBuilder =
         [WebSocketResourcesWebSocketRequestMessageBuilder new];
-    requestBuilder.id = socketMessage.requestId;
+    [requestBuilder setRequestId:socketMessage.requestId];
     [requestBuilder setVerb:request.HTTPMethod];
     [requestBuilder setPath:requestPath];
     if (jsonData) {
@@ -542,7 +542,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     DDLogInfo(@"%@ received WebSocket response.", self.logTag);
 
-    if (![message hasId]) {
+    if (![message hasRequestId]) {
         DDLogError(@"%@ received incomplete WebSocket response.", self.logTag);
         return;
     }
@@ -551,7 +551,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [self requestSocketAliveForAtLeastSeconds:kMakeRequestKeepSocketAliveDurationSeconds];
     });
 
-    UInt64 requestId = message.id;
+    UInt64 requestId = message.requestId;
     UInt32 responseStatus = 0;
     if (message.hasStatus) {
         responseStatus = message.status;
@@ -752,7 +752,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     WebSocketResourcesWebSocketResponseMessageBuilder *response = [WebSocketResourcesWebSocketResponseMessage builder];
     [response setStatus:200];
     [response setMessage:@"OK"];
-    [response setId:request.id];
+    [response setRequestId:request.requestId];
 
     WebSocketResourcesWebSocketMessageBuilder *message = [WebSocketResourcesWebSocketMessage builder];
     [message setResponse:response.build];

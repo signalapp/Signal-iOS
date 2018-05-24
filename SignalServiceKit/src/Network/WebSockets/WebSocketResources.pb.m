@@ -26,7 +26,7 @@ static PBExtensionRegistry* extensionRegistry = nil;
 @property (strong) NSString* path;
 @property (strong) NSData* body;
 @property (strong) NSMutableArray * headersArray;
-@property UInt64 id;
+@property UInt64 requestId;
 @end
 
 @implementation WebSocketResourcesWebSocketRequestMessage
@@ -54,19 +54,19 @@ static PBExtensionRegistry* extensionRegistry = nil;
 @synthesize body;
 @synthesize headersArray;
 @dynamic headers;
-- (BOOL) hasId {
-  return !!hasId_;
+- (BOOL) hasRequestId {
+  return !!hasRequestId_;
 }
-- (void) setHasId:(BOOL) _value_ {
-  hasId_ = !!_value_;
+- (void) setHasRequestId:(BOOL) _value_ {
+  hasRequestId_ = !!_value_;
 }
-@synthesize id;
+@synthesize requestId;
 - (instancetype) init {
   if ((self = [super init])) {
     self.verb = @"";
     self.path = @"";
     self.body = [NSData data];
-    self.id = 0L;
+    self.requestId = 0L;
   }
   return self;
 }
@@ -101,8 +101,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   if (self.hasBody) {
     [output writeData:3 value:self.body];
   }
-  if (self.hasId) {
-    [output writeUInt64:4 value:self.id];
+  if (self.hasRequestId) {
+    [output writeUInt64:4 value:self.requestId];
   }
   [self.headersArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
     [output writeString:5 value:element];
@@ -125,8 +125,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   if (self.hasBody) {
     size_ += computeDataSize(3, self.body);
   }
-  if (self.hasId) {
-    size_ += computeUInt64Size(4, self.id);
+  if (self.hasRequestId) {
+    size_ += computeUInt64Size(4, self.requestId);
   }
   {
     __block SInt32 dataSize = 0;
@@ -181,8 +181,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   if (self.hasBody) {
     [output appendFormat:@"%@%@: %@\n", indent, @"body", self.body];
   }
-  if (self.hasId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  if (self.hasRequestId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"requestId", [NSNumber numberWithLongLong:self.requestId]];
   }
   [self.headersArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
     [output appendFormat:@"%@%@: %@\n", indent, @"headers", obj];
@@ -199,8 +199,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   if (self.hasBody) {
     [dictionary setObject: self.body forKey: @"body"];
   }
-  if (self.hasId) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  if (self.hasRequestId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.requestId] forKey: @"requestId"];
   }
   [dictionary setObject:self.headers forKey: @"headers"];
   [self.unknownFields storeInDictionary:dictionary];
@@ -220,8 +220,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
       (!self.hasPath || [self.path isEqual:otherMessage.path]) &&
       self.hasBody == otherMessage.hasBody &&
       (!self.hasBody || [self.body isEqual:otherMessage.body]) &&
-      self.hasId == otherMessage.hasId &&
-      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasRequestId == otherMessage.hasRequestId &&
+      (!self.hasRequestId || self.requestId == otherMessage.requestId) &&
       [self.headersArray isEqualToArray:otherMessage.headersArray] &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
@@ -236,8 +236,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   if (self.hasBody) {
     hashCode = hashCode * 31 + [self.body hash];
   }
-  if (self.hasId) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  if (self.hasRequestId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.requestId] hash];
   }
   [self.headersArray enumerateObjectsUsingBlock:^(NSString *element, NSUInteger idx, BOOL *stop) {
     hashCode = hashCode * 31 + [element hash];
@@ -301,8 +301,8 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
       [resultWebSocketRequestMessage.headersArray addObjectsFromArray:other.headersArray];
     }
   }
-  if (other.hasId) {
-    [self setId:other.id];
+  if (other.hasRequestId) {
+    [self setRequestId:other.requestId];
   }
   [self mergeUnknownFields:other.unknownFields];
   return self;
@@ -338,7 +338,7 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
         break;
       }
       case 32: {
-        [self setId:[input readUInt64]];
+        [self setRequestId:[input readUInt64]];
         break;
       }
       case 42: {
@@ -417,26 +417,26 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
   resultWebSocketRequestMessage.headersArray = nil;
   return self;
 }
-- (BOOL) hasId {
-  return resultWebSocketRequestMessage.hasId;
+- (BOOL) hasRequestId {
+  return resultWebSocketRequestMessage.hasRequestId;
 }
-- (UInt64) id {
-  return resultWebSocketRequestMessage.id;
+- (UInt64) requestId {
+  return resultWebSocketRequestMessage.requestId;
 }
-- (WebSocketResourcesWebSocketRequestMessageBuilder*) setId:(UInt64) value {
-  resultWebSocketRequestMessage.hasId = YES;
-  resultWebSocketRequestMessage.id = value;
+- (WebSocketResourcesWebSocketRequestMessageBuilder*) setRequestId:(UInt64) value {
+  resultWebSocketRequestMessage.hasRequestId = YES;
+  resultWebSocketRequestMessage.requestId = value;
   return self;
 }
-- (WebSocketResourcesWebSocketRequestMessageBuilder*) clearId {
-  resultWebSocketRequestMessage.hasId = NO;
-  resultWebSocketRequestMessage.id = 0L;
+- (WebSocketResourcesWebSocketRequestMessageBuilder*) clearRequestId {
+  resultWebSocketRequestMessage.hasRequestId = NO;
+  resultWebSocketRequestMessage.requestId = 0L;
   return self;
 }
 @end
 
 @interface WebSocketResourcesWebSocketResponseMessage ()
-@property UInt64 id;
+@property UInt64 requestId;
 @property UInt32 status;
 @property (strong) NSString* message;
 @property (strong) NSMutableArray * headersArray;
@@ -445,13 +445,13 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
 
 @implementation WebSocketResourcesWebSocketResponseMessage
 
-- (BOOL) hasId {
-  return !!hasId_;
+- (BOOL) hasRequestId {
+  return !!hasRequestId_;
 }
-- (void) setHasId:(BOOL) _value_ {
-  hasId_ = !!_value_;
+- (void) setHasRequestId:(BOOL) _value_ {
+  hasRequestId_ = !!_value_;
 }
-@synthesize id;
+@synthesize requestId;
 - (BOOL) hasStatus {
   return !!hasStatus_;
 }
@@ -477,7 +477,7 @@ static WebSocketResourcesWebSocketRequestMessage* defaultWebSocketResourcesWebSo
 @synthesize body;
 - (instancetype) init {
   if ((self = [super init])) {
-    self.id = 0L;
+    self.requestId = 0L;
     self.status = 0;
     self.message = @"";
     self.body = [NSData data];
@@ -506,8 +506,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   return YES;
 }
 - (void) writeToCodedOutputStream:(PBCodedOutputStream*) output {
-  if (self.hasId) {
-    [output writeUInt64:1 value:self.id];
+  if (self.hasRequestId) {
+    [output writeUInt64:1 value:self.requestId];
   }
   if (self.hasStatus) {
     [output writeUInt32:2 value:self.status];
@@ -530,8 +530,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   }
 
   size_ = 0;
-  if (self.hasId) {
-    size_ += computeUInt64Size(1, self.id);
+  if (self.hasRequestId) {
+    size_ += computeUInt64Size(1, self.requestId);
   }
   if (self.hasStatus) {
     size_ += computeUInt32Size(2, self.status);
@@ -586,8 +586,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   return [WebSocketResourcesWebSocketResponseMessage builderWithPrototype:self];
 }
 - (void) writeDescriptionTo:(NSMutableString*) output withIndent:(NSString*) indent {
-  if (self.hasId) {
-    [output appendFormat:@"%@%@: %@\n", indent, @"id", [NSNumber numberWithLongLong:self.id]];
+  if (self.hasRequestId) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"requestId", [NSNumber numberWithLongLong:self.requestId]];
   }
   if (self.hasStatus) {
     [output appendFormat:@"%@%@: %@\n", indent, @"status", [NSNumber numberWithInteger:self.status]];
@@ -604,8 +604,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
-  if (self.hasId) {
-    [dictionary setObject: [NSNumber numberWithLongLong:self.id] forKey: @"id"];
+  if (self.hasRequestId) {
+    [dictionary setObject: [NSNumber numberWithLongLong:self.requestId] forKey: @"requestId"];
   }
   if (self.hasStatus) {
     [dictionary setObject: [NSNumber numberWithInteger:self.status] forKey: @"status"];
@@ -628,8 +628,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   }
   WebSocketResourcesWebSocketResponseMessage *otherMessage = other;
   return
-      self.hasId == otherMessage.hasId &&
-      (!self.hasId || self.id == otherMessage.id) &&
+      self.hasRequestId == otherMessage.hasRequestId &&
+      (!self.hasRequestId || self.requestId == otherMessage.requestId) &&
       self.hasStatus == otherMessage.hasStatus &&
       (!self.hasStatus || self.status == otherMessage.status) &&
       self.hasMessage == otherMessage.hasMessage &&
@@ -641,8 +641,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
 }
 - (NSUInteger) hash {
   __block NSUInteger hashCode = 7;
-  if (self.hasId) {
-    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.id] hash];
+  if (self.hasRequestId) {
+    hashCode = hashCode * 31 + [[NSNumber numberWithLongLong:self.requestId] hash];
   }
   if (self.hasStatus) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.status] hash];
@@ -699,8 +699,8 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
   if (other == [WebSocketResourcesWebSocketResponseMessage defaultInstance]) {
     return self;
   }
-  if (other.hasId) {
-    [self setId:other.id];
+  if (other.hasRequestId) {
+    [self setRequestId:other.requestId];
   }
   if (other.hasStatus) {
     [self setStatus:other.status];
@@ -740,7 +740,7 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
         break;
       }
       case 8: {
-        [self setId:[input readUInt64]];
+        [self setRequestId:[input readUInt64]];
         break;
       }
       case 16: {
@@ -762,20 +762,20 @@ static WebSocketResourcesWebSocketResponseMessage* defaultWebSocketResourcesWebS
     }
   }
 }
-- (BOOL) hasId {
-  return resultWebSocketResponseMessage.hasId;
+- (BOOL) hasRequestId {
+  return resultWebSocketResponseMessage.hasRequestId;
 }
-- (UInt64) id {
-  return resultWebSocketResponseMessage.id;
+- (UInt64) requestId {
+  return resultWebSocketResponseMessage.requestId;
 }
-- (WebSocketResourcesWebSocketResponseMessageBuilder*) setId:(UInt64) value {
-  resultWebSocketResponseMessage.hasId = YES;
-  resultWebSocketResponseMessage.id = value;
+- (WebSocketResourcesWebSocketResponseMessageBuilder*) setRequestId:(UInt64) value {
+  resultWebSocketResponseMessage.hasRequestId = YES;
+  resultWebSocketResponseMessage.requestId = value;
   return self;
 }
-- (WebSocketResourcesWebSocketResponseMessageBuilder*) clearId {
-  resultWebSocketResponseMessage.hasId = NO;
-  resultWebSocketResponseMessage.id = 0L;
+- (WebSocketResourcesWebSocketResponseMessageBuilder*) clearRequestId {
+  resultWebSocketResponseMessage.hasRequestId = NO;
+  resultWebSocketResponseMessage.requestId = 0L;
   return self;
 }
 - (BOOL) hasStatus {

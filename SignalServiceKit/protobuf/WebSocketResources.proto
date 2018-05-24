@@ -19,12 +19,12 @@ message WebSocketRequestMessage
     optional string path = 2;
     optional bytes body = 3;
     repeated string headers = 5;
-    optional uint64 id = 4;
+    optional uint64 requestId = 4;
 }
 
 message WebSocketResponseMessage
 {
-    optional uint64 id = 1;
+    optional uint64 requestId = 1;
     optional uint32 status = 2;
     optional string message = 3;
     repeated string headers = 5;
