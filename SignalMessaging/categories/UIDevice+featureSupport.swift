@@ -23,6 +23,7 @@ public extension UIDevice {
         case 2436:
             return true
         default:
+            // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
             owsFail("\(logTag) in \(#function) unknown device format")
             return false
         }
