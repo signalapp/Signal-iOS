@@ -23,7 +23,13 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     let contactsManager: OWSContactsManager
 
     private(set) var textView: UITextView!
-    private(set) var topToolbar: UIToolbar!
+    private var sendButton: UIBarButtonItem = {
+        return UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
+                                                        comment: "Label for the send button in the conversation view."),
+                               style: .plain,
+                               target: self,
+                               action: #selector(sendPressed))
+    }()
 
     // MARK: Initializers
 
@@ -48,26 +54,13 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         super.viewDidLoad()
         self.navigationItem.title = NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
                                                       comment: "Title for the 'message approval' dialog.")
+
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        self.navigationItem.rightBarButtonItem = sendButton
     }
 
-    private func updateToolbar() {
-        var items = [UIBarButtonItem]()
-
-        let cancelButton = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
-        items.append(cancelButton)
-
-        if textView.text.count > 0 {
-            let spacer = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-            items.append(spacer)
-            let sendButton = UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
-                                                                      comment: "Label for the send button in the conversation view."),
-                                             style: .plain,
-                                             target: self,
-                                             action: #selector(sendPressed))
-            items.append(sendButton)
-        }
-
-        topToolbar.items = items
+    private func updateSendButton() {
+        sendButton.isEnabled = textView.text.count > 0
     }
 
     // MARK: - Create Views
@@ -77,20 +70,11 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         self.view = UIView.container()
         self.view.backgroundColor = UIColor.white
 
-        // Top Toolbar
-        topToolbar = UIToolbar()
-        topToolbar.backgroundColor = UIColor.ows_toolbarBackground
-        self.view.addSubview(topToolbar)
-        topToolbar.autoPinWidthToSuperview()
-        topToolbar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        topToolbar.setContentHuggingVerticalHigh()
-        topToolbar.setCompressionResistanceVerticalHigh()
-
         // Recipient Row
         let recipientRow = createRecipientRow()
         view.addSubview(recipientRow)
         recipientRow.autoPinWidthToSuperview()
-        recipientRow.autoPinEdge(.top, to: .bottom, of: topToolbar)
+        recipientRow.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         // Text View
         textView = UITextView()
@@ -105,8 +89,6 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.autoPinWidthToSuperview()
         textView.autoPinEdge(.top, to: .bottom, of: recipientRow)
         textView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
-
-        updateToolbar()
     }
 
     private func createRecipientRow() -> UIView {
@@ -223,6 +205,6 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     // MARK: - UITextViewDelegate
 
     public func textViewDidChange(_ textView: UITextView) {
-        updateToolbar()
+        updateSendButton()
     }
 }

@@ -12,6 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+extern NSString *const OWSWindowManagerCallDidChangeNotification;
+const CGFloat OWSWindowManagerCallScreenHeight(void);
+
 extern const UIWindowLevel UIWindowLevel_Background;
 
 @interface OWSWindowManager : NSObject
@@ -29,7 +32,6 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)startCall:(UIViewController *)callViewController;
 - (void)endCall:(UIViewController *)callViewController;
 - (void)leaveCallView;
-- (void)returnToCallView;
 - (BOOL)hasCall;
 
 @end

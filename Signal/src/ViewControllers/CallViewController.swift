@@ -43,6 +43,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var contactAvatarContainerView: UIView!
     var callStatusLabel: UILabel!
     var callDurationTimer: Timer?
+    var leaveCallViewButton: UIButton!
 
     // MARK: - Ongoing Call Controls
 
@@ -226,8 +227,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         blurView.isUserInteractionEnabled = false
         self.view.addSubview(blurView)
 
-        self.view.setHLayoutMargins(0)
-
         // Create the video views first, as they are under the other views.
         createVideoViews()
         createContactViews()
@@ -254,6 +253,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     func createContactViews() {
+
+        leaveCallViewButton = UIButton()
+        let backButtonImage = self.view.isRTL() ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+        leaveCallViewButton.setImage(backButtonImage, for: .normal)
+        leaveCallViewButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        leaveCallViewButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
+        self.view.addSubview(leaveCallViewButton)
+
         contactNameLabel = MarqueeLabel()
 
         // marquee config
@@ -267,7 +274,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.trailingBuffer = ScaleFromIPhone5(80.0)
 
         // label config
-        contactNameLabel.font = UIFont.ows_lightFont(withSize: ScaleFromIPhone5To7Plus(32, 40))
+        contactNameLabel.font = UIFont.ows_dynamicTypeTitle1
+        contactNameLabel.textAlignment = .center
         contactNameLabel.textColor = UIColor.white
         contactNameLabel.layer.shadowOffset = CGSize.zero
         contactNameLabel.layer.shadowOpacity = 0.35
@@ -276,11 +284,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.view.addSubview(contactNameLabel)
 
         callStatusLabel = UILabel()
-        callStatusLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(19, 25))
+        callStatusLabel.font = UIFont.ows_dynamicTypeBody
+        callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.layer.shadowOffset = CGSize.zero
         callStatusLabel.layer.shadowOpacity = 0.35
         callStatusLabel.layer.shadowRadius = 4
+
         self.view.addSubview(callStatusLabel)
 
         contactAvatarContainerView = UIView.container()
@@ -349,8 +359,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     func createOngoingCallControls() {
 
-//        textMessageButton = createButton(imageName:"message-active-wide",
-//                                                action:#selector(didPressTextMessage))
         audioSourceButton = createButton(image: #imageLiteral(resourceName: "audio-call-speaker-inactive"),
                                           action: #selector(didPressAudioSource))
         audioSourceButton.accessibilityLabel = NSLocalizedString("CALL_VIEW_AUDIO_SOURCE_LABEL",
@@ -473,8 +481,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Layout
 
+    var localVideoViewTopConstraint: NSLayoutConstraint!
+
     func createViewConstraints() {
-        let topMargin = CGFloat(40)
+
         let contactVSpacing = CGFloat(3)
         let settingsNagHMargin = CGFloat(30)
         let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
@@ -492,23 +502,29 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Dark blurred background.
         blurView.autoPinEdgesToSuperviewEdges()
 
+        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .leading)
+        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
+
+        // MJK TODO height of contact name label should be ~same as back button
+        contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
+        contactNameLabel.autoPinEdge(.leading, to: .trailing, of: leaveCallViewButton, withOffset: 8, relation: .greaterThanOrEqual)
+        contactNameLabel.autoHCenterInSuperview()
+        contactNameLabel.setContentHuggingVerticalHigh()
+        contactNameLabel.setCompressionResistanceHigh()
+
+        callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
+        callStatusLabel.autoHCenterInSuperview()
+        callStatusLabel.setContentHuggingVerticalHigh()
+        callStatusLabel.setCompressionResistanceHigh()
+
         localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
-        localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
+        // MJK TODO, depends on whether contactNameLabel is visible
+        self.localVideoViewTopConstraint = localVideoView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: 4)
         let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
         localVideoView.autoSetDimension(.width, toSize: localVideoSize)
         localVideoView.autoSetDimension(.height, toSize: localVideoSize)
 
         remoteVideoView.autoPinEdgesToSuperviewEdges()
-
-        contactNameLabel.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
-        contactNameLabel.autoPinLeadingToSuperviewMargin()
-        contactNameLabel.setContentHuggingVerticalHigh()
-        contactNameLabel.setCompressionResistanceHigh()
-
-        callStatusLabel.autoPinEdge(.top, to: .bottom, of: contactNameLabel, withOffset: contactVSpacing)
-        callStatusLabel.autoPinLeadingToSuperviewMargin()
-        callStatusLabel.setContentHuggingVerticalHigh()
-        callStatusLabel.setCompressionResistanceHigh()
 
         contactAvatarContainerView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: +avatarTopSpacing)
         contactAvatarContainerView.autoPinEdge(.bottom, to: .top, of: ongoingCallControls, withOffset: -avatarBottomSpacing)
@@ -565,12 +581,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         if localVideoView.isHidden {
             let contactHMargin = CGFloat(5)
-            constraints.append(contactNameLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
-            constraints.append(callStatusLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
+//            constraints.append(contactNameLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
+//            constraints.append(callStatusLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
         } else {
             let spacing = CGFloat(10)
-            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: contactNameLabel, offset: spacing))
-            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: callStatusLabel, offset: spacing))
+//            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: contactNameLabel, offset: spacing))
+//            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: callStatusLabel, offset: spacing))
         }
 
         self.localVideoConstraints = constraints
@@ -916,10 +932,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
-    func didTapLeaveCall(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
+    func didTapLeaveCall(sender: UIButton) {
         OWSWindowManager.shared().leaveCallView()
     }
 

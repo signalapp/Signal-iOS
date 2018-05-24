@@ -184,7 +184,7 @@ protocol MediaGalleryDataSourceDelegate: class {
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
-class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
+class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSource, MediaTileViewControllerDelegate {
 
     private var pageViewController: MediaPageViewController?
 
@@ -395,9 +395,9 @@ class MediaGalleryViewController: UINavigationController, MediaGalleryDataSource
 
     // If we're using a navigationController other than self to present the views
     // e.g. the conversation settings view controller
-    var fromNavController: UINavigationController?
+    var fromNavController: OWSNavigationController?
 
-    func pushTileView(fromNavController: UINavigationController) {
+    func pushTileView(fromNavController: OWSNavigationController) {
         var mostRecentItem: MediaGalleryItem?
         self.uiDatabaseConnection.read { transaction in
             if let message = self.mediaGalleryFinder.mostRecentMediaMessage(transaction: transaction) {

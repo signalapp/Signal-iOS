@@ -128,6 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[UIApplication sharedApplication] setStatusBarHidden:isHidden animated:isAnimated];
 }
 
+- (CGFloat)statusBarHeight
+{
+    return [UIApplication sharedApplication].statusBarFrame.size.height;
+}
+
 - (BOOL)isInBackground
 {
     return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;

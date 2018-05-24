@@ -60,6 +60,7 @@
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/ThreadUtil.h>
@@ -290,6 +291,10 @@ typedef enum : NSUInteger {
                                                  name:kNSNotificationName_BlockedPhoneNumbersDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(windowManagerCallDidChange:)
+                                                 name:OWSWindowManagerCallDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
                                                  name:kNSNotificationName_IdentityStateDidChange
                                                object:nil];
@@ -481,8 +486,6 @@ typedef enum : NSUInteger {
     [super viewDidLoad];
 
     [self createContents];
-
-    [self.navigationController.navigationBar setTranslucent:NO];
 
     [self registerCellClasses];
 
@@ -1225,6 +1228,11 @@ typedef enum : NSUInteger {
     self.navigationItem.leftBarButtonItem = backItem;
 }
 
+- (void)windowManagerCallDidChange:(NSNotification *)notification
+{
+    [self updateBarButtonItems];
+}
+
 - (void)updateBarButtonItems
 {
     if (self.userLeftGroup) {
@@ -1239,9 +1247,21 @@ typedef enum : NSUInteger {
         // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
         // The contents of the navigation bar are cramped in this view.
         UIButton *callButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *image = [UIImage imageNamed:@"button_phone_white"];
+        UIImage *image = [[UIImage imageNamed:@"button_phone_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         [callButton setImage:image forState:UIControlStateNormal];
+        
+        if (OWSWindowManager.sharedManager.hasCall) {
+            callButton.enabled = NO;
+            callButton.userInteractionEnabled = NO;
+            callButton.tintColor = UIColor.lightGrayColor;
+        } else {
+            callButton.enabled = YES;
+            callButton.userInteractionEnabled = YES;
+            callButton.tintColor = UIColor.whiteColor;
+        }
+
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
+        
         // We normally would want to use left and right insets that ensure the button
         // is square and the icon is centered.  However UINavigationBar doesn't offer us
         // control over the margins and spacing of its content, and the buttons end up
@@ -2579,8 +2599,8 @@ typedef enum : NSUInteger {
     contactsPicker.title
         = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
 
-    UINavigationController *navigationController =
-        [[UINavigationController alloc] initWithRootViewController:contactsPicker];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:contactsPicker];
     [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
@@ -2621,7 +2641,7 @@ typedef enum : NSUInteger {
     GifPickerViewController *view =
         [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
     view.delegate = self;
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:view];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:view];
 
     [self dismissKeyBoard];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -4018,8 +4038,9 @@ typedef enum : NSUInteger {
         } else if (skipApprovalDialog) {
             [self sendMessageAttachment:attachment];
         } else {
-            AttachmentApprovalViewController *approvalVC = [[AttachmentApprovalViewController alloc] initWithAttachment:attachment delegate:self];
-            [self presentViewController:approvalVC animated:YES completion:nil];
+            OWSNavigationController *modal =
+                [AttachmentApprovalViewController wrappedInNavControllerWithAttachment:attachment delegate:self];
+            [self presentViewController:modal animated:YES completion:nil];
         }
     });
 }

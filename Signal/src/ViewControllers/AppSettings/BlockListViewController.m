@@ -47,12 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.navigationController.navigationBar setTranslucent:NO];
-}
-
 #pragma mark - Table view data source
 
 - (void)updateTableContents

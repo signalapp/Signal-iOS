@@ -55,7 +55,6 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [super loadView];
 
     self.view.backgroundColor = [UIColor whiteColor];
-    [self.navigationController.navigationBar setTranslucent:NO];
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
@@ -267,8 +266,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (self.isPresentedInNavigationController) {
         [self.navigationController pushViewController:countryCodeController animated:YES];
     } else {
-        UINavigationController *navigationController =
-            [[UINavigationController alloc] initWithRootViewController:countryCodeController];
+        OWSNavigationController *navigationController =
+            [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
         [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
     }
 }

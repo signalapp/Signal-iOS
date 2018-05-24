@@ -185,12 +185,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     NSString *_Nullable messageText = [self convertAttachmentToMessageTextIfPossible];
 
-    // Hide the navigation bar before presenting the approval view.
-    //
-    // Note that cancelling in the approval views will dismiss the entire
-    // share extension, so there is no "back" button.
-    self.navigationController.navigationBarHidden = YES;
-
     if (messageText) {
         MessageApprovalViewController *approvalVC =
             [[MessageApprovalViewController alloc] initWithMessageText:messageText
@@ -200,10 +194,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
         [self.navigationController pushViewController:approvalVC animated:YES];
     } else {
-        AttachmentApprovalViewController *approvalVC =
-            [[AttachmentApprovalViewController alloc] initWithAttachment:self.attachment delegate:self];
-
-        [self.navigationController pushViewController:approvalVC animated:YES];
+        OWSNavigationController *approvalModal =
+            [AttachmentApprovalViewController wrappedInNavControllerWithAttachment:self.attachment delegate:self];
+        [self presentViewController:approvalModal animated:YES completion:nil];
     }
 }
 

@@ -12,7 +12,6 @@
 #import "NotificationsManager.h"
 #import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
-#import "OWSNavigationController.h"
 #import "OWSScreenLockUI.h"
 #import "Pastelog.h"
 #import "PushManager.h"
@@ -28,6 +27,7 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSContactsSyncing.h>
 #import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/Release.h>
@@ -483,9 +483,9 @@ static NSTimeInterval launchStartedAt;
     if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![TSAccountManager isRegistered]) {
             id signupController = SignalApp.sharedApp.signUpFlowNavigationController;
-            if ([signupController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navController = (UINavigationController *)signupController;
-                UIViewController *controller          = [navController.childViewControllers lastObject];
+            if ([signupController isKindOfClass:[OWSNavigationController class]]) {
+                OWSNavigationController *navController = (OWSNavigationController *)signupController;
+                UIViewController *controller = [navController.childViewControllers lastObject];
                 if ([controller isKindOfClass:[CodeVerificationViewController class]]) {
                     CodeVerificationViewController *cvvc = (CodeVerificationViewController *)controller;
                     NSString *verificationCode           = [url.path substringFromIndex:1];
@@ -628,7 +628,7 @@ static NSTimeInterval launchStartedAt;
                         @"%@ Skipping 2FA reminder since there isn't yet an initial view controller", self.logTag);
                 } else {
                     UIViewController *rootViewController = self.window.rootViewController;
-                    UINavigationController *reminderNavController =
+                    OWSNavigationController *reminderNavController =
                         [OWS2FAReminderViewController wrappedInNavController];
 
                     [rootViewController presentViewController:reminderNavController animated:YES completion:nil];
@@ -1159,6 +1159,19 @@ static NSTimeInterval launchStartedAt;
     }
 
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+}
+
+#pragma mark - status bar touches
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    CGPoint location = [[[event allTouches] anyObject] locationInView:[self window]];
+    CGRect statusBarFrame = [UIApplication sharedApplication].statusBarFrame;
+    if (CGRectContainsPoint(statusBarFrame, location)) {
+        DDLogDebug(@"%@ touched status bar", self.logTag);
+        [[NSNotificationCenter defaultCenter] postNotificationName:TappedStatusBarNotification object:nil];
+    }
 }
 
 @end
