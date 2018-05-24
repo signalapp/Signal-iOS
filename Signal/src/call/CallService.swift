@@ -1530,7 +1530,7 @@ private class SignalCallData: NSObject {
 
         currentCallData?.terminate()
 
-        self.callUIAdapter.didTerminateCall(self.call)
+        self.callUIAdapter.didTerminateCall(currentCallData?.call)
 
         fireDidUpdateVideoTracks()
     }
