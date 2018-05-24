@@ -72,7 +72,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
 // UIWindowLevel_CallView
 @property (nonatomic) UIWindow *callViewWindow;
-@property (nonatomic) OWSNavigationController *callNavigationController;
+@property (nonatomic) UINavigationController *callNavigationController;
 
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
@@ -184,8 +184,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     UIViewController *viewController = [OWSWindowRootViewController new];
     viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
 
-    OWSNavigationController *navigationController =
-        [[OWSNavigationController alloc] initWithRootViewController:viewController];
+    // NOTE: Do not use OWSNavigationController for call window.
+    UINavigationController *navigationController =
+        [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
     OWSAssert(!self.callNavigationController);
     self.callNavigationController = navigationController;
