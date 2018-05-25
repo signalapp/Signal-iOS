@@ -1233,10 +1233,9 @@ private class SignalCallData: NSObject {
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
-            // This should never happen; return to a known good state.
-            owsFail("\(self.logTag) call was unexpectedly nil in \(#function)")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call unexpectedly nil in \(#function)"))
+            // This can happen if you tap the video button right after the other
+            // user hangs up.
+            Logger.warn("\(self.logTag) ignoring local video change; no call.")
             return
         }
 
