@@ -797,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "ခေါ်ဆိုမှု မအောင်မြင်ပါ ";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "စာတိုပို့ခြင်း မအောင်မြင်ပါ ";
 
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ပို့လိုက်သည့် ကုဒ်ဖြင့် အတည်မပြုနိုင်ပါက သင့်ကိုယ်ပိုင်စာရင်း ကိုအတည်ပြုပေးလို့ မရပါ။";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ဤဖုန်းနံပါတ်အမျိုးအစားကို အထောက်အပံ့မပေးပါ။ ကျေးဇူးပြုပြီး အကူအညီပေးသည့်အဖွဲ့ကို ဆက်သွယ်ပါ။";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "အပြင်အဆင်များ";

@@ -5,19 +5,19 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Acceptă noul număr de siguranță";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal Call";
+"ACTION_AUDIO_CALL" = "Apel Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Invite to Signal";
+"ACTION_INVITE" = "Invită pe Signal";
 
 /* Label for 'sent message' button in contact view. */
-"ACTION_SEND_MESSAGE" = "Send Message";
+"ACTION_SEND_MESSAGE" = "Trimite mesaj";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
+"ACTION_SHARE_CONTACT" = "Partajează contactul";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video Call";
+"ACTION_VIDEO_CALL" = "Apel Video";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Adaugă";
@@ -137,7 +137,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Nu s-au putut elimina metadatele din imagine.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Could not resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Imaginea nu a putut fi redimensionată.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Atașamentul este prea mare.";
@@ -410,7 +410,7 @@
 "CONFIRMATION_TITLE" = "Confirmă";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Adresă";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blocat";
@@ -422,52 +422,52 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Număr Necunoscut";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "Editează";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "Oraș";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Țară";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Cartier";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Căsuță poștală";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Post Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Cod poștal";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Regiune";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "Stradă";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Nume";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Prenume";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Al doilea pronume";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Prefix";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Sufix";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Organizație";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "Telefon";
 
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Nici un email disponibil";
@@ -476,28 +476,28 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nici un număr de telefon disponibil.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Select Contact";
+"CONTACT_PICKER_TITLE" = "Selectează contactul";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Partajează contactul";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Editează numele";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Contact invalid.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nici un câmp al contactului nu a fost selectat.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Deschide în Hărți";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Trimite email";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Contact fără nume";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Setări conversație";
@@ -596,7 +596,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Această operațiune poate dura câteva minute.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Se optimizează baza de date";
 
 /* The current day. */
 "DATE_TODAY" = "Astăzi";
@@ -797,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Apelul a eșuat.";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Trimiterea mesajului a eșuat.";
 
@@ -858,7 +861,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Numărul de siguranță s-a schimbat. Apasă pentru a verifica.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Utilizator neînregistrat: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Prea multe erori pentru acest contact. Te rog încearcă din nou în curând.";
@@ -1146,7 +1149,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Trimis";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Omis";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Se încarcă ...";
@@ -1182,7 +1185,7 @@
 "MESSAGE_STATUS_READ" = "Citit";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Omis";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Se trimite...";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nu putem activa contul tău până nu verifici codul pe care ți l-am trimis.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Acest format de număr de telefon nu este suportat, te rog contactează suportul tehnic.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sunet mesaj";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Setări";

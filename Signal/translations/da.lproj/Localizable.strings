@@ -8,13 +8,13 @@
 "ACTION_AUDIO_CALL" = "Signal Call";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Invite to Signal";
+"ACTION_INVITE" = "Invitér til Signal";
 
 /* Label for 'sent message' button in contact view. */
 "ACTION_SEND_MESSAGE" = "Send Message";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
+"ACTION_SHARE_CONTACT" = "Del kontakt";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Video Call";
@@ -410,7 +410,7 @@
 "CONFIRMATION_TITLE" = "Bekræft";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Adresse";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blokeret";
@@ -422,7 +422,7 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ikke-registreret nummer";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "Redigér";
 
 /* Label for a contact's email address. */
 "CONTACT_EMAIL" = "Email";
@@ -479,7 +479,7 @@
 "CONTACT_PICKER_TITLE" = "Select Contact";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Del kontakt";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
@@ -503,7 +503,7 @@
 "CONVERSATION_SETTINGS" = "Samtale indstillingér";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Add to Existing Contact";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tilføj til eksisterende kontakt";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Block this user";
@@ -796,6 +796,9 @@
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Opkald fejlede.";
+
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Beskeden kunne ikke sendes.";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vi kan ikke aktivere din konto før du bekræfter den kode vi har sendt dig.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dette telefonnummerformat er ikke understøttet.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Indstillinger";

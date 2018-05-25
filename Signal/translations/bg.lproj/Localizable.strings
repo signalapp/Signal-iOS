@@ -137,7 +137,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не може да се премахнат метаданните от изображението.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Could not resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Не може да се преоразмери изображението.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Прикаченият файл е прекалено голям.";
@@ -410,7 +410,7 @@
 "CONFIRMATION_TITLE" = "Потвърждение";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Адрес";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Блокиран";
@@ -422,52 +422,52 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Нерегистриран Номер";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "Редакция";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Email";
+"CONTACT_EMAIL" = "Имейл";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "Град";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Държава";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Квартал";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Пощенска Кутия";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Post Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Пощенски Код";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "Област";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "Улица";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Фамилия";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Име";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Презиме";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "Префикс";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Наставка";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Организация";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "Телефон";
 
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Няма налична електронна поща.";
@@ -479,25 +479,25 @@
 "CONTACT_PICKER_TITLE" = "Избери Контакт";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Сподели Контакт";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Редактирай Име";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Невалиден контакт.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Няма избрани полета за контакт.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Отваряне в Карти";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Изпратете имейл";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Неназован контакт";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Настройки на Разговор";
@@ -596,7 +596,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Това може да отнеме няколко минути.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Оптимизирай Базата Данни";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Оптимизиране на данните";
 
 /* The current day. */
 "DATE_TODAY" = "Днес";
@@ -797,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Обаждането се провали.";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Неуспешно изпращане на съобщение.";
 
@@ -858,7 +861,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Номера за безопасност са променени. Докоснете, за да ги потвърдите.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Нерегистриран потребител: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Твърде много провали с този контакт. Моля, опитайте отново след малко.";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Не можем да активираме профила ви, докато не потвърдите кода, който сме ви изпратили.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Формата на телефонният номер не се поддържа, моля свържете се с поддръжката. ";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук на съобщението";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";

@@ -797,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Anruf gescheitert.";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Senden der Nachricht gescheitert.";
 
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Dein Konto kann nicht aktiviert werden, bevor du den dir gesendeten Code verifizierst.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Dieses Rufnummernformat wird nicht unterstützt, bitte den Support kontaktieren.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Nachrichtenton";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Einstellungen";
@@ -2180,7 +2195,7 @@
 "VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Verifikationscode";
 
 /* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mich stattdessen anrufen";
+"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Mich anrufen";
 
 /* button text during registration to request another SMS code be sent */
 "VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Code via SMS erneut senden";

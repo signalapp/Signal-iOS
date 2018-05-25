@@ -797,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Kõne ei õnnestunud.";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Sõnumi saatmine ei õnnestunud.";
 
@@ -858,7 +861,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumber muudetud. Klõpsa kinnitamiseks.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Liiga palju ebaõnnestumisi selle kontaktiga. Palun proovi mõne aja pärast uuesti.";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sinu kontot pole võimalik aktiveerida enne kui oled kinnitanud koodi, mille sulle saatsime.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "See telefoninumber pole toetatud, palun võta ühendust kasutajatoega.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sõnumi heli";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
