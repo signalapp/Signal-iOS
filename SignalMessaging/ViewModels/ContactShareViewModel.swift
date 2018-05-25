@@ -7,16 +7,20 @@ import Foundation
 @objc
 public class ContactShareViewModel: NSObject {
 
+    @objc
     public let dbRecord: OWSContact
 
+    @objc
     public var avatarImageData: Data? {
         didSet {
             self.cachedAvatarImage = nil
         }
     }
 
-    var cachedAvatarImage: UIImage?
-    var avatarImage: UIImage? {
+    private var cachedAvatarImage: UIImage?
+
+    @objc
+    public var avatarImage: UIImage? {
         if self.cachedAvatarImage != nil {
             return self.cachedAvatarImage
         }
@@ -29,6 +33,7 @@ public class ContactShareViewModel: NSObject {
         return cachedAvatarImage
     }
 
+    @objc
     public required init(contactShareRecord: OWSContact, avatarImageData: Data?) {
         self.dbRecord = contactShareRecord
         self.avatarImageData = avatarImageData
@@ -71,6 +76,7 @@ public class ContactShareViewModel: NSObject {
 
     // MARK: Delegated -> dbRecord
 
+    @objc
     public var name: OWSContactName {
         get {
             return dbRecord.name
@@ -80,6 +86,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
+    @objc
     public var addresses: [OWSContactAddress] {
         get {
             return dbRecord.addresses
@@ -89,6 +96,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
+    @objc
     public var emails: [OWSContactEmail] {
         get {
             return dbRecord.emails
@@ -98,6 +106,7 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
+    @objc
     public var phoneNumbers: [OWSContactPhoneNumber] {
         get {
             return dbRecord.phoneNumbers
@@ -107,30 +116,37 @@ public class ContactShareViewModel: NSObject {
         }
     }
 
+    @objc
     public func systemContactsWithSignalAccountPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
         return dbRecord.systemContactsWithSignalAccountPhoneNumbers(contactsManager)
     }
 
+    @objc
     public func systemContactPhoneNumbers(_ contactsManager: ContactsManagerProtocol) -> [String] {
         return dbRecord.systemContactPhoneNumbers(contactsManager)
     }
 
+    @objc
     public func e164PhoneNumbers() -> [String] {
         return dbRecord.e164PhoneNumbers()
     }
 
+    @objc
     public var displayName: String {
         return dbRecord.name.displayName
     }
 
+    @objc
     public var ows_isValid: Bool {
         return dbRecord.ows_isValid()
     }
 
+    @objc
     public var isProfileAvatar: Bool {
         return dbRecord.isProfileAvatar
     }
 
+    @objc
     public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
 
         guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord, imageData: self.avatarImageData) else {
@@ -141,6 +157,7 @@ public class ContactShareViewModel: NSObject {
         return existingContact.buildCNContact(mergedWithNewContact: newCNContact)
     }
 
+    @objc
     public func copy(withName name: OWSContactName) -> ContactShareViewModel {
 
         // TODO move the `copy` logic into the view model?
@@ -149,6 +166,7 @@ public class ContactShareViewModel: NSObject {
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: self.avatarImageData)
     }
 
+    @objc
     public func newContact(withName name: OWSContactName) -> ContactShareViewModel {
 
         // TODO move the `newContact` logic into the view model?

@@ -4,12 +4,14 @@
 
 import Foundation
 
+@objc
 public extension UIDevice {
     var supportsCallKit: Bool {
         return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion(majorVersion: 10, minorVersion: 0, patchVersion: 0))
     }
 
-    var isIPhoneX: Bool {
+    @objc
+    public var isIPhoneX: Bool {
         switch UIScreen.main.nativeBounds.height {
         case 1136:
             // iPhone 5 or 5S or 5C

@@ -13,8 +13,8 @@ public class AudioActivity: NSObject {
         return "<\(self.logTag) audioDescription: \"\(audioDescription)\">"
     }
 
-    public
-    init(audioDescription: String) {
+    @objc
+    public init(audioDescription: String) {
         self.audioDescription = audioDescription
     }
 
@@ -27,7 +27,7 @@ public class AudioActivity: NSObject {
 public class OWSAudioSession: NSObject {
 
     // Force singleton access
-    public static let shared = OWSAudioSession()
+    @objc public static let shared = OWSAudioSession()
     private override init() {}
     private let avAudioSession = AVAudioSession.sharedInstance()
 
@@ -35,6 +35,7 @@ public class OWSAudioSession: NSObject {
 
     // Respects hardware mute switch, plays through external speaker, mixes with backround audio
     // appropriate for foreground sound effects.
+    @objc
     public func startAmbientAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
 
@@ -56,6 +57,7 @@ public class OWSAudioSession: NSObject {
     }
 
     // Ignores hardware mute switch, plays through external speaker
+    @objc
     public func startPlaybackAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function)")
 
@@ -71,6 +73,7 @@ public class OWSAudioSession: NSObject {
         }
     }
 
+    @objc
     public func startRecordingAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("\(logTag) in \(#function)")
 
@@ -90,6 +93,7 @@ public class OWSAudioSession: NSObject {
         }
     }
 
+    @objc
     public func startAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function) with \(audioActivity)")
 
@@ -99,6 +103,7 @@ public class OWSAudioSession: NSObject {
         self.currentActivities.append(Weak(value: audioActivity))
     }
 
+    @objc
     public func endAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("\(logTag) in \(#function) with audioActivity: \(audioActivity)")
 
@@ -171,6 +176,7 @@ public class OWSAudioSession: NSObject {
      * This must be called before any audio tracks are added to the peerConnection, else we'll start recording before all
      * our signaling is set up.
      */
+    @objc
     public func configureRTCAudio() {
         Logger.info("\(logTag) in \(#function)")
         rtcAudioSession.useManualAudio = true
@@ -180,6 +186,7 @@ public class OWSAudioSession: NSObject {
      * Because we useManualAudio with our RTCAudioSession, we have to start/stop the recording audio session ourselves.
      * See header for details on  manual audio.
      */
+    @objc
     public var isRTCAudioEnabled: Bool {
         get {
             return rtcAudioSession.isAudioEnabled

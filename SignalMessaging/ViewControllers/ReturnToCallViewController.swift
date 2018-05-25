@@ -12,10 +12,12 @@ public protocol ReturnToCallViewControllerDelegate: class {
 @objc
 public class ReturnToCallViewController: UIViewController {
 
+    @objc
     public weak var delegate: ReturnToCallViewControllerDelegate?
 
     let returnToCallLabel = UILabel()
 
+    @objc
     public func startAnimating() {
         NotificationCenter.default.addObserver(self, selector: #selector(didTapStatusBar(notification:)), name: .TappedStatusBar, object: nil)
         self.returnToCallLabel.layer.removeAllAnimations()
@@ -27,6 +29,7 @@ public class ReturnToCallViewController: UIViewController {
                        completion: { _ in self.returnToCallLabel.alpha = 1 })
     }
 
+    @objc
     public func stopAnimating() {
         NotificationCenter.default.removeObserver(self, name: .TappedStatusBar, object: nil)
         self.returnToCallLabel.layer.removeAllAnimations()

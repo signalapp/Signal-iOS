@@ -7,14 +7,17 @@ public class AnyLRUCache: NSObject {
 
     let backingCache: LRUCache<NSObject, NSObject>
 
+    @objc
     public init(maxSize: Int) {
         backingCache = LRUCache(maxSize: maxSize)
     }
 
+    @objc
     public func get(key: NSObject) -> NSObject? {
         return self.backingCache.get(key: key)
     }
 
+    @objc
     public func set(key: NSObject, value: NSObject) {
         self.backingCache.set(key: key, value: value)
     }

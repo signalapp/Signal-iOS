@@ -10,7 +10,8 @@ import SignalServiceKit
  * Signal is actually two services - textSecure for messages and red phone (for calls). 
  * AccountManager delegates to both.
  */
-class AccountManager: NSObject {
+@objc
+public class AccountManager: NSObject {
     let TAG = "[AccountManager]"
 
     let textSecureAccountManager: TSAccountManager
@@ -22,7 +23,8 @@ class AccountManager: NSObject {
         return PushManager.shared()
     }
 
-    required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
+    @objc
+    public required init(textSecureAccountManager: TSAccountManager, preferences: OWSPreferences) {
         self.networkManager = textSecureAccountManager.networkManager
         self.textSecureAccountManager = textSecureAccountManager
         self.preferences = preferences

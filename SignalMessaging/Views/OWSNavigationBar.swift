@@ -6,30 +6,35 @@ import Foundation
 import UIKit
 
 @objc
-protocol NavBarLayoutDelegate: class {
+public protocol NavBarLayoutDelegate: class {
     func navBarCallLayoutDidChange(navbar: OWSNavigationBar)
 }
 
 @objc
-class OWSNavigationBar: UINavigationBar {
+public class OWSNavigationBar: UINavigationBar {
 
-    weak var navBarLayoutDelegate: NavBarLayoutDelegate?
+    @objc
+    public weak var navBarLayoutDelegate: NavBarLayoutDelegate?
 
-    let navbarWithoutStatusHeight: CGFloat = 44
+    @objc
+    public let navbarWithoutStatusHeight: CGFloat = 44
 
-    var callBannerHeight: CGFloat {
+    @objc
+    public var callBannerHeight: CGFloat {
         return OWSWindowManagerCallScreenHeight()
     }
 
-    var statusBarHeight: CGFloat {
+    @objc
+    public var statusBarHeight: CGFloat {
         return CurrentAppContext().statusBarHeight
     }
 
-    var fullWidth: CGFloat {
+    @objc
+    public var fullWidth: CGFloat {
         return UIScreen.main.bounds.size.width
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -54,7 +59,7 @@ class OWSNavigationBar: UINavigationBar {
         self.navBarLayoutDelegate?.navBarCallLayoutDidChange(navbar: self)
     }
 
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
         guard OWSWindowManager.shared().hasCall() else {
             return super.sizeThatFits(size)
         }
@@ -69,7 +74,7 @@ class OWSNavigationBar: UINavigationBar {
         }
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         guard OWSWindowManager.shared().hasCall() else {
             super.layoutSubviews()
             return
