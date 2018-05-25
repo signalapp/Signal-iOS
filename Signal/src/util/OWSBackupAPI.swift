@@ -80,7 +80,7 @@ import CloudKit
     // backups can reuse the same record.
     @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
-                                                    fileUrlBlock: @escaping (()) -> URL?,
+                                                    fileUrlBlock: @escaping () -> URL?,
                                                     success: @escaping (String) -> Void,
                                                     failure: @escaping (Error) -> Void) {
         saveFileOnceToCloud(recordName: recordNameForPersistentFile(fileId: fileId),
@@ -208,7 +208,7 @@ import CloudKit
     @objc
     public class func saveFileOnceToCloud(recordName: String,
                                           recordType: String,
-                                          fileUrlBlock: @escaping (()) -> URL?,
+                                          fileUrlBlock: @escaping () -> URL?,
                                           success: @escaping (String) -> Void,
                                           failure: @escaping (Error) -> Void) {
 
@@ -220,7 +220,7 @@ import CloudKit
                                     success(recordName)
                                 } else {
                                     // No record found, saving new record.
-                                    guard let fileUrl = fileUrlBlock(()) else {
+                                    guard let fileUrl = fileUrlBlock() else {
                                         Logger.error("\(self.logTag) error preparing file for upload.")
                                         failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                             NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
@@ -242,7 +242,7 @@ import CloudKit
 
     @objc
     public class func deleteRecordsFromCloud(recordNames: [String],
-                                            success: @escaping (()) -> Void,
+                                            success: @escaping () -> Void,
                                             failure: @escaping (Error) -> Void) {
         deleteRecordsFromCloud(recordNames: recordNames,
                               remainingRetries: maxRetries,
@@ -252,7 +252,7 @@ import CloudKit
 
     private class func deleteRecordsFromCloud(recordNames: [String],
                                              remainingRetries: Int,
-                                             success: @escaping (()) -> Void,
+                                             success: @escaping () -> Void,
                                              failure: @escaping (Error) -> Void) {
 
         let recordIDs = recordNames.map { CKRecordID(recordName: $0) }
@@ -264,7 +264,7 @@ import CloudKit
                                                   label: "Delete Records")
             switch outcome {
             case .success:
-                success(())
+                success()
             case .failureDoNotRetry(let outcomeError):
                 failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
@@ -466,7 +466,7 @@ import CloudKit
     @objc
     public class func downloadFileFromCloud(recordName: String,
                                             toFileUrl: URL,
-                                            success: @escaping (()) -> Void,
+                                            success: @escaping () -> Void,
                                             failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,
@@ -475,7 +475,7 @@ import CloudKit
                             DispatchQueue.global().async {
                                 do {
                                     try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
-                                    success(())
+                                    success()
                                 } catch {
                                     Logger.error("\(self.logTag) couldn't copy asset file: \(error).")
                                     failure(invalidServiceResponseError())

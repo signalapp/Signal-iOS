@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -38,7 +38,7 @@ import UIKit
 
         var acceptableSubstring = ""
 
-        for (_, char) in replacementString.characters.enumerated() {
+        for (_, char) in replacementString.enumerated() {
             var maybeAcceptableSubstring = acceptableSubstring
             maybeAcceptableSubstring.append(char)
             if (byteLength(maybeAcceptableSubstring) <= availableSpace) {
@@ -48,7 +48,7 @@ import UIKit
             }
         }
 
-        textField.text = (existingString as NSString).replacingCharacters(in: editingRange, with:acceptableSubstring)
+        textField.text = (existingString as NSString).replacingCharacters(in: editingRange, with: acceptableSubstring)
 
         // We've already handled any valid editing manually, so prevent further changes.
         return false

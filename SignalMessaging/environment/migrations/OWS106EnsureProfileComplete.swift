@@ -20,7 +20,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
-    override public func runUp(completion:@escaping ((Void)) -> Void) {
+    override public func runUp(completion:@escaping () -> Void) {
         let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
 
             if (didSucceed) {
@@ -30,7 +30,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 Logger.error("\(self.TAG) Failed.")
             }
 
-            completion(())
+            completion()
         })
 
         type(of: self).sharedCompleteRegistrationFixerJob = job
