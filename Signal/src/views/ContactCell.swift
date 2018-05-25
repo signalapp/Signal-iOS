@@ -65,7 +65,7 @@ class ContactCell: UITableViewCell {
         }
     }
 
-    func didChangePreferredContentSize() {
+    @objc func didChangePreferredContentSize() {
         self.titleLabel.font = UIFont.ows_dynamicTypeBody
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
@@ -130,7 +130,7 @@ fileprivate extension CNContact {
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [
-            NSFontAttributeName: UIFont(descriptor: boldDescriptor!, size: 0)
+            NSAttributedStringKey.font: UIFont(descriptor: boldDescriptor!, size: 0)
         ]
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {

@@ -203,7 +203,7 @@ class ContactShareFieldView: UIStackView {
         self.addArrangedSubview(previewView)
     }
 
-    func wasTapped(sender: UIGestureRecognizer) {
+    @objc func wasTapped(sender: UIGestureRecognizer) {
         Logger.info("\(self.logTag) \(#function)")
 
         guard sender.state == .recognized else {
@@ -401,7 +401,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     func createNameRow() -> UIView {
         let nameVMargin = CGFloat(16)
 
-        let stackView = TappableStackView(actionBlock: { [weak self] _ in
+        let stackView = TappableStackView(actionBlock: { [weak self] 
             guard let strongSelf = self else { return }
             strongSelf.didPressEditName()
         })
@@ -447,7 +447,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     // MARK: -
 
-    func didPressSendButton() {
+    @objc func didPressSendButton() {
         SwiftAssertIsOnMainThread(#function)
 
         guard isAtLeastOneFieldSelected() else {
@@ -475,7 +475,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         delegate.approveContactShare(self, didApproveContactShare: filteredContactShare)
     }
 
-    func didPressCancel() {
+    @objc func didPressCancel() {
         Logger.info("\(logTag) \(#function)")
 
         guard let delegate = self.delegate else {

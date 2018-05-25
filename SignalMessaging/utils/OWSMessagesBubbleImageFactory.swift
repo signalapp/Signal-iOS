@@ -21,22 +21,22 @@ public class OWSMessagesBubbleImageFactory: NSObject {
     }()
 
     public lazy var incoming: JSQMessagesBubbleImage = {
-        let color = bubbleColorIncoming
+        let color = OWSMessagesBubbleImageFactory.bubbleColorIncoming
         return self.incoming(color: color)
     }()
 
     public lazy var outgoing: JSQMessagesBubbleImage = {
-        let color = bubbleColorOutgoingSent
+        let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
         return self.outgoing(color: color)
     }()
 
     public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
-        let color = bubbleColorOutgoingSending
+        let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
         return self.outgoing(color: color)
     }()
 
     public lazy var outgoingFailed: JSQMessagesBubbleImage = {
-        let color = bubbleColorOutgoingUnsent
+        let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
         return self.outgoing(color: color)
     }()
 

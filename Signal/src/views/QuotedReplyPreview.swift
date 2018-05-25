@@ -83,7 +83,7 @@ class QuotedReplyPreview: UIView {
         self.heightConstraint.constant = size.height
     }
 
-    func contentSizeCategoryDidChange(_ notification: Notification) {
+    @objc func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         updateContents()

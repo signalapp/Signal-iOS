@@ -545,7 +545,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 if let error = error {
                     reject(error)
                 } else {
-                    fulfill()
+                    fulfill(())
                 }
             })
         }
@@ -575,7 +575,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                     reject(error)
                                                     return
                                                 }
-                                                fulfill()
+                                                fulfill(())
             })
         }
 
@@ -616,7 +616,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                         reject(error)
                                                         return
                                                     }
-                                                    fulfill()
+                                                    fulfill(())
             })
         }
         return promise

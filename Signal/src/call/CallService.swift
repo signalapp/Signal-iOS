@@ -319,12 +319,12 @@ private class SignalCallData: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func didEnterBackground() {
+    @objc func didEnterBackground() {
         SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }
 
-    func didBecomeActive() {
+    @objc func didBecomeActive() {
         SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }

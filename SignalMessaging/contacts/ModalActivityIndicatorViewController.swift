@@ -132,7 +132,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.presentTimer = nil
     }
 
-    func presentTimerFired() {
+    @objc func presentTimerFired() {
         SwiftAssertIsOnMainThread(#function)
 
         clearTimer()
@@ -143,7 +143,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
-    func cancelPressed() {
+    @objc func cancelPressed() {
         SwiftAssertIsOnMainThread(#function)
 
         wasCancelled = true

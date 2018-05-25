@@ -220,7 +220,7 @@ import CloudKit
                                     success(recordName)
                                 } else {
                                     // No record found, saving new record.
-                                    guard let fileUrl = fileUrlBlock() else {
+                                    guard let fileUrl = fileUrlBlock(()) else {
                                         Logger.error("\(self.logTag) error preparing file for upload.")
                                         failure(OWSErrorWithCodeDescription(.exportBackupError,
                                                                             NSLocalizedString("BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED",
@@ -264,7 +264,7 @@ import CloudKit
                                                   label: "Delete Records")
             switch outcome {
             case .success:
-                success()
+                success(())
             case .failureDoNotRetry(let outcomeError):
                 failure(outcomeError)
             case .failureRetryAfterDelay(let retryDelay):
@@ -475,7 +475,7 @@ import CloudKit
                             DispatchQueue.global().async {
                                 do {
                                     try FileManager.default.copyItem(at: asset.fileURL, to: toFileUrl)
-                                    success()
+                                    success(())
                                 } catch {
                                     Logger.error("\(self.logTag) couldn't copy asset file: \(error).")
                                     failure(invalidServiceResponseError())

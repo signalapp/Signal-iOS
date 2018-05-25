@@ -95,7 +95,7 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: - Actions
 
-    func shareButtonPressed() {
+    @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: messageBody)
     }
 }

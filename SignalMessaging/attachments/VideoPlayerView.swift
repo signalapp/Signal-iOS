@@ -112,7 +112,7 @@ public class PlayerProgressBar: UIView {
 
         // Configure controls
 
-        let kLabelFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFontWeightRegular)
+        let kLabelFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.regular)
         positionLabel.font = kLabelFont
         remainingLabel.font = kLabelFont
 

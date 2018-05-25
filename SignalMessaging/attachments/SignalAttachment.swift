@@ -958,7 +958,7 @@ public class SignalAttachment: NSObject {
         }
 
         exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.outputFileType = AVFileTypeMPEG4
+        exportSession.outputFileType = AVFileType.mp4
         exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")

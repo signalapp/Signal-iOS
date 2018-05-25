@@ -30,7 +30,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                 Logger.error("\(self.TAG) Failed.")
             }
 
-            completion()
+            completion(())
         })
 
         type(of: self).sharedCompleteRegistrationFixerJob = job
@@ -98,7 +98,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
                 Logger.info("\(self.TAG) verified recipient profile is in good shape: \(localRecipientId)")
 
-                fulfill()
+                fulfill(())
             }.catch { error in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
@@ -107,7 +107,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
                                                     success: {
                                                         Logger.info("\(self.TAG) successfully uploaded pre-keys. Profile should be fixed.")
-                                                        fulfill()
+                                                        fulfill(())
                     },
                                                     failure: { _ in
                                                         reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.TAG) Unknown error in \(#function)"))

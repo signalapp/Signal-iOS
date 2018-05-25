@@ -305,11 +305,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     // MARK: - Button Actions
 
-    func onTouchCancelButton() {
+    @objc func onTouchCancelButton() {
         contactsPickerDelegate?.contactsPickerDidCancel(self)
     }
 
-    func onTouchDoneButton() {
+    @objc func onTouchDoneButton() {
         contactsPickerDelegate?.contactsPicker(self, didSelectMultipleContacts: selectedContacts)
     }
 
