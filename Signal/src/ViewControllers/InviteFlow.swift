@@ -129,7 +129,9 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("\(self.logTag) in \(#function) with error: \(error)")
-        self.presentingViewController.dismiss(animated: true)
+        self.presentingViewController.dismiss(animated: true) {
+            OWSAlerts.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
+        }
     }
 
     func contactsPickerDidCancel(_: ContactsPicker) {
