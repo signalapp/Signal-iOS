@@ -101,7 +101,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         switch inviteChannel {
         case .message:
             let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
-            sendSMSTo(phoneNumbers: phoneNumbers)
+            dismissAndSendSMSTo(phoneNumbers: phoneNumbers)
         case .mail:
             let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
             sendMailTo(emails: recipients)
@@ -164,6 +164,12 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
+    public func dismissAndSendSMSTo(phoneNumbers: [String]) {
+        self.presentingViewController.dismiss(animated: true) {
+            self.sendSMSTo(phoneNumbers: phoneNumbers)
+        }
+    }
+
     public func sendSMSTo(phoneNumbers: [String]) {
         if #available(iOS 10.0, *) {
             // iOS10 message compose view doesn't respect some system appearence attributes.
@@ -179,9 +185,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
         messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
-        self.presentingViewController.dismiss(animated: true) {
-            self.presentingViewController.present(messageComposeViewController, animated: true)
-        }
+        self.presentingViewController.present(messageComposeViewController, animated: true)
     }
 
     // MARK: MessageComposeViewControllerDelegate
