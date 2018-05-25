@@ -32,10 +32,10 @@ final class ContactsPickerTest: XCTestCase {
         let emailOnlyContactD = CNMutableContact()
         emailOnlyContactD.emailAddresses.append(CNLabeledValue(label: nil, value: "dude@bla.com"))
 
-        let contactsPicker = ContactsPicker(delegate: nil)
+        let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .phoneNumber)
         let collatedContacts = contactsPicker.collatedContacts([emailOnlyContactB, emailOnlyContactD])
 
-        let sectionTitles = contactsPicker.collation.sectionTitles
+        let sectionTitles = contactsPicker.collationForTests.sectionTitles
         if let bIndex = sectionTitles.index(of: "B") {
             let bSectionContacts = collatedContacts[bIndex]
             XCTAssertEqual(bSectionContacts.first, emailOnlyContactB)
@@ -54,10 +54,10 @@ final class ContactsPickerTest: XCTestCase {
         nameAndEmailContact.givenName = "Alice"
         nameAndEmailContact.emailAddresses.append(CNLabeledValue(label: nil, value: "nameAndEmail@bla.com"))
 
-        let contactsPicker = ContactsPicker(delegate: nil)
+        let contactsPicker = ContactsPicker(allowsMultipleSelection: false, subtitleCellType: .phoneNumber)
         let collatedContacts = contactsPicker.collatedContacts([nameAndEmailContact])
 
-        let sectionTitles = contactsPicker.collation.sectionTitles
+        let sectionTitles = contactsPicker.collationForTests.sectionTitles
         if let aIndex = sectionTitles.index(of: "A") {
             let aSectionContacts = collatedContacts[aIndex]
             XCTAssertEqual(aSectionContacts.first, nameAndEmailContact)

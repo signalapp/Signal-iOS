@@ -59,6 +59,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     private let collation = UILocalizedIndexedCollation.current()
+    public var collationForTests: UILocalizedIndexedCollation {
+        get {
+            return collation
+        }
+    }
     private let contactStore = CNContactStore()
 
     // Data Source State
