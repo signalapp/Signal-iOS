@@ -23,6 +23,7 @@ class QuotedReplyPreview: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc
     init(quotedReply: OWSQuotedReplyModel) {
         self.quotedReply = quotedReply
 

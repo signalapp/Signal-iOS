@@ -14,6 +14,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
     // increment a similar constant for each migration.
+    @objc
     class func migrationId() -> String {
         return "106"
     }

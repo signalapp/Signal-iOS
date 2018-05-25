@@ -278,6 +278,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     // TODO rename to replacingOriginRect
     private var originRect: CGRect?
 
+    @objc
     public func presentDetailView(fromViewController: UIViewController, mediaMessage: TSMessage, replacingView: UIView) {
         var galleryItem: MediaGalleryItem?
         uiDatabaseConnection.read { transaction in

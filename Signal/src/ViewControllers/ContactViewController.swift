@@ -48,6 +48,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         fatalError("Unimplemented")
     }
 
+    @objc
     required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.current().contactsManager
         self.contactShare = contactShare

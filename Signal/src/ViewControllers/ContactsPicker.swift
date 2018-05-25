@@ -72,6 +72,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     private lazy var selectedContacts = [Contact]()
 
     // Configuration
+    @objc
     public weak var contactsPickerDelegate: ContactsPickerDelegate?
     private let subtitleCellType: SubtitleCellValue
     private let allowsMultipleSelection: Bool

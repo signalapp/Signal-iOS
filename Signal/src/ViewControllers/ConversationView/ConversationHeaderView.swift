@@ -12,8 +12,10 @@ public protocol ConversationHeaderViewDelegate {
 @objc
 public class ConversationHeaderView: UIStackView {
 
+    @objc
     public weak var delegate: ConversationHeaderViewDelegate?
 
+    @objc
     public var attributedTitle: NSAttributedString? {
         get {
             return self.titleLabel.attributedText
@@ -23,6 +25,7 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
+    @objc
     public var attributedSubtitle: NSAttributedString? {
         get {
             return self.subtitleLabel.attributedText
@@ -41,14 +44,18 @@ public class ConversationHeaderView: UIStackView {
         }
     }
 
+    @objc
     public let titlePrimaryFont: UIFont =  UIFont.ows_boldFont(withSize: 17)
+    @objc
     public let titleSecondaryFont: UIFont =  UIFont.ows_regularFont(withSize: 9)
-
+    @objc
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
+
     private let titleLabel: UILabel
     private let subtitleLabel: UILabel
     private let avatarView: AvatarImageView
 
+    @objc
     public required init(thread: TSThread, contactsManager: OWSContactsManager) {
 
         let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)

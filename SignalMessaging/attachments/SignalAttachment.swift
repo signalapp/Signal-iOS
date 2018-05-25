@@ -1011,6 +1011,7 @@ public class SignalAttachment: NSObject {
         return VideoCompressionResult(attachmentPromise: attachmentPromise, exportSession: exportSession)
     }
 
+    @objc
     public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video

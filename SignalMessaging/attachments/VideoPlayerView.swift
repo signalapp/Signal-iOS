@@ -7,6 +7,7 @@ import AVFoundation
 
 @objc
 public class VideoPlayerView: UIView {
+    @objc
     var player: AVPlayer? {
         get {
             return playerLayer.player

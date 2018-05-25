@@ -33,6 +33,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var lastQuery: String = ""
 
+    @objc
     public weak var delegate: GifPickerViewControllerDelegate?
 
     let thread: TSThread
@@ -60,6 +61,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         fatalError("\(#function) is unimplemented.")
     }
 
+    @objc
     required init(thread: TSThread, messageSender: MessageSender) {
         self.thread = thread
         self.messageSender = messageSender

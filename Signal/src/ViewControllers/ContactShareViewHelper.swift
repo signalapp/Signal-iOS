@@ -15,10 +15,12 @@ public protocol ContactShareViewHelperDelegate: class {
 @objc
 public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
+    @objc
     weak var delegate: ContactShareViewHelperDelegate?
 
     let contactsManager: OWSContactsManager
 
+    @objc
     public required init(contactsManager: OWSContactsManager) {
         SwiftAssertIsOnMainThread(#function)
 
@@ -89,6 +91,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
+    @objc
     func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("\(logTag) \(#function)")
 

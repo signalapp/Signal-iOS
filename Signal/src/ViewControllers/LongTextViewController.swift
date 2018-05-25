@@ -24,6 +24,7 @@ public class LongTextViewController: OWSViewController {
         fatalError("\(#function) is unimplemented.")
     }
 
+    @objc
     public required init(viewItem: ConversationViewItem) {
         self.viewItem = viewItem
 
@@ -76,7 +77,7 @@ public class LongTextViewController: OWSViewController {
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .leading)
         messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
-        messageTextView.textContainerInset = UIEdgeInsetsMake(0, view.layoutMargins.left, 0, view.layoutMargins.right)
+        messageTextView.textContainerInset = UIEdgeInsets(top: 0, left: view.layoutMargins.left, bottom: 0, right: view.layoutMargins.right)
         messageTextView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         let footer = UIToolbar()
