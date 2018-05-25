@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,7 +12,7 @@ import SignalMessaging
  * Syncing is accomplished via the existing contact syncing mechanism, except the only contact synced is ourself. It's incumbent on the linked device
  * to treat this "self contact" record specially.
  */
-@objc class MultiDeviceProfileKeyUpdateJob: NSObject {
+@objc public class MultiDeviceProfileKeyUpdateJob: NSObject {
 
     let TAG = "[MultiDeviceProfileKeyUpdateJob]"
 
@@ -21,7 +21,7 @@ import SignalMessaging
     let messageSender: MessageSender
     let profileManager: OWSProfileManager
 
-    required init(profileKey: OWSAES256Key, identityManager: OWSIdentityManager, messageSender: MessageSender, profileManager: OWSProfileManager) {
+   @objc public required init(profileKey: OWSAES256Key, identityManager: OWSIdentityManager, messageSender: MessageSender, profileManager: OWSProfileManager) {
         self.profileKey = profileKey
 
         self.identityManager = identityManager

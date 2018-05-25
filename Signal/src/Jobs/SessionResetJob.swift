@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc(OWSSessionResetJob)
-class SessionResetJob: NSObject {
+public class SessionResetJob: NSObject {
 
     let TAG = "SessionResetJob"
 
@@ -16,7 +16,7 @@ class SessionResetJob: NSObject {
     let primaryStorage: OWSPrimaryStorage
     let messageSender: MessageSender
 
-    required init(recipientId: String, thread: TSThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
+    @objc public required init(recipientId: String, thread: TSThread, messageSender: MessageSender, primaryStorage: OWSPrimaryStorage) {
         self.thread = thread
         self.recipientId = recipientId
         self.messageSender = messageSender

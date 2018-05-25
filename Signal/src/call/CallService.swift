@@ -338,7 +338,7 @@ private class SignalCallData: NSObject {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    public func createCallUIAdapter() {
+    @objc public func createCallUIAdapter() {
         SwiftAssertIsOnMainThread(#function)
 
         if self.call != nil {

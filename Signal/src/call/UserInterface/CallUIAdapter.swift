@@ -167,7 +167,7 @@ extension CallUIAdaptee {
         adaptee.answerCall(call)
     }
 
-    internal func declineCall(localId: UUID) {
+    @objc public func declineCall(localId: UUID) {
         SwiftAssertIsOnMainThread(#function)
 
         adaptee.declineCall(localId: localId)
@@ -187,7 +187,7 @@ extension CallUIAdaptee {
         }
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    @objc public func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         adaptee.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: hasLocalVideo)
