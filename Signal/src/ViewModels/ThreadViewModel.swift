@@ -6,21 +6,22 @@ import Foundation
 
 @objc
 public class ThreadViewModel: NSObject {
-    let hasUnreadMessages: Bool
-    let lastMessageDate: Date
-    let isGroupThread: Bool
-    let threadRecord: TSThread
-    let unreadCount: UInt
-    let contactIdentifier: String?
-    let name: String
-    let isMuted: Bool
+    @objc public let hasUnreadMessages: Bool
+    @objc public let lastMessageDate: Date
+    @objc public let isGroupThread: Bool
+    @objc public let threadRecord: TSThread
+    @objc public let unreadCount: UInt
+    @objc public let contactIdentifier: String?
+    @objc public let name: String
+    @objc public let isMuted: Bool
     var isContactThread: Bool {
         return !isGroupThread
     }
 
-    let lastMessageText: String?
+    @objc public let lastMessageText: String?
 
-    init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
+    @objc
+    public init(thread: TSThread, transaction: YapDatabaseReadTransaction) {
         self.threadRecord = thread
         self.lastMessageDate = thread.lastMessageDate()
         self.isGroupThread = thread.isGroupThread()

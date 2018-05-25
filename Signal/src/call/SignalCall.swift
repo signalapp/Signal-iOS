@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 
-enum CallState: String {
+public enum CallState: String {
     case idle
     case dialing
     case answering
@@ -37,7 +37,7 @@ protocol CallObserver: class {
  *
  * This class' state should only be accessed on the main queue.
  */
-@objc class SignalCall: NSObject {
+@objc public class SignalCall: NSObject {
 
     let TAG = "[SignalCall]"
 

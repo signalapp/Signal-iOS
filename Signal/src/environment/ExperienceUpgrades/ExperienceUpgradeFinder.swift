@@ -44,25 +44,26 @@ class ExperienceUpgradeFinder: NSObject {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingProfiles.rawValue,
                                  title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE", comment: "Header for upgrade experience"),
                                  body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
-                                 image:#imageLiteral(resourceName: "introductory_splash_profile"))
+                                 image: #imageLiteral(resourceName: "introductory_splash_profile"))
     }
 
     var introducingReadReceipts: ExperienceUpgrade {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingReadReceipts.rawValue,
                                  title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE", comment: "Header for upgrade experience"),
                                  body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION", comment: "Description of new profile feature for upgrading (existing) users"),
-                                 image:#imageLiteral(resourceName: "introductory_splash_read_receipts"))
+                                 image: #imageLiteral(resourceName: "introductory_splash_read_receipts"))
     }
 
     var configurableNotificationAudio: ExperienceUpgrade {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingCustomNotificationAudio.rawValue,
                                  title: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE", comment: "Header for upgrade experience"),
                                  body: NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION", comment: "Description for notification audio customization"),
-                                 image:#imageLiteral(resourceName: "introductory_splash_custom_audio"))
+                                 image: #imageLiteral(resourceName: "introductory_splash_custom_audio"))
     }
 
     // Keep these ordered by increasing uniqueId.
-    private var allExperienceUpgrades: [ExperienceUpgrade] {
+    @objc
+    public var allExperienceUpgrades: [ExperienceUpgrade] {
         return [
             // Disable old experience upgrades. Most people have seen them by now, and accomodating multiple makes layout harder.
             // Note if we ever want to show multiple experience upgrades again

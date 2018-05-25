@@ -71,7 +71,7 @@ import SignalMessaging
  *                      --[SS.Hangup]-->
  */
 
-enum CallError: Error {
+public enum CallError: Error {
     case providerReset
     case assertionError(description: String)
     case disconnected
@@ -207,7 +207,7 @@ private class SignalCallData: NSObject {
 }
 
 // This class' state should only be accessed on the main queue.
-@objc class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
+@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
 
     // MARK: - Properties
 
@@ -222,7 +222,7 @@ private class SignalCallData: NSObject {
 
     // Exposed by environment.m
     internal let notificationsAdapter: CallNotificationsAdapter
-    internal var callUIAdapter: CallUIAdapter!
+    @objc public var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
 
@@ -298,7 +298,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
+    @objc public required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
         self.contactsManager = contactsManager
         self.messageSender = messageSender
@@ -353,7 +353,7 @@ private class SignalCallData: NSObject {
     /**
      * Initiate an outgoing call.
      */
-    public func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
+    func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
 
         guard self.call == nil else {
@@ -938,7 +938,7 @@ private class SignalCallData: NSObject {
      *
      * Used by notification actions which can't serialize a call object.
      */
-    public func handleAnswerCall(localId: UUID) {
+    @objc public func handleAnswerCall(localId: UUID) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {

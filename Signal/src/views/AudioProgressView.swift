@@ -5,9 +5,9 @@
 import UIKit
 import SignalServiceKit
 
-@objc class AudioProgressView: UIView {
+@objc public class AudioProgressView: UIView {
 
-    override var bounds: CGRect {
+    @objc public override var bounds: CGRect {
         didSet {
             if oldValue != bounds {
                 updateSubviews()
@@ -15,7 +15,7 @@ import SignalServiceKit
         }
     }
 
-    override var frame: CGRect {
+    @objc public override var frame: CGRect {
         didSet {
             if oldValue != frame {
                 updateSubviews()
@@ -23,13 +23,13 @@ import SignalServiceKit
         }
     }
 
-    var horizontalBarColor = UIColor.black {
+    @objc public var horizontalBarColor = UIColor.black {
         didSet {
             updateContent()
         }
     }
 
-    var progressColor = UIColor.blue {
+    @objc public var progressColor = UIColor.blue {
         didSet {
             updateContent()
         }
@@ -38,7 +38,7 @@ import SignalServiceKit
     private let horizontalBarLayer: CAShapeLayer
     private let progressLayer: CAShapeLayer
 
-    var progress: CGFloat = 0 {
+    @objc public var progress: CGFloat = 0 {
         didSet {
             if oldValue != progress {
                 updateContent()
@@ -47,7 +47,7 @@ import SignalServiceKit
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
+    @objc public required init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is unimplemented.")
     }
 
