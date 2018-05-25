@@ -876,7 +876,7 @@ private class SignalCallData: NSObject {
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
 
         switch call.state {
-        case .remoteRinging:
+        case .remoteRinging, .localRinging:
             Logger.debug("\(self.logTag) in \(#function) disconnect while ringing... we'll keep ringing")
         case .connected:
             call.state = .reconnecting
@@ -1490,12 +1490,15 @@ private class SignalCallData: NSObject {
 
         if let failedCall = failedCall {
 
-            if failedCall.state == .answering {
+            switch failedCall.state {
+            case .answering, .localRinging:
                 assert(failedCall.callRecord == nil)
                 // call failed before any call record could be created, make one now.
                 handleMissedCall(failedCall)
+            default:
+                assert(failedCall.callRecord != nil)
             }
-            assert(failedCall.callRecord != nil)
+            
 
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             failedCall.error = error
