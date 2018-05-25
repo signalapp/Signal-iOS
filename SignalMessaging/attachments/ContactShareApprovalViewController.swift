@@ -401,7 +401,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     func createNameRow() -> UIView {
         let nameVMargin = CGFloat(16)
 
-        let stackView = TappableStackView(actionBlock: { [weak self] 
+        let stackView = TappableStackView(actionBlock: { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.didPressEditName()
         })

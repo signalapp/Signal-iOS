@@ -154,17 +154,23 @@ private class SignalCallData: NSObject {
 
         let (callConnectedPromise, fulfillCallConnectedPromise, rejectCallConnectedPromise) = Promise<Void>.pending()
         self.callConnectedPromise = callConnectedPromise
-        self.fulfillCallConnectedPromise = fulfillCallConnectedPromise
+        self.fulfillCallConnectedPromise = {
+            fulfillCallConnectedPromise(())
+        }
         self.rejectCallConnectedPromise = rejectCallConnectedPromise
 
         let (peerConnectionClientPromise, fulfillPeerConnectionClientPromise, rejectPeerConnectionClientPromise) = Promise<Void>.pending()
         self.peerConnectionClientPromise = peerConnectionClientPromise
-        self.fulfillPeerConnectionClientPromise = fulfillPeerConnectionClientPromise
+        self.fulfillPeerConnectionClientPromise = {
+            fulfillPeerConnectionClientPromise(())
+        }
         self.rejectPeerConnectionClientPromise = rejectPeerConnectionClientPromise
 
         let (readyToSendIceUpdatesPromise, fulfillReadyToSendIceUpdatesPromise, rejectReadyToSendIceUpdatesPromise) = Promise<Void>.pending()
         self.readyToSendIceUpdatesPromise = readyToSendIceUpdatesPromise
-        self.fulfillReadyToSendIceUpdatesPromise = fulfillReadyToSendIceUpdatesPromise
+        self.fulfillReadyToSendIceUpdatesPromise = {
+            fulfillReadyToSendIceUpdatesPromise(())
+        }
         self.rejectReadyToSendIceUpdatesPromise = rejectReadyToSendIceUpdatesPromise
 
         super.init()
@@ -1498,7 +1504,6 @@ private class SignalCallData: NSObject {
             default:
                 assert(failedCall.callRecord != nil)
             }
-            
 
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             failedCall.error = error

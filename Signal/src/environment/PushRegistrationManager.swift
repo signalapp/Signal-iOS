@@ -145,7 +145,9 @@ public enum PushRegistrationError: Error {
 
         let (promise, fulfill, _) = Promise<Void>.pending()
         self.userNotificationSettingsPromise = promise
-        self.fulfillUserNotificationSettingsPromise = fulfill
+        self.fulfillUserNotificationSettingsPromise = {
+            fulfill(())
+        }
 
         Logger.info("\(self.logTag) registering user notification settings")
 

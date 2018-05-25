@@ -136,7 +136,7 @@ fileprivate extension CNContact {
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
             highlightedName.enumerateAttributes(in: NSRange(location: 0, length: highlightedName.length), options: [], using: { (attrs, range, _) in
-                if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
+                if let property = attrs[NSAttributedStringKey(rawValue: CNContactPropertyAttribute)] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }
             })

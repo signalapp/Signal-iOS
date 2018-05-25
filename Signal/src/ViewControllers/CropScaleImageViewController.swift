@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -71,7 +71,7 @@ class CropScaleImageViewController: OWSViewController {
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(width:210, height:210)
+        return CGSize(width: 210, height: 210)
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height
@@ -136,13 +136,13 @@ class CropScaleImageViewController: OWSViewController {
 
         // The "default" (no scaling, no translation) crop frame, expressed in
         // srcImage's coordinate system.
-        srcDefaultCropSizePoints = defaultCropSizePoints(dstSizePoints:unitSquareSize)
+        srcDefaultCropSizePoints = defaultCropSizePoints(dstSizePoints: unitSquareSize)
         assert(srcImageSizePoints.width >= srcDefaultCropSizePoints.width)
         assert(srcImageSizePoints.height >= srcDefaultCropSizePoints.height)
 
         // By default, center the crop region in the src image.
-        srcTranslation = CGPoint(x:(srcImageSizePoints.width - srcDefaultCropSizePoints.width) * 0.5,
-                                 y:(srcImageSizePoints.height - srcDefaultCropSizePoints.height) * 0.5)
+        srcTranslation = CGPoint(x: (srcImageSizePoints.width - srcDefaultCropSizePoints.width) * 0.5,
+                                 y: (srcImageSizePoints.height - srcDefaultCropSizePoints.height) * 0.5)
     }
 
     // Given a dst size, find the size of the largest crop region
@@ -182,7 +182,7 @@ class CropScaleImageViewController: OWSViewController {
         self.view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
 
-        let imageView = OWSLayerView(frame:CGRect.zero, layoutCallback: {[weak self] 
+        let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.updateImageLayout()
         })
@@ -205,7 +205,7 @@ class CropScaleImageViewController: OWSViewController {
             }
             let path = UIBezierPath(rect: bounds)
 
-            let circleRect = strongSelf.cropFrame(forBounds:bounds)
+            let circleRect = strongSelf.cropFrame(forBounds: bounds)
             let radius = circleRect.size.width * 0.5
             let circlePath = UIBezierPath(roundedRect: circleRect, cornerRadius: radius)
 
@@ -222,13 +222,13 @@ class CropScaleImageViewController: OWSViewController {
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_mediumFont(withSize:ScaleFromIPhone5(16))
+        titleLabel.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))
         titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview()
         let titleLabelMargin = ScaleFromIPhone5(16)
-        titleLabel.autoPin(toTopLayoutGuideOf:self, withInset:titleLabelMargin)
+        titleLabel.autoPin(toTopLayoutGuideOf: self, withInset: titleLabelMargin)
 
         createButtonRow(contentView: contentView)
 
@@ -286,7 +286,7 @@ class CropScaleImageViewController: OWSViewController {
         assert(defaultCropOriginPoints.y >= 0)
         assert(defaultCropOriginPoints.x <= imageSizePoints.width - defaultCropSizePoints.width)
         assert(defaultCropOriginPoints.y <= imageSizePoints.height - defaultCropSizePoints.height)
-        return CGRect(origin:defaultCropOriginPoints, size:defaultCropSizePoints)
+        return CGRect(origin: defaultCropOriginPoints, size: defaultCropSizePoints)
     }
 
     // Updates the image view _AND_ normalizes the current scale/translate state.
@@ -308,19 +308,19 @@ class CropScaleImageViewController: OWSViewController {
                 return
         }
         // The frame of the crop circle within the image view.
-        let cropFrame = self.cropFrame(forBounds:CGRect(origin:CGPoint.zero, size: imageViewSizePoints))
+        let cropFrame = self.cropFrame(forBounds: CGRect(origin: CGPoint.zero, size: imageViewSizePoints))
 
         // Normalize the scaling property.
         imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale))
 
-        let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                       height:srcDefaultCropSizePoints.height / imageScale)
+        let srcCropSizePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                       height: srcDefaultCropSizePoints.height / imageScale)
 
         let minSrcTranslationPoints = CGPoint.zero
 
         // Prevent panning outside of image area.
-        let maxSrcTranslationPoints = CGPoint(x:srcImageSizePoints.width - srcCropSizePoints.width,
-                                              y:srcImageSizePoints.height - srcCropSizePoints.height
+        let maxSrcTranslationPoints = CGPoint(x: srcImageSizePoints.width - srcCropSizePoints.width,
+                                              y: srcImageSizePoints.height - srcCropSizePoints.height
         )
 
         // Normalize the translation property
@@ -352,15 +352,15 @@ class CropScaleImageViewController: OWSViewController {
     // output will be WYSIWYG with the view state.
     private func imageRenderRect(forDstSize dstSize: CGSize) -> CGRect {
 
-        let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                       height:srcDefaultCropSizePoints.height / imageScale)
+        let srcCropSizePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                       height: srcDefaultCropSizePoints.height / imageScale)
 
         let srcToViewRatio = dstSize.width / srcCropSizePoints.width
 
-        return CGRect(origin: CGPoint(x:srcTranslation.x * -srcToViewRatio,
-                                                    y:srcTranslation.y * -srcToViewRatio),
-                                    size: CGSize(width:srcImageSizePoints.width * +srcToViewRatio,
-                                                 height:srcImageSizePoints.height * +srcToViewRatio
+        return CGRect(origin: CGPoint(x: srcTranslation.x * -srcToViewRatio,
+                                                    y: srcTranslation.y * -srcToViewRatio),
+                                    size: CGSize(width: srcImageSizePoints.width * +srcToViewRatio,
+                                                 height: srcImageSizePoints.height * +srcToViewRatio
         ))
     }
 
@@ -388,11 +388,11 @@ class CropScaleImageViewController: OWSViewController {
                 let scaleDiff = sender.scale / lastPinchScale
 
                 // Update scaling.
-                let srcCropSizeBeforeScalePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                                          height:srcDefaultCropSizePoints.height / imageScale)
+                let srcCropSizeBeforeScalePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                                          height: srcDefaultCropSizePoints.height / imageScale)
                 imageScale = max(kMinImageScale, min(kMaxImageScale, imageScale * scaleDiff))
-                let srcCropSizeAfterScalePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                                         height:srcDefaultCropSizePoints.height / imageScale)
+                let srcCropSizeAfterScalePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                                         height: srcDefaultCropSizePoints.height / imageScale)
                 // Since the translation state reflects the "upper left" corner of the crop region, we need to
                 // adjust the translation when scaling to preserve the "center" of the crop region.
                 srcTranslation.x += (srcCropSizeBeforeScalePoints.width - srcCropSizeAfterScalePoints.width) * 0.5
@@ -400,16 +400,16 @@ class CropScaleImageViewController: OWSViewController {
 
                 // Update translation.
                 let viewSizePoints = imageView.frame.size
-                let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                               height:srcDefaultCropSizePoints.height / imageScale)
+                let srcCropSizePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                               height: srcDefaultCropSizePoints.height / imageScale)
 
                 let viewToSrcRatio = srcCropSizePoints.width / viewSizePoints.width
 
-                let gestureTranslation = CGPoint(x:location.x - lastPinchLocation.x,
-                                                 y:location.y - lastPinchLocation.y)
+                let gestureTranslation = CGPoint(x: location.x - lastPinchLocation.x,
+                                                 y: location.y - lastPinchLocation.y)
 
-                srcTranslation = CGPoint(x:srcTranslation.x + gestureTranslation.x * -viewToSrcRatio,
-                                         y:srcTranslation.y + gestureTranslation.y * -viewToSrcRatio)
+                srcTranslation = CGPoint(x: srcTranslation.x + gestureTranslation.x * -viewToSrcRatio,
+                                         y: srcTranslation.y + gestureTranslation.y * -viewToSrcRatio)
 
                 lastPinchLocation = location
                 lastPinchScale = sender.scale
@@ -435,8 +435,8 @@ class CropScaleImageViewController: OWSViewController {
             break
         case .changed, .ended:
             let viewSizePoints = imageView.frame.size
-            let srcCropSizePoints = CGSize(width:srcDefaultCropSizePoints.width / imageScale,
-                                           height:srcDefaultCropSizePoints.height / imageScale)
+            let srcCropSizePoints = CGSize(width: srcDefaultCropSizePoints.width / imageScale,
+                                           height: srcDefaultCropSizePoints.height / imageScale)
 
             let viewToSrcRatio = srcCropSizePoints.width / viewSizePoints.width
 
@@ -444,8 +444,8 @@ class CropScaleImageViewController: OWSViewController {
                 sender.translation(in: sender.view)
 
             // Update translation.
-            srcTranslation = CGPoint(x:srcTranslationAtPanStart.x + gestureTranslation.x * -viewToSrcRatio,
-                                     y:srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
+            srcTranslation = CGPoint(x: srcTranslationAtPanStart.x + gestureTranslation.x * -viewToSrcRatio,
+                                     y: srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
             break
         case .cancelled, .failed:
             srcTranslation
@@ -463,44 +463,44 @@ class CropScaleImageViewController: OWSViewController {
         let buttonRow = UIView()
         self.view.addSubview(buttonRow)
         buttonRow.autoPinWidthToSuperview()
-        buttonRow.autoPinEdge(toSuperviewEdge:.bottom, withInset:buttonBottomMargin)
-        buttonRow.autoPinEdge(.top, to:.bottom, of:contentView, withOffset:buttonTopMargin)
+        buttonRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: buttonBottomMargin)
+        buttonRow.autoPinEdge(.top, to: .bottom, of: contentView, withOffset: buttonTopMargin)
 
         let cancelButton = createButton(title: CommonStrings.cancelButton,
                                         action: #selector(cancelPressed))
         buttonRow.addSubview(cancelButton)
-        cancelButton.autoPinEdge(toSuperviewEdge:.top)
-        cancelButton.autoPinEdge(toSuperviewEdge:.bottom)
+        cancelButton.autoPinEdge(toSuperviewEdge: .top)
+        cancelButton.autoPinEdge(toSuperviewEdge: .bottom)
         cancelButton.autoPinEdge(toSuperviewEdge: .left)
 
         let doneButton = createButton(title: NSLocalizedString("BUTTON_DONE",
                                                                comment: "Label for generic done button."),
                                       action: #selector(donePressed))
         buttonRow.addSubview(doneButton)
-        doneButton.autoPinEdge(toSuperviewEdge:.top)
-        doneButton.autoPinEdge(toSuperviewEdge:.bottom)
+        doneButton.autoPinEdge(toSuperviewEdge: .top)
+        doneButton.autoPinEdge(toSuperviewEdge: .bottom)
         doneButton.autoPinEdge(toSuperviewEdge: .right)
     }
 
     private func createButton(title: String, action: Selector) -> UIButton {
-        let buttonFont = UIFont.ows_mediumFont(withSize:ScaleFromIPhone5To7Plus(18, 22))
+        let buttonFont = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
         let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
 
         let button = UIButton()
-        button.setTitle(title, for:.normal)
-        button.setTitleColor(UIColor.white, for:.normal)
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel!.font = buttonFont
-        button.addTarget(self, action:action, for:.touchUpInside)
-        button.autoSetDimension(.width, toSize:buttonWidth)
-        button.autoSetDimension(.height, toSize:buttonHeight)
+        button.addTarget(self, action: action, for: .touchUpInside)
+        button.autoSetDimension(.width, toSize: buttonWidth)
+        button.autoSetDimension(.height, toSize: buttonHeight)
         return button
     }
 
     // MARK: - Event Handlers
 
     @objc func cancelPressed(sender: UIButton) {
-        dismiss(animated: true, completion:nil)
+        dismiss(animated: true, completion: nil)
     }
 
     @objc func donePressed(sender: UIButton) {

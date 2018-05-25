@@ -214,7 +214,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         // Back Button
         let backButtonSize = CGFloat(50)
-        let backButton = TappableView(actionBlock: { [weak self] 
+        let backButton = TappableView(actionBlock: { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.didPressDismiss()
         })
@@ -280,21 +280,21 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_SEND_MESSAGE",
                                                                                           comment: "Label for 'sent message' button in contact view."),
                                                                   imageName: "contact_view_message",
-                                                                  actionBlock: { [weak self] 
+                                                                  actionBlock: { [weak self] in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressSendMessage()
             }))
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                                           comment: "Label for 'audio call' button in contact view."),
                                                                   imageName: "contact_view_audio_call",
-                                                                  actionBlock: { [weak self] 
+                                                                  actionBlock: { [weak self] in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressAudioCall()
             }))
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_VIDEO_CALL",
                                                                                           comment: "Label for 'video call' button in contact view."),
                                                                   imageName: "contact_view_video_call",
-                                                                  actionBlock: { [weak self] 
+                                                                  actionBlock: { [weak self] in
                                                                     guard let strongSelf = self else { return }
                                                                     strongSelf.didPressVideoCall()
             }))
@@ -307,7 +307,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             // Show invite button for system contacts without a Signal account.
             let inviteButton = createLargePillButton(text: NSLocalizedString("ACTION_INVITE",
                                                                              comment: "Label for 'invite' button in contact view."),
-                                                     actionBlock: { [weak self] 
+                                                     actionBlock: { [weak self] in
                                                         guard let strongSelf = self else { return }
                                                         strongSelf.didPressInvite()
             })
@@ -334,7 +334,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         // Always show "add to contacts" button.
         let addToContactsButton = createLargePillButton(text: NSLocalizedString("CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                                                                                 comment: "Message shown in conversation view that offers to add an unknown user to your phone's contacts."),
-                                                        actionBlock: { [weak self] 
+                                                        actionBlock: { [weak self] in
                                                             guard let strongSelf = self else { return }
                                                             strongSelf.didPressAddToContacts()
         })
@@ -373,7 +373,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         for phoneNumber in contactShare.phoneNumbers {
             rows.append(ContactFieldView.contactFieldView(forPhoneNumber: phoneNumber,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
-                                                          actionBlock: { [weak self] _ in
+                                                          actionBlock: { [weak self] in
                                                             guard let strongSelf = self else { return }
                                                             strongSelf.didPressPhoneNumber(phoneNumber: phoneNumber)
             }))
@@ -382,7 +382,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         for email in contactShare.emails {
             rows.append(ContactFieldView.contactFieldView(forEmail: email,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
-                                                          actionBlock: { [weak self] _ in
+                                                          actionBlock: { [weak self] in
                                                             guard let strongSelf = self else { return }
                                                             strongSelf.didPressEmail(email: email)
             }))
@@ -391,7 +391,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         for address in contactShare.addresses {
             rows.append(ContactFieldView.contactFieldView(forAddress: address,
                                                           layoutMargins: UIEdgeInsets(top: 5, left: hMargin, bottom: 5, right: hMargin),
-                                                          actionBlock: { [weak self] _ in
+                                                          actionBlock: { [weak self] in
                                                             guard let strongSelf = self else { return }
                                                             strongSelf.didPressAddress(address: address)
             }))
