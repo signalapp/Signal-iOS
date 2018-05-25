@@ -47,6 +47,10 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
+    deinit {
+        Logger.verbose("[InviteFlow] deinit")
+    }
+
     // MARK: Twitter
 
     func canTweet() -> Bool {
@@ -88,17 +92,16 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     func contactsPicker(_: ContactsPicker, didSelectMultipleContacts contacts: [Contact]) {
         Logger.debug("\(TAG) didSelectContacts:\(contacts)")
 
-        self.presentingViewController.dismiss(animated: true)
-
         guard let inviteChannel = channel else {
             Logger.error("\(TAG) unexpected nil channel after returning from contact picker.")
+            self.presentingViewController.dismiss(animated: true)
             return
         }
 
         switch inviteChannel {
         case .message:
             let phoneNumbers: [String] = contacts.map { $0.userTextPhoneNumbers.first }.filter { $0 != nil }.map { $0! }
-            dismissAndSendSMSTo(phoneNumbers: phoneNumbers)
+            sendSMSTo(phoneNumbers: phoneNumbers)
         case .mail:
             let recipients: [String] = contacts.map { $0.emails.first }.filter { $0 != nil }.map { $0! }
             sendMailTo(emails: recipients)
@@ -159,12 +162,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
-    public func dismissAndSendSMSTo(phoneNumbers: [String]) {
-        self.presentingViewController.dismiss(animated: true) {
-            self.sendSMSTo(phoneNumbers: phoneNumbers)
-        }
-    }
-
     public func sendSMSTo(phoneNumbers: [String]) {
         if #available(iOS 10.0, *) {
             // iOS10 message compose view doesn't respect some system appearence attributes.
@@ -180,7 +177,9 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
         messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
-        self.presentingViewController.navigationController?.present(messageComposeViewController, animated: true)
+        self.presentingViewController.dismiss(animated: true) {
+            self.presentingViewController.present(messageComposeViewController, animated: true)
+        }
     }
 
     // MARK: MessageComposeViewControllerDelegate
@@ -188,17 +187,17 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
         // Revert system styling applied to make messaging app legible on iOS10.
         UIUtil.applySignalAppearence()
-        self.presentingViewController.dismiss(animated: true, completion: nil)
-
-        switch result {
-        case .failed:
-            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-            warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
-            self.presentingViewController.present(warning, animated: true, completion: nil)
-        case .sent:
-            Logger.debug("\(self.TAG) user successfully invited their friends via SMS.")
-        case .cancelled:
-            Logger.debug("\(self.TAG) user cancelled message invite")
+        self.presentingViewController.dismiss(animated: true) {
+            switch result {
+            case .failed:
+                let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
+                warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
+                self.presentingViewController.present(warning, animated: true, completion: nil)
+            case .sent:
+                Logger.debug("\(self.TAG) user successfully invited their friends via SMS.")
+            case .cancelled:
+                Logger.debug("\(self.TAG) user cancelled message invite")
+            }
         }
     }
 
@@ -226,7 +225,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     func sendMailTo(emails recipientEmails: [String]) {
         let mailComposeViewController = MFMailComposeViewController()
         mailComposeViewController.mailComposeDelegate = self
-
         mailComposeViewController.setBccRecipients(recipientEmails)
 
         let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")
@@ -236,28 +234,26 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
         self.presentingViewController.dismiss(animated: true) {
-            self.presentingViewController.navigationController?.present(mailComposeViewController, animated: true) {
-                UIUtil.applySignalAppearence()
-            }
+            self.presentingViewController.present(mailComposeViewController, animated: true)
         }
     }
 
     // MARK: MailComposeViewControllerDelegate
 
     func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-        self.presentingViewController.dismiss(animated: true, completion: nil)
-
-        switch result {
-        case .failed:
-            let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-            warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
-            self.presentingViewController.present(warning, animated: true, completion: nil)
-        case .sent:
-            Logger.debug("\(self.TAG) user successfully invited their friends via mail.")
-        case .saved:
-            Logger.debug("\(self.TAG) user saved mail invite.")
-        case .cancelled:
-            Logger.debug("\(self.TAG) user cancelled mail invite.")
+        self.presentingViewController.dismiss(animated: true) {
+            switch result {
+            case .failed:
+                let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
+                warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
+                self.presentingViewController.present(warning, animated: true, completion: nil)
+            case .sent:
+                Logger.debug("\(self.TAG) user successfully invited their friends via mail.")
+            case .saved:
+                Logger.debug("\(self.TAG) user saved mail invite.")
+            case .cancelled:
+                Logger.debug("\(self.TAG) user cancelled mail invite.")
+            }
         }
     }
 
