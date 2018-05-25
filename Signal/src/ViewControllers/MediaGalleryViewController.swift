@@ -203,6 +203,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         Logger.debug("\(logTag) deinit")
     }
 
+    @objc
     init(thread: TSThread, uiDatabaseConnection: YapDatabaseConnection, options: MediaGalleryOption = []) {
         self.thread = thread
         assert(uiDatabaseConnection.isInLongLivedReadTransaction())
@@ -397,6 +398,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
     // e.g. the conversation settings view controller
     var fromNavController: OWSNavigationController?
 
+    @objc
     func pushTileView(fromNavController: OWSNavigationController) {
         var mostRecentItem: MediaGalleryItem?
         self.uiDatabaseConnection.read { transaction in

@@ -157,10 +157,12 @@ extension String {
     @objc public let isTextTruncated: Bool
     @objc public let jumbomojiCount: UInt
 
+    @objc
     static let kMaxJumbomojiCount: UInt = 5
     // This value is a bit arbitrary since we don't need to be 100% correct about 
     // rendering "Jumbomoji".  It allows us to place an upper bound on worst-case
     // performacne.
+    @objc
     static let kMaxCharactersPerEmojiCount: UInt = 10
 
     // MARK: Initializers

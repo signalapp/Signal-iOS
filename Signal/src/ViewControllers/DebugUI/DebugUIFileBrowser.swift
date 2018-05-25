@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-class DebugUIFileBrowser: OWSTableViewController {
+@objc class DebugUIFileBrowser: OWSTableViewController {
 
     // MARK: Dependencies
     var fileManager: FileManager {
@@ -12,7 +12,7 @@ class DebugUIFileBrowser: OWSTableViewController {
     // MARK: Overrides
     let fileURL: URL
 
-    init(fileURL: URL) {
+    @objc init(fileURL: URL) {
         self.fileURL = fileURL
 
         super.init(nibName: nil, bundle: nil)
@@ -125,7 +125,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     preferredStyle: .alert)
 
                 alert.addAction(OWSAlerts.cancelAction)
-                alert.addAction(UIAlertAction(title:"Rename \(strongSelf.fileURL.lastPathComponent)", style:.default) { _ in
+                alert.addAction(UIAlertAction(title: "Rename \(strongSelf.fileURL.lastPathComponent)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFail("missing text field")
                         return
@@ -170,7 +170,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     preferredStyle: .alert)
 
                 alert.addAction(OWSAlerts.cancelAction)
-                alert.addAction(UIAlertAction(title:"Moving \(filename)", style:.default) { _ in
+                alert.addAction(UIAlertAction(title: "Moving \(filename)", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFail("missing text field")
                         return
@@ -259,7 +259,7 @@ class DebugUIFileBrowser: OWSTableViewController {
 
                 let protections: [FileProtectionType] = [.none, .complete, .completeUnlessOpen, .completeUntilFirstUserAuthentication]
                 protections.forEach { (protection: FileProtectionType) in
-                    actionSheet.addAction(UIAlertAction(title: "\(protection.rawValue.replacingOccurrences(of:"NSFile", with: ""))", style: .default) { (_: UIAlertAction) in
+                    actionSheet.addAction(UIAlertAction(title: "\(protection.rawValue.replacingOccurrences(of: "NSFile", with: ""))", style: .default) { (_: UIAlertAction) in
                         Logger.debug("\(strongSelf.logTag) chose protection: \(protection) for file: \(fileURL)")
                         let fileAttributes: [FileAttributeKey: Any] = [.protectionKey: protection]
                         do {
@@ -288,7 +288,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     preferredStyle: .alert)
 
                 alert.addAction(OWSAlerts.cancelAction)
-                alert.addAction(UIAlertAction(title:"Create", style:.default) { _ in
+                alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFail("missing text field")
                         return
@@ -326,7 +326,7 @@ class DebugUIFileBrowser: OWSTableViewController {
                     preferredStyle: .alert)
 
                 alert.addAction(OWSAlerts.cancelAction)
-                alert.addAction(UIAlertAction(title:"Create", style:.default) { _ in
+                alert.addAction(UIAlertAction(title: "Create", style: .default) { _ in
                     guard let textField = alert.textFields?.first else {
                         owsFail("missing text field")
                         return

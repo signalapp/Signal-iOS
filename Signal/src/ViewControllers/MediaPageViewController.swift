@@ -13,6 +13,7 @@ public class GalleryItemBox: NSObject {
         self.value = value
     }
 
+    @objc
     public var attachmentStream: TSAttachmentStream {
         return value.attachmentStream
     }

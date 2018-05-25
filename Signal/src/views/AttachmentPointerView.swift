@@ -24,6 +24,7 @@ class AttachmentPointerView: UIView {
         }
     }
 
+    @objc
     required init(attachmentPointer: TSAttachmentPointer, isIncoming: Bool) {
         self.isIncoming = isIncoming
         self.attachmentPointer = attachmentPointer

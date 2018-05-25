@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,6 +20,7 @@ class CompareSafetyNumbersActivity: UIActivity {
     var mySafetyNumbers: String?
     let delegate: CompareSafetyNumbersActivityDelegate
 
+    @objc
     required init(delegate: CompareSafetyNumbersActivityDelegate) {
         self.delegate = delegate
         super.init()
@@ -48,7 +49,7 @@ class CompareSafetyNumbersActivity: UIActivity {
     }
 
     override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
-        return stringsFrom(activityItems:activityItems).count > 0
+        return stringsFrom(activityItems: activityItems).count > 0
     }
 
     override func prepare(withActivityItems activityItems: [Any]) {
@@ -73,7 +74,7 @@ class CompareSafetyNumbersActivity: UIActivity {
 
         if pasteboardSafetyNumbers == mySafetyNumbers {
             Logger.info("\(TAG) successfully matched safety numbers. local numbers: \(String(describing: mySafetyNumbers)) pasteboard:\(pasteboardSafetyNumbers)")
-            delegate.compareSafetyNumbersActivitySucceeded(activity:self)
+            delegate.compareSafetyNumbersActivitySucceeded(activity: self)
         } else {
             Logger.warn("\(TAG) local numbers: \(String(describing: mySafetyNumbers)) didn't match pasteboard:\(pasteboardSafetyNumbers)")
             let error = OWSErrorWithCodeDescription(OWSErrorCode.privacyVerificationFailure,
@@ -91,7 +92,7 @@ class CompareSafetyNumbersActivity: UIActivity {
 
         var numericOnly: String?
         if let regex = try? NSRegularExpression(pattern: "\\D", options: .caseInsensitive) {
-            numericOnly = regex.stringByReplacingMatches(in: string!, options: .withTransparentBounds, range: NSMakeRange(0, string!.count), withTemplate: "")
+            numericOnly = regex.stringByReplacingMatches(in: string!, options: .withTransparentBounds, range: NSRange(location: 0, length: string!.count), withTemplate: "")
         }
 
         return numericOnly

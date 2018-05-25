@@ -13,7 +13,7 @@ enum ExperienceUpgradeId: String {
     introducingCustomNotificationAudio = "005"
 }
 
-class ExperienceUpgradeFinder: NSObject {
+@objc public class ExperienceUpgradeFinder: NSObject {
 
     // MARK - Singleton class
 
@@ -79,11 +79,11 @@ class ExperienceUpgradeFinder: NSObject {
 
     // MARK: - Instance Methods
 
-    public func allUnseen(transaction: YapDatabaseReadTransaction) -> [ExperienceUpgrade] {
+    @objc public func allUnseen(transaction: YapDatabaseReadTransaction) -> [ExperienceUpgrade] {
         return allExperienceUpgrades.filter { ExperienceUpgrade.fetch(uniqueId: $0.uniqueId!, transaction: transaction) == nil }
     }
 
-    public func markAllAsSeen(transaction: YapDatabaseReadWriteTransaction) {
+    @objc public func markAllAsSeen(transaction: YapDatabaseReadWriteTransaction) {
         Logger.info("\(logTag) marking experience upgrades as seen")
         allExperienceUpgrades.forEach { $0.save(with: transaction) }
     }

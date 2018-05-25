@@ -52,7 +52,7 @@ class OWSLayerView: UIView {
 //   region b) the rectangle at which the src image should be rendered
 //   given a dst view or output context that will yield the 
 //   appropriate cropping.
-class CropScaleImageViewController: OWSViewController {
+@objc class CropScaleImageViewController: OWSViewController {
 
     let TAG = "[CropScaleImageViewController]"
 
@@ -107,7 +107,7 @@ class CropScaleImageViewController: OWSViewController {
         fatalError("\(#function) is unimplemented.")
     }
 
-    required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
+    @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion

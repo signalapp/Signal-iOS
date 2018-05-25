@@ -60,6 +60,7 @@ import Foundation
 }
 
 @objc public class MediaStrings: NSObject {
+    @objc
     static public let allMedia = NSLocalizedString("MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON", comment: "nav bar button item")
 }
 

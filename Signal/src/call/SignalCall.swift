@@ -42,6 +42,8 @@ protocol CallObserver: class {
     let TAG = "[SignalCall]"
 
     var observers = [Weak<CallObserver>]()
+
+    @objc
     let remotePhoneNumber: String
 
     var isTerminated: Bool {
@@ -59,6 +61,7 @@ protocol CallObserver: class {
     let direction: CallDirection
 
     // Distinguishes between calls locally, e.g. in CallKit
+    @objc
     let localId: UUID
 
     let thread: TSContactThread

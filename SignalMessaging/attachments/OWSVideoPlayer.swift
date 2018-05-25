@@ -13,12 +13,14 @@ protocol OWSVideoPlayerDelegate: class {
 @objc
 public class OWSVideoPlayer: NSObject {
 
+    @objc
     let avPlayer: AVPlayer
     let audioActivity: AudioActivity
 
+    @objc
     weak var delegate: OWSVideoPlayerDelegate?
 
-    init(url: URL) {
+    @objc init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
         self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)")
 
@@ -32,11 +34,13 @@ public class OWSVideoPlayer: NSObject {
 
     // MARK: Playback Controls
 
+    @objc
     public func pause() {
         avPlayer.pause()
         OWSAudioSession.shared.endAudioActivity(self.audioActivity)
     }
 
+    @objc
     public func play() {
         OWSAudioSession.shared.startPlaybackAudioActivity(self.audioActivity)
 
@@ -53,6 +57,7 @@ public class OWSVideoPlayer: NSObject {
         avPlayer.play()
     }
 
+    @objc
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: kCMTimeZero)

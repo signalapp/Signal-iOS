@@ -259,6 +259,7 @@ private class SignalCallData: NSObject {
         }
     }
 
+    @objc
     var call: SignalCall? {
         get {
             SwiftAssertIsOnMainThread(#function)
@@ -1251,6 +1252,7 @@ private class SignalCallData: NSObject {
         }
     }
 
+    @objc
     func handleCallKitStartVideo() {
         SwiftAssertIsOnMainThread(#function)
 

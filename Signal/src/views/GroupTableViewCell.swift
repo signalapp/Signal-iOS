@@ -51,6 +51,7 @@ import SignalServiceKit
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc
     public func configure(thread: TSGroupThread, contactsManager: OWSContactsManager) {
         if let groupName = thread.groupModel.groupName, !groupName.isEmpty {
             self.nameLabel.text = groupName

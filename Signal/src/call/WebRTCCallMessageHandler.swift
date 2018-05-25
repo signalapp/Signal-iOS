@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc(OWSWebRTCCallMessageHandler)
-class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
+public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK - Properties
 
@@ -21,7 +21,7 @@ class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: Initializers
 
-    required init(accountManager: AccountManager, callService: CallService, messageSender: MessageSender) {
+    @objc public required init(accountManager: AccountManager, callService: CallService, messageSender: MessageSender) {
         self.accountManager = accountManager
         self.callService = callService
         self.messageSender = messageSender

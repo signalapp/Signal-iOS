@@ -18,8 +18,9 @@ class SyncPushTokensJob: NSObject {
         return PushRegistrationManager.shared
     }
 
-    var uploadOnlyIfStale = true
+    @objc var uploadOnlyIfStale = true
 
+    @objc
     required init(accountManager: AccountManager, preferences: OWSPreferences) {
         self.accountManager = accountManager
         self.preferences = preferences

@@ -20,26 +20,31 @@ public class OWSMessagesBubbleImageFactory: NSObject {
         return UIView().isRTL()
     }()
 
+    @objc
     public lazy var incoming: JSQMessagesBubbleImage = {
         let color = OWSMessagesBubbleImageFactory.bubbleColorIncoming
         return self.incoming(color: color)
     }()
 
+    @objc
     public lazy var outgoing: JSQMessagesBubbleImage = {
         let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
         return self.outgoing(color: color)
     }()
 
+    @objc
     public lazy var currentlyOutgoing: JSQMessagesBubbleImage = {
         let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
         return self.outgoing(color: color)
     }()
 
+    @objc
     public lazy var outgoingFailed: JSQMessagesBubbleImage = {
         let color = OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
         return self.outgoing(color: color)
     }()
 
+    @objc
     public func bubble(message: TSMessage) -> JSQMessagesBubbleImage {
         if message is TSIncomingMessage {
             return self.incoming
@@ -70,6 +75,7 @@ public class OWSMessagesBubbleImageFactory: NSObject {
     @objc
     public static let bubbleColorOutgoingSent = UIColor.ows_materialBlue
 
+    @objc
     public func bubbleColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return OWSMessagesBubbleImageFactory.bubbleColorIncoming

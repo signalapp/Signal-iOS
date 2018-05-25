@@ -75,6 +75,7 @@ public class PlayerProgressBar: UIView {
 
     private let kPreferredTimeScale: CMTimeScale = 100
 
+    @objc
     public var player: AVPlayer? {
         didSet {
             guard let item = player?.currentItem else {

@@ -11,12 +11,14 @@ protocol QuotedReplyPreviewDelegate: class {
 
 @objc
 class QuotedReplyPreview: UIView {
+    @objc
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
+    @objc
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
