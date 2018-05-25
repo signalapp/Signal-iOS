@@ -71,9 +71,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
+    var hasShownLocalVideo = false
     weak var localVideoTrack: RTCVideoTrack?
     weak var remoteVideoTrack: RTCVideoTrack?
-    var localVideoConstraints: [NSLayoutConstraint] = []
 
     override public var canBecomeFirstResponder: Bool {
         return true
@@ -481,7 +481,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Layout
 
-    var localVideoViewTopConstraint: NSLayoutConstraint!
+    var localVideoViewTopConstraintDefault: NSLayoutConstraint!
+    var localVideoViewTopConstraintHidden: NSLayoutConstraint!
 
     func createViewConstraints() {
 
@@ -519,7 +520,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
         // MJK TODO, depends on whether contactNameLabel is visible
-        self.localVideoViewTopConstraint = localVideoView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: 4)
+        self.localVideoViewTopConstraintDefault = localVideoView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: 4)
+        self.localVideoViewTopConstraintHidden = localVideoView.autoPinEdge(toSuperviewMargin: .top)
         let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
         localVideoView.autoSetDimension(.width, toSize: localVideoSize)
         localVideoView.autoSetDimension(.height, toSize: localVideoSize)
@@ -574,22 +576,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func updateLocalVideoLayout() {
-
-        NSLayoutConstraint.deactivate(self.localVideoConstraints)
-
-        var constraints: [NSLayoutConstraint] = []
-
-        if localVideoView.isHidden {
-            let contactHMargin = CGFloat(5)
-//            constraints.append(contactNameLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
-//            constraints.append(callStatusLabel.autoPinTrailingToSuperviewMargin(withInset: contactHMargin))
-        } else {
-            let spacing = CGFloat(10)
-//            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: contactNameLabel, offset: spacing))
-//            constraints.append(localVideoView.autoPinLeading(toTrailingEdgeOf: callStatusLabel, offset: spacing))
+        if !localVideoView.isHidden {
+            localVideoView.superview?.bringSubview(toFront: localVideoView)
         }
 
-        self.localVideoConstraints = constraints
         updateCallUI(callState: call.state)
     }
 
@@ -727,12 +717,27 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Also hide other controls if user has tapped to hide them.
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
+            leaveCallViewButton.isHidden = true
             contactNameLabel.isHidden = true
             callStatusLabel.isHidden = true
             ongoingCallControls.isHidden = true
         } else {
+            leaveCallViewButton.isHidden = false
             contactNameLabel.isHidden = false
             callStatusLabel.isHidden = false
+        }
+
+        let doLocalVideoLayout = {
+            self.localVideoViewTopConstraintDefault.isActive = !self.contactNameLabel.isHidden
+            self.localVideoViewTopConstraintHidden.isActive = self.contactNameLabel.isHidden
+            self.localVideoView.superview?.layoutIfNeeded()
+        }
+        if hasShownLocalVideo {
+            // Animate.
+            UIView.animate(withDuration: 0.25, animations: doLocalVideoLayout)
+        } else {
+            // Don't animate.
+            doLocalVideoLayout()
         }
 
         // Audio Source Handling (bluetooth)
@@ -1006,6 +1011,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         updateLocalVideoLayout()
         updateAudioSourceButtonIsSelected()
+
+        // Don't animate layout of local video view until it has been presented.
+        if !isHidden {
+            hasShownLocalVideo = true
+        }
     }
 
     var hasRemoteVideoTrack: Bool {
