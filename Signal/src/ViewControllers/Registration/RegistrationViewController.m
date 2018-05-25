@@ -70,41 +70,53 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     UIView *headerWrapper = [UIView containerView];
     [self.view addSubview:headerWrapper];
     headerWrapper.backgroundColor = UIColor.ows_signalBrandBlueColor;
-
-    UIView *headerContent = [UIView new];
-    [headerWrapper addSubview:headerContent];
     [headerWrapper autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeBottom];
-    [headerContent autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [headerContent autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [headerContent autoPinWidthToSuperview];
 
     UILabel *headerLabel = [UILabel new];
     headerLabel.text = NSLocalizedString(@"REGISTRATION_TITLE_LABEL", @"");
     headerLabel.textColor = [UIColor whiteColor];
     headerLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(20.f, 24.f)];
-    [headerContent addSubview:headerLabel];
-    [headerLabel autoHCenterInSuperview];
-    [headerLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:14.f];
 
-    CGFloat screenHeight = MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
-    if (screenHeight < 568) {
-        // iPhone 4s or smaller.
-        [headerContent autoSetDimension:ALDimensionHeight toSize:20];
-        headerLabel.hidden = YES;
-    } else if (screenHeight < 667) {
-        // iPhone 5 or smaller.
-        [headerContent autoSetDimension:ALDimensionHeight toSize:80];
-    } else {
-        [headerContent autoSetDimension:ALDimensionHeight toSize:220];
+    NSString *legalTopMatterFormat = NSLocalizedString(@"REGISTRATION_LEGAL_TOP_MATTER_FORMAT",
+        @"legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink");
+    NSString *legalTopMatterLinkWord = NSLocalizedString(
+        @"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE", @"embedded in legal topmatter, styled as a link");
+    NSString *legalTopMatter = [NSString stringWithFormat:legalTopMatterFormat, legalTopMatterLinkWord];
+    NSMutableAttributedString *attributedLegalTopMatter =
+        [[NSMutableAttributedString alloc] initWithString:legalTopMatter];
+    NSRange linkRange = [legalTopMatter rangeOfString:legalTopMatterLinkWord];
+    NSDictionary *linkStyleAttributes = @{
+        NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+    };
+    [attributedLegalTopMatter setAttributes:linkStyleAttributes range:linkRange];
 
-        UIImage *logo = [UIImage imageNamed:@"logoSignal"];
-        OWSAssert(logo);
-        UIImageView *logoView = [UIImageView new];
-        logoView.image = logo;
-        [headerContent addSubview:logoView];
-        [logoView autoHCenterInSuperview];
-        [logoView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:headerLabel withOffset:-14.f];
+    UILabel *legalTopMatterLabel = [UILabel new];
+    legalTopMatterLabel.textColor = UIColor.whiteColor;
+    legalTopMatterLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    legalTopMatterLabel.numberOfLines = 0;
+    legalTopMatterLabel.textAlignment = NSTextAlignmentCenter;
+    legalTopMatterLabel.attributedText = attributedLegalTopMatter;
+    legalTopMatterLabel.userInteractionEnabled = YES;
+
+    UITapGestureRecognizer *tapGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapLegalTerms:)];
+    [legalTopMatterLabel addGestureRecognizer:tapGesture];
+
+    UIStackView *headerContent = [[UIStackView alloc] initWithArrangedSubviews:@[ headerLabel, legalTopMatterLabel ]];
+    headerContent.axis = UILayoutConstraintAxisVertical;
+    headerContent.alignment = UIStackViewAlignmentCenter;
+    headerContent.spacing = ScaleFromIPhone5To7Plus(8, 16);
+    headerContent.layoutMarginsRelativeArrangement = YES;
+
+    {
+        CGFloat topMargin = ScaleFromIPhone5To7Plus(4, 16);
+        CGFloat bottomMargin = ScaleFromIPhone5To7Plus(8, 16);
+        headerContent.layoutMargins = UIEdgeInsetsMake(topMargin, 40, bottomMargin, 40);
     }
+
+    [headerWrapper addSubview:headerContent];
+    [headerContent autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [headerContent autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeTop];
 
     const CGFloat kRowHeight = 60.f;
     const CGFloat kRowHMargin = 20.f;
@@ -229,6 +241,25 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [spinnerView autoSetDimension:ALDimensionHeight toSize:20.f];
     [spinnerView autoPinTrailingToSuperviewMarginWithInset:20.f];
     [spinnerView stopAnimating];
+
+    NSString *bottomTermsLinkText = NSLocalizedString(@"REGISTRATION_LEGAL_TERMS_LINK",
+        @"one line label below submit button on registration screen, which links to an external webpage.");
+    UIButton *bottomLegalLinkButton = [UIButton new];
+    bottomLegalLinkButton.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    [bottomLegalLinkButton setTitleColor:UIColor.ows_materialBlueColor forState:UIControlStateNormal];
+    [bottomLegalLinkButton setTitle:bottomTermsLinkText forState:UIControlStateNormal];
+    [contentView addSubview:bottomLegalLinkButton];
+    [bottomLegalLinkButton addTarget:self
+                              action:@selector(didTapLegalTerms:)
+                    forControlEvents:UIControlEventTouchUpInside];
+
+    [bottomLegalLinkButton autoPinLeadingAndTrailingToSuperviewMargin];
+    [bottomLegalLinkButton autoPinEdge:ALEdgeTop
+                                toEdge:ALEdgeBottom
+                                ofView:activateButton
+                            withOffset:ScaleFromIPhone5To7Plus(8, 12)];
+    [bottomLegalLinkButton setCompressionResistanceHigh];
+    [bottomLegalLinkButton setContentHuggingHigh];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -348,6 +379,11 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     if (sender.state == UIGestureRecognizerStateRecognized) {
         [self changeCountryCodeTapped];
     }
+}
+
+- (void)didTapLegalTerms:(UIButton *)sender
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:kLegalTermsUrlString]];
 }
 
 - (void)changeCountryCodeTapped
