@@ -169,6 +169,7 @@ typedef enum : NSUInteger {
 // * If we do the third step, we must call resetContentAndLayout afterward.
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
+@property (nonatomic) BOOL shouldRecreateMappings;
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
@@ -436,16 +437,7 @@ typedef enum : NSUInteger {
     self.lastRangeLength = 0;
     [self ensureDynamicInteractions];
 
-    if (thread.uniqueId.length > 0) {
-        self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
-                                                                          view:TSMessageDatabaseViewExtensionName];
-    } else {
-        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
-        self.messageMappings =
-            [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
-        return;
-    }
-
+    self.messageMappings = [self createDatabaseViewMappings];
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -453,6 +445,17 @@ typedef enum : NSUInteger {
     }];
     [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
+}
+
+- (YapDatabaseViewMappings *)createDatabaseViewMappings
+{
+    if (thread.uniqueId.length > 0) {
+        return [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
+                                                          view:TSMessageDatabaseViewExtensionName];
+    } else {
+        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
+        return [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
+    }
 }
 
 - (BOOL)userLeftGroup
@@ -3128,6 +3131,8 @@ typedef enum : NSUInteger {
         // We don't need to do this if we're not observing db modifications since we'll
         // do it when we resume.
         [self resetMappings];
+    } else {
+        self.shouldRecreateMappings = YES;
     }
 }
 
@@ -4636,9 +4641,17 @@ typedef enum : NSUInteger {
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
+    if (self.shouldRecreateMappings) {
+        self.shouldRecreateMappings = NO;
+
+        DDLogInfo(@"%@ %s shouldRecreateMappings", self.logTag, __PRETTY_FUNCTION__);
+        [DDLog flushLog];
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+        }];
+
+        self.messageMappings = [self createDatabaseViewMappings];
+    }
 
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
     // reset all state updated by yapDatabaseModified:.
@@ -4666,9 +4679,10 @@ typedef enum : NSUInteger {
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
+    //    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    //        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod"
+    //        inCollection:@"temp"];
+    //    }];
 
     if (self.viewItems.count > 0) {
         ConversationViewItem *lastViewItem = [self.viewItems lastObject];
