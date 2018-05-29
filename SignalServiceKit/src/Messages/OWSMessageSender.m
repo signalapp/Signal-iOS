@@ -976,7 +976,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                      messages:deviceMessages
                                                                         relay:recipient.relay
                                                                     timeStamp:message.timestamp];
-    if (TSSocketManager.sharedManager.canMakeRequests) {
+    if (CurrentAppContext().isMainApp && TSSocketManager.sharedManager.canMakeRequests) {
         [TSSocketManager.sharedManager makeRequest:request
             success:^(id _Nullable responseObject) {
                 [self messageSendDidSucceed:message
