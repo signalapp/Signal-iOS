@@ -109,6 +109,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
 
 @property (readonly) TSOutgoingMessageState messageState;
+@property (readonly) BOOL wasDeliveredToAnyRecipient;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly) NSString *customMessage;
