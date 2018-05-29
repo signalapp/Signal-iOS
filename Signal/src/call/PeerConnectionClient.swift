@@ -108,6 +108,13 @@ class PeerConnectionProxy: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDe
         objc_sync_enter(self)
         let result = value
         objc_sync_exit(self)
+
+        if result == nil {
+            // Every time this method returns nil is a
+            // possible crash avoided.
+            Logger.verbose("\(logTag) cleared get.")
+        }
+
         return result
     }
 
@@ -528,7 +535,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 if let error = error {
                     reject(error)
                 } else {
-                    fulfill(())
+                    fulfill()
                 }
             })
         }
@@ -558,7 +565,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                     reject(error)
                                                     return
                                                 }
-                                                fulfill(())
+                                                fulfill()
             })
         }
 
@@ -599,7 +606,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                                                         reject(error)
                                                         return
                                                     }
-                                                    fulfill(())
+                                                    fulfill()
             })
         }
         return promise
