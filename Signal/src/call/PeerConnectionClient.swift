@@ -80,6 +80,13 @@ protocol PeerConnectionClientDelegate: class {
 // [PeerConnectionClient terminate] when it is done with a PeerConnectionClient
 // instance, so terminate is a reliable place where we can break the retain cycle.
 //
+// Note that we use the proxy in two ways:
+//
+// * As a delegate for the peer connection and the data channel,
+//   safely forwarding delegate method invocations to the PCC.
+// * To safely obtain references to the PCC within the PCC's
+//   async blocks.
+//
 // This should be fixed in Swift 4, but it isn't.
 //
 // To test using the following scenarios:
