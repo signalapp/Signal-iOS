@@ -244,6 +244,9 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var cameraConstraints: RTCMediaConstraints
 
     private let proxy = PeerConnectionProxy()
+    // Note that we're deliberately leaking proxy instances using this
+    // collection to avoid EXC_BAD_ACCESS.  Calls are rare and the proxy
+    // is tiny (a single property), so it's better to leak and be safe.
     private static var expiredProxies = [PeerConnectionProxy]()
 
     init(iceServers: [RTCIceServer], delegate: PeerConnectionClientDelegate, callDirection: CallDirection, useTurnOnly: Bool) {
