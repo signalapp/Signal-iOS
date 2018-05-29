@@ -145,6 +145,14 @@ NS_ASSUME_NONNULL_BEGIN
     TSThread *fetchedThread = [TSThread fetchObjectWithUniqueID:self.uniqueThreadId transaction:transaction];
 
     [fetchedThread updateWithLastMessage:self transaction:transaction];
+
+    DDLogInfo(@"%@ --- saveWithTransaction: %@, %llu, %llu, %llu",
+        self.logTag,
+        self.debugDescription,
+        self.timestamp,
+        self.timestampForSorting,
+        [NSDate ows_millisecondTimeStamp]);
+    [DDLog flushLog];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

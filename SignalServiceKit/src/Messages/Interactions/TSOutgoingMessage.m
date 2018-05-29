@@ -350,6 +350,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
     self.recipientStateMap = [recipientStateMap copy];
 
+    DDLogInfo(@"%@ --- TSOutgoingMessage init: %@, %llu, %llu, %llu",
+        self.logTag,
+        self.debugDescription,
+        self.timestamp,
+        self.timestampForSorting,
+        [NSDate ows_millisecondTimeStamp]);
+    [DDLog flushLog];
+
     return self;
 }
 
