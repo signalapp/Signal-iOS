@@ -63,14 +63,6 @@ NS_ASSUME_NONNULL_BEGIN
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
 
-    DDLogInfo(@"%@ --- TSIncomingMessage init: %@, %llu, %llu, %llu",
-        self.logTag,
-        self.debugDescription,
-        self.timestamp,
-        self.timestampForSorting,
-        [NSDate ows_millisecondTimeStamp]);
-    [DDLog flushLog];
-
     return self;
 }
 
