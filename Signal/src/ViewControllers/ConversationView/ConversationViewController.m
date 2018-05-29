@@ -4633,6 +4633,13 @@ typedef enum : NSUInteger {
 
 - (void)resetMappings
 {
+    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    [DDLog flushLog];
+
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+    }];
+
     // If we're entering "active" mode (e.g. view is visible and app is in foreground),
     // reset all state updated by yapDatabaseModified:.
     if (self.messageMappings != nil) {
@@ -4662,6 +4669,17 @@ typedef enum : NSUInteger {
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
     }];
+
+    if (self.viewItems.count > 0) {
+        ConversationViewItem *lastViewItem = [self.viewItems lastObject];
+        DDLogInfo(@"%@ --- resetMappings last: %@, %llu, %llu, %llu",
+            self.logTag,
+            lastViewItem.interaction.debugDescription,
+            lastViewItem.interaction.timestamp,
+            lastViewItem.interaction.timestampForSorting,
+            [NSDate ows_millisecondTimeStamp]);
+        [DDLog flushLog];
+    }
 }
 
 #pragma mark - ConversationCollectionViewDelegate
