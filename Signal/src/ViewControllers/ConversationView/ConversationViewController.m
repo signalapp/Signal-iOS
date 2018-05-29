@@ -3117,8 +3117,7 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    [DDLog flushLog];
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
