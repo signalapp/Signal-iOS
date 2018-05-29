@@ -449,11 +449,11 @@ typedef enum : NSUInteger {
 
 - (YapDatabaseViewMappings *)createDatabaseViewMappings
 {
-    if (thread.uniqueId.length > 0) {
-        return [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
+    if (self.thread.uniqueId.length > 0) {
+        return [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.thread.uniqueId ]
                                                           view:TSMessageDatabaseViewExtensionName];
     } else {
-        OWSFail(@"uniqueId unexpectedly empty for thread: %@", thread);
+        OWSFail(@"uniqueId unexpectedly empty for thread: %@", self.thread);
         return [[YapDatabaseViewMappings alloc] initWithGroups:@[] view:TSMessageDatabaseViewExtensionName];
     }
 }
