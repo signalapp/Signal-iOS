@@ -109,7 +109,8 @@ class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
     }
 }
 
-public enum ContactStoreAuthorizationStatus {
+@objc
+public enum ContactStoreAuthorizationStatus: UInt {
     case notDetermined,
          restricted,
          denied,
@@ -118,6 +119,7 @@ public enum ContactStoreAuthorizationStatus {
 
 @objc public protocol SystemContactsFetcherDelegate: class {
     func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, updatedContacts contacts: [Contact], isUserRequested: Bool)
+    func systemContactsFetcher(_ systemContactsFetcher: SystemContactsFetcher, hasAuthorizationStatus authorizationStatus: ContactStoreAuthorizationStatus)
 }
 
 @objc
@@ -212,12 +214,13 @@ public class SystemContactsFetcher: NSObject {
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
+                    Logger.flush()
                     completion(error)
                     return
                 }
 
                 guard granted else {
-                    // This case should have been caught be the error guard a few lines up.
+                    // This case should have been caught by the error guard a few lines up.
                     owsFail("\(self.TAG) declined contact access.")
                     completion(nil)
                     return
@@ -231,6 +234,7 @@ public class SystemContactsFetcher: NSObject {
             self.updateContacts(completion: completion)
         case .denied, .restricted:
             Logger.debug("\(TAG) contacts were \(self.authorizationStatus)")
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             completion(nil)
         }
     }
@@ -239,6 +243,7 @@ public class SystemContactsFetcher: NSObject {
     public func fetchOnceIfAlreadyAuthorized() {
         SwiftAssertIsOnMainThread(#function)
         guard authorizationStatus == .authorized else {
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             return
         }
         guard !systemContactsHaveBeenRequestedAtLeastOnce else {
@@ -253,6 +258,7 @@ public class SystemContactsFetcher: NSObject {
         SwiftAssertIsOnMainThread(#function)
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             return
         }
 
@@ -279,6 +285,8 @@ public class SystemContactsFetcher: NSObject {
         let completion: (Error?) -> Void = { error in
             DispatchMainThreadSafe({
                 completionParam?(error)
+
+                assert(backgroundTask != nil)
                 backgroundTask = nil
             })
         }
