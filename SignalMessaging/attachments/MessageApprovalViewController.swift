@@ -23,13 +23,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     let contactsManager: OWSContactsManager
 
     private(set) var textView: UITextView!
-    private var sendButton: UIBarButtonItem = {
-        return UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
-                                                        comment: "Label for the send button in the conversation view."),
-                               style: .plain,
-                               target: self,
-                               action: #selector(sendPressed))
-    }()
+    private var sendButton: UIBarButtonItem!
 
     // MARK: Initializers
 
@@ -52,15 +46,27 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
         self.navigationItem.title = NSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
                                                       comment: "Title for the 'message approval' dialog.")
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(cancelPressed))
+        sendButton = UIBarButtonItem(title: NSLocalizedString("SEND_BUTTON_TITLE",
+                                                              comment: "Label for the send button in the conversation view."),
+                                     style: .plain,
+                                     target: self,
+                                     action: #selector(sendPressed))
         self.navigationItem.rightBarButtonItem = sendButton
     }
 
     private func updateSendButton() {
         sendButton.isEnabled = textView.text.count > 0
+    }
+
+    override public func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        updateSendButton()
     }
 
     // MARK: - Create Views
