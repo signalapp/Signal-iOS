@@ -98,15 +98,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Always load up to 50 messages when user arrives.
-static const int kYapDatabasePageSize = 50;
-// Never show more than 50*500 = 25k messages in conversation view at a time.
-static const int kYapDatabaseMaxPageCount = 500;
-// Never show more than 6*50 = 300 messages in conversation view when user
-// arrives.
-static const int kYapDatabaseMaxInitialPageCount = 6;
-static const int kConversationInitialMaxRangeSize = kYapDatabasePageSize * kYapDatabaseMaxInitialPageCount;
-static const int kYapDatabaseRangeMaxLength = kYapDatabasePageSize * kYapDatabaseMaxPageCount;
+// Always load up to n messages when user arrives.
+//
+// The smaller this number is, the faster the conversation can display.
+// To test, shrink you accessability font as much as possible, then count how many 1-line system info messages (our shortest cells) can
+// fit on screen at a time on an iPhoneX
+//
+// PERF: we could do less messages on shorter (older, slower) devices
+// PERF: we could cache the cell height, since some messages will be much taller.
+static const int kYapDatabasePageSize = 25;
+
+// Never show more than n messages in conversation view when user arrives.
+static const int kConversationInitialMaxRangeSize = 300;
+
+// Never show more than n messages in conversation view at a time.
+static const int kYapDatabaseRangeMaxLength = 25000;
+
 static const int kYapDatabaseRangeMinLength = 0;
 
 static const CGFloat kLoadMoreHeaderHeight = 60.f;
