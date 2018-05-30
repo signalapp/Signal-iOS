@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
 # master. After commiting to master, this script audits that all tags have been
@@ -40,7 +41,7 @@ def main():
 
     if len(tags_of_concern) > 0:
         logging.debug("Found unmerged tags newer than epoch: %s" % tags_of_concern)
-        raise RuntimeError("Found unmerged tags: %s" % tags_of_concern)
+        raise RuntimeError("💥 Found unmerged tags: %s" % tags_of_concern)
     else:
         logging.debug("No unmerged tags newer than epoch. All good!")
 
