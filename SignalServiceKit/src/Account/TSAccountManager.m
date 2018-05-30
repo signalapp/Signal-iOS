@@ -35,7 +35,12 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 @interface TSAccountManager ()
 
 @property (nonatomic, readonly) BOOL isRegistered;
+
+// This property is exposed publicly for testing purposes only.
+#ifndef DEBUG
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+#endif
+
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 

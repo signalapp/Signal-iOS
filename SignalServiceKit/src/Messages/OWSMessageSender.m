@@ -985,7 +985,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              deviceMessages:deviceMessages
                                     success:successHandler];
             }
-            failure:^(NSInteger statusCode, NSData *_Nullable responseBody, NSError *error) {
+            failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
                 [self messageSendDidFail:message
                                recipient:recipient
                                   thread:thread
@@ -994,7 +994,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        remainingAttempts:remainingAttempts
                               statusCode:statusCode
                                    error:error
-                            responseData:responseBody
+                            responseData:responseData
                                  success:successHandler
                                  failure:failureHandler];
             }];
