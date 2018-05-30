@@ -259,6 +259,7 @@ public class SystemContactsFetcher: NSObject {
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
+            completion(nil)
             return
         }
 
