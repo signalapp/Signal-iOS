@@ -4461,7 +4461,16 @@ typedef enum : NSUInteger {
         // Snapshot the scroll state by measuring the "distance from top of view to
         // bottom of content"; if the mapping's "window" size grows, it will grow
         // _upward_.
-        CGFloat viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+        CGFloat viewTopToContentBottom = 0;
+        OWSAssert([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
+        ConversationViewLayout *conversationViewLayout
+            = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
+        // To avoid laying out the collection view during initial view
+        // presentation, don't trigger layout here (via safeContentHeight)
+        // until layout has been done at least once.
+        if (conversationViewLayout.hasEverHadLayout) {
+            viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
+        }
 
         NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
 

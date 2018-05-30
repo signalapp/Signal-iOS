@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,7 +37,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @interface ConversationViewLayout : UICollectionViewLayout
 
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
-
+@property (nonatomic, readonly) BOOL hasLayout;
+@property (nonatomic, readonly) BOOL hasEverHadLayout;
 @property (nonatomic, readonly) int contentWidth;
 
 @end
