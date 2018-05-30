@@ -102,10 +102,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
         NSLocalizedString(@"ERROR_DESCRIPTION_REQUEST_FAILED", @"Error indicating that a socket request failed."));
 
-    [self didFailWithStatusCode:0 error:error];
+    [self didFailWithStatusCode:0 responseData:nil error:error];
 }
 
-- (void)didFailWithStatusCode:(NSInteger)statusCode error:(NSError *)error
+- (void)didFailWithStatusCode:(NSInteger)statusCode responseData:(nullable NSData *)responseData error:(NSError *)error
 {
     OWSAssert(error);
 
@@ -117,12 +117,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
+    DDLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+
     OWSAssert(self.success);
     OWSAssert(self.failure);
 
     TSSocketMessageFailure failure = self.failure;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        failure(statusCode, error);
+        failure(statusCode, responseData, error);
     });
 
     self.success = nil;
@@ -568,18 +570,18 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (message.hasMessage) {
         responseMessage = message.message;
     }
-    NSData *_Nullable responseBody;
+    NSData *_Nullable responseData;
     if (message.hasBody) {
-        responseBody = message.body;
+        responseData = message.body;
     }
     NSArray<NSString *> *_Nullable responseHeaders = message.headers;
 
     BOOL hasValidResponse = YES;
-    id responseObject = responseBody;
-    if (responseBody) {
+    id responseObject = responseData;
+    if (responseData) {
         NSError *error;
         id _Nullable responseJson =
-            [NSJSONSerialization JSONObjectWithData:responseBody options:(NSJSONReadingOptions)0 error:&error];
+            [NSJSONSerialization JSONObjectWithData:responseData options:(NSJSONReadingOptions)0 error:&error];
         if (!responseJson || error) {
             OWSProdLogAndFail(@"%@ could not parse WebSocket response JSON: %@.", self.logTag, error);
             hasValidResponse = NO;
@@ -606,7 +608,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
                 NSLocalizedString(
                     @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
-            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus error:error];
+            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus responseData:responseData error:error];
         }
     }
 
@@ -615,7 +617,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         (unsigned long long)requestId,
         (NSInteger)responseStatus,
         responseMessage,
-        responseBody.length,
+        responseData.length,
         responseHeaders,
         socketMessage != nil,
         responseObject);

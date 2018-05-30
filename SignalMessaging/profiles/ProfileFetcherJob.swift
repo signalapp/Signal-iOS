@@ -125,7 +125,7 @@ public class ProfileFetcherJob: NSObject {
                         reject(error)
                     }
             },
-                failure: { (_: NSInteger, error: Error) in
+                failure: { (_: NSInteger, _:Data?, error: Error) in
                     reject(error)
             })
         } else {
