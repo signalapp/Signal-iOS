@@ -18,7 +18,7 @@ typedef NS_ENUM(NSUInteger, SocketManagerState) {
 
 typedef void (^TSSocketMessageSuccess)(id _Nullable responseObject);
 // statusCode is zero by default, if request never made or failed.
-typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
+typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSData *_Nullable responseBody, NSError *error);
 
 @class TSRequest;
 

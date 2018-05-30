@@ -985,7 +985,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              deviceMessages:deviceMessages
                                     success:successHandler];
             }
-            failure:^(NSInteger statusCode, NSError *error) {
+            failure:^(NSInteger statusCode, NSData *_Nullable responseBody, NSError *error) {
                 [self messageSendDidFail:message
                                recipient:recipient
                                   thread:thread
@@ -994,6 +994,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        remainingAttempts:remainingAttempts
                               statusCode:statusCode
                                    error:error
+                            responseData:responseBody
                                  success:successHandler
                                  failure:failureHandler];
             }];
@@ -1009,6 +1010,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failure:^(NSURLSessionDataTask *task, NSError *error) {
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 NSInteger statusCode = response.statusCode;
+                NSData *_Nullable responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
                 [self messageSendDidFail:message
                                recipient:recipient
@@ -1018,6 +1020,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                        remainingAttempts:remainingAttempts
                               statusCode:statusCode
                                    error:error
+                            responseData:responseData
                                  success:successHandler
                                  failure:failureHandler];
             }];
@@ -1067,7 +1070,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
          remainingAttempts:(int)remainingAttempts
                 statusCode:(NSInteger)statusCode
-                     error:(NSError *)error
+                     error:(NSError *)responseError
+              responseData:(nullable NSData *)responseData
                    success:(void (^)(void))successHandler
                    failure:(RetryableFailureHandler)failureHandler
 {
@@ -1075,21 +1079,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssert(recipient);
     OWSAssert(thread);
     OWSAssert(deviceMessages);
-    OWSAssert(error);
+    OWSAssert(responseError);
     OWSAssert(successHandler);
     OWSAssert(failureHandler);
 
     DDLogInfo(@"%@ sending to recipient: %@, failed with error.", self.logTag, recipient.uniqueId);
-    [DDLog flushLog];
-
-    NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
 
     void (^retrySend)(void) = ^void() {
         if (remainingAttempts <= 0) {
             // Since we've already repeatedly failed to send to the messaging API,
             // it's unlikely that repeating the whole process will succeed.
-            [error setIsRetryable:NO];
-            return failureHandler(error);
+            [responseError setIsRetryable:NO];
+            return failureHandler(responseError);
         }
 
         dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1130,32 +1131,39 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         case 409: {
             // Mismatched devices
-            DDLogWarn(@"%@ Mismatch Devices for recipient: %@", self.logTag, recipient.uniqueId);
+            DDLogWarn(@"%@ Mismatched devices for recipient: %@", self.logTag, recipient.uniqueId);
 
-            NSError *error;
-            NSDictionary *serializedResponse =
-                [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
-            if (error) {
+            NSError *_Nullable error = nil;
+            NSDictionary *_Nullable responseJson = nil;
+            if (responseData) {
+                responseJson = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+            }
+            if (error || !responseJson) {
                 OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotParseMismatchedDevicesJson]);
                 [error setIsRetryable:YES];
                 return failureHandler(error);
             }
 
-            [self handleMismatchedDevices:serializedResponse recipient:recipient completion:retrySend];
+            [self handleMismatchedDevicesWithResponseJson:responseJson recipient:recipient completion:retrySend];
             break;
         }
         case 410: {
             // Stale devices
             DDLogWarn(@"%@ Stale devices for recipient: %@", self.logTag, recipient.uniqueId);
 
-            if (!responseData) {
+            NSError *_Nullable error = nil;
+            NSDictionary *_Nullable responseJson = nil;
+            if (responseData) {
+                responseJson = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+            }
+            if (error || !responseJson) {
                 DDLogWarn(@"Stale devices but server didn't specify devices in response.");
                 NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                 [error setIsRetryable:YES];
                 return failureHandler(error);
             }
 
-            [self handleStaleDevicesWithResponse:responseData recipientId:recipient.uniqueId completion:retrySend];
+            [self handleStaleDevicesWithResponseJson:responseJson recipientId:recipient.uniqueId completion:retrySend];
             break;
         }
         default:
@@ -1164,12 +1172,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)handleMismatchedDevices:(NSDictionary *)dictionary
-                      recipient:(SignalRecipient *)recipient
-                     completion:(void (^)(void))completionHandler
+- (void)handleMismatchedDevicesWithResponseJson:(NSDictionary *)responseJson
+                                      recipient:(SignalRecipient *)recipient
+                                     completion:(void (^)(void))completionHandler
 {
-    NSArray *extraDevices = [dictionary objectForKey:@"extraDevices"];
-    NSArray *missingDevices = [dictionary objectForKey:@"missingDevices"];
+    OWSAssert(responseJson);
+    OWSAssert(recipient);
+    OWSAssert(completionHandler);
+
+    NSArray *extraDevices = responseJson[@"extraDevices"];
+    NSArray *missingDevices = responseJson[@"missingDevices"];
 
     if (missingDevices.count > 0) {
         NSString *localNumber = [TSAccountManager localNumber];
@@ -1442,13 +1454,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
-- (void)handleStaleDevicesWithResponse:(NSData *)responseData
-                           recipientId:(NSString *)identifier
-                            completion:(void (^)(void))completionHandler
+- (void)handleStaleDevicesWithResponseJson:(NSDictionary *)responseJson
+                               recipientId:(NSString *)identifier
+                                completion:(void (^)(void))completionHandler
 {
     dispatch_async([OWSDispatch sendingQueue], ^{
-        NSDictionary *serialization = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil];
-        NSArray *devices = serialization[@"staleDevices"];
+        NSArray *devices = responseJson[@"staleDevices"];
 
         if (!([devices count] > 0)) {
             return;

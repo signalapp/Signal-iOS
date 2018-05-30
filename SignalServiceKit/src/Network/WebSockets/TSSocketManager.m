@@ -102,10 +102,10 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
         NSLocalizedString(@"ERROR_DESCRIPTION_REQUEST_FAILED", @"Error indicating that a socket request failed."));
 
-    [self didFailWithStatusCode:0 error:error];
+    [self didFailWithStatusCode:0 responseBody:nil error:error];
 }
 
-- (void)didFailWithStatusCode:(NSInteger)statusCode error:(NSError *)error
+- (void)didFailWithStatusCode:(NSInteger)statusCode responseBody:(nullable NSData *)responseBody error:(NSError *)error
 {
     OWSAssert(error);
 
@@ -117,12 +117,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
+    DDLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+
     OWSAssert(self.success);
     OWSAssert(self.failure);
 
     TSSocketMessageFailure failure = self.failure;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        failure(statusCode, error);
+        failure(statusCode, responseBody, error);
     });
 
     self.success = nil;
@@ -606,7 +608,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
                 NSLocalizedString(
                     @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
-            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus error:error];
+            [socketMessage didFailWithStatusCode:(NSInteger)responseStatus responseBody:responseBody error:error];
         }
     }
 
