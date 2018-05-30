@@ -67,8 +67,8 @@ extension CallUIAdaptee {
         SwiftAssertIsOnMainThread(#function)
 
         guard self.callService.call == nil else {
-            Logger.info("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
-            //TODO terminate existing call.
+            owsFail("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
+            self.callService.terminateCallDueToCriticalError()
             return
         }
 
