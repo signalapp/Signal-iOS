@@ -134,7 +134,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return self.systemContactsFetcher.supportsContactEditing;
 }
 
-#pragma mark SystemContactsFetcherDelegate
+#pragma mark - SystemContactsFetcherDelegate
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
               updatedContacts:(NSArray<Contact *> *)contacts
@@ -150,6 +150,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         shouldClearStaleCache = YES;
     }
     [self updateWithContacts:contacts shouldClearStaleCache:shouldClearStaleCache];
+}
+
+- (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
+       hasAuthorizationStatus:(enum ContactStoreAuthorizationStatus)authorizationStatus
+{
+    if (authorizationStatus == ContactStoreAuthorizationStatusRestricted
+        || authorizationStatus == ContactStoreAuthorizationStatusDenied) {
+        // Clear the contacts cache if access to the system contacts is revoked.
+        [self updateWithContacts:@[] shouldClearStaleCache:YES];
+    }
 }
 
 #pragma mark - Intersection
