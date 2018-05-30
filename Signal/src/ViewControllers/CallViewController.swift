@@ -714,6 +714,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             ongoingVideoCallControls.removeFromSuperview()
             ongoingCallControls.insertArrangedSubview(ongoingAudioCallControls, at: 0)
         }
+        // Layout immediately to avoid spurious animation.
+        ongoingCallControls.layoutIfNeeded()
 
         // Also hide other controls if user has tapped to hide them.
         if shouldRemoteVideoControlsBeHidden && !remoteVideoView.isHidden {
