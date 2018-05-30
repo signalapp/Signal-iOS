@@ -112,6 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
 
+    [UIView setAnimationsEnabled:NO];
+
     if (@available(iOS 11.0, *)) {
         if (OWSWindowManager.sharedManager.hasCall) {
             if (UIDevice.currentDevice.isIPhoneX) {
@@ -147,7 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
         // Since the navbar's frame was updated, we need to be sure our child VC's
         // container view is updated.
         [self.view setNeedsLayout];
+        [self.view layoutSubviews];
     }
+    [UIView setAnimationsEnabled:YES];
 }
 
 @end
