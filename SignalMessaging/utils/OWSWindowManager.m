@@ -185,6 +185,9 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     viewController.view.backgroundColor = [UIColor ows_materialBlueColor];
 
     // NOTE: Do not use OWSNavigationController for call window.
+    // It adjusts the size of the navigation bar to reflect the
+    // call window.  We don't want those adjustments made within
+    // the call window itself.
     UINavigationController *navigationController =
         [[UINavigationController alloc] initWithRootViewController:viewController];
     navigationController.navigationBarHidden = YES;
