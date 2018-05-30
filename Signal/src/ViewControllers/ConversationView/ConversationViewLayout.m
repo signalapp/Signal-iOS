@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 // layout without incurring any of the (great) expense of performing an
 // unnecessary layout pass.
 @property (nonatomic) BOOL hasLayout;
+@property (nonatomic) BOOL hasEverHadLayout;
 
 @property (nonatomic) int contentWidth;
 
@@ -35,6 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (void)setHasLayout:(BOOL)hasLayout
+{
+    _hasLayout = hasLayout;
+
+    if (hasLayout) {
+        self.hasEverHadLayout = YES;
+    }
 }
 
 - (void)invalidateLayout
