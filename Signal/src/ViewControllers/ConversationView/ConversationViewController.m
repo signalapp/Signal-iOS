@@ -158,6 +158,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
+@property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 // These two properties must be updated in lockstep.
 //
@@ -275,6 +276,8 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
+
+    _viewControllerCreatedAt = CACurrentMediaTime();
     _contactsManager = [Environment current].contactsManager;
     _contactsUpdater = [Environment current].contactsUpdater;
     _messageSender = [Environment current].messageSender;
@@ -677,6 +680,11 @@ typedef enum : NSUInteger {
     }
 
     [self updateLastVisibleTimestamp];
+
+    if (!self.viewHasEverAppeared) {
+        NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
+        DDLogInfo(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
+    }
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1077,6 +1085,7 @@ typedef enum : NSUInteger {
     }
 
     self.actionOnOpen = ConversationViewActionNone;
+
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
