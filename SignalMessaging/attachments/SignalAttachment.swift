@@ -958,7 +958,7 @@ public class SignalAttachment: NSObject {
         }
 
         exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.outputFileType = AVFileTypeMPEG4
+        exportSession.outputFileType = AVFileType.mp4
         exportSession.metadataItemFilter = AVMetadataItemFilter.forSharing()
 
         let exportURL = videoTempPath.appendingPathComponent(UUID().uuidString).appendingPathExtension("mp4")
@@ -1011,6 +1011,7 @@ public class SignalAttachment: NSObject {
         return VideoCompressionResult(attachmentPromise: attachmentPromise, exportSession: exportSession)
     }
 
+    @objc
     public class func isInvalidVideo(dataSource: DataSource, dataUTI: String) -> Bool {
         guard videoUTISet.contains(dataUTI) else {
             // not a video

@@ -25,8 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 
-- (TSInteraction *)lastInteractionWithTranscation:(YapDatabaseReadTransaction *)transaction;
-
 @end
 
 @implementation TSThread

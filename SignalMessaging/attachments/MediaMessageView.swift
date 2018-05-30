@@ -164,7 +164,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
-        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
             stackView.autoPinHeightToSuperview()
         }
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
@@ -277,7 +277,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         // it's superview is big enough to contain it.
         stackView.autoPinWidthToSuperview()
         stackView.autoVCenterInSuperview()
-        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
             stackView.autoPinHeightToSuperview()
         }
         stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)

@@ -200,11 +200,11 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     // MARK: - Event Handlers
 
-    func cancelPressed(sender: UIButton) {
+    @objc func cancelPressed(sender: UIButton) {
         delegate?.messageApprovalDidCancel(self)
     }
 
-    func sendPressed(sender: UIButton) {
+    @objc func sendPressed(sender: UIButton) {
         delegate?.messageApproval(self, didApproveMessage: self.textView.text)
     }
 

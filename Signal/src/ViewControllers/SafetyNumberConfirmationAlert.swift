@@ -5,7 +5,8 @@
 import Foundation
 import SignalServiceKit
 
-class SafetyNumberConfirmationAlert: NSObject {
+@objc
+public class SafetyNumberConfirmationAlert: NSObject {
 
     let TAG = "[SafetyNumberConfirmationAlert]"
 
@@ -17,18 +18,22 @@ class SafetyNumberConfirmationAlert: NSObject {
         self.primaryStorage = OWSPrimaryStorage.shared()
     }
 
+    @objc
     public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
+    @objc
     public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
     }
 
+    @objc
     public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
         return self.presentAlertIfNecessary(recipientIds: recipientIds, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
+    @objc
     public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
         return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
                                                                                                   confirmationText: confirmationText,

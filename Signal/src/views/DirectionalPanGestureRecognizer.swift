@@ -14,7 +14,7 @@ class PanDirectionGestureRecognizer: UIPanGestureRecognizer {
 
     let direction: PanDirection
 
-    init(direction: PanDirection, target: AnyObject, action: Selector) {
+    @objc init(direction: PanDirection, target: AnyObject, action: Selector) {
         self.direction = direction
 
         super.init(target: target, action: action)

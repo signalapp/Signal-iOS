@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -12,35 +12,37 @@ import WebRTC
 class FakePeerConnectionClientDelegate: PeerConnectionClientDelegate {
 
     enum ConnectionState {
-        case connected, failed
+        case connected, disconnected, failed
     }
 
     var connectionState: ConnectionState?
     var localIceCandidates = [RTCIceCandidate]()
     var dataChannelMessages = [OWSWebRTCProtosData]()
 
-    internal func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceConnected(_ peerconnectionClient: PeerConnectionClient) {
         connectionState = .connected
     }
 
-    internal func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceDisconnected(_ peerconnectionClient: PeerConnectionClient) {
+        connectionState = .disconnected
+    }
+
+    func peerConnectionClientIceFailed(_ peerconnectionClient: PeerConnectionClient) {
         connectionState = .failed
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, addedLocalIceCandidate iceCandidate: RTCIceCandidate) {
         localIceCandidates.append(iceCandidate)
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, received dataChannelMessage: OWSWebRTCProtosData) {
         dataChannelMessages.append(dataChannelMessage)
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
-
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
     }
 
-    internal func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
-
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
     }
 }
 

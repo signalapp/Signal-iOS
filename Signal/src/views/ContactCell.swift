@@ -65,7 +65,7 @@ class ContactCell: UITableViewCell {
         }
     }
 
-    func didChangePreferredContentSize() {
+    @objc func didChangePreferredContentSize() {
         self.titleLabel.font = UIFont.ows_dynamicTypeBody
         self.subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
     }
@@ -130,13 +130,13 @@ fileprivate extension CNContact {
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [
-            NSFontAttributeName: UIFont(descriptor: boldDescriptor!, size: 0)
+            NSAttributedStringKey.font: UIFont(descriptor: boldDescriptor!, size: 0)
         ]
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
             highlightedName.enumerateAttributes(in: NSRange(location: 0, length: highlightedName.length), options: [], using: { (attrs, range, _) in
-                if let property = attrs[CNContactPropertyAttribute] as? String, property == keyToHighlight {
+                if let property = attrs[NSAttributedStringKey(rawValue: CNContactPropertyAttribute)] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }
             })

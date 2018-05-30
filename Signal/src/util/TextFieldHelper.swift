@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-@objc class TextFieldHelper: NSObject {
+@objc public class TextFieldHelper: NSObject {
 
     // Used to implement the UITextFieldDelegate method: `textField:shouldChangeCharactersInRange:replacementString`
     // Takes advantage of Swift's superior unicode handling to append partial pasted text without splitting multi-byte characters.
-    class func textField(_ textField: UITextField, shouldChangeCharactersInRange editingRange: NSRange, replacementString: String, byteLimit: UInt) -> Bool {
+    @objc public class func textField(_ textField: UITextField, shouldChangeCharactersInRange editingRange: NSRange, replacementString: String, byteLimit: UInt) -> Bool {
 
         let byteLength = { (string: String) -> UInt in
             return UInt(string.utf8.count)
@@ -38,7 +38,7 @@ import UIKit
 
         var acceptableSubstring = ""
 
-        for (_, char) in replacementString.characters.enumerated() {
+        for (_, char) in replacementString.enumerated() {
             var maybeAcceptableSubstring = acceptableSubstring
             maybeAcceptableSubstring.append(char)
             if (byteLength(maybeAcceptableSubstring) <= availableSpace) {
@@ -48,7 +48,7 @@ import UIKit
             }
         }
 
-        textField.text = (existingString as NSString).replacingCharacters(in: editingRange, with:acceptableSubstring)
+        textField.text = (existingString as NSString).replacingCharacters(in: editingRange, with: acceptableSubstring)
 
         // We've already handled any valid editing manually, so prevent further changes.
         return false

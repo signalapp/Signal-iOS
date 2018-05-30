@@ -105,13 +105,13 @@ public enum PushRegistrationError: Error {
 
     // MARK: PKPushRegistryDelegate - voIP Push Token
 
-    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, forType type: PKPushType) {
+    public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("\(self.logTag) in \(#function)")
         assert(type == .voIP)
         self.pushManager.application(UIApplication.shared, didReceiveRemoteNotification: payload.dictionaryPayload)
     }
 
-    public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, forType type: PKPushType) {
+    public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
         Logger.info("\(self.logTag) in \(#function)")
         assert(type == .voIP)
         assert(credentials.type == .voIP)
@@ -123,7 +123,7 @@ public enum PushRegistrationError: Error {
         fulfillVoipTokenPromise(credentials.token)
     }
 
-    public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenForType type: PKPushType) {
+    public func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         // It's not clear when this would happen. We've never previously handled it, but we should at
         // least start learning if it happens.
         owsFail("\(self.logTag) in \(#function)")
@@ -145,7 +145,9 @@ public enum PushRegistrationError: Error {
 
         let (promise, fulfill, _) = Promise<Void>.pending()
         self.userNotificationSettingsPromise = promise
-        self.fulfillUserNotificationSettingsPromise = fulfill
+        self.fulfillUserNotificationSettingsPromise = {
+            fulfill(())
+        }
 
         Logger.info("\(self.logTag) registering user notification settings")
 
@@ -266,7 +268,7 @@ public enum PushRegistrationError: Error {
 
         // If we've already completed registering for a voip token, resolve it immediately,
         // rather than waiting for the delegate method to be called.
-        if let voipTokenData = voipRegistry.pushToken(forType: .voIP) {
+        if let voipTokenData = voipRegistry.pushToken(for: .voIP) {
             Logger.info("\(self.logTag) using pre-registered voIP token")
             fulfill(voipTokenData)
         }

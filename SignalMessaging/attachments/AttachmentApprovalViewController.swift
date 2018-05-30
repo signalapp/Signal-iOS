@@ -216,7 +216,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         }
     }
 
-    public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
+    @objc public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
         assert(self.videoPlayer != nil)
         self.pauseVideo()
     }
@@ -251,7 +251,7 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         self.playVideo()
     }
 
-    func cancelPressed(sender: UIButton) {
+    @objc func cancelPressed(sender: UIButton) {
         self.delegate?.attachmentApproval(self, didCancelAttachment: attachment)
     }
 
@@ -619,7 +619,7 @@ class CaptioningToolbar: UIView, UITextViewDelegate {
         bottomGradient.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
     }
 
-    func didTapSend() {
+    @objc func didTapSend() {
         self.captioningToolbarDelegate?.captioningToolbarDidTapSend(self, captionText: self.textView.text)
     }
 

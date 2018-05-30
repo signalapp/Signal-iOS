@@ -11,16 +11,19 @@ protocol QuotedReplyPreviewDelegate: class {
 
 @objc
 class QuotedReplyPreview: UIView {
+    @objc
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
+    @objc
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc
     init(quotedReply: OWSQuotedReplyModel) {
         self.quotedReply = quotedReply
 
@@ -83,7 +86,7 @@ class QuotedReplyPreview: UIView {
         self.heightConstraint.constant = size.height
     }
 
-    func contentSizeCategoryDidChange(_ notification: Notification) {
+    @objc func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         updateContents()

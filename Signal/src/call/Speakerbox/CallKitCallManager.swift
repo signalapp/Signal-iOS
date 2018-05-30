@@ -19,6 +19,8 @@ final class CallKitCallManager: NSObject {
 
     let callController = CXCallController()
     let showNamesOnCallScreen: Bool
+
+    @objc
     static let kAnonymousCallHandlePrefix = "Signal:"
 
     required init(showNamesOnCallScreen: Bool) {

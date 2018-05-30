@@ -20,6 +20,7 @@ public class DeviceSleepManager: NSObject {
 
     let TAG = "[DeviceSleepManager]"
 
+    @objc
     public static let sharedInstance = DeviceSleepManager()
 
     private class SleepBlock: CustomDebugStringConvertible {
@@ -57,6 +58,7 @@ public class DeviceSleepManager: NSObject {
         ensureSleepBlocking()
     }
 
+    @objc
     public func addBlock(blockObject: NSObject) {
         SwiftAssertIsOnMainThread(#function)
 
@@ -65,6 +67,7 @@ public class DeviceSleepManager: NSObject {
         ensureSleepBlocking()
     }
 
+    @objc
     public func removeBlock(blockObject: NSObject) {
         SwiftAssertIsOnMainThread(#function)
 

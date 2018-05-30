@@ -16,6 +16,7 @@ public protocol DisappearingTimerConfigurationViewDelegate: class {
 @objc
 public class DisappearingTimerConfigurationView: UIView {
 
+    @objc
     public weak var delegate: DisappearingTimerConfigurationViewDelegate? {
         didSet {
             // gesture recognizer is only enabled when a delegate is assigned.

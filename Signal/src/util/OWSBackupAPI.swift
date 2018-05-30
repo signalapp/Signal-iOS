@@ -80,7 +80,7 @@ import CloudKit
     // backups can reuse the same record.
     @objc
     public class func savePersistentFileOnceToCloud(fileId: String,
-                                                    fileUrlBlock: @escaping (()) -> URL?,
+                                                    fileUrlBlock: @escaping () -> URL?,
                                                     success: @escaping (String) -> Void,
                                                     failure: @escaping (Error) -> Void) {
         saveFileOnceToCloud(recordName: recordNameForPersistentFile(fileId: fileId),
@@ -208,7 +208,7 @@ import CloudKit
     @objc
     public class func saveFileOnceToCloud(recordName: String,
                                           recordType: String,
-                                          fileUrlBlock: @escaping (()) -> URL?,
+                                          fileUrlBlock: @escaping () -> URL?,
                                           success: @escaping (String) -> Void,
                                           failure: @escaping (Error) -> Void) {
 
@@ -242,7 +242,7 @@ import CloudKit
 
     @objc
     public class func deleteRecordsFromCloud(recordNames: [String],
-                                            success: @escaping (()) -> Void,
+                                            success: @escaping () -> Void,
                                             failure: @escaping (Error) -> Void) {
         deleteRecordsFromCloud(recordNames: recordNames,
                               remainingRetries: maxRetries,
@@ -252,7 +252,7 @@ import CloudKit
 
     private class func deleteRecordsFromCloud(recordNames: [String],
                                              remainingRetries: Int,
-                                             success: @escaping (()) -> Void,
+                                             success: @escaping () -> Void,
                                              failure: @escaping (Error) -> Void) {
 
         let recordIDs = recordNames.map { CKRecordID(recordName: $0) }
@@ -466,7 +466,7 @@ import CloudKit
     @objc
     public class func downloadFileFromCloud(recordName: String,
                                             toFileUrl: URL,
-                                            success: @escaping (()) -> Void,
+                                            success: @escaping () -> Void,
                                             failure: @escaping (Error) -> Void) {
 
         downloadFromCloud(recordName: recordName,

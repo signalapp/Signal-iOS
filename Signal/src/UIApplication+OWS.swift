@@ -4,13 +4,13 @@
 
 import Foundation
 
-extension UIApplication {
+@objc public extension UIApplication {
 
-    var frontmostViewControllerIgnoringAlerts: UIViewController? {
+    @objc public var frontmostViewControllerIgnoringAlerts: UIViewController? {
         return findFrontmostViewController(ignoringAlerts: true)
     }
 
-    var frontmostViewController: UIViewController? {
+    @objc public var frontmostViewController: UIViewController? {
         return findFrontmostViewController(ignoringAlerts: false)
     }
 
@@ -26,7 +26,7 @@ extension UIApplication {
         return viewController.findFrontmostViewController(ignoringAlerts)
     }
 
-    func openSystemSettings() {
+    @objc public func openSystemSettings() {
         openURL(URL(string: UIApplicationOpenSettingsURLString)!)
     }
 

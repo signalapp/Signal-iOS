@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-@objc enum MessageReceiptStatus: Int {
+@objc public enum MessageReceiptStatus: Int {
     case uploading
     case sending
     case sent
@@ -25,7 +25,8 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-recipient.
-    class func recipientStatus(outgoingMessage: TSOutgoingMessage,
+    @objc
+    public class func recipientStatus(outgoingMessage: TSOutgoingMessage,
             recipientState: TSOutgoingMessageRecipientState,
                                       referenceView: UIView) -> MessageReceiptStatus {
         let (messageReceiptStatus, _, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
@@ -143,6 +144,7 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-message.
+    @objc
     public class func receiptMessage(outgoingMessage: TSOutgoingMessage,
                                     referenceView: UIView) -> String {
         let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage,
@@ -151,7 +153,8 @@ public class MessageRecipientStatusUtils: NSObject {
     }
 
     // This method is per-message.
-    class func recipientStatus(outgoingMessage: TSOutgoingMessage, referenceView: UIView) -> MessageReceiptStatus {
+    @objc
+    public class func recipientStatus(outgoingMessage: TSOutgoingMessage, referenceView: UIView) -> MessageReceiptStatus {
         let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage,
                                                               referenceView: referenceView)
         return status

@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc(OWSMessageFetcherJob)
-class MessageFetcherJob: NSObject {
+public class MessageFetcherJob: NSObject {
 
     private var timer: Timer?
 
@@ -16,7 +16,7 @@ class MessageFetcherJob: NSObject {
     private let messageReceiver: OWSMessageReceiver
     private let signalService: OWSSignalService
 
-    init(messageReceiver: OWSMessageReceiver, networkManager: TSNetworkManager, signalService: OWSSignalService) {
+    @objc public init(messageReceiver: OWSMessageReceiver, networkManager: TSNetworkManager, signalService: OWSSignalService) {
         self.messageReceiver = messageReceiver
         self.networkManager = networkManager
         self.signalService = signalService
@@ -58,7 +58,7 @@ class MessageFetcherJob: NSObject {
         return promise
     }
 
-    @objc func run() -> AnyPromise {
+    @objc public func run() -> AnyPromise {
         return AnyPromise(run())
     }
 

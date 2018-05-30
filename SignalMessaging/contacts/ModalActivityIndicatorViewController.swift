@@ -15,6 +15,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     let canCancel: Bool
 
+    @objc
     public var wasCancelled: Bool = false
 
     var activityIndicator: UIActivityIndicatorView?
@@ -35,6 +36,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         SwiftAssertIsOnMainThread(#function)
@@ -50,6 +52,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
+    @objc
     public func dismiss(completion : @escaping () -> Void) {
         SwiftAssertIsOnMainThread(#function)
 
@@ -132,7 +135,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.presentTimer = nil
     }
 
-    func presentTimerFired() {
+    @objc func presentTimerFired() {
         SwiftAssertIsOnMainThread(#function)
 
         clearTimer()
@@ -143,7 +146,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
-    func cancelPressed() {
+    @objc func cancelPressed() {
         SwiftAssertIsOnMainThread(#function)
 
         wasCancelled = true

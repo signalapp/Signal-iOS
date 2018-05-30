@@ -58,6 +58,10 @@ NSString *const OWSPrimaryStorageAppUpgradeNagDate = @"TSStorageManagerAppUpgrad
 
 - (void)showAppUpgradeNagIfNecessary
 {
+    if (CurrentAppContext().isRunningTests) {
+        return;
+    }
+
     // Only show nag if we are "at rest" in the home view or registration view without any
     // alerts or dialogs showing.
     UIViewController *frontmostViewController =

@@ -19,12 +19,15 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     let installUrl = "https://signal.org/install/"
     let homepageUrl = "https://signal.org"
 
+    @objc
     let actionSheetController: UIAlertController
+    @objc
     let presentingViewController: UIViewController
     let contactsManager: OWSContactsManager
 
     var channel: Channel?
 
+    @objc
     required init(presentingViewController: UIViewController, contactsManager: OWSContactsManager) {
         self.presentingViewController = presentingViewController
         self.contactsManager = contactsManager
@@ -165,6 +168,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         }
     }
 
+    @objc
     public func sendSMSTo(phoneNumbers: [String]) {
         if #available(iOS 10.0, *) {
             // iOS10 message compose view doesn't respect some system appearence attributes.

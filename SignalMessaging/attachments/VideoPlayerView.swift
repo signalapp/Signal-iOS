@@ -7,6 +7,7 @@ import AVFoundation
 
 @objc
 public class VideoPlayerView: UIView {
+    @objc
     var player: AVPlayer? {
         get {
             return playerLayer.player
@@ -75,6 +76,7 @@ public class PlayerProgressBar: UIView {
 
     private let kPreferredTimeScale: CMTimeScale = 100
 
+    @objc
     public var player: AVPlayer? {
         didSet {
             guard let item = player?.currentItem else {
@@ -112,7 +114,7 @@ public class PlayerProgressBar: UIView {
 
         // Configure controls
 
-        let kLabelFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFontWeightRegular)
+        let kLabelFont = UIFont.monospacedDigitSystemFont(ofSize: 12, weight: UIFont.Weight.regular)
         positionLabel.font = kLabelFont
         remainingLabel.font = kLabelFont
 

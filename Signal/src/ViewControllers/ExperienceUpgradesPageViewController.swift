@@ -103,7 +103,7 @@ private class IntroducingCustomNotificationAudioExperienceUpgradeViewController:
         return button
     }
 
-    func didTapButton(sender: UIButton) {
+    @objc func didTapButton(sender: UIButton) {
         Logger.debug("\(TAG) in \(#function)")
 
         guard let buttonAction = self.buttonAction else {
@@ -213,7 +213,7 @@ private class IntroductingReadReceiptsExperienceUpgradeViewController: Experienc
         return button
     }
 
-    func didTapButton(sender: UIButton) {
+    @objc func didTapButton(sender: UIButton) {
         Logger.debug("\(TAG) in \(#function)")
 
         guard let buttonAction = self.buttonAction else {
@@ -343,7 +343,7 @@ private class IntroductingProfilesExperienceUpgradeViewController: ExperienceUpg
 
     // MARK: - Actions
 
-    func didTapButton(sender: UIButton) {
+    @objc func didTapButton(sender: UIButton) {
         Logger.debug("\(TAG) in \(#function)")
 
         // dismiss the modally presented view controller, then proceed.
@@ -382,7 +382,7 @@ private class CallKitExperienceUpgradeViewController: ExperienceUpgradeViewContr
 
     // MARK: - Actions
 
-    func didTapPrivacySettingsButton(sender: UIButton) {
+    @objc func didTapPrivacySettingsButton(sender: UIButton) {
         Logger.debug("\(TAG) in \(#function)")
 
         // dismiss the modally presented view controller, then proceed.
@@ -480,7 +480,8 @@ func setPageControlAppearance() {
     pageControl.currentPageIndicatorTintColor = UIColor.ows_materialBlue
 }
 
-class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControllerDataSource {
+@objc
+public class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControllerDataSource {
 
     let TAG = "[ExperienceUpgradeViewController]"
 
@@ -494,7 +495,8 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
 
     // MARK: - Initializers
 
-    required init(experienceUpgrades: [ExperienceUpgrade]) {
+    @objc
+    public required init(experienceUpgrades: [ExperienceUpgrade]) {
         self.experienceUpgrades = experienceUpgrades
 
         setPageControlAppearance()
@@ -507,13 +509,14 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
     }
 
     @available(*, unavailable, message:"unavailable, use initWithExperienceUpgrade instead")
-    required init?(coder aDecoder: NSCoder) {
+    @objc
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("unimplemented")
     }
 
     // MARK: - View lifecycle
 
-    override func viewDidLoad() {
+    @objc public override func viewDidLoad() {
         guard let firstViewController = allViewControllers.first else {
             owsFail("\(TAG) no pages to show.")
             dismiss(animated: true)
@@ -524,7 +527,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         self.pageViewController.setViewControllers([ firstViewController ], direction: .forward, animated: false, completion: nil)
     }
 
-    override func loadView() {
+    @objc public override func loadView() {
         self.view = UIView.container()
         view.backgroundColor = UIColor.white
 
@@ -677,7 +680,7 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         allViewControllers.append(viewController)
     }
 
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    @objc public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         // Blocking write before dismiss, to be sure they're marked as complete
         // before HomeView.didAppear is re-fired.
         self.editingDBConnection.readWrite { transaction in
@@ -687,12 +690,12 @@ class ExperienceUpgradesPageViewController: OWSViewController, UIPageViewControl
         super.dismiss(animated: flag, completion: completion)
     }
 
-    func didTapDismissButton(sender: UIButton) {
+    @objc func didTapDismissButton(sender: UIButton) {
         Logger.debug("\(TAG) in \(#function)")
         self.dismiss(animated: true)
     }
 
-    func handleDismissGesture(sender: AnyObject) {
+    @objc func handleDismissGesture(sender: AnyObject) {
         Logger.debug("\(TAG) in \(#function)")
         self.dismiss(animated: true)
     }

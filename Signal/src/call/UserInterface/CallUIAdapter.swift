@@ -82,7 +82,7 @@ extension CallUIAdaptee {
  * Notify the user of call related activities.
  * Driven by either a CallKit or System notifications adaptee
  */
-@objc class CallUIAdapter: NSObject, CallServiceObserver {
+@objc public class CallUIAdapter: NSObject, CallServiceObserver {
 
     let TAG = "[CallUIAdapter]"
     private let adaptee: CallUIAdaptee
@@ -90,7 +90,7 @@ extension CallUIAdaptee {
     internal let audioService: CallAudioService
     internal let callService: CallService
 
-    required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
+    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
         SwiftAssertIsOnMainThread(#function)
 
         self.contactsManager = contactsManager
@@ -155,7 +155,7 @@ extension CallUIAdaptee {
         return call
     }
 
-    internal func answerCall(localId: UUID) {
+    @objc public func answerCall(localId: UUID) {
         SwiftAssertIsOnMainThread(#function)
 
         adaptee.answerCall(localId: localId)
@@ -167,7 +167,7 @@ extension CallUIAdaptee {
         adaptee.answerCall(call)
     }
 
-    internal func declineCall(localId: UUID) {
+    @objc public func declineCall(localId: UUID) {
         SwiftAssertIsOnMainThread(#function)
 
         adaptee.declineCall(localId: localId)
@@ -187,7 +187,7 @@ extension CallUIAdaptee {
         }
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    @objc public func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         adaptee.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: hasLocalVideo)

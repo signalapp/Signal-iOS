@@ -912,7 +912,7 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-             completionHandler:(void (^)(void))completionHandler
+             completionHandler:(void (^)())completionHandler
 {
     OWSAssertIsOnMainThread();
 
@@ -939,7 +939,7 @@ static NSTimeInterval launchStartedAt;
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
               withResponseInfo:(NSDictionary *)responseInfo
-             completionHandler:(void (^)(void))completionHandler
+             completionHandler:(void (^)())completionHandler
 {
     OWSAssertIsOnMainThread();
 

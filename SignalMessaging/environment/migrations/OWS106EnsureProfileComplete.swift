@@ -14,13 +14,14 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
     // increment a similar constant for each migration.
+    @objc
     class func migrationId() -> String {
         return "106"
     }
 
     // Overriding runUp since we have some specific completion criteria which
     // is more likely to fail since it involves network requests.
-    override public func runUp(completion:@escaping ((Void)) -> Void) {
+    override public func runUp(completion:@escaping () -> Void) {
         let job = CompleteRegistrationFixerJob(completionHandler: { (didSucceed) in
 
             if (didSucceed) {
@@ -98,7 +99,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             ProfileFetcherJob(networkManager: networkManager).getProfile(recipientId: localRecipientId).then { _ -> Void in
                 Logger.info("\(self.TAG) verified recipient profile is in good shape: \(localRecipientId)")
 
-                fulfill()
+                fulfill(())
             }.catch { error in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
@@ -107,7 +108,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
                     TSPreKeyManager.registerPreKeys(with: .signedAndOneTime,
                                                     success: {
                                                         Logger.info("\(self.TAG) successfully uploaded pre-keys. Profile should be fixed.")
-                                                        fulfill()
+                                                        fulfill(())
                     },
                                                     failure: { _ in
                                                         reject(OWSErrorWithCodeDescription(.signalServiceFailure, "\(self.TAG) Unknown error in \(#function)"))

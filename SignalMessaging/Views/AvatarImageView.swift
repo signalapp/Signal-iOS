@@ -95,7 +95,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func handleSignalAccountsChanged(notification: Notification) {
+    @objc func handleSignalAccountsChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         // PERF: It would be nice if we could do this only if *this* user's SignalAccount changed,
@@ -104,7 +104,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.updateImage()
     }
 
-    func handleOtherUsersProfileChanged(notification: Notification) {
+    @objc func handleOtherUsersProfileChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
@@ -126,7 +126,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.updateImage()
     }
 
-    func handleGroupAvatarChanged(notification: Notification) {
+    @objc func handleGroupAvatarChanged(notification: Notification) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard let changedGroupThreadId = notification.userInfo?[TSGroupThread_NotificationKey_UniqueId] as? String else {

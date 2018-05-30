@@ -49,6 +49,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         fatalError("\(#function) is unimplemented.")
     }
 
+    @objc
     required init(viewItem: ConversationViewItem, message: TSMessage, mode: MessageMetadataViewMode) {
         self.contactsManager = Environment.current().contactsManager
         self.viewItem = viewItem
@@ -496,7 +497,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: - Actions
 
-    func shareButtonPressed() {
+    @objc func shareButtonPressed() {
         guard let attachmentStream = attachmentStream else {
             Logger.error("\(logTag) Share button should only be shown with attachment, but no attachment found.")
             return
@@ -525,7 +526,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
     }
 
-    internal func yapDatabaseModified(notification: NSNotification) {
+    @objc internal func yapDatabaseModified(notification: NSNotification) {
         SwiftAssertIsOnMainThread(#function)
 
         guard !wasDeleted else {

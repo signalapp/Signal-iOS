@@ -59,6 +59,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     private let collation = UILocalizedIndexedCollation.current()
+    public var collationForTests: UILocalizedIndexedCollation {
+        get {
+            return collation
+        }
+    }
     private let contactStore = CNContactStore()
 
     // Data Source State
@@ -67,6 +72,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     private lazy var selectedContacts = [Contact]()
 
     // Configuration
+    @objc
     public weak var contactsPickerDelegate: ContactsPickerDelegate?
     private let subtitleCellType: SubtitleCellValue
     private let allowsMultipleSelection: Bool
@@ -300,11 +306,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     // MARK: - Button Actions
 
-    func onTouchCancelButton() {
+    @objc func onTouchCancelButton() {
         contactsPickerDelegate?.contactsPickerDidCancel(self)
     }
 
-    func onTouchDoneButton() {
+    @objc func onTouchDoneButton() {
         contactsPickerDelegate?.contactsPicker(self, didSelectMultipleContacts: selectedContacts)
     }
 

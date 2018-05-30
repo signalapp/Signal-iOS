@@ -125,7 +125,7 @@ class ReminderView: UIView {
         iconView.autoSetDimension(.width, toSize: 13)
     }
 
-    func handleTap(gestureRecognizer: UIGestureRecognizer) {
+    @objc func handleTap(gestureRecognizer: UIGestureRecognizer) {
         tapAction()
     }
 }

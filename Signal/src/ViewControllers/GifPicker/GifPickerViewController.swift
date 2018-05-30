@@ -33,6 +33,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var lastQuery: String = ""
 
+    @objc
     public weak var delegate: GifPickerViewControllerDelegate?
 
     let thread: TSThread
@@ -60,6 +61,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         fatalError("\(#function) is unimplemented.")
     }
 
+    @objc
     required init(thread: TSThread, messageSender: MessageSender) {
         self.thread = thread
         self.messageSender = messageSender
@@ -79,7 +81,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer?.invalidate()
     }
 
-    func didBecomeActive() {
+    @objc func didBecomeActive() {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.TAG) \(#function)")
@@ -88,7 +90,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         ensureCellState()
     }
 
-    func reachabilityChanged() {
+    @objc func reachabilityChanged() {
         SwiftAssertIsOnMainThread(#function)
 
         Logger.info("\(self.TAG) \(#function)")
@@ -418,7 +420,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - Event Handlers
 
-    func donePressed(sender: UIButton) {
+    @objc func donePressed(sender: UIButton) {
         dismiss(animated: true, completion: nil)
     }
 
@@ -505,7 +507,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - Event Handlers
 
-    func retryTapped(sender: UIGestureRecognizer) {
+    @objc func retryTapped(sender: UIGestureRecognizer) {
         guard sender.state == .recognized else {
             return
         }

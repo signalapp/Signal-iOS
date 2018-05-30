@@ -71,7 +71,7 @@ import SignalMessaging
  *                      --[SS.Hangup]-->
  */
 
-enum CallError: Error {
+public enum CallError: Error {
     case providerReset
     case assertionError(description: String)
     case disconnected
@@ -154,17 +154,23 @@ private class SignalCallData: NSObject {
 
         let (callConnectedPromise, fulfillCallConnectedPromise, rejectCallConnectedPromise) = Promise<Void>.pending()
         self.callConnectedPromise = callConnectedPromise
-        self.fulfillCallConnectedPromise = fulfillCallConnectedPromise
+        self.fulfillCallConnectedPromise = {
+            fulfillCallConnectedPromise(())
+        }
         self.rejectCallConnectedPromise = rejectCallConnectedPromise
 
         let (peerConnectionClientPromise, fulfillPeerConnectionClientPromise, rejectPeerConnectionClientPromise) = Promise<Void>.pending()
         self.peerConnectionClientPromise = peerConnectionClientPromise
-        self.fulfillPeerConnectionClientPromise = fulfillPeerConnectionClientPromise
+        self.fulfillPeerConnectionClientPromise = {
+            fulfillPeerConnectionClientPromise(())
+        }
         self.rejectPeerConnectionClientPromise = rejectPeerConnectionClientPromise
 
         let (readyToSendIceUpdatesPromise, fulfillReadyToSendIceUpdatesPromise, rejectReadyToSendIceUpdatesPromise) = Promise<Void>.pending()
         self.readyToSendIceUpdatesPromise = readyToSendIceUpdatesPromise
-        self.fulfillReadyToSendIceUpdatesPromise = fulfillReadyToSendIceUpdatesPromise
+        self.fulfillReadyToSendIceUpdatesPromise = {
+            fulfillReadyToSendIceUpdatesPromise(())
+        }
         self.rejectReadyToSendIceUpdatesPromise = rejectReadyToSendIceUpdatesPromise
 
         super.init()
@@ -201,7 +207,7 @@ private class SignalCallData: NSObject {
 }
 
 // This class' state should only be accessed on the main queue.
-@objc class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
+@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
 
     // MARK: - Properties
 
@@ -216,7 +222,7 @@ private class SignalCallData: NSObject {
 
     // Exposed by environment.m
     internal let notificationsAdapter: CallNotificationsAdapter
-    internal var callUIAdapter: CallUIAdapter!
+    @objc public var callUIAdapter: CallUIAdapter!
 
     // MARK: Class
 
@@ -253,6 +259,7 @@ private class SignalCallData: NSObject {
         }
     }
 
+    @objc
     var call: SignalCall? {
         get {
             SwiftAssertIsOnMainThread(#function)
@@ -292,7 +299,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
+    @objc public required init(accountManager: AccountManager, contactsManager: OWSContactsManager, messageSender: MessageSender, notificationsAdapter: CallNotificationsAdapter) {
         self.accountManager = accountManager
         self.contactsManager = contactsManager
         self.messageSender = messageSender
@@ -319,12 +326,12 @@ private class SignalCallData: NSObject {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func didEnterBackground() {
+    @objc func didEnterBackground() {
         SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }
 
-    func didBecomeActive() {
+    @objc func didBecomeActive() {
         SwiftAssertIsOnMainThread(#function)
         self.updateIsVideoEnabled()
     }
@@ -332,7 +339,7 @@ private class SignalCallData: NSObject {
     /**
      * Choose whether to use CallKit or a Notification backed interface for calling.
      */
-    public func createCallUIAdapter() {
+    @objc public func createCallUIAdapter() {
         SwiftAssertIsOnMainThread(#function)
 
         if self.call != nil {
@@ -347,7 +354,7 @@ private class SignalCallData: NSObject {
     /**
      * Initiate an outgoing call.
      */
-    public func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
+    func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         SwiftAssertIsOnMainThread(#function)
 
         guard self.call == nil else {
@@ -932,7 +939,7 @@ private class SignalCallData: NSObject {
      *
      * Used by notification actions which can't serialize a call object.
      */
-    public func handleAnswerCall(localId: UUID) {
+    @objc public func handleAnswerCall(localId: UUID) {
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
@@ -1245,6 +1252,7 @@ private class SignalCallData: NSObject {
         }
     }
 
+    @objc
     func handleCallKitStartVideo() {
         SwiftAssertIsOnMainThread(#function)
 
@@ -1498,7 +1506,6 @@ private class SignalCallData: NSObject {
             default:
                 assert(failedCall.callRecord != nil)
             }
-            
 
             // It's essential to set call.state before terminateCall, because terminateCall nils self.call
             failedCall.error = error

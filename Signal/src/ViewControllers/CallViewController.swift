@@ -150,7 +150,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         NotificationCenter.default.removeObserver(self)
     }
 
-    func didBecomeActive() {
+    @objc func didBecomeActive() {
         if (self.isViewLoaded) {
             shouldRemoteVideoControlsBeHidden = false
         }
@@ -235,7 +235,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         createSettingsNagViews()
     }
 
-    func didTouchRootView(sender: UIGestureRecognizer) {
+    @objc func didTouchRootView(sender: UIGestureRecognizer) {
         if !remoteVideoView.isHidden {
             shouldRemoteVideoControlsBeHidden = !shouldRemoteVideoControlsBeHidden
         }
@@ -541,7 +541,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactAvatarView.autoPinEdge(toSuperviewEdge: .right, withInset: 0, relation: .greaterThanOrEqual)
         contactAvatarView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0, relation: .greaterThanOrEqual)
         contactAvatarView.autoPinEdge(toSuperviewEdge: .left, withInset: 0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(UILayoutPriorityDefaultLow) {
+        NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
             contactAvatarView.autoPinEdgesToSuperviewMargins()
         }
 
@@ -825,7 +825,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     /**
      * Ends a connected call. Do not confuse with `didPressDeclineCall`.
      */
-    func didPressHangup(sender: UIButton) {
+    @objc func didPressHangup(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         callUIAdapter.localHangupCall(call)
@@ -833,14 +833,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false)
     }
 
-    func didPressMute(sender muteButton: UIButton) {
+    @objc func didPressMute(sender muteButton: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         muteButton.isSelected = !muteButton.isSelected
 
         callUIAdapter.setIsMuted(call: call, isMuted: muteButton.isSelected)
     }
 
-    func didPressAudioSource(sender button: UIButton) {
+    @objc func didPressAudioSource(sender button: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         if self.hasAlternateAudioSources {
@@ -863,20 +863,20 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false)
     }
 
-    func didPressAnswerCall(sender: UIButton) {
+    @objc func didPressAnswerCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         callUIAdapter.answerCall(call)
     }
 
-    func didPressVideo(sender: UIButton) {
+    @objc func didPressVideo(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
         let hasLocalVideo = !sender.isSelected
 
         callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
     }
 
-    func didPressFlipCamera(sender: UIButton) {
+    @objc func didPressFlipCamera(sender: UIButton) {
         // toggle value
         sender.isSelected = !sender.isSelected
 
@@ -889,7 +889,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     /**
      * Denies an incoming not-yet-connected call, Do not confuse with `didPressHangup`.
      */
-    func didPressDeclineCall(sender: UIButton) {
+    @objc func didPressDeclineCall(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         callUIAdapter.declineCall(call)
@@ -897,7 +897,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         dismissIfPossible(shouldDelay: false)
     }
 
-    func didPressShowCallSettings(sender: UIButton) {
+    @objc func didPressShowCallSettings(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         markSettingsNagAsComplete()
@@ -916,7 +916,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         })
     }
 
-    func didPressDismissNag(sender: UIButton) {
+    @objc func didPressDismissNag(sender: UIButton) {
         Logger.info("\(TAG) called \(#function)")
 
         markSettingsNagAsComplete()
@@ -939,7 +939,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
-    func didTapLeaveCall(sender: UIButton) {
+    @objc func didTapLeaveCall(sender: UIButton) {
         OWSWindowManager.shared().leaveCallView()
     }
 

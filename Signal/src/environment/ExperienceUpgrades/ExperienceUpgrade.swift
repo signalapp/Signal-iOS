@@ -1,24 +1,24 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-class ExperienceUpgrade: TSYapDatabaseObject {
+@objc public class ExperienceUpgrade: TSYapDatabaseObject {
     let title: String
     let body: String
     let image: UIImage?
 
-    required init(uniqueId: String, title: String, body: String, image: UIImage) {
+    @objc public required init(uniqueId: String, title: String, body: String, image: UIImage) {
         self.title = title
         self.body = body
         self.image  = image
         super.init(uniqueId: uniqueId)
     }
 
-    override required init(uniqueId: String?) {
+    @objc public override required init(uniqueId: String?) {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
         // will assign them.
@@ -28,7 +28,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         super.init(uniqueId: uniqueId)
     }
 
-    required init!(coder: NSCoder) {
+   @objc public required init!(coder: NSCoder) {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
         // will assign them.
@@ -38,7 +38,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         super.init(coder: coder)
     }
 
-    required init(dictionary dictionaryValue: [AnyHashable : Any]!) throws {
+    @objc public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
         // will assign them.
@@ -48,7 +48,7 @@ class ExperienceUpgrade: TSYapDatabaseObject {
         try super.init(dictionary: dictionaryValue)
     }
 
-    override class func storageBehaviorForProperty(withKey propertyKey: String) -> MTLPropertyStorage {
+    @objc public override class func storageBehaviorForProperty(withKey propertyKey: String) -> MTLPropertyStorage {
         // These exist in a hardcoded set - no need to save them, plus it allows us to
         // update copy/image down the line if there was a typo and we want to re-expose
         // these models in a "change log" archive.
