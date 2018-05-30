@@ -115,7 +115,7 @@ public class ProfileFetcherJob: NSObject {
 
         let (promise, fulfill, reject) = Promise<SignalServiceProfile>.pending()
 
-        if self.socketManager.canMakeRequests {
+        if TSSocketManager.canMakeRequests() {
             self.socketManager.make(request,
                 success: { (responseObject: Any?) -> Void in
                     do {

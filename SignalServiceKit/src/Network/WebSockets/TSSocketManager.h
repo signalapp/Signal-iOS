@@ -25,7 +25,6 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
 @interface TSSocketManager : NSObject <SRWebSocketDelegate>
 
 @property (nonatomic, readonly) SocketManagerState state;
-@property (atomic, readonly) BOOL canMakeRequests;
 
 + (instancetype)sharedManager;
 
@@ -43,6 +42,8 @@ typedef void (^TSSocketMessageFailure)(NSInteger statusCode, NSError *error);
 + (void)requestSocketOpen;
 
 #pragma mark - Message Sending
+
++ (BOOL)canMakeRequests;
 
 - (void)makeRequest:(TSRequest *)request
             success:(TSSocketMessageSuccess)success
