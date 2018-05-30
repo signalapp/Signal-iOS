@@ -18,7 +18,13 @@ enum PushNotificationRequestResult: String {
 }
 
 class FailingTSAccountManager: TSAccountManager {
-    let phoneNumberAwaitingVerification = "+13235555555"
+    override public init(networkManager: TSNetworkManager, primaryStorage: OWSPrimaryStorage) {
+        SwiftAssertIsOnMainThread(#function)
+
+        super.init(networkManager: networkManager, primaryStorage: primaryStorage)
+
+        self.phoneNumberAwaitingVerification = "+13235555555"
+    }
 
     override func verifyAccount(withCode: String,
                                 pin: String?,
