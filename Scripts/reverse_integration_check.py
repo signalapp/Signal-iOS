@@ -33,7 +33,10 @@ def main():
 
     logging.debug("ignoring tags before epoch_tag: %s" % epoch_tag)
 
-    tags_of_concern = [unmerged_tag for unmerged_tag in unmerged_tags if LooseVersion(unmerged_tag) > LooseVersion(epoch_tag)]
+    tags_of_concern = [tag for tag in unmerged_tags if LooseVersion(tag) > LooseVersion(epoch_tag)]
+
+    # Don't reverse integrate tags for adhoc builds
+    tags_of_concern = [tag for tag in tags_of_concern if "adhoc" not in tag]
 
     if len(tags_of_concern) > 0:
         logging.debug("Found unmerged tags newer than epoch: %s" % tags_of_concern)
