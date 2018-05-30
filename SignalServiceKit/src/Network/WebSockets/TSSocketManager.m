@@ -441,6 +441,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
 #pragma mark - Message Sending
 
++ (BOOL)canMakeRequests
+{
+    if (!CurrentAppContext().isMainApp) {
+        return NO;
+    }
+    return TSSocketManager.sharedManager.canMakeRequests;
+}
+
 - (void)makeRequest:(TSRequest *)request success:(TSSocketMessageSuccess)success failure:(TSSocketMessageFailure)failure
 {
     OWSAssert(request);
