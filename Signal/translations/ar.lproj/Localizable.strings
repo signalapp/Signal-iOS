@@ -5,22 +5,22 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "قبول رقم الأمان الجديد";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Signal Call";
+"ACTION_AUDIO_CALL" = "اتصال";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Invite to Signal";
+"ACTION_INVITE" = "ارسال دعوة";
 
 /* Label for 'sent message' button in contact view. */
-"ACTION_SEND_MESSAGE" = "Send Message";
+"ACTION_SEND_MESSAGE" = "إرسال رسالة";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Share Contact";
+"ACTION_SHARE_CONTACT" = "مشاركة جهة اتصال.";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video Call";
+"ACTION_VIDEO_CALL" = "اتصال فيديو";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
-"ADD_GROUP_MEMBER_VIEW_BUTTON" = "إضافة";
+"ADD_GROUP_MEMBER_VIEW_BUTTON" = "إضافة.";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "إضافة جهة اتصال";
@@ -68,7 +68,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ في المجموعة %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "سجنال لايستطيع البدء . الرجاء ارسال سجلات التصحيح لفريقنا لحل هذه المشكلة. ";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "فشل في بداء التطبيق. يرجى التكرم بإرسال سجلات التصحيح لفريق الدعم الفني لمعالجة الخلل. ";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "خطأ";
@@ -80,25 +80,22 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "النسخة %@ غير موجودة بمتجر الآب ستور";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "يوجد نسخة جديدة من تطبيق سجنال";
+"APP_UPDATE_NAG_ALERT_TITLE" = "يوجد اصدار جديد للتطبيق";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تحديث";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "تحديث التطبيق";
 
 /* Name of application */
 "APPLICATION_NAME" = "سجنال";
 
 /* Pressing this button moves a thread from the inbox to the archive */
-"ARCHIVE_ACTION" = "أرشفة";
+"ARCHIVE_ACTION" = "ارشفة المحادثة";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "مرفقة";
+"ATTACHMENT" = "مرفق";
 
 /* One line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
-
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "مرفقات";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "لقد تجاوزت الحد المسموح للرسالة.";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "نوع الملف: %@";
@@ -110,79 +107,79 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "أرسل";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "ملحق";
+"ATTACHMENT_DEFAULT_FILENAME" = "المرفقات";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "لم ينجح تنزيل الملحق. انقر لإعادة المحاولة.";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "فشل في تحميل المرفقا، انقر لإعادة المحاولة.";
 
 /* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "جارى التحميل…";
+"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "جارى التحميل..";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "في قائمة التنزيل";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "في قائمة الانتظار";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "خطأ في ارسال الملحق";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "خطأ في ارسال المرفقات.";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "لا يمكن إعادة تحجيم الصورة الملحقة ";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "فشل في حفظ الصورة المرفقة.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "معالجة الفيديو غير ممكنة";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "لا يمكن معالجة الصيغة المرفقة الى MP4.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "لا يمكن تحليل الصورة الملحقة";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "فشل في معالجة الصورة المفرقة.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "لايمكن ازالة المعلومات المرافقة من الصورة";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "لايمكن حذف معلومات META من المرفقات.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Could not resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "فشل في معالجة ابعاد الصورة.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "حجم الملحق كبير جدا";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "لقد تجاوزت الحد الاقصى للمرفقات.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "الملحق يحتوي على بيانات غير صحيحة.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "المرفق يحتوي على بيانات غير صحيحة.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "صيغة ملف الملحق غير صحيحة.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "صيغة ملف المرفق غير صحيحة.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "الملحق خالي.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "المفرق لا يحتوي على معلومات.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "اختر أو إلتقط صورة ثمّ أرسلها";
+"ATTACHMENT_HINT" = "ادرج صورة من الالبوم او بإستخدام الكاميرا قبل الارسال.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "المرفق";
+"ATTACHMENT_LABEL" = "ارفق الصور.";
 
 /* attachment menu option to send contact */
-"ATTACHMENT_MENU_CONTACT_BUTTON" = "Contact";
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "ارسل إلى جهة اتصال.";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "فشل في اختيار الوثيقة ";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "فشل في اختيار المرفقات. ";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "لا يمكن لـ Signal التعامل مع ملف من هذا النوع. حاول ضغط الملف قبل ارساله.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "لا يمكن لـ Signal معالجة صيغة الملف المرفق. يرجى محاولة ضغط الملف قبل إعادة ارساله.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ملف غير مدعم";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ملف غير مدعم؟";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية.";
 
 /* action sheet button title to enable built in speaker during a call */
-"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت";
+"AUDIO_ROUTE_BUILT_IN_SPEAKER" = "مكبر الصوت.";
 
 /* button text for back button */
-"BACK_BUTTON" = "رجوع";
+"BACK_BUTTON" = "الرجوع للخلف.";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ليس بالامكان تصدير نسخة المعلومات الاحتياطية ";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "ليس بالامكان تصدير نسخة احتياطية.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "الرد الخدمي باطل  ";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "فشل في استقبال المعلومات من الخادم.";
 
 /* Error indicating the backup export failed to save a file to the cloud. */
 "BACKUP_EXPORT_ERROR_SAVE_FILE_TO_CLOUD_FAILED" = "لا يمكن تحميل المعلومات الاحتياطية";
@@ -317,10 +314,10 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "رفض مكالمة واردة";
 
 /* Accessibility label for hang up call */
-"CALL_VIEW_HANGUP_LABEL" = "End call";
+"CALL_VIEW_HANGUP_LABEL" = "انهاء المكالمة";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "حجب المكرفون.";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "يمكنك الرد على المكالمات من شاشة جهازك المقفلة مباشرةً، كما يمكن أن ترى أسم المتصل ورقمه ضمن المكالمات الواردة إِذا قمت بتغيير الإعدادات.\n\nللمزيد من التفاصيل اطلع على إعدادات الخصوصية.";
@@ -335,16 +332,16 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "اظهار إِعدادات الخصوصية";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغير اتجاه العدسة.";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "التحويل الى مكالمة صوتية.";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "تحويل الى مكالمة مرئية.";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "اضغك للعودة الى المكالمة.";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "إعادة الإتصال";
@@ -362,13 +359,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "اختر الدولة";
 
 /* Error indicating that the app could not determine that user's CloudKit account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "There was an error communicating with iCloud for backups.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "فشل في الاتصال بخوادم Icloud.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "You do not have an iCloud Account for backups.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "ليس لديك حساب Icloud لعمل نسخة احتياطية.";
 
 /* Error indicating that the app was prevented from accessing the user's CloudKit account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was not allowed to access your iCloud account for backups.";
+"CLOUDKIT_STATUS_RESTRICTED" = "لم يتم السماح للتطبيق بالدخول على Icloud.";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "المقارنة مع الحافظة";
@@ -410,7 +407,7 @@
 "CONFIRMATION_TITLE" = "تأكيد";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "عنوان البريد";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "محظور";
@@ -422,52 +419,52 @@
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "رقم غير مسجّل";
 
 /* Label for the 'edit name' button in the contact share approval view. */
-"CONTACT_EDIT_NAME_BUTTON" = "Edit";
+"CONTACT_EDIT_NAME_BUTTON" = "تحرير الاسم";
 
 /* Label for a contact's email address. */
-"CONTACT_EMAIL" = "Email";
+"CONTACT_EMAIL" = "البريد الاكتروني";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "المدينة";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "الدولة";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "الحي";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "صندوق البريد";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Post Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "رمز البريد";
 
 /* Label for the 'region' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_REGION" = "Region";
+"CONTACT_FIELD_ADDRESS_REGION" = "الاقليم";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "الشارع";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "اسم العائلة";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "الاسم الاول";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "اسم الاب/ الاسم الثاني";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "اللقب";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "الملحق";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "جهة العمل";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "رقم الهاتف";
 
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "لا يوجد عنوان بريد إلكتروني.";
@@ -476,25 +473,25 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "لا يوجد رقم هاتف.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Select Contact";
+"CONTACT_PICKER_TITLE" = "اختار جهة الاتصال";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Share Contact";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "مشاركة جهة الاتصال";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "تحرير الاسم";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "جهة اتصال غير صحيحة";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "لم يتم اختيار الحقول المطلوبة";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "فتح في تطبيق الخريطة";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "ارسال بريد الكتروني";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Unnamed Contact";
@@ -814,6 +811,12 @@
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "لم ينجح بعث الرسالة لعدم صحة معلومات المستلمين. ";
+
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "جهازك لم يعد مسجّلًا برقم هاتفك. عليك حذف وإعادة تثبيت Signal.";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "لا نستطيع تفعيل حسابك حتى تتحقق من الرمز الذي أرسلناه.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "صيغة رقم الهاتف هذه غير مدعومة, فضلّا تواصل مع الدعم.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "الإعدادات";

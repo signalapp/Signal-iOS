@@ -97,9 +97,6 @@
 /* One line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Message limit reached.";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Attachment";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "ဖိုင်အမျိုးအစား %@";
 
@@ -814,6 +811,12 @@
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "လက်ခံမည့်သူ အကျုံးမဝင်သောကြောင့် စာပို့ခြင်း မအောင်မြင်ပါ။";
+
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "သင့်ဖုန်းသည် ဤဖုန်းနံပါတ်နှင့် စာရင်းသွင်းထားခြင်းမရှိတော့ပါ။ Signal ကိုပြန်ဖယ်ပြီး ပြန်သွင်းရပါမည်။ ";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ပို့လိုက်သည့် ကုဒ်ဖြင့် အတည်မပြုနိုင်ပါက သင့်ကိုယ်ပိုင်စာရင်း ကိုအတည်ပြုပေးလို့ မရပါ။";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "ဤဖုန်းနံပါတ်အမျိုးအစားကို အထောက်အပံ့မပေးပါ။ ကျေးဇူးပြုပြီး အကူအညီပေးသည့်အဖွဲ့ကို ဆက်သွယ်ပါ။";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Message Sound";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "အပြင်အဆင်များ";

@@ -97,9 +97,6 @@
 /* One line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Jõuti sõnumi piirini.";
 
-/* Title for the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_DIALOG_TITLE" = "Manus";
-
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Faili tüüp: %@";
 
@@ -815,6 +812,12 @@
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
 
+/* Error indicating that a socket request failed. */
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+
+/* Error indicating that a socket response failed. */
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbri jaoks registreeritud. Sa pead Signali eemaldama ja uuesti paigaldama.";
 
@@ -858,7 +861,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumber muudetud. Klõpsa kinnitamiseks.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Liiga palju ebaõnnestumisi selle kontaktiga. Palun proovi mõne aja pärast uuesti.";
@@ -1600,6 +1603,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sinu kontot pole võimalik aktiveerida enne kui oled kinnitanud koodi, mille sulle saatsime.";
 
+/* one line label below submit button on registration screen, which links to an external webpage. */
+"REGISTRATION_LEGAL_TERMS_LINK" = "Tingimused ja privaatsuspoliitika";
+
+/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Registreerides seda seadet nõustud Signali %@";
+
+/* embedded in legal topmatter, styled as a link */
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "tingimustega";
+
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "See telefoninumber pole toetatud, palun võta ühendust kasutajatoega.";
 
@@ -1887,6 +1899,9 @@
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sõnumi heli";
+
+/* table cell label */
+"SETTINGS_LEGAL_TERMS_CELL" = "Tingimused ja privaatsuspoliitika";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
