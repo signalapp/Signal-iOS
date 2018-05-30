@@ -140,7 +140,16 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
               updatedContacts:(NSArray<Contact *> *)contacts
                 isUserRequested:(BOOL)isUserRequested
 {
-    [self updateWithContacts:contacts shouldClearStaleCache:isUserRequested];
+    BOOL shouldClearStaleCache;
+    // On iOS 11.2, only clear the contacts cache if the fetch was initiated by the user.
+    // iOS 11.2 rarely returns partial fetches and we use the cache to prevent contacts from
+    // periodically disappearing from the UI.
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 3)) {
+        shouldClearStaleCache = isUserRequested;
+    } else {
+        shouldClearStaleCache = YES;
+    }
+    [self updateWithContacts:contacts shouldClearStaleCache:shouldClearStaleCache];
 }
 
 #pragma mark - Intersection
