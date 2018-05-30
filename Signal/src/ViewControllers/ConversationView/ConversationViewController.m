@@ -4462,12 +4462,14 @@ typedef enum : NSUInteger {
         // bottom of content"; if the mapping's "window" size grows, it will grow
         // _upward_.
         CGFloat viewTopToContentBottom = 0;
-        if ([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]) {
-            ConversationViewLayout *conversationViewLayout
-                = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
-            if (conversationViewLayout.hasLayout) {
-                viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
-            }
+        OWSAssert([self.collectionView.collectionViewLayout isKindOfClass:[ConversationViewLayout class]]);
+        ConversationViewLayout *conversationViewLayout
+            = (ConversationViewLayout *)self.collectionView.collectionViewLayout;
+        // To avoid laying out the collection view during initial view
+        // presentation, don't trigger layout here (via safeContentHeight)
+        // until layout has been done at least once.
+        if (conversationViewLayout.hasEverHadLayout) {
+            viewTopToContentBottom = self.safeContentHeight - self.collectionView.contentOffset.y;
         }
 
         NSUInteger oldCellCount = [self.messageMappings numberOfItemsInGroup:self.thread.uniqueId];
