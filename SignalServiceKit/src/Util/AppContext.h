@@ -33,14 +33,32 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, nullable) UIWindow *mainWindow;
 
-// Should only be called if isMainApp is YES.
+// Unlike UIApplication.applicationState, this is thread-safe.
+// It contains the "last known" application state.
 //
-// Wherever possible, use isMainAppAndActive or isInBackground instead.
-// This should only be used by debugging/logging code.
-- (UIApplicationState)mainApplicationState;
+// Because it is updated in response to "will/did-style" events, it is
+// conservative and skews toward less-active and not-foreground:
+//
+// * It doesn't report "is active" until the app is active
+//   and reports "inactive" as soon as it _will become_ inactive.
+// * It doesn't report "is foreground (but inactive)" until the app is
+//   foreground & inactive and reports "background" as soon as it _will
+//   enter_ background.
+//
+// This conservatism is useful, since we want to err on the side of
+// caution when, for example, we do work that should only be done
+// when the app is foreground and active.
+@property (atomic, readonly) UIApplicationState reportedApplicationState;
 
-// Similar to UIApplicationStateBackground, but works in SAE.
+// A convenience accessor for reportedApplicationState.
+//
+// This method is thread-safe.
 - (BOOL)isInBackground;
+
+// A convenience accessor for reportedApplicationState.
+//
+// This method is thread-safe.
+- (BOOL)isAppForegroundAndActive;
 
 // Should start a background task if isMainApp is YES.
 // Should just return UIBackgroundTaskInvalid if isMainApp is NO.

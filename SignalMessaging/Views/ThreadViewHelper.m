@@ -56,25 +56,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillEnterForeground:)
-                                                 name:OWSApplicationWillEnterForegroundNotification
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidEnterBackground:)
-                                                 name:OWSApplicationDidEnterBackgroundNotification
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:OWSApplicationWillResignActiveNotification
                                                object:nil];
 
-    self.shouldObserveDBModifications = !CurrentAppContext().isInBackground;
+    [self updateShouldObserveDBModifications];
 }
 
-- (void)applicationWillEnterForeground:(NSNotification *)notification
+- (void)applicationDidBecomeActive:(NSNotification *)notification
 {
-    self.shouldObserveDBModifications = YES;
+    [self updateShouldObserveDBModifications];
 }
 
-- (void)applicationDidEnterBackground:(NSNotification *)notification
+- (void)applicationWillResignActive:(NSNotification *)notification
 {
-    self.shouldObserveDBModifications = NO;
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)updateShouldObserveDBModifications
+{
+    self.shouldObserveDBModifications = CurrentAppContext().isAppForegroundAndActive;
 }
 
 // Don't observe database change notifications when the app is in the background.
