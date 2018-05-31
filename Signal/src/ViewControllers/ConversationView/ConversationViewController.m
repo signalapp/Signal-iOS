@@ -233,7 +233,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL isViewCompletelyAppeared;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic) BOOL hasUnreadMessages;
@@ -594,12 +593,12 @@ typedef enum : NSUInteger {
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     [self startReadTimer];
-    self.isAppInBackground = NO;
+    [self updateCellsVisible];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    self.isAppInBackground = YES;
+    [self updateCellsVisible];
     if (self.hasClearedUnreadMessagesIndicator) {
         self.hasClearedUnreadMessagesIndicator = NO;
         [self.dynamicInteractions clearUnreadIndicatorState];
@@ -609,6 +608,7 @@ typedef enum : NSUInteger {
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
+    [self updateShouldObserveDBModifications];
     [self cancelVoiceMemo];
     self.isUserScrolling = NO;
     [self saveDraft];
@@ -620,6 +620,7 @@ typedef enum : NSUInteger {
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    [self updateShouldObserveDBModifications];
     [self startReadTimer];
 }
 
@@ -1530,7 +1531,8 @@ typedef enum : NSUInteger {
 
 - (void)autoLoadMoreIfNecessary
 {
-    if (self.isUserScrolling || !self.isViewVisible || self.isAppInBackground) {
+    BOOL isAppInBackground = CurrentAppContext().isInBackground;
+    if (self.isUserScrolling || !self.isViewVisible || isAppInBackground) {
         return;
     }
     if (!self.showLoadMoreHeader) {
@@ -4428,17 +4430,10 @@ typedef enum : NSUInteger {
     [self updateCellsVisible];
 }
 
-- (void)setIsAppInBackground:(BOOL)isAppInBackground
-{
-    _isAppInBackground = isAppInBackground;
-
-    [self updateShouldObserveDBModifications];
-    [self updateCellsVisible];
-}
-
 - (void)updateCellsVisible
 {
-    BOOL isCellVisible = self.isViewVisible && !self.isAppInBackground;
+    BOOL isAppInBackground = CurrentAppContext().isInBackground;
+    BOOL isCellVisible = self.isViewVisible && !isAppInBackground;
     for (ConversationViewCell *cell in self.collectionView.visibleCells) {
         cell.isCellVisible = isCellVisible;
     }
@@ -4446,7 +4441,8 @@ typedef enum : NSUInteger {
 
 - (void)updateShouldObserveDBModifications
 {
-    self.shouldObserveDBModifications = self.isViewVisible && !self.isAppInBackground;
+    BOOL isAppForegroundAndActive = CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
+    self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications

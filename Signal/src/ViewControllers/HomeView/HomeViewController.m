@@ -51,7 +51,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) NSSet<NSString *> *blockedPhoneNumberSet;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
 @property (nonatomic) BOOL isViewVisible;
-@property (nonatomic) BOOL isAppInBackground;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasBeenPresented;
 
@@ -132,12 +131,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                  name:OWSApplicationWillEnterForegroundNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationDidEnterBackground:)
-                                                 name:OWSApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(yapDatabaseModified:)
@@ -484,16 +483,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateShouldObserveDBModifications];
 }
 
-- (void)setIsAppInBackground:(BOOL)isAppInBackground
-{
-    _isAppInBackground = isAppInBackground;
-
-    [self updateShouldObserveDBModifications];
-}
-
 - (void)updateShouldObserveDBModifications
 {
-    self.shouldObserveDBModifications = self.isViewVisible && !self.isAppInBackground;
+    BOOL isAppForegroundAndActive = CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
+    self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
@@ -550,13 +543,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    self.isAppInBackground = NO;
     [self checkIfEmptyView];
-}
-
-- (void)applicationDidEnterBackground:(NSNotification *)notification
-{
-    self.isAppInBackground = YES;
 }
 
 - (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -566,6 +553,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    [self updateShouldObserveDBModifications];
+
     // It's possible a thread was created while we where in the background. But since we don't honor contact
     // requests unless the app is in the foregrond, we must check again here upon becoming active.
     __block BOOL hasAnyMessages;
@@ -580,6 +569,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
             });
         }];
     }
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    [self updateShouldObserveDBModifications];
 }
 
 #pragma mark - startup
