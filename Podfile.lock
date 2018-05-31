@@ -145,7 +145,7 @@ DEPENDENCIES:
   - YYImage
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - AFNetworking
     - ATAppUpdater
     - CocoaLumberjack
@@ -239,4 +239,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6a1bafb7c5bedfa4e577580ff12e487cc7111f38
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3
