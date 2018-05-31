@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
 # master. After commiting to master, this script audits that all tags have been
@@ -33,11 +34,14 @@ def main():
 
     logging.debug("ignoring tags before epoch_tag: %s" % epoch_tag)
 
-    tags_of_concern = [unmerged_tag for unmerged_tag in unmerged_tags if LooseVersion(unmerged_tag) > LooseVersion(epoch_tag)]
+    tags_of_concern = [tag for tag in unmerged_tags if LooseVersion(tag) > LooseVersion(epoch_tag)]
+
+    # Don't reverse integrate tags for adhoc builds
+    tags_of_concern = [tag for tag in tags_of_concern if "adhoc" not in tag]
 
     if len(tags_of_concern) > 0:
         logging.debug("Found unmerged tags newer than epoch: %s" % tags_of_concern)
-        raise RuntimeError("Found unmerged tags: %s" % tags_of_concern)
+        raise RuntimeError("💥 Found unmerged tags: %s" % tags_of_concern)
     else:
         logging.debug("No unmerged tags newer than epoch. All good!")
 
