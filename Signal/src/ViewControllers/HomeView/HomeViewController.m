@@ -485,7 +485,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)updateShouldObserveDBModifications
 {
-    BOOL isAppForegroundAndActive = CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
+    BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
     self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
 }
 

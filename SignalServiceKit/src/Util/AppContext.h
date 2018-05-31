@@ -55,6 +55,11 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // This method is thread-safe.
 - (BOOL)isInBackground;
 
+// A convenience accessor for reportedApplicationState.
+//
+// This method is thread-safe.
+- (BOOL)isAppForegroundAndActive;
+
 // Should start a background task if isMainApp is YES.
 // Should just return UIBackgroundTaskInvalid if isMainApp is NO.
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:

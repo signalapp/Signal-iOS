@@ -151,6 +151,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.reportedApplicationState == UIApplicationStateBackground;
 }
 
+- (BOOL)isAppForegroundAndActive
+{
+    return self.reportedApplicationState == UIApplicationStateActive;
+}
+
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
     (BackgroundTaskExpirationHandler)expirationHandler
 {

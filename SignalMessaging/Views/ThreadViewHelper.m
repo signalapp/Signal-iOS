@@ -79,8 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateShouldObserveDBModifications
 {
-    BOOL isAppForegroundAndActive = CurrentAppContext().reportedApplicationState == UIApplicationStateActive;
-    self.shouldObserveDBModifications = isAppForegroundAndActive;
+    self.shouldObserveDBModifications = CurrentAppContext().isAppForegroundAndActive;
 }
 
 // Don't observe database change notifications when the app is in the background.
