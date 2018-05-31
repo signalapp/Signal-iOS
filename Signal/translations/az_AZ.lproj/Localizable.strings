@@ -280,6 +280,9 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 
+/* Button text to enable batch selection mode */
+"BUTTON_CONTINUE" = "Continue";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal requires access to your microphone to make calls and record voice messages. You can grant this permission in the Settings app.";
 
