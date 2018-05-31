@@ -801,6 +801,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 {
     OWSAssert(userProfile);
 
+    __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (userProfile.avatarUrlPath.length < 1) {
             OWSFail(@"%@ Malformed avatar URL: %@", self.logTag, userProfile.avatarUrlPath);
@@ -884,6 +886,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                     [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
                     [self updateProfileAvatarCache:image filename:fileName];
                 }
+
+                OWSAssert(backgroundTask);
+                backgroundTask = nil;
             });
         };
 
