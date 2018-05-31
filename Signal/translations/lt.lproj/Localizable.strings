@@ -274,6 +274,9 @@
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Užblokuoti %@?";
 
+/* Label for 'continue' button. */
+"BUTTON_CONTINUE" = "Continue";
+
 /* Label for generic done button. */
 "BUTTON_DONE" = "Atlikta";
 
@@ -794,6 +797,9 @@
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Skambutis nepavyko.";
 
+/* Error indicating that the phone's contacts could not be retrieved. */
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepavyko išsiųsti žinutę.";
 
@@ -813,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Žinutės išsiuntimas nepavyko dėl teisingų gavėjų trūkumo.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Tinklo užklausa nepavyko.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Neteisingas atsakymas iš paslaugos.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Jūsų įrenginys daugiau nebėra priregistruotas prie jūsų telefono numerio. Jūs privalote pašalinti ir iš naujo įdiegti Signal.";
@@ -1039,6 +1045,9 @@
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Pakviesti draugus";
+
+/* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Žinutės išnyksta po %@.";
