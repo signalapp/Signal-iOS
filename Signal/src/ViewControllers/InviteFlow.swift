@@ -169,7 +169,21 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
         self.presentingViewController.dismiss(animated: true) {
-            self.sendSMSTo(phoneNumbers: phoneNumbers)
+            if phoneNumbers.count > 0 {
+                let warning = UIAlertController(title: nil,
+                                                message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
+                                                                                       comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."),
+                                                preferredStyle: .alert)
+                warning.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_CONTINUE",
+                                                                         comment: "Label for 'continue' button."),
+                                                style: .default, handler: { _ in
+                    self.sendSMSTo(phoneNumbers: phoneNumbers)
+                }))
+                warning.addAction(OWSAlerts.cancelAction)
+                self.presentingViewController.present(warning, animated: true, completion: nil)
+            } else {
+                self.sendSMSTo(phoneNumbers: phoneNumbers)
+            }
         }
     }
 
