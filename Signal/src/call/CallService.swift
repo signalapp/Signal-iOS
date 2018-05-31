@@ -1527,14 +1527,6 @@ private class SignalCallData: NSObject {
         terminateCall()
     }
 
-    public func terminateCallDueToCriticalError() {
-        SwiftAssertIsOnMainThread(#function)
-
-        owsFail("\(logTag) \(#function)")
-
-        terminateCall()
-    }
-
     /**
      * Clean up any existing call state and get ready to receive a new call.
      */
