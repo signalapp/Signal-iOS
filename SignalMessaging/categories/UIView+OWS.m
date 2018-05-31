@@ -302,6 +302,14 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return constraint;
 }
 
+- (NSLayoutConstraint *)autoPinVCenterToSuperviewVCenter {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSLayoutConstraint *constraint = [self.centerYAnchor constraintEqualToAnchor:self.superview.centerYAnchor];
+    constraint.active = YES;
+    return constraint;
+}
+
 - (NSLayoutConstraint *)autoPinTopToSuperviewMargin
 {
     return [self autoPinTopToSuperviewMarginWithInset:0.f];

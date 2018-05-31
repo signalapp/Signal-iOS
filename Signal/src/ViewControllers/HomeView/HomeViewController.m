@@ -220,10 +220,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
     [self.view addSubview:emptyBoxLabel];
-    [emptyBoxLabel setNumberOfLines:0]; //  Let the label use as many lines as needed. It will very rarely be more than 2.
+
+    //  Let the label use as many lines as needed. It will very rarely be more than 2 but may happen for verbose locs.
+    [emptyBoxLabel setNumberOfLines:0];
+
     [emptyBoxLabel autoPinLeadingToSuperviewMargin];
     [emptyBoxLabel autoPinTrailingToSuperviewMargin];
-    [[[emptyBoxLabel centerYAnchor] constraintEqualToAnchor:[[self view] centerYAnchor]] setActive:YES];
+    [emptyBoxLabel autoPinVCenterToSuperviewVCenter];
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
