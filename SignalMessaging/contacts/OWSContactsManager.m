@@ -584,10 +584,18 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        CNMutableContact *formatContact = [CNMutableContact new];
-        formatContact.givenName = firstName.string;
-        formatContact.familyName = lastName.string;
-        CNContactDisplayNameOrder nameOrder = [CNContactFormatter nameOrderForContact:formatContact];
+        CNContact *_Nullable cnContact = self.allContactsMap[recipientId].cnContact;
+        if (!cnContact) {
+            // If we don't have a CNContact for this recipient id, make one.
+            // Presumably [CNContactFormatter nameOrderForContact:] tries
+            // to localizes its result based on the languages/scripts used
+            // in the contact's fields.
+            CNMutableContact *formatContact = [CNMutableContact new];
+            formatContact.givenName = firstName.string;
+            formatContact.familyName = lastName.string;
+            cnContact = formatContact;
+        }
+        CNContactDisplayNameOrder nameOrder = [CNContactFormatter nameOrderForContact:cnContact];
         NSAttributedString *_Nullable leftName, *_Nullable rightName;
         if (nameOrder == CNContactDisplayNameOrderGivenNameFirst) {
             leftName = firstName;
