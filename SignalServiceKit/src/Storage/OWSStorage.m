@@ -720,9 +720,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             stringWithFormat:@"CipherKeySpec inaccessible. New install or no unlock since device restart? Error: %@",
             error];
         if (CurrentAppContext().isMainApp) {
-            UIApplicationState applicationState = CurrentAppContext().mainApplicationState;
-            errorDescription =
-                [errorDescription stringByAppendingFormat:@", ApplicationState: %d", (int)applicationState];
+            UIApplicationState applicationState = CurrentAppContext().reportedApplicationState;
+            errorDescription = [errorDescription
+                stringByAppendingFormat:@", ApplicationState: %@", NSStringForUIApplicationState(applicationState)];
         }
         DDLogError(@"%@ %@", self.logTag, errorDescription);
         [DDLog flushLog];

@@ -11,6 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface MainAppContext ()
+
+@property (atomic) UIApplicationState reportedApplicationState;
+
+@end
+
+#pragma mark -
+
 @implementation MainAppContext
 
 @synthesize mainWindow = _mainWindow;
@@ -22,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    self.reportedApplicationState = UIApplicationStateInactive;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
@@ -58,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    self.reportedApplicationState = UIApplicationStateInactive;
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
@@ -66,6 +78,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    self.reportedApplicationState = UIApplicationStateBackground;
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
@@ -77,6 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    self.reportedApplicationState = UIApplicationStateInactive;
+
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
@@ -86,6 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    self.reportedApplicationState = UIApplicationStateActive;
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
@@ -135,12 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isInBackground
 {
-    return [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
-}
-
-- (UIApplicationState)mainApplicationState
-{
-    return [UIApplication sharedApplication].applicationState;
+    return self.reportedApplicationState == UIApplicationStateBackground;
 }
 
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:

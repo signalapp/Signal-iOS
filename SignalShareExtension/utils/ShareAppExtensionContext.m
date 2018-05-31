@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ShareAppExtensionContext ()
 
 @property (nonatomic) UIViewController *rootViewController;
-@property (atomic) BOOL isSAEInBackground;
+
+@property (atomic) UIApplicationState reportedApplicationState;
 
 @end
 
@@ -32,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(rootViewController);
 
     _rootViewController = rootViewController;
+
+    self.reportedApplicationState = UIApplicationStateInactive;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(extensionHostDidBecomeActive:)
@@ -66,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    self.isSAEInBackground = NO;
+    self.reportedApplicationState = UIApplicationStateActive;
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidBecomeActiveNotification object:nil];
 }
@@ -74,6 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)extensionHostWillResignActive:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
+
+    self.reportedApplicationState = UIApplicationStateInactive;
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
@@ -88,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
     [DDLog flushLog];
 
-    self.isSAEInBackground = YES;
+    self.reportedApplicationState = UIApplicationStateBackground;
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationDidEnterBackgroundNotification object:nil];
 }
@@ -99,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
-    self.isSAEInBackground = NO;
+    self.reportedApplicationState = UIApplicationStateInactive;
 
     [NSNotificationCenter.defaultCenter postNotificationName:OWSApplicationWillEnterForegroundNotification object:nil];
 }
@@ -143,13 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isInBackground
 {
-    return self.isSAEInBackground;
-}
-
-- (UIApplicationState)mainApplicationState
-{
-    OWSFail(@"%@ called %s.", self.logTag, __PRETTY_FUNCTION__);
-    return UIApplicationStateBackground;
+    return self.reportedApplicationState == UIApplicationStateBackground;
 }
 
 - (UIBackgroundTaskIdentifier)beginBackgroundTaskWithExpirationHandler:
