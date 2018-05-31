@@ -1531,8 +1531,8 @@ typedef enum : NSUInteger {
 
 - (void)autoLoadMoreIfNecessary
 {
-    BOOL isAppInBackground = CurrentAppContext().isInBackground;
-    if (self.isUserScrolling || !self.isViewVisible || isAppInBackground) {
+    BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
+    if (self.isUserScrolling || !self.isViewVisible || !isMainAppAndActive) {
         return;
     }
     if (!self.showLoadMoreHeader) {
