@@ -525,7 +525,6 @@ NS_ASSUME_NONNULL_BEGIN
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
 {
     textView.hidden = NO;
-    textView.text = text;
     textView.textColor = textColor;
 
     // Honor dynamic type in the message bodies.
@@ -535,6 +534,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
     };
     textView.shouldIgnoreEvents = shouldIgnoreEvents;
+
+    // For perf, set text last. Otherwise changing font/color is more expensive.
+    textView.text = text;
 }
 
 - (BOOL)hasTapForMore
