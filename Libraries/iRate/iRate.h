@@ -162,7 +162,7 @@ typedef NS_ENUM(NSUInteger, iRateErrorCode) {
 - (BOOL)shouldPromptForRating;
 - (void)promptForRating;
 - (void)promptIfNetworkAvailable;
-- (void)promptIfAllCriteriaMet;
+- (BOOL)promptIfAllCriteriaMet;
 - (void)openRatingsPageInAppStore;
 - (void)logEvent:(BOOL)deferPrompt;
 - (void)preventPromptAtNextTest;

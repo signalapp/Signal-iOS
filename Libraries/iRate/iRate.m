@@ -129,7 +129,7 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 @property (nonatomic, assign) BOOL checkingForPrompt;
 @property (nonatomic, assign) BOOL checkingForAppStoreID;
 @property (nonatomic, assign) BOOL shouldPreventPromptAtNextTest;
-
+@property (nonatomic) BOOL hasPromptedAtLaunch;
 @property (nonatomic) BOOL hasQueuedSynchronize;
 
 @end
@@ -792,10 +792,15 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
     }
 }
 
-- (void)promptIfAllCriteriaMet {
+- (BOOL)promptIfAllCriteriaMet {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        return NO;
+    }
     if ([self shouldPromptForRating]) {
         [self promptIfNetworkAvailable];
+        return YES;
     }
+    return NO;
 }
 
 - (BOOL)showRemindButton {
@@ -972,9 +977,6 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
 - (void)applicationWillEnterForeground {
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
         [self incrementUseCount];
-        if (self.promptAtLaunch) {
-            [self promptIfAllCriteriaMet];
-        }
     }
 }
 
@@ -995,6 +997,11 @@ static NSString *const iRateMacAppStoreURLFormat  = @"macappstore://itunes.apple
     if (self.hasQueuedSynchronize) {
         [[NSUserDefaults standardUserDefaults] synchronize];
         self.hasQueuedSynchronize = NO;
+    }
+    if (self.promptAtLaunch && !self.hasPromptedAtLaunch) {
+        if ([self promptIfAllCriteriaMet]) {
+            self.hasPromptedAtLaunch = YES;
+        }
     }
 }
 
