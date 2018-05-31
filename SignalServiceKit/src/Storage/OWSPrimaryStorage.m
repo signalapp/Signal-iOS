@@ -19,6 +19,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSUIDatabaseConnectionWillUpdateNotification = @"OWSUIDatabaseConnectionWillUpdateNotification";
+NSString *const OWSUIDatabaseConnectionDidUpdateNotification = @"OWSUIDatabaseConnectionDidUpdateNotification";
+NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification = @"OWSUIDatabaseConnectionWillUpdateExternallyNotification";
+NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification = @"OWSUIDatabaseConnectionDidUpdateExternallyNotification";
+
+NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnectionNotificationsKey";
 NSString *const OWSPrimaryStorageExceptionName_CouldNotCreateDatabaseDirectory
     = @"TSStorageManagerExceptionName_CouldNotCreateDatabaseDirectory";
 
@@ -86,9 +92,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 @interface OWSPrimaryStorage ()
 
-@property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadConnection;
-@property (nonatomic, readonly, nullable) YapDatabaseConnection *dbReadWriteConnection;
-
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
 
@@ -97,6 +100,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 #pragma mark -
 
 @implementation OWSPrimaryStorage
+
+@synthesize uiDatabaseConnection = _uiDatabaseConnection;
 
 + (instancetype)sharedManager
 {
@@ -119,13 +124,69 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     if (self) {
         [self loadDatabase];
 
-        _dbReadConnection = self.newDatabaseConnection;
-        _dbReadWriteConnection = self.newDatabaseConnection;
+        _dbReadConnection = [self newDatabaseConnection];
+        _dbReadWriteConnection = [self newDatabaseConnection];
+        _uiDatabaseConnection = [self newDatabaseConnection];
+        
+        // Increase object cache limit. Default is 250.
+        _uiDatabaseConnection.objectCacheLimit = 500;
+        [_uiDatabaseConnection beginLongLivedReadTransaction];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModified:)
+                                                     name:YapDatabaseModifiedNotification
+                                                   object:self.dbNotificationObject];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(yapDatabaseModifiedExternally:)
+                                                     name:YapDatabaseModifiedExternallyNotification
+                                                   object:nil];
 
         OWSSingletonAssert();
     }
 
     return self;
+}
+
+- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+{
+    // Notify observers we're about to update the database connection
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateExternallyNotification object:self.dbNotificationObject];
+    
+    // Move uiDatabaseConnection to the latest commit.
+    // Do so atomically, and fetch all the notifications for each commit we jump.
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    
+    // Notify observers that the uiDatabaseConnection was updated
+    NSDictionary *userInfo = @{ OWSUIDatabaseConnectionNotificationsKey: notifications };
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionDidUpdateExternallyNotification
+                                                        object:self.dbNotificationObject
+                                                      userInfo:userInfo];
+}
+
+- (void)yapDatabaseModified:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+    
+    // Notify observers we're about to update the database connection
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];
+        
+    // Move uiDatabaseConnection to the latest commit.
+    // Do so atomically, and fetch all the notifications for each commit we jump.
+    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    
+    // Notify observers that the uiDatabaseConnection was updated
+    NSDictionary *userInfo = @{ OWSUIDatabaseConnectionNotificationsKey: notifications };
+    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionDidUpdateNotification
+                                                        object:self.dbNotificationObject
+                                                      userInfo:userInfo];
+}
+     
+- (YapDatabaseConnection *)uiDatabaseConnection
+{
+    OWSAssertIsOnMainThread();
+    return _uiDatabaseConnection;
 }
 
 - (void)resetStorage

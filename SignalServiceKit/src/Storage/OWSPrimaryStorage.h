@@ -6,14 +6,22 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString *const OWSUIDatabaseConnectionWillUpdateNotification;
+extern NSString *const OWSUIDatabaseConnectionDidUpdateNotification;
+extern NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification;
+extern NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification;
+extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
+
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
 
-- (YapDatabaseConnection *)dbReadConnection;
-- (YapDatabaseConnection *)dbReadWriteConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+
 + (YapDatabaseConnection *)dbReadConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
 
