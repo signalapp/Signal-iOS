@@ -185,6 +185,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
                 do {
                     let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
+                    contactFetchRequest.sortOrder = .userDefault
                     try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                         contacts.append(contact)
                     }
@@ -196,20 +197,13 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     }
 
     func collatedContacts(_ contacts: [CNContact]) -> [[CNContact]] {
-        let sortSelector = #selector(getter: CNContact.nameForCollating)
+        let selector: Selector = #selector(getter: CNContact.nameForCollating)
 
-        // 1. Organize the contacts into sections.
         var collated = Array(repeating: [CNContact](), count: collation.sectionTitles.count)
         for contact in contacts {
-            let sectionNumber = collation.section(for: contact,
-                                                  collationStringSelector: sortSelector)
+            let sectionNumber = collation.section(for: contact, collationStringSelector: selector)
             collated[sectionNumber].append(contact)
         }
-        // 2. Sort the contents of each section.
-        collated = collated.map({ (sectionContacts) in
-            return collation.sortedArray(from: sectionContacts,
-                                         collationStringSelector: sortSelector)
-        }) as! [[CNContact]]
         return collated
     }
 
@@ -372,7 +366,7 @@ fileprivate extension CNContact {
     @objc var nameForCollating: String {
         get {
             if self.familyName.isEmpty && self.givenName.isEmpty {
-                return (self.emailAddresses.first?.value as String? ?? "").lowercased().ows_stripped()
+                return self.emailAddresses.first?.value as String? ?? ""
             }
 
             let compositeName: String
@@ -381,7 +375,7 @@ fileprivate extension CNContact {
             } else {
                 compositeName = "\(self.givenName) \(self.familyName)"
             }
-            return compositeName.lowercased().ows_stripped()
+            return compositeName.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         }
     }
 }
