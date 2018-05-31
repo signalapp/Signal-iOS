@@ -217,14 +217,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
-                                                     dbConnection:(YapDatabaseConnection *)dbConnection
+                                             uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
+                                        editingDatabaseConnection:(YapDatabaseConnection *)editingDatabaseConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
                                       (nullable NSNumber *)firstUnseenInteractionTimestampParameter
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
-    OWSAssert(dbConnection);
+    OWSAssert(uiDatabaseConnection);
+    OWSAssert(editingDatabaseConnection);
     OWSAssert(contactsManager);
     OWSAssert(blockingManager);
     OWSAssert(maxRangeSize > 0);
@@ -247,7 +249,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
 
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    NSMutableArray *writeBlocks = [NSMutableArray new];
+    [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         const int kMaxBlockOfferOutgoingMessageCount = 10;
 
         // Find any "dynamic" interactions and safety number changes.
@@ -305,7 +308,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         for (TSInteraction *interaction in interactionsToDelete) {
             DDLogDebug(@"Cleaning up interaction: %@", [interaction class]);
-            [interaction removeWithTransaction:transaction];
+            [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                [interaction removeWithTransaction:writeTransaction];
+            }];
         }
 
         // Determine if there are "unread" messages in this conversation.
@@ -546,7 +551,11 @@ NS_ASSUME_NONNULL_BEGIN
                 // Preserve the timestamp of the existing "contact offers" so that
                 // we replace it in the same position in the timeline.
                 contactOffersTimestamp = existingContactOffers.timestamp;
-                [existingContactOffers removeWithTransaction:transaction];
+                
+                [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                    [existingContactOffers removeWithTransaction:writeTransaction];
+                }];
+
                 existingContactOffers = nil;
             }
         }
@@ -556,7 +565,9 @@ NS_ASSUME_NONNULL_BEGIN
                 self.logTag,
                 existingContactOffers.uniqueId,
                 existingContactOffers.timestampForSorting);
-            [existingContactOffers removeWithTransaction:transaction];
+            [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                [existingContactOffers removeWithTransaction:writeTransaction];
+            }];
         } else if (!existingContactOffers && shouldHaveContactOffers) {
             NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -567,7 +578,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                               hasAddToContactsOffer:shouldHaveAddToContactsOffer
                                                       hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
                                                                         recipientId:recipientId];
-            [offersMessage saveWithTransaction:transaction];
+            [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                [offersMessage saveWithTransaction:writeTransaction];
+            }];
 
             DDLogInfo(@"%@ Creating contact offers: %@ (%llu)",
                 self.logTag,
@@ -582,7 +595,9 @@ NS_ASSUME_NONNULL_BEGIN
                 DDLogInfo(@"%@ Removing obsolete TSUnreadIndicatorInteraction: %@",
                     self.logTag,
                     existingUnreadIndicator.uniqueId);
-                [existingUnreadIndicator removeWithTransaction:transaction];
+                [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                    [existingUnreadIndicator removeWithTransaction:writeTransaction];
+                }];
             }
         } else {
             // We want the unread indicator to appear just before the first unread incoming
@@ -599,7 +614,9 @@ NS_ASSUME_NONNULL_BEGIN
                     DDLogInfo(@"%@ Removing TSUnreadIndicatorInteraction due to changed timestamp: %@",
                         self.logTag,
                         existingUnreadIndicator.uniqueId);
-                    [existingUnreadIndicator removeWithTransaction:transaction];
+                    [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                        [existingUnreadIndicator removeWithTransaction:writeTransaction];
+                    }];
                 }
 
                 TSUnreadIndicatorInteraction *indicator = [[TSUnreadIndicatorInteraction alloc]
@@ -607,7 +624,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                   thread:thread
                                    hasMoreUnseenMessages:result.hasMoreUnseenMessages
                     missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
-                [indicator saveWithTransaction:transaction];
+                [writeBlocks addObject:^(YapDatabaseReadWriteTransaction *writeTransaction) {
+                    [indicator saveWithTransaction:writeTransaction];
+                }];
 
                 DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
                     self.logTag,
@@ -617,6 +636,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }];
 
+    if (writeBlocks.count > 0) {
+        [editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull writeTransaction) {
+            for (void (^ writeBlock)(YapDatabaseReadWriteTransaction *) in writeBlocks) {
+                writeBlock(writeTransaction);
+            }
+        }];
+    }
+    
     return result;
 }
 

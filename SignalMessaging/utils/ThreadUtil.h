@@ -102,9 +102,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
-                                                     dbConnection:(YapDatabaseConnection *)dbConnection
+                                             uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
+                                        editingDatabaseConnection:(YapDatabaseConnection *)editingDatabaseConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-                                  firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
+                                  firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestampParameter
                                                      maxRangeSize:(int)maxRangeSize;
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
