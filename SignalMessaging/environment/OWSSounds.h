@@ -34,6 +34,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_CallFailure,
 
     // Other
+    OWSSound_MessageSent,
     OWSSound_None,
     OWSSound_DefaultiOSIncomingRingtone = OWSSound_Opening,
 };

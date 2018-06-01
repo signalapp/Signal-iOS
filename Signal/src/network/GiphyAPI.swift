@@ -368,7 +368,7 @@ extension GiphyError: LocalizedError {
             Logger.error("\(TAG) Invalid response data.")
             return nil
         }
-        return imageDicts.flatMap { imageDict in
+        return imageDicts.compactMap { imageDict in
             return parseGiphyImage(imageDict: imageDict)
         }
     }

@@ -111,6 +111,11 @@ NS_ASSUME_NONNULL_BEGIN
     return sharedColor;
 }
 
++ (UIColor *)ows_messageBubbleLightGrayColor
+{
+    return [UIColor colorWithHue:240.0f / 360.0f saturation:0.02f brightness:0.92f alpha:1.0f];
+}
+
 + (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier
 {
     NSArray *colors = @[

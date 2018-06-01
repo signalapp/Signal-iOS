@@ -148,6 +148,7 @@
 		34641E1B2088DA4100E2EDE5 /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E192088DA3F00E2EDE5 /* ScreenLockViewController.m */; };
 		34641E1C2088DA4100E2EDE5 /* ScreenLockViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34641E1F2088DA6D00E2EDE5 /* SAEScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */; };
+		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		347850311FD7494A007B8332 /* dripicons-v2.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5B1E787A9800DF2FB9 /* dripicons-v2.ttf */; };
 		347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 34330A5D1E787BD800DF2FB9 /* ElegantIcons.ttf */; };
@@ -757,6 +758,7 @@
 		34641E1A2088DA4000E2EDE5 /* ScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenLockViewController.h; path = SignalMessaging/ViewControllers/ScreenLockViewController.h; sourceTree = SOURCE_ROOT; };
 		34641E1D2088DA6C00E2EDE5 /* SAEScreenLockViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SAEScreenLockViewController.h; sourceTree = "<group>"; };
 		34641E1E2088DA6D00E2EDE5 /* SAEScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SAEScreenLockViewController.m; sourceTree = "<group>"; };
+		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		347850561FD86544007B8332 /* SAEFailedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEFailedViewController.swift; sourceTree = "<group>"; };
 		347850581FD9972E007B8332 /* SwiftSingletons.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftSingletons.swift; sourceTree = "<group>"; };
@@ -1279,6 +1281,7 @@
 			isa = PBXGroup;
 			children = (
 				45A2F004204473A3002E978A /* NewMessage.aifc */,
+				34661FB720C1C0D60056EDD6 /* message_sent.aiff */,
 				34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */,
 				34CF0786203E6B78005C4D61 /* end_call_tone_cept.caf */,
 				34074FC5203E5435004596AE /* messageReceivedSounds */,
@@ -2747,6 +2750,7 @@
 				34CF0788203E6B78005C4D61 /* ringback_tone_ansi.caf in Resources */,
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				AD83FF431A73426500B5C81A /* audio_play_button@2x.png in Resources */,
+				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				34B3F8781E8DF1700035BE1A /* ContactsPicker.xib in Resources */,
 				B633C5C31A1D190B0059AC12 /* mute_off@2x.png in Resources */,

@@ -74,7 +74,7 @@ enum ExperienceUpgradeId: String {
             // introducingProfiles,
             // introducingReadReceipts,
             configurableNotificationAudio
-        ].flatMap { $0 }
+        ].compactMap { $0 }
     }
 
     // MARK: - Instance Methods

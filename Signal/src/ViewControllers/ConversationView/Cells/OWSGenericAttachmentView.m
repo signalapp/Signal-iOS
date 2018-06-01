@@ -4,13 +4,13 @@
 
 #import "OWSGenericAttachmentView.h"
 #import "OWSBezierPathView.h"
-#import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)bubbleBackgroundColor
 {
-    return self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
 }
 
 - (UIColor *)textColor

@@ -128,7 +128,7 @@ public class OWSAudioSession: NSObject {
         defer { objc_sync_exit(self) }
 
         // Cull any stale activities
-        currentActivities = currentActivities.flatMap { oldActivity in
+        currentActivities = currentActivities.compactMap { oldActivity in
             guard oldActivity.value != nil else {
                 // Normally we should be explicitly stopping an audio activity, but this allows
                 // for recovery if the owner of the AudioAcivity was GC'd without ending it's

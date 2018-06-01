@@ -1094,6 +1094,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
+/* Label for button that loads more messages in conversation view. */
+"load_earlier_messages" = "Load Earlier Messages";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 

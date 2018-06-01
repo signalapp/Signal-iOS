@@ -4,8 +4,6 @@
 
 #import "OWSUnreadIndicatorCell.h"
 #import "ConversationViewItem.h"
-#import "NSBundle+JSQMessages.h"
-#import <JSQMessagesViewController/UIView+JSQMessages.h>
 #import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -133,7 +131,8 @@ NS_ASSUME_NONNULL_BEGIN
                   @"Messages that indicates that there are more unseen messages including safety number changes that "
                   @"be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier "
                   @"messages' button}}."));
-    NSString *loadMoreButtonName = [NSBundle jsq_localizedStringForKey:@"load_earlier_messages"];
+    NSString *loadMoreButtonName = NSLocalizedString(
+        @"load_earlier_messages", @"Label for button that loads more messages in conversation view.");
     return [NSString stringWithFormat:subtitleFormat, loadMoreButtonName];
 }
 
