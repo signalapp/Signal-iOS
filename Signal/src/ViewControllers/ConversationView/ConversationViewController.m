@@ -80,6 +80,7 @@
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
@@ -156,8 +157,9 @@ typedef enum : NSUInteger {
 @property (nullable, nonatomic) UIPanGestureRecognizer *currentShowMessageDetailsPanGesture;
 
 @property (nonatomic) TSThread *thread;
-@property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
+@property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
 // These two properties must be updated in lockstep.
 //
@@ -174,7 +176,7 @@ typedef enum : NSUInteger {
 // * If the first and/or second steps changes the set of messages
 //   their ordering and/or their state, we must do the third and fourth steps.
 // * If we do the third step, we must call resetContentAndLayout afterward.
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
@@ -275,6 +277,8 @@ typedef enum : NSUInteger {
 
 - (void)commonInit
 {
+
+    _viewControllerCreatedAt = CACurrentMediaTime();
     _contactsManager = [Environment current].contactsManager;
     _contactsUpdater = [Environment current].contactsUpdater;
     _messageSender = [Environment current].messageSender;
@@ -309,13 +313,17 @@ typedef enum : NSUInteger {
                                                  name:UIContentSizeCategoryDidChangeNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
+                                             selector:@selector(uiDatabaseDidUpdateExternally:)
+                                                 name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
                                                object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+                                             selector:@selector(uiDatabaseWillUpdate:)
+                                                 name:OWSUIDatabaseConnectionWillUpdateNotification
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(uiDatabaseDidUpdate:)
+                                                 name:OWSUIDatabaseConnectionDidUpdateNotification
+                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
@@ -677,6 +685,11 @@ typedef enum : NSUInteger {
     }
 
     [self updateLastVisibleTimestamp];
+
+    if (!self.viewHasEverAppeared) {
+        NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
+        DDLogVerbose(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
+    }
 }
 
 - (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
@@ -1077,6 +1090,7 @@ typedef enum : NSUInteger {
     }
 
     self.actionOnOpen = ConversationViewActionNone;
+
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
@@ -2061,6 +2075,12 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
+    // In case we were presenting edit menu, we need to become first responder before presenting another VC
+    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
+    if (!self.isFirstResponder) {
+        [self becomeFirstResponder];
+    }
+
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
         OWSFail(@"Unexpected viewItem.interaction");
         return;
@@ -2084,6 +2104,11 @@ typedef enum : NSUInteger {
     OWSAssert(attachmentStream);
 
     [self dismissKeyBoard];
+    // In case we were presenting edit menu, we need to become first responder before presenting another VC
+    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
+    if (!self.isFirstResponder) {
+        [self becomeFirstResponder];
+    }
 
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
         OWSFail(@"Unexpected viewItem.interaction");
@@ -2451,8 +2476,6 @@ typedef enum : NSUInteger {
     const int currentMaxRangeSize = (int)self.lastRangeLength;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
-    // `ensureDynamicInteractionsForThread` should operate on the latest thread contents, so
-    // we should _read_ from uiDatabaseConnection and _write_ to `editingDatabaseConnection`.
     self.dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
@@ -3104,25 +3127,15 @@ typedef enum : NSUInteger {
 
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
-    NSAssert([NSThread isMainThread], @"Must access uiDatabaseConnection on main thread!");
-    if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
-        // Increase object cache limit. Default is 250.
-        _uiDatabaseConnection.objectCacheLimit = 500;
-        [_uiDatabaseConnection beginLongLivedReadTransaction];
-    }
-    return _uiDatabaseConnection;
+    return OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
 }
 
 - (YapDatabaseConnection *)editingDatabaseConnection
 {
-    if (!_editingDatabaseConnection) {
-        _editingDatabaseConnection = [self.primaryStorage newDatabaseConnection];
-    }
-    return _editingDatabaseConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -3139,20 +3152,8 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+- (void)uiDatabaseWillUpdate:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
-    // Currently, we update thread and message state every time
-    // the database is modified.  That doesn't seem optimal, but
-    // in practice it's efficient enough.
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
     // HACK to work around radar #28167779
     // "UICollectionView performBatchUpdates can trigger a crash if the collection view is flagged for layout"
     // more: https://github.com/PSPDFKit-labs/radar.apple.com/tree/master/28167779%20-%20CollectionViewBatchingIssue
@@ -3163,11 +3164,21 @@ typedef enum : NSUInteger {
     //       view items before they are updated.
     [self.collectionView layoutIfNeeded];
     // ENDHACK to work around radar #28167779
+}
 
-    // We need to `beginLongLivedReadTransaction` before we update our
-    // models in order to jump to the most recent commit.
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
+- (void)uiDatabaseDidUpdate:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
 
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+    
+    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
+
+    NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
+    OWSAssert([notifications isKindOfClass:[NSArray class]]);
+    
     [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
 
@@ -4650,10 +4661,6 @@ typedef enum : NSUInteger {
     if (self.messageMappings != nil) {
         // Before we begin observing database modifications, make sure
         // our mapping and table state is up-to-date.
-        //
-        // We need to `beginLongLivedReadTransaction` before we update our
-        // mapping in order to jump to the most recent commit.
-        [self.uiDatabaseConnection beginLongLivedReadTransaction];
         [self extendRangeToIncludeUnobservedItems];
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.messageMappings updateWithTransaction:transaction];
