@@ -41,12 +41,6 @@
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
-#import <JSQMessagesViewController/JSQMediaItem.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
-#import <JSQMessagesViewController/JSQMessagesMediaViewBubbleImageMasker.h>
-#import <JSQMessagesViewController/UIColor+JSQMessages.h>
-#import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
 #import <SignalMessaging/AttachmentSharing.h>

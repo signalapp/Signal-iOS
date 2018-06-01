@@ -45,14 +45,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImage.h>
-#import <JSQMessagesViewController/JSQMessagesBubbleImageFactory.h>
-#import <JSQMessagesViewController/JSQMessagesCollectionViewFlowLayoutInvalidationContext.h>
-#import <JSQMessagesViewController/JSQMessagesCollectionViewLayoutAttributes.h>
-#import <JSQMessagesViewController/JSQMessagesTimestampFormatter.h>
-#import <JSQMessagesViewController/JSQSystemSoundPlayer+JSQMessages.h>
-#import <JSQMessagesViewController/UIColor+JSQMessages.h>
-#import <JSQSystemSoundPlayer/JSQSystemSoundPlayer.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalMessaging/Environment.h>
@@ -1479,8 +1471,6 @@ typedef enum : NSUInteger {
         [((TSContactThread *)self.thread).contactIdentifier isEqualToString:[TSAccountManager localNumber]]);
 }
 
-#pragma mark - JSQMessagesViewController method overrides
-
 #pragma mark - Dynamic Text
 
 /**
@@ -2702,7 +2692,9 @@ typedef enum : NSUInteger {
     self.inputToolbar.quotedReply = nil;
 
     if ([Environment.preferences soundInForeground]) {
-        [JSQSystemSoundPlayer jsq_playMessageSentSound];
+        SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
+        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
+        AudioServicesPlayAlertSound(soundId);
     }
 }
 

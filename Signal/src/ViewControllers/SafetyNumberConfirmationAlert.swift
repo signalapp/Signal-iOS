@@ -112,7 +112,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {
-        return recipientIds.flatMap {
+        return recipientIds.compactMap {
             OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: $0)
         }.first
     }

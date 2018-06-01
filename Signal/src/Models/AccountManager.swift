@@ -52,9 +52,9 @@ public class AccountManager: NSObject {
 
         Logger.debug("\(self.TAG) registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
-            self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+            return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
         }.then {
-            self.syncPushTokens()
+            return self.syncPushTokens()
         }.recover { (error) -> Promise<Void> in
             switch error {
             case PushRegistrationError.pushNotSupported(let description):

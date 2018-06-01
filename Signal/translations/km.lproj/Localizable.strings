@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "អ្នកកំណត់រយៈពេលសាររលុប %@។";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "ផ្ទុកសារពីមុន";

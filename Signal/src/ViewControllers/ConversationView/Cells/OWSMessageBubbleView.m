@@ -768,11 +768,11 @@ NS_ASSUME_NONNULL_BEGIN
     switch (self.attachmentPointer.state) {
         case TSAttachmentPointerStateEnqueued:
             customView.backgroundColor
-                = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
+                = (self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
         case TSAttachmentPointerStateDownloading:
             customView.backgroundColor
-                = (self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
+                = (self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
             break;
         case TSAttachmentPointerStateFailed:
             customView.backgroundColor = [UIColor grayColor];

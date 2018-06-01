@@ -522,7 +522,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
             return
         }
 
-        let items: [MediaGalleryItem] = indexPaths.flatMap { return self.galleryItem(at: $0) }
+        let items: [MediaGalleryItem] = indexPaths.compactMap { return self.galleryItem(at: $0) }
 
         guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
             owsFail("\(logTag) in \(#function) mediaGalleryDataSource was unexpectedly nil")

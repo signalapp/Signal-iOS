@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "メッセージの消失時間を%@に設定しました";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "以前のメッセージを読み込む";

@@ -4,8 +4,6 @@
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
-#import "NSBundle+JSQMessages.h"
-#import <JSQMessagesViewController/UIView+JSQMessages.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -139,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 
-    // We're using a bit of a hack to get JSQ to layout this and the unread indicator as
+    // We're using a bit of a hack to get this and the unread indicator to layout as
     // "full width" cells.  These cells will end up with an erroneous left margin that we
     // want to reverse.
     CGFloat contentWidth = self.width;

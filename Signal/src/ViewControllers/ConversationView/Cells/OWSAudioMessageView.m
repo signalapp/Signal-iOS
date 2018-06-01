@@ -5,10 +5,10 @@
 #import "OWSAudioMessageView.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
-#import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -179,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)bubbleBackgroundColor
 {
-    return self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
 }
 
 - (BOOL)isVoiceMessage

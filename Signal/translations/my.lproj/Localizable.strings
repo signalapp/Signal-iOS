@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "သင်သည် စာများအား %@ အတောအတွင်းပျက်သွားစေရန် ချိန်ထားသည်။";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "အပေါ်က စာများကို ဖွင့်ပါ";

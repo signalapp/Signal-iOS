@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "訊息銷毀時間設置為%@。";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "讀取較早訊息";

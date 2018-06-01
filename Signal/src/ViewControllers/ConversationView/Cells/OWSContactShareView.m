@@ -5,12 +5,12 @@
 #import "OWSContactShareView.h"
 #import "OWSContactAvatarBuilder.h"
 #import "Signal-Swift.h"
-#import "UIColor+JSQMessages.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)bubbleBackgroundColor
 {
-    return self.isIncoming ? [UIColor jsq_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
+    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
 }
 
 + (UIFont *)nameFont

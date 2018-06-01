@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ai setat timpul de expirare a mesajelor la %@.";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "Încarcă mesajele anterioare";

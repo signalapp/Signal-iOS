@@ -2257,7 +2257,7 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您设置了消息%@后消失。";
 
-// Strings Copied in from JSQMessagesViewController
+
 
 
 "load_earlier_messages" = "加载早前的消息";
