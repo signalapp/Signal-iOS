@@ -169,7 +169,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
         self.presentingViewController.dismiss(animated: true) {
-            if phoneNumbers.count > 0 {
+            if phoneNumbers.count > 1 {
                 let warning = UIAlertController(title: nil,
                                                 message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
                                                                                        comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."),
