@@ -13,6 +13,9 @@ public extension UIDevice {
     @objc
     public var isIPhoneX: Bool {
         switch UIScreen.main.nativeBounds.height {
+        case 960:
+            //  iPad in iPhone compatibility mode (using old iPhone 4 screen size)
+            return false
         case 1136:
             // iPhone 5 or 5S or 5C
             return false
