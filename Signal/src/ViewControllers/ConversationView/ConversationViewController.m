@@ -5123,7 +5123,9 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     // Ensure that we are first responder before presenting other views.
     // This ensures that the input toolbar will be restored after the
     // presented view is dismissed.
-    [self becomeFirstResponder];
+    if (![self isFirstResponder]) {
+        [self becomeFirstResponder];
+    }
 
     [super presentViewController:viewController animated:animated completion:completion];
 }
