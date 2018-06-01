@@ -728,10 +728,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "בוא נחליף אל Signal";
 
-/* No comment provided by engineer. */
+/* Second part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "הקש על הכפתור חַבֵּר";
 
-/* No comment provided by engineer. */
+/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "התחל את שיחת Signal הראשונה שלך!";
 
 /* No comment provided by engineer. */

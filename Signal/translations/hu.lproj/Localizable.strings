@@ -728,10 +728,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Kapcsoljunk át Signal-ra";
 
-/* No comment provided by engineer. */
+/* Second part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Érintsd meg az új üzenet gombot.";
 
-/* No comment provided by engineer. */
+/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Indítsd el első Signal beszélgetésed!";
 
 /* No comment provided by engineer. */

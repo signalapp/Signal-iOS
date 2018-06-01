@@ -728,10 +728,10 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Laten we Signal gebruiken";
 
-/* No comment provided by engineer. */
+/* Second part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Tik op de samenstel-knop.";
 
-/* No comment provided by engineer. */
+/* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Begin je eerste Signal-gesprek!";
 
 /* No comment provided by engineer. */
