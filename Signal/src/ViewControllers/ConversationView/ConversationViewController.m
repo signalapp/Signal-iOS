@@ -2693,8 +2693,7 @@ typedef enum : NSUInteger {
 
     if ([Environment.preferences soundInForeground]) {
         SystemSoundID soundId = [OWSSounds systemSoundIDForSound:OWSSound_MessageSent quiet:YES];
-        // Vibrate, respect silent switch, respect "Alert" volume, not media volume.
-        AudioServicesPlayAlertSound(soundId);
+        AudioServicesPlaySystemSound(soundId);
     }
 }
 
