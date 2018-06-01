@@ -226,7 +226,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [emptyBoxLabel autoPinLeadingToSuperviewMargin];
     [emptyBoxLabel autoPinTrailingToSuperviewMargin];
-    [emptyBoxLabel autoPinVCenterToSuperviewVCenter];
+    [emptyBoxLabel autoAlignAxisToSuperviewAxis:ALAxisHorizontal];
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];
     pullToRefreshView.tintColor = [UIColor grayColor];
