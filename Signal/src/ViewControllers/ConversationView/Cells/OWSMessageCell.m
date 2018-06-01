@@ -358,6 +358,11 @@ NS_ASSUME_NONNULL_BEGIN
         self.footerLabel.hidden = NO;
     }
 
+    // Footer labels can extend past the message bubble, but
+    // we want to leave spaces for an expiration timer and
+    // include padding so that they still visually "cling" to the
+    // appropriate incoming/outgoing edge.
+    const CGFloat maxFooterLabelWidth = self.contentWidth - 100;
     if (hasExpirationTimer &&
         attributedText) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -365,8 +370,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self.footerLabel autoVCenterInSuperview],
             (self.isIncoming ? [self.expirationTimerView autoPinLeadingToSuperviewMargin]
                              : [self.expirationTimerView autoPinTrailingToSuperviewMargin]),
-            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingEdgeOfView:self.expirationTimerView offset:0.f]
-                             : [self.footerLabel autoPinTrailingToLeadingEdgeOfView:self.expirationTimerView offset:0.f]),
+            (self.isIncoming ? [self.footerLabel autoPinLeadingToTrailingEdgeOfView:self.expirationTimerView]
+                             : [self.footerLabel autoPinTrailingToLeadingEdgeOfView:self.expirationTimerView]),
+            [self.footerLabel autoSetDimension:ALDimensionWidth
+                                        toSize:maxFooterLabelWidth
+                                      relation:NSLayoutRelationLessThanOrEqual],
             [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
         ]];
     } else if (hasExpirationTimer) {
@@ -382,6 +390,9 @@ NS_ASSUME_NONNULL_BEGIN
             (self.isIncoming ? [self.footerLabel autoPinLeadingToSuperviewMargin]
                              : [self.footerLabel autoPinTrailingToSuperviewMargin]),
             [self.footerView autoSetDimension:ALDimensionHeight toSize:self.footerHeight],
+            [self.footerLabel autoSetDimension:ALDimensionWidth
+                                        toSize:maxFooterLabelWidth
+                                      relation:NSLayoutRelationLessThanOrEqual],
         ]];
     } else {
         OWSFail(@"%@ Cell unexpectedly has neither expiration timer nor footer text.", self.logTag);
