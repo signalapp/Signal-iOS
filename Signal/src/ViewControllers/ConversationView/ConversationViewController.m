@@ -3123,10 +3123,7 @@ typedef enum : NSUInteger {
 
 - (YapDatabaseConnection *)editingDatabaseConnection
 {
-    if (!_editingDatabaseConnection) {
-        _editingDatabaseConnection = [self.primaryStorage newDatabaseConnection];
-    }
-    return _editingDatabaseConnection;
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
 }
 
 - (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
