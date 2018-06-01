@@ -26,7 +26,7 @@ public class MessageFetcherJob: NSObject {
         SwiftSingletons.register(self)
     }
 
-    public func run() -> Promise<Void> {
+    @discardableResult public func run() -> Promise<Void> {
         Logger.debug("\(self.logTag) in \(#function)")
 
         guard signalService.isCensorshipCircumventionActive else {

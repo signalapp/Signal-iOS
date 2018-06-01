@@ -2880,7 +2880,7 @@ typedef enum : NSUInteger {
 - (void)resetFrame
 {
     // fixes bug on frame being off after this selection
-    CGRect frame = [UIScreen mainScreen].applicationFrame;
+    CGRect frame = [UIScreen mainScreen].bounds;
     self.view.frame = frame;
 }
 

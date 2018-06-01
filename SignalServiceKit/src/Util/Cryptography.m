@@ -377,9 +377,9 @@ const NSUInteger kAES256_KeyByteLength = 32;
             return [paddedPlainText copy];
         } else {
             unsigned long paddingSize = paddedPlainText.length - unpaddedSize;
-            DDLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %u, paddingSize: %lu",
+            DDLogInfo(@"%@ decrypted padded attachment with unpaddedSize: %lu, paddingSize: %lu",
                 self.logTag,
-                unpaddedSize,
+                (unsigned long)unpaddedSize,
                 paddingSize);
             return [paddedPlainText subdataWithRange:NSMakeRange(0, unpaddedSize)];
         }
