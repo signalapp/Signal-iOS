@@ -223,6 +223,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     //  Let the label use as many lines as needed. It will very rarely be more than 2 but may happen for verbose locs.
     [emptyBoxLabel setNumberOfLines:0];
+    emptyBoxLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
     [emptyBoxLabel autoPinLeadingToSuperviewMargin];
     [emptyBoxLabel autoPinTrailingToSuperviewMargin];
