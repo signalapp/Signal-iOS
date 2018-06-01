@@ -194,7 +194,7 @@ CHECKOUT OPTIONS:
     :commit: 03a19c80aafc10a3464f0c086b1eb38239c507ac
     :git: https://github.com/signalapp/Curve25519Kit
   GRKOpenSSLFramework:
-    :commit: 841e24eba93cabfe503222f858de2a40b3762aab
+    :commit: b799c27e7927e5304ec1e4ad53c6d33c6fd1cae7
     :git: https://github.com/signalapp/GRKOpenSSLFramework
   HKDFKit:
     :commit: d2e2e50990e88537d6c4e38cc32a6f6debd83446
