@@ -94,7 +94,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
     UILabel *legalTopMatterLabel = [UILabel new];
     legalTopMatterLabel.textColor = UIColor.whiteColor;
-    legalTopMatterLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    legalTopMatterLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
     legalTopMatterLabel.numberOfLines = 0;
     legalTopMatterLabel.textAlignment = NSTextAlignmentCenter;
     legalTopMatterLabel.attributedText = attributedLegalTopMatter;
@@ -247,7 +247,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     NSString *bottomTermsLinkText = NSLocalizedString(@"REGISTRATION_LEGAL_TERMS_LINK",
         @"one line label below submit button on registration screen, which links to an external webpage.");
     UIButton *bottomLegalLinkButton = [UIButton new];
-    bottomLegalLinkButton.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    bottomLegalLinkButton.titleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
     [bottomLegalLinkButton setTitleColor:UIColor.ows_materialBlueColor forState:UIControlStateNormal];
     [bottomLegalLinkButton setTitle:bottomTermsLinkText forState:UIControlStateNormal];
     [contentView addSubview:bottomLegalLinkButton];
