@@ -4721,6 +4721,7 @@ typedef enum : NSUInteger {
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
             if (!interaction) {
                 OWSFail(@"%@ missing interaction in message mappings: %zd / %zd.", self.logTag, row, count);
+                // TODO: Add analytics.
                 continue;
             }
             if (!interaction.uniqueId) {
@@ -4729,6 +4730,7 @@ typedef enum : NSUInteger {
                     row,
                     count,
                     interaction.description);
+                // TODO: Add analytics.
                 continue;
             }
 
