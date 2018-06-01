@@ -157,7 +157,7 @@ typedef enum : NSUInteger {
 @property (nullable, nonatomic) UIPanGestureRecognizer *currentShowMessageDetailsPanGesture;
 
 @property (nonatomic) TSThread *thread;
-@property (nonatomic) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
 @property (nonatomic, readonly) NSTimeInterval viewControllerCreatedAt;
 
@@ -176,7 +176,7 @@ typedef enum : NSUInteger {
 // * If the first and/or second steps changes the set of messages
 //   their ordering and/or their state, we must do the third and fourth steps.
 // * If we do the third step, we must call resetContentAndLayout afterward.
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic) YapDatabaseViewMappings *messageMappings;
 
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
@@ -688,7 +688,7 @@ typedef enum : NSUInteger {
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
-        DDLogInfo(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
+        DDLogVerbose(@"%@ First viewWillAppear took: %.2fms", self.logTag, appearenceDuration * 1000);
     }
 }
 
