@@ -2465,8 +2465,6 @@ typedef enum : NSUInteger {
     const int currentMaxRangeSize = (int)self.lastRangeLength;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
-    // `ensureDynamicInteractionsForThread` should operate on the latest thread contents, so
-    // we should _read_ from uiDatabaseConnection and _write_ to `editingDatabaseConnection`.
     self.dynamicInteractions =
         [ThreadUtil ensureDynamicInteractionsForThread:self.thread
                                        contactsManager:self.contactsManager
