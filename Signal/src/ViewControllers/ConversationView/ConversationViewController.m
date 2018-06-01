@@ -2061,6 +2061,12 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
+    // In case we were presenting edit menu, we need to become first responder before presenting another VC
+    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
+    if (!self.isFirstResponder) {
+        [self becomeFirstResponder];
+    }
+
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
         OWSFail(@"Unexpected viewItem.interaction");
         return;
@@ -2084,6 +2090,11 @@ typedef enum : NSUInteger {
     OWSAssert(attachmentStream);
 
     [self dismissKeyBoard];
+    // In case we were presenting edit menu, we need to become first responder before presenting another VC
+    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
+    if (!self.isFirstResponder) {
+        [self becomeFirstResponder];
+    }
 
     if (![viewItem.interaction isKindOfClass:[TSMessage class]]) {
         OWSFail(@"Unexpected viewItem.interaction");
