@@ -244,10 +244,11 @@ private class SignalCallData: NSObject {
                 if let oldValue = oldValue {
                     DeviceSleepManager.sharedInstance.removeBlock(blockObject: oldValue)
                 }
-                stopAnyCallTimer()
                 if let callData = callData {
                     DeviceSleepManager.sharedInstance.addBlock(blockObject: callData)
                     self.startCallTimer()
+                } else {
+                    stopAnyCallTimer()
                 }
             }
 
@@ -1233,10 +1234,9 @@ private class SignalCallData: NSObject {
         SwiftAssertIsOnMainThread(#function)
 
         guard let call = self.call else {
-            // This should never happen; return to a known good state.
-            owsFail("\(self.logTag) call was unexpectedly nil in \(#function)")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "\(self.logTag) call unexpectedly nil in \(#function)"))
+            // This can happen if you toggle local video right after
+            // the other user ends the call.
+            Logger.debug("\(self.logTag) \(#function) Ignoring event from obsolete call")
             return
         }
 
@@ -1666,11 +1666,8 @@ private class SignalCallData: NSObject {
     func startCallTimer() {
         SwiftAssertIsOnMainThread(#function)
 
-        if self.activeCallTimer != nil {
-            owsFail("\(self.logTag) activeCallTimer should only be set once per call")
-            self.activeCallTimer!.invalidate()
-            self.activeCallTimer = nil
-        }
+        stopAnyCallTimer()
+        assert(self.activeCallTimer == nil)
 
         self.activeCallTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: true) { [weak self] timer in
             guard let strongSelf = self else {
@@ -1688,6 +1685,15 @@ private class SignalCallData: NSObject {
     }
 
     func ensureCallScreenPresented(call: SignalCall) {
+        guard let currentCall = self.call else {
+            owsFail("\(self.logTag) obsolete call: \(call.identifiersForLogs) in \(#function)")
+            return
+        }
+        guard currentCall == call else {
+            owsFail("\(self.logTag) obsolete call: \(call.identifiersForLogs) in \(#function)")
+            return
+        }
+
         guard let connectedDate = call.connectedDate else {
             // Ignore; call hasn't connected yet.
             return
