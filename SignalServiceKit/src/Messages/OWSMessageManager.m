@@ -705,7 +705,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (syncMessage.hasBlocked) {
         NSArray<NSString *> *blockedPhoneNumbers = [syncMessage.blocked.numbers copy];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [_blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
+            [self.blockingManager setBlockedPhoneNumbers:blockedPhoneNumbers sendSyncMessage:NO];
         });
     } else if (syncMessage.read.count > 0) {
         DDLogInfo(@"%@ Received %ld read receipt(s)", self.logTag, (u_long)syncMessage.read.count);

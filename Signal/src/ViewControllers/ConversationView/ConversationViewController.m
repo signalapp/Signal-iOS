@@ -3747,8 +3747,9 @@ typedef enum : NSUInteger {
             lastVisibleIndexPath = indexPath;
         }
     }
-    if (lastVisibleIndexPath && lastVisibleIndexPath.row >= self.viewItems.count) {
-        return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:self.viewItems.count - 1 inSection:0] : nil);
+    if (lastVisibleIndexPath && lastVisibleIndexPath.row >= (NSInteger)self.viewItems.count) {
+        return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:(NSInteger)self.viewItems.count - 1 inSection:0]
+                                         : nil);
     }
     return lastVisibleIndexPath;
 }

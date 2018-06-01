@@ -27,7 +27,7 @@ import SignalMessaging
     /**
      * |handle| is a user formatted phone number, e.g. from a system contacts entry
      */
-    @objc public func initiateCall(handle: String) -> Bool {
+    @discardableResult @objc public func initiateCall(handle: String) -> Bool {
         Logger.info("\(TAG) in \(#function) with handle: \(handle)")
 
         guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
@@ -41,7 +41,7 @@ import SignalMessaging
     /**
      * |recipientId| is a e164 formatted phone number.
      */
-    @objc public func initiateCall(recipientId: String,
+    @discardableResult @objc public func initiateCall(recipientId: String,
         isVideo: Bool) -> Bool {
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings

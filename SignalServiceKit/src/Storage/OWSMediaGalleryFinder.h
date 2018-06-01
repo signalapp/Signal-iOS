@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMediaGalleryFinder : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // How many media items a thread has

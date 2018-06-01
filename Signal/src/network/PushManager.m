@@ -112,13 +112,19 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     DDLogInfo(@"%@ received remote notification", self.logTag);
 
     [AppReadiness runNowOrWhenAppIsReady:^{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
         [self.messageFetcherJob run];
+#pragma GCC diagnostic pop
     }];
 }
 
 - (void)applicationDidBecomeActive {
     [AppReadiness runNowOrWhenAppIsReady:^{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
         [self.messageFetcherJob run];
+#pragma GCC diagnostic pop
     }];
 }
 

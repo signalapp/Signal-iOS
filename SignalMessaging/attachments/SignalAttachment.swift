@@ -39,7 +39,7 @@ extension String {
 }
 
 extension SignalAttachmentError: LocalizedError {
-    public var errorDescription: String {
+    public var errorDescription: String? {
         switch self {
         case .missingData:
             return NSLocalizedString("ATTACHMENT_ERROR_MISSING_DATA", comment: "Attachment error message for attachments without any data")
@@ -222,13 +222,21 @@ public class SignalAttachment: NSObject {
             owsFail("\(logTag) Missing error")
             return nil
         }
+        guard let errorDescription = error.errorDescription else {
+            owsFail("\(logTag) Missing error description")
+            return nil
+        }
 
-        return "\(error.errorDescription)"
+        return "\(errorDescription)"
     }
 
     @objc
     public class var missingDataErrorMessage: String {
-        return SignalAttachmentError.missingData.errorDescription
+        guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
+            owsFail("\(logTag) Missing error description")
+            return ""
+        }
+        return errorDescription
     }
 
     @objc

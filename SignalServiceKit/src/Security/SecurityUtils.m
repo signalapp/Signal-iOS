@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SecurityUtils.h"
@@ -9,7 +9,7 @@
 
 + (NSData *)generateRandomBytes:(NSUInteger)length
 {
-    return [Randomness generateRandomBytes:length];
+    return [Randomness generateRandomBytes:(int)length];
 }
 
 @end

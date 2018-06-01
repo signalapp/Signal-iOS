@@ -12,6 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingSyncMessage
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+
+    if (self) {
+    }
+
+    return self;
+}
+
 - (instancetype)init
 {
     self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
