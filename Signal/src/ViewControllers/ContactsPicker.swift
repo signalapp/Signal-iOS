@@ -185,6 +185,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
                 do {
                     let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
+                    contactFetchRequest.sortOrder = .userDefault
                     try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                         contacts.append(contact)
                     }
