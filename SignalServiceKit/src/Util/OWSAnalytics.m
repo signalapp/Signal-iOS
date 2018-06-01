@@ -267,9 +267,9 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     dispatch_once(&onceToken, ^{
         NSOperatingSystemVersion operatingSystemVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
         result = [NSString stringWithFormat:@"%zd.%zd.%zd",
-                           operatingSystemVersion.majorVersion,
-                           operatingSystemVersion.minorVersion,
-                           operatingSystemVersion.patchVersion];
+                           (NSUInteger)operatingSystemVersion.majorVersion,
+                           (NSUInteger)operatingSystemVersion.minorVersion,
+                           (NSUInteger)operatingSystemVersion.patchVersion];
     });
     return result;
 }

@@ -616,12 +616,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             if formattedDate.hasPrefix("00:") {
                 // Don't show the "hours" portion of the date format unless the
                 // call duration is at least 1 hour.
-                formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 3))
+                formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 3)...])
             } else {
                 // If showing the "hours" portion of the date format, strip any leading
                 // zeroes.
                 if formattedDate.hasPrefix("0") {
-                    formattedDate = formattedDate.substring(from: formattedDate.index(formattedDate.startIndex, offsetBy: 1))
+                    formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 1)...])
                 }
             }
             return formattedDate
