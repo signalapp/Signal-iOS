@@ -4719,7 +4719,18 @@ typedef enum : NSUInteger {
         for (NSUInteger row = 0; row < count; row++) {
             TSInteraction *interaction =
                 [viewTransaction objectAtRow:row inSection:0 withMappings:self.messageMappings];
-            OWSAssert(interaction);
+            if (!interaction) {
+                OWSFail(@"%@ missing interaction in message mappings: %zd / %zd.", self.logTag, row, count);
+                continue;
+            }
+            if (!interaction.uniqueId) {
+                OWSFail(@"%@ invalid interaction in message mappings: %zd / %zd: %@.",
+                    self.logTag,
+                    row,
+                    count,
+                    interaction.description);
+                continue;
+            }
 
             ConversationViewItem *_Nullable viewItem = self.viewItemCache[interaction.uniqueId];
             if (viewItem) {
