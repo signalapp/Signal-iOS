@@ -231,6 +231,21 @@ static NSTimeInterval launchStartedAt;
     if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
         DDLogInfo(
             @"%@ exiting because we are in the background and the database password is not accessible.", self.logTag);
+
+        UILocalNotification *notification = [UILocalNotification new];
+        NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
+            @"Lock screen notification text presented after user powers on their device without unlocking. Embeds "
+            @"{{device model}} (either 'iPad' or 'iPhone')");
+        notification.alertBody = [NSString stringWithFormat:messageFormat, UIDevice.currentDevice.localizedModel];
+
+        // Make sure we clear any existing notifications so that they don't start stacking up
+        // if the user receives multiple pushes.
+        [UIApplication.sharedApplication cancelAllLocalNotifications];
+        [UIApplication.sharedApplication setApplicationIconBadgeNumber:0];
+
+        [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+        [UIApplication.sharedApplication setApplicationIconBadgeNumber:1];
+
         [DDLog flushLog];
         exit(0);
     }
