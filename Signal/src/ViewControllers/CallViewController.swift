@@ -503,11 +503,16 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Dark blurred background.
         blurView.autoPinEdgesToSuperviewEdges()
 
-        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .leading)
-        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
+        leaveCallViewButton.autoPinEdge(toSuperviewEdge: .leading)
 
-        // MJK TODO height of contact name label should be ~same as back button
-        contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
+        if #available(iOS 11, *) {
+            leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
+            contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
+        } else {
+            leaveCallViewButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+            contactNameLabel.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        }
+
         contactNameLabel.autoPinEdge(.leading, to: .trailing, of: leaveCallViewButton, withOffset: 8, relation: .greaterThanOrEqual)
         contactNameLabel.autoHCenterInSuperview()
         contactNameLabel.setContentHuggingVerticalHigh()
@@ -519,7 +524,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         callStatusLabel.setCompressionResistanceHigh()
 
         localVideoView.autoPinTrailingToSuperviewMargin(withInset: videoPreviewHMargin)
-        // MJK TODO, depends on whether contactNameLabel is visible
+
         self.localVideoViewTopConstraintDefault = localVideoView.autoPinEdge(.top, to: .bottom, of: callStatusLabel, withOffset: 4)
         self.localVideoViewTopConstraintHidden = localVideoView.autoPinEdge(toSuperviewMargin: .top)
         let localVideoSize = ScaleFromIPhone5To7Plus(80, 100)
