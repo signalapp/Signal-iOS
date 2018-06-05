@@ -1094,6 +1094,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "အဖွဲ့ဝင်များ";
 
+/* Label for button that loads more messages in conversation view. */
+"load_earlier_messages" = "အပေါ်က စာများကို ဖွင့်ပါ";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "မှတ်တမ်းထည့်နေသည်";
 
@@ -1341,6 +1344,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "လူများကို ဖုန်းနံပါတ်အရရှာမည်";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You must unlock your %@ once after restarting to receive Signal messages.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "%@ထံသို့စာပို့၍မရပါ။";

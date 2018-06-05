@@ -1094,6 +1094,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "สมาชิกกลุ่ม";
 
+/* Label for button that loads more messages in conversation view. */
+"load_earlier_messages" = "โหลดข้อความก่อนหน้านี้";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "กำลังบันทึก";
 
@@ -1341,6 +1344,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหารายชื่อผู้ติดต่อด้วยหมายเลขโทรศัพท์";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You must unlock your %@ once after restarting to receive Signal messages.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "ไม่สามารถส่งข้อความของคุณไปยัง %@ ได้สำเร็จ";

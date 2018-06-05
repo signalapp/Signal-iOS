@@ -1094,6 +1094,9 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "群組成員";
 
+/* Label for button that loads more messages in conversation view. */
+"load_earlier_messages" = "讀取較早訊息";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "紀錄中";
 
@@ -1341,6 +1344,9 @@
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "透過手機號碼搜尋聯絡人";
+
+/* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You must unlock your %@ once after restarting to receive Signal messages.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "你給%@的訊息傳送失敗。";
