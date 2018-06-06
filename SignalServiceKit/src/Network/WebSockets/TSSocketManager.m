@@ -92,7 +92,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
-    DDLogInfo(@"%@ %s didSucceedWithResponseObject: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
@@ -126,7 +126,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
-    DDLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+    DDLogError(@"%@ %s: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
