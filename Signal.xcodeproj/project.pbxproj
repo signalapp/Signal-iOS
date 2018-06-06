@@ -35,7 +35,6 @@
 		340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */; };
 		340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */; };
 		340FC8C0204DB7D2007AEB0F /* OWSBackupExportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8BF204DB7D2007AEB0F /* OWSBackupExportJob.m */; };
-		340FC8C2204DDF67007AEB0F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340FC8C1204DDF66007AEB0F /* CloudKit.framework */; };
 		340FC8C5204DE223007AEB0F /* DebugUIBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C4204DE223007AEB0F /* DebugUIBackup.m */; };
 		340FC8C7204DE64D007AEB0F /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C6204DE64D007AEB0F /* OWSBackupAPI.swift */; };
 		340FC8CA20517B84007AEB0F /* OWSBackupImportJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC8C820517B84007AEB0F /* OWSBackupImportJob.m */; };
@@ -621,7 +620,6 @@
 		340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowGroupMembersViewController.m; sourceTree = "<group>"; };
 		340FC8BE204DB7D1007AEB0F /* OWSBackupExportJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupExportJob.h; sourceTree = "<group>"; };
 		340FC8BF204DB7D2007AEB0F /* OWSBackupExportJob.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBackupExportJob.m; sourceTree = "<group>"; };
-		340FC8C1204DDF66007AEB0F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		340FC8C3204DE223007AEB0F /* DebugUIBackup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIBackup.h; sourceTree = "<group>"; };
 		340FC8C4204DE223007AEB0F /* DebugUIBackup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIBackup.m; sourceTree = "<group>"; };
 		340FC8C6204DE64D007AEB0F /* OWSBackupAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupAPI.swift; sourceTree = "<group>"; };
@@ -1233,7 +1231,6 @@
 				70377AAB1918450100CAF501 /* MobileCoreServices.framework in Frameworks */,
 				B9EB5ABD1884C002007CBB57 /* MessageUI.framework in Frameworks */,
 				453518991FC63DBF00210559 /* SignalMessaging.framework in Frameworks */,
-				340FC8C2204DDF67007AEB0F /* CloudKit.framework in Frameworks */,
 				76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */,
 				768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */,
 				A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */,
@@ -2321,7 +2318,6 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				340FC8C1204DDF66007AEB0F /* CloudKit.framework */,
 				455A16DB1F1FEA0000F86704 /* Metal.framework */,
 				455A16DC1F1FEA0000F86704 /* MetalKit.framework */,
 				45847E861E4283C30080EAB3 /* Intents.framework */,
@@ -2626,7 +2622,7 @@
 								enabled = 0;
 							};
 							com.apple.iCloud = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
