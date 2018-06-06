@@ -75,6 +75,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     return self;
 }
 
+- (void)dealloc
+{
+    DDLogInfo(@"Dealloc: %@", self.class);
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)didSucceedWithResponseObject:(id _Nullable)responseObject
 {
     @synchronized(self)
@@ -84,6 +91,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
         self.hasCompleted = YES;
     }
+
+    DDLogInfo(@"%@ %s didSucceedWithResponseObject: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
@@ -532,6 +541,12 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
+            DDLogError(@"%@ message timed out: %lld, %@, %@, %zd.",
+                self.logTag,
+                socketMessage.requestId,
+                request.HTTPMethod,
+                requestPath,
+                jsonData.length);
             [weakSocketMessage didFailBeforeSending];
         });
 }
@@ -638,6 +653,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         socketMessages = self.socketMessageMap.allValues;
         [self.socketMessageMap removeAllObjects];
     }
+
+    DDLogInfo(@"%@ failAllPendingSocketMessages: %zd.", self.logTag, socketMessages.count);
 
     for (TSSocketMessage *socketMessage in socketMessages) {
         [socketMessage didFailBeforeSending];
