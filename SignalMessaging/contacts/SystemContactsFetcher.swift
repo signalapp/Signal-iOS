@@ -175,7 +175,7 @@ public class SystemContactsFetcher: NSObject {
         hasSetupObservation = true
         self.contactStoreAdapter.startObservingChanges { [weak self] in
             DispatchQueue.main.async {
-                self?.updateContacts(completion: nil, isUserRequested: false)
+                self?.refreshAfterContactsChange()
             }
         }
     }
@@ -256,6 +256,7 @@ public class SystemContactsFetcher: NSObject {
     @objc
     public func userRequestedRefresh(completion: @escaping (Error?) -> Void) {
         SwiftAssertIsOnMainThread(#function)
+
         guard authorizationStatus == .authorized else {
             owsFail("should have already requested contact access")
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
@@ -264,6 +265,19 @@ public class SystemContactsFetcher: NSObject {
         }
 
         updateContacts(completion: completion, isUserRequested: true)
+    }
+
+    @objc
+    public func refreshAfterContactsChange() {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard authorizationStatus == .authorized else {
+            Logger.info("\(logTag) ignoring contacts change; no access.")
+            self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
+            return
+        }
+
+        updateContacts(completion: nil, isUserRequested: false)
     }
 
     private func updateContacts(completion completionParam: ((Error?) -> Void)?, isUserRequested: Bool = false) {
