@@ -27,7 +27,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
 @implementation TSErrorMessage
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {

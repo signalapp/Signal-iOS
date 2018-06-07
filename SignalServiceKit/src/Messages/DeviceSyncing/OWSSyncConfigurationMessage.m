@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncConfigurationMessage.h"
@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
     _areReadReceiptsEnabled = areReadReceiptsEnabled;
 
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
