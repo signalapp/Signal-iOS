@@ -22,6 +22,7 @@
 #import "TextSecureKitEnv.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionCipher.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -80,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeBlocked:(OWSSignalServiceProtosEnvelope *)envelope
+- (BOOL)isEnvelopeBlocked:(SSKEnvelope *)envelope
 {
     OWSAssert(envelope);
 
@@ -89,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Decryption
 
-- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)decryptEnvelope:(SSKEnvelope *)envelope
            successBlock:(DecryptSuccessBlock)successBlockParameter
            failureBlock:(DecryptFailureBlock)failureBlockParameter
 {
@@ -128,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         switch (envelope.type) {
-            case OWSSignalServiceProtosEnvelopeTypeCiphertext: {
+            case SSKEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted secure message.", self.logTag);
@@ -145,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // Return to avoid double-acknowledging.
                 return;
             }
-            case OWSSignalServiceProtosEnvelopeTypePrekeyBundle: {
+            case SSKEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
@@ -164,9 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             // These message types don't have a payload to decrypt.
-            case OWSSignalServiceProtosEnvelopeTypeReceipt:
-            case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
-            case OWSSignalServiceProtosEnvelopeTypeUnknown: {
+            case SSKEnvelopeTypeReceipt:
+            case SSKEnvelopeTypeKeyExchange:
+            case SSKEnvelopeTypeUnknown: {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     successBlock(nil, transaction);
                 }];
@@ -192,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     failureBlock();
 }
 
-- (void)decryptSecureMessage:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)decryptSecureMessage:(SSKEnvelope *)envelope
                 successBlock:(DecryptSuccessBlock)successBlock
                 failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
@@ -209,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
               failureBlock:failureBlock];
 }
 
-- (void)decryptPreKeyBundle:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)decryptPreKeyBundle:(SSKEnvelope *)envelope
                successBlock:(DecryptSuccessBlock)successBlock
                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
@@ -229,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
               failureBlock:failureBlock];
 }
 
-- (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)decryptEnvelope:(SSKEnvelope *)envelope
          cipherTypeName:(NSString *)cipherTypeName
      cipherMessageBlock:(id<CipherMessage> (^_Nonnull)(NSData *))cipherMessageBlock
            successBlock:(DecryptSuccessBlock)successBlock
@@ -245,8 +246,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *recipientId = envelope.source;
     int deviceId = envelope.sourceDevice;
 
-    // DEPRECATED - Remove after all clients have been upgraded.
-    NSData *encryptedData = envelope.hasContent ? envelope.content : envelope.legacyMessage;
+    // DEPRECATED - Remove `legacyMessage` after all clients have been upgraded.
+    NSData *encryptedData = envelope.content ?: envelope.legacyMessage;
     if (!encryptedData) {
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
         failureBlock(nil);
@@ -278,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)processException:(NSException *)exception envelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)processException:(NSException *)exception envelope:(SSKEnvelope *)envelope
 {
     DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
         self.logTag,
@@ -325,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
-                         envelope:(OWSSignalServiceProtosEnvelope *)envelope
+                         envelope:(SSKEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];

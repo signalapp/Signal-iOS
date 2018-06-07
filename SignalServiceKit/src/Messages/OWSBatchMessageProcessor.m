@@ -19,6 +19,7 @@
 #import "TSYapDatabaseObject.h"
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -27,8 +28,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Persisted data model
-
-@class OWSSignalServiceProtosEnvelope;
 
 @interface OWSMessageContentJob : TSYapDatabaseObject
 
@@ -40,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
                        plaintextData:(NSData *_Nullable)plaintextData NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_UNAVAILABLE;
-- (OWSSignalServiceProtosEnvelope *)envelopeProto;
+
+@property (nonatomic, readonly, nullable) SSKEnvelope *envelope;
 
 @end
 
@@ -74,9 +74,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosEnvelope *)envelopeProto
+- (nullable SSKEnvelope *)envelope
 {
-    return [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
+    NSError *error;
+    SSKEnvelope *_Nullable result = [[SSKEnvelope alloc] initWithSerializedData:self.envelopeData error:&error];
+
+    if (error) {
+        OWSProdLogAndFail(@"%@ paring SSKEnvelope failed with error: %@", self.logTag, error);
+        return nil;
+    }
+    
+    return result;
 }
 
 @end
@@ -378,16 +386,27 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
-            @try {
-                [self.messagesManager processEnvelope:job.envelopeProto
-                                        plaintextData:job.plaintextData
-                                          transaction:transaction];
-            } @catch (NSException *exception) {
-                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+
+            void (^reportFailure)(YapDatabaseReadWriteTransaction *transaction) = ^(
+                YapDatabaseReadWriteTransaction *transaction) {
                 // TODO: Add analytics.
                 TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
                 [[TextSecureKitEnv sharedEnv].notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                            transaction:transaction];
+            };
+
+            @try {
+                SSKEnvelope *_Nullable envelope = job.envelope;
+                if (!envelope) {
+                    reportFailure(transaction);
+                } else {
+                    [self.messagesManager processEnvelope:envelope
+                                            plaintextData:job.plaintextData
+                                              transaction:transaction];
+                }
+            } @catch (NSException *exception) {
+                OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
+                reportFailure(transaction);
             }
             [processedJobs addObject:job];
 

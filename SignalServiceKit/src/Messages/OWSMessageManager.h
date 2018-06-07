@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosEnvelope;
+@class SSKEnvelope;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)sharedManager;
 
 // processEnvelope: can be called from any thread.
-- (void)processEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (void)processEnvelope:(SSKEnvelope *)envelope
           plaintextData:(NSData *_Nullable)plaintextData
             transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

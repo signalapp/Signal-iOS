@@ -1,9 +1,5 @@
 //
-//  TSErrorMessage_privateConstructor.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -14,7 +10,7 @@
                          inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
-@property NSData *envelopeData;
+@property (atomic, nullable) NSData *envelopeData;
 
 @property NSDictionary *pendingOutgoingMessage;
 

@@ -4,35 +4,36 @@
 
 #import "OWSMessageHandler.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 // used in log formatting
-NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
+NSString *envelopeAddress(SSKEnvelope *envelope)
 {
     return [NSString stringWithFormat:@"%@.%d", envelope.source, (unsigned int)envelope.sourceDevice];
 }
 
 @implementation OWSMessageHandler
 
-- (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope
+- (NSString *)descriptionForEnvelopeType:(SSKEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
 
     switch (envelope.type) {
-        case OWSSignalServiceProtosEnvelopeTypeReceipt:
+        case SSKEnvelopeTypeReceipt:
             return @"DeliveryReceipt";
-        case OWSSignalServiceProtosEnvelopeTypeUnknown:
+        case SSKEnvelopeTypeUnknown:
             // Shouldn't happen
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
             return @"Unknown";
-        case OWSSignalServiceProtosEnvelopeTypeCiphertext:
+        case SSKEnvelopeTypeCiphertext:
             return @"SignalEncryptedMessage";
-        case OWSSignalServiceProtosEnvelopeTypeKeyExchange:
+        case SSKEnvelopeTypeKeyExchange:
             // Unsupported
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeKeyExchange]);
             return @"KeyExchange";
-        case OWSSignalServiceProtosEnvelopeTypePrekeyBundle:
+        case SSKEnvelopeTypePrekeyBundle:
             return @"PreKeyEncryptedMessage";
         default:
             // Shouldn't happen
@@ -41,7 +42,7 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
     }
 }
 
-- (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (NSString *)descriptionForEnvelope:(SSKEnvelope *)envelope
 {
     OWSAssert(envelope != nil);
 
