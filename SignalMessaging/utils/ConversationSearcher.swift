@@ -1,17 +1,65 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 
 @objc
+public class ConversationSearchItem: NSObject {
+    @objc
+    public let thread: ThreadViewModel
+
+    init(thread: ThreadViewModel) {
+        self.thread = thread
+    }
+}
+
+@objc
+public class ConversationSearchResults: NSObject {
+    let conversations: [ConversationSearchItem]
+    let contacts: [ConversationSearchItem]
+    let messages: [ConversationSearchItem]
+
+    public init(conversations: [ConversationSearchItem], contacts: [ConversationSearchItem], messages: [ConversationSearchItem]) {
+        self.conversations = conversations
+        self.contacts = contacts
+        self.messages = messages
+    }
+}
+
+@objc
 public class ConversationSearcher: NSObject {
+
+    private let finder: ConversationFullTextSearchFinder
 
     @objc
     public static let shared: ConversationSearcher = ConversationSearcher()
     override private init() {
+        finder = ConversationFullTextSearchFinder()
         super.init()
+    }
+
+    @objc
+    public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> ConversationSearchResults {
+
+        // TODO limit results, prioritize conversations, then contacts, then messages.
+        var conversations: [ConversationSearchItem] = []
+        var contacts: [ConversationSearchItem] = []
+        var messages: [ConversationSearchItem] = []
+
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any) in
+            if let thread = match as? TSThread {
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let searchItem = ConversationSearchItem(thread: threadViewModel)
+
+                conversations.append(searchItem)
+            } else {
+                Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
+            }
+        }
+
+        return ConversationSearchResults(conversations: conversations, contacts: contacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)
@@ -58,6 +106,7 @@ public class ConversationSearcher: NSObject {
     // MARK: - Helpers
 
     // MARK: Searchers
+
     private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
         let groupName = groupThread.groupModel.groupName
         let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
@@ -86,5 +135,52 @@ public class ConversationSearcher: NSObject {
         let profileName = contactsManager.profileName(forRecipientId: recipientId)
 
         return "\(recipientId) \(contactName) \(profileName ?? "")"
+    }
+}
+
+public class ConversationFullTextSearchFinder {
+
+    public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any) -> Void) {
+        guard let ext = ext(transaction: transaction) else {
+            owsFail("ext was unexpectedly nil")
+            return
+        }
+
+        ext.enumerateKeysAndObjects(matching: searchText) { (_, _, object, _) in
+            block(object)
+        }
+    }
+
+    private func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseFullTextSearchTransaction? {
+        return transaction.ext(ConversationFullTextSearchFinder.dbExtensionName) as? YapDatabaseFullTextSearchTransaction
+    }
+
+    // MARK: - Extension Registration
+
+    static let dbExtensionName: String = "ConversationFullTextSearchFinderExtension1"
+
+    public class func asyncRegisterDatabaseExtension(storage: OWSStorage) {
+        storage.asyncRegister(dbExtensionConfig, withName: dbExtensionName)
+    }
+
+    // Only for testing.
+    public class func syncRegisterDatabaseExtension(storage: OWSStorage) {
+        storage.register(dbExtensionConfig, withName: dbExtensionName)
+    }
+
+    private class var dbExtensionConfig: YapDatabaseFullTextSearch {
+        let contentColumnName = "content"
+        let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (dict: NSMutableDictionary, _: String, _: String, object: Any) in
+            if let groupThread = object as? TSGroupThread {
+                dict[contentColumnName] = groupThread.groupModel.groupName
+            }
+        }
+
+        // update search index on contact name changes?
+        // update search index on message insertion?
+
+        // TODO is it worth doing faceted search, i.e. Author / Name / Content?
+        // seems unlikely that mobile users would use the "author: Alice" search syntax.
+        return YapDatabaseFullTextSearch(columnNames: ["content"], handler: handler)
     }
 }
