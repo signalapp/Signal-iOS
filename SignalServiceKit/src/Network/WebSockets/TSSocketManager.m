@@ -75,13 +75,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     return self;
 }
 
-- (void)dealloc
-{
-    DDLogInfo(@"Dealloc: %@", self.class);
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)didSucceedWithResponseObject:(id _Nullable)responseObject
 {
     @synchronized(self)
@@ -91,8 +84,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         }
         self.hasCompleted = YES;
     }
-
-    DDLogError(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
@@ -126,7 +117,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         self.hasCompleted = YES;
     }
 
-    DDLogError(@"%@ %s: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
+    DDLogError(@"%@ %s didFailWithStatusCode: %zd, %@", self.logTag, __PRETTY_FUNCTION__, statusCode, error);
 
     OWSAssert(self.success);
     OWSAssert(self.failure);
