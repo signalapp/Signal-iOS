@@ -9,6 +9,7 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -83,7 +84,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
 }
 
-- (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+- (instancetype)initWithEnvelope:(SSKEnvelope *)envelope
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
@@ -145,7 +146,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     }
 }
 
-+ (instancetype)corruptedMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SSKEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -158,7 +159,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [[self alloc] initWithFailedMessageType:TSErrorMessageInvalidMessage];
 }
 
-+ (instancetype)invalidVersionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SSKEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -166,7 +167,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidVersion];
 }
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SSKEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -174,7 +175,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidKeyException];
 }
 
-+ (instancetype)missingSessionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SSKEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return

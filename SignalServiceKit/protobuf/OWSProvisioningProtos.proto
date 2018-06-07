@@ -4,13 +4,14 @@
  * Licensed according to the LICENSE file in this repository.
  */
 
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
 package signalservice;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "ProvisioningProtos";
-
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "OWSProvisioningProtos";
 
 message ProvisionEnvelope {
   optional bytes publicKey = 1;
