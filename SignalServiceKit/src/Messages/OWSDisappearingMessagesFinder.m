@@ -246,7 +246,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             dict[OWSDisappearingMessageFinderThreadIdColumn] = message.uniqueThreadId;
         }];
 
-    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
+    return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:@"1"];
 }
 
 #ifdef DEBUG
