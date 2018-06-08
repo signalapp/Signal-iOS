@@ -54,6 +54,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasBeenPresented;
 
+// Mark: Search
+
+@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) ConversationSearchViewController *searchController;
+
 // Dependencies
 
 @property (nonatomic, readonly) AccountManager *accountManager;
@@ -238,7 +243,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-
+    
     [self updateReminderViews];
 }
 
@@ -261,7 +266,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [super viewDidLoad];
 
     self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-
+    
     // Create the database connection.
     [self uiDatabaseConnection];
 
@@ -289,6 +294,28 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
+
+    // Search
+    
+    UISearchBar *searchBar = [UISearchBar new];
+    _searchBar = searchBar;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", @"Placeholder text for search bar which filters conversations.");
+    searchBar.backgroundColor = [UIColor whiteColor];
+    [searchBar sizeToFit];
+    
+    // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
+    ConversationSearchViewController *searchController = [ConversationSearchViewController new];
+    self.searchController = searchController;
+    [self addChildViewController:searchController];
+    searchController.view.frame = self.view.frame;
+    [self.view addSubview:searchController.view];
+    // TODO - better/more flexible way to pin below search bar?
+    [searchController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(58, 0, 0, 0)];
+    searchBar.delegate = searchController;
+    
+    OWSAssert(self.tableView.tableHeaderView == nil);
+    self.tableView.tableHeaderView = self.searchBar;
 
     [self updateBarButtonItems];
 }

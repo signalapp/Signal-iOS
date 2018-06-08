@@ -15,16 +15,19 @@ public class ConversationSearchItem: NSObject {
     }
 }
 
-@objc
-public class ConversationSearchResults: NSObject {
-    let conversations: [ConversationSearchItem]
-    let contacts: [ConversationSearchItem]
-    let messages: [ConversationSearchItem]
+public class ConversationSearchResults {
+    public let conversations: [ConversationSearchItem]
+    public let contacts: [ConversationSearchItem]
+    public let messages: [ConversationSearchItem]
 
     public init(conversations: [ConversationSearchItem], contacts: [ConversationSearchItem], messages: [ConversationSearchItem]) {
         self.conversations = conversations
         self.contacts = contacts
         self.messages = messages
+    }
+
+    public class func empty() -> ConversationSearchResults {
+        return ConversationSearchResults(conversations: [], contacts: [], messages: [])
     }
 }
 
@@ -40,7 +43,6 @@ public class ConversationSearcher: NSObject {
         super.init()
     }
 
-    @objc
     public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> ConversationSearchResults {
 
         // TODO limit results, prioritize conversations, then contacts, then messages.
