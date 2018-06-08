@@ -5,13 +5,13 @@
 import Foundation
 import SignalServiceKit
 
-@objc
-public class SearchResult: NSObject {
-    @objc
+public class SearchResult {
     public let thread: ThreadViewModel
+    public let snippet: String?
 
-    init(thread: ThreadViewModel) {
+    init(thread: ThreadViewModel, snippet: String?) {
         self.thread = thread
+        self.snippet = snippet
     }
 }
 
@@ -50,12 +50,20 @@ public class ConversationSearcher: NSObject {
         var contacts: [SearchResult] = []
         var messages: [SearchResult] = []
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let searchResult = SearchResult(thread: threadViewModel)
+                let snippet: String? = thread.lastMessageText(transaction: transaction)
+                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
 
                 conversations.append(searchResult)
+            } else if let message = match as? TSMessage {
+                let thread = message.thread(with: transaction)
+
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
+
+                messages.append(searchResult)
             } else {
                 Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
             }

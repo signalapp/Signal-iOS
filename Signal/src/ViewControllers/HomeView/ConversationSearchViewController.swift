@@ -32,6 +32,7 @@ class ConversationSearchViewController: UITableViewController {
         self.view.isHidden = true
 
         self.tableView.register(ChatSearchResultCell.self, forCellReuseIdentifier: ChatSearchResultCell.reuseIdentifier)
+        self.tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
     }
 
     // MARK: UITableViewDelegate
@@ -55,8 +56,93 @@ class ConversationSearchViewController: UITableViewController {
     class ChatSearchResultCell: UITableViewCell {
         static let reuseIdentifier = "ChatSearchResultCell"
 
+        let nameLabel: UILabel
+        let snippetLabel: UILabel
+        let avatarView: AvatarImageView
+
+        override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+            self.nameLabel = UILabel()
+            self.snippetLabel = UILabel()
+            self.avatarView = AvatarImageView()
+            avatarView.autoSetDimensions(to: CGSize(width: 40, height: 40))
+
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+            let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
+            textRows.axis = .vertical
+
+            let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+            columns.axis = .horizontal
+            columns.spacing = 8
+
+            contentView.addSubview(columns)
+            columns.autoPinEdgesToSuperviewMargins()
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
         func configure(searchResult: SearchResult) {
-            self.textLabel!.text = searchResult.thread.name
+            self.nameLabel.text = searchResult.thread.name
+            self.snippetLabel.text = searchResult.snippet
+        }
+    }
+
+    class MessageSearchResultCell: UITableViewCell {
+        static let reuseIdentifier = "MessageSearchResultCell"
+
+        let nameLabel: UILabel
+        let snippetLabel: UILabel
+
+        override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+            self.nameLabel = UILabel()
+            self.snippetLabel = UILabel()
+
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+            let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
+            textRows.axis = .vertical
+
+            contentView.addSubview(textRows)
+            textRows.autoPinEdgesToSuperviewMargins()
+        }
+
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        func configure(searchResult: SearchResult) {
+            self.nameLabel.text = searchResult.thread.name
+
+//            [[NSAttributedString alloc] initWithData:[htmlString dataUsingEncoding:NSUTF8StringEncoding]
+//                options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
+//                NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
+//                documentAttributes:nil error:nil];
+
+            guard let snippet = searchResult.snippet else {
+                self.snippetLabel.text = nil
+                return
+            }
+
+            guard let encodedString = snippet.data(using: .utf8) else {
+                self.snippetLabel.text = nil
+                return
+            }
+
+//            NSAttributedString(data: <#T##Data#>, options: [, ], documentAttributes: <#T##AutoreleasingUnsafeMutablePointer<NSDictionary?>?#>)
+            // Bold snippet text
+            do {
+
+                // TODO   NSAttributedString.DocumentReadingOptionKey.characterEncoding: .utf8
+                let attributedSnippet = try NSAttributedString(data: encodedString,
+                                                               options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html],
+                                                               documentAttributes: nil)
+
+                self.snippetLabel.attributedText = attributedSnippet
+            } catch {
+                owsFail("failed to generate snippet: \(error)")
+            }
         }
     }
 
@@ -79,10 +165,18 @@ class ConversationSearchViewController: UITableViewController {
             return cell
         case .contacts:
             // TODO
-                return UITableViewCell()
+            return UITableViewCell()
         case .messages:
-            // TODO
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageSearchResultCell.reuseIdentifier) as? MessageSearchResultCell else {
                 return UITableViewCell()
+            }
+
+            guard let searchResult = self.searchResultSet.messages[safe: indexPath.row] else {
+                return UITableViewCell()
+            }
+
+            cell.configure(searchResult: searchResult)
+            return cell
         }
     }
 

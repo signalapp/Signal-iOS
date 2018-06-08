@@ -26,6 +26,7 @@ class ConversationSearcherTest: XCTestCase {
 
         TSContactThread.removeAllObjectsInCollection()
         TSGroupThread.removeAllObjectsInCollection()
+        TSMessage.removeAllObjectsInCollection()
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [], image: nil, groupId: Randomness.generateRandomBytes(16))
@@ -41,6 +42,18 @@ class ConversationSearcherTest: XCTestCase {
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactId: "+49030183000", transaction: transaction)
             self.bobThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+
+            let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
+            helloAlice.save(with: transaction)
+
+            let goodbyeAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Goodbye Alice", attachmentId: nil)
+            goodbyeAlice.save(with: transaction)
+
+            let helloBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Hello Book Club", attachmentId: nil)
+            helloBookClub.save(with: transaction)
+
+            let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
+            goodbyeBookClub.save(with: transaction)
         }
     }
 
@@ -144,7 +157,7 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
     }
 
-    func testSearchContactByName() {
+    func pending_testSearchConversationByContactByName() {
         var resultSet: SearchResultSet = .empty
 
         resultSet = getResultSet(searchText: "Alice")
@@ -158,6 +171,19 @@ class ConversationSearcherTest: XCTestCase {
         resultSet = getResultSet(searchText: "Barker")
         XCTAssertEqual(1, resultSet.conversations.count)
         XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+    }
+
+    func testSearchMessageByBodyContent() {
+        var resultSet: SearchResultSet = .empty
+
+        resultSet = getResultSet(searchText: "Hello Alice")
+        XCTAssertEqual(1, resultSet.messages.count)
+        XCTAssertEqual(aliceThread, resultSet.messages.first?.thread)
+
+        resultSet = getResultSet(searchText: "Hello")
+        XCTAssertEqual(2, resultSet.messages.count)
+        XCTAssert(resultSet.messages.map { $0.thread }.contains(aliceThread))
+        XCTAssert(resultSet.messages.map { $0.thread }.contains(bookClubThread))
     }
 
     // Mark: Helpers

@@ -21,8 +21,8 @@ public class SearchIndexer<T> {
 @objc
 public class FullTextSearchFinder: NSObject {
 
-    public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any) -> Void) {
-        guard let ext = ext(transaction: transaction) else {
+    public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
+        guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
             assertionFailure("ext was unexpectedly nil")
             return
         }
@@ -33,8 +33,9 @@ public class FullTextSearchFinder: NSObject {
         // TODO a stricter "whole word" query for body text?
         let prefixQuery = "*\(normalized)*"
 
-        ext.enumerateKeysAndObjects(matching: prefixQuery) { (_, _, object, _) in
-            block(object)
+        // (snippet: String, collection: String, key: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>)
+        ext.enumerateKeysAndObjects(matching: prefixQuery, with: nil) { (snippet: String, _: String, _: String, object: Any, _: UnsafeMutablePointer<ObjCBool>) in
+            block(object, snippet)
         }
     }
 
@@ -82,11 +83,20 @@ public class FullTextSearchFinder: NSObject {
         return normalize(text: searchableContent)
     }
 
+    private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
+
+        let searchableContent =  message.body ?? ""
+
+        return normalize(text: searchableContent)
+    }
+
     private class func indexContent(object: Any) -> String? {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread)
         } else if let contactThread = object as? TSContactThread {
             return self.contactThreadIndexer.index(contactThread)
+        } else if let message = object as? TSMessage {
+            return self.messageIndexer.index(message)
         } else {
             return nil
         }
