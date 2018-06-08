@@ -49,12 +49,15 @@
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
                                                                     objectForKey:@"CFBundleVersion"]]];
 
+#ifdef SHOW_LEGAL_TERMS_LINK
     [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
                                                                          @"table cell label")
                                                          actionBlock:^{
                                                              [[UIApplication sharedApplication]
                                                                  openURL:[NSURL URLWithString:kLegalTermsUrlString]];
                                                          }]];
+#endif
+
     [contents addSection:informationSection];
 
     OWSTableSection *helpSection = [OWSTableSection new];
