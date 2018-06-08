@@ -7,7 +7,7 @@ import Foundation
 @objc
 class ConversationSearchViewController: UITableViewController {
 
-    var searchResults: ConversationSearchResults = ConversationSearchResults.empty
+    var searchResultSet: SearchResultSet = SearchResultSet.empty
 
     var uiDatabaseConnection: YapDatabaseConnection {
         // TODO do we want to respond to YapDBModified? Might be hard when there's lots of search results, for only marginal value
@@ -44,18 +44,18 @@ class ConversationSearchViewController: UITableViewController {
 
         switch searchSection {
         case .conversations:
-            return searchResults.conversations.count
+            return searchResultSet.conversations.count
         case .contacts:
-            return searchResults.contacts.count
+            return searchResultSet.contacts.count
         case .messages:
-            return searchResults.messages.count
+            return searchResultSet.messages.count
         }
     }
 
     class ChatSearchResultCell: UITableViewCell {
         static let reuseIdentifier = "ChatSearchResultCell"
 
-        func configure(searchResult: ConversationSearchItem) {
+        func configure(searchResult: SearchResult) {
             self.textLabel!.text = searchResult.thread.name
         }
     }
@@ -72,7 +72,7 @@ class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
 
-            guard let searchResult = self.searchResults.conversations[safe: indexPath.row] else {
+            guard let searchResult = self.searchResultSet.conversations[safe: indexPath.row] else {
                 return UITableViewCell()
             }
             cell.configure(searchResult: searchResult)
@@ -98,19 +98,19 @@ class ConversationSearchViewController: UITableViewController {
 
         switch searchSection {
         case .conversations:
-            if searchResults.conversations.count > 0 {
+            if searchResultSet.conversations.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing conversations (either group or contact conversations)")
             } else {
                 return nil
             }
         case .contacts:
-            if searchResults.contacts.count > 0 {
+            if searchResultSet.contacts.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "section header for search results that match a contact who doesn't have an existing conversation")
             } else {
                 return nil
             }
         case .messages:
-            if searchResults.messages.count > 0 {
+            if searchResultSet.messages.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "section header for search results that match a message in a conversation")
             } else {
                 return nil
@@ -179,7 +179,7 @@ extension ConversationSearchViewController: UISearchBarDelegate {
 
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard searchText.stripped.count > 0 else {
-            self.searchResults = ConversationSearchResults.empty
+            self.searchResultSet = SearchResultSet.empty
             self.view.isHidden = true
             return
         }
@@ -187,7 +187,7 @@ extension ConversationSearchViewController: UISearchBarDelegate {
         self.view.isHidden = false
 
         self.uiDatabaseConnection.read { transaction in
-            self.searchResults = self.searcher.results(searchText: searchText, transaction: transaction)
+            self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction)
         }
         // TODO: more perfomant way to do...
         self.tableView.reloadData()

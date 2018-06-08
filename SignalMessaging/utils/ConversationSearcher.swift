@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public class ConversationSearchItem: NSObject {
+public class SearchResult: NSObject {
     @objc
     public let thread: ThreadViewModel
 
@@ -15,19 +15,19 @@ public class ConversationSearchItem: NSObject {
     }
 }
 
-public class ConversationSearchResults {
-    public let conversations: [ConversationSearchItem]
-    public let contacts: [ConversationSearchItem]
-    public let messages: [ConversationSearchItem]
+public class SearchResultSet {
+    public let conversations: [SearchResult]
+    public let contacts: [SearchResult]
+    public let messages: [SearchResult]
 
-    public init(conversations: [ConversationSearchItem], contacts: [ConversationSearchItem], messages: [ConversationSearchItem]) {
+    public init(conversations: [SearchResult], contacts: [SearchResult], messages: [SearchResult]) {
         self.conversations = conversations
         self.contacts = contacts
         self.messages = messages
     }
 
-    public class var empty: ConversationSearchResults {
-        return ConversationSearchResults(conversations: [], contacts: [], messages: [])
+    public class var empty: SearchResultSet {
+        return SearchResultSet(conversations: [], contacts: [], messages: [])
     }
 }
 
@@ -43,25 +43,25 @@ public class ConversationSearcher: NSObject {
         super.init()
     }
 
-    public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> ConversationSearchResults {
+    public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> SearchResultSet {
 
         // TODO limit results, prioritize conversations, then contacts, then messages.
-        var conversations: [ConversationSearchItem] = []
-        var contacts: [ConversationSearchItem] = []
-        var messages: [ConversationSearchItem] = []
+        var conversations: [SearchResult] = []
+        var contacts: [SearchResult] = []
+        var messages: [SearchResult] = []
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any) in
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let searchItem = ConversationSearchItem(thread: threadViewModel)
+                let searchResult = SearchResult(thread: threadViewModel)
 
-                conversations.append(searchItem)
+                conversations.append(searchResult)
             } else {
                 Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
             }
         }
 
-        return ConversationSearchResults(conversations: conversations, contacts: contacts, messages: messages)
+        return SearchResultSet(conversations: conversations, contacts: contacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)

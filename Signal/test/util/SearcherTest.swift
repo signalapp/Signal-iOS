@@ -22,7 +22,7 @@ class ConversationSearcherTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        ConversationFullTextSearchFinder.syncRegisterDatabaseExtension(storage: OWSPrimaryStorage.shared())
+        FullTextSearchFinder.syncRegisterDatabaseExtension(storage: OWSPrimaryStorage.shared())
     }
 
     // Mark: Tests
@@ -44,11 +44,11 @@ class ConversationSearcherTest: XCTestCase {
         }
 
         // No Match
-        let noMatch = results(searchText: "asdasdasd")
+        let noMatch = resultSet(searchText: "asdasdasd")
         XCTAssert(noMatch.conversations.isEmpty)
 
         // Partial Match
-        let bookMatch = results(searchText: "Book")
+        let bookMatch = resultSet(searchText: "Book")
         XCTAssert(bookMatch.conversations.count == 1)
         if let foundThread: ThreadViewModel = bookMatch.conversations.first?.thread {
             XCTAssertEqual(bookClubThread, foundThread)
@@ -56,7 +56,7 @@ class ConversationSearcherTest: XCTestCase {
             XCTFail("no thread found")
         }
 
-        let snackMatch = results(searchText: "Snack")
+        let snackMatch = resultSet(searchText: "Snack")
         XCTAssert(snackMatch.conversations.count == 1)
         if let foundThread: ThreadViewModel = snackMatch.conversations.first?.thread {
             XCTAssertEqual(snackClubThread, foundThread)
@@ -65,21 +65,21 @@ class ConversationSearcherTest: XCTestCase {
         }
 
         // Multiple Partial Matches
-        let multipleMatch = results(searchText: "Club")
+        let multipleMatch = resultSet(searchText: "Club")
         XCTAssert(multipleMatch.conversations.count == 2)
         XCTAssert(multipleMatch.conversations.map { $0.thread }.contains(bookClubThread))
         XCTAssert(multipleMatch.conversations.map { $0.thread }.contains(snackClubThread))
 
         // Match Name Exactly
-        let exactMatch = results(searchText: "Book Club")
+        let exactMatch = resultSet(searchText: "Book Club")
         XCTAssert(exactMatch.conversations.count == 1)
         XCTAssertEqual(bookClubThread, exactMatch.conversations.first!.thread)
     }
 
     // Mark: Helpers
 
-    private func results(searchText: String) -> ConversationSearchResults {
-        var results: ConversationSearchResults!
+    private func resultSet(searchText: String) -> SearchResultSet {
+        var results: SearchResultSet!
         self.dbConnection.read { transaction in
             results = self.searcher.results(searchText: searchText, transaction: transaction)
         }
