@@ -7,7 +7,16 @@ import Foundation
 @objc
 class ConversationSearchViewController: UITableViewController {
 
-    var searchResults: ConversationSearchResults = ConversationSearchResults.empty()
+    var searchResults: ConversationSearchResults = ConversationSearchResults.empty
+
+    var uiDatabaseConnection: YapDatabaseConnection {
+        // TODO do we want to respond to YapDBModified? Might be hard when there's lots of search results, for only marginal value
+        return OWSPrimaryStorage.shared().uiDatabaseConnection
+    }
+
+    var searcher: ConversationSearcher {
+        return ConversationSearcher.shared
+    }
 
     enum SearchSection: Int {
         case conversations = 0
@@ -21,12 +30,13 @@ class ConversationSearchViewController: UITableViewController {
         super.viewDidLoad()
 
         self.view.isHidden = true
-        self.view.backgroundColor = UIColor.yellow
+
+        self.tableView.register(ChatSearchResultCell.self, forCellReuseIdentifier: ChatSearchResultCell.reuseIdentifier)
     }
 
     // MARK: UITableViewDelegate
 
-    override public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
             owsFail("unknown section: \(section)")
             return 0
@@ -42,22 +52,73 @@ class ConversationSearchViewController: UITableViewController {
         }
     }
 
+    class ChatSearchResultCell: UITableViewCell {
+        static let reuseIdentifier = "ChatSearchResultCell"
+
+        func configure(searchResult: ConversationSearchItem) {
+            self.textLabel!.text = searchResult.thread.name
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
+            return UITableViewCell()
+        }
+
+        switch searchSection {
+        case .conversations:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatSearchResultCell.reuseIdentifier) as? ChatSearchResultCell else {
+                return UITableViewCell()
+            }
+
+            guard let searchResult = self.searchResults.conversations[safe: indexPath.row] else {
+                return UITableViewCell()
+            }
+            cell.configure(searchResult: searchResult)
+            return cell
+        case .contacts:
+            // TODO
+                return UITableViewCell()
+        case .messages:
+            // TODO
+                return UITableViewCell()
+        }
+    }
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 3
+    }
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let searchSection = SearchSection(rawValue: section) else {
+            owsFail("unknown section: \(section)")
+            return nil
+        }
+
+        switch searchSection {
+        case .conversations:
+            if searchResults.conversations.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing conversations (either group or contact conversations)")
+            } else {
+                return nil
+            }
+        case .contacts:
+            if searchResults.contacts.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_CONTACTS", comment: "section header for search results that match a contact who doesn't have an existing conversation")
+            } else {
+                return nil
+            }
+        case .messages:
+            if searchResults.messages.count > 0 {
+                return NSLocalizedString("SEARCH_SECTION_MESSAGES", comment: "section header for search results that match a message in a conversation")
+            } else {
+                return nil
+            }
+        }
+    }
+
     /*
- 
-    // Row display. Implementers should *always* try to reuse cells by setting each cell's reuseIdentifier and querying for available reusable cells with dequeueReusableCellWithIdentifier:
-    // Cell gets various attributes set automatically based on table (separators) and data source (accessory views, editing controls)
-    
-    @available(iOS 2.0, *)
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-    
-    
-    @available(iOS 2.0, *)
-    optional public func numberOfSections(in tableView: UITableView) -> Int // Default is 1 if not implemented
-    
-    
-    @available(iOS 2.0, *)
-    optional public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? // fixed font style. use custom view (UILabel) if you want something different
-    
     @available(iOS 2.0, *)
     optional public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String?
     
@@ -118,11 +179,18 @@ extension ConversationSearchViewController: UISearchBarDelegate {
 
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard searchText.stripped.count > 0 else {
+            self.searchResults = ConversationSearchResults.empty
             self.view.isHidden = true
             return
         }
 
         self.view.isHidden = false
+
+        self.uiDatabaseConnection.read { transaction in
+            self.searchResults = self.searcher.results(searchText: searchText, transaction: transaction)
+        }
+        // TODO: more perfomant way to do...
+        self.tableView.reloadData()
     }
 
 //
