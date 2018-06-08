@@ -8,7 +8,7 @@ import XCTest
 
 class ConversationSearcherTest: XCTestCase {
 
-    // Mark: Dependencies
+    // MARK: - Dependencies
     var searcher: ConversationSearcher {
         return ConversationSearcher.shared
     }
@@ -17,68 +17,152 @@ class ConversationSearcherTest: XCTestCase {
         return OWSPrimaryStorage.shared().dbReadWriteConnection
     }
 
-    // Mark: Test Life Cycle
+    // MARK: - Test Life Cycle
 
     override func setUp() {
         super.setUp()
 
         FullTextSearchFinder.syncRegisterDatabaseExtension(storage: OWSPrimaryStorage.shared())
-    }
 
-    // Mark: Tests
-
-    func testSearchByGroupName() {
-
+        TSContactThread.removeAllObjectsInCollection()
         TSGroupThread.removeAllObjectsInCollection()
 
-        var bookClubThread: ThreadViewModel!
-        var snackClubThread: ThreadViewModel!
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [], image: nil, groupId: Randomness.generateRandomBytes(16))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
-            bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
             let snackModel = TSGroupModel(title: "Snack Club", memberIds: [], image: nil, groupId: Randomness.generateRandomBytes(16))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
-            snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
+
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: "+12345678900", transaction: transaction)
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
+
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: "+49030183000", transaction: transaction)
+            self.bobThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
         }
+    }
+
+    // MARK: - Fixtures
+
+    var bookClubThread: ThreadViewModel!
+    var snackClubThread: ThreadViewModel!
+
+    var aliceThread: ThreadViewModel!
+    var bobThread: ThreadViewModel!
+
+    // MARK: Tests
+
+    func testSearchByGroupName() {
+
+        var resultSet: SearchResultSet = .empty
 
         // No Match
-        let noMatch = resultSet(searchText: "asdasdasd")
-        XCTAssert(noMatch.conversations.isEmpty)
+        resultSet = getResultSet(searchText: "asdasdasd")
+        XCTAssert(resultSet.conversations.isEmpty)
 
         // Partial Match
-        let bookMatch = resultSet(searchText: "Book")
-        XCTAssert(bookMatch.conversations.count == 1)
-        if let foundThread: ThreadViewModel = bookMatch.conversations.first?.thread {
+        resultSet = getResultSet(searchText: "Book")
+        XCTAssert(resultSet.conversations.count == 1)
+        if let foundThread: ThreadViewModel = resultSet.conversations.first?.thread {
             XCTAssertEqual(bookClubThread, foundThread)
         } else {
             XCTFail("no thread found")
         }
 
-        let snackMatch = resultSet(searchText: "Snack")
-        XCTAssert(snackMatch.conversations.count == 1)
-        if let foundThread: ThreadViewModel = snackMatch.conversations.first?.thread {
+        resultSet = getResultSet(searchText: "Snack")
+        XCTAssert(resultSet.conversations.count == 1)
+        if let foundThread: ThreadViewModel = resultSet.conversations.first?.thread {
             XCTAssertEqual(snackClubThread, foundThread)
         } else {
             XCTFail("no thread found")
         }
 
         // Multiple Partial Matches
-        let multipleMatch = resultSet(searchText: "Club")
-        XCTAssert(multipleMatch.conversations.count == 2)
-        XCTAssert(multipleMatch.conversations.map { $0.thread }.contains(bookClubThread))
-        XCTAssert(multipleMatch.conversations.map { $0.thread }.contains(snackClubThread))
+        resultSet = getResultSet(searchText: "Club")
+        XCTAssertEqual(2, resultSet.conversations.count)
+        XCTAssert(resultSet.conversations.map { $0.thread }.contains(bookClubThread))
+        XCTAssert(resultSet.conversations.map { $0.thread }.contains(snackClubThread))
 
         // Match Name Exactly
-        let exactMatch = resultSet(searchText: "Book Club")
-        XCTAssert(exactMatch.conversations.count == 1)
-        XCTAssertEqual(bookClubThread, exactMatch.conversations.first!.thread)
+        resultSet = getResultSet(searchText: "Book Club")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(bookClubThread, resultSet.conversations.first!.thread)
+    }
+
+    func testSearchContactByNumber() {
+        var resultSet: SearchResultSet = .empty
+
+        // No match
+        resultSet = getResultSet(searchText: "+5551239999")
+        XCTAssertEqual(0, resultSet.conversations.count)
+
+        // Exact match
+        resultSet = getResultSet(searchText: "+12345678900")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        // Partial match
+        resultSet = getResultSet(searchText: "+123456")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        // Prefixes
+        resultSet = getResultSet(searchText: "12345678900")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "49")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "1-234-56")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "123456")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "1.234.56")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+    }
+
+    // TODO
+    func pending_testSearchContactByNumber() {
+        var resultSet: SearchResultSet = .empty
+
+        // Phone Number formatting should be forgiving
+        resultSet = getResultSet(searchText: "234.56")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "234 56")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+    }
+
+    func testSearchContactByName() {
+        var resultSet: SearchResultSet = .empty
+
+        resultSet = getResultSet(searchText: "Alice")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "Bob")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+
+        resultSet = getResultSet(searchText: "Barker")
+        XCTAssertEqual(1, resultSet.conversations.count)
+        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
     }
 
     // Mark: Helpers
 
-    private func resultSet(searchText: String) -> SearchResultSet {
+    private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
             results = self.searcher.results(searchText: searchText, transaction: transaction)
