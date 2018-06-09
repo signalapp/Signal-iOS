@@ -64,6 +64,8 @@ public class ConversationSearcher: NSObject {
                 let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
 
                 messages.append(searchResult)
+            } else if let signalAccount = match as? SignalAccount {
+                // TODO show "other contact" results when there is no existing thread
             } else {
                 Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
             }

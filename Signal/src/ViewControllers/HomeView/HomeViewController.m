@@ -313,6 +313,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // TODO - better/more flexible way to pin below search bar?
     [searchController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(60, 0, 0, 0)];
     searchBar.delegate = searchController;
+    searchController.searchBar = searchBar;
     
     OWSAssert(self.tableView.tableHeaderView == nil);
     self.tableView.tableHeaderView = self.searchBar;
