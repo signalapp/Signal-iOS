@@ -6,6 +6,81 @@ import XCTest
 @testable import Signal
 @testable import SignalMessaging
 
+@objc
+class FakeEnvironment: TextSecureKitEnv {
+    let proxy: TextSecureKitEnv
+
+    init(proxy: TextSecureKitEnv) {
+        self.proxy = proxy
+        super.init(callMessageHandler: proxy.callMessageHandler, contactsManager: proxy.contactsManager, messageSender: proxy.messageSender, notificationsManager: proxy.notificationsManager, profileManager: proxy.profileManager)
+    }
+
+    var stubbedCallMessageHandler: OWSCallMessageHandler?
+    override var callMessageHandler: OWSCallMessageHandler {
+        if let callMessageHandler = stubbedCallMessageHandler {
+            return callMessageHandler
+        }
+        return proxy.callMessageHandler
+    }
+
+    var stubbedContactsManager: ContactsManagerProtocol?
+    override var contactsManager: ContactsManagerProtocol {
+        if let contactsManager = stubbedContactsManager {
+            return contactsManager
+        }
+        return proxy.contactsManager
+    }
+
+    var stubbedMessageSender: MessageSender?
+    override var messageSender: MessageSender {
+        if let messageSender = stubbedMessageSender {
+            return messageSender
+        }
+        return proxy.messageSender
+    }
+
+    var stubbedNotificationsManager: NotificationsProtocol?
+    override var notificationsManager: NotificationsProtocol {
+        if let notificationsManager = stubbedNotificationsManager {
+            return notificationsManager
+        }
+        return proxy.notificationsManager
+    }
+
+    var stubbedProfileManager: ProfileManagerProtocol?
+    override var profileManager: ProfileManagerProtocol {
+        if let profileManager = stubbedProfileManager {
+            return profileManager
+        }
+        return proxy.profileManager
+    }
+}
+
+@objc
+class FakeContactsManager: NSObject, ContactsManagerProtocol {
+    func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
+        if phoneNumber == "+12345678900" {
+            return "Alice"
+        } else if phoneNumber == "+49030183000" {
+            return "Bob Barker"
+        } else {
+            return ""
+        }
+    }
+
+    func signalAccounts() -> [SignalAccount] {
+        return []
+    }
+
+    func isSystemContact(_ recipientId: String) -> Bool {
+        return true
+    }
+
+    func isSystemContact(withSignalAccount recipientId: String) -> Bool {
+        return true
+    }
+}
+
 class ConversationSearcherTest: XCTestCase {
 
     // MARK: - Dependencies
@@ -19,6 +94,14 @@ class ConversationSearcherTest: XCTestCase {
 
     // MARK: - Test Life Cycle
 
+    var originalEnvironment: TextSecureKitEnv?
+
+    override func tearDown() {
+        super.tearDown()
+
+        TextSecureKitEnv.setShared(originalEnvironment!)
+    }
+
     override func setUp() {
         super.setUp()
 
@@ -28,12 +111,18 @@ class ConversationSearcherTest: XCTestCase {
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
+        originalEnvironment = TextSecureKitEnv.shared()
+
+        let testEnvironment: FakeEnvironment = FakeEnvironment(proxy: originalEnvironment!)
+        testEnvironment.stubbedContactsManager = FakeContactsManager()
+        TextSecureKitEnv.setShared(testEnvironment)
+
         self.dbConnection.readWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", memberIds: [], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let bookModel = TSGroupModel(title: "Book Club", memberIds: ["+12345678900", "+49030183000"], image: nil, groupId: Randomness.generateRandomBytes(16))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
-            let snackModel = TSGroupModel(title: "Snack Club", memberIds: [], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let snackModel = TSGroupModel(title: "Snack Club", memberIds: ["+12345678900"], image: nil, groupId: Randomness.generateRandomBytes(16))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
@@ -68,79 +157,69 @@ class ConversationSearcherTest: XCTestCase {
     // MARK: Tests
 
     func testSearchByGroupName() {
-
-        var resultSet: SearchResultSet = .empty
+        var threads: [ThreadViewModel] = []
 
         // No Match
-        resultSet = getResultSet(searchText: "asdasdasd")
-        XCTAssert(resultSet.conversations.isEmpty)
+        threads = searchConversations(searchText: "asdasdasd")
+        XCTAssert(threads.isEmpty)
 
         // Partial Match
-        resultSet = getResultSet(searchText: "Book")
-        XCTAssert(resultSet.conversations.count == 1)
-        if let foundThread: ThreadViewModel = resultSet.conversations.first?.thread {
-            XCTAssertEqual(bookClubThread, foundThread)
-        } else {
-            XCTFail("no thread found")
-        }
+        threads = searchConversations(searchText: "Book")
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
-        resultSet = getResultSet(searchText: "Snack")
-        XCTAssert(resultSet.conversations.count == 1)
-        if let foundThread: ThreadViewModel = resultSet.conversations.first?.thread {
-            XCTAssertEqual(snackClubThread, foundThread)
-        } else {
-            XCTFail("no thread found")
-        }
+        threads = searchConversations(searchText: "Snack")
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([snackClubThread], threads)
 
         // Multiple Partial Matches
-        resultSet = getResultSet(searchText: "Club")
-        XCTAssertEqual(2, resultSet.conversations.count)
-        XCTAssert(resultSet.conversations.map { $0.thread }.contains(bookClubThread))
-        XCTAssert(resultSet.conversations.map { $0.thread }.contains(snackClubThread))
+        threads = searchConversations(searchText: "Club")
+        XCTAssertEqual(2, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread], threads)
 
         // Match Name Exactly
-        resultSet = getResultSet(searchText: "Book Club")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(bookClubThread, resultSet.conversations.first!.thread)
+        threads = searchConversations(searchText: "Book Club")
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
     }
 
     func testSearchContactByNumber() {
-        var resultSet: SearchResultSet = .empty
+        var threads: [ThreadViewModel] = []
 
         // No match
-        resultSet = getResultSet(searchText: "+5551239999")
-        XCTAssertEqual(0, resultSet.conversations.count)
+        threads = searchConversations(searchText: "+5551239999")
+        XCTAssertEqual(0, threads.count)
 
         // Exact match
-        resultSet = getResultSet(searchText: "+12345678900")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "+12345678900")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
         // Partial match
-        resultSet = getResultSet(searchText: "+123456")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "+123456")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
         // Prefixes
-        resultSet = getResultSet(searchText: "12345678900")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "12345678900")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
-        resultSet = getResultSet(searchText: "49")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "49")
+        XCTAssertEqual(2, threads.count)
+        XCTAssertEqual([bookClubThread, bobThread], threads)
 
-        resultSet = getResultSet(searchText: "1-234-56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "1-234-56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
-        resultSet = getResultSet(searchText: "123456")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "123456")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
-        resultSet = getResultSet(searchText: "1.234.56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "1.234.56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
     }
 
     // TODO
@@ -157,20 +236,24 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
     }
 
-    func pending_testSearchConversationByContactByName() {
-        var resultSet: SearchResultSet = .empty
+    func testSearchConversationByContactByName() {
+        var threads: [ThreadViewModel] = []
 
-        resultSet = getResultSet(searchText: "Alice")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "Alice")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
-        resultSet = getResultSet(searchText: "Bob")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "Bob")
+        XCTAssertEqual(2, threads.count)
+        XCTAssertEqual([bookClubThread, bobThread], threads)
 
-        resultSet = getResultSet(searchText: "Barker")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(bobThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "Barker")
+        XCTAssertEqual(2, threads.count)
+        XCTAssertEqual([bookClubThread, bobThread], threads)
+
+        threads = searchConversations(searchText: "Bob B")
+        XCTAssertEqual(2, threads.count)
+        XCTAssertEqual([bookClubThread, bobThread], threads)
     }
 
     func testSearchMessageByBodyContent() {
@@ -187,6 +270,11 @@ class ConversationSearcherTest: XCTestCase {
     }
 
     // Mark: Helpers
+
+    private func searchConversations(searchText: String) -> [ThreadViewModel] {
+        let results = getResultSet(searchText: searchText)
+        return results.conversations.map { $0.thread }
+    }
 
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!

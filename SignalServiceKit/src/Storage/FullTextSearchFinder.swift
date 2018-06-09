@@ -45,6 +45,10 @@ public class FullTextSearchFinder: NSObject {
 
     // Mark: Index Building
 
+    private class var contactsManager: ContactsManagerProtocol {
+        return TextSecureKitEnv.shared().contactsManager
+    }
+
     private class func normalize(text: String) -> String {
         var normalized: String = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -59,36 +63,64 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread) in
-        let searchableContent = groupThread.groupModel.groupName ?? ""
+        let groupName = groupThread.groupModel.groupName ?? ""
 
-        // TODO member names, member numbers
+        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
+            recipientIndexer.index(recipientId)
+        }.joined(separator: " ")
+
+        let searchableContent = "\(groupName) \(memberStrings)"
 
         return normalize(text: searchableContent)
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread) in
-        let searchableContent =  contactThread.contactIdentifier()
-
-        // TODO contact name
+        let recipientId =  contactThread.contactIdentifier()
+        let searchableContent = recipientIndexer.index(recipientId)
 
         return normalize(text: searchableContent)
     }
 
-    private static let contactIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
-
-        let searchableContent =  "\(recipientId)"
-
-        // TODO contact name
+    private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
+        let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
+        let searchableContent =  "\(recipientId) \(displayName)"
 
         return normalize(text: searchableContent)
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
-
         let searchableContent =  message.body ?? ""
 
         return normalize(text: searchableContent)
     }
+
+//    private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
+//        let groupName = groupThread.groupModel.groupName
+//        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
+//            self.indexingString(recipientId: recipientId)
+//            }.joined(separator: " ")
+//
+//        return "\(memberStrings) \(groupName ?? "")"
+//    }
+//
+//    private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
+//        let recipientId = contactThread.contactIdentifier()
+//        return self.indexingString(recipientId: recipientId)
+//    }
+//
+//    private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
+//        let recipientId = signalAccount.recipientId
+//        return self.indexingString(recipientId: recipientId)
+//    }
+//
+
+//
+//    private func indexingString(recipientId: String) -> String {
+//        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
+//        let profileName = contactsManager.profileName(forRecipientId: recipientId)
+//
+//        return "\(recipientId) \(contactName) \(profileName ?? "")"
+//    }
 
     private class func indexContent(object: Any) -> String? {
         if let groupThread = object as? TSGroupThread {
