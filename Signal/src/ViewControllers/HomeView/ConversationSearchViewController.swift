@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class ConversationSearchViewController: UITableViewController, UISearchBarDelegate {
+class ConversationSearchViewController: UITableViewController {
 
     var searchResultSet: SearchResultSet = SearchResultSet.empty
 
@@ -125,31 +125,19 @@ class ConversationSearchViewController: UITableViewController, UISearchBarDelega
     // MARK: UISearchBarDelegate
 
     @objc
-    public var searchBar: UISearchBar?
-
-    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard let searchBar = self.searchBar else {
-            owsFail("\(logTag) searchBar was unexpectedly nil")
-            return
-        }
-
-        searchBar.resignFirstResponder()
-    }
-
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    public func updateSearchResults(searchText: String) {
         guard searchText.stripped.count > 0 else {
             self.searchResultSet = SearchResultSet.empty
-            self.view.isHidden = true
             return
         }
 
-        self.view.isHidden = false
+        // TODO: async?
+        // TODO: debounce?
 
         self.uiDatabaseConnection.read { transaction in
             self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction)
         }
 
-        // TODO: debounce
         // TODO: more perfomant way to do this?
         self.tableView.reloadData()
     }
@@ -242,7 +230,9 @@ class MessageSearchResultCell: UITableViewCell {
         // Bold snippet text
         do {
 
-            // FIXME - apply our font without clobbering bold.
+            // FIXME - The snippet marks up the matched search text with <b> tags.
+            // We can parse this into an attributed string, but it also takes on an undesirable font.
+            // We want to apply our own font without clobbering bold in the process - maybe by enumerating and inspecting the attributes? Or maybe we can pass in a base font?
             let attributedSnippet = try NSMutableAttributedString(data: encodedString,
                                                                   options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html],
                                                                   documentAttributes: nil)

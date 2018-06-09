@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
-@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate, UISearchResultsUpdating>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -56,8 +56,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Mark: Search
 
-@property (nonatomic) UISearchBar *searchBar;
-@property (nonatomic) ConversationSearchViewController *searchController;
+//@property (nonatomic) UISearchBar *searchBar;
+@property (nonatomic) UISearchController *searchController;
+@property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 // Dependencies
 
@@ -294,30 +295,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
-
+    
     // Search
     
-    UISearchBar *searchBar = [UISearchBar new];
-    _searchBar = searchBar;
-    searchBar.searchBarStyle = UISearchBarStyleMinimal;
-    searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER", @"Placeholder text for search bar which filters conversations.");
-    searchBar.backgroundColor = [UIColor whiteColor];
-    [searchBar sizeToFit];
-    
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
-    ConversationSearchViewController *searchController = [ConversationSearchViewController new];
+    ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
+    self.searchResultsController = searchResultsController;
+    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
     self.searchController = searchController;
-    [self addChildViewController:searchController];
-    searchController.view.frame = self.view.frame;
-    [self.view addSubview:searchController.view];
-    // TODO - better/more flexible way to pin below search bar?
-    [searchController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(60, 0, 0, 0)];
-    searchBar.delegate = searchController;
-    searchController.searchBar = searchBar;
-    
-    OWSAssert(self.tableView.tableHeaderView == nil);
-    self.tableView.tableHeaderView = self.searchBar;
-
+    searchController.searchResultsUpdater = self;
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
+        
     [self updateBarButtonItems];
 }
 
@@ -869,6 +858,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     return YES;
+}
+
+#pragma mark - SearchResultsUpdating
+
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
+{
+    [self.searchResultsController updateSearchResultsWithSearchText:self.searchController.searchBar.text];
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
