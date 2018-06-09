@@ -31,11 +31,14 @@ class ConversationSearchViewController: UITableViewController {
 
         self.view.isHidden = true
 
-        self.tableView.register(ChatSearchResultCell.self, forCellReuseIdentifier: ChatSearchResultCell.reuseIdentifier)
-        self.tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
+        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 60
+
+        tableView.register(ChatSearchResultCell.self, forCellReuseIdentifier: ChatSearchResultCell.reuseIdentifier)
+        tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
     }
 
-    // MARK: UITableViewDelegate
+    // MARK: UITableViewDataSource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let searchSection = SearchSection(rawValue: section) else {
@@ -50,99 +53,6 @@ class ConversationSearchViewController: UITableViewController {
             return searchResultSet.contacts.count
         case .messages:
             return searchResultSet.messages.count
-        }
-    }
-
-    class ChatSearchResultCell: UITableViewCell {
-        static let reuseIdentifier = "ChatSearchResultCell"
-
-        let nameLabel: UILabel
-        let snippetLabel: UILabel
-        let avatarView: AvatarImageView
-
-        override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-            self.nameLabel = UILabel()
-            self.snippetLabel = UILabel()
-            self.avatarView = AvatarImageView()
-            avatarView.autoSetDimensions(to: CGSize(width: 40, height: 40))
-
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-            let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
-            textRows.axis = .vertical
-
-            let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
-            columns.axis = .horizontal
-            columns.spacing = 8
-
-            contentView.addSubview(columns)
-            columns.autoPinEdgesToSuperviewMargins()
-        }
-
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        func configure(searchResult: SearchResult) {
-            self.nameLabel.text = searchResult.thread.name
-            self.snippetLabel.text = searchResult.snippet
-        }
-    }
-
-    class MessageSearchResultCell: UITableViewCell {
-        static let reuseIdentifier = "MessageSearchResultCell"
-
-        let nameLabel: UILabel
-        let snippetLabel: UILabel
-
-        override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-            self.nameLabel = UILabel()
-            self.snippetLabel = UILabel()
-
-            super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-            let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
-            textRows.axis = .vertical
-
-            contentView.addSubview(textRows)
-            textRows.autoPinEdgesToSuperviewMargins()
-        }
-
-        required init?(coder aDecoder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        func configure(searchResult: SearchResult) {
-            self.nameLabel.text = searchResult.thread.name
-
-//            [[NSAttributedString alloc] initWithData:[htmlString dataUsingEncoding:NSUTF8StringEncoding]
-//                options:@{NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType,
-//                NSCharacterEncodingDocumentAttribute: @(NSUTF8StringEncoding)}
-//                documentAttributes:nil error:nil];
-
-            guard let snippet = searchResult.snippet else {
-                self.snippetLabel.text = nil
-                return
-            }
-
-            guard let encodedString = snippet.data(using: .utf8) else {
-                self.snippetLabel.text = nil
-                return
-            }
-
-//            NSAttributedString(data: <#T##Data#>, options: [, ], documentAttributes: <#T##AutoreleasingUnsafeMutablePointer<NSDictionary?>?#>)
-            // Bold snippet text
-            do {
-
-                // TODO   NSAttributedString.DocumentReadingOptionKey.characterEncoding: .utf8
-                let attributedSnippet = try NSAttributedString(data: encodedString,
-                                                               options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html],
-                                                               documentAttributes: nil)
-
-                self.snippetLabel.attributedText = attributedSnippet
-            } catch {
-                owsFail("failed to generate snippet: \(error)")
-            }
         }
     }
 
@@ -258,19 +168,6 @@ class ConversationSearchViewController: UITableViewController {
 }
 
 extension ConversationSearchViewController: UISearchBarDelegate {
-//    @available(iOS 2.0, *)
-//    optional public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool // return NO to not become first responder
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) // called when text starts editing
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool // return NO to not resign first responder
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) // called when text ends editing
-//
-
     public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard searchText.stripped.count > 0 else {
             self.searchResultSet = SearchResultSet.empty
@@ -283,28 +180,94 @@ extension ConversationSearchViewController: UISearchBarDelegate {
         self.uiDatabaseConnection.read { transaction in
             self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction)
         }
-        // TODO: more perfomant way to do...
+
+        // TODO: debounce
+        // TODO: more perfomant way to do this?
         self.tableView.reloadData()
     }
+}
 
-//
-//    @available(iOS 3.0, *)
-//    optional public func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool // called before text changes
-//
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) // called when keyboard search button pressed
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) // called when bookmark button pressed
-//
-//    @available(iOS 2.0, *)
-//    optional public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) // called when cancel button pressed
-//
-//    @available(iOS 3.2, *)
-//    optional public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) // called when search results button pressed
-//
-//
-//    @available(iOS 3.0, *)
-//    optional public func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int)
+class ChatSearchResultCell: UITableViewCell {
+    static let reuseIdentifier = "ChatSearchResultCell"
+
+    let nameLabel: UILabel
+    let snippetLabel: UILabel
+    let avatarView: AvatarImageView
+
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        self.nameLabel = UILabel()
+        self.snippetLabel = UILabel()
+        self.avatarView = AvatarImageView()
+        avatarView.autoSetDimensions(to: CGSize(width: 40, height: 40))
+
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
+        textRows.axis = .vertical
+
+        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        columns.axis = .horizontal
+        columns.spacing = 8
+
+        contentView.addSubview(columns)
+        columns.autoPinEdgesToSuperviewMargins()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(searchResult: SearchResult) {
+        self.nameLabel.text = searchResult.thread.name
+        self.snippetLabel.text = searchResult.snippet
+    }
+}
+
+class MessageSearchResultCell: UITableViewCell {
+    static let reuseIdentifier = "MessageSearchResultCell"
+
+    let nameLabel: UILabel
+    let snippetLabel: UILabel
+
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        self.nameLabel = UILabel()
+        self.snippetLabel = UILabel()
+
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
+        textRows.axis = .vertical
+
+        contentView.addSubview(textRows)
+        textRows.autoPinEdgesToSuperviewMargins()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    func configure(searchResult: SearchResult) {
+        self.nameLabel.text = searchResult.thread.name
+
+        guard let snippet = searchResult.snippet else {
+            self.snippetLabel.text = nil
+            return
+        }
+
+        guard let encodedString = snippet.data(using: .utf8) else {
+            self.snippetLabel.text = nil
+            return
+        }
+
+        // Bold snippet text
+        do {
+            let attributedSnippet = try NSAttributedString(data: encodedString,
+                                                           options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html],
+                                                           documentAttributes: nil)
+
+            self.snippetLabel.attributedText = attributedSnippet
+        } catch {
+            owsFail("failed to generate snippet: \(error)")
+        }
+    }
 }
