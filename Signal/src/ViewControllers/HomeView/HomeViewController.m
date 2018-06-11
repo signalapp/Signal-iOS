@@ -879,6 +879,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+    [self.tableView setContentOffset:CGPointZero animated:NO];
+
     [self updateSearchResultsVisibility];
 }
 
