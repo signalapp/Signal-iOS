@@ -91,13 +91,13 @@ public class FullTextSearchFinder: NSObject {
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let searchableContent =  "\(recipientId) \(displayName)"
+        let searchableContent = "\(recipientId) \(displayName)"
 
         return normalize(text: searchableContent)
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
-        let searchableContent =  message.body ?? ""
+        let searchableContent = message.body ?? ""
 
         return normalize(text: searchableContent)
     }
@@ -106,9 +106,17 @@ public class FullTextSearchFinder: NSObject {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread)
         } else if let contactThread = object as? TSContactThread {
+            guard contactThread.hasEverHadMessage else {
+                // If we've never sent/received a message in a TSContactThread,
+                // then we want it to appear in the "Other Contacts" section rather
+                // than in the "Conversations" section.
+                return nil
+            }
             return self.contactThreadIndexer.index(contactThread)
         } else if let message = object as? TSMessage {
             return self.messageIndexer.index(message)
+        } else if let signalAccount = object as? SignalAccount {
+            return self.recipientIndexer.index(signalAccount.recipientId)
         } else {
             return nil
         }

@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 
-public class SearchResult {
+public class ConversationSearchResult {
     public let thread: ThreadViewModel
     public let snippet: String?
 
@@ -15,12 +15,23 @@ public class SearchResult {
     }
 }
 
-public class SearchResultSet {
-    public let conversations: [SearchResult]
-    public let contacts: [SearchResult]
-    public let messages: [SearchResult]
+public class ContactSearchResult {
+    public let signalAccount: SignalAccount
+    public var recipientId: String {
+        return signalAccount.recipientId
+    }
 
-    public init(conversations: [SearchResult], contacts: [SearchResult], messages: [SearchResult]) {
+    init(signalAccount: SignalAccount) {
+        self.signalAccount = signalAccount
+    }
+}
+
+public class SearchResultSet {
+    public let conversations: [ConversationSearchResult]
+    public let contacts: [ContactSearchResult]
+    public let messages: [ConversationSearchResult]
+
+    public init(conversations: [ConversationSearchResult], contacts: [ContactSearchResult], messages: [ConversationSearchResult]) {
         self.conversations = conversations
         self.contacts = contacts
         self.messages = messages
@@ -44,32 +55,42 @@ public class ConversationSearcher: NSObject {
     }
 
     public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> SearchResultSet {
-        var conversations: [SearchResult] = []
-        var contacts: [SearchResult] = []
-        var messages: [SearchResult] = []
+        var conversations: [ConversationSearchResult] = []
+        var contacts: [ContactSearchResult] = []
+        var messages: [ConversationSearchResult] = []
+
+        var existingConversationRecipientIds: Set<String> = Set()
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let snippet: String? = thread.lastMessageText(transaction: transaction)
-                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, snippet: snippet)
 
+                if let contactThread = thread as? TSContactThread {
+                    let recipientId = contactThread.contactIdentifier()
+                    existingConversationRecipientIds.insert(recipientId)
+                }
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
                 let thread = message.thread(with: transaction)
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, snippet: snippet)
 
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
-                // TODO show "other contact" results when there is no existing thread
+                let searchResult = ContactSearchResult(signalAccount: signalAccount)
+                contacts.append(searchResult)
             } else {
                 Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
             }
         }
 
-        return SearchResultSet(conversations: conversations, contacts: contacts, messages: messages)
+        // Only show contacts which were not included in an existing 1:1 conversation.
+        let otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
+
+        return SearchResultSet(conversations: conversations, contacts: otherContacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)
