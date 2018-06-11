@@ -36,6 +36,36 @@ class ConversationSearchViewController: UITableViewController {
         tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
     }
 
+    // MARK: UITableViewDelegate
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+
+        guard let searchSection = SearchSection(rawValue: indexPath.section) else {
+            owsFail("\(logTag) unknown section selected.")
+            return
+        }
+
+        var sectionResults: [SearchResult]
+        switch searchSection {
+        case .conversations:
+            sectionResults = searchResultSet.conversations
+        case .contacts:
+            sectionResults = searchResultSet.contacts
+        case .messages:
+            sectionResults = searchResultSet.messages
+        }
+
+        guard indexPath.row < sectionResults.count else {
+            owsFail("\(logTag) unknown row selected.")
+            return
+        }
+
+        let searchResult = sectionResults[indexPath.row]
+        let thread = searchResult.thread
+        SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
+    }
+
     // MARK: UITableViewDataSource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

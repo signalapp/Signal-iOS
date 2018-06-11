@@ -38,7 +38,10 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
-@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate, UISearchResultsUpdating>
+@interface HomeViewController () <UITableViewDelegate,
+    UITableViewDataSource,
+    UIViewControllerPreviewingDelegate,
+    UISearchBarDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -56,7 +59,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Mark: Search
 
-@property (nonatomic) UISearchController *searchController;
+@property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 // Dependencies
@@ -296,16 +299,29 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
     
     // Search
-    
+
+    UISearchBar *searchBar = [UISearchBar new];
+    _searchBar = searchBar;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+        @"Placeholder text for search bar which filters conversations.");
+    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.delegate = self;
+    [searchBar sizeToFit];
+
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
+    OWSAssert(self.tableView.tableHeaderView == nil);
+    self.tableView.tableHeaderView = self.searchBar;
+
     ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
     self.searchResultsController = searchResultsController;
-    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
-    self.searchController = searchController;
-    searchController.searchResultsUpdater = self;
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    self.definesPresentationContext = YES;
-        
+    [self addChildViewController:searchResultsController];
+    [self.view addSubview:searchResultsController.view];
+    [searchResultsController.view autoPinWidthToSuperview];
+    [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:searchBar];
+    [searchResultsController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.tableView];
+    searchResultsController.view.hidden = self;
+
     [self updateBarButtonItems];
 }
 
@@ -859,11 +875,45 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return YES;
 }
 
-#pragma mark - SearchResultsUpdating
+#pragma mark - UISearchBarDelegate
 
-- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    [self.searchResultsController updateSearchResultsWithSearchText:self.searchController.searchBar.text];
+    [self.tableView setContentOffset:CGPointZero animated:NO];
+
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    self.searchBar.text = nil;
+
+    [self updateSearchResultsVisibility];
+}
+
+- (void)updateSearchResultsVisibility
+{
+    OWSAssertIsOnMainThread();
+
+    NSString *searchText = self.searchBar.text.ows_stripped;
+    [self.searchResultsController updateSearchResultsWithSearchText:searchText];
+    BOOL isSearching = searchText.length > 0;
+    self.searchResultsController.view.hidden = !isSearching;
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
