@@ -32,7 +32,7 @@ class ConversationSearchViewController: UITableViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
 
-        tableView.register(ChatSearchResultCell.self, forCellReuseIdentifier: ChatSearchResultCell.reuseIdentifier)
+        tableView.register(ConversationSearchResultCell.self, forCellReuseIdentifier: ConversationSearchResultCell.reuseIdentifier)
         tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
     }
 
@@ -62,7 +62,7 @@ class ConversationSearchViewController: UITableViewController {
 
         switch searchSection {
         case .conversations:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatSearchResultCell.reuseIdentifier) as? ChatSearchResultCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationSearchResultCell.reuseIdentifier) as? ConversationSearchResultCell else {
                 return UITableViewCell()
             }
 
@@ -141,8 +141,8 @@ class ConversationSearchViewController: UITableViewController {
     }
 }
 
-class ChatSearchResultCell: UITableViewCell {
-    static let reuseIdentifier = "ChatSearchResultCell"
+class ConversationSearchResultCell: UITableViewCell {
+    static let reuseIdentifier = "ConversationSearchResultCell"
 
     let nameLabel: UILabel
     let snippetLabel: UILabel
