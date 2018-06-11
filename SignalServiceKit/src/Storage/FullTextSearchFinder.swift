@@ -94,34 +94,6 @@ public class FullTextSearchFinder: NSObject {
         return normalize(text: searchableContent)
     }
 
-//    private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
-//        let groupName = groupThread.groupModel.groupName
-//        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
-//            self.indexingString(recipientId: recipientId)
-//            }.joined(separator: " ")
-//
-//        return "\(memberStrings) \(groupName ?? "")"
-//    }
-//
-//    private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
-//        let recipientId = contactThread.contactIdentifier()
-//        return self.indexingString(recipientId: recipientId)
-//    }
-//
-//    private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
-//        let recipientId = signalAccount.recipientId
-//        return self.indexingString(recipientId: recipientId)
-//    }
-//
-
-//
-//    private func indexingString(recipientId: String) -> String {
-//        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-//        let profileName = contactsManager.profileName(forRecipientId: recipientId)
-//
-//        return "\(recipientId) \(contactName) \(profileName ?? "")"
-//    }
-
     private class func indexContent(object: Any) -> String? {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread)
@@ -136,7 +108,7 @@ public class FullTextSearchFinder: NSObject {
 
     // MARK: - Extension Registration
 
-    // MJK - FIXME, remove dynamic name when done developing.
+    // MJK - FIXME - while developing it's helpful to rebuild the index every launch. But we need to remove this before releasing.
     private static let dbExtensionName: String = "FullTextSearchFinderExtension\(Date())"
 
     @objc

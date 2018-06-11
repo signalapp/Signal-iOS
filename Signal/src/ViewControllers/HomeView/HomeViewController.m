@@ -56,7 +56,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Mark: Search
 
-//@property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchController *searchController;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 

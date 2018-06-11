@@ -29,8 +29,6 @@ class ConversationSearchViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.isHidden = true
-
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
 
