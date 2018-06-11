@@ -27,18 +27,24 @@ public class ContactSearchResult {
 }
 
 public class SearchResultSet {
+    public let searchText: String
     public let conversations: [ConversationSearchResult]
     public let contacts: [ContactSearchResult]
     public let messages: [ConversationSearchResult]
 
-    public init(conversations: [ConversationSearchResult], contacts: [ContactSearchResult], messages: [ConversationSearchResult]) {
+    public init(searchText: String, conversations: [ConversationSearchResult], contacts: [ContactSearchResult], messages: [ConversationSearchResult]) {
+        self.searchText = searchText
         self.conversations = conversations
         self.contacts = contacts
         self.messages = messages
     }
 
     public class var empty: SearchResultSet {
-        return SearchResultSet(conversations: [], contacts: [], messages: [])
+        return SearchResultSet(searchText: "", conversations: [], contacts: [], messages: [])
+    }
+
+    public var isEmpty: Bool {
+        return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
     }
 }
 
@@ -90,7 +96,7 @@ public class ConversationSearcher: NSObject {
         // Only show contacts which were not included in an existing 1:1 conversation.
         let otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
 
-        return SearchResultSet(conversations: conversations, contacts: otherContacts, messages: messages)
+        return SearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)
