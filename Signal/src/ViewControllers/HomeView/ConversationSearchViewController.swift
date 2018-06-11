@@ -41,30 +41,42 @@ class ConversationSearchViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-
+        
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             owsFail("\(logTag) unknown section selected.")
             return
         }
-
-        var sectionResults: [SearchResult]
+        
         switch searchSection {
         case .conversations:
-            sectionResults = searchResultSet.conversations
+            let sectionResults = searchResultSet.conversations
+            guard let searchResult = sectionResults[safe: indexPath.row] else {
+                owsFail("\(logTag) unknown row selected.")
+                return
+            }
+            
+            let thread = searchResult.thread
+            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
+            
         case .contacts:
-            sectionResults = searchResultSet.contacts
+            let sectionResults = searchResultSet.contacts
+            guard let searchResult = sectionResults[safe: indexPath.row] else {
+                owsFail("\(logTag) unknown row selected.")
+                return
+            }
+            
+            SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose)
+            
         case .messages:
-            sectionResults = searchResultSet.messages
+            let sectionResults = searchResultSet.messages
+            guard let searchResult = sectionResults[safe: indexPath.row] else {
+                owsFail("\(logTag) unknown row selected.")
+                return
+            }
+            
+            let thread = searchResult.thread
+            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
         }
-
-        guard indexPath.row < sectionResults.count else {
-            owsFail("\(logTag) unknown row selected.")
-            return
-        }
-
-        let searchResult = sectionResults[indexPath.row]
-        let thread = searchResult.thread
-        SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
     }
 
     // MARK: UITableViewDataSource

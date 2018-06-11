@@ -87,7 +87,7 @@ public class ConversationSearcher: NSObject {
             }
         }
 
-        // Only show contacts which were not included in an existing conversation.
+        // Only show contacts which were not included in an existing 1:1 conversation.
         let otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
 
         return SearchResultSet(conversations: conversations, contacts: otherContacts, messages: messages)

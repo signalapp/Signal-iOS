@@ -106,6 +106,12 @@ public class FullTextSearchFinder: NSObject {
         if let groupThread = object as? TSGroupThread {
             return self.groupThreadIndexer.index(groupThread)
         } else if let contactThread = object as? TSContactThread {
+            guard contactThread.hasEverHadMessage else {
+                // If we've never sent/received a message in a TSContactThread,
+                // then we want it to appear in the "Other Contacts" section rather
+                // than in the "Conversations" section.
+                return nil
+            }
             return self.contactThreadIndexer.index(contactThread)
         } else if let message = object as? TSMessage {
             return self.messageIndexer.index(message)
