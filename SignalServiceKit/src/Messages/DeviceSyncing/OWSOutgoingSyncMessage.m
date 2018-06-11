@@ -12,14 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingSyncMessage
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super initWithCoder:coder];
-
-    if (self) {
-    }
-
-    return self;
+    return [super initWithCoder:coder];
 }
 
 - (instancetype)init

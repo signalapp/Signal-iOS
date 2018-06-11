@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBlockedPhoneNumbersMessage.h"
@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 @implementation OWSBlockedPhoneNumbersMessage
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (instancetype)initWithPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
 {
