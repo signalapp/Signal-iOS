@@ -195,6 +195,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSUInteger lastRangeLength;
 @property (nonatomic) ConversationViewAction actionOnOpen;
+@property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
+
 @property (nonatomic) BOOL peek;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -426,11 +428,16 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)configureForThread:(TSThread *)thread action:(ConversationViewAction)action
+- (void)configureForThread:(TSThread *)thread
+                    action:(ConversationViewAction)action
+            focusMessageId:(nullable NSString *)focusMessageId
 {
+    OWSAssert(thread);
+
     _thread = thread;
     _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     self.actionOnOpen = action;
+    self.focusMessageIdOnOpen = focusMessageId;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
@@ -698,13 +705,35 @@ typedef enum : NSUInteger {
     return nil;
 }
 
+- (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
+{
+    OWSAssert(self.focusMessageIdOnOpen);
+
+    NSInteger row = 0;
+    for (ConversationViewItem *viewItem in self.viewItems) {
+        if ([viewItem.interaction.uniqueId isEqualToString:self.focusMessageIdOnOpen]) {
+            return [NSIndexPath indexPathForRow:row inSection:0];
+        }
+        row++;
+    }
+    return nil;
+}
+
 - (void)scrollToDefaultPosition
 {
     if (self.isUserScrolling) {
         return;
     }
 
-    NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
+    NSIndexPath *_Nullable indexPath = nil;
+    if (self.focusMessageIdOnOpen) {
+        indexPath = [self indexPathOfMessageOnOpen];
+    }
+
+    if (!indexPath) {
+        indexPath = [self indexPathOfUnreadMessagesIndicator];
+    }
+
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
             [self.collectionView setContentOffset:CGPointZero animated:NO];
@@ -1081,8 +1110,9 @@ typedef enum : NSUInteger {
             break;
     }
 
+    // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
-
+    self.focusMessageIdOnOpen = nil;
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
@@ -1557,7 +1587,7 @@ typedef enum : NSUInteger {
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-    if (hasEarlierUnseenMessages) {
+    if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
         [self scrollToUnreadIndicatorAnimated];
     }
 }

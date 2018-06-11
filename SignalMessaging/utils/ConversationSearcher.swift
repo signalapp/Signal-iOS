@@ -7,10 +7,14 @@ import SignalServiceKit
 
 public class ConversationSearchResult {
     public let thread: ThreadViewModel
+
+    public let messageId: String?
+
     public let snippet: String?
 
-    init(thread: ThreadViewModel, snippet: String?) {
+    init(thread: ThreadViewModel, messageId: String?, snippet: String?) {
         self.thread = thread
+        self.messageId = messageId
         self.snippet = snippet
     }
 }
@@ -71,7 +75,7 @@ public class ConversationSearcher: NSObject {
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let snippet: String? = thread.lastMessageText(transaction: transaction)
-                let searchResult = ConversationSearchResult(thread: threadViewModel, snippet: snippet)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: nil, snippet: snippet)
 
                 if let contactThread = thread as? TSContactThread {
                     let recipientId = contactThread.contactIdentifier()
@@ -82,14 +86,14 @@ public class ConversationSearcher: NSObject {
                 let thread = message.thread(with: transaction)
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let searchResult = ConversationSearchResult(thread: threadViewModel, snippet: snippet)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: message.uniqueId, snippet: snippet)
 
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
                 let searchResult = ContactSearchResult(signalAccount: signalAccount)
                 contacts.append(searchResult)
             } else {
-                Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
+                owsFail("\(self.logTag) in \(#function) unhandled item: \(match)")
             }
         }
 

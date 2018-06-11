@@ -13,6 +13,8 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/Threading.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SignalApp ()
 
 @property (nonatomic) OWSWebRTCCallMessageHandler *callMessageHandler;
@@ -187,6 +189,13 @@
 
 - (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action
 {
+    [self presentConversationForThread:thread action:action focusMessageId:nil];
+}
+
+- (void)presentConversationForThread:(TSThread *)thread
+                              action:(ConversationViewAction)action
+                      focusMessageId:(nullable NSString *)focusMessageId
+{
     OWSAssertIsOnMainThread();
 
     DDLogInfo(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
@@ -207,7 +216,7 @@
             }
         }
 
-        [self.homeViewController presentThread:thread action:action];
+        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId];
     });
 }
 
@@ -248,3 +257,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
