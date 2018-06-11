@@ -1,5 +1,3 @@
-#
-
 # Translations
 
 ## For Developers
