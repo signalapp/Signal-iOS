@@ -4115,7 +4115,9 @@ typedef enum : NSUInteger {
         self.scrollDownButton.frame = newButtonFrame;
 
         // Adjust content offset to prevent the presented keyboard from obscuring content.
-        if (wasScrolledToBottom) {
+        if (!self.viewHasEverAppeared) {
+            [self scrollToDefaultPosition];
+        } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];
         } else {
