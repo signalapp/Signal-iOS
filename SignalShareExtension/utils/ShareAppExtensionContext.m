@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _rootViewController = rootViewController;
 
-    self.reportedApplicationState = UIApplicationStateInactive;
+    self.reportedApplicationState = UIApplicationStateActive;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(extensionHostDidBecomeActive:)
