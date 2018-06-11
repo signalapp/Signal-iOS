@@ -19,9 +19,10 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     enum SearchSection: Int {
-        case conversations = 0
-        case contacts = 1
-        case messages = 2
+        case noResults
+        case conversations
+        case contacts
+        case messages
     }
 
     // MARK: View Lifecyle
@@ -41,39 +42,41 @@ class ConversationSearchViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
-        
+
         guard let searchSection = SearchSection(rawValue: indexPath.section) else {
             owsFail("\(logTag) unknown section selected.")
             return
         }
-        
+
         switch searchSection {
+        case .noResults:
+            owsFail("\(logTag) shouldn't be able to tap 'no results' section")
         case .conversations:
             let sectionResults = searchResultSet.conversations
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
-            
+
         case .contacts:
             let sectionResults = searchResultSet.contacts
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose)
-            
+
         case .messages:
             let sectionResults = searchResultSet.messages
             guard let searchResult = sectionResults[safe: indexPath.row] else {
                 owsFail("\(logTag) unknown row selected.")
                 return
             }
-            
+
             let thread = searchResult.thread
             SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
         }
@@ -88,6 +91,9 @@ class ConversationSearchViewController: UITableViewController {
         }
 
         switch searchSection {
+        case .noResults:
+            // We don't display a "no results" cell, we simply display no results.
+            return 0
         case .conversations:
             return searchResultSet.conversations.count
         case .contacts:
@@ -104,6 +110,8 @@ class ConversationSearchViewController: UITableViewController {
         }
 
         switch searchSection {
+        case .noResults:
+            return UITableViewCell()
         case .conversations:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationSearchResultCell.reuseIdentifier) as? ConversationSearchResultCell else {
                 return UITableViewCell()
@@ -150,6 +158,8 @@ class ConversationSearchViewController: UITableViewController {
         }
 
         switch searchSection {
+        case .noResults:
+            return nil
         case .conversations:
             if searchResultSet.conversations.count > 0 {
                 return NSLocalizedString("SEARCH_SECTION_CONVERSATIONS", comment: "section header for search results that match existing conversations (either group or contact conversations)")

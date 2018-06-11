@@ -40,6 +40,10 @@ public class SearchResultSet {
     public class var empty: SearchResultSet {
         return SearchResultSet(conversations: [], contacts: [], messages: [])
     }
+
+    public var isEmpty: Bool {
+        return conversations.isEmpty && contacts.isEmpty && messages.isEmpty
+    }
 }
 
 @objc
