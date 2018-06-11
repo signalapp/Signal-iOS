@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSNumber *unreadIndicatorPosition;
 
+@property (nonatomic, nullable) NSNumber *focusMessagePosition;
+
 @property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
 
 @property (nonatomic) BOOL hasMoreUnseenMessages;
@@ -221,6 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
                                       (nullable NSNumber *)firstUnseenInteractionTimestampParameter
+                                                   focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
@@ -615,9 +618,44 @@ NS_ASSUME_NONNULL_BEGIN
                     indicator.timestampForSorting);
             }
         }
+
+        // Determine the position of the focus message _after_ performing any mutations
+        // around dynamic interactions.
+        if (focusMessageId != nil) {
+            result.focusMessagePosition =
+                [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
+        }
     }];
 
     return result;
+}
+
+
++ (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                      focusMessageId:(NSString *)focusMessageId
+{
+    OWSAssert(thread);
+    OWSAssert(transaction);
+    OWSAssert(focusMessageId);
+
+    // Enumerate in reverse to count the number of messages after the "focus message".
+    __block NSUInteger count = 0;
+    __block BOOL didMatch = NO;
+    [[transaction ext:TSMessageDatabaseViewExtensionName]
+        enumerateKeysInGroup:thread.uniqueId
+                 withOptions:NSEnumerationReverse
+                  usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+                      if ([key isEqualToString:focusMessageId]) {
+                          didMatch = YES;
+                          *stop = YES;
+                          return;
+                      }
+
+                      count++;
+                  }];
+
+    return didMatch ? @(count) : nil;
 }
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager

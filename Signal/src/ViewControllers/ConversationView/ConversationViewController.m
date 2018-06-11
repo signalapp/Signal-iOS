@@ -1095,6 +1095,7 @@ typedef enum : NSUInteger {
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
+    [self autoLoadMoreIfNecessary];
 
     switch (self.actionOnOpen) {
         case ConversationViewActionNone:
@@ -1664,8 +1665,19 @@ typedef enum : NSUInteger {
     
     if (self.lastRangeLength == 0) {
         // If this is the first time we're configuring the range length,
-        // try to take into account the position of the unread indicator.
+        // try to take into account the position of the unread indicator
+        // and the "focus message".
         OWSAssert(self.dynamicInteractions);
+
+        if (self.focusMessageIdOnOpen) {
+            OWSAssert(self.dynamicInteractions.focusMessagePosition);
+            if (self.dynamicInteractions.focusMessagePosition) {
+                DDLogVerbose(@"%@ ensuring load of focus message: %@",
+                    self.logTag,
+                    self.dynamicInteractions.focusMessagePosition);
+                rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
+            }
+        }
 
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
@@ -1679,7 +1691,7 @@ typedef enum : NSUInteger {
             // We'd like to include at least N seen messages,
             // to give the user the context of where they left off the conversation.
             const NSUInteger kPreferredSeenMessageCount = 1;
-            rangeLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
+            rangeLength = MAX(rangeLength, unreadIndicatorPosition + kPreferredSeenMessageCount);
         }
     }
 
@@ -2503,6 +2515,7 @@ typedef enum : NSUInteger {
                                           dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
+                                        focusMessageId:self.focusMessageIdOnOpen
                                           maxRangeSize:maxRangeSize];
 }
 

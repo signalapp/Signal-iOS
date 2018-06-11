@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 // to include the unread indicator.
 @property (nonatomic, nullable, readonly) NSNumber *unreadIndicatorPosition;
 
+@property (nonatomic, nullable, readonly) NSNumber *focusMessagePosition;
+
 // If there are unseen messages in the thread, this is the timestamp
 // of the oldest unseen message.
 //
@@ -105,6 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
+                                                   focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize;
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
