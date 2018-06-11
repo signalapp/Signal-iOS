@@ -91,13 +91,13 @@ public class FullTextSearchFinder: NSObject {
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let searchableContent =  "\(recipientId) \(displayName)"
+        let searchableContent = "\(recipientId) \(displayName)"
 
         return normalize(text: searchableContent)
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
-        let searchableContent =  message.body ?? ""
+        let searchableContent = message.body ?? ""
 
         return normalize(text: searchableContent)
     }
@@ -109,6 +109,8 @@ public class FullTextSearchFinder: NSObject {
             return self.contactThreadIndexer.index(contactThread)
         } else if let message = object as? TSMessage {
             return self.messageIndexer.index(message)
+        } else if let signalAccount = object as? SignalAccount {
+            return self.recipientIndexer.index(signalAccount.recipientId)
         } else {
             return nil
         }

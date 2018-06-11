@@ -34,6 +34,7 @@ class ConversationSearchViewController: UITableViewController {
 
         tableView.register(ConversationSearchResultCell.self, forCellReuseIdentifier: ConversationSearchResultCell.reuseIdentifier)
         tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
+        tableView.register(ContactSearchResultCell.self, forCellReuseIdentifier: ContactSearchResultCell.reuseIdentifier)
     }
 
     // MARK: UITableViewDelegate
@@ -102,8 +103,16 @@ class ConversationSearchViewController: UITableViewController {
             cell.configure(searchResult: searchResult)
             return cell
         case .contacts:
-            // TODO
-            return UITableViewCell()
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactSearchResultCell.reuseIdentifier) as? ContactSearchResultCell else {
+                return UITableViewCell()
+            }
+
+            guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
+                return UITableViewCell()
+            }
+
+            cell.configure(searchResult: searchResult)
+            return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageSearchResultCell.reuseIdentifier) as? MessageSearchResultCell else {
                 return UITableViewCell()
@@ -209,7 +218,7 @@ class ConversationSearchResultCell: UITableViewCell {
         return Environment.current().contactsManager
     }
 
-    func configure(searchResult: SearchResult) {
+    func configure(searchResult: ConversationSearchResult) {
         self.avatarView.image = OWSAvatarBuilder.buildImage(thread: searchResult.thread.threadRecord, diameter: avatarWidth, contactsManager: self.contactsManager)
         self.nameLabel.text = searchResult.thread.name
         self.snippetLabel.text = searchResult.snippet
@@ -242,7 +251,7 @@ class MessageSearchResultCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(searchResult: SearchResult) {
+    func configure(searchResult: ConversationSearchResult) {
         self.nameLabel.text = searchResult.thread.name
 
         guard let snippet = searchResult.snippet else {
@@ -270,5 +279,51 @@ class MessageSearchResultCell: UITableViewCell {
         } catch {
             owsFail("failed to generate snippet: \(error)")
         }
+    }
+}
+
+class ContactSearchResultCell: UITableViewCell {
+    static let reuseIdentifier = "ContactSearchResultCell"
+
+    let nameLabel: UILabel
+    let snippetLabel: UILabel
+    let avatarView: AvatarImageView
+    let avatarWidth: UInt = 40
+
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        self.nameLabel = UILabel()
+        self.snippetLabel = UILabel()
+        self.avatarView = AvatarImageView()
+        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(avatarWidth), height: CGFloat(avatarWidth)))
+
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
+        snippetLabel.font = UIFont.ows_dynamicTypeFootnote
+
+        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
+        textRows.axis = .vertical
+
+        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        columns.axis = .horizontal
+        columns.spacing = 8
+
+        contentView.addSubview(columns)
+        columns.autoPinEdgesToSuperviewMargins()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    var contactsManager: OWSContactsManager {
+        return Environment.current().contactsManager
+    }
+
+    func configure(searchResult: ContactSearchResult) {
+        let avatarBuilder = OWSContactAvatarBuilder.init(signalId: searchResult.recipientId, diameter: avatarWidth, contactsManager: contactsManager)
+        self.avatarView.image = avatarBuilder.build()
+        self.nameLabel.text = self.contactsManager.displayName(forPhoneIdentifier: searchResult.recipientId)
+        self.snippetLabel.text = searchResult.recipientId
     }
 }
