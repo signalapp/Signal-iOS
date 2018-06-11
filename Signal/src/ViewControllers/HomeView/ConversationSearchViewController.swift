@@ -33,6 +33,7 @@ class ConversationSearchViewController: UITableViewController {
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
 
+        tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(ConversationSearchResultCell.self, forCellReuseIdentifier: ConversationSearchResultCell.reuseIdentifier)
         tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
         tableView.register(ContactSearchResultCell.self, forCellReuseIdentifier: ContactSearchResultCell.reuseIdentifier)
@@ -92,8 +93,7 @@ class ConversationSearchViewController: UITableViewController {
 
         switch searchSection {
         case .noResults:
-            // We don't display a "no results" cell, we simply display no results.
-            return 0
+            return searchResultSet.isEmpty ? 1 : 0
         case .conversations:
             return searchResultSet.conversations.count
         case .contacts:
@@ -111,23 +111,39 @@ class ConversationSearchViewController: UITableViewController {
 
         switch searchSection {
         case .noResults:
-            return UITableViewCell()
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: EmptySearchResultCell.reuseIdentifier) as? EmptySearchResultCell else {
+                owsFail("cell was unexpectedly nil")
+                return UITableViewCell()
+            }
+
+            guard indexPath.row == 0 else {
+                owsFail("searchResult was unexpected index")
+                return UITableViewCell()
+            }
+
+            let searchText = self.searchResultSet.searchText
+            cell.configure(searchText: searchText)
+            return cell
         case .conversations:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationSearchResultCell.reuseIdentifier) as? ConversationSearchResultCell else {
+                owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.conversations[safe: indexPath.row] else {
+                owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
             cell.configure(searchResult: searchResult)
             return cell
         case .contacts:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactSearchResultCell.reuseIdentifier) as? ContactSearchResultCell else {
+                owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.contacts[safe: indexPath.row] else {
+                owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
 
@@ -135,10 +151,12 @@ class ConversationSearchViewController: UITableViewController {
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageSearchResultCell.reuseIdentifier) as? MessageSearchResultCell else {
+                owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
 
             guard let searchResult = self.searchResultSet.messages[safe: indexPath.row] else {
+                owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
 
@@ -148,7 +166,7 @@ class ConversationSearchViewController: UITableViewController {
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
 
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -347,5 +365,44 @@ class ContactSearchResultCell: UITableViewCell {
         self.avatarView.image = avatarBuilder.build()
         self.nameLabel.text = self.contactsManager.displayName(forPhoneIdentifier: searchResult.recipientId)
         self.snippetLabel.text = searchResult.recipientId
+    }
+}
+
+class EmptySearchResultCell: UITableViewCell {
+    static let reuseIdentifier = "EmptySearchResultCell"
+
+    let messageLabel: UILabel
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        self.messageLabel = UILabel()
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        messageLabel.font = UIFont.ows_dynamicTypeBody
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 3
+
+        contentView.addSubview(messageLabel)
+
+        messageLabel.autoSetDimension(.height, toSize: 150)
+
+        messageLabel.autoPinEdge(toSuperviewMargin: .top, relation: .greaterThanOrEqual)
+        messageLabel.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
+        messageLabel.autoPinEdge(toSuperviewMargin: .bottom, relation: .greaterThanOrEqual)
+        messageLabel.autoPinEdge(toSuperviewMargin: .trailing, relation: .greaterThanOrEqual)
+
+        messageLabel.autoVCenterInSuperview()
+        messageLabel.autoHCenterInSuperview()
+
+        messageLabel.setContentHuggingHigh()
+        messageLabel.setCompressionResistanceHigh()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public func configure(searchText: String) {
+        let format = NSLocalizedString("HOME_VIEW_SEARCH_NO_RESULTS_FORMAT", comment: "Format string when search returns no results. Embeds {{search term}}")
+        let messageText: String = NSString(format: format as NSString, searchText) as String
+        self.messageLabel.text = messageText
     }
 }
