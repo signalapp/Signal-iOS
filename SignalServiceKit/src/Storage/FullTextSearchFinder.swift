@@ -33,8 +33,16 @@ public class FullTextSearchFinder: NSObject {
         // TODO a stricter "whole word" query for body text?
         let prefixQuery = "*\(normalized)*"
 
+        let maxSearchResults = 500
+        var searchResultCount = 0
         // (snippet: String, collection: String, key: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>)
-        ext.enumerateKeysAndObjects(matching: prefixQuery, with: nil) { (snippet: String, _: String, _: String, object: Any, _: UnsafeMutablePointer<ObjCBool>) in
+        ext.enumerateKeysAndObjects(matching: prefixQuery, with: nil) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
+            guard searchResultCount < maxSearchResults else {
+                stop.pointee = true
+                return
+            }
+            searchResultCount = searchResultCount + 1
+
             block(object, snippet)
         }
     }
