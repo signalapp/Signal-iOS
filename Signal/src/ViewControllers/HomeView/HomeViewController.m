@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
-@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate, UISearchResultsUpdating>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -53,6 +53,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasBeenPresented;
+
+// Mark: Search
+
+@property (nonatomic) UISearchController *searchController;
+@property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 // Dependencies
 
@@ -238,7 +243,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-
+    
     [self updateReminderViews];
 }
 
@@ -261,7 +266,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [super viewDidLoad];
 
     self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-
+    
     // Create the database connection.
     [self uiDatabaseConnection];
 
@@ -289,7 +294,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
-
+    
+    // Search
+    
+    // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
+    ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
+    self.searchResultsController = searchResultsController;
+    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:searchResultsController];
+    self.searchController = searchController;
+    searchController.searchResultsUpdater = self;
+    self.tableView.tableHeaderView = self.searchController.searchBar;
+    self.definesPresentationContext = YES;
+        
     [self updateBarButtonItems];
 }
 
@@ -841,6 +857,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     return YES;
+}
+
+#pragma mark - SearchResultsUpdating
+
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
+{
+    [self.searchResultsController updateSearchResultsWithSearchText:self.searchController.searchBar.text];
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate

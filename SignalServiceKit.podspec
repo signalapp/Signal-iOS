@@ -25,7 +25,7 @@ An Objective-C library for communicating with the Signal messaging service.
   #s.ios.deployment_target = '9.0'
   #s.osx.deployment_target = '10.9'
   s.requires_arc = true
-  s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm}'
+  s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm,swift}'
 
   # We want to use modules to avoid clobbering CocoaLumberjack macros defined
   # by other OWS modules which *also* import CocoaLumberjack. But because we

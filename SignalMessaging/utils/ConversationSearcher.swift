@@ -1,17 +1,75 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 
+public class SearchResult {
+    public let thread: ThreadViewModel
+    public let snippet: String?
+
+    init(thread: ThreadViewModel, snippet: String?) {
+        self.thread = thread
+        self.snippet = snippet
+    }
+}
+
+public class SearchResultSet {
+    public let conversations: [SearchResult]
+    public let contacts: [SearchResult]
+    public let messages: [SearchResult]
+
+    public init(conversations: [SearchResult], contacts: [SearchResult], messages: [SearchResult]) {
+        self.conversations = conversations
+        self.contacts = contacts
+        self.messages = messages
+    }
+
+    public class var empty: SearchResultSet {
+        return SearchResultSet(conversations: [], contacts: [], messages: [])
+    }
+}
+
 @objc
 public class ConversationSearcher: NSObject {
+
+    private let finder: FullTextSearchFinder
 
     @objc
     public static let shared: ConversationSearcher = ConversationSearcher()
     override private init() {
+        finder = FullTextSearchFinder()
         super.init()
+    }
+
+    public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> SearchResultSet {
+        var conversations: [SearchResult] = []
+        var contacts: [SearchResult] = []
+        var messages: [SearchResult] = []
+
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+            if let thread = match as? TSThread {
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let snippet: String? = thread.lastMessageText(transaction: transaction)
+                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
+
+                conversations.append(searchResult)
+            } else if let message = match as? TSMessage {
+                let thread = message.thread(with: transaction)
+
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let searchResult = SearchResult(thread: threadViewModel, snippet: snippet)
+
+                messages.append(searchResult)
+            } else if let signalAccount = match as? SignalAccount {
+                // TODO show "other contact" results when there is no existing thread
+            } else {
+                Logger.debug("\(self.logTag) in \(#function) unhandled item: \(match)")
+            }
+        }
+
+        return SearchResultSet(conversations: conversations, contacts: contacts, messages: messages)
     }
 
     @objc(filterThreads:withSearchText:)
@@ -58,6 +116,7 @@ public class ConversationSearcher: NSObject {
     // MARK: - Helpers
 
     // MARK: Searchers
+
     private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
         let groupName = groupThread.groupModel.groupName
         let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
