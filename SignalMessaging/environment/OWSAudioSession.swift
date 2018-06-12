@@ -66,6 +66,12 @@ public class OWSAudioSession: NSObject {
 
         startAudioActivity(audioActivity)
 
+        guard currentActivities.count == 1 else {
+            // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
+            Logger.info("\(logTag) in \(#function) not touching audio session since another currentActivity exists.")
+            return
+        }
+
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
         } catch {
@@ -83,6 +89,12 @@ public class OWSAudioSession: NSObject {
         assert(avAudioSession.recordPermission() == .granted)
 
         startAudioActivity(audioActivity)
+
+        guard currentActivities.count == 1 else {
+            // We don't want to clobber the audio capabilities configured by (e.g.) media playback or an in-progress call
+            Logger.info("\(logTag) in \(#function) not touching audio session since another currentActivity exists.")
+            return false
+        }
 
         do {
             try avAudioSession.setCategory(AVAudioSessionCategoryRecord)

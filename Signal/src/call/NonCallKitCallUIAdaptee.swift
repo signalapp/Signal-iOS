@@ -90,6 +90,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
+        // TODO: We never set this to false.
         OWSAudioSession.shared.isRTCAudioEnabled = true
         self.callService.handleAnswerCall(call)
     }
@@ -124,6 +125,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
     func recipientAcceptedCall(_ call: SignalCall) {
         SwiftAssertIsOnMainThread(#function)
 
+        // TODO: We never set this to false.
         OWSAudioSession.shared.isRTCAudioEnabled = true
     }
 

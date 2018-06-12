@@ -3508,6 +3508,13 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer stop];
     self.audioAttachmentPlayer = nil;
 
+    if (SignalApp.sharedApp.callService.call != nil) {
+        [OWSAlerts showErrorAlertWithMessage:
+                       NSLocalizedString(@"ERROR_VOICE_MEMO_NOT_AVAILABLE_DURING_CALLS",
+                           @"Message for the alert indicating that voice memos aren't available during a call.")];
+        return;
+    }
+
     NSString *temporaryDirectory = NSTemporaryDirectory();
     NSString *filename = [NSString stringWithFormat:@"%lld.m4a", [NSDate ows_millisecondTimeStamp]];
     NSString *filepath = [temporaryDirectory stringByAppendingPathComponent:filename];
@@ -3516,7 +3523,7 @@ typedef enum : NSUInteger {
     // Setup audio session
     BOOL configuredAudio = [OWSAudioSession.shared startRecordingAudioActivity:self.voiceNoteAudioActivity];
     if (!configuredAudio) {
-        OWSFail(@"%@ Couldn't configure audio session", self.logTag);
+        DDLogError(@"%@ Couldn't configure audio session", self.logTag);
         [self cancelVoiceMemo];
         return;
     }
