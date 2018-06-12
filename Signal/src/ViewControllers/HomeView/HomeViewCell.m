@@ -79,6 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
+    const CGFloat kAvatarMinVMargin = 10;
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                      withInset:kAvatarMinVMargin
+                                       relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom
+                                      withInset:kAvatarMinVMargin
+                                       relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.payloadView = [UIStackView new];
     self.payloadView.axis = UILayoutConstraintAxisVertical;
