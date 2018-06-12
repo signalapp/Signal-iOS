@@ -329,40 +329,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     if (self.homeViewMode != HomeViewMode_Inbox) {
         return;
     }
-    const CGFloat kBarButtonSize = 44;
-    // We use UIButtons with [UIBarButtonItem initWithCustomView:...] instead of
-    // UIBarButtonItem in order to ensure that these buttons are spaced tightly.
-    // The contents of the navigation bar are cramped in this view.
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-    [button setImage:image forState:UIControlStateNormal];
-    UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
-    // We normally would want to use left and right insets that ensure the button
-    // is square and the icon is centered.  However UINavigationBar doesn't offer us
-    // control over the margins and spacing of its content, and the buttons end up
-    // too far apart and too far from the edge of the screen. So we use a smaller
-    // leading inset tighten up the layout.
-    CGFloat hInset = round((kBarButtonSize - image.size.width) * 0.5f);
-    if (self.view.isRTL) {
-        imageEdgeInsets.right = hInset;
-        imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
-    } else {
-        imageEdgeInsets.left = hInset;
-        imageEdgeInsets.right = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
-    }
-    imageEdgeInsets.top = round((kBarButtonSize - image.size.height) * 0.5f);
-    imageEdgeInsets.bottom = round(kBarButtonSize - (image.size.height + imageEdgeInsets.top));
-    button.imageEdgeInsets = imageEdgeInsets;
-    button.accessibilityLabel = CommonStrings.openSettingsButton;
 
-    [button addTarget:self action:@selector(settingsButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    button.frame = CGRectMake(0,
-        0,
-        round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
-        round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:button];
-    settingsButton.accessibilityLabel
-        = NSLocalizedString(@"SETTINGS_BUTTON_ACCESSIBILITY", @"Accessibility hint for the settings button");
+    //  Settings button.
+    UIImage *image = [UIImage imageNamed:@"button_settings_white"];
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsButtonPressed:)];
+    settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
 
     self.navigationItem.rightBarButtonItem =
