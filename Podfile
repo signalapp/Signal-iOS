@@ -90,6 +90,7 @@ def disable_optimizations_for_tests(installer)
 
     # Allow accurate step-thru debugging while in tests
     build_config.build_settings['GCC_OPTIMIZATION_LEVEL'] = '0'
+    build_config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
   end
 end
 
