@@ -7,7 +7,7 @@ import XCTest
 @testable import SignalMessaging
 
 @objc
-class FakeEnvironment: TextSecureKitEnv {
+class StubbableEnvironment: TextSecureKitEnv {
     let proxy: TextSecureKitEnv
 
     init(proxy: TextSecureKitEnv) {
@@ -17,51 +17,36 @@ class FakeEnvironment: TextSecureKitEnv {
 
     var stubbedCallMessageHandler: OWSCallMessageHandler?
     override var callMessageHandler: OWSCallMessageHandler {
-        if let callMessageHandler = stubbedCallMessageHandler {
-            return callMessageHandler
-        }
-        return proxy.callMessageHandler
+        return stubbedCallMessageHandler ?? proxy.callMessageHandler
     }
 
     var stubbedContactsManager: ContactsManagerProtocol?
     override var contactsManager: ContactsManagerProtocol {
-        if let contactsManager = stubbedContactsManager {
-            return contactsManager
-        }
-        return proxy.contactsManager
+        return stubbedContactsManager ?? proxy.contactsManager
     }
 
     var stubbedMessageSender: MessageSender?
     override var messageSender: MessageSender {
-        if let messageSender = stubbedMessageSender {
-            return messageSender
-        }
-        return proxy.messageSender
+        return stubbedMessageSender ?? proxy.messageSender
     }
 
     var stubbedNotificationsManager: NotificationsProtocol?
     override var notificationsManager: NotificationsProtocol {
-        if let notificationsManager = stubbedNotificationsManager {
-            return notificationsManager
-        }
-        return proxy.notificationsManager
+        return stubbedNotificationsManager ?? proxy.notificationsManager
     }
 
     var stubbedProfileManager: ProfileManagerProtocol?
     override var profileManager: ProfileManagerProtocol {
-        if let profileManager = stubbedProfileManager {
-            return profileManager
-        }
-        return proxy.profileManager
+        return stubbedProfileManager ?? proxy.profileManager
     }
 }
 
 @objc
 class FakeContactsManager: NSObject, ContactsManagerProtocol {
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
-        if phoneNumber == "+12345678900" {
+        if phoneNumber == aliceRecipientId {
             return "Alice"
-        } else if phoneNumber == "+49030183000" {
+        } else if phoneNumber == bobRecipientId {
             return "Bob Barker"
         } else {
             return ""
@@ -80,6 +65,9 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 }
+
+let bobRecipientId = "+49030183000"
+let aliceRecipientId = "+12345678900"
 
 class ConversationSearcherTest: XCTestCase {
 
@@ -113,23 +101,23 @@ class ConversationSearcherTest: XCTestCase {
 
         originalEnvironment = TextSecureKitEnv.shared()
 
-        let testEnvironment: FakeEnvironment = FakeEnvironment(proxy: originalEnvironment!)
+        let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()
         TextSecureKitEnv.setShared(testEnvironment)
 
         self.dbConnection.readWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", memberIds: ["+12345678900", "+49030183000"], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
-            let snackModel = TSGroupModel(title: "Snack Club", memberIds: ["+12345678900"], image: nil, groupId: Randomness.generateRandomBytes(16))
+            let snackModel = TSGroupModel(title: "Snack Club", memberIds: [aliceRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: "+12345678900", transaction: transaction)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: "+49030183000", transaction: transaction)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
             self.bobThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
@@ -191,7 +179,7 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual(0, threads.count)
 
         // Exact match
-        threads = searchConversations(searchText: "+12345678900")
+        threads = searchConversations(searchText: aliceRecipientId)
         XCTAssertEqual(3, threads.count)
         XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
