@@ -708,15 +708,23 @@ typedef enum : NSUInteger {
 - (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
 {
     OWSAssert(self.focusMessageIdOnOpen);
+    OWSAssert(self.dynamicInteractions.focusMessagePosition);
 
-    NSInteger row = 0;
-    for (ConversationViewItem *viewItem in self.viewItems) {
-        if ([viewItem.interaction.uniqueId isEqualToString:self.focusMessageIdOnOpen]) {
-            return [NSIndexPath indexPathForRow:row inSection:0];
-        }
-        row++;
+    if (!self.dynamicInteractions.focusMessagePosition) {
+        // This might happen if the focus message has disappeared
+        // before this view could appear.
+        OWSFail(@"%@ focus message has unknown position.", self.logTag);
+        return nil;
     }
-    return nil;
+    NSUInteger focusMessagePosition = self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue;
+    if (focusMessagePosition >= self.viewItems.count) {
+        // This might happen if the focus message is outside the maximum
+        // valid load window size for this view.
+        OWSFail(@"%@ focus message has invalid position.", self.logTag);
+        return nil;
+    }
+    NSInteger row = (NSInteger)((self.viewItems.count - 1) - focusMessagePosition);
+    return [NSIndexPath indexPathForRow:row inSection:0];
 }
 
 - (void)scrollToDefaultPosition

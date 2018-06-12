@@ -639,23 +639,29 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(focusMessageId);
 
-    // Enumerate in reverse to count the number of messages after the "focus message".
-    __block NSUInteger count = 0;
-    __block BOOL didMatch = NO;
-    [[transaction ext:TSMessageDatabaseViewExtensionName]
-        enumerateKeysInGroup:thread.uniqueId
-                 withOptions:NSEnumerationReverse
-                  usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
-                      if ([key isEqualToString:focusMessageId]) {
-                          didMatch = YES;
-                          *stop = YES;
-                          return;
-                      }
+    YapDatabaseViewTransaction *databaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
 
-                      count++;
-                  }];
-
-    return didMatch ? @(count) : nil;
+    NSString *_Nullable group = nil;
+    NSUInteger index;
+    BOOL success =
+        [databaseView getGroup:&group index:&index forKey:focusMessageId inCollection:TSInteraction.collection];
+    if (!success) {
+        // This might happen if the focus message has disappeared
+        // before this view could appear.
+        OWSFail(@"%@ failed to find focus message index.", self.logTag);
+        return nil;
+    }
+    if (![group isEqualToString:thread.uniqueId]) {
+        OWSFail(@"%@ focus message has invalid group.", self.logTag);
+        return nil;
+    }
+    NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
+    if (index >= count) {
+        OWSFail(@"%@ focus message has invalid index.", self.logTag);
+        return nil;
+    }
+    NSUInteger position = (count - index) - 1;
+    return @(position);
 }
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager

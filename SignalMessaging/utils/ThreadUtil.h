@@ -25,6 +25,10 @@ NS_ASSUME_NONNULL_BEGIN
 // to include the unread indicator.
 @property (nonatomic, nullable, readonly) NSNumber *unreadIndicatorPosition;
 
+// Represents the "reverse index" of the focus message, if any.
+// The "reverse index" is the distance of this interaction from
+// the last interaction in the thread.  Therefore the last interaction
+// will have a "reverse index" of zero.
 @property (nonatomic, nullable, readonly) NSNumber *focusMessagePosition;
 
 // If there are unseen messages in the thread, this is the timestamp
