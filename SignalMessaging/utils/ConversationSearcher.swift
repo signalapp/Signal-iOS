@@ -106,6 +106,7 @@ public class ConversationSearcher: NSObject {
         var existingConversationRecipientIds: Set<String> = Set()
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let snippet: String? = thread.lastMessageText(transaction: transaction)

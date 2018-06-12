@@ -191,22 +191,18 @@ class ConversationSearchViewController: UITableViewController {
                 }
                 overrideTimestamp = NSNumber(value: message.timestamp)
 
-                guard let snippet = searchResult.snippet else {
+                guard let rawSnippet = searchResult.snippet else {
                     owsFail("\(ConversationSearchViewController.logTag) message search result is missing snippet")
                     return
                 }
-                guard let snippetData = snippet.data(using: String.Encoding.utf8) else {
-                    owsFail("\(ConversationSearchViewController.logTag) message search result has invalid snippet")
-                    return
-                }
-                do {
-                    let snippetOptions = [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
-                    overrideSnippet = try NSAttributedString(data: snippetData,
-                                                             options: snippetOptions,
-                                                             documentAttributes: nil)
-                } catch {
-                    owsFail("\(ConversationSearchViewController.logTag) could not parse message snippet")
-                }
+                // YDB uses bold tags to highlight matches within the snippet.
+                let filteredSnippet = rawSnippet
+                    .replacingOccurrences(of: "<b>", with: "")
+                    .replacingOccurrences(of: "</b>", with: "")
+                    .replacingOccurrences(of: "<B>", with: "")
+                    .replacingOccurrences(of: "</B>", with: "")
+
+                overrideSnippet = NSAttributedString(string: filteredSnippet)
             }
 
             cell.configure(withThread: searchResult.thread,
