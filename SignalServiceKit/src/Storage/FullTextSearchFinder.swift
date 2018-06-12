@@ -27,11 +27,11 @@ public class FullTextSearchFinder: NSObject {
             return
         }
 
-        let normalized = FullTextSearchFinder.normalize(text: searchText)
+        let normalized = FullTextSearchFinder.normalize(queryText: searchText)
 
-        // We want a forgiving query for phone numbers
-        // TODO a stricter "whole word" query for body text?
-        let prefixQuery = "*\(normalized)*"
+        // We want to match by prefix for "search as you type" functionality.
+        // SQLite does not support suffix or contains matches.
+        let prefixQuery = "\(normalized)*"
 
         let maxSearchResults = 500
         var searchResultCount = 0
@@ -57,10 +57,10 @@ public class FullTextSearchFinder: NSObject {
         return TextSecureKitEnv.shared().contactsManager
     }
 
-    private class func normalize(text: String) -> String {
-        var normalized: String = text.trimmingCharacters(in: .whitespacesAndNewlines)
+    private class func normalize(indexingText: String) -> String {
+        var normalized: String = indexingText.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Remove any phone number formatting from the search terms
+        // Remove any formatting from the search terms
         let nonformattingScalars = normalized.unicodeScalars.lazy.filter {
             !CharacterSet.punctuationCharacters.contains($0)
         }
@@ -68,6 +68,27 @@ public class FullTextSearchFinder: NSObject {
         normalized = String(String.UnicodeScalarView(nonformattingScalars))
 
         return normalized
+    }
+
+    private class func normalize(queryText: String) -> String {
+        var normalized: String = queryText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove any formatting from the search terms
+        let nonformattingScalars = normalized.unicodeScalars.lazy.filter {
+            !CharacterSet.punctuationCharacters.contains($0)
+        }
+        let normalizedChars = String(String.UnicodeScalarView(nonformattingScalars))
+
+        let digitsOnlyScalars = normalized.unicodeScalars.lazy.filter {
+            CharacterSet.decimalDigits.contains($0)
+        }
+        let normalizedDigits = String(String.UnicodeScalarView(digitsOnlyScalars))
+
+        if normalizedDigits.count > 0 {
+            return "\(normalizedChars) OR \(normalizedDigits)"
+        } else {
+            return "\(normalizedChars)"
+        }
     }
 
     private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread) in
@@ -79,27 +100,43 @@ public class FullTextSearchFinder: NSObject {
 
         let searchableContent = "\(groupName) \(memberStrings)"
 
-        return normalize(text: searchableContent)
+        return normalize(indexingText: searchableContent)
     }
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread) in
         let recipientId =  contactThread.contactIdentifier()
         let searchableContent = recipientIndexer.index(recipientId)
 
-        return normalize(text: searchableContent)
+        return normalize(indexingText: searchableContent)
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String) in
         let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let searchableContent = "\(recipientId) \(displayName)"
 
-        return normalize(text: searchableContent)
+        let nationalNumber: String = { (recipientId: String) -> String in
+
+            guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
+                assertionFailure("unexpected unparseable recipientId: \(recipientId)")
+                return ""
+            }
+
+            guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
+                assertionFailure("unexpected unparseable recipientId: \(recipientId)")
+                return ""
+            }
+
+            return String(String.UnicodeScalarView(digitScalars))
+        }(recipientId)
+
+        let searchableContent = "\(recipientId) \(nationalNumber) \(displayName)"
+
+        return normalize(indexingText: searchableContent)
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
         let searchableContent = message.body ?? ""
 
-        return normalize(text: searchableContent)
+        return normalize(indexingText: searchableContent)
     }
 
     private class func indexContent(object: Any) -> String? {

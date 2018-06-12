@@ -35,10 +35,9 @@
 
 - (NSURL *)toSystemDialerURL;
 - (NSString *)toE164;
-- (NSString *)localizedDescriptionForUser;
 - (NSNumber *)getCountryCode;
+@property (nonatomic, readonly, nullable) NSString *nationalNumber;
 - (BOOL)isValid;
-- (BOOL)resolvesInternationallyTo:(PhoneNumber *)otherPhoneNumber;
 
 - (NSComparisonResult)compare:(PhoneNumber *)other;
 

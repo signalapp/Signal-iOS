@@ -210,18 +210,16 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
     }
 
-    // TODO
-    func pending_testSearchContactByNumber() {
-        var resultSet: SearchResultSet = .empty
-
+    func testSearchContactByNumberWithoutCountryCode() {
+        var threads: [ThreadViewModel] = []
         // Phone Number formatting should be forgiving
-        resultSet = getResultSet(searchText: "234.56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "234.56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
-        resultSet = getResultSet(searchText: "234 56")
-        XCTAssertEqual(1, resultSet.conversations.count)
-        XCTAssertEqual(aliceThread, resultSet.conversations.first?.thread)
+        threads = searchConversations(searchText: "234 56")
+        XCTAssertEqual(3, threads.count)
+        XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
     }
 
     func testSearchConversationByContactByName() {

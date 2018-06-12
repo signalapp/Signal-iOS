@@ -372,25 +372,23 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     return self.phoneNumber.countryCode;
 }
 
-- (BOOL)isValid {
-    return [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil isValidNumber:self.phoneNumber];
-}
-
-- (NSString *)localizedDescriptionForUser {
-    NBPhoneNumberUtil *phoneUtil = [PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil;
-
-    NSError *formatError = nil;
-    NSString *pretty =
-        [phoneUtil format:self.phoneNumber numberFormat:NBEPhoneNumberFormatINTERNATIONAL error:&formatError];
-
-    if (formatError != nil) {
-        return self.e164;
+- (nullable NSString *)nationalNumber
+{
+    NSError *error;
+    NSString *nationalNumber = [[PhoneNumberUtil sharedThreadLocal] format:self.phoneNumber
+                                                              numberFormat:NBEPhoneNumberFormatNATIONAL
+                                                                     error:&error];
+    if (error) {
+        DDLogVerbose(@"%@ error parsing number into national format: %@", self.logTag, error);
+        return nil;
     }
-    return pretty;
+
+    return nationalNumber;
 }
 
-- (BOOL)resolvesInternationallyTo:(PhoneNumber *)otherPhoneNumber {
-    return [self.toE164 isEqualToString:otherPhoneNumber.toE164];
+- (BOOL)isValid
+{
+    return [[PhoneNumberUtil sharedThreadLocal].nbPhoneNumberUtil isValidNumber:self.phoneNumber];
 }
 
 - (NSString *)description {
