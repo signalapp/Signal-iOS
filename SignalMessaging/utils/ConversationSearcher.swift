@@ -5,7 +5,7 @@
 import Foundation
 import SignalServiceKit
 
-public class ConversationSearchResult: NSObject, Comparable {
+public class ConversationSearchResult: Comparable {
     public let thread: ThreadViewModel
 
     public let messageId: String?
@@ -30,30 +30,28 @@ public class ConversationSearchResult: NSObject, Comparable {
     // MARK: Equatable
 
     public static func == (lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
-        if lhs.thread.threadRecord.uniqueId != rhs.thread.threadRecord.uniqueId {
-            return false
-        }
-        return NSObject.isNullableObject(lhs.messageId as NSObject?, equalTo: rhs.messageId as NSObject?)
+        return lhs.thread.threadRecord.uniqueId == rhs.thread.threadRecord.uniqueId &&
+            lhs.messageId == rhs.messageId
     }
 }
 
-public class ContactSearchResult: NSObject, Comparable {
+public class ContactSearchResult: Comparable {
     public let signalAccount: SignalAccount
+    public let contactsManager: OWSContactsManager
+
     public var recipientId: String {
         return signalAccount.recipientId
     }
 
-    private var sortKey: String = ""
-
-    init(signalAccount: SignalAccount, sortKey: String) {
+    init(signalAccount: SignalAccount, contactsManager: OWSContactsManager) {
         self.signalAccount = signalAccount
-        self.sortKey = sortKey
+        self.contactsManager = contactsManager
     }
 
     // Mark: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.sortKey < rhs.sortKey
+        return lhs.contactsManager.compareSignalAccount(lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
     }
 
     // MARK: Equatable
@@ -128,12 +126,7 @@ public class ConversationSearcher: NSObject {
                 let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: message.uniqueId, snippet: snippet, sortKey: sortKey)
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
-                let anyFont = UIFont.systemFont(ofSize: 12)
-                let sortKey = contactsManager.attributedStringForConversationTitle(withPhoneIdentifier: signalAccount.recipientId,
-                    primaryFont: anyFont,
-                    secondaryFont: anyFont).string
-
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, sortKey: sortKey)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
                 contacts.append(searchResult)
             } else {
                 owsFail("\(self.logTag) in \(#function) unhandled item: \(match)")
@@ -145,8 +138,8 @@ public class ConversationSearcher: NSObject {
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
-        conversations = conversations.sorted().reversed()
-        messages = messages.sorted().reversed()
+        conversations = conversations.sorted(by: >)
+        messages = messages.sorted(by: >)
         // Order "other" contact results by display name.
         otherContacts = otherContacts.sorted()
 
