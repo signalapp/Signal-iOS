@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Kas blokeerida %@?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Jätka";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Tehtud";
@@ -798,7 +798,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Kõne ei õnnestunud.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Puudub juurdepääs kontaktidele.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Sõnumi saatmine ei õnnestunud.";
@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Sõnumi saatmine ei õnnestunud kehtivate saajate puudumise tõttu.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Võrgupäring ei õnnestunud.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Vigane vastus teenuselt.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "See seade ei ole enam sinu telefoninumbri jaoks registreeritud. Sa pead Signali eemaldama ja uuesti paigaldama.";
@@ -1047,7 +1047,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Kutsu sõpru";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Mitme kasutaja korraga kutsumine saadab grupisõnumi, mille saajad näevad üksteist.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Sõnumid kaovad pärast %@.";
@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Leia kontaktid numbri järgi";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Sa võisid %@'i taaskäivitamise ajal saada sõnumeid.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Sõnumi saatmine kasutajale %@ ei õnnestunud.";

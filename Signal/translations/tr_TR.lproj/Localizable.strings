@@ -68,7 +68,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@ grubundaki %@: %@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Sinyal başlatılamıyor. Lütfen bu sorunu çözmek için hata ayıklama günlüklerinizi ekibimize gönderin.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal başlatılamıyor. Lütfen bu sorunu çözmek için hata ayıklama günlüklerinizi ekibimize gönderin.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Hata";
@@ -131,7 +131,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Resim eki ayrıştırılamadı.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Görüntüye ait üstveri kaldırılamadı.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Resim boyutlandırılamadı.";
@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@engellensin mi?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Devam et";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Tamam";
@@ -410,7 +410,7 @@
 "CONFIRMATION_TITLE" = "Onay";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Adres";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Engellendi";
@@ -458,10 +458,10 @@
 "CONTACT_FIELD_MIDDLE_NAME" = "İkinci ad";
 
 /* Label for the 'name prefix' field of a contact. */
-"CONTACT_FIELD_NAME_PREFIX" = "Prefix";
+"CONTACT_FIELD_NAME_PREFIX" = "Ön ek";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "Suffix";
+"CONTACT_FIELD_NAME_SUFFIX" = "Son ek";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "Kuruluş";
@@ -488,13 +488,13 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Geçersiz kişi.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Kişi alanı seçilmedi.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Harita'da Aç";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "E-posta Gönder";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "İsimsiz Kişi";
@@ -629,7 +629,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "E-posta Desteği";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Son Konuya Gönder";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Kendine Gönder";
@@ -798,7 +798,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Arama Hatası.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Kişilere erişilemedi.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Mesajı gönderilmedi.";
@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Mesaj gönderimi, geçerli alıcı olmadığından başarısız oldu.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Ağ isteği başarısız oldu.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Hizmetten geçersiz yanıt.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Cihazınız artık telefon numaranız için kayıtlı değil. Signal'ı kaldırıp tekrar kurmalısınız.";
@@ -867,7 +867,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Güvenlik numarası değişti. Doğrulamak için dokunun";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Kayıtlı Olmayan Kullanıcı: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu irtibatta çok fazla arıza var. Lütfen kısa bir süre sonra tekrar deneyin.";
@@ -903,7 +903,7 @@
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "İstenen GIF getirilemedi. Lütfen çevrimiçi olduğunuzu doğrulayın.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = "An unknown error occurred.";
+"GIF_PICKER_ERROR_GENERIC" = "Bilinmeyen bir hata oluştu.";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "GIF Seçilemiyor";
@@ -981,7 +981,7 @@
 "GROUP_YOU_LEFT" = "Grubu terk ettin.";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arşivlenmiş Görüşmeler";
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Engellendi";
@@ -1008,7 +1008,7 @@
 "IN_CALL_TERMINATED" = "Çağrı Sonlandı.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bu görüşmeler arşivlendi. Yeni mesajlar alınırsa gelen kutusunda görünecekler.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Kişilerinizin adını görmek için, sistem ayarlarını kişi erişimine izin verecek şekilde güncelleyin.";
@@ -1047,7 +1047,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Arkadaş davet et";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Aynı anda birden çok kullanıcıyı davet etmek, alıcıların birbirlerini görebilecekleri bir grup mesajı gönderir.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Mesaj şu zamandan sonra kayıp oluyor: %@.";
@@ -1101,7 +1101,7 @@
 "LOGGING_SECTION" = "Sistem kaydı";
 
 /* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Message";
+"LONG_TEXT_VIEW_TITLE" = "Mesaj";
 
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Tüm Medyalar";
@@ -1161,7 +1161,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Gönderildi";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Skipped";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Atlanan";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Yükleniyor";
@@ -1197,7 +1197,7 @@
 "MESSAGE_STATUS_READ" = "Okundu";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Atlandı";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Gönderiliyor...";
@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kişileri Telefon Numarası ile bul";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@ yeniden başlatırken mesaj almış olabilirsiniz.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Mesajın %@ isimli kullanıcıya gönderilemedi.";
@@ -1544,13 +1544,13 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Replying to %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@ cevaben";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Replying to You";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Size Cevaben";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Replying to Yourself";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Kendinize Cevaben";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Ek";
@@ -1580,10 +1580,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN kodumu unuttum.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Bu telefon numarasının kaydı, numaranın en son Signal üzerinde aktif olmasının üzerinden 7 gün geçtikten sonra Kayıt Kilidi PIN'iniz olmadan mümkün olabilecektir.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.\n\nYour Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
+"REGISTER_2FA_INSTRUCTIONS" = "Bu telefon numarası Kayıt Kilidi etkin. Lütfen Kayıt Kilidi PIN kodunu giriniz.\n\nKayıt Kilidi PIN'iniz, son adımda telefonunuza gönderilen otomatik doğrulama kodundan ayrıdır.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Kayıt Başarısız";
@@ -1607,7 +1607,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Ülke Kodu";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Registration Lock";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Kayıt Kilidi";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Numarayı Gir";
@@ -1619,13 +1619,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Sizi gönderdiğimiz kodu doğrulayana kadar hesabınızı aktive edemiyoruz.";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+"REGISTRATION_LEGAL_TERMS_LINK" = "Şartlar ve Gizlilik Politikası";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Bu cihazı kaydederek Signal'ın %@kabul etmiş olursunuz.";
 
 /* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "şartlar";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Bu telefon numarası formatı desteklenmiyor, lütfen destek ile iletişime geç.";
@@ -1646,7 +1646,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Gönderdiğiniz sayılar gönderdiğimizle eşleşmiyor. Çifte kontrol etmek ister misiniz?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hatalı Kayıt Kilidi PIN'i.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_VERIFY_DEVICE" = "Bu cihazı etkinleştir";
@@ -1670,22 +1670,22 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Kayıt etmeye çalıştığın telefon numarası zaten başka bir sunucuda kayıtlı, lütfen oradan kayıdını kaldır ve tekrar dene. ";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Registration Lock is enabled for your phone number. To help you memorize your Registration Lock PIN, Signal will periodically ask you to confirm it.";
+"REMINDER_2FA_BODY" = "Telefon numaranız için Kayıt Kilidi etkinleştirildi. Kayıt Kilitleme PIN'inizi ezberlemenize yardımcı olmak için Signal onu periyodik olarak onaylamanızı ister.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Reminder:";
+"REMINDER_2FA_BODY_HEADER" = "Uyarı:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kayıt Kilidi, telefon numaranızın yetkisiz kayıt girişimlerinden korunmasına yardımcı olur. Bu özellik, Signal gizlilik ayarlarınızda herhangi bir zamanda devre dışı bırakılabilir.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Kayıt Kilidi PIN'inizi Girin";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Gizlilik ayarlarınızdan yeni bir PIN belirleyebilirsiniz.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Bu doğru PIN değil.";
 
 /* Short name for edit menu item to reply to a message. */
 "REPLY_ITEM_ACTION" = "Yanıtla";
@@ -1718,34 +1718,34 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "Karekodu tara";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Instant";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Derhal";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Kimlik doğrulaması yapılamadı.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Authentication failed.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Kimlik doğrulama başarısız oldu.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Çok fazla başarısız kimlik doğrulama girişimi. Lütfen daha sonra tekrar deneyiniz.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Ekran Kilidini kullanmak için iOS ayarlarınızdan bir şifre belirlemelisiniz.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Ekran Kilidini kullanmak için iOS ayarlarınızdan bir şifre belirlemelisiniz.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Ekran Kilidini kullanmak için iOS ayarlarınızdan bir şifre belirlemelisiniz.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Signal'i açmak için kimlik doğrulaması yapın.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Authentication Failed";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Kimlik doğrulama başarısız oldu.";
 
 /* Label for button on lock screen that lets users unlock Signal. */
-"SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
+"SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal'ın Kilidini Açın";
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "İsim ya da numara bul";
@@ -1826,7 +1826,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (varsayılan)";
 
 /* Label for the backup view in app settings. */
 "SETTINGS_BACKUP" = "Yedekleme";
@@ -1841,10 +1841,10 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Yedekleme Etkinleştirildi";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Phase";
+"SETTINGS_BACKUP_PHASE" = "Aşama";
 
 /* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Progress";
+"SETTINGS_BACKUP_PROGRESS" = "İlerleme";
 
 /* Label for status row in the in the backup settings view. */
 "SETTINGS_BACKUP_STATUS" = "Durum";
@@ -1910,22 +1910,22 @@
 "SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı davet edin";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "@signalapp kullanarak bana ulaşabilirsiniz. Hemen edinin: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Mesaj Sesi";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Şartlar ve Gizlilik Politikası";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ayarlar";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Telefonunuz kilitliyken Arama ve Mesaj bildirimleri görünebilir. Bu bildirimlerde neyin gösterildiğini sınırlamak isteyebilirsiniz.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notification Content";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Bildirim İçeriği";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Bildirimler";
@@ -1934,10 +1934,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Arayan adı ve numarasını göster";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS Telefon uygulamasında \"Son Aramalar\" listesinde aramaları göster.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Son Aramalarda Göster";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS arama entegrasyonu";
@@ -1952,10 +1952,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "İletiler okunduğunda görün ve paylaşın. Bu ayar isteğe bağlıdır ve tüm sohbetler için geçerlidir.";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
+"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekran Kilidi Zaman Aşımı";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID, veya iOS cihaz şifrenizi kullanarak Signal'ın kilidini açın. Ekran Kilidi etkinken gelen aramaları cevaplayabilir ve mesaj bildirimleri alabilirsiniz. Signal'ın bildirim ayarları, görüntülenen bilgileri özelleştirmenizi sağlar.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekran Kilidi";
@@ -2012,7 +2012,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@ ile olan güvenlik numaranız yakın zamanda değişti. Yeniden göndermeden önce ana uygulamadan doğrulamak isteyebilirsiniz.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Yükleniyor...";
@@ -2024,13 +2024,13 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Kayıtlı Değil";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Güncellemek veya kayıt olmak için Signal uygulamasını başlatın.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Hazır Değil";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Ek Dosyayı Gönderme Başarısız Oldu";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Yükleniyor...";
@@ -2051,7 +2051,7 @@
 "SMS_INVITE_BODY" = "Seni Signal kullanmaya davet ediyorum! İşte link:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "None";
+"SOUNDS_NONE" = "Hiçbiri";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ile güvenlik numaranız eşleşiyor. Bu kişiyi doğrulanmış olarak işaretleyebilirsiniz.";
@@ -2162,13 +2162,13 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Cevaplamak için kaydır";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "You can now choose default and per-conversation notification sounds, and calls will respect the ringtone you've chosen for each system contact.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Artık varsayılan ve konuşma başına bildirim seslerini seçebilirsiniz ve aramalar her sistem kişisi için seçtiğiniz zil sesine uygun olacaktır.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Review Notification Settings";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Bildirim Ayarlarını Gözden Geçirin";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Updated Call and Message Sounds";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Güncellenmiş Çağrı ve Mesaj Sesleri";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Profilinizi Ayarlayın";
@@ -2195,7 +2195,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Merhaba güvenli görüntülü aramalar!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal requires iOS 9 or later. Please upgrade iOS in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal iOS 9 veya üstü gerektirir. Lütfen Ayarlar uygulamasında >> Genel >> Yazılım Güncelleme'den iOS'u yükseltin.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS u Güncelle";

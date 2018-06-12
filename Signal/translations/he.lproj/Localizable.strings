@@ -389,13 +389,13 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "זה יאפס את היישומון ע\"י מחיקת ההודעות שלך וביטול הרישום שלך עם השרת. היישומון ייסגר לאחר מחיקת הנתונים.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "האם ברצונך באמת למחוק את החשבון שלך?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "האם אתה בטוח שאתה רוצה למחוק את החשבון שלך?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "לא תהיה לך אפשרות לשלוח או לקבל הודעות בקבוצה זו.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "האם את/ה בטוח/ה רוצה לעזוב?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "האם אתה באמת רוצה לעזוב?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "קשר מכשיר חדש";
@@ -407,7 +407,7 @@
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "מספר ביטחון עם %@ השתנה";
 
 /* Generic button text to proceed with an action */
-"CONFIRMATION_TITLE" = "אישור";
+"CONFIRMATION_TITLE" = "אשר";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "כתובת";
@@ -419,7 +419,7 @@
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "לא מאומת";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "מספר לא רשום";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "מספר בלתי רשום";
 
 /* Label for the 'edit name' button in the contact share approval view. */
 "CONTACT_EDIT_NAME_BUTTON" = "ערוך";
@@ -470,10 +470,10 @@
 "CONTACT_PHONE" = "טלפון";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "אין מייל";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "אין דוא\"ל זמין.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "אין מספר טלפון";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "אין מספר טלפון זמין.";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "בחר איש קשר";
@@ -620,7 +620,7 @@
 "DEBUG_LOG_ALERT_NO_LOGS" = "לא היה ניתן למצוא יומנים כלשהם.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "פתח דיווח תקל";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "פתח דוח תקל";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "העתק קישור";
@@ -648,10 +648,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "הכוונה מחדש של GitHub";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "פעילות אחרונה: %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "פעיל לאחרונה: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "מקושר: %@";
+"DEVICE_LINKED_AT_LABEL" = "קושר: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "שגיאה בטעינת רשימת מכשירים";
@@ -663,10 +663,10 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "כאשר מאופשר, הודעות אשר נשלחו והתקבלו בשיחה זו יעלמו לאחר שנקראו.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "כרגע הודעות נעלמות אחרי %@";
+"DISAPPEARING_MESSAGES_HINT" = "כרגע הודעות נעלמות לאחר %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "הגדרות הודעות נעלמות";
+"DISAPPEARING_MESSAGES_LABEL" = "הגדרות של הודעות נעלמות";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "בטל";
@@ -693,7 +693,7 @@
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "הוסף...";
 
 /* a title for the members section of the 'new/update group' view. */
-"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "חברים";
+"EDIT_GROUP_MEMBERS_SECTION_TITLE" = "חברי קבוצה";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "התווסף";
@@ -705,7 +705,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "שינית קבוצה זו. האם תרצה לשמור שינויים אלו?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "שינויים לא שמורים";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "שינויים בלתי שמורים";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "העתק";
@@ -744,7 +744,7 @@
 "EMPTY_CONTACTS_LABEL_LINE1" = "לאף אחד מאנשי הקשר שלך אין Signal.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "אולי תזמין מישהו?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "למה אינך מזמין מישהו?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "עצה: הוסף שיחה בתור תזכורת!";
@@ -753,7 +753,7 @@
 "EMPTY_INBOX_FIRST_TITLE" = "בוצע. בוצע. בוצע.";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_TEXT" = "אפס. שום דבר. כלום.";
+"EMPTY_INBOX_TEXT" = "כלום. אפס. שום דבר.";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_TITLE" = "ריק ונקי לגמרי.";
@@ -792,16 +792,16 @@
 "ENABLE_2FA_VIEW_TITLE" = "נעילת הרשמה";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "תפוס";
+"END_CALL_RESPONDER_IS_BUSY" = "תפוס.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "שיחה נכשלה";
+"END_CALL_UNCATEGORIZED_FAILURE" = "שיחה נכשלה.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "לא היה ניתן להשיג גישה אל אנשי הקשר.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "הודעה לא נשלחה";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "נכשל בשליחת הודעה.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "לא היה ניתן לשלוח עקב נתוני פרטיות מיושנים.";
@@ -840,7 +840,7 @@
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "כישלון: בקש מהשולח לעדכן את Signal ולשלוח מחדש.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "הגיע מסר כפול.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "התקבלה הודעה כפולה.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "המפתח של המקבל אינו תקין.";
@@ -849,10 +849,10 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "ההודעה שהתקבלה אינה מסונכרנת. הקש כדי לאפס את השיח המאובטח שלך.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "הגיע מסר שאינו תואם לגרסה הזאת.";
+"ERROR_MESSAGE_INVALID_VERSION" = "התקבלה הודעה בלתי תואמת עם גרסה זו.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "אין התחברות זמינה לאיש הקשר הזה.";
+"ERROR_MESSAGE_NO_SESSION" = "אין שיח זמין עבור איש קשר.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "מספר ביטחון השתנה.";
@@ -879,7 +879,7 @@
 "FAILED_VERIFICATION_TITLE" = "נכשל בוידוא מספר ביטחון!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמאומת";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "סמן כמוודא";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "אפס שיח";
@@ -936,10 +936,10 @@
 "GROUP_MANAGEMENT_SECTION" = "פרטי קבוצה";
 
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ הצטרף לקבוצה.";
+"GROUP_MEMBER_JOINED" = "%@ הצטרף אל הקבוצה.";
 
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ יצא מהקבוצה.";
+"GROUP_MEMBER_LEFT" = "%@ עזב את הקבוצה.";
 
 /* Button label to add information to an unknown contact */
 "GROUP_MEMBERS_ADD_CONTACT_INFO" = "הוסף איש קשר";
@@ -954,7 +954,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "זה ינקה את הוידוא של כל חברי הקבוצה שמספרי הביטחון שלהם השתנו מאז שוודאו בפעם האחרונה.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברים";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "חברי קבוצה";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "לא מסומן כמאומת";
@@ -963,28 +963,28 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "שלח הודעה";
 
 /* Button label for the 'show contact info' button */
-"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "פרטי איש קשר";
+"GROUP_MEMBERS_VIEW_CONTACT_INFO" = "מידע איש קשר";
 
 /* No comment provided by engineer. */
-"GROUP_REMOVING" = "עזיבת הקבוצה %@";
+"GROUP_REMOVING" = "עוזב את הקבוצה %@";
 
 /* Title of alert indicating that group deletion failed. */
-"GROUP_REMOVING_FAILED" = "עזיבת הקבוצה נכשלה";
+"GROUP_REMOVING_FAILED" = "נכשל בעזיבת קבוצה";
 
 /* No comment provided by engineer. */
-"GROUP_TITLE_CHANGED" = "הכותרת עכשיו היא „%@”.";
+"GROUP_TITLE_CHANGED" = "הכותרת היא עכשיו '%@'.";
 
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "הקבוצה עודכנה.";
+"GROUP_UPDATED" = "קבוצה עודכנה.";
 
 /* No comment provided by engineer. */
-"GROUP_YOU_LEFT" = "יצאת מהקבוצה.";
+"GROUP_YOU_LEFT" = "עזבת את הקבוצה.";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "שיחות מאורכבות";
 
 /* A label for conversations with blocked users. */
-"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "חסום";
+"HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "חסומים";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "ארכיון";
@@ -1020,7 +1020,7 @@
 "INCOMING_CALL_FROM" = "שיחה נכנסת מאת %@";
 
 /* info message recorded in conversation history when local user declined a call */
-"INCOMING_DECLINED_CALL" = "סירבת שיחה";
+"INCOMING_DECLINED_CALL" = "דחית שיחה";
 
 /* No comment provided by engineer. */
 "INCOMING_INCOMPLETE_CALL" = "שיחה נכנסת לקויה מאת";
@@ -1098,7 +1098,7 @@
 "load_earlier_messages" = "טען הודעות מוקדמות יותר";
 
 /* No comment provided by engineer. */
-"LOGGING_SECTION" = "רישום יומן";
+"LOGGING_SECTION" = "יומן אירועים";
 
 /* Title for the 'long text message' view. */
 "LONG_TEXT_VIEW_TITLE" = "הודעה";
@@ -1274,10 +1274,10 @@
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "שיחה לא נענתה מאת %@.";
 
 /* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "לא ניתן לשייך עוד מכשירים.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "אינך יכול לצמד עוד מכשירים כלשהם.";
 
 /* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "הגעת למספר המרבי של מכשירים שאפשר לשייך לחשבון שלך. נא להסיר מכשיר ולנסות לשייך שוב.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "הגעת למספר המרבי של מכשירים שאתה יכול לצמד אל החשבון שלך. אנא הסר מכשיר או נסה שוב לצמד מאוחר יותר.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "לא תקבל התראות עבור שיחות מושתקות.";
@@ -1301,7 +1301,7 @@
 "NETWORK_STATUS_HEADER" = "מצב רשת";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "לא מחובר";
+"NETWORK_STATUS_OFFLINE" = "מנותק";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "מצא לפי מספר טלפון";
@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "מצא אנשי קשר לפי מספר טלפון";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "ייתכן שקיבלת הודעות בזמן שה־%@ שלך הופעל מחדש.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "הודעתך נכשלה להישלח אל %@.";
@@ -1463,7 +1463,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal לא היה יכול למצוא מספר ביטחון כלשהו בלוח העריכה שלך. האם העתקת אותו כראוי?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Signal משתף מספר ביטחון נבדל. בדוק שוב כי %@ מציג את מספר הביטחון *שלך*.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "כל זוג של משתמשי Signal משתף מספר ביטחון נבדל. בדוק שוב כי %@ מציג את מספר הביטחון הנבדל *שלך*.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "אתה מריץ גרסה ישנה של Signal. אתה צריך לעדכן גרסה לפני שתוכל לוודא.";
@@ -1544,13 +1544,13 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "מגיב אל %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "משיב אל %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "מגיב אליך";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "משיב אליך";
 
 /* message header label when quoting yourself */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "מגיב אל עצמך";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "משיב אל עצמך";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "צרופה";
@@ -1688,7 +1688,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "זה לא ה־PIN הנכון.";
 
 /* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "הגב";
+"REPLY_ITEM_ACTION" = "השב";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "הירשם מחדש עבור התראות דחיפה";
@@ -1748,10 +1748,10 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "בטל נעילת Signal";
 
 /* No comment provided by engineer. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "חפש לפי שם או מספר טלפון";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "חפש לפי שם או מספר";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "ההתחברות המאובטחת אותחלה.";
+"SECURE_SESSION_RESET" = "שיח מאובטח אופס.";
 
 /* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
@@ -1778,7 +1778,7 @@
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "הזמן דרך מסרון: %@";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "הזמן חבר דרך SMS (ערוץ לא מבוטח)";
+"SEND_SMS_CONFIRM_TITLE" = "להזמין חבר דרך מסרון בלתי־מאובטח?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "האם תרצה להזמין את המספר הבא אל Signal:";
@@ -2102,7 +2102,7 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@שב";
 
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "ביטול";
+"TXT_CANCEL_TITLE" = "בטל";
 
 /* No comment provided by engineer. */
 "TXT_DELETE_TITLE" = "מחק";

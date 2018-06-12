@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "用手机号码搜索联系人";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "您可能在%@重启时收到了新消息。";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "给 %@ 的消息发送失败。";

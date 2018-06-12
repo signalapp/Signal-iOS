@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Заблокировать %@?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Продолжить";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Готово";
@@ -798,7 +798,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Звонок не удался.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Не удалось получить доступ к контактам.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ошибка отправки сообщения.";
@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ошибка отправки сообщения из-за отсутствия действующих получателей.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Сбой сетевого запроса.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Неверный ответ от службы.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Устройство больше не связано с вашим номером телефона. Необходимо удалить и переустановить Signal.";
@@ -1047,7 +1047,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Пригласить друзей";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "При одновременном приглашении нескольких пользователей будет отправлено групповое сообщение, получатели которого смогут видеть друг друга.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Сообщения будут исчезать через %@.";
@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Поиск по номеру телефона";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Возможно, вы получили сообщения во время перезапуска вашего %@.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "Ваше сообщение не отправлено %@ из-за ошибки.";
@@ -1619,13 +1619,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Невозможно активировать аккаунт до подтверждения отправленного вам кода.";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+"REGISTRATION_LEGAL_TERMS_LINK" = "Условия и политика конфиденциальности";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Регистрируясь на этом устройстве, вы соглашаетесь с %@ Signal";
 
 /* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "условиями";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Этот формат телефонного номера не поддерживается. Пожалуйста, обратитесь в поддержку.";
@@ -1916,7 +1916,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук сообщения";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Условия и политика конфиденциальности";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";

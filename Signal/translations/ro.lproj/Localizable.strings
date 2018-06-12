@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Blochez pe %@?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "Continuă";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "Gata";
@@ -798,7 +798,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Apelul a eșuat.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Contactele nu au putut fi accesate.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Trimiterea mesajului a eșuat.";
@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Mesajul nu a putut fi trimis deoarece nu există o listă validă de destinatari.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Cererea de rețea a eșuat.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Răspuns invalid de la serviciu.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Dispozitivul tău nu mai este înregistrat pentru numărul tău de telefon. Trebuie să ștergi și să reinstalezi Signal.";
@@ -1619,13 +1619,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nu putem activa contul tău până nu verifici codul pe care ți l-am trimis.";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+"REGISTRATION_LEGAL_TERMS_LINK" = "Termeni și politică de confidențialitate";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
 "REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
 
 /* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "condiții";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Acest format de număr de telefon nu este suportat, te rog contactează suportul tehnic.";
@@ -1916,7 +1916,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Sunet mesaj";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Termeni și politica de confidențialitate";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Setări";
