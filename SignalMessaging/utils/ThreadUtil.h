@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 // The "reverse index" is the distance of this interaction from
 // the last interaction in the thread.  Therefore the last interaction
 // will have a "reverse index" of zero.
+//
+// We use "reverse indices" because (among other uses) we use this to
+// determine the initial load window size.
 @property (nonatomic, nullable, readonly) NSNumber *focusMessagePosition;
 
 // If there are unseen messages in the thread, this is the timestamp
