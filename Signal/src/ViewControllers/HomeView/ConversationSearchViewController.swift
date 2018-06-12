@@ -18,6 +18,10 @@ class ConversationSearchViewController: UITableViewController {
         return ConversationSearcher.shared
     }
 
+    private var contactsManager: OWSContactsManager {
+        return Environment.current().contactsManager
+    }
+
     enum SearchSection: Int {
         case noResults
         case conversations
@@ -207,6 +211,7 @@ class ConversationSearchViewController: UITableViewController {
     public func updateSearchResults(searchText: String) {
         guard searchText.stripped.count > 0 else {
             self.searchResultSet = SearchResultSet.empty
+            self.tableView.reloadData()
             return
         }
 
@@ -217,7 +222,7 @@ class ConversationSearchViewController: UITableViewController {
             self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
         }
 
-        // TODO: more perfomant way to do this?
+        // TODO: more performant way to do this?
         self.tableView.reloadData()
     }
 }
