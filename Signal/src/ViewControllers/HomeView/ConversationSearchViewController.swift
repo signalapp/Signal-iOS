@@ -214,7 +214,7 @@ class ConversationSearchViewController: UITableViewController {
         // TODO: debounce?
 
         self.uiDatabaseConnection.read { transaction in
-            self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction)
+            self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
         }
 
         // TODO: more perfomant way to do this?

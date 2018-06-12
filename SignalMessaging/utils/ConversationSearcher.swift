@@ -5,28 +5,61 @@
 import Foundation
 import SignalServiceKit
 
-public class ConversationSearchResult {
+public class ConversationSearchResult: NSObject, Comparable {
     public let thread: ThreadViewModel
 
     public let messageId: String?
 
     public let snippet: String?
 
-    init(thread: ThreadViewModel, messageId: String?, snippet: String?) {
+    private let sortKey: UInt64
+
+    init(thread: ThreadViewModel, messageId: String?, snippet: String?, sortKey: UInt64) {
         self.thread = thread
         self.messageId = messageId
         self.snippet = snippet
+        self.sortKey = sortKey
+    }
+
+    // Mark: Comparable
+
+    public static func < (lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
+        return lhs.sortKey < rhs.sortKey
+    }
+
+    // MARK: Equatable
+
+    public static func == (lhs: ConversationSearchResult, rhs: ConversationSearchResult) -> Bool {
+        if lhs.thread.threadRecord.uniqueId != rhs.thread.threadRecord.uniqueId {
+            return false
+        }
+        return NSObject.isNullableObject(lhs.messageId as NSObject?, equalTo: rhs.messageId as NSObject?)
     }
 }
 
-public class ContactSearchResult {
+public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
     public var recipientId: String {
         return signalAccount.recipientId
     }
 
-    init(signalAccount: SignalAccount) {
+    private var sortKey: String = ""
+
+    init(signalAccount: SignalAccount, sortKey: String) {
         self.signalAccount = signalAccount
+        self.sortKey = sortKey
+    }
+
+    // Mark: Comparable
+
+    public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
+        return lhs.sortKey < rhs.sortKey
+    }
+
+    // MARK: Equatable
+
+    public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
+        return lhs.recipientId == rhs.recipientId
     }
 }
 
@@ -64,7 +97,10 @@ public class ConversationSearcher: NSObject {
         super.init()
     }
 
-    public func results(searchText: String, transaction: YapDatabaseReadTransaction) -> SearchResultSet {
+    public func results(searchText: String,
+                        transaction: YapDatabaseReadTransaction,
+                        contactsManager: OWSContactsManager) -> SearchResultSet {
+
         var conversations: [ConversationSearchResult] = []
         var contacts: [ContactSearchResult] = []
         var messages: [ConversationSearchResult] = []
@@ -75,22 +111,29 @@ public class ConversationSearcher: NSObject {
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let snippet: String? = thread.lastMessageText(transaction: transaction)
-                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: nil, snippet: snippet)
+                let sortKey = NSDate.ows_millisecondsSince1970(for: threadViewModel.lastMessageDate)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: nil, snippet: snippet, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
                     let recipientId = contactThread.contactIdentifier()
                     existingConversationRecipientIds.insert(recipientId)
                 }
+
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
                 let thread = message.thread(with: transaction)
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: message.uniqueId, snippet: snippet)
-
+                let sortKey = message.timestamp
+                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: message.uniqueId, snippet: snippet, sortKey: sortKey)
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
-                let searchResult = ContactSearchResult(signalAccount: signalAccount)
+                let anyFont = UIFont.systemFont(ofSize: 12)
+                let sortKey = contactsManager.attributedStringForConversationTitle(withPhoneIdentifier: signalAccount.recipientId,
+                    primaryFont: anyFont,
+                    secondaryFont: anyFont).string
+
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, sortKey: sortKey)
                 contacts.append(searchResult)
             } else {
                 owsFail("\(self.logTag) in \(#function) unhandled item: \(match)")
@@ -98,7 +141,14 @@ public class ConversationSearcher: NSObject {
         }
 
         // Only show contacts which were not included in an existing 1:1 conversation.
-        let otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
+        var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
+
+        // Order the conversation and message results in reverse chronological order.
+        // The contact results are pre-sorted by display name.
+        conversations = conversations.sorted().reversed()
+        messages = messages.sorted().reversed()
+        // Order "other" contact results by display name.
+        otherContacts = otherContacts.sorted()
 
         return SearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
     }
