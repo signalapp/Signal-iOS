@@ -118,7 +118,7 @@ class ConversationSearcherTest: XCTestCase {
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
-            self.bobThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.save(with: transaction)
@@ -140,7 +140,7 @@ class ConversationSearcherTest: XCTestCase {
     var snackClubThread: ThreadViewModel!
 
     var aliceThread: ThreadViewModel!
-    var bobThread: ThreadViewModel!
+    var bobEmptyThread: ThreadViewModel!
 
     // MARK: Tests
 
@@ -194,8 +194,8 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
         threads = searchConversations(searchText: "49")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "1-234-56")
         XCTAssertEqual(3, threads.count)
@@ -232,16 +232,16 @@ class ConversationSearcherTest: XCTestCase {
         XCTAssertEqual([bookClubThread, snackClubThread, aliceThread], threads)
 
         threads = searchConversations(searchText: "Bob")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "Barker")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
 
         threads = searchConversations(searchText: "Bob B")
-        XCTAssertEqual(2, threads.count)
-        XCTAssertEqual([bookClubThread, bobThread], threads)
+        XCTAssertEqual(1, threads.count)
+        XCTAssertEqual([bookClubThread], threads)
     }
 
     func testSearchMessageByBodyContent() {
