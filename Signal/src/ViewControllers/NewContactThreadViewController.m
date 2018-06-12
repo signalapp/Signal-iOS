@@ -432,19 +432,22 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
         NSMutableArray <OWSTableItem *> *contactItems = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            [contactItems addObject:[OWSTableItem itemWithCustomCellBlock:^{
-                ContactTableViewCell *cell = [ContactTableViewCell new];
-                BOOL isBlocked = [self.contactsViewHelper isRecipientIdBlocked:signalAccount.recipientId];
-                if (isBlocked) {
-                    cell.accessoryMessage
-                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                }
-                
-                [cell configureWithSignalAccount:signalAccount contactsManager:self.contactsViewHelper.contactsManager];
-                
-                return cell;
-            }
-                                        customRowHeight:[ContactTableViewCell rowHeight]
+            [contactItems addObject:[OWSTableItem
+                                        itemWithCustomCellBlock:^{
+                                            ContactTableViewCell *cell = [ContactTableViewCell new];
+                                            BOOL isBlocked = [self.contactsViewHelper
+                                                isRecipientIdBlocked:signalAccount.recipientId];
+                                            if (isBlocked) {
+                                                cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
+                                                    @"An indicator that a contact has been blocked.");
+                                            }
+
+                                            [cell configureWithSignalAccount:signalAccount
+                                                             contactsManager:self.contactsViewHelper.contactsManager];
+
+                                            return cell;
+                                        }
+                                        customRowHeight:UITableViewAutomaticDimension
                                         actionBlock:^{
                                             [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
                                         }]];
