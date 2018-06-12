@@ -11,6 +11,9 @@
 @interface HomeViewController : OWSViewController
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)presentThread:(TSThread *)thread
+               action:(ConversationViewAction)action
+       focusMessageId:(nullable NSString *)focusMessageId;
 
 - (void)showNewConversationView;
 

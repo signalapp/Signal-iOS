@@ -424,7 +424,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ConversationViewController *vc = [ConversationViewController new];
         TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
-        [vc configureForThread:thread action:ConversationViewActionNone];
+        [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
         [vc peekSetup];
 
         return vc;
@@ -1001,6 +1001,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
 {
+    [self presentThread:thread action:action focusMessageId:nil];
+}
+
+- (void)presentThread:(TSThread *)thread
+               action:(ConversationViewAction)action
+       focusMessageId:(nullable NSString *)focusMessageId
+{
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
         return;
@@ -1008,11 +1015,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *mvc = [ConversationViewController new];
-        [mvc configureForThread:thread action:action];
+        ConversationViewController *viewController = [ConversationViewController new];
+        [viewController configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
+        [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
     });
 }
 

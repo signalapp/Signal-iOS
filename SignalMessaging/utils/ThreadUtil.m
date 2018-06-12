@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSNumber *unreadIndicatorPosition;
 
+@property (nonatomic, nullable) NSNumber *focusMessagePosition;
+
 @property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
 
 @property (nonatomic) BOOL hasMoreUnseenMessages;
@@ -221,6 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                   firstUnseenInteractionTimestamp:
                                       (nullable NSNumber *)firstUnseenInteractionTimestampParameter
+                                                   focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
 {
     OWSAssert(thread);
@@ -615,9 +618,50 @@ NS_ASSUME_NONNULL_BEGIN
                     indicator.timestampForSorting);
             }
         }
+
+        // Determine the position of the focus message _after_ performing any mutations
+        // around dynamic interactions.
+        if (focusMessageId != nil) {
+            result.focusMessagePosition =
+                [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
+        }
     }];
 
     return result;
+}
+
+
++ (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                      focusMessageId:(NSString *)focusMessageId
+{
+    OWSAssert(thread);
+    OWSAssert(transaction);
+    OWSAssert(focusMessageId);
+
+    YapDatabaseViewTransaction *databaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
+
+    NSString *_Nullable group = nil;
+    NSUInteger index;
+    BOOL success =
+        [databaseView getGroup:&group index:&index forKey:focusMessageId inCollection:TSInteraction.collection];
+    if (!success) {
+        // This might happen if the focus message has disappeared
+        // before this view could appear.
+        OWSFail(@"%@ failed to find focus message index.", self.logTag);
+        return nil;
+    }
+    if (![group isEqualToString:thread.uniqueId]) {
+        OWSFail(@"%@ focus message has invalid group.", self.logTag);
+        return nil;
+    }
+    NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
+    if (index >= count) {
+        OWSFail(@"%@ focus message has invalid index.", self.logTag);
+        return nil;
+    }
+    NSUInteger position = (count - index) - 1;
+    return @(position);
 }
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager

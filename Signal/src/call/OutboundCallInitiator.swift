@@ -45,10 +45,7 @@ import SignalMessaging
         isVideo: Bool) -> Bool {
         // Rather than an init-assigned dependency property, we access `callUIAdapter` via Environment
         // because it can change after app launch due to user settings
-        guard let callUIAdapter = SignalApp.shared().callUIAdapter else {
-            owsFail("\(TAG) can't initiate call because callUIAdapter is nil")
-            return false
-        }
+        let callUIAdapter = SignalApp.shared().callUIAdapter
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFail("\(TAG) could not identify frontmostViewController in \(#function)")
             return false

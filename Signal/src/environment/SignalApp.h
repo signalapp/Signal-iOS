@@ -4,6 +4,8 @@
 
 #import "ConversationViewController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class AccountManager;
 @class CallService;
 @class CallUIAdapter;
@@ -17,8 +19,8 @@
 
 @interface SignalApp : NSObject
 
-@property (nonatomic, weak) HomeViewController *homeViewController;
-@property (nonatomic, weak) OWSNavigationController *signUpFlowNavigationController;
+@property (nonatomic, nullable, weak) HomeViewController *homeViewController;
+@property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
 
 // TODO: Convert to singletons?
 @property (nonatomic, readonly) OWSWebRTCCallMessageHandler *callMessageHandler;
@@ -40,6 +42,9 @@
 - (void)presentConversationForThreadId:(NSString *)threadId;
 - (void)presentConversationForThread:(TSThread *)thread;
 - (void)presentConversationForThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)presentConversationForThread:(TSThread *)thread
+                              action:(ConversationViewAction)action
+                      focusMessageId:(nullable NSString *)focusMessageId;
 
 #pragma mark - Methods
 
@@ -48,3 +53,5 @@
 + (void)clearAllNotifications;
 
 @end
+
+NS_ASSUME_NONNULL_END

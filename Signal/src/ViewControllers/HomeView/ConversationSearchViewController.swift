@@ -79,7 +79,9 @@ class ConversationSearchViewController: UITableViewController {
             }
 
             let thread = searchResult.thread
-            SignalApp.shared().presentConversation(for: thread.threadRecord, action: .compose)
+            SignalApp.shared().presentConversation(for: thread.threadRecord,
+                                                   action: .compose,
+                                                   focusMessageId: searchResult.messageId)
         }
     }
 

@@ -195,6 +195,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) NSUInteger lastRangeLength;
 @property (nonatomic) ConversationViewAction actionOnOpen;
+@property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
+
 @property (nonatomic) BOOL peek;
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
@@ -426,11 +428,16 @@ typedef enum : NSUInteger {
     [self hideInputIfNeeded];
 }
 
-- (void)configureForThread:(TSThread *)thread action:(ConversationViewAction)action
+- (void)configureForThread:(TSThread *)thread
+                    action:(ConversationViewAction)action
+            focusMessageId:(nullable NSString *)focusMessageId
 {
+    OWSAssert(thread);
+
     _thread = thread;
     _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     self.actionOnOpen = action;
+    self.focusMessageIdOnOpen = focusMessageId;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
@@ -698,13 +705,43 @@ typedef enum : NSUInteger {
     return nil;
 }
 
+- (NSIndexPath *_Nullable)indexPathOfMessageOnOpen
+{
+    OWSAssert(self.focusMessageIdOnOpen);
+    OWSAssert(self.dynamicInteractions.focusMessagePosition);
+
+    if (!self.dynamicInteractions.focusMessagePosition) {
+        // This might happen if the focus message has disappeared
+        // before this view could appear.
+        OWSFail(@"%@ focus message has unknown position.", self.logTag);
+        return nil;
+    }
+    NSUInteger focusMessagePosition = self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue;
+    if (focusMessagePosition >= self.viewItems.count) {
+        // This might happen if the focus message is outside the maximum
+        // valid load window size for this view.
+        OWSFail(@"%@ focus message has invalid position.", self.logTag);
+        return nil;
+    }
+    NSInteger row = (NSInteger)((self.viewItems.count - 1) - focusMessagePosition);
+    return [NSIndexPath indexPathForRow:row inSection:0];
+}
+
 - (void)scrollToDefaultPosition
 {
     if (self.isUserScrolling) {
         return;
     }
 
-    NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
+    NSIndexPath *_Nullable indexPath = nil;
+    if (self.focusMessageIdOnOpen) {
+        indexPath = [self indexPathOfMessageOnOpen];
+    }
+
+    if (!indexPath) {
+        indexPath = [self indexPathOfUnreadMessagesIndicator];
+    }
+
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
             [self.collectionView setContentOffset:CGPointZero animated:NO];
@@ -1066,6 +1103,7 @@ typedef enum : NSUInteger {
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
+    [self autoLoadMoreIfNecessary];
 
     switch (self.actionOnOpen) {
         case ConversationViewActionNone:
@@ -1081,8 +1119,9 @@ typedef enum : NSUInteger {
             break;
     }
 
+    // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
-
+    self.focusMessageIdOnOpen = nil;
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
@@ -1557,7 +1596,7 @@ typedef enum : NSUInteger {
     // Don’t auto-scroll after “loading more messages” unless we have “more unseen messages”.
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
-    if (hasEarlierUnseenMessages) {
+    if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
         [self scrollToUnreadIndicatorAnimated];
     }
 }
@@ -1634,8 +1673,19 @@ typedef enum : NSUInteger {
     
     if (self.lastRangeLength == 0) {
         // If this is the first time we're configuring the range length,
-        // try to take into account the position of the unread indicator.
+        // try to take into account the position of the unread indicator
+        // and the "focus message".
         OWSAssert(self.dynamicInteractions);
+
+        if (self.focusMessageIdOnOpen) {
+            OWSAssert(self.dynamicInteractions.focusMessagePosition);
+            if (self.dynamicInteractions.focusMessagePosition) {
+                DDLogVerbose(@"%@ ensuring load of focus message: %@",
+                    self.logTag,
+                    self.dynamicInteractions.focusMessagePosition);
+                rangeLength = MAX(rangeLength, 1 + self.dynamicInteractions.focusMessagePosition.unsignedIntegerValue);
+            }
+        }
 
         if (self.dynamicInteractions.unreadIndicatorPosition) {
             NSUInteger unreadIndicatorPosition
@@ -1649,7 +1699,7 @@ typedef enum : NSUInteger {
             // We'd like to include at least N seen messages,
             // to give the user the context of where they left off the conversation.
             const NSUInteger kPreferredSeenMessageCount = 1;
-            rangeLength = unreadIndicatorPosition + kPreferredSeenMessageCount;
+            rangeLength = MAX(rangeLength, unreadIndicatorPosition + kPreferredSeenMessageCount);
         }
     }
 
@@ -2473,6 +2523,7 @@ typedef enum : NSUInteger {
                                           dbConnection:self.editingDatabaseConnection
                            hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
                        firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
+                                        focusMessageId:self.focusMessageIdOnOpen
                                           maxRangeSize:maxRangeSize];
 }
 
