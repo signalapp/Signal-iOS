@@ -124,6 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.tableViewController.view];
     [_tableViewController.view autoPinWidthToSuperview];
 
+    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableViewController.tableView.estimatedRowHeight = 60;
+
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contactsPermissionReminderView];
     [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
     _tableViewController.tableView.tableHeaderView = searchBar;

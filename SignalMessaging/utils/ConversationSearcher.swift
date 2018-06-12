@@ -187,8 +187,6 @@ public class ConversationSearcher: NSObject {
         }
     }
 
-    // MARK: - Helpers
-
     // MARK: Searchers
 
     private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
@@ -202,11 +200,13 @@ public class ConversationSearcher: NSObject {
 
     private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
         let recipientId = contactThread.contactIdentifier()
+        Logger.verbose("contactThreadSearcher: \(self.indexingString(recipientId: recipientId))")
         return self.indexingString(recipientId: recipientId)
     }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
         let recipientId = signalAccount.recipientId
+        Logger.verbose("signalAccountSearcher: \(self.indexingString(recipientId: recipientId))")
         return self.indexingString(recipientId: recipientId)
     }
 

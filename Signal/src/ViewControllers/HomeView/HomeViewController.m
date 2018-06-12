@@ -31,6 +31,8 @@
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 typedef NS_ENUM(NSInteger, HomeViewMode) {
     HomeViewMode_Archive,
     HomeViewMode_Inbox,
@@ -100,7 +102,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     OWSFail(@"Do not load this from the storyboard.");
 
@@ -227,6 +229,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 60;
 
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;
@@ -409,8 +413,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
-              viewControllerForLocation:(CGPoint)location
+- (nullable UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
+                       viewControllerForLocation:(CGPoint)location
 {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
@@ -804,11 +808,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return thread;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return HomeViewCell.rowHeight;
-}
-
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();
@@ -828,7 +827,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return;
 }
 
-- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+- (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self isIndexPathForArchivedConversations:indexPath]) {
         return @[];
@@ -1370,3 +1369,5 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

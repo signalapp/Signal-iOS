@@ -29,7 +29,20 @@ class ConversationSearchViewController: UITableViewController {
         case messages
     }
 
+    var contactsManager: OWSContactsManager {
+        return Environment.current().contactsManager
+    }
+
+    var blockedPhoneNumberSet = Set<String>()
+
     // MARK: View Lifecyle
+
+    override public func loadView() {
+        super.loadView()
+
+        let blockingManager = OWSBlockingManager.shared()
+        blockedPhoneNumberSet = Set(blockingManager.blockedPhoneNumbers())
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,9 +51,8 @@ class ConversationSearchViewController: UITableViewController {
         tableView.estimatedRowHeight = 60
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
-        tableView.register(ConversationSearchResultCell.self, forCellReuseIdentifier: ConversationSearchResultCell.reuseIdentifier)
-        tableView.register(MessageSearchResultCell.self, forCellReuseIdentifier: MessageSearchResultCell.reuseIdentifier)
-        tableView.register(ContactSearchResultCell.self, forCellReuseIdentifier: ContactSearchResultCell.reuseIdentifier)
+        tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
     }
 
     // MARK: UITableViewDelegate
@@ -131,7 +143,7 @@ class ConversationSearchViewController: UITableViewController {
             cell.configure(searchText: searchText)
             return cell
         case .conversations:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationSearchResultCell.reuseIdentifier) as? ConversationSearchResultCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
                 owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -140,10 +152,10 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(searchResult: searchResult)
+            cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
             return cell
         case .contacts:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactSearchResultCell.reuseIdentifier) as? ContactSearchResultCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier()) as? ContactTableViewCell else {
                 owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -152,11 +164,10 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-
-            cell.configure(searchResult: searchResult)
+            cell.configure(with: searchResult.signalAccount, contactsManager: contactsManager)
             return cell
         case .messages:
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageSearchResultCell.reuseIdentifier) as? MessageSearchResultCell else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {
                 owsFail("cell was unexpectedly nil")
                 return UITableViewCell()
             }
@@ -166,7 +177,44 @@ class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
 
-            cell.configure(searchResult: searchResult)
+            var overrideSnippet = NSAttributedString()
+            var overrideTimestamp: NSNumber?
+            self.uiDatabaseConnection.read { transaction in
+                guard let messageId = searchResult.messageId else {
+                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message id")
+                    return
+                }
+                guard let message = TSInteraction.fetch(uniqueId: messageId, transaction: transaction) else {
+                    // This could happen if the message has disappeared, etc.
+                    Logger.error("\(ConversationSearchViewController.logTag) could not load message")
+                    return
+                }
+                overrideTimestamp = NSNumber(value: message.timestamp)
+
+                guard let snippet = searchResult.snippet else {
+                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing snippet")
+                    return
+                }
+                guard let snippetData = snippet.data(using: String.Encoding.utf8) else {
+                    owsFail("\(ConversationSearchViewController.logTag) message search result has invalid snippet")
+                    return
+                }
+                do {
+                    let snippetOptions = [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html]
+                    overrideSnippet = try NSAttributedString(data: snippetData,
+                                                             options: snippetOptions,
+                                                             documentAttributes: nil)
+                } catch {
+                    owsFail("\(ConversationSearchViewController.logTag) could not parse message snippet")
+                }
+            }
+
+            cell.configure(withThread: searchResult.thread,
+                           contactsManager: contactsManager,
+                           blockedPhoneNumber: self.blockedPhoneNumberSet,
+                overrideSnippet: overrideSnippet,
+                overrideTimestamp: overrideTimestamp)
+
             return cell
         }
     }
@@ -224,154 +272,6 @@ class ConversationSearchViewController: UITableViewController {
 
         // TODO: more performant way to do this?
         self.tableView.reloadData()
-    }
-}
-
-class ConversationSearchResultCell: UITableViewCell {
-    static let reuseIdentifier = "ConversationSearchResultCell"
-
-    let nameLabel: UILabel
-    let snippetLabel: UILabel
-    let avatarView: AvatarImageView
-    let avatarWidth: UInt = 40
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        self.nameLabel = UILabel()
-        self.snippetLabel = UILabel()
-        self.avatarView = AvatarImageView()
-        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(avatarWidth), height: CGFloat(avatarWidth)))
-
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        snippetLabel.font = UIFont.ows_dynamicTypeFootnote
-
-        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
-        textRows.axis = .vertical
-
-        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
-        columns.axis = .horizontal
-        columns.spacing = 8
-
-        contentView.addSubview(columns)
-        columns.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
-    }
-
-    func configure(searchResult: ConversationSearchResult) {
-        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: searchResult.thread.threadRecord, diameter: avatarWidth, contactsManager: self.contactsManager)
-        self.nameLabel.text = searchResult.thread.name
-        self.snippetLabel.text = searchResult.snippet
-    }
-}
-
-class MessageSearchResultCell: UITableViewCell {
-    static let reuseIdentifier = "MessageSearchResultCell"
-
-    let nameLabel: UILabel
-    let snippetLabel: UILabel
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        self.nameLabel = UILabel()
-        self.snippetLabel = UILabel()
-
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        snippetLabel.font = UIFont.ows_dynamicTypeFootnote
-
-        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
-        textRows.axis = .vertical
-
-        contentView.addSubview(textRows)
-        textRows.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure(searchResult: ConversationSearchResult) {
-        self.nameLabel.text = searchResult.thread.name
-
-        guard let snippet = searchResult.snippet else {
-            self.snippetLabel.text = nil
-            return
-        }
-
-        guard let encodedString = snippet.data(using: .utf8) else {
-            self.snippetLabel.text = nil
-            return
-        }
-
-        // Bold snippet text
-        do {
-
-            // FIXME - The snippet marks up the matched search text with <b> tags.
-            // We can parse this into an attributed string, but it also takes on an undesirable font.
-            // We want to apply our own font without clobbering bold in the process - maybe by enumerating and inspecting the attributes? Or maybe we can pass in a base font?
-            let attributedSnippet = try NSMutableAttributedString(data: encodedString,
-                                                                  options: [NSAttributedString.DocumentReadingOptionKey.documentType: NSAttributedString.DocumentType.html],
-                                                                  documentAttributes: nil)
-            attributedSnippet.addAttribute(NSAttributedStringKey.font, value: self.snippetLabel.font, range: NSRange(location: 0, length: attributedSnippet.length))
-
-            self.snippetLabel.attributedText = attributedSnippet
-        } catch {
-            owsFail("failed to generate snippet: \(error)")
-        }
-    }
-}
-
-class ContactSearchResultCell: UITableViewCell {
-    static let reuseIdentifier = "ContactSearchResultCell"
-
-    let nameLabel: UILabel
-    let snippetLabel: UILabel
-    let avatarView: AvatarImageView
-    let avatarWidth: UInt = 40
-
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        self.nameLabel = UILabel()
-        self.snippetLabel = UILabel()
-        self.avatarView = AvatarImageView()
-        avatarView.autoSetDimensions(to: CGSize(width: CGFloat(avatarWidth), height: CGFloat(avatarWidth)))
-
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-
-        nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        snippetLabel.font = UIFont.ows_dynamicTypeFootnote
-
-        let textRows = UIStackView(arrangedSubviews: [nameLabel, snippetLabel])
-        textRows.axis = .vertical
-
-        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
-        columns.axis = .horizontal
-        columns.spacing = 8
-
-        contentView.addSubview(columns)
-        columns.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
-    }
-
-    func configure(searchResult: ContactSearchResult) {
-        let avatarBuilder = OWSContactAvatarBuilder.init(signalId: searchResult.recipientId, diameter: avatarWidth, contactsManager: contactsManager)
-        self.avatarView.image = avatarBuilder.build()
-        self.nameLabel.text = self.contactsManager.displayName(forPhoneIdentifier: searchResult.recipientId)
-        self.snippetLabel.text = searchResult.recipientId
     }
 }
 
