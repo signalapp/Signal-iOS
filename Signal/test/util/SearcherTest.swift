@@ -341,4 +341,10 @@ class SearcherTest: XCTestCase {
         XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza 323"))
         XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Liza 323"))
     }
+
+    func testTextSanitization() {
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza"), "Liza")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza +1-323"), "Liza 1 323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "\"\\'!&@#$%^&*()Liza +1-323"), "Liza 1 323")
+    }
 }

@@ -28,6 +28,7 @@ public class SearchIndexer<T> {
         normalized = String(String.UnicodeScalarView(nonformattingScalars))
 
         return normalized
+//        return FullTextSearchFinder.filterIndexOrQueryText(text: indexingText)
     }
 }
 
@@ -64,6 +65,57 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
+    // Mark: Filtering
+    
+//    private class func characterSet(fromCharacter: UInt32, toCharacter: UInt32) -> CharacterSet {
+//        var string = ""
+//        // Add to include last character.
+//        for character in fromCharacter ..< toCharacter + 1 {
+//            guard let chr = Unicode.Scalar(character) else {
+//                assertionFailure("\(self.logTag) could not parse character.")
+//                continue
+//            }
+//            string += String(chr)
+//        }
+//        return CharacterSet(charactersIn: string)
+//    }
+//    
+//    private static var kFilterCharacters: CharacterSet = {
+//        var set = CharacterSet()
+//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 0, toCharacter: 31))
+//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 33, toCharacter: 47))
+//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 58, toCharacter: 64))
+//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 91, toCharacter: 96))
+//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 123, toCharacter: 126))
+//        return set
+//    }()
+//    
+//    public class func filterIndexOrQueryText(text: String) -> String {
+//        let filteredScalars = String(text.unicodeScalars.lazy.map {
+//            if kFilterCharacters.contains($0) {
+//                return " "
+//            } else {
+//                return Character($0)
+//            }
+//        })
+//        
+//        // Remove any phone number formatting from the search terms
+//        let nonformattingScalars = filteredScalars.unicodeScalars.lazy.filter {
+//            !CharacterSet.punctuationCharacters.contains($0)
+//        }
+//        
+//        var normalized = String(String.UnicodeScalarView(nonformattingScalars))
+//        
+//        // Simplify the normalized text by combining adjacent whitespace.
+//        while normalized.contains("  ") {
+//            normalized = normalized.replacingOccurrences(of: "  ", with: " ")
+//        }
+//        
+//        // We strip leading & trailing whitespace last, since we may replace
+//        // filtered characters with whitespace.
+//        return normalized.trimmingCharacters(in: .whitespacesAndNewlines)
+//    }
+    
     private func normalize(queryText: String) -> String {
         var normalized: String = queryText.trimmingCharacters(in: .whitespacesAndNewlines)
 
