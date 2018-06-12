@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -63,7 +63,8 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
     } else if (content.hasDataMessage) {
         return [NSString stringWithFormat:@"<DataMessage: %@ />", [self descriptionForDataMessage:content.dataMessage]];
     } else if (content.hasCallMessage) {
-        return [NSString stringWithFormat:@"<CallMessage: %@ />", content.callMessage];
+        NSString *callMessageDescription = [self descriptionForCallMessage:content.callMessage];
+        return [NSString stringWithFormat:@"<CallMessage %@ />", callMessageDescription];
     } else if (content.hasNullMessage) {
         return [NSString stringWithFormat:@"<NullMessage: %@ />", content.nullMessage];
     } else if (content.hasReceiptMessage) {
@@ -74,6 +75,35 @@ NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope)
         OWSFail(@"Unknown content type.");
         return @"UnknownContent";
     }
+}
+
+- (NSString *)descriptionForCallMessage:(OWSSignalServiceProtosCallMessage *)callMessage
+{
+    NSString *messageType;
+    UInt64 callId;
+    
+    if (callMessage.hasOffer) {
+        messageType = @"Offer";
+        callId = callMessage.offer.id;
+    } else if (callMessage.hasBusy) {
+        messageType = @"Busy";
+        callId = callMessage.busy.id;
+    } else if (callMessage.hasAnswer) {
+        messageType = @"Answer";
+        callId = callMessage.answer.id;
+    } else if (callMessage.hasHangup) {
+        messageType = @"Hangup";
+        callId = callMessage.hangup.id;
+    } else if (callMessage.iceUpdate.count > 0) {
+        messageType = [NSString stringWithFormat:@"Ice Updates (%lu)", (unsigned long)callMessage.iceUpdate.count];
+        callId = callMessage.iceUpdate.firstObject.id;
+    } else {
+        OWSFail(@"%@ failure: unexpected call message type: %@", self.logTag, callMessage);
+        messageType = @"Unknown";
+        callId = 0;
+    }
+
+    return [NSString stringWithFormat:@"type: %@, id: %llu", messageType, callId];
 }
 
 /**
