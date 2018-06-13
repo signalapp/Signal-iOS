@@ -97,6 +97,15 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     self.failure = nil;
 }
 
+- (void)timeoutIfNecessary
+{
+    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
+        NSLocalizedString(
+            @"ERROR_DESCRIPTION_REQUEST_TIMED_OUT", @"Error indicating that a socket request timed out."));
+
+    [self didFailWithStatusCode:0 responseData:nil error:error];
+}
+
 - (void)didFailBeforeSending
 {
     NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageRequestFailed,
@@ -520,7 +529,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [socketMessage didFailBeforeSending];
         return;
     }
-    DDLogVerbose(@"%@ message scheduled: %lld, %@, %@, %zd.",
+    DDLogVerbose(@"%@ message scheduled: %llu, %@, %@, %zd.",
         self.logTag,
         socketMessage.requestId,
         request.HTTPMethod,
@@ -532,13 +541,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, kSocketTimeoutSeconds * NSEC_PER_SEC),
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
         ^{
-            DDLogError(@"%@ message timed out: %lld, %@, %@, %zd.",
-                self.logTag,
-                socketMessage.requestId,
-                request.HTTPMethod,
-                requestPath,
-                jsonData.length);
-            [weakSocketMessage didFailBeforeSending];
+            [weakSocketMessage timeoutIfNecessary];
         });
 }
 
