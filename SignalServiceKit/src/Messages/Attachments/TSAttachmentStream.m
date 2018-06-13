@@ -672,6 +672,27 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
 }
 
+- (BOOL)isOversizeText
+{
+    return [self.contentType isEqualToString:OWSMimeTypeOversizeTextMessage];
+}
+
+- (nullable NSString *)readOversizeText
+{
+    if (!self.isOversizeText) {
+        OWSFail(@"%@ oversize text attachment has unexpected content type.", self.logTag);
+        return nil;
+    }
+    NSError *error;
+    NSData *_Nullable data = [self readDataFromFileWithError:&error];
+    if (error || !data) {
+        OWSFail(@"%@ could not read oversize text attachment: %@.", self.logTag, error);
+        return nil;
+    }
+    NSString *_Nullable string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return string;
+}
+
 #pragma mark - Update With... Methods
 
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment

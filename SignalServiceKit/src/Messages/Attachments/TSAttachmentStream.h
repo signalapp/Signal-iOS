@@ -58,6 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
 - (BOOL)writeDataSource:(DataSource *)dataSource;
 
+- (BOOL)isOversizeText;
+- (nullable NSString *)readOversizeText;
+
 + (void)deleteAttachments;
 + (NSString *)attachmentsFolder;
 
