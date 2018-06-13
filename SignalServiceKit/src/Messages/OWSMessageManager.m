@@ -888,8 +888,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageUpdate];
+
+    uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
+                                                           groupMetaMessage:TSGroupMessageUpdate
+                                                           expiresInSeconds:expiresInSeconds];
+
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
     [message updateWithSendingToSingleGroupRecipient:envelope.source transaction:transaction];

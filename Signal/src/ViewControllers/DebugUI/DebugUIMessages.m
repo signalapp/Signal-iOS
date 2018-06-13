@@ -3766,7 +3766,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }];
     OWSAssert(thread);
 
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew];
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew expiresInSeconds:0];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;

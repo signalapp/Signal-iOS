@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSDisappearingMessagesConfiguration;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -121,6 +122,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)unarchiveThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+
+#pragma mark Disappearing Messages
+
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
+    (YapDatabaseReadTransaction *)transaction;
+- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark Drafts
 

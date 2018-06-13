@@ -5,6 +5,7 @@
 #import "TSThread.h"
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "TSDatabaseView.h"
@@ -321,6 +322,26 @@ NS_ASSUME_NONNULL_BEGIN
         _lastMessageDate = lastMessageDate;
 
         [self saveWithTransaction:transaction];
+    }
+}
+
+#pragma mark Disappearing Messages
+
+- (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
+    (YapDatabaseReadTransaction *)transaction
+{
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+}
+
+- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+
+    OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
+
+    if (!config.isEnabled) {
+        return 0;
+    } else {
+        return config.durationSeconds;
     }
 }
 

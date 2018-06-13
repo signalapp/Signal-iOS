@@ -75,8 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                                              OWSDisappearingMessagesConfiguration *config =
                                                  [OWSDisappearingMessagesConfiguration
-                                                     fetchOrCreateDefaultWithThreadId:thread.uniqueId
-                                                                          transaction:transaction];
+                                                     fetchOrBuildDefaultWithThreadId:thread.uniqueId
+                                                                         transaction:transaction];
                                              [config removeWithTransaction:transaction];
                                          }];
                                      }]];

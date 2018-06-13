@@ -50,8 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (instancetype)fetchOrCreateDefaultWithThreadId:(NSString *)threadId
-                                     transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId
+                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *savedConfiguration =
         [self fetchObjectWithUniqueID:threadId transaction:transaction];

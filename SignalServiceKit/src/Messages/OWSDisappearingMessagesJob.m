@@ -205,8 +205,8 @@ void AssertIsOnDisappearingMessagesQueue()
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
-                                                                   transaction:transaction];
+        [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:message.uniqueThreadId
+                                                                  transaction:transaction];
 
     if (message.expiresInSeconds == 0) {
         disappearingMessagesConfiguration.enabled = NO;

@@ -275,12 +275,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                       expiresInSeconds:(uint32_t)expiresInSeconds;
 {
     return [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                               inThread:thread
                                                            messageBody:nil
                                                          attachmentIds:[NSMutableArray new]
-                                                      expiresInSeconds:0
+                                                      expiresInSeconds:expiresInSeconds
                                                        expireStartedAt:0
                                                         isVoiceMessage:NO
                                                       groupMetaMessage:groupMetaMessage

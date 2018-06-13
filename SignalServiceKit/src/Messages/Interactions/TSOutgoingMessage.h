@@ -106,7 +106,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage;
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
-                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage;
+                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
+                       expiresInSeconds:(uint32_t)expiresInSeconds;
 
 @property (readonly) TSOutgoingMessageState messageState;
 @property (readonly) BOOL wasDeliveredToAnyRecipient;
