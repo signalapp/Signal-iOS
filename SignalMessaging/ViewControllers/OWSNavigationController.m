@@ -91,12 +91,19 @@ NS_ASSUME_NONNULL_BEGIN
 // if a view has unsaved changes.
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    OWSAssert(gestureRecognizer == self.interactivePopGestureRecognizer);
+
     UIViewController *topViewController = self.topViewController;
     if ([topViewController conformsToProtocol:@protocol(OWSNavigationView)]) {
         id<OWSNavigationView> navigationView = (id<OWSNavigationView>)topViewController;
         return ![navigationView shouldCancelNavigationBack];
     } else {
-        return YES;
+        UIViewController *rootViewController = self.viewControllers.firstObject;
+        if (topViewController == rootViewController) {
+            return NO;
+        } else {
+            return YES;
+        }
     }
 }
 
