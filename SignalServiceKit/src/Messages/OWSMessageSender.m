@@ -771,11 +771,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                    recipient:(SignalRecipient *)recipient
-                      thread:(TSThread *)thread
+                      thread:(nullable TSThread *)thread
                     attempts:(int)remainingAttempts
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler
 {
+    OWSAssert(thread || [message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+
     DDLogInfo(@"%@ attempting to send message: %@, timestamp: %llu, recipient: %@",
         self.logTag,
         message.class,
@@ -1065,7 +1067,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (void)messageSendDidFail:(TSOutgoingMessage *)message
                  recipient:(SignalRecipient *)recipient
-                    thread:(TSThread *)thread
+                    thread:(nullable TSThread *)thread
              isLocalNumber:(BOOL)isLocalNumber
             deviceMessages:(NSArray<NSDictionary *> *)deviceMessages
          remainingAttempts:(int)remainingAttempts
@@ -1077,7 +1079,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssert(message);
     OWSAssert(recipient);
-    OWSAssert(thread);
+    OWSAssert(thread || [message isKindOfClass:[OWSOutgoingSyncMessage class]]);
     OWSAssert(deviceMessages);
     OWSAssert(responseError);
     OWSAssert(successHandler);
