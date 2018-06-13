@@ -239,7 +239,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         return super.resignFirstResponder()
     }
 
-    // MARK: View Lifecyle
+    // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
