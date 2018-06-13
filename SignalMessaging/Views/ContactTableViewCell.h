@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsManager.h"
@@ -12,7 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const kContactsTable_CellReuseIdentifier;
 extern const NSUInteger kContactTableViewCellAvatarSize;
 extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
@@ -25,7 +24,7 @@ extern const CGFloat kContactTableViewCellAvatarTextMargin;
 @property (nonatomic, nullable) NSString *accessoryMessage;
 @property (nonatomic, readonly) UILabel *subtitle;
 
-+ (nullable NSString *)reuseIdentifier;
++ (NSString *)reuseIdentifier;
 
 + (CGFloat)rowHeight;
 

@@ -10,13 +10,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface HomeViewCell : UITableViewCell
 
-+ (CGFloat)rowHeight;
-
 + (NSString *)cellReuseIdentifier;
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet;
+
+- (void)configureWithThread:(ThreadViewModel *)thread
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+            overrideSnippet:(nullable NSAttributedString *)overrideSnippet
+               overrideDate:(nullable NSDate *)overrideDate;
 
 @end
 

@@ -59,6 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.avatarView);
 
+    const CGFloat kMinVMargin = 5;
+
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
     self.contentView.layoutMargins = UIEdgeInsetsZero;
@@ -77,6 +79,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
+    const CGFloat kAvatarMinVMargin = 10;
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                      withInset:kAvatarMinVMargin
+                                       relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom
+                                      withInset:kAvatarMinVMargin
+                                       relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.payloadView = [UIStackView new];
     self.payloadView.axis = UILayoutConstraintAxisVertical;
@@ -84,10 +93,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin pin to the superview _edge_ and not _margin_ for the purposes
+    // We pin to the superview _edge_ and not _margin_ for the purposes
     // of overflow, so that changes to the margins do not trip these safe guards.
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                       withInset:kMinVMargin
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom
+                                       withInset:kMinVMargin
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
     // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
@@ -148,6 +161,19 @@ NS_ASSUME_NONNULL_BEGIN
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
 {
+    [self configureWithThread:thread
+              contactsManager:contactsManager
+        blockedPhoneNumberSet:blockedPhoneNumberSet
+              overrideSnippet:nil
+                 overrideDate:nil];
+}
+
+- (void)configureWithThread:(ThreadViewModel *)thread
+            contactsManager:(OWSContactsManager *)contactsManager
+      blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
+            overrideSnippet:(nullable NSAttributedString *)overrideSnippet
+               overrideDate:(nullable NSDate *)overrideDate
+{
     OWSAssertIsOnMainThread();
     OWSAssert(thread);
     OWSAssert(contactsManager);
@@ -168,13 +194,21 @@ NS_ASSUME_NONNULL_BEGIN
     self.payloadView.spacing = 0.f;
     self.topRowView.spacing = self.topRowHSpacing;
 
+    if (overrideSnippet) {
+        self.snippetLabel.attributedText = overrideSnippet;
+    } else {
+        self.snippetLabel.attributedText =
+            [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
+    }
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
+    //
+    // Note: we apply this font _after_ we set the attributed text to
+    // override any font attributes.
     self.snippetLabel.font = [self snippetFont];
-    self.snippetLabel.attributedText =
-        [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
 
-    self.dateTimeLabel.text = [self stringForDate:thread.lastMessageDate];
+    self.dateTimeLabel.text
+        = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
     if (hasUnreadMessages) {
         self.dateTimeLabel.textColor = [UIColor ows_blackColor];
@@ -203,19 +237,22 @@ NS_ASSUME_NONNULL_BEGIN
                                  // Spec check. Should be 12pts (6pt on each side) when using default font size.
                                  OWSAssert(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
 
-                                 [self.viewConstraints addObject:[self.unreadBadge autoMatchDimension:ALDimensionWidth
-                                                                                          toDimension:ALDimensionWidth
-                                                                                               ofView:self.unreadLabel
-                                                                                           withOffset:minMargin]];
+                                 [self.viewConstraints addObjectsFromArray:@[
+                                     [self.unreadBadge autoMatchDimension:ALDimensionWidth
+                                                              toDimension:ALDimensionWidth
+                                                                   ofView:self.unreadLabel
+                                                               withOffset:minMargin],
+                                     // badge sizing
+                                     [self.unreadBadge autoSetDimension:ALDimensionWidth
+                                                                 toSize:unreadBadgeHeight
+                                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                                     [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
+                                 ]];
+
                              }];
 
+        const CGFloat kMinVMargin = 5;
         [self.viewConstraints addObjectsFromArray:@[
-            // badge sizing
-            [self.unreadBadge autoSetDimension:ALDimensionWidth
-                                        toSize:unreadBadgeHeight
-                                      relation:NSLayoutRelationGreaterThanOrEqual],
-            [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
-
             // Horizontally, badge is inserted after the tail of the payloadView, pushing back the date *and* snippet
             // view
             [self.payloadView autoPinEdge:ALEdgeTrailing
@@ -223,6 +260,12 @@ NS_ASSUME_NONNULL_BEGIN
                                    ofView:self.unreadBadge
                                withOffset:-self.topRowHSpacing],
             [self.unreadBadge autoPinTrailingToSuperviewMargin],
+            [self.unreadBadge autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                               withInset:kMinVMargin
+                                                relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.unreadBadge autoPinEdgeToSuperviewEdge:ALEdgeBottom
+                                               withInset:kMinVMargin
+                                                relation:NSLayoutRelationGreaterThanOrEqual],
 
             // Vertically, badge is positioned vertically by aligning it's label *subview's* baseline.
             // This allows us a single visual baseline of text across the top row across [name, dateTime,
@@ -365,21 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
     CGFloat alpha = CGFloatClamp(referenceFontSize / kReferenceFontSizeMin, 1.f, 1.3f);
     return minValue * alpha;
-}
-
-+ (CGFloat)rowHeight
-{
-    // Scale the cell height using size of dynamic "body" type as a reference.
-    const CGFloat kReferenceFontSizeMin = 17.f;
-    const CGFloat kReferenceFontSizeMax = 23.f;
-    CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(referenceFontSize, kReferenceFontSizeMin, kReferenceFontSizeMax));
-
-    const CGFloat kCellHeightMin = 68.f;
-    const CGFloat kCellHeightMax = 80.f;
-    CGFloat result = ceil(CGFloatLerp(kCellHeightMin, kCellHeightMax, alpha));
-
-    return result;
 }
 
 - (NSUInteger)cellHMargin

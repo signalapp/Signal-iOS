@@ -7,11 +7,13 @@
 
 // Separate iOS Frameworks from other imports.
 #import "AppSettingsViewController.h"
+#import "ContactTableViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
+#import "HomeViewCell.h"
 #import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"

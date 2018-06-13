@@ -112,7 +112,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                          actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssert(customCell);
-    OWSAssert(customRowHeight > 0);
+    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
@@ -125,7 +125,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                           customRowHeight:(CGFloat)customRowHeight
                               actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0);
+    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self itemWithCustomCellBlock:customCellBlock actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -177,7 +177,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0);
+    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self disclosureItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -237,7 +237,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                       customRowHeight:(CGFloat)customRowHeight
                           actionBlock:(nullable OWSTableSubPageBlock)actionBlock
 {
-    OWSAssert(customRowHeight > 0);
+    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self subPageItemWithText:text actionBlock:actionBlock];
     item.customRowHeight = @(customRowHeight);
@@ -285,7 +285,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight
 {
-    OWSAssert(customRowHeight > 0);
+    OWSAssert(customRowHeight > 0 || customRowHeight == UITableViewAutomaticDimension);
 
     OWSTableItem *item = [self softCenterLabelItemWithText:text];
     item.customRowHeight = @(customRowHeight);

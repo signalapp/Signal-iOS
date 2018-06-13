@@ -6,6 +6,8 @@
 #import <SignalMessaging/OWSViewController.h>
 #import <UIKit/UIKit.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class TSThread;
 
 @interface HomeViewController : OWSViewController
@@ -25,3 +27,5 @@
                animatePresentation:(BOOL)animatePresentation;
 
 @end
+
+NS_ASSUME_NONNULL_END
