@@ -138,10 +138,10 @@ public class ConversationSearcher: NSObject {
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.
-        conversations = conversations.sorted(by: >)
-        messages = messages.sorted(by: >)
+        conversations.sort(by: >)
+        messages.sort(by: >)
         // Order "other" contact results by display name.
-        otherContacts = otherContacts.sorted()
+        otherContacts.sort()
 
         return SearchResultSet(searchText: searchText, conversations: conversations, contacts: otherContacts, messages: messages)
     }
