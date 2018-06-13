@@ -19,7 +19,9 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 @property (nonatomic, readonly) TSThread *thread;
 
-- (void)configureForThread:(TSThread *)thread action:(ConversationViewAction)action;
+- (void)configureForThread:(TSThread *)thread
+                    action:(ConversationViewAction)action
+            focusMessageId:(nullable NSString *)focusMessageId;
 
 - (void)popKeyBoard;
 

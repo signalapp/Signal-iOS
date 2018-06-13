@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
                               identityKey:(NSData *)identityKey
                verificationForRecipientId:(NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // This is a clunky name, but we want to differentiate it from `recipientIdentifier` inherited from `TSOutgoingMessage`
 @property (nonatomic, readonly) NSString *verificationForRecipientId;

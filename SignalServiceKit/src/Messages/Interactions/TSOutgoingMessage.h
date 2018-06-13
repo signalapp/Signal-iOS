@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
                             messageBody:(nullable NSString *)body

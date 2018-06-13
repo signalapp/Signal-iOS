@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [super init];
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
 

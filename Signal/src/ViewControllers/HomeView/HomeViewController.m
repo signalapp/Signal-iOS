@@ -38,7 +38,10 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
-@interface HomeViewController () <UITableViewDelegate, UITableViewDataSource, UIViewControllerPreviewingDelegate>
+@interface HomeViewController () <UITableViewDelegate,
+    UITableViewDataSource,
+    UIViewControllerPreviewingDelegate,
+    UISearchBarDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -53,6 +56,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldObserveDBModifications;
 @property (nonatomic) BOOL hasBeenPresented;
+
+// Mark: Search
+
+@property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic) ConversationSearchViewController *searchResultsController;
 
 // Dependencies
 
@@ -238,7 +246,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           action:@selector(pullToRefreshPerformed:)
                 forControlEvents:UIControlEventValueChanged];
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
-
+    
     [self updateReminderViews];
 }
 
@@ -261,7 +269,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [super viewDidLoad];
 
     self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-
+    
     // Create the database connection.
     [self uiDatabaseConnection];
 
@@ -289,6 +297,30 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable)) {
         [self registerForPreviewingWithDelegate:self sourceView:self.tableView];
     }
+    
+    // Search
+
+    UISearchBar *searchBar = [UISearchBar new];
+    _searchBar = searchBar;
+    searchBar.searchBarStyle = UISearchBarStyleMinimal;
+    searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
+        @"Placeholder text for search bar which filters conversations.");
+    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.delegate = self;
+    [searchBar sizeToFit];
+
+    // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
+    OWSAssert(self.tableView.tableHeaderView == nil);
+    self.tableView.tableHeaderView = self.searchBar;
+
+    ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
+    self.searchResultsController = searchResultsController;
+    [self addChildViewController:searchResultsController];
+    [self.view addSubview:searchResultsController.view];
+    [searchResultsController.view autoPinWidthToSuperview];
+    [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:searchBar];
+    [searchResultsController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.tableView];
+    searchResultsController.view.hidden = self;
 
     [self updateBarButtonItems];
 }
@@ -392,7 +424,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         ConversationViewController *vc = [ConversationViewController new];
         TSThread *thread = [self threadForIndexPath:indexPath];
         self.lastThread = thread;
-        [vc configureForThread:thread action:ConversationViewActionNone];
+        [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
         [vc peekSetup];
 
         return vc;
@@ -843,6 +875,47 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return YES;
 }
 
+#pragma mark - UISearchBarDelegate
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+{
+    [self.tableView setContentOffset:CGPointZero animated:NO];
+
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+{
+    [self updateSearchResultsVisibility];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    self.searchBar.text = nil;
+
+    [self updateSearchResultsVisibility];
+}
+
+- (void)updateSearchResultsVisibility
+{
+    OWSAssertIsOnMainThread();
+
+    NSString *searchText = self.searchBar.text.ows_stripped;
+    [self.searchResultsController updateSearchResultsWithSearchText:searchText];
+    BOOL isSearching = searchText.length > 0;
+    self.searchResultsController.view.hidden = !isSearching;
+}
+
 #pragma mark - HomeFeedTableViewCellDelegate
 
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
@@ -928,6 +1001,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
 {
+    [self presentThread:thread action:action focusMessageId:nil];
+}
+
+- (void)presentThread:(TSThread *)thread
+               action:(ConversationViewAction)action
+       focusMessageId:(nullable NSString *)focusMessageId
+{
     if (thread == nil) {
         OWSFail(@"Thread unexpectedly nil");
         return;
@@ -935,11 +1015,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     // We do this synchronously if we're already on the main thread.
     DispatchMainThreadSafe(^{
-        ConversationViewController *mvc = [ConversationViewController new];
-        [mvc configureForThread:thread action:action];
+        ConversationViewController *viewController = [ConversationViewController new];
+        [viewController configureForThread:thread action:action focusMessageId:focusMessageId];
         self.lastThread = thread;
 
-        [self pushTopLevelViewController:mvc animateDismissal:YES animatePresentation:YES];
+        [self pushTopLevelViewController:viewController animateDismissal:YES animatePresentation:YES];
     });
 }
 

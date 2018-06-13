@@ -275,7 +275,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "ហាមឃាត់ %@?";
 
 /* Label for 'continue' button. */
-"BUTTON_CONTINUE" = "Continue";
+"BUTTON_CONTINUE" = "បន្ត";
 
 /* Label for generic done button. */
 "BUTTON_DONE" = "បញ្ចប់";
@@ -798,7 +798,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "ការហៅបរាជ័យ";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "មិនអាចចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនង។";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "បរាជ័យក្នុងការបញ្ជូនសារ";
@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "ផ្ញើសារបរាជ័យ ដោយសារឈ្មោះអ្នកទទួលមិនត្រឹមត្រូវ។";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "ការស្នើសុំបណ្តាញបរាជ័យ។";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "ការឆ្លើយតបមិនត្រឹមត្រូវពីសេវាកម្ម។";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "ឧបករណ៍អ្នក លែងមានលេខទូរស័ព្ទរបស់អ្នកទៀតហើយ។ អ្នកត្រូវលុបចោល និងបញ្ចូល Signal ឡើងវិញ។";
@@ -1047,7 +1047,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "អញ្ជើញមិត្តភក្តិ";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will send a group message whose recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "អញ្ជើញអ្នកប្រើប្រាស់ច្រើននាក់ក្នុងពេលតែមួយ នឹងផ្ញើសារជាក្រុមមួយ ដែលអ្នកទទួលអាចមើលឃើញរៀងខ្លួន។";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "សាររលុបបន្ទាប់ពី %@។";
@@ -1346,7 +1346,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ស្វែងរកលេខទំនាក់ទំនងតាមលេខទូរស័ព្ទ";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You must unlock your %@ once after restarting to receive Signal messages.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "សាររបស់អ្នកបរាជ័យក្នុងការបញ្ជូនទៅកាន់ %@។";
@@ -1619,13 +1619,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "អ្នកមិនអាចបើកគណនីរបស់អ្នក រហូតអ្នកបានផ្ទៀងផ្ទាត់លេខកូដ ដែលយើងបានផ្ញើជូនអ្នក។";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
+"REGISTRATION_LEGAL_TERMS_LINK" = "គោលការណ៍ឯកជន និងលក្ខខណ្ឌ";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "By registering this device, you agree to Signal's %@";
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "ដោយចុះឈ្មោះឧបករណ៍នេះ អ្នកយល់ព្រមអោយ Signal %@";
 
 /* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "terms";
+"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "លក្ខខណ្ឌ";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "មិនគាំទ្រទម្រង់លេខទូរស័ព្ទនេះទេ សូមទំនាក់ទំនងផ្នែកជំនួយ។";
@@ -1916,7 +1916,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "សំឡេងសារ";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "គោលការណ៍ឯកជន និងលក្ខខណ្ឌ";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ការកំណត់";

@@ -38,4 +38,13 @@ public class ThreadViewModel: NSObject {
         self.unreadCount = thread.unreadMessageCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
     }
+
+    @objc
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let otherThread = object as? ThreadViewModel else {
+            return super.isEqual(object)
+        }
+
+        return threadRecord.isEqual(otherThread.threadRecord)
+    }
 }

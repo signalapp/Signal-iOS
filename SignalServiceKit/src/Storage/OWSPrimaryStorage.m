@@ -16,6 +16,7 @@
 #import "OWSStorage+Subclass.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -58,13 +59,14 @@ void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:storage];
     [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:storage];
 
-    // Register extensions which aren't essential for rendering threads async.
+    [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:storage];
     [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:storage];
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    
     // NOTE: Always pass the completion to the _LAST_ of the async database
     // view registrations.
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];

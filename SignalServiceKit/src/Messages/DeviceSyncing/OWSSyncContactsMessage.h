@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
                        identityManager:(OWSIdentityManager *)identityManager
                         profileManager:(id<ProfileManagerProtocol>)profileManager NS_DESIGNATED_INITIALIZER;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
 - (NSData *)buildPlainTextAttachmentData;
 
 @end

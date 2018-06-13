@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end
 

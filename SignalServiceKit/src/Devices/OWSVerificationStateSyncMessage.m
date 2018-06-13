@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSVerificationStateSyncMessage.h"
@@ -47,6 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
     _paddingBytesLength = arc4random_uniform(512) + 1;
 
     return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder

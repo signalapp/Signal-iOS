@@ -42,6 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {

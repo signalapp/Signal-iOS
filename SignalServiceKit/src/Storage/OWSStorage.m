@@ -18,6 +18,8 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
+#import <YapDatabase/YapDatabaseFullTextSearch.h>
+#import <YapDatabase/YapDatabaseFullTextSearchPrivate.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 #import <YapDatabase/YapDatabaseSecondaryIndexPrivate.h>
 
@@ -536,6 +538,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                                                                     extensionName:extensionName]
                   options:secondaryIndex->options];
         return secondaryIndexCopy;
+    } else if ([extension isKindOfClass:[YapDatabaseFullTextSearch class]]) {
+        YapDatabaseFullTextSearch *fullTextSearch = (YapDatabaseFullTextSearch *)extension;
+        
+        NSString *versionTag = [self appendSuffixToDatabaseExtensionVersionIfNecessary:fullTextSearch.versionTag extensionName:extensionName];
+        YapDatabaseFullTextSearch *fullTextSearchCopy = [[YapDatabaseFullTextSearch alloc] initWithColumnNames:fullTextSearch->columnNames.array
+                                                                                                       handler:fullTextSearch->handler
+                                                                                                    versionTag:versionTag];
+        
+        return fullTextSearchCopy;
     } else if ([extension isKindOfClass:[YapDatabaseCrossProcessNotification class]]) {
         // versionTag doesn't matter for YapDatabaseCrossProcessNotification.
         return extension;
