@@ -9,16 +9,18 @@ public class ConversationSearchResult: Comparable {
     public let thread: ThreadViewModel
 
     public let messageId: String?
+    public let messageTimestamp: UInt64?
 
     public let snippet: String?
 
     private let sortKey: UInt64
 
-    init(thread: ThreadViewModel, messageId: String?, snippet: String?, sortKey: UInt64) {
+    init(thread: ThreadViewModel, sortKey: UInt64, messageId: String? = nil, messageTimestamp: UInt64? = nil, snippet: String? = nil) {
         self.thread = thread
-        self.messageId = messageId
-        self.snippet = snippet
         self.sortKey = sortKey
+        self.messageId = messageId
+        self.messageTimestamp = messageTimestamp
+        self.snippet = snippet
     }
 
     // Mark: Comparable
@@ -109,9 +111,8 @@ public class ConversationSearcher: NSObject {
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-                let snippet: String? = thread.lastMessageText(transaction: transaction)
                 let sortKey = NSDate.ows_millisecondsSince1970(for: threadViewModel.lastMessageDate)
-                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: nil, snippet: snippet, sortKey: sortKey)
+                let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
                     let recipientId = contactThread.contactIdentifier()
@@ -124,7 +125,12 @@ public class ConversationSearcher: NSObject {
 
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let sortKey = message.timestamp
-                let searchResult = ConversationSearchResult(thread: threadViewModel, messageId: message.uniqueId, snippet: snippet, sortKey: sortKey)
+                let searchResult = ConversationSearchResult(thread: threadViewModel,
+                                                            sortKey: sortKey,
+                                                            messageId: message.uniqueId,
+                                                            messageTimestamp: message.timestamp,
+                                                            snippet: snippet)
+
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
                 let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)

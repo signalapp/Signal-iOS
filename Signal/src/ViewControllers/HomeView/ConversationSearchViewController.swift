@@ -29,23 +29,15 @@ class ConversationSearchViewController: UITableViewController {
         case messages
     }
 
-    var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
-    }
-
     var blockedPhoneNumberSet = Set<String>()
 
     // MARK: View Lifecyle
 
-    override public func loadView() {
-        super.loadView()
+    override func viewDidLoad() {
+        super.viewDidLoad()
 
         let blockingManager = OWSBlockingManager.shared()
         blockedPhoneNumberSet = Set(blockingManager.blockedPhoneNumbers())
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 60
@@ -179,30 +171,29 @@ class ConversationSearchViewController: UITableViewController {
 
             var overrideSnippet = NSAttributedString()
             var overrideTimestamp: NSNumber?
-            self.uiDatabaseConnection.read { transaction in
-                guard let messageId = searchResult.messageId else {
-                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message id")
-                    return
+            if let messageId = searchResult.messageId {
+                if let messageTimestamp = searchResult.messageTimestamp {
+                    overrideTimestamp = NSNumber(value: messageTimestamp)
+                } else {
+                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message timestamp")
                 }
-                guard let message = TSInteraction.fetch(uniqueId: messageId, transaction: transaction) else {
-                    // This could happen if the message has disappeared, etc.
-                    Logger.error("\(ConversationSearchViewController.logTag) could not load message")
-                    return
-                }
-                overrideTimestamp = NSNumber(value: message.timestamp)
 
-                guard let rawSnippet = searchResult.snippet else {
-                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing snippet")
-                    return
-                }
-                // YDB uses bold tags to highlight matches within the snippet.
-                let filteredSnippet = rawSnippet
-                    .replacingOccurrences(of: "<b>", with: "")
-                    .replacingOccurrences(of: "</b>", with: "")
-                    .replacingOccurrences(of: "<B>", with: "")
-                    .replacingOccurrences(of: "</B>", with: "")
+                // Note that we only use the snippet for message results,
+                // not conversation results.  HomeViewCell will generate
+                // a snippet for conversations that reflects the latest
+                // contents.
+                if let messageSnippet = searchResult.snippet {
+                    // YDB uses bold tags to highlight matches within the snippet.
+                    let filteredSnippet = messageSnippet
+                        .replacingOccurrences(of: "<b>", with: "")
+                        .replacingOccurrences(of: "</b>", with: "")
+                        .replacingOccurrences(of: "<B>", with: "")
+                        .replacingOccurrences(of: "</B>", with: "")
 
-                overrideSnippet = NSAttributedString(string: filteredSnippet)
+                    overrideSnippet = NSAttributedString(string: filteredSnippet)
+                } else {
+                    owsFail("\(ConversationSearchViewController.logTag) message search result is missing message snippet")
+                }
             }
 
             cell.configure(withThread: searchResult.thread,
