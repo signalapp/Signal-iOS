@@ -12,7 +12,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSContactsSyncing.h>
-#import <SignalMessaging/OWSLogger.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/Release.h>
@@ -25,5 +24,6 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSObject+OWS.h>
 #import <SignalServiceKit/OWSAsserts.h>
+#import <SignalServiceKit/OWSLogger.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/TSAccountManager.h>

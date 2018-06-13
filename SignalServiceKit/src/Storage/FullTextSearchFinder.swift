@@ -38,7 +38,7 @@ public class FullTextSearchFinder: NSObject {
 
     public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
         guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
-            assertionFailure("ext was unexpectedly nil")
+            owsFail("\(logTag) ext was unexpectedly nil")
             return
         }
 
@@ -112,12 +112,12 @@ public class FullTextSearchFinder: NSObject {
         let nationalNumber: String = { (recipientId: String) -> String in
 
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
-                assertionFailure("unexpected unparseable recipientId: \(recipientId)")
+                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
                 return ""
             }
 
             guard let digitScalars = phoneNumber.nationalNumber?.unicodeScalars.filter({ CharacterSet.decimalDigits.contains($0) }) else {
-                assertionFailure("unexpected unparseable recipientId: \(recipientId)")
+                owsFail("\(logTag) unexpected unparseable recipientId: \(recipientId)")
                 return ""
             }
 
