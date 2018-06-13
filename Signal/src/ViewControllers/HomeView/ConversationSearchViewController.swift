@@ -13,7 +13,7 @@ class ConversationSearchViewController: UITableViewController {
             SwiftAssertIsOnMainThread(#function)
 
             // Use a slight delay to debounce updates.
-            refreshSearchResults(delay: 0.25)
+            refreshSearchResults()
         }
     }
 
@@ -64,7 +64,7 @@ class ConversationSearchViewController: UITableViewController {
     @objc internal func yapDatabaseModified(notification: NSNotification) {
         SwiftAssertIsOnMainThread(#function)
 
-        refreshSearchResults(delay: 1.0)
+        refreshSearchResults()
     }
 
     // MARK: UITableViewDelegate
@@ -257,8 +257,18 @@ class ConversationSearchViewController: UITableViewController {
 
     var refreshTimer: Timer?
 
-    private func refreshSearchResults(delay: TimeInterval) {
+    private func refreshSearchResults() {
         SwiftAssertIsOnMainThread(#function)
+
+        guard !searchResultSet.isEmpty else {
+            // To avoid incorrectly showing the "no results" state,
+            // always search immediately if the current result set is empty.
+            refreshTimer?.invalidate()
+            refreshTimer = nil
+
+            updateSearchResults(searchText: searchText)
+            return
+        }
 
         if refreshTimer != nil {
             // Don't start a new refresh timer if there's already one active.
@@ -266,7 +276,7 @@ class ConversationSearchViewController: UITableViewController {
         }
 
         refreshTimer?.invalidate()
-        refreshTimer = WeakTimer.scheduledTimer(timeInterval: delay, target: self, userInfo: nil, repeats: false) { [weak self] _ in
+        refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
