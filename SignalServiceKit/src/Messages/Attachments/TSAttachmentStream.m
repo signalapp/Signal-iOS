@@ -450,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (result == nil) {
-        OWSFail(@"%@ Unable to build thumnail for attachmentId: %@", self.logTag, self.uniqueId);
+        DDLogError(@"%@ Unable to build thumbnail for attachmentId: %@", self.logTag, self.uniqueId);
         return;
     }
 

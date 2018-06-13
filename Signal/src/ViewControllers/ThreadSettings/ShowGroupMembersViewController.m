@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED",
                                                              @"Label for the button that clears all verification "
                                                              @"errors in the 'group members' view.")
-                                         customRowHeight:ContactTableViewCell.rowHeight
+                                         customRowHeight:UITableViewAutomaticDimension
                                              actionBlock:^{
                                                  [weakSelf offerResetAllNoLongerVerified];
                                              }]];
@@ -171,40 +171,42 @@ NS_ASSUME_NONNULL_BEGIN
             return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
         }];
     for (NSString *recipientId in sortedRecipientIds) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            ShowGroupMembersViewController *strongSelf = weakSelf;
-            OWSCAssert(strongSelf);
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 ShowGroupMembersViewController *strongSelf = weakSelf;
+                                 OWSCAssert(strongSelf);
 
-            ContactTableViewCell *cell = [ContactTableViewCell new];
-            SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
-            OWSVerificationState verificationState =
-                [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
-            BOOL isVerified = verificationState == OWSVerificationStateVerified;
-            BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
-            BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
-            if (isNoLongerVerified) {
-                cell.accessoryMessage = NSLocalizedString(
-                    @"CONTACT_CELL_IS_NO_LONGER_VERIFIED", @"An indicator that a contact is no longer verified.");
-            } else if (isBlocked) {
-                cell.accessoryMessage
-                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-            }
+                                 ContactTableViewCell *cell = [ContactTableViewCell new];
+                                 SignalAccount *signalAccount = [helper signalAccountForRecipientId:recipientId];
+                                 OWSVerificationState verificationState =
+                                     [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+                                 BOOL isVerified = verificationState == OWSVerificationStateVerified;
+                                 BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
+                                 BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                                 if (isNoLongerVerified) {
+                                     cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_NO_LONGER_VERIFIED",
+                                         @"An indicator that a contact is no longer verified.");
+                                 } else if (isBlocked) {
+                                     cell.accessoryMessage = NSLocalizedString(
+                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                 }
 
-            if (signalAccount) {
-                [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
-            } else {
-                [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
-            }
+                                 if (signalAccount) {
+                                     [cell configureWithSignalAccount:signalAccount
+                                                      contactsManager:helper.contactsManager];
+                                 } else {
+                                     [cell configureWithRecipientId:recipientId contactsManager:helper.contactsManager];
+                                 }
 
-            if (isVerified) {
-                cell.subtitle.attributedText = cell.verifiedSubtitle;
-            } else {
-                cell.subtitle.attributedText = nil;
-            }
+                                 if (isVerified) {
+                                     cell.subtitle.attributedText = cell.verifiedSubtitle;
+                                 } else {
+                                     cell.subtitle.attributedText = nil;
+                                 }
 
-            return cell;
-        }
-                             customRowHeight:[ContactTableViewCell rowHeight]
+                                 return cell;
+                             }
+                             customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  if (useVerifyAction) {
                                      [weakSelf showSafetyNumberView:recipientId];

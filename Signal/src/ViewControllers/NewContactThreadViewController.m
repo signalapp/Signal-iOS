@@ -284,12 +284,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Table Contents
 
-- (CGFloat)actionCellHeight
-{
-    return ScaleFromIPhone5To7Plus(round((kOWSTable_DefaultCellHeight + [ContactTableViewCell rowHeight]) * 0.5f),
-        [ContactTableViewCell rowHeight]);
-}
-
 - (void)updateTableContents
 {
     OWSTableContents *contents = [OWSTableContents new];
@@ -307,7 +301,7 @@ NS_ASSUME_NONNULL_BEGIN
     [staticSection
         addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                                                          @"A label the cell that lets you add a new member to a group.")
-                                     customRowHeight:self.actionCellHeight
+                                     customRowHeight:UITableViewAutomaticDimension
                                          actionBlock:^{
                                              NewNonContactConversationViewController *viewController =
                                                  [NewNonContactConversationViewController new];
@@ -322,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
-                               customRowHeight:self.actionCellHeight
+                               customRowHeight:UITableViewAutomaticDimension
                                    actionBlock:^{
                                        [weakSelf presentInviteFlow];
                                    }]];
@@ -382,7 +376,7 @@ NS_ASSUME_NONNULL_BEGIN
                     addItem:[OWSTableItem softCenterLabelItemWithText:
                                               NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
                                                   @"A label that indicates the user has no Signal contacts.")
-                                                      customRowHeight:self.actionCellHeight]];
+                                                      customRowHeight:UITableViewAutomaticDimension]];
             } else {
                 UITableViewCell *loadingCell = [UITableViewCell new];
                 OWSAssert(loadingCell.contentView);
@@ -481,34 +475,37 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(phoneNumber.length > 0);
 
         if ([self.nonContactAccountSet containsObject:phoneNumber]) {
-            [phoneNumbersSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                ContactTableViewCell *cell = [ContactTableViewCell new];
-                BOOL isBlocked = [helper isRecipientIdBlocked:phoneNumber];
-                if (isBlocked) {
-                    cell.accessoryMessage = NSLocalizedString(
-                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                }
+            [phoneNumbersSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
+                                BOOL isBlocked = [helper isRecipientIdBlocked:phoneNumber];
+                                if (isBlocked) {
+                                    cell.accessoryMessage = NSLocalizedString(
+                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                }
 
-                SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
-                if (signalAccount) {
-                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
-                } else {
-                    [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
-                }
+                                SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
+                                if (signalAccount) {
+                                    [cell configureWithSignalAccount:signalAccount
+                                                     contactsManager:helper.contactsManager];
+                                } else {
+                                    [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
+                                }
 
-                return cell;
-            }
-                                             customRowHeight:[ContactTableViewCell rowHeight]
-                                             actionBlock:^{
-                                                 [weakSelf newConversationWithRecipientId:phoneNumber];
-                                             }]];
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
+                            actionBlock:^{
+                                [weakSelf newConversationWithRecipientId:phoneNumber];
+                            }]];
         } else {
             NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
                                                             @"Text for button to send a Signal invite via SMS. %@ is "
                                                             @"placeholder for the recipient's phone number."),
                                        phoneNumber];
             [phoneNumbersSection addItem:[OWSTableItem disclosureItemWithText:text
-                                                              customRowHeight:self.actionCellHeight
+                                                              customRowHeight:UITableViewAutomaticDimension
                                                                   actionBlock:^{
                                                                       [weakSelf sendTextToPhoneNumber:phoneNumber];
                                                                   }]];
@@ -533,22 +530,24 @@ NS_ASSUME_NONNULL_BEGIN
             // results.
             continue;
         }
-        [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            ContactTableViewCell *cell = [ContactTableViewCell new];
-            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
-            if (isBlocked) {
-                cell.accessoryMessage
-                    = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-            }
+        [contactsSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            ContactTableViewCell *cell = [ContactTableViewCell new];
+                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                            if (isBlocked) {
+                                cell.accessoryMessage = NSLocalizedString(
+                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                            }
 
-            [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                            [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
 
-            return cell;
-        }
-                                     customRowHeight:[ContactTableViewCell rowHeight]
-                                     actionBlock:^{
-                                         [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
-                                     }]];
+                            return cell;
+                        }
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
+                        }]];
     }
     if (filteredSignalAccounts.count > 0) {
         [sections addObject:contactsSection];
@@ -562,12 +561,13 @@ NS_ASSUME_NONNULL_BEGIN
     for (TSGroupThread *thread in filteredGroupThreads) {
         hasSearchResults = YES;
 
-        [groupSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            GroupTableViewCell *cell = [GroupTableViewCell new];
-            [cell configureWithThread:thread contactsManager:helper.contactsManager];
-            return cell;
-        }
-                                  customRowHeight:[ContactTableViewCell rowHeight]
+        [groupSection addItem:[OWSTableItem
+                                  itemWithCustomCellBlock:^{
+                                      GroupTableViewCell *cell = [GroupTableViewCell new];
+                                      [cell configureWithThread:thread contactsManager:helper.contactsManager];
+                                      return cell;
+                                  }
+                                  customRowHeight:UITableViewAutomaticDimension
                                   actionBlock:^{
                                       [weakSelf newConversationWithThread:thread];
                                   }]];
@@ -597,7 +597,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         @"placeholder for the recipient's phone number."),
                                    displayName];
         [inviteeSection addItem:[OWSTableItem disclosureItemWithText:text
-                                                     customRowHeight:self.actionCellHeight
+                                                     customRowHeight:UITableViewAutomaticDimension
                                                          actionBlock:^{
                                                              [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
                                                          }]];
@@ -614,7 +614,7 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem softCenterLabelItemWithText:
                                       NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
                                           @"A label that indicates the user's search has no matching results.")
-                                              customRowHeight:self.actionCellHeight]];
+                                              customRowHeight:UITableViewAutomaticDimension]];
 
         [sections addObject:noResultsSection];
     }
