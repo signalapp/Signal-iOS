@@ -910,7 +910,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     OWSAssertIsOnMainThread();
 
     NSString *searchText = self.searchBar.text.ows_stripped;
-    [self.searchResultsController updateSearchResultsWithSearchText:searchText];
+    self.searchResultsController.searchText = searchText;
     BOOL isSearching = searchText.length > 0;
     self.searchResultsController.view.hidden = !isSearching;
 }

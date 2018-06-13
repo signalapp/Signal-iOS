@@ -7,10 +7,19 @@ import Foundation
 @objc
 class ConversationSearchViewController: UITableViewController {
 
+    @objc
+    public var searchText = "" {
+        didSet {
+            SwiftAssertIsOnMainThread(#function)
+
+            // Use a slight delay to debounce updates.
+            refreshSearchResults()
+        }
+    }
+
     var searchResultSet: SearchResultSet = SearchResultSet.empty
 
     var uiDatabaseConnection: YapDatabaseConnection {
-        // TODO do we want to respond to YapDBModified? Might be hard when there's lots of search results, for only marginal value
         return OWSPrimaryStorage.shared().uiDatabaseConnection
     }
 
@@ -31,7 +40,7 @@ class ConversationSearchViewController: UITableViewController {
 
     var blockedPhoneNumberSet = Set<String>()
 
-    // MARK: View Lifecyle
+    // MARK: View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +54,17 @@ class ConversationSearchViewController: UITableViewController {
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(yapDatabaseModified),
+                                               name: NSNotification.Name.YapDatabaseModified,
+                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+    }
+
+    @objc internal func yapDatabaseModified(notification: NSNotification) {
+        SwiftAssertIsOnMainThread(#function)
+
+        refreshSearchResults()
     }
 
     // MARK: UITableViewDelegate
@@ -233,18 +253,45 @@ class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    // MARK: UISearchBarDelegate
+    // MARK: Update Search Results
 
-    @objc
-    public func updateSearchResults(searchText: String) {
+    var refreshTimer: Timer?
+
+    private func refreshSearchResults() {
+        SwiftAssertIsOnMainThread(#function)
+
+        guard !searchResultSet.isEmpty else {
+            // To avoid incorrectly showing the "no results" state,
+            // always search immediately if the current result set is empty.
+            refreshTimer?.invalidate()
+            refreshTimer = nil
+
+            updateSearchResults(searchText: searchText)
+            return
+        }
+
+        if refreshTimer != nil {
+            // Don't start a new refresh timer if there's already one active.
+            return
+        }
+
+        refreshTimer?.invalidate()
+        refreshTimer = WeakTimer.scheduledTimer(timeInterval: 0.1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
+            strongSelf.refreshTimer = nil
+        }
+    }
+
+    private func updateSearchResults(searchText: String) {
         guard searchText.stripped.count > 0 else {
             self.searchResultSet = SearchResultSet.empty
             self.tableView.reloadData()
             return
         }
-
-        // TODO: async?
-        // TODO: debounce?
 
         self.uiDatabaseConnection.read { transaction in
             self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
