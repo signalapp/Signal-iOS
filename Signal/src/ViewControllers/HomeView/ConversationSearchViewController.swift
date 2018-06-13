@@ -12,14 +12,14 @@ class ConversationSearchViewController: UITableViewController {
         didSet {
             SwiftAssertIsOnMainThread(#function)
 
-            updateSearchResults(searchText: searchText)
+            // Use a slight delay to debounce updates.
+            refreshSearchResults(delay: 0.25)
         }
     }
 
     var searchResultSet: SearchResultSet = SearchResultSet.empty
 
     var uiDatabaseConnection: YapDatabaseConnection {
-        // TODO do we want to respond to YapDBModified? Might be hard when there's lots of search results, for only marginal value
         return OWSPrimaryStorage.shared().uiDatabaseConnection
     }
 
@@ -61,25 +61,10 @@ class ConversationSearchViewController: UITableViewController {
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
-    var refreshTimer: Timer?
-
     @objc internal func yapDatabaseModified(notification: NSNotification) {
         SwiftAssertIsOnMainThread(#function)
 
-        if refreshTimer != nil {
-            // Don't start a new refresh timer if there's already one active.
-            return
-        }
-
-        refreshTimer?.invalidate()
-        refreshTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-
-            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
-            strongSelf.refreshTimer = nil
-        }
+        refreshSearchResults(delay: 1.0)
     }
 
     // MARK: UITableViewDelegate
@@ -268,7 +253,28 @@ class ConversationSearchViewController: UITableViewController {
         }
     }
 
-    // MARK: UISearchBarDelegate
+    // MARK: Update Search Results
+
+    var refreshTimer: Timer?
+
+    private func refreshSearchResults(delay: TimeInterval) {
+        SwiftAssertIsOnMainThread(#function)
+
+        if refreshTimer != nil {
+            // Don't start a new refresh timer if there's already one active.
+            return
+        }
+
+        refreshTimer?.invalidate()
+        refreshTimer = WeakTimer.scheduledTimer(timeInterval: delay, target: self, userInfo: nil, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.updateSearchResults(searchText: strongSelf.searchText)
+            strongSelf.refreshTimer = nil
+        }
+    }
 
     private func updateSearchResults(searchText: String) {
         guard searchText.stripped.count > 0 else {
@@ -276,9 +282,6 @@ class ConversationSearchViewController: UITableViewController {
             self.tableView.reloadData()
             return
         }
-
-        // TODO: async?
-        // TODO: debounce?
 
         self.uiDatabaseConnection.read { transaction in
             self.searchResultSet = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: self.contactsManager)
