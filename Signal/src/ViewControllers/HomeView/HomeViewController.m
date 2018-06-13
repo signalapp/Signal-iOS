@@ -324,7 +324,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [searchResultsController.view autoPinWidthToSuperview];
     [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:searchBar];
     [searchResultsController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.tableView];
-    searchResultsController.view.hidden = self;
+    searchResultsController.view.hidden = YES;
 
     [self updateBarButtonItems];
 }
@@ -913,6 +913,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.searchResultsController.searchText = searchText;
     BOOL isSearching = searchText.length > 0;
     self.searchResultsController.view.hidden = !isSearching;
+
+    if (isSearching) {
+        [self.tableView setContentOffset:CGPointZero animated:NO];
+        self.tableView.scrollEnabled = NO;
+    } else {
+        self.tableView.scrollEnabled = YES;
+    }
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
