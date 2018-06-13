@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
++ (uint32_t)maxDurationSeconds;
 
 @end
 

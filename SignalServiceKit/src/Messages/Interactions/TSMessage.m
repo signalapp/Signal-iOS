@@ -8,6 +8,7 @@
 #import "NSDate+OWS.h"
 #import "NSString+SSK.h"
 #import "OWSContact.h"
+#import "OWSDisappearingMessagesConfiguration.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
@@ -153,13 +154,31 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)setExpiresInSeconds:(uint32_t)expiresInSeconds
 {
-    _expiresInSeconds = expiresInSeconds;
+    uint32_t maxExpirationDuration = [OWSDisappearingMessagesConfiguration maxDurationSeconds];
+    if (expiresInSeconds > maxExpirationDuration) {
+        OWSProdLogAndFail(@"%@ in %s using `maxExpirationDuration` instead of: %u",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            maxExpirationDuration);
+    }
+
+    _expiresInSeconds = MIN(expiresInSeconds, maxExpirationDuration);
     [self updateExpiresAt];
 }
 
 - (void)setExpireStartedAt:(uint64_t)expireStartedAt
 {
-    _expireStartedAt = expireStartedAt;
+    if (_expireStartedAt != 0 && _expireStartedAt < expireStartedAt) {
+        DDLogDebug(@"%@ in %s ignoring later startedAt time", self.logTag, __PRETTY_FUNCTION__);
+        return;
+    }
+
+    uint64_t now = [NSDate ows_millisecondTimeStamp];
+    if (expireStartedAt > now) {
+        DDLogWarn(@"%@ in %s using `now` instead of future time", self.logTag, __PRETTY_FUNCTION__);
+    }
+
+    _expireStartedAt = MIN(now, expireStartedAt);
     [self updateExpiresAt];
 }
 

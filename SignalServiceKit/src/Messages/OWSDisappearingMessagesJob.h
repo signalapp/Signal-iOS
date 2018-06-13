@@ -21,10 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
                  expirationStartedAt:(uint64_t)expirationStartedAt
                          transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
 
-- (void)setExpirationForMessage:(TSMessage *)message
-            expirationStartedAt:(uint64_t)expirationStartedAt
-                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
-
 /**
  * Synchronize our disappearing messages settings with that of the given message. Useful so we can
  * become eventually consistent with remote senders.
