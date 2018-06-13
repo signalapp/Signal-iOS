@@ -50,8 +50,10 @@ public class FullTextSearchFinder: NSObject {
 
         let maxSearchResults = 500
         var searchResultCount = 0
-        // (snippet: String, collection: String, key: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>)
-        ext.enumerateKeysAndObjects(matching: prefixQuery, with: nil) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
+        let snippetOptions = YapDatabaseFullTextSearchSnippetOptions()
+        snippetOptions.startMatchText = ""
+        snippetOptions.endMatchText = ""
+        ext.enumerateKeysAndObjects(matching: prefixQuery, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
             guard searchResultCount < maxSearchResults else {
                 stop.pointee = true
                 return

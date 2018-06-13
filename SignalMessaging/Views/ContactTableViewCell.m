@@ -109,7 +109,7 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     [_nameContainerView autoPinTrailingToSuperviewMargin];
 
     // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin pin to the superview _edge_ and not _margin_ for the purposes
+    // We pin to the superview _edge_ and not _margin_ for the purposes
     // of overflow, so that changes to the margins do not trip these safe guards.
     [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop
                                   withInset:kMinVMargin

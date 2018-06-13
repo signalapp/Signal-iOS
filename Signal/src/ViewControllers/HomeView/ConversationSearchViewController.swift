@@ -170,10 +170,10 @@ class ConversationSearchViewController: UITableViewController {
             }
 
             var overrideSnippet = NSAttributedString()
-            var overrideTimestamp: NSNumber?
-            if let messageId = searchResult.messageId {
-                if let messageTimestamp = searchResult.messageTimestamp {
-                    overrideTimestamp = NSNumber(value: messageTimestamp)
+            var overrideDate: Date?
+            if searchResult.messageId != nil {
+                if let messageDate = searchResult.messageDate {
+                    overrideDate = messageDate
                 } else {
                     owsFail("\(ConversationSearchViewController.logTag) message search result is missing message timestamp")
                 }
@@ -183,14 +183,7 @@ class ConversationSearchViewController: UITableViewController {
                 // a snippet for conversations that reflects the latest
                 // contents.
                 if let messageSnippet = searchResult.snippet {
-                    // YDB uses bold tags to highlight matches within the snippet.
-                    let filteredSnippet = messageSnippet
-                        .replacingOccurrences(of: "<b>", with: "")
-                        .replacingOccurrences(of: "</b>", with: "")
-                        .replacingOccurrences(of: "<B>", with: "")
-                        .replacingOccurrences(of: "</B>", with: "")
-
-                    overrideSnippet = NSAttributedString(string: filteredSnippet)
+                    overrideSnippet = NSAttributedString(string: messageSnippet)
                 } else {
                     owsFail("\(ConversationSearchViewController.logTag) message search result is missing message snippet")
                 }
@@ -199,8 +192,8 @@ class ConversationSearchViewController: UITableViewController {
             cell.configure(withThread: searchResult.thread,
                            contactsManager: contactsManager,
                            blockedPhoneNumber: self.blockedPhoneNumberSet,
-                overrideSnippet: overrideSnippet,
-                overrideTimestamp: overrideTimestamp)
+                           overrideSnippet: overrideSnippet,
+                           overrideDate: overrideDate)
 
             return cell
         }

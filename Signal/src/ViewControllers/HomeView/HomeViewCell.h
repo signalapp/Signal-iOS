@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
-          overrideTimestamp:(nullable NSNumber *)overrideTimestamp;
+               overrideDate:(nullable NSDate *)overrideDate;
 
 @end
 

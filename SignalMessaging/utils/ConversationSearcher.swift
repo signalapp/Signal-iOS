@@ -9,17 +9,17 @@ public class ConversationSearchResult: Comparable {
     public let thread: ThreadViewModel
 
     public let messageId: String?
-    public let messageTimestamp: UInt64?
+    public let messageDate: Date?
 
     public let snippet: String?
 
     private let sortKey: UInt64
 
-    init(thread: ThreadViewModel, sortKey: UInt64, messageId: String? = nil, messageTimestamp: UInt64? = nil, snippet: String? = nil) {
+    init(thread: ThreadViewModel, sortKey: UInt64, messageId: String? = nil, messageDate: Date? = nil, snippet: String? = nil) {
         self.thread = thread
         self.sortKey = sortKey
         self.messageId = messageId
-        self.messageTimestamp = messageTimestamp
+        self.messageDate = messageDate
         self.snippet = snippet
     }
 
@@ -128,7 +128,7 @@ public class ConversationSearcher: NSObject {
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,
                                                             messageId: message.uniqueId,
-                                                            messageTimestamp: message.timestamp,
+                                                            messageDate: NSDate.ows_date(withMillisecondsSince1970: message.timestamp),
                                                             snippet: snippet)
 
                 messages.append(searchResult)

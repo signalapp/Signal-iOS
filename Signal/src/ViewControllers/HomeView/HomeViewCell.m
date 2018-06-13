@@ -93,10 +93,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin pin to the superview _edge_ and not _margin_ for the purposes
+    // We pin to the superview _edge_ and not _margin_ for the purposes
     // of overflow, so that changes to the margins do not trip these safe guards.
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop
+                                       withInset:kMinVMargin
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom
+                                       withInset:kMinVMargin
+                                        relation:NSLayoutRelationGreaterThanOrEqual];
     // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
@@ -136,16 +140,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
-
-    // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                       withInset:kMinVMargin
-                                        relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                       withInset:kMinVMargin
-                                        relation:NSLayoutRelationGreaterThanOrEqual];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -171,14 +165,14 @@ NS_ASSUME_NONNULL_BEGIN
               contactsManager:contactsManager
         blockedPhoneNumberSet:blockedPhoneNumberSet
               overrideSnippet:nil
-            overrideTimestamp:nil];
+                 overrideDate:nil];
 }
 
 - (void)configureWithThread:(ThreadViewModel *)thread
             contactsManager:(OWSContactsManager *)contactsManager
       blockedPhoneNumberSet:(NSSet<NSString *> *)blockedPhoneNumberSet
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
-          overrideTimestamp:(nullable NSNumber *)overrideTimestamp
+               overrideDate:(nullable NSDate *)overrideDate
 {
     OWSAssertIsOnMainThread();
     OWSAssert(thread);
@@ -213,9 +207,8 @@ NS_ASSUME_NONNULL_BEGIN
     // override any font attributes.
     self.snippetLabel.font = [self snippetFont];
 
-    self.dateTimeLabel.text = (overrideTimestamp
-            ? [self stringForDate:[NSDate ows_dateWithMillisecondsSince1970:overrideTimestamp.unsignedLongLongValue]]
-            : [self stringForDate:thread.lastMessageDate]);
+    self.dateTimeLabel.text
+        = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
     if (hasUnreadMessages) {
         self.dateTimeLabel.textColor = [UIColor ows_blackColor];
