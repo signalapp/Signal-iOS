@@ -59,11 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.avatarView);
 
-    const CGFloat kMinVMargin = 5;
-
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.layoutMargins = UIEdgeInsetsMake(0, self.cellHMargin, 0, self.cellHMargin);
-    self.contentView.layoutMargins = UIEdgeInsetsZero;
+    self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
@@ -79,13 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView autoVCenterInSuperview];
     [self.avatarView setContentHuggingHigh];
     [self.avatarView setCompressionResistanceHigh];
-    const CGFloat kAvatarMinVMargin = 10;
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                      withInset:kAvatarMinVMargin
-                                       relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                      withInset:kAvatarMinVMargin
-                                       relation:NSLayoutRelationGreaterThanOrEqual];
+    // Ensure that the cell's contents never overflow the cell bounds.
+    [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.payloadView = [UIStackView new];
     self.payloadView.axis = UILayoutConstraintAxisVertical;
@@ -93,14 +86,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
     [self.payloadView autoVCenterInSuperview];
     // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                       withInset:kMinVMargin
-                                        relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                       withInset:kMinVMargin
-                                        relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
     // We pin the payloadView traillingEdge later, as part of the "Unread Badge" logic.
 
     self.nameLabel = [UILabel new];
@@ -408,11 +395,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
     CGFloat alpha = CGFloatClamp(referenceFontSize / kReferenceFontSizeMin, 1.f, 1.3f);
     return minValue * alpha;
-}
-
-- (NSUInteger)cellHMargin
-{
-    return 16;
 }
 
 - (NSUInteger)avatarSize
