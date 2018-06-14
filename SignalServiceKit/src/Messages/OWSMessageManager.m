@@ -775,7 +775,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:name];
+                                                             createdByRemoteName:name
+                                                      createdInExistingGroupName:nil];
     [message saveWithTransaction:transaction];
 }
 
@@ -950,6 +951,8 @@ NS_ASSUME_NONNULL_BEGIN
                 TSGroupThread *newGroupThread =
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
+
+                uint64_t now = [NSDate ows_millisecondTimeStamp];
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
@@ -959,10 +962,23 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
 
-                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                [[[TSInfoMessage alloc] initWithTimestamp:now
                                                  inThread:newGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
+
+                if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
+                    // We could use the sender name here, but maybe it makes more sense to attribute it to the group.
+                    NSString *configUpdateName = dataMessage.group.name;
+                    [[OWSDisappearingMessagesJob sharedJob]
+                        becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                          thread:newGroupThread
+                                           appearBeforeTimestamp:now
+                                      createdByRemoteContactName:nil
+                                      createdInExistingGroupName:configUpdateName
+                                                     transaction:transaction];
+                }
+
                 return nil;
             }
             case OWSSignalServiceProtosGroupContextTypeQuit: {

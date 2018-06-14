@@ -821,9 +821,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self.disappearingMessagesConfiguration save];
         OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
             [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                           thread:self.thread
-                    configuration:self.disappearingMessagesConfiguration];
+                         initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                    thread:self.thread
+                             configuration:self.disappearingMessagesConfiguration
+                       createdByRemoteName:nil
+                createdInExistingGroupName:nil];
         [infoMessage save];
 
         [OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob
