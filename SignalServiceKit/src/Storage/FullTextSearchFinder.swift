@@ -18,17 +18,7 @@ public class SearchIndexer<T> {
     }
 
     private func normalize(indexingText: String) -> String {
-        var normalized: String = indexingText.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        // Remove any punctuation from the search index
-        let nonformattingScalars = normalized.unicodeScalars.lazy.filter {
-            !CharacterSet.punctuationCharacters.contains($0)
-        }
-
-        normalized = String(String.UnicodeScalarView(nonformattingScalars))
-
-        return normalized
-//        return FullTextSearchFinder.filterIndexOrQueryText(text: indexingText)
+        return FullTextSearchFinder.sanitize(text: indexingText)
     }
 }
 
@@ -37,24 +27,42 @@ public class FullTextSearchFinder: NSObject {
 
     // Mark: Querying
 
+    // We want to match by prefix for "search as you type" functionality.
+    // SQLite does not support suffix or contains matches.
+    public class func query(searchText: String) -> String {
+        // 1. Normalize the search text.
+        let normalizedSearchText = normalize(queryText: searchText)
+
+        // 2. Split into tokens.
+        let queryTerms = normalizedSearchText.split(separator: " ").filter {
+            // Ignore empty tokens.
+            $0.count > 0
+        }.map {
+            // Allow partial match of each token.
+            $0 + "*"
+        }
+
+        // 3. Join tokens into query string.
+        let query = queryTerms.joined(separator: " ")
+        return query
+    }
+
     public func enumerateObjects(searchText: String, transaction: YapDatabaseReadTransaction, block: @escaping (Any, String) -> Void) {
         guard let ext: YapDatabaseFullTextSearchTransaction = ext(transaction: transaction) else {
             owsFail("\(logTag) ext was unexpectedly nil")
             return
         }
 
-        let normalized = normalize(queryText: searchText)
+        let query = FullTextSearchFinder.query(searchText: searchText)
 
-        // We want to match by prefix for "search as you type" functionality.
-        // SQLite does not support suffix or contains matches.
-        let prefixQuery = "\(normalized)*"
+        Logger.verbose("\(logTag) query: \(query)")
 
         let maxSearchResults = 500
         var searchResultCount = 0
         let snippetOptions = YapDatabaseFullTextSearchSnippetOptions()
         snippetOptions.startMatchText = ""
         snippetOptions.endMatchText = ""
-        ext.enumerateKeysAndObjects(matching: prefixQuery, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
+        ext.enumerateKeysAndObjects(matching: query, with: snippetOptions) { (snippet: String, _: String, _: String, object: Any, stop: UnsafeMutablePointer<ObjCBool>) in
             guard searchResultCount < maxSearchResults else {
                 stop.pointee = true
                 return
@@ -66,64 +74,49 @@ public class FullTextSearchFinder: NSObject {
     }
 
     // Mark: Filtering
-    
-//    private class func characterSet(fromCharacter: UInt32, toCharacter: UInt32) -> CharacterSet {
-//        var string = ""
-//        // Add to include last character.
-//        for character in fromCharacter ..< toCharacter + 1 {
-//            guard let chr = Unicode.Scalar(character) else {
-//                assertionFailure("\(self.logTag) could not parse character.")
-//                continue
-//            }
-//            string += String(chr)
-//        }
-//        return CharacterSet(charactersIn: string)
-//    }
-//    
-//    private static var kFilterCharacters: CharacterSet = {
-//        var set = CharacterSet()
-//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 0, toCharacter: 31))
-//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 33, toCharacter: 47))
-//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 58, toCharacter: 64))
-//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 91, toCharacter: 96))
-//        set.formUnion(FullTextSearchFinder.characterSet(fromCharacter: 123, toCharacter: 126))
-//        return set
-//    }()
-//    
-//    public class func filterIndexOrQueryText(text: String) -> String {
-//        let filteredScalars = String(text.unicodeScalars.lazy.map {
-//            if kFilterCharacters.contains($0) {
-//                return " "
-//            } else {
-//                return Character($0)
-//            }
-//        })
-//        
-//        // Remove any phone number formatting from the search terms
-//        let nonformattingScalars = filteredScalars.unicodeScalars.lazy.filter {
-//            !CharacterSet.punctuationCharacters.contains($0)
-//        }
-//        
-//        var normalized = String(String.UnicodeScalarView(nonformattingScalars))
-//        
-//        // Simplify the normalized text by combining adjacent whitespace.
-//        while normalized.contains("  ") {
-//            normalized = normalized.replacingOccurrences(of: "  ", with: " ")
-//        }
-//        
-//        // We strip leading & trailing whitespace last, since we may replace
-//        // filtered characters with whitespace.
-//        return normalized.trimmingCharacters(in: .whitespacesAndNewlines)
-//    }
-    
-    private func normalize(queryText: String) -> String {
-        var normalized: String = queryText.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        // Remove any punctuation from the search terms
-        let nonformattingScalars = normalized.unicodeScalars.lazy.filter {
-            !CharacterSet.punctuationCharacters.contains($0)
+    fileprivate class func charactersToRemove() -> CharacterSet {
+        var charactersToFilter = CharacterSet.punctuationCharacters
+        charactersToFilter.formUnion(CharacterSet.illegalCharacters)
+        charactersToFilter.formUnion(CharacterSet.controlCharacters)
+        charactersToFilter.formUnion(CharacterSet.symbols)
+        return charactersToFilter
+    }
+
+    fileprivate class func separatorCharacters() -> CharacterSet {
+        let separatorCharacters = CharacterSet.whitespacesAndNewlines
+        return separatorCharacters
+    }
+
+    fileprivate class func sanitize(text: String) -> String {
+        // 1. Filter out invalid characters.
+        let filtered = text.unicodeScalars.lazy.filter({
+            !charactersToRemove().contains($0)
+        })
+
+        // 2. Simplify whitespace.
+        let simplifyingFunction: (UnicodeScalar) -> UnicodeScalar = {
+            if separatorCharacters().contains($0) {
+                return UnicodeScalar(" ")
+            } else {
+                return $0
+            }
         }
-        let normalizedChars = String(String.UnicodeScalarView(nonformattingScalars))
+        let simplified = filtered.map(simplifyingFunction)
+
+        // 3. Combine adjacent whitespace.
+        var result = String(String.UnicodeScalarView(simplified))
+        while result.contains("  ") {
+            result = result.replacingOccurrences(of: "  ", with: " ")
+        }
+
+        // 4. Strip leading & trailing whitespace last, since we may replace
+        // filtered characters with whitespace.
+        return result.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private class func normalize(queryText: String) -> String {
+        var normalized: String = FullTextSearchFinder.sanitize(text: queryText)
 
         let digitsOnlyScalars = normalized.unicodeScalars.lazy.filter {
             CharacterSet.decimalDigits.contains($0)
@@ -131,9 +124,9 @@ public class FullTextSearchFinder: NSObject {
         let normalizedDigits = String(String.UnicodeScalarView(digitsOnlyScalars))
 
         if normalizedDigits.count > 0 {
-            return "\(normalizedChars) OR \(normalizedDigits)"
+            return "\(normalized) OR \(normalizedDigits)"
         } else {
-            return "\(normalizedChars)"
+            return normalized
         }
     }
 
@@ -231,8 +224,11 @@ public class FullTextSearchFinder: NSObject {
         }
 
         // update search index on contact name changes?
-        // update search index on message insertion?
 
-        return YapDatabaseFullTextSearch(columnNames: ["content"], handler: handler)
+        return YapDatabaseFullTextSearch(columnNames: ["content"],
+                                         options: nil,
+                                         handler: handler,
+                                         ftsVersion: YapDatabaseFullTextSearchFTS5Version,
+                                         versionTag: "1")
     }
 }
