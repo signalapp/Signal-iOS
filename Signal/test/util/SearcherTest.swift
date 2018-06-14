@@ -66,6 +66,8 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
+        owsFail("\(logTag) if this method ends up being used by the tests, we should provide a better implementation.")
+
         return .orderedAscending
     }
 }
@@ -347,15 +349,15 @@ class SearcherTest: XCTestCase {
     }
 
     func testSearchQuery() {
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza"), "Liza*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza +1-323"), "1323* Liza*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "1323* Liza*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "renaldo RENALDO reñaldo REÑALDO"), "RENALDO* REÑALDO* renaldo* reñaldo*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "😏"), "😏*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "alice 123 bob 456"), "123* 123456* 456* alice* bob*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Li!za"), "Liza*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza Liza"), "Liza*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza liza"), "Liza* liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza +1-323"), "\"1323\"* \"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "\"1323\"* \"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "renaldo RENALDO reñaldo REÑALDO"), "\"RENALDO\"* \"REÑALDO\"* \"renaldo\"* \"reñaldo\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "😏"), "\"😏\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "alice 123 bob 456"), "\"123\"* \"123456\"* \"456\"* \"alice\"* \"bob\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Li!za"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza Liza"), "\"Liza\"*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza liza"), "\"Liza\"* \"liza\"*")
     }
 
     func testTextNormalization() {

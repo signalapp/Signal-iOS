@@ -31,6 +31,9 @@ public class FullTextSearchFinder: NSObject {
     // SQLite does not support suffix or contains matches.
     public class func query(searchText: String) -> String {
         // 1. Normalize the search text.
+        //
+        // TODO: We could arguably convert to lowercase since the search
+        // is case-insensitive.
         let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
 
         // 2. Split into query terms (or tokens).
@@ -44,6 +47,9 @@ public class FullTextSearchFinder: NSObject {
         queryTerms.append(digitsOnly)
 
         // 4. De-duplicate and sort query terms.
+        //    Duplicate terms are redundant.
+        //    Sorting terms makes the output of this method deterministic and easier to test,
+        //        and the order won't affect the search results.
         queryTerms = Array(Set(queryTerms)).sorted()
 
         // 5. Filter the query terms.
@@ -54,6 +60,10 @@ public class FullTextSearchFinder: NSObject {
             // Allow partial match of each term.
             //
             // Note that we use double-quotes to enclose each search term.
+            // Quoted search terms can include a few more characters than
+            // "bareword" (non-quoted) search terms.  This shouldn't matter,
+            // since we're filtering all of the affected characters, but
+            // quoting protects us from any bugs in that logic.
             "\"\($0)\"*"
         }
 
@@ -91,6 +101,10 @@ public class FullTextSearchFinder: NSObject {
     // Mark: Normalization
 
     fileprivate class func charactersToRemove() -> CharacterSet {
+        // * We want to strip punctuation - and our definition of "punctuation"
+        //   is broader than `CharacterSet.punctuationCharacters`.
+        // * FTS should be robust to (i.e. ignore) illegal and control characters,
+        //   but it's safer if we filter them ourselves as well.
         var charactersToFilter = CharacterSet.punctuationCharacters
         charactersToFilter.formUnion(CharacterSet.illegalCharacters)
         charactersToFilter.formUnion(CharacterSet.controlCharacters)
@@ -108,11 +122,6 @@ public class FullTextSearchFinder: NSObject {
         return charactersToFilter
     }
 
-    fileprivate class func separatorCharacters() -> CharacterSet {
-        let separatorCharacters = CharacterSet.whitespacesAndNewlines
-        return separatorCharacters
-    }
-
     public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
         let filtered = text.unicodeScalars.lazy.filter({
@@ -121,7 +130,7 @@ public class FullTextSearchFinder: NSObject {
 
         // 2. Simplify whitespace.
         let simplifyingFunction: (UnicodeScalar) -> UnicodeScalar = {
-            if separatorCharacters().contains($0) {
+            if CharacterSet.whitespacesAndNewlines.contains($0) {
                 return UnicodeScalar(" ")
             } else {
                 return $0
@@ -129,14 +138,9 @@ public class FullTextSearchFinder: NSObject {
         }
         let simplified = filtered.map(simplifyingFunction)
 
-        // 3. Combine adjacent whitespace.
-        var result = String(String.UnicodeScalarView(simplified))
-        while result.contains("  ") {
-            result = result.replacingOccurrences(of: "  ", with: " ")
-        }
-
-        // 4. Strip leading & trailing whitespace last, since we may replace
+        // 3. Strip leading & trailing whitespace last, since we may replace
         // filtered characters with whitespace.
+        var result = String(String.UnicodeScalarView(simplified))
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
