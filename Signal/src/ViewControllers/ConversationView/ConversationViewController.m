@@ -3918,7 +3918,11 @@ typedef enum : NSUInteger {
 
         groupThread.groupModel = newGroupModel;
         [groupThread saveWithTransaction:transaction];
-        message = [TSOutgoingMessage outgoingMessageInThread:groupThread groupMetaMessage:TSGroupMessageUpdate];
+
+        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+        message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+                                            groupMetaMessage:TSGroupMessageUpdate
+                                            expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     }];
 

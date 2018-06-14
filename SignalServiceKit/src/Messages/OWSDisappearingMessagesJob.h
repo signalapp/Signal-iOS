@@ -36,6 +36,29 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+/**
+ * Synchronize our disappearing messages settings with that of the given message. Useful so we can
+ * become eventually consistent with remote senders.
+ *
+ * @param duration
+ *   Can be 0, indicating a non-expiring message, or greater, indicating an expiring message. We match the expiration
+ * timer of the message, including disabling expiring messages if the message is not an expiring message.
+ *
+ * @param timestampForSorting
+ *   timestampForSorting of the message before which we want to appear.
+ *
+ * @param remoteContactName
+ *    nil for outgoing messages, otherwise the name of the sender
+ * @param createdInExistingGroup
+ *    YES when being added to a group which already has DM enabled, otherwise NO
+ */
+- (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
+                                          thread:(TSThread *)thread
+                           appearBeforeTimestamp:(uint64_t)timestampForSorting
+                      createdByRemoteContactName:(nullable NSString *)remoteContactName
+                          createdInExistingGroup:(BOOL)createdInExistingGroup
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 // Clean up any messages that expired since last launch immediately
 // and continue cleaning in the background.
 - (void)startIfNecessary;

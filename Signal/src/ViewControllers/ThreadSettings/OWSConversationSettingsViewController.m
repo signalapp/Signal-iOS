@@ -821,9 +821,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self.disappearingMessagesConfiguration save];
         OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
             [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                           thread:self.thread
-                    configuration:self.disappearingMessagesConfiguration];
+                     initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                thread:self.thread
+                         configuration:self.disappearingMessagesConfiguration
+                   createdByRemoteName:nil
+                createdInExistingGroup:NO];
         [infoMessage save];
 
         [OWSNotifyRemoteOfUpdatedDisappearingConfigurationJob
@@ -937,7 +939,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     TSGroupThread *gThread = (TSGroupThread *)self.thread;
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit];
+        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageQuit expiresInSeconds:0];
     [self.messageSender enqueueMessage:message
         success:^{
             DDLogInfo(@"%@ Successfully left group.", self.logTag);

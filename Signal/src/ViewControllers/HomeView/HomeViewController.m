@@ -938,8 +938,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                           preferredStyle:UIAlertControllerStyleAlert];
             [self presentViewController:removingFromGroup animated:YES completion:nil];
 
-            TSOutgoingMessage *message =
-                [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageQuit];
+            TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
+                                                                   groupMetaMessage:TSGroupMessageQuit
+                                                                   expiresInSeconds:0];
             [self.messageSender enqueueMessage:message
                 success:^{
                     [self dismissViewControllerAnimated:YES

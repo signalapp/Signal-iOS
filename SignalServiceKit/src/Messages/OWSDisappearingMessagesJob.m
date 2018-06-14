@@ -197,57 +197,65 @@ void AssertIsOnDisappearingMessagesQueue()
                                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSAssert(message);
-    OWSAssert(contactsManager);
-    
+    TSThread *thread = [message threadWithTransaction:transaction];
+    NSString *remoteContactName = nil;
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        remoteContactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
+    }
+
+    [self becomeConsistentWithDisappearingDuration:message.expiresInSeconds
+                                            thread:thread
+                             appearBeforeTimestamp:message.timestampForSorting
+                        createdByRemoteContactName:remoteContactName
+                            createdInExistingGroup:NO
+                                       transaction:transaction];
+}
+
+- (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
+                                          thread:(TSThread *)thread
+                           appearBeforeTimestamp:(uint64_t)timestampForSorting
+                      createdByRemoteContactName:(nullable NSString *)remoteContactName
+                          createdInExistingGroup:(BOOL)createdInExistingGroup
+                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(thread);
+    OWSAssert(timestampForSorting > 0);
+    OWSAssert(transaction);
+
     __block OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
     
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchOrCreateDefaultWithThreadId:message.uniqueThreadId
-                                                                   transaction:transaction];
+        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
-    if (message.expiresInSeconds == 0) {
+    if (duration == 0) {
         disappearingMessagesConfiguration.enabled = NO;
     } else {
         disappearingMessagesConfiguration.enabled = YES;
-        disappearingMessagesConfiguration.durationSeconds = message.expiresInSeconds;
+        disappearingMessagesConfiguration.durationSeconds = duration;
     }
 
     if (!disappearingMessagesConfiguration.dictionaryValueDidChange) {
         return;
     }
+
     DDLogInfo(@"%@ becoming consistent with disappearing message configuration: %@",
         self.logTag,
         disappearingMessagesConfiguration.dictionaryValue);
+
     [disappearingMessagesConfiguration saveWithTransaction:transaction];
 
-    TSThread *_Nullable thread = [message threadWithTransaction:transaction];
-    if (!thread) {
-        // If there's not yet a message thread, we don't create one.
-        OWSFail(@"%@ in %s thread was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
-        return;
-    }
-    
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        NSString *contactName = [contactsManager displayNameForPhoneIdentifier:incomingMessage.messageAuthorId];
-        
-        // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
-                                                                           thread:thread
-                                                                    configuration:disappearingMessagesConfiguration
-                                                              createdByRemoteName:contactName]
-            saveWithTransaction:transaction];
-    } else {
-        // We want the info message to appear _before_ the message.
-        [[[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:message.timestampForSorting - 1
-                                                                           thread:thread
-                                                                    configuration:disappearingMessagesConfiguration]
-            saveWithTransaction:transaction];
-    }
-    
+    // We want the info message to appear _before_ the message.
+    OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
+        [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:timestampForSorting - 1
+                                                                          thread:thread
+                                                                   configuration:disappearingMessagesConfiguration
+                                                             createdByRemoteName:remoteContactName
+                                                          createdInExistingGroup:createdInExistingGroup];
+    [infoMessage saveWithTransaction:transaction];
+
     backgroundTask = nil;
 }
 

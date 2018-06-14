@@ -134,6 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithConfigurationForMessage:outgoingMessage
                                                                             contactsManager:self.contactsManager
                                                                                 transaction:transaction];
+
+
         // early return to avoid saving an empty incoming message.
         OWSAssert(transcript.body.length == 0);
         OWSAssert(outgoingMessage.attachmentIds.count == 0);

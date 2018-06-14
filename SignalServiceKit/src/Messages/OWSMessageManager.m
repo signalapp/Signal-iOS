@@ -775,7 +775,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSDisappearingConfigurationUpdateInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
-                                                             createdByRemoteName:name];
+                                                             createdByRemoteName:name
+                                                          createdInExistingGroup:NO];
     [message saveWithTransaction:transaction];
 }
 
@@ -888,8 +889,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMessageUpdate];
+
+    uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
+    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
+                                                           groupMetaMessage:TSGroupMessageUpdate
+                                                           expiresInSeconds:expiresInSeconds];
+
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
     [message updateWithSendingToSingleGroupRecipient:envelope.source transaction:transaction];
@@ -946,6 +951,8 @@ NS_ASSUME_NONNULL_BEGIN
                 TSGroupThread *newGroupThread =
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
+
+                uint64_t now = [NSDate ows_millisecondTimeStamp];
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                         memberIds:newMemberIds.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
@@ -955,10 +962,21 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupThread.groupModel = newGroupModel;
                 [newGroupThread saveWithTransaction:transaction];
 
-                [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                [[[TSInfoMessage alloc] initWithTimestamp:now
                                                  inThread:newGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
+
+                if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
+                    [[OWSDisappearingMessagesJob sharedJob]
+                        becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                          thread:newGroupThread
+                                           appearBeforeTimestamp:now
+                                      createdByRemoteContactName:nil
+                                          createdInExistingGroup:YES
+                                                     transaction:transaction];
+                }
+
                 return nil;
             }
             case OWSSignalServiceProtosGroupContextTypeQuit: {

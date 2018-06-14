@@ -3423,11 +3423,27 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:YES
                                                                durationSeconds:(uint32_t)[durationSeconds intValue]];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
+
+        {
+            NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+                [[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:thread.uniqueId
+                                                                       enabled:YES
+                                                               durationSeconds:(uint32_t)[durationSeconds intValue]];
+            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:nil
+                                  createdInExistingGroup:YES]];
+        }
+
         {
             NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
@@ -3435,10 +3451,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:YES
                                                                durationSeconds:(uint32_t)[durationSeconds intValue]];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
         {
             OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
@@ -3446,10 +3463,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                        enabled:NO
                                                                durationSeconds:0];
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                    initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               thread:thread
-                                        configuration:disappearingMessagesConfiguration
-                                  createdByRemoteName:@"Alice"]];
+                                       initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                  thread:thread
+                                           configuration:disappearingMessagesConfiguration
+                                     createdByRemoteName:@"Alice"
+                                  createdInExistingGroup:NO]];
         }
 
         [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
@@ -3766,7 +3784,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }];
     OWSAssert(thread);
 
-    TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew];
+    TSOutgoingMessage *message =
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew expiresInSeconds:0];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
