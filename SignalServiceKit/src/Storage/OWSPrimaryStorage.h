@@ -22,6 +22,8 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
+- (void)updateUIDatabaseConnectionToLatest;
+
 + (YapDatabaseConnection *)dbReadConnection;
 + (YapDatabaseConnection *)dbReadWriteConnection;
 
