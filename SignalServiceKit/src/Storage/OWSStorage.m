@@ -542,10 +542,13 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         YapDatabaseFullTextSearch *fullTextSearch = (YapDatabaseFullTextSearch *)extension;
         
         NSString *versionTag = [self appendSuffixToDatabaseExtensionVersionIfNecessary:fullTextSearch.versionTag extensionName:extensionName];
-        YapDatabaseFullTextSearch *fullTextSearchCopy = [[YapDatabaseFullTextSearch alloc] initWithColumnNames:fullTextSearch->columnNames.array
-                                                                                                       handler:fullTextSearch->handler
-                                                                                                    versionTag:versionTag];
-        
+        YapDatabaseFullTextSearch *fullTextSearchCopy =
+            [[YapDatabaseFullTextSearch alloc] initWithColumnNames:fullTextSearch->columnNames.array
+                                                           options:fullTextSearch->options
+                                                           handler:fullTextSearch->handler
+                                                        ftsVersion:fullTextSearch->ftsVersion
+                                                        versionTag:versionTag];
+
         return fullTextSearchCopy;
     } else if ([extension isKindOfClass:[YapDatabaseCrossProcessNotification class]]) {
         // versionTag doesn't matter for YapDatabaseCrossProcessNotification.
