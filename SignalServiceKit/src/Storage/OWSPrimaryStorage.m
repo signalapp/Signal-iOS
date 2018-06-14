@@ -168,10 +168,15 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     OWSAssertIsOnMainThread();
     
     DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-    
+    [self updateUIDatabaseConnectionToLatest];
+}
+
+- (void)updateUIDatabaseConnectionToLatest
+{
+
     // Notify observers we're about to update the database connection
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];
-        
+
     // Move uiDatabaseConnection to the latest commit.
     // Do so atomically, and fetch all the notifications for each commit we jump.
     NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
@@ -182,7 +187,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                                                         object:self.dbNotificationObject
                                                       userInfo:userInfo];
 }
-     
+
 - (YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssertIsOnMainThread();
