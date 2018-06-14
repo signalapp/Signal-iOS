@@ -52,7 +52,9 @@ public class FullTextSearchFinder: NSObject {
             $0.count > 0
         }.map {
             // Allow partial match of each term.
-            $0 + "*"
+            //
+            // Note that we use double-quotes to enclose each search term.
+            "\"\($0)\"*"
         }
 
         // 6. Join terms into query string.
@@ -92,8 +94,17 @@ public class FullTextSearchFinder: NSObject {
         var charactersToFilter = CharacterSet.punctuationCharacters
         charactersToFilter.formUnion(CharacterSet.illegalCharacters)
         charactersToFilter.formUnion(CharacterSet.controlCharacters)
-        // Note that we strip the Unicode "subtitute" character (26).
-        charactersToFilter.formUnion(CharacterSet(charactersIn: "+~$^=|<>`_\u{26}"))
+
+        // We want to strip all ASCII characters except:
+        // * Letters a-z, A-Z
+        // * Numerals 0-9
+        // * Whitespace
+        var asciiToFilter = CharacterSet(charactersIn: UnicodeScalar(0x0)!..<UnicodeScalar(0x80)!)
+        assert(!asciiToFilter.contains(UnicodeScalar(0x80)!))
+        asciiToFilter.subtract(CharacterSet.alphanumerics)
+        asciiToFilter.subtract(CharacterSet.whitespacesAndNewlines)
+        charactersToFilter.formUnion(asciiToFilter)
+
         return charactersToFilter
     }
 
@@ -197,7 +208,7 @@ public class FullTextSearchFinder: NSObject {
 
     // MARK: - Extension Registration
 
-    private static let dbExtensionName: String = "FullTextSearchFinderExtension)"
+    private static let dbExtensionName: String = "FullTextSearchFinderExtension"
 
     private func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseFullTextSearchTransaction? {
         return transaction.ext(FullTextSearchFinder.dbExtensionName) as? YapDatabaseFullTextSearchTransaction
