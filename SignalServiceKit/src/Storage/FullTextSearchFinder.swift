@@ -36,8 +36,15 @@ public class FullTextSearchFinder: NSObject {
         // is case-insensitive.
         let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
 
-        // 2. Split into query terms (or tokens).
-        var queryTerms = normalizedSearchText.split(separator: " ")
+        // 2. Split the non-numeric text into query terms (or tokens).
+        let nonNumericText = String(String.UnicodeScalarView(normalizedSearchText.unicodeScalars.lazy.map {
+            if CharacterSet.decimalDigits.contains($0) {
+                return " "
+            } else {
+                return $0
+            }
+        }))
+        var queryTerms = nonNumericText.split(separator: " ")
 
         // 3. Add an additional numeric-only query term.
         let digitsOnlyScalars = normalizedSearchText.unicodeScalars.lazy.filter {
@@ -140,7 +147,7 @@ public class FullTextSearchFinder: NSObject {
 
         // 3. Strip leading & trailing whitespace last, since we may replace
         // filtered characters with whitespace.
-        var result = String(String.UnicodeScalarView(simplified))
+        let result = String(String.UnicodeScalarView(simplified))
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
