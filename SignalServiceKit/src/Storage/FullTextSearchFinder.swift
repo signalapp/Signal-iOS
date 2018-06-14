@@ -25,7 +25,7 @@ public class SearchIndexer<T> {
 @objc
 public class FullTextSearchFinder: NSObject {
 
-    // Mark: Querying
+    // MARK: - Querying
 
     // We want to match by prefix for "search as you type" functionality.
     // SQLite does not support suffix or contains matches.
@@ -99,15 +99,15 @@ public class FullTextSearchFinder: NSObject {
                 stop.pointee = true
                 return
             }
-            searchResultCount = searchResultCount + 1
+            searchResultCount += 1
 
             block(object, snippet)
         }
     }
 
-    // Mark: Normalization
+    // MARK: - Normalization
 
-    fileprivate class func charactersToRemove() -> CharacterSet {
+    fileprivate static var charactersToRemove: CharacterSet = {
         // * We want to strip punctuation - and our definition of "punctuation"
         //   is broader than `CharacterSet.punctuationCharacters`.
         // * FTS should be robust to (i.e. ignore) illegal and control characters,
@@ -127,12 +127,12 @@ public class FullTextSearchFinder: NSObject {
         charactersToFilter.formUnion(asciiToFilter)
 
         return charactersToFilter
-    }
+    }()
 
     public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
         let filtered = text.unicodeScalars.lazy.filter({
-            !charactersToRemove().contains($0)
+            !charactersToRemove.contains($0)
         })
 
         // 2. Simplify whitespace.
@@ -151,7 +151,7 @@ public class FullTextSearchFinder: NSObject {
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    // Mark: Index Building
+    // MARK: - Index Building
 
     private class var contactsManager: ContactsManagerProtocol {
         return TextSecureKitEnv.shared().contactsManager
