@@ -3885,6 +3885,10 @@ typedef enum : NSUInteger {
         DDLogInfo(@"%@ Not marking messages as read; another view is presented.", self.logTag);
         return;
     }
+    if (OWSWindowManager.sharedManager.shouldShowCallView) {
+        DDLogInfo(@"%@ Not marking messages as read; call view is presented.", self.logTag);
+        return;
+    }
     if (self.navigationController.topViewController != self) {
         DDLogInfo(@"%@ Not marking messages as read; another view is pushed.", self.logTag);
         return;
