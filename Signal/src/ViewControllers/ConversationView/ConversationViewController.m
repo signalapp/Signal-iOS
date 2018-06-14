@@ -442,6 +442,10 @@ typedef enum : NSUInteger {
     self.lastRangeLength = 0;
     [self ensureDynamicInteractions];
 
+    // We need to update uiDatabaseConnection to reflect changes made
+    // by ensureDynamicInteractions.    
+    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+
     if (thread.uniqueId.length > 0) {
         self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
                                                                           view:TSMessageDatabaseViewExtensionName];
