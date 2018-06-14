@@ -214,7 +214,6 @@ public class SystemContactsFetcher: NSObject {
             self.contactStoreAdapter.requestAccess { (granted, error) in
                 if let error = error {
                     Logger.error("\(self.TAG) error fetching contacts: \(error)")
-                    Logger.flush()
                     completion(error)
                     return
                 }

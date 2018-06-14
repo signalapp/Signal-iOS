@@ -207,10 +207,7 @@ public class FullTextSearchFinder: NSObject {
         guard message.hasAttachments() else {
             return nil
         }
-        guard let dbConnection = dbConnection else {
-            owsFail("Could not load attachment for search indexing.")
-            return nil
-        }
+        let dbConnection = OWSPrimaryStorage.shared().dbReadConnection
         var oversizeText: String?
         dbConnection.read({ (transaction) in
             guard let attachment = message.attachment(with: transaction) else {
@@ -223,8 +220,6 @@ public class FullTextSearchFinder: NSObject {
             guard attachmentStream.isOversizeText() else {
                 return
             }
-            Logger.verbose("attachmentStream: \(attachmentStream.contentType)")
-            Logger.flush()
             guard let text = attachmentStream.readOversizeText() else {
                 owsFail("Could not load oversize text attachment")
                 return
@@ -233,8 +228,6 @@ public class FullTextSearchFinder: NSObject {
         })
         return oversizeText
     }
-
-    private static var dbConnection: YapDatabaseConnection?
 
     private class func indexContent(object: Any) -> String? {
         if let groupThread = object as? TSGroupThread {
@@ -276,10 +269,6 @@ public class FullTextSearchFinder: NSObject {
 
     private class var dbExtensionConfig: YapDatabaseFullTextSearch {
         SwiftAssertIsOnMainThread(#function)
-
-        if dbConnection == nil {
-            dbConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
-        }
 
         let contentColumnName = "content"
 
