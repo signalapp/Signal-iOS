@@ -92,7 +92,8 @@ public class FullTextSearchFinder: NSObject {
         var charactersToFilter = CharacterSet.punctuationCharacters
         charactersToFilter.formUnion(CharacterSet.illegalCharacters)
         charactersToFilter.formUnion(CharacterSet.controlCharacters)
-        charactersToFilter.formUnion(CharacterSet(charactersIn: "+~$^=|<>`"))
+        // Note that we strip the Unicode "subtitute" character (26).
+        charactersToFilter.formUnion(CharacterSet(charactersIn: "+~$^=|<>`_\u{26}"))
         return charactersToFilter
     }
 
