@@ -776,7 +776,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:name
-                                                      createdInExistingGroupName:nil];
+                                                          createdInExistingGroup:NO];
     [message saveWithTransaction:transaction];
 }
 
@@ -968,14 +968,12 @@ NS_ASSUME_NONNULL_BEGIN
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
 
                 if (dataMessage.hasExpireTimer && dataMessage.expireTimer > 0) {
-                    // We could use the sender name here, but maybe it makes more sense to attribute it to the group.
-                    NSString *configUpdateName = dataMessage.group.name;
                     [[OWSDisappearingMessagesJob sharedJob]
                         becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                           thread:newGroupThread
                                            appearBeforeTimestamp:now
                                       createdByRemoteContactName:nil
-                                      createdInExistingGroupName:configUpdateName
+                                          createdInExistingGroup:YES
                                                      transaction:transaction];
                 }
 

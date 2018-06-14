@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                            thread:(TSThread *)thread
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration
               createdByRemoteName:(nullable NSString *)remoteName
-       createdInExistingGroupName:(nullable NSString *)createdInExistingGroupName;
+           createdInExistingGroup:(BOOL)createdInExistingGroup;
 
 @end
 

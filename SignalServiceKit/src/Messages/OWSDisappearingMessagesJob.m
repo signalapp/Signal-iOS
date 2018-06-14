@@ -208,7 +208,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                             thread:thread
                              appearBeforeTimestamp:message.timestampForSorting
                         createdByRemoteContactName:remoteContactName
-                        createdInExistingGroupName:nil
+                            createdInExistingGroup:NO
                                        transaction:transaction];
 }
 
@@ -216,7 +216,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                           thread:(TSThread *)thread
                            appearBeforeTimestamp:(uint64_t)timestampForSorting
                       createdByRemoteContactName:(nullable NSString *)remoteContactName
-                      createdInExistingGroupName:(nullable NSString *)existingGroupName
+                          createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(thread);
@@ -253,7 +253,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                                           thread:thread
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:remoteContactName
-                                                      createdInExistingGroupName:existingGroupName];
+                                                          createdInExistingGroup:createdInExistingGroup];
     [infoMessage saveWithTransaction:transaction];
 
     backgroundTask = nil;

@@ -49,14 +49,14 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @param remoteContactName
  *    nil for outgoing messages, otherwise the name of the sender
- * @param existingGroupName
- *    set when being added to a group which already has DM enabled, otherwise nil
+ * @param createdInExistingGroup
+ *    YES when being added to a group which already has DM enabled, otherwise NO
  */
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
                            appearBeforeTimestamp:(uint64_t)timestampForSorting
                       createdByRemoteContactName:(nullable NSString *)remoteContactName
-                      createdInExistingGroupName:(nullable NSString *)existingGroupName
+                          createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // Clean up any messages that expired since last launch immediately

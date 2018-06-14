@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingConfigurationUpdateInfoMessage ()
 
 @property (nonatomic, readonly, nullable) NSString *createdByRemoteName;
-@property (nonatomic, readonly, nullable) NSString *createdInExistingGroupName;
+@property (nonatomic, readonly) BOOL createdInExistingGroup;
 @property (nonatomic, readonly) BOOL configurationIsEnabled;
 @property (nonatomic, readonly) uint32_t configurationDurationSeconds;
 
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                            thread:(TSThread *)thread
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration
               createdByRemoteName:(nullable NSString *)remoteName
-       createdInExistingGroupName:(nullable NSString *)createdInExistingGroupName
+           createdInExistingGroup:(BOOL)createdInExistingGroup
 {
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
     if (!self) {
@@ -32,8 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     _configurationIsEnabled = configuration.isEnabled;
     _configurationDurationSeconds = configuration.durationSeconds;
+
+    // At most one should be set
+    OWSAssert(!remoteName || !createdInExistingGroup);
+
     _createdByRemoteName = remoteName;
-    _createdInExistingGroupName = createdInExistingGroupName;
+    _createdInExistingGroup = createdInExistingGroup;
 
     return self;
 }
@@ -47,7 +51,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    if (self.createdByRemoteName) {
+    if (self.createdInExistingGroup) {
+        OWSAssert(self.configurationIsEnabled && self.configurationDurationSeconds > 0);
+        NSString *infoFormat = NSLocalizedString(@"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
+            @"Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} "
+            @"before messages disappear, see the *_TIME_AMOUNT strings for context.");
+
+        NSString *durationString = [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
+        return [NSString stringWithFormat:infoFormat, durationString];
+    } else if (self.createdByRemoteName) {
         if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {
             NSString *infoFormat = NSLocalizedString(@"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION",
                 @"Info Message when {{other user}} updates message expiration to {{time amount}}, see the "
@@ -62,14 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
                 @"Info Message when {{other user}} disables or doesn't support disappearing messages");
             return [NSString stringWithFormat:infoFormat, self.createdByRemoteName];
         }
-    } else if (self.createdInExistingGroupName) {
-        OWSAssert(self.configurationIsEnabled && self.configurationDurationSeconds > 0);
-        NSString *infoFormat = NSLocalizedString(@"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",
-            @"Info Message when added to {{group name}} which has enabled message expiration after {{time amount}}, "
-            @"see the *_TIME_AMOUNT strings for context.");
-
-        NSString *durationString = [NSString formatDurationSeconds:self.configurationDurationSeconds useShortFormat:NO];
-        return [NSString stringWithFormat:infoFormat, self.createdByRemoteName, durationString];
     } else {
         // Changed by local request
         if (self.configurationIsEnabled && self.configurationDurationSeconds > 0) {
