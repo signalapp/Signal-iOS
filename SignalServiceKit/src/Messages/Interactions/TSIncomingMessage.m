@@ -151,11 +151,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(transaction);
 
-    if (_read && readTimestamp <= self.expireStartedAt) {
+    if (_read && readTimestamp >= self.expireStartedAt) {
         return;
     }
-
-    NSTimeInterval secondsAgoRead = ([NSDate ows_millisecondTimeStamp] - readTimestamp) / 1000;
+    
+    NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
     DDLogDebug(@"%@ marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
         self.logTag,
         self.uniqueId,
@@ -164,6 +164,13 @@ NS_ASSUME_NONNULL_BEGIN
     _read = YES;
     [self saveWithTransaction:transaction];
     [self touchThreadWithTransaction:transaction];
+    
+    [transaction addCompletionQueue:nil
+                    completionBlock:^{
+                        [[NSNotificationCenter defaultCenter]
+                         postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                         object:self];
+                    }];
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
                                                      expirationStartedAt:readTimestamp

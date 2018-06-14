@@ -171,17 +171,6 @@ void AssertIsOnDisappearingMessagesQueue()
                  expirationStartedAt:(uint64_t)expirationStartedAt
                          transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
 {
-    if (!message.isExpiringMessage) {
-        return;
-    }
-
-    [self setExpirationForMessage:message expirationStartedAt:expirationStartedAt transaction:transaction];
-}
-
-- (void)setExpirationForMessage:(TSMessage *)message
-            expirationStartedAt:(uint64_t)expirationStartedAt
-                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
-{
     OWSAssert(transaction);
 
     if (!message.isExpiringMessage) {
@@ -401,7 +390,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
             uint64_t readTimeBestGuess = message.timestampForSorting;
-            [self setExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
+            [self startAnyExpirationForMessage:message expirationStartedAt:readTimeBestGuess transaction:transaction];
         }
                                                  transaction:transaction];
 }

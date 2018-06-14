@@ -438,13 +438,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     [message markAsReadAtTimestamp:readReceipt.readTimestamp sendReadReceipt:NO transaction:transaction];
     [readReceipt removeWithTransaction:transaction];
-
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        [[NSNotificationCenter defaultCenter]
-                            postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                                               object:message];
-                    }];
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
@@ -498,6 +491,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssert(message);
     OWSAssert(transaction);
 
+    // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
+    [message markAsReadAtTimestamp:readTimestamp sendReadReceipt:NO transaction:transaction];
+
+    // Also mark any messages appearing earlier in the thread as read.
+    //
     // Use `timestampForSorting` which reflects local received order, rather than `timestamp`
     // which reflect sender time.
     [self markAsReadBeforeTimestamp:message.timestampForSorting
@@ -547,9 +545,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
          }
          
          OWSAssert(!possiblyRead.read);
+         OWSAssert(possiblyRead.expireStartedAt == 0);
          if (!possiblyRead.read) {
-             [newlyReadList addObject:possiblyRead];
-         } else if (readTimestamp < possiblyRead.expireStartedAt) {
              [newlyReadList addObject:possiblyRead];
          }
      }];
@@ -565,16 +562,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
     for (id<OWSReadTracking> readItem in newlyReadList) {
         [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
-
-        if ([readItem isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)readItem;
-            [transaction addCompletionQueue:nil
-                            completionBlock:^{
-                                [[NSNotificationCenter defaultCenter]
-                                 postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                                 object:incomingMessage];
-                            }];
-        }
     }
 }
 

@@ -64,17 +64,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSNumber *> *)validDurationsSeconds
 {
-    return @[ @(5),
-              @(10),
-              @(30),
-              @(60),
-              @(300),
-              @(1800),
-              @(3600),
-              @(21600),
-              @(43200),
-              @(86400),
-              @(604800) ];
+    return @[
+        @(5 * kSecondInterval),
+        @(10 * kSecondInterval),
+        @(30 * kSecondInterval),
+        @(1 * kMinuteInterval),
+        @(5 * kMinuteInterval),
+        @(30 * kMinuteInterval),
+        @(1 * kHourInterval),
+        @(6 * kHourInterval),
+        @(12 * kHourInterval),
+        @(24 * kHourInterval),
+        @(1 * kWeekInterval)
+    ];
+}
+
++ (uint32_t)maxDurationSeconds
+{
+    uint32_t max = [[self.validDurationsSeconds valueForKeyPath:@"@max.intValue"] unsignedIntValue];
+
+    // It's safe to update this assert if we add a larger duration
+    OWSAssert(max == 1 * kWeekInterval);
+
+    return max;
 }
 
 - (NSUInteger)durationIndex
