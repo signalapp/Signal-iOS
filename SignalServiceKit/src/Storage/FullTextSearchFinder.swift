@@ -18,7 +18,7 @@ public class SearchIndexer<T> {
     }
 
     private func normalize(indexingText: String) -> String {
-        return FullTextSearchFinder.sanitize(text: indexingText)
+        return FullTextSearchFinder.normalize(text: indexingText)
     }
 }
 
@@ -31,19 +31,32 @@ public class FullTextSearchFinder: NSObject {
     // SQLite does not support suffix or contains matches.
     public class func query(searchText: String) -> String {
         // 1. Normalize the search text.
-        let normalizedSearchText = normalize(queryText: searchText)
+        let normalizedSearchText = FullTextSearchFinder.normalize(text: searchText)
 
-        // 2. Split into tokens.
-        let queryTerms = normalizedSearchText.split(separator: " ").filter {
-            // Ignore empty tokens.
+        // 2. Split into query terms (or tokens).
+        var queryTerms = normalizedSearchText.split(separator: " ")
+
+        // 3. Add an additional numeric-only query term.
+        let digitsOnlyScalars = normalizedSearchText.unicodeScalars.lazy.filter {
+            CharacterSet.decimalDigits.contains($0)
+        }
+        let digitsOnly: Substring = Substring(String(String.UnicodeScalarView(digitsOnlyScalars)))
+        queryTerms.append(digitsOnly)
+
+        // 4. De-duplicate and sort query terms.
+        queryTerms = Array(Set(queryTerms)).sorted()
+
+        // 5. Filter the query terms.
+        let filteredQueryTerms = queryTerms.filter {
+            // Ignore empty terms.
             $0.count > 0
         }.map {
-            // Allow partial match of each token.
+            // Allow partial match of each term.
             $0 + "*"
         }
 
-        // 3. Join tokens into query string.
-        let query = queryTerms.joined(separator: " ")
+        // 6. Join terms into query string.
+        let query = filteredQueryTerms.joined(separator: " ")
         return query
     }
 
@@ -73,13 +86,13 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
-    // Mark: Filtering
+    // Mark: Normalization
 
     fileprivate class func charactersToRemove() -> CharacterSet {
         var charactersToFilter = CharacterSet.punctuationCharacters
         charactersToFilter.formUnion(CharacterSet.illegalCharacters)
         charactersToFilter.formUnion(CharacterSet.controlCharacters)
-        charactersToFilter.formUnion(CharacterSet.symbols)
+        charactersToFilter.formUnion(CharacterSet(charactersIn: "+~$^=|<>`"))
         return charactersToFilter
     }
 
@@ -88,7 +101,7 @@ public class FullTextSearchFinder: NSObject {
         return separatorCharacters
     }
 
-    fileprivate class func sanitize(text: String) -> String {
+    public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
         let filtered = text.unicodeScalars.lazy.filter({
             !charactersToRemove().contains($0)
@@ -113,21 +126,6 @@ public class FullTextSearchFinder: NSObject {
         // 4. Strip leading & trailing whitespace last, since we may replace
         // filtered characters with whitespace.
         return result.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private class func normalize(queryText: String) -> String {
-        var normalized: String = FullTextSearchFinder.sanitize(text: queryText)
-
-        let digitsOnlyScalars = normalized.unicodeScalars.lazy.filter {
-            CharacterSet.decimalDigits.contains($0)
-        }
-        let normalizedDigits = String(String.UnicodeScalarView(digitsOnlyScalars))
-
-        if normalizedDigits.count > 0 {
-            return "\(normalized) OR \(normalizedDigits)"
-        } else {
-            return normalized
-        }
     }
 
     // Mark: Index Building

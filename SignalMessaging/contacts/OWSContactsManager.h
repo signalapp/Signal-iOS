@@ -71,7 +71,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  * Used for sorting, respects system contacts name sort order preference.
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
-- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right;
 
 // Generally we prefer the formattedProfileName over the raw profileName so as to
 // distinguish a profile name apart from a name pulled from the system's contacts.

@@ -64,6 +64,10 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
     func isSystemContact(withSignalAccount recipientId: String) -> Bool {
         return true
     }
+
+    func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
+        return .orderedAscending
+    }
 }
 
 let bobRecipientId = "+49030183000"
@@ -265,7 +269,7 @@ class ConversationSearcherTest: XCTestCase {
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
-            results = self.searcher.results(searchText: searchText, transaction: transaction)
+            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: TextSecureKitEnv.shared().contactsManager)
         }
         return results
     }
@@ -342,9 +346,23 @@ class SearcherTest: XCTestCase {
         XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Liza 323"))
     }
 
-    func testTextSanitization() {
+    func testSearchQuery() {
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza"), "Liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza +1-323"), "1323* Liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "1323* Liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "renaldo RENALDO reñaldo REÑALDO"), "RENALDO* REÑALDO* renaldo* reñaldo*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "😏"), "😏*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "alice 123 bob 456"), "123* 123456* 456* alice* bob*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Li!za"), "Liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza Liza"), "Liza*")
+        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza liza"), "Liza* liza*")
+    }
+
+    func testTextNormalization() {
         XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza"), "Liza")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza +1-323"), "Liza 1 323")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "\"\\'!&@#$%^&*()Liza +1-323"), "Liza 1 323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza +1-323"), "Liza 1323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "Liza 1323")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "renaldo RENALDO reñaldo REÑALDO"), "renaldo RENALDO reñaldo REÑALDO")
+        XCTAssertEqual(FullTextSearchFinder.normalize(text: "😏"), "😏")
     }
 }

@@ -39,13 +39,13 @@ public class ConversationSearchResult: Comparable {
 
 public class ContactSearchResult: Comparable {
     public let signalAccount: SignalAccount
-    public let contactsManager: OWSContactsManager
+    public let contactsManager: ContactsManagerProtocol
 
     public var recipientId: String {
         return signalAccount.recipientId
     }
 
-    init(signalAccount: SignalAccount, contactsManager: OWSContactsManager) {
+    init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
         self.signalAccount = signalAccount
         self.contactsManager = contactsManager
     }
@@ -53,7 +53,7 @@ public class ContactSearchResult: Comparable {
     // Mark: Comparable
 
     public static func < (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.contactsManager.compareSignalAccount(lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
+        return lhs.contactsManager.compare(signalAccount: lhs.signalAccount, with: rhs.signalAccount) == .orderedAscending
     }
 
     // MARK: Equatable
@@ -99,7 +99,7 @@ public class ConversationSearcher: NSObject {
 
     public func results(searchText: String,
                         transaction: YapDatabaseReadTransaction,
-                        contactsManager: OWSContactsManager) -> SearchResultSet {
+                        contactsManager: ContactsManagerProtocol) -> SearchResultSet {
 
         var conversations: [ConversationSearchResult] = []
         var contacts: [ContactSearchResult] = []

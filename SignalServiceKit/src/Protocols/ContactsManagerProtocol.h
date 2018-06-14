@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSystemContact:(NSString *)recipientId;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
 
+- (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
+                         withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
+
 @end
 
 NS_ASSUME_NONNULL_END
