@@ -1065,6 +1065,7 @@ typedef enum : NSUInteger {
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
     [self updateBackButtonUnreadCount];
+    [self autoLoadMoreIfNecessary];
 
     switch (self.actionOnOpen) {
         case ConversationViewActionNone:
@@ -1081,7 +1082,6 @@ typedef enum : NSUInteger {
     }
 
     self.actionOnOpen = ConversationViewActionNone;
-
 
     self.isViewCompletelyAppeared = YES;
     self.viewHasEverAppeared = YES;
@@ -1557,6 +1557,10 @@ typedef enum : NSUInteger {
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
     if (hasEarlierUnseenMessages) {
+        // Ensure view items are updated before trying to scroll to the
+        // unread indicator.
+        [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
+
         [self scrollToUnreadIndicatorAnimated];
     }
 }
