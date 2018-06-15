@@ -53,9 +53,6 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 {
     OWSAssert(!self.nameLabel);
 
-    self.preservesSuperviewLayoutMargins = YES;
-    self.contentView.preservesSuperviewLayoutMargins = YES;
-
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
 

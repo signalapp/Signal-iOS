@@ -103,6 +103,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         // Auto size cells for dynamic type
         tableView.estimatedRowHeight = 60.0
         tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 60
 
         tableView.allowsMultipleSelection = allowsMultipleSelection
 
