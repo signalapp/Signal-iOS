@@ -230,7 +230,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
     self.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableView.estimatedRowHeight = 60;
 
     UILabel *emptyBoxLabel = [UILabel new];
     self.emptyBoxLabel = emptyBoxLabel;

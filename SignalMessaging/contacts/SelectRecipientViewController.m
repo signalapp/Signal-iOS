@@ -521,33 +521,37 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
             // Contacts
 
             for (SignalAccount *signalAccount in signalAccounts) {
-                [contactsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-                    SelectRecipientViewController *strongSelf = weakSelf;
-                    OWSCAssert(strongSelf);
+                [contactsSection
+                    addItem:[OWSTableItem
+                                itemWithCustomCellBlock:^{
+                                    SelectRecipientViewController *strongSelf = weakSelf;
+                                    OWSCAssert(strongSelf);
 
-                    ContactTableViewCell *cell = [ContactTableViewCell new];
-                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
-                    if (isBlocked) {
-                        cell.accessoryMessage = NSLocalizedString(
-                            @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                    } else {
-                        cell.accessoryMessage = [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
-                    }
-                    [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
+                                    ContactTableViewCell *cell = [ContactTableViewCell new];
+                                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                                    if (isBlocked) {
+                                        cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
+                                            @"An indicator that a contact has been blocked.");
+                                    } else {
+                                        cell.accessoryMessage =
+                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
+                                    }
+                                    [cell configureWithSignalAccount:signalAccount
+                                                     contactsManager:helper.contactsManager];
 
-                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
-                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                    }
+                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                                    }
 
-                    return cell;
-                }
-                                             customRowHeight:[ContactTableViewCell rowHeight]
-                                             actionBlock:^{
-                                                 if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
-                                                     return;
-                                                 }
-                                                 [weakSelf.delegate signalAccountWasSelected:signalAccount];
-                                             }]];
+                                    return cell;
+                                }
+                                customRowHeight:UITableViewAutomaticDimension
+                                actionBlock:^{
+                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                        return;
+                                    }
+                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
+                                }]];
             }
         }
         [contents addSection:contactsSection];

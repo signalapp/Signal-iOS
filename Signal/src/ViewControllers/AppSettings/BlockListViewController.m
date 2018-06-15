@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
 
     [self updateTableContents];
 }
@@ -78,18 +79,22 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<NSString *> *blockedPhoneNumbers =
         [helper.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
     for (NSString *phoneNumber in blockedPhoneNumbers) {
-        [blocklistSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            ContactTableViewCell *cell = [ContactTableViewCell new];
-            SignalAccount *signalAccount = [helper signalAccountForRecipientId:phoneNumber];
-            if (signalAccount) {
-                [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
-            } else {
-                [cell configureWithRecipientId:phoneNumber contactsManager:helper.contactsManager];
-            }
+        [blocklistSection addItem:[OWSTableItem
+                                      itemWithCustomCellBlock:^{
+                                          ContactTableViewCell *cell = [ContactTableViewCell new];
+                                          SignalAccount *signalAccount =
+                                              [helper signalAccountForRecipientId:phoneNumber];
+                                          if (signalAccount) {
+                                              [cell configureWithSignalAccount:signalAccount
+                                                               contactsManager:helper.contactsManager];
+                                          } else {
+                                              [cell configureWithRecipientId:phoneNumber
+                                                             contactsManager:helper.contactsManager];
+                                          }
 
-            return cell;
-        }
-                                      customRowHeight:[ContactTableViewCell rowHeight]
+                                          return cell;
+                                      }
+                                      customRowHeight:UITableViewAutomaticDimension
                                       actionBlock:^{
                                           [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
                                                                            fromViewController:weakSelf

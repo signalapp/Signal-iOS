@@ -49,7 +49,6 @@ class ConversationSearchViewController: UITableViewController {
         blockedPhoneNumberSet = Set(blockingManager.blockedPhoneNumbers())
 
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = 60
 
         tableView.register(EmptySearchResultCell.self, forCellReuseIdentifier: EmptySearchResultCell.reuseIdentifier)
         tableView.register(HomeViewCell.self, forCellReuseIdentifier: HomeViewCell.cellReuseIdentifier())

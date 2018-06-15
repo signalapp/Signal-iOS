@@ -49,16 +49,6 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     return NSStringFromClass(self.class);
 }
 
-- (CGSize)intrinsicContentSize
-{
-    return CGSizeMake(self.width, ContactTableViewCell.rowHeight);
-}
-
-+ (CGFloat)rowHeight
-{
-    return 60.f;
-}
-
 - (void)configureProgrammatically
 {
     OWSAssert(!self.nameLabel);

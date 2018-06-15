@@ -248,7 +248,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     statusLabel.adjustsFontSizeToFitWidth = true
                     statusLabel.sizeToFit()
                     cell.accessoryView = statusLabel
-                    cell.autoSetDimension(.height, toSize: ContactTableViewCell.rowHeight())
                     cell.setContentHuggingLow()
                     cell.isUserInteractionEnabled = false
                     groupRows.append(cell)
