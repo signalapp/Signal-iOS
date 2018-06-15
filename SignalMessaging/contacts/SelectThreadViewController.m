@@ -111,6 +111,8 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinWidthToSuperview];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableViewController.tableView.estimatedRowHeight = 60;
 }
 
 - (void)yapDatabaseModifiedExternally:(NSNotification *)notification

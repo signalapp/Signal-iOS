@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableViewController.tableView.estimatedRowHeight = 60;
 
     [self updateTableContents];
 }

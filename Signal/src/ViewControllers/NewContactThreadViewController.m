@@ -125,6 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     [_tableViewController.view autoPinWidthToSuperview];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableViewController.tableView.estimatedRowHeight = 60;
 
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contactsPermissionReminderView];
     [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];

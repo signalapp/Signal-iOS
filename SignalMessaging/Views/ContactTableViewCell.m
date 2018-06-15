@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kContactTableViewCellAvatarSize = 40;
+const NSUInteger kContactTableViewCellAvatarSize = 48;
 const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 @interface ContactTableViewCell ()
@@ -52,11 +52,6 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 - (void)configureProgrammatically
 {
     OWSAssert(!self.nameLabel);
-
-    const CGFloat kMinVMargin = 5;
-
-    self.preservesSuperviewLayoutMargins = YES;
-    self.contentView.preservesSuperviewLayoutMargins = YES;
 
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
@@ -99,20 +94,10 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
     [_nameContainerView autoPinTrailingToSuperviewMargin];
 
     // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                  withInset:kMinVMargin
-                                   relation:NSLayoutRelationGreaterThanOrEqual];
-    [_avatarView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                  withInset:kMinVMargin
-                                   relation:NSLayoutRelationGreaterThanOrEqual];
-    [_nameContainerView autoPinEdgeToSuperviewEdge:ALEdgeTop
-                                         withInset:kMinVMargin
-                                          relation:NSLayoutRelationGreaterThanOrEqual];
-    [_nameContainerView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                         withInset:kMinVMargin
-                                          relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.nameContainerView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [self.nameContainerView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
 
     [self configureFonts];
 
