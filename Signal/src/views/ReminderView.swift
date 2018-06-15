@@ -91,7 +91,7 @@ class ReminderView: UIView {
         // Label
         switch (mode) {
         case .nag:
-            label.font = UIFont.ows_regularFont(withSize: 14)
+            label.font = UIFont.ows_dynamicTypeFootnote
         case .explanation:
             label.font = UIFont.ows_dynamicTypeSubheadline
         }

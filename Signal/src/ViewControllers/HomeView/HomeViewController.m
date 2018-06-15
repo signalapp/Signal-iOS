@@ -74,6 +74,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Views
 
+@property (nonatomic) NSLayoutConstraint *hideDeregisteredViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
@@ -193,7 +194,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    [self reloadTableViewData];
+    [self updateReminderViews];
 }
 
 #pragma mark - View Life Cycle
@@ -209,12 +210,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [SignalApp.sharedApp setHomeViewController:self];
     }
 
+    ReminderView *deregisteredView =
+        [ReminderView nagWithText:NSLocalizedString(@"INBOX_VIEW_DEREGISTRATION_WARNING",
+                                      @"Label warning the user that they have been de-registered.")
+                        tapAction:^{
+                            // TODO:
+                        }];
+    [self.view addSubview:deregisteredView];
+    [deregisteredView autoPinWidthToSuperview];
+    [deregisteredView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    self.hideDeregisteredViewConstraint = [deregisteredView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideDeregisteredViewConstraint.priority = UILayoutPriorityRequired;
+
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
                                               @"Label reminding the user that they are in archive mode.")];
     [self.view addSubview:archiveReminderView];
     [archiveReminderView autoPinWidthToSuperview];
-    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [archiveReminderView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:deregisteredView];
     self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
 
@@ -270,12 +283,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     BOOL shouldHideArchiveReminderView = self.homeViewMode != HomeViewMode_Archive;
     BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
+    BOOL shouldHideDeregisteredView = !TSAccountManager.sharedInstance.isDeregistered;
+
     if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
-        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
+        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView
+        && self.hideDeregisteredViewConstraint.active == shouldHideDeregisteredView) {
         return;
     }
+
     self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
     self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
+    self.hideDeregisteredViewConstraint.active = shouldHideDeregisteredView;
+
     [self.view setNeedsLayout];
     [self.view layoutSubviews];
 }
