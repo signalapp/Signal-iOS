@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
+extern NSString *const DeregistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class OWSPrimaryStorage;
@@ -115,6 +116,12 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 #endif
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock;
+
+#pragma mark - Deregistration
+
+// De-registration reflects whether or not the service has received a 403
+- (BOOL)isDeregistered;
+- (void)setIsDeregistered:(BOOL)isDeregistered;
 
 @end
 

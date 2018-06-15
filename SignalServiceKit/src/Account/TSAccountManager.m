@@ -23,9 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
+NSString *const DeregistrationStateDidChangeNotification = @"DeregistrationStateDidChangeNotification";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
+NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
@@ -43,6 +45,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+
+@property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
 
 @end
 
@@ -108,6 +112,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         _isRegistered = NO;
         _cachedLocalNumber = nil;
         _phoneNumberAwaitingVerification = nil;
+        _cachedIsDeregistered = nil;
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
 
@@ -152,6 +157,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     // Warm these cached values.
     [self isRegistered];
     [self localNumber];
+    [self isDeregistered];
 }
 
 + (nullable NSString *)localNumber
@@ -522,6 +528,47 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     {
         _isRegistered = NO;
     }
+}
+
+#pragma mark - Deregistration
+
+- (BOOL)isDeregistered
+{
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self) {
+        if (self.cachedIsDeregistered == nil) {
+            self.cachedIsDeregistered = @([self.dbConnection boolForKey:TSAccountManager_IsDeregisteredKey
+                                                           inCollection:TSAccountManager_UserAccountCollection
+                                                           defaultValue:NO]);
+        }
+    }
+
+    OWSAssert(self.cachedIsDeregistered);
+    return self.cachedIsDeregistered.boolValue;
+}
+
+- (void)setIsDeregistered:(BOOL)isDeregistered
+{
+    @synchronized(self) {
+        if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered))
+            {
+                return;
+            }
+
+        DDLogWarn(@"%@ isDeregistered: %d", self.logTag, isDeregistered);
+
+        self.cachedIsDeregistered == @(isDeregistered);
+    }
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setValue:@(isDeregistered)
+                       forKey:TSAccountManager_IsDeregisteredKey
+                 inCollection:TSAccountManager_UserAccountCollection];
+    }];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DeregistrationStateDidChangeNotification
+                                                             object:nil
+                                                           userInfo:nil];
 }
 
 @end

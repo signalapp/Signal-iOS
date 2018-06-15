@@ -612,8 +612,14 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         BOOL hasSuccessStatus = 200 <= responseStatus && responseStatus <= 299;
         BOOL didSucceed = hasSuccessStatus && hasValidResponse;
         if (didSucceed) {
+            [TSAccountManager.sharedInstance setIsDeregistered:NO];
+
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
+            if (responseStatus == 403) {
+                [TSAccountManager.sharedInstance setIsDeregistered:YES];
+            }
+
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageResponseFailed,
                 NSLocalizedString(
                     @"ERROR_DESCRIPTION_RESPONSE_FAILED", @"Error indicating that a socket response failed."));
