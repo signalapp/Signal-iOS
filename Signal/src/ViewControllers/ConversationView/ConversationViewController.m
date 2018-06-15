@@ -1596,6 +1596,10 @@ typedef enum : NSUInteger {
     //
     // Otherwise, tapping on "load more messages" autoscrolls you downward which is completely wrong.
     if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
+        // Ensure view items are updated before trying to scroll to the
+        // unread indicator.
+        [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
+
         [self scrollToUnreadIndicatorAnimated];
     }
 }
