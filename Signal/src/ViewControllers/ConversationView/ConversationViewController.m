@@ -442,12 +442,11 @@ typedef enum : NSUInteger {
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
 
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
-
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
     self.lastRangeLength = 0;
     [self ensureDynamicInteractions];
+    [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
 
     if (thread.uniqueId.length > 0) {
         self.messageMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ thread.uniqueId ]
