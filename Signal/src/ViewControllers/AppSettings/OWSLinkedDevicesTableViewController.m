@@ -195,8 +195,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     OWSAssertIsOnMainThread();
 
-    DDLogVerbose(@"%@ %s", self.logTag, __PRETTY_FUNCTION__);
-
     // External database modifications can't be converted into incremental updates,
     // so rebuild everything.  This is expensive and usually isn't necessary, but
     // there's no alternative.

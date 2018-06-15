@@ -494,7 +494,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      failure:(RetryableFailureHandler)failureHandler
 {
     dispatch_async([OWSDispatch sendingQueue], ^{
-        TSThread *thread = message.thread;
+        TSThread *_Nullable thread = message.thread;
 
         // TODO: It would be nice to combine the "contact" and "group" send logic here.
         if ([thread isKindOfClass:[TSContactThread class]] &&
@@ -1121,6 +1121,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         case 404: {
             DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
 
+            OWSAssert(thread);
             [self unregisteredRecipient:recipient message:message thread:thread];
             NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
             // No need to retry if the recipient is not registered.
