@@ -25,6 +25,7 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
@@ -159,6 +160,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deregistrationStateDidChange:)
+                                                 name:DeregistrationStateDidChangeNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -178,6 +183,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 - (void)signalAccountsDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self reloadTableViewData];
+}
+
+- (void)deregistrationStateDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 

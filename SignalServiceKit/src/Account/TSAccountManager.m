@@ -16,6 +16,7 @@
 #import "TSPreKeyManager.h"
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -541,29 +542,28 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                                            inCollection:TSAccountManager_UserAccountCollection
                                                            defaultValue:NO]);
         }
-    }
 
-    OWSAssert(self.cachedIsDeregistered);
-    return self.cachedIsDeregistered.boolValue;
+        OWSAssert(self.cachedIsDeregistered);
+        return self.cachedIsDeregistered.boolValue;
+    }
 }
 
 - (void)setIsDeregistered:(BOOL)isDeregistered
 {
     @synchronized(self) {
-        if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered))
-            {
-                return;
-            }
+        if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered) {
+            return;
+        }
 
         DDLogWarn(@"%@ isDeregistered: %d", self.logTag, isDeregistered);
 
-        self.cachedIsDeregistered == @(isDeregistered);
+        self.cachedIsDeregistered = @(isDeregistered);
     }
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setValue:@(isDeregistered)
-                       forKey:TSAccountManager_IsDeregisteredKey
-                 inCollection:TSAccountManager_UserAccountCollection];
+        [transaction setObject:@(isDeregistered)
+                        forKey:TSAccountManager_IsDeregisteredKey
+                  inCollection:TSAccountManager_UserAccountCollection];
     }];
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DeregistrationStateDidChangeNotification
