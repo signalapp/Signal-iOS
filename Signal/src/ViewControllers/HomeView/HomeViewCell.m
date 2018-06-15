@@ -59,8 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.avatarView);
 
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
     self.backgroundColor = [UIColor whiteColor];
 
     _viewConstraints = [NSMutableArray new];
