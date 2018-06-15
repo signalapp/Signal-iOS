@@ -617,6 +617,8 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             [socketMessage didSucceedWithResponseObject:responseObject];
         } else {
             if (responseStatus == 403) {
+                // This should be redundant with our check for the socket
+                // failing due to 403, but let's be thorough.
                 [TSAccountManager.sharedInstance setIsDeregistered:YES];
             }
 
@@ -672,6 +674,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 
     self.state = SocketManagerStateOpen;
+
+    // If socket opens, we know we're not de-registered.
+    [TSAccountManager.sharedInstance setIsDeregistered:NO];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -684,6 +689,13 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
     DDLogError(@"Websocket did fail with error: %@", error);
 
+    if ([error.domain isEqualToString:SRWebSocketErrorDomain] && error.code == 2132) {
+        NSNumber *_Nullable statusCode = error.userInfo[SRHTTPResponseErrorKey];
+        if (statusCode.unsignedIntegerValue == 403) {
+            [TSAccountManager.sharedInstance setIsDeregistered:YES];
+        }
+    }
+
     [self handleSocketFailure];
 }
 
@@ -695,6 +707,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         // Ignore events from obsolete web sockets.
         return;
     }
+
+    // If we receive a response, we know we're not de-registered.
+    [TSAccountManager.sharedInstance setIsDeregistered:NO];
 
     WebSocketResourcesWebSocketMessage *wsMessage;
     @try {
