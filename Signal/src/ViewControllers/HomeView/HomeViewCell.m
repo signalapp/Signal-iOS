@@ -60,8 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!self.avatarView);
 
     [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.preservesSuperviewLayoutMargins = YES;
-    self.contentView.preservesSuperviewLayoutMargins = YES;
 
     self.backgroundColor = [UIColor whiteColor];
 
