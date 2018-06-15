@@ -194,7 +194,39 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage) in
-        return message.body ?? ""
+        if let body = message.body, body.count > 0 {
+            return body
+        }
+        if let oversizeText = oversizeText(forMessage: message) {
+            return oversizeText
+        }
+        return ""
+    }
+
+    private static func oversizeText(forMessage message: TSMessage) -> String? {
+        guard message.hasAttachments() else {
+            return nil
+        }
+        let dbConnection = OWSPrimaryStorage.shared().dbReadConnection
+        var oversizeText: String?
+        dbConnection.read({ (transaction) in
+            guard let attachment = message.attachment(with: transaction) else {
+                owsFail("Could not load attachment for search indexing.")
+                return
+            }
+            guard let attachmentStream = attachment as? TSAttachmentStream else {
+                return
+            }
+            guard attachmentStream.isOversizeText() else {
+                return
+            }
+            guard let text = attachmentStream.readOversizeText() else {
+                owsFail("Could not load oversize text attachment")
+                return
+            }
+            oversizeText = text
+        })
+        return oversizeText
     }
 
     private class func indexContent(object: Any) -> String? {
@@ -236,6 +268,8 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private class var dbExtensionConfig: YapDatabaseFullTextSearch {
+        SwiftAssertIsOnMainThread(#function)
+
         let contentColumnName = "content"
 
         let handler = YapDatabaseFullTextSearchHandler.withObjectBlock { (dict: NSMutableDictionary, _: String, _: String, object: Any) in
