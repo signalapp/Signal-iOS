@@ -647,6 +647,12 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "Device no longer registered! This is likely because you registered your phone number with Signal on a different device. Tap to re-register.";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Last active: %@";
 
@@ -1021,9 +1027,6 @@
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
-
-/* Label warning the user that they have been de-registered. */
-"INBOX_VIEW_DEREGISTRATION_WARNING" = "You are not logged in. Another device may have been registered with your phone number.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "To see the names of your contacts, update your system settings to allow contact access.";
