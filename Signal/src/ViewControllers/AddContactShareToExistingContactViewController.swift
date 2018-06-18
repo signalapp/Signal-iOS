@@ -55,17 +55,34 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         navigationController.popViewController(animated: true)
     }
 
-    func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
+    func contactsPicker(_: ContactsPicker, didSelectContact newContact: Contact) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard let mergedContact: CNContact = self.contactShare.cnContact(mergedWithExistingContact: contact) else {
-            owsFail("\(logTag) in \(#function) mergedContact was unexpectedly nil")
-            return
-        }
+        let contactsManager = Environment.current().contactsManager
+        contactsManager?.cnContact(withId: self.contactShare.cnContactId,
+                                   success: { [weak self] oldCNContact in
+                                    contactsManager?.cnContact(withId: newContact.cnContactId,
+                                                               success: { newCNContact in
+                                                                guard let strongSelf = weakSelf else {
+                                                                    return
+                                                                }
+                                                                strongSelf.merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
+                                    }, failure: {
+                                        // TODO: Alert?
+                                    })
+        }, failure: {
+            // TODO: Alert?
+        })
+    }
+
+    func merge(oldCNContact: CNContact, newCNContact: CNContact) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        let mergedCNContact: CNContact = Contact.merge(cnContact: oldCNContact, newCNContact: newCNContact)
 
         // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
         // saving our users a tap in some cases when we already know they want to edit.
-        let contactViewController: CNContactViewController = CNContactViewController(forNewContact: mergedContact)
+        let contactViewController: CNContactViewController = CNContactViewController(forNewContact: mergedCNContact)
 
         // Default title is "New Contact". We could give a more descriptive title, but anything
         // seems redundant - the context is sufficiently clear.

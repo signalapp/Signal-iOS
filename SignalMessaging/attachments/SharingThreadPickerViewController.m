@@ -149,37 +149,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     self.thread = thread;
 
     if (self.attachment.isConvertibleToContactShare) {
-        NSData *data = self.attachment.data;
-
-        Contact *_Nullable contact = [Contact contactWithVCardData:data];
-        OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
-        if (!contactShareRecord) {
-            DDLogError(@"%@ Could not convert system contact.", self.logTag);
-            return;
-        }
-
-        BOOL isProfileAvatar = NO;
-        NSData *_Nullable avatarImageData = contact.imageData;
-        for (NSString *recipientId in contact.textSecureIdentifiers) {
-            if (avatarImageData) {
-                break;
-            }
-            avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
-            if (avatarImageData) {
-                isProfileAvatar = YES;
-            }
-        }
-        contactShareRecord.isProfileAvatar = isProfileAvatar;
-
-        ContactShareViewModel *contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord
-                                                      avatarImageData:avatarImageData];
-
-        ContactShareApprovalViewController *approvalVC =
-            [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
-                                                             contactsManager:self.contactsManager
-                                                                    delegate:self];
-        [self.navigationController pushViewController:approvalVC animated:YES];
+        [self showContactShareApproval];
         return;
     }
 
@@ -198,6 +168,45 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [AttachmentApprovalViewController wrappedInNavControllerWithAttachment:self.attachment delegate:self];
         [self presentViewController:approvalModal animated:YES completion:nil];
     }
+}
+
+- (void)showContactShareApproval
+{
+    OWSAssert(self.attachment);
+    OWSAssert(self.thread);
+    OWSAssert(self.attachment.isConvertibleToContactShare);
+
+    NSData *data = self.attachment.data;
+
+    CNContact *_Nullable cnContact = [Contact cnContactWithVCardData:data];
+    Contact *_Nullable contact = [[Contact alloc] initWithSystemContact:cnContact];
+    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
+    if (!contactShareRecord) {
+        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+        return;
+    }
+
+    BOOL isProfileAvatar = NO;
+    NSData *_Nullable avatarImageData = contact.imageData;
+    for (NSString *recipientId in contact.textSecureIdentifiers) {
+        if (avatarImageData) {
+            break;
+        }
+        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        if (avatarImageData) {
+            isProfileAvatar = YES;
+        }
+    }
+    contactShareRecord.isProfileAvatar = isProfileAvatar;
+
+    ContactShareViewModel *contactShare =
+        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
+
+    ContactShareApprovalViewController *approvalVC =
+        [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare
+                                                         contactsManager:self.contactsManager
+                                                                delegate:self];
+    [self.navigationController pushViewController:approvalVC animated:YES];
 }
 
 // override

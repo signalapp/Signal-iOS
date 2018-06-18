@@ -9,6 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
+typedef void (^CNContactFetchSuccess)(CNContact *cnContact);
+typedef void (^CNContactFetchFailure)(void);
+
 @class ImageCache;
 @class SignalAccount;
 @class UIFont;
@@ -58,6 +61,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // but not prompt for contact access. Also, it will always notify delegates, even if
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
 - (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
+
+- (void)cnContactWithId:(NSString *)contactId
+                success:(CNContactFetchSuccess)success
+                failure:(CNContactFetchFailure)failure;
 
 #pragma mark - Util
 

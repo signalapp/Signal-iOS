@@ -133,6 +133,17 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return self.systemContactsFetcher.supportsContactEditing;
 }
 
+- (void)cnContactWithId:(NSString *)contactId
+                success:(CNContactFetchSuccess)success
+                failure:(CNContactFetchFailure)failure
+{
+    OWSAssert(contactId.length > 0);
+    OWSAssert(success);
+    OWSAssert(failure);
+
+    return [self.systemContactsFetcher fetchCNContactWithContactId:contactId success:success failure:failure];
+}
+
 #pragma mark - SystemContactsFetcherDelegate
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemsContactsFetcher
@@ -255,13 +266,13 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
+                contactIdToSignalRecipientsMap[contact.cnContactId] = signalRecipients;
             }
         }];
 
         NSMutableSet<NSString *> *seenRecipientIds = [NSMutableSet new];
         for (Contact *contact in contacts) {
-            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
+            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.cnContactId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
                 if ([seenRecipientIds containsObject:signalRecipient.recipientId]) {
                     DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
@@ -584,7 +595,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        CNContact *_Nullable cnContact = self.allContactsMap[recipientId].cnContact;
+        CNContact *_Nullable cnContact = self.allContactsMap[recipientId].cnContactForFormatting;
         if (!cnContact) {
             // If we don't have a CNContact for this recipient id, make one.
             // Presumably [CNContactFormatter nameOrderForContact:] tries

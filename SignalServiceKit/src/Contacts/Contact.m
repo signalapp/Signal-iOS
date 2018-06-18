@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface Contact ()
 
-@property (readonly, nonatomic) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
+@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
 
 @end
 
@@ -37,11 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _cnContact = contact;
+    _cnContactId = contact.identifier;
     _firstName = contact.givenName.ows_stripped;
     _lastName = contact.familyName.ows_stripped;
     _fullName = [Contact formattedFullNameWithCNContact:contact];
-    _uniqueId = contact.identifier;
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
     NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap = [NSMutableDictionary new];
@@ -112,17 +111,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
-}
-
-+ (nullable Contact *)contactWithVCardData:(NSData *)data
-{
-    CNContact *_Nullable cnContact = [self cnContactWithVCardData:data];
-
-    if (!cnContact) {
-        return nil;
-    }
-
-    return [[self alloc] initWithSystemContact:cnContact];
 }
 
 - (nullable UIImage *)image
@@ -326,9 +314,14 @@ NS_ASSUME_NONNULL_BEGIN
     return contacts.firstObject;
 }
 
-- (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact
++ (CNContact *)mergeCNContact:(CNContact *)oldCNContact newCNContact:(CNContact *)newCNContact
 {
-    CNMutableContact *_Nullable mergedCNContact = [self.cnContact mutableCopy];
+    OWSAssert(oldCNContact);
+    OWSAssert(newCNContact);
+
+    Contact *oldContact = [[Contact alloc] initWithSystemContact:oldCNContact];
+
+    CNMutableContact *_Nullable mergedCNContact = [oldCNContact mutableCopy];
     if (!mergedCNContact) {
         OWSFail(@"%@ in %s mergedCNContact was unexpectedly nil", self.logTag, __PRETTY_FUNCTION__);
         return [CNContact new];
@@ -351,8 +344,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Phone Numbers
-    NSSet<PhoneNumber *> *existingParsedPhoneNumberSet = [NSSet setWithArray:self.parsedPhoneNumbers];
-    NSSet<NSString *> *existingUnparsedPhoneNumberSet = [NSSet setWithArray:self.userTextPhoneNumbers];
+    NSSet<PhoneNumber *> *existingParsedPhoneNumberSet = [NSSet setWithArray:oldContact.parsedPhoneNumbers];
+    NSSet<NSString *> *existingUnparsedPhoneNumberSet = [NSSet setWithArray:oldContact.userTextPhoneNumbers];
 
     NSMutableArray<CNLabeledValue<CNPhoneNumber *> *> *mergedPhoneNumbers = [mergedCNContact.phoneNumbers mutableCopy];
     for (CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber in newCNContact.phoneNumbers) {
@@ -371,7 +364,7 @@ NS_ASSUME_NONNULL_BEGIN
     mergedCNContact.phoneNumbers = mergedPhoneNumbers;
     
     // Emails
-    NSSet<NSString *> *existingEmailSet = [NSSet setWithArray:self.emails];
+    NSSet<NSString *> *existingEmailSet = [NSSet setWithArray:oldContact.emails];
     NSMutableArray<CNLabeledValue<NSString *> *> *mergedEmailAddresses = [mergedCNContact.emailAddresses mutableCopy];
     for (CNLabeledValue<NSString *> *labeledEmail in newCNContact.emailAddresses) {
         NSString *normalizedValue = labeledEmail.value.ows_stripped;
@@ -414,6 +407,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return localizedLabel;
+}
+
+- (CNContact *)cnContactForFormatting
+{
+    CNMutableContact *cnContact = [CNMutableContact new];
+    cnContact.givenName = self.firstName;
+    cnContact.familyName = self.lastName;
+    return cnContact;
 }
 
 @end
