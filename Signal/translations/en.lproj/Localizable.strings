@@ -1315,6 +1315,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "Connecting";
 
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Network Status";
 
@@ -1977,6 +1980,9 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "See and share when messages have been read. This setting is optional and applies to all conversations.";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "Re-register";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";

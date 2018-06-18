@@ -5,14 +5,13 @@
 #import "HomeViewController.h"
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
-#import "CodeVerificationViewController.h"
 #import "HomeViewCell.h"
 #import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
-#import "RegistrationViewController.h"
+#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
@@ -217,7 +216,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
                                       @"Label warning the user that they have been de-registered.")
                         tapAction:^{
-                            [weakSelf showReRegistrationUI];
+                            HomeViewController *strongSelf = weakSelf;
+                            if (!strongSelf) {
+                                return;
+                            }
+                            [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
                         }];
     [self.view addSubview:deregisteredView];
     [deregisteredView autoPinWidthToSuperview];
@@ -1408,80 +1411,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:[UIColor ows_darkGrayColor]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
-}
-
-- (void)showReRegistrationUI
-{
-    UIAlertController *actionSheetController =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    __weak HomeViewController *weakSelf = self;
-    [actionSheetController
-        addAction:[UIAlertAction
-                      actionWithTitle:NSLocalizedString(@"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
-                                          @"Label for button that lets users re-register using the same phone number.")
-                                style:UIAlertActionStyleDestructive
-                              handler:^(UIAlertAction *action) {
-                                  [weakSelf reregisterWithSamePhoneNumber];
-                              }]];
-
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
-
-    [self presentViewController:actionSheetController animated:YES completion:nil];
-}
-
-- (void)reregisterWithSamePhoneNumber
-{
-    DDLogInfo(@"%@ reregisterWithSamePhoneNumber.", self.logTag);
-
-    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
-        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
-        return;
-    }
-
-    [[Environment current].preferences unsetRecordedAPNSTokens];
-
-    [ModalActivityIndicatorViewController
-        presentFromViewController:self
-                        canCancel:NO
-                  backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [TSAccountManager
-                          registerWithPhoneNumber:[TSAccountManager sharedInstance].reregisterationPhoneNumber
-                          success:^{
-                              DDLogInfo(@"%@ re-registering: send verification code succeeded.", self.logTag);
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      CodeVerificationViewController *viewController =
-                                          [CodeVerificationViewController new];
-
-                                      OWSNavigationController *navigationController =
-                                          [[OWSNavigationController alloc] initWithRootViewController:viewController];
-                                      navigationController.navigationBarHidden = YES;
-
-                                      [UIApplication sharedApplication].delegate.window.rootViewController
-                                          = navigationController;
-                                  }];
-                              });
-                          }
-                          failure:^(NSError *error) {
-                              DDLogError(@"%@ re-registering: send verification code failed.", self.logTag);
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      if (error.code == 400) {
-                                          [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
-                                                                message:NSLocalizedString(
-                                                                            @"REGISTRATION_NON_VALID_NUMBER", nil)];
-                                      } else {
-                                          [OWSAlerts showAlertWithTitle:error.localizedDescription
-                                                                message:error.localizedRecoverySuggestion];
-                                      }
-                                  }];
-                              });
-                          }
-                          smsVerification:YES];
-                  }];
 }
 
 @end
