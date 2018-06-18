@@ -88,7 +88,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
         DDLogInfo(@"%@ request succeeded : %@", self.logTag, request);
 
-        [TSAccountManager.sharedInstance setIsDeregistered:NO];
+        if (request.shouldHaveAuthorizationHeaders) {
+            [TSAccountManager.sharedInstance setIsDeregistered:NO];
+        }
 
         successBlock(task, responseObject);
     };

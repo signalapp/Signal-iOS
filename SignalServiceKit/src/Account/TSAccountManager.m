@@ -40,7 +40,10 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 @property (nonatomic, readonly) BOOL isRegistered;
 
+// This property is exposed publicly for testing purposes only.
+#ifndef DEBUG
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+#endif
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
@@ -73,10 +76,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
                                                    object:nil];
-
-        self.phoneNumberAwaitingVerification =
-            [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
-                               inCollection:TSAccountManager_UserAccountCollection];
     }
 
     return self;
@@ -189,6 +188,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                  inCollection:TSAccountManager_UserAccountCollection];
 
         self.phoneNumberAwaitingVerification = nil;
+
+        self.cachedLocalNumber = localNumber;
     }
 }
 

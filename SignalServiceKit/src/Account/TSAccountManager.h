@@ -18,7 +18,10 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @interface TSAccountManager : NSObject
 
-@property (nonatomic, nullable, readonly) NSString *phoneNumberAwaitingVerification;
+// This property is exposed for testing purposes only.
+#ifdef DEBUG
+@property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+#endif
 
 #pragma mark - Initializers
 
@@ -116,8 +119,12 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 #pragma mark - De-Registration
 
-// De-registration reflects whether or not the client has received
-// a 403 from the service.
+// De-registration reflects whether or not the "last known contact"
+// with the service was:
+//
+// * A 403 from the service, indicating de-registration.
+// * A successful auth'd request _or_ websocket connection indicating
+//   valid registration.
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 
