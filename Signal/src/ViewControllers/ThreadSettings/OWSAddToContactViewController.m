@@ -198,7 +198,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
     if (!cnContact) {
-        // TODO:
+        OWSFail(@"%@ Could not load system contact.", self.logTag);
+        return;
     }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
                                                      fromViewController:self
