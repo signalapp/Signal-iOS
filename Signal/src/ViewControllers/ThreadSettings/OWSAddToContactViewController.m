@@ -161,8 +161,6 @@ NS_ASSUME_NONNULL_BEGIN
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
 
     for (Contact *contact in self.contactsViewHelper.contactsManager.allContacts) {
-        OWSAssert(contact.cnContact);
-
         NSString *_Nullable displayName = [self displayNameForContact:contact];
         if (displayName.length < 1) {
             continue;
@@ -198,10 +196,14 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ Contact editing not supported", self.logTag);
         return;
     }
+    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+    if (!cnContact) {
+        // TODO:
+    }
     [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
                                                      fromViewController:self
                                                         editImmediately:YES
-                                                 addToExistingCnContact:contact.cnContact];
+                                                 addToExistingCnContact:cnContact];
 }
 
 @end

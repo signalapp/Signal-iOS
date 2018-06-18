@@ -113,6 +113,17 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (nullable Contact *)contactWithVCardData:(NSData *)data
+{
+    CNContact *_Nullable cnContact = [self cnContactWithVCardData:data];
+
+    if (!cnContact) {
+        return nil;
+    }
+
+    return [[self alloc] initWithSystemContact:cnContact];
+}
+
 - (nullable UIImage *)image
 {
     if (_image) {
@@ -407,14 +418,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return localizedLabel;
-}
-
-- (CNContact *)cnContactForFormatting
-{
-    CNMutableContact *cnContact = [CNMutableContact new];
-    cnContact.givenName = self.firstName;
-    cnContact.familyName = self.lastName;
-    return cnContact;
 }
 
 @end

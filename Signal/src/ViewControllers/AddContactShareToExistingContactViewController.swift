@@ -55,24 +55,21 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         navigationController.popViewController(animated: true)
     }
 
-    func contactsPicker(_: ContactsPicker, didSelectContact newContact: Contact) {
+    func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
         Logger.debug("\(self.logTag) in \(#function)")
 
         let contactsManager = Environment.current().contactsManager
-        contactsManager?.cnContact(withId: self.contactShare.cnContactId,
-                                   success: { [weak self] oldCNContact in
-                                    contactsManager?.cnContact(withId: newContact.cnContactId,
-                                                               success: { newCNContact in
-                                                                guard let strongSelf = weakSelf else {
-                                                                    return
-                                                                }
-                                                                strongSelf.merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
-                                    }, failure: {
-                                        // TODO: Alert?
-                                    })
-        }, failure: {
+        guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
             // TODO: Alert?
-        })
+            Logger.warn("\(logTag) could not load old CNContact.")
+            return
+        }
+        guard let newCNContact = OWSContacts.systemContact(for: self.contactShare.dbRecord, imageData: self.contactShare.avatarImageData) else {
+            // TODO: Alert?
+            Logger.warn("\(logTag) could not load new CNContact.")
+            return
+        }
+        merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
     }
 
     func merge(oldCNContact: CNContact, newCNContact: CNContact) {

@@ -237,7 +237,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         let contact = Contact(systemContact: cnContact)
 
         cell.configure(contact: contact, subtitleType: subtitleCellType, showsWhenSelected: self.allowsMultipleSelection, contactsManager: self.contactsManager)
-        let isSelected = selectedContacts.contains(where: { $0.uniqueId == contact.uniqueId })
+        let isSelected = selectedContacts.contains(where: { $0.cnContactId == contact.cnContactId })
         cell.isSelected = isSelected
 
         // Make sure we preserve selection across tableView.reloadData which happens when toggling between 
@@ -256,7 +256,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         let deselectedContact = cell.contact!
 
         selectedContacts = selectedContacts.filter {
-            return $0.uniqueId != deselectedContact.uniqueId
+            return $0.cnContactId != deselectedContact.cnContactId
         }
     }
 

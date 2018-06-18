@@ -148,21 +148,6 @@ public class ContactShareViewModel: NSObject {
         return dbRecord.isProfileAvatar
     }
 
-//    @objc
-//    public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
-//    public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
-////        success successParam: @escaping (CNContact) -> Void,
-////        failure failureParam: @escaping () -> Void) {
-//
-//        guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord, imageData: self.avatarImageData) else {
-//            owsFail("\(logTag) in \(#function) newCNContact was unexpectedly nil")
-//            return nil
-//        }
-//
-//        let mergedCNContact = Contact.merge(cnContact: <#T##CNContact#>, newCNContact: <#T##CNContact#>)
-//        return existingContact.buildCNContact(mergedWithNewContact: newCNContact)
-//    }
-
     @objc
     public func copy(withName name: OWSContactName) -> ContactShareViewModel {
 
@@ -181,5 +166,4 @@ public class ContactShareViewModel: NSObject {
         // If we want to keep the avatar image, the caller will need to re-apply it.
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
     }
-
 }

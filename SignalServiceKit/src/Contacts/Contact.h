@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 #if TARGET_OS_IOS
 
 - (instancetype)initWithSystemContact:(CNContact *)contact NS_AVAILABLE_IOS(9_0);
++ (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
 - (NSString *)nameForPhoneNumber:(NSString *)recipientId;
@@ -52,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CNContact *)mergeCNContact:(CNContact *)oldCNContact
                  newCNContact:(CNContact *)newCNContact NS_SWIFT_NAME(merge(cnContact:newCNContact:));
-
-- (CNContact *)cnContactForFormatting;
 
 @end
 

@@ -36,6 +36,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
+@property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 
 @end
 
@@ -60,6 +61,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
+    _cnContactCache = [NSCache new];
+    _cnContactCache.countLimit = 50;
 
     OWSSingletonAssert();
 
@@ -133,15 +136,24 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return self.systemContactsFetcher.supportsContactEditing;
 }
 
-- (void)cnContactWithId:(NSString *)contactId
-                success:(CNContactFetchSuccess)success
-                failure:(CNContactFetchFailure)failure
+- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
 {
     OWSAssert(contactId.length > 0);
-    OWSAssert(success);
-    OWSAssert(failure);
+    OWSAssert(self.cnContactCache);
 
-    return [self.systemContactsFetcher fetchCNContactWithContactId:contactId success:success failure:failure];
+    if (!contactId) {
+        return nil;
+    }
+
+    CNContact *_Nullable cnContact = [self.cnContactCache objectForKey:contactId];
+    if (!cnContact) {
+        cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
+        if (cnContact) {
+            [self.cnContactCache setObject:cnContact forKey:contactId];
+        }
+    }
+
+    return cnContact;
 }
 
 #pragma mark - SystemContactsFetcherDelegate
@@ -595,7 +607,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        CNContact *_Nullable cnContact = self.allContactsMap[recipientId].cnContactForFormatting;
+        NSString *_Nullable cnContactId = self.allContactsMap[recipientId].cnContactId;
+        CNContact *_Nullable cnContact = [self cnContactWithId:cnContactId];
         if (!cnContact) {
             // If we don't have a CNContact for this recipient id, make one.
             // Presumably [CNContactFormatter nameOrderForContact:] tries

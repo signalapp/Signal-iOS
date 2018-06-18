@@ -395,63 +395,15 @@ public class SystemContactsFetcher: NSObject {
     }
 
     @objc
-    public func fetchCNContact(contactId: String,
-                               success successParam: @escaping (CNContact) -> Void,
-                               failure failureParam: @escaping () -> Void) {
+    public func fetchCNContact(contactId: String) -> CNContact? {
         SwiftAssertIsOnMainThread(#function)
 
         guard authorizationStatus == .authorized else {
             Logger.error("\(logTag) contact fetch failed; no access.")
-            failureParam()
-            return
+            return nil
         }
 
-        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
-            SwiftAssertIsOnMainThread(#function)
-
-            guard status == .expired else {
-                return
-            }
-
-            guard let _ = self else {
-                return
-            }
-            Logger.error("background task time ran out before contact fetch completed.")
-        })
-
-        // Ensure success is invoked on main thread.
-        let success: (CNContact) -> Void = { contact in
-            DispatchMainThreadSafe({
-                successParam(contact)
-
-                assert(backgroundTask != nil)
-                backgroundTask = nil
-            })
-        }
-
-        // Ensure success is invoked on main thread.
-        let failure: () -> Void = {
-            DispatchMainThreadSafe({
-                failureParam()
-
-                assert(backgroundTask != nil)
-                backgroundTask = nil
-            })
-        }
-
-        // Don't use the serial queue.
-        DispatchQueue.global().async {
-
-            Logger.info("\(self.logTag) fetching contact")
-
-            if let cnContact = self.contactStoreAdapter.fetchCNContact(contactId: contactId) {
-                Logger.info("\(self.logTag) contact found")
-                success(cnContact)
-            } else {
-                Logger.info("\(self.logTag) contact not found")
-                failure()
-            }
-        }
+        return contactStoreAdapter.fetchCNContact(contactId: contactId)
     }
 }
 
