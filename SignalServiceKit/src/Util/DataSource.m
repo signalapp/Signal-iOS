@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
         // if ows_isValidImage is given a file path, it will
         // avoid loading most of the data into memory, which
         // is considerably more performant, so try to do that.
-        return [NSData ows_isValidImageAtPath:dataPath];
+        return [NSData ows_isValidImageAtPath:dataPath mimeType:self.mimeType];
     }
     NSData *data = [self data];
     return [data ows_isValidImage];
@@ -81,6 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setSourceFilename:(nullable NSString *)sourceFilename
 {
     _sourceFilename = sourceFilename.filterFilename;
+}
+
+// Returns the MIME type, if known.
+- (nullable NSString *)mimeType
+{
+    OWS_ABSTRACT_METHOD();
+
+    return nil;
 }
 
 @end
@@ -220,6 +228,11 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return YES;
     }
+}
+
+- (nullable NSString *)mimeType
+{
+    return (self.fileExtension ? [MIMETypeUtil mimeTypeForFileExtension:self.fileExtension] : nil);
 }
 
 @end
@@ -370,6 +383,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         return YES;
     }
+}
+
+- (nullable NSString *)mimeType
+{
+    NSString *_Nullable fileExtension = self.filePath.pathExtension;
+    return (fileExtension ? [MIMETypeUtil mimeTypeForFileExtension:fileExtension] : nil);
 }
 
 @end

@@ -645,7 +645,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             NSString *_Nullable filePath = [strongSelf.attachmentStream filePath];
             YYImage *_Nullable animatedImage = nil;
-            if (filePath && [NSData ows_isValidImageAtPath:filePath]) {
+            if (strongSelf.attachmentStream.isValidImage && filePath) {
                 animatedImage = [YYImage imageWithContentsOfFile:filePath];
             }
             return animatedImage;

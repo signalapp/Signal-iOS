@@ -76,12 +76,12 @@
 
 - (ConversationViewItem *)stillImageViewItem
 {
-    return [self viewItemWithAttachmentMimetype:@"image/jpeg" filename:@"test-jpg.jpg"];
+    return [self viewItemWithAttachmentMimetype:OWSMimeTypeImageJpeg filename:@"test-jpg.jpg"];
 }
 
 - (ConversationViewItem *)animatedImageViewItem
 {
-    return [self viewItemWithAttachmentMimetype:@"image/gif" filename:@"test-gif.gif"];
+    return [self viewItemWithAttachmentMimetype:OWSMimeTypeImageGif filename:@"test-gif.gif"];
 }
 
 - (ConversationViewItem *)videoViewItem

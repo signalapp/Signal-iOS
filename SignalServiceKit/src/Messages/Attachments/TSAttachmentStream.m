@@ -312,6 +312,25 @@ NS_ASSUME_NONNULL_BEGIN
     return [MIMETypeUtil isAudio:self.contentType];
 }
 
+#pragma mark - Image Validation
+
+- (BOOL)isValidImageWithData:(NSData *)data
+{
+    OWSAssert(self.isImage || self.isAnimated);
+    OWSAssert(data);
+
+    return [data ows_isValidImageWithMimeType:self.contentType];
+}
+
+- (BOOL)isValidImage
+{
+    OWSAssert(self.isImage || self.isAnimated);
+
+    return [NSData ows_isValidImageAtPath:self.filePath mimeType:self.contentType];
+}
+
+#pragma mark -
+
 - (nullable UIImage *)image
 {
     if ([self isVideo]) {
@@ -322,7 +341,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
-        if (![data ows_isValidImage]) {
+        if (![self isValidImageWithData:data]) {
             return nil;
         }
         return [UIImage imageWithData:data];
@@ -348,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSData *data = [NSData dataWithContentsOfURL:mediaUrl];
-    if (![data ows_isValidImage]) {
+    if (![self isValidImageWithData:data]) {
         return nil;
     }
 
@@ -422,7 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIImage *_Nullable result;
     if (self.isImage || self.isAnimated) {
-        if (![NSData ows_isValidImageAtPath:self.filePath]) {
+        if (![self isValidImage]) {
             DDLogWarn(@"%@ skipping thumbnail generation for invalid image at path: %@", self.logTag, self.filePath);
             return;
         }
@@ -516,7 +535,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (!mediaUrl) {
             return CGSizeZero;
         }
-        if (![NSData ows_isValidImageAtPath:mediaUrl.path]) {
+        if (![self isValidImage]) {
             return CGSizeZero;
         }
 

@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         instance = [DebugUIMessagesAssetLoader
             fakeAssetLoaderWithUrl:@"https://s3.amazonaws.com/ows-data/example_attachment_media/random-gif.gif"
-                          mimeType:@"image/gif"];
+                          mimeType:OWSMimeTypeImageGif];
     });
     return instance;
 }
@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         instance =
             [DebugUIMessagesAssetLoader fakeAssetLoaderWithUrl:@"https://i.giphy.com/media/LTw0F3GAdaao8/source.gif"
-                                                      mimeType:@"image/gif"];
+                                                      mimeType:OWSMimeTypeImageGif];
     });
     return instance;
 }
