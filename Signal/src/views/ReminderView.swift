@@ -9,11 +9,9 @@ class ReminderView: UIView {
     let TAG = "[ReminderView]"
     let label = UILabel()
 
-    static let defaultTapAction = {
-        Logger.debug("[ReminderView] tapped.")
-    }
+    typealias Action = () -> Void
 
-    var tapAction: () -> Void
+    var tapAction: (() -> Void)?
 
     var text: String? {
         get {
@@ -44,7 +42,7 @@ class ReminderView: UIView {
     }
 
     private init(mode: ReminderViewMode,
-         text: String, tapAction: @escaping () -> Void) {
+         text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction
 
@@ -55,12 +53,12 @@ class ReminderView: UIView {
         setupSubviews()
     }
 
-    @objc public class func nag(text: String, tapAction: @escaping () -> Void) -> ReminderView {
+    @objc public class func nag(text: String, tapAction: Action?) -> ReminderView {
         return ReminderView(mode: .nag, text: text, tapAction: tapAction)
     }
 
     @objc public class func explanation(text: String) -> ReminderView {
-        return ReminderView(mode: .explanation, text: text, tapAction: ReminderView.defaultTapAction)
+        return ReminderView(mode: .explanation, text: text, tapAction: nil)
     }
 
     func setupSubviews() {
@@ -121,6 +119,9 @@ class ReminderView: UIView {
     }
 
     @objc func handleTap(gestureRecognizer: UIGestureRecognizer) {
-        tapAction()
+        guard gestureRecognizer.state == .recognized else {
+            return
+        }
+        tapAction?()
     }
 }
