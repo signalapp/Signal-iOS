@@ -36,7 +36,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
-@property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
+@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
 
 @end
 
@@ -61,8 +61,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [NSCache new];
-    _cnContactCache.countLimit = 50;
+    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50];
 
     OWSSingletonAssert();
 
@@ -145,11 +144,14 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         return nil;
     }
 
-    CNContact *_Nullable cnContact = [self.cnContactCache objectForKey:contactId];
-    if (!cnContact) {
-        cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
-        if (cnContact) {
-            [self.cnContactCache setObject:cnContact forKey:contactId];
+    CNContact *_Nullable cnContact;
+    @synchronized(self.cnContactCache) {
+        cnContact = (CNContact * _Nullable)[self.cnContactCache getWithKey:contactId];
+        if (!cnContact) {
+            cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
+            if (cnContact) {
+                [self.cnContactCache setWithKey:contactId value:cnContact];
+            }
         }
     }
 

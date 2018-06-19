@@ -24,26 +24,46 @@ public class AnyLRUCache: NSObject {
 }
 
 // A simple LRU cache bounded by the number of entries.
-//
-// TODO: We might want to observe memory pressure notifications.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 
     private var cacheMap: [KeyType: ValueType] = [:]
     private var cacheOrder: [KeyType] = []
     private let maxSize: Int
 
+    @objc
     public init(maxSize: Int) {
         self.maxSize = maxSize
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didReceiveMemoryWarning),
+                                               name: NSNotification.Name.UIApplicationDidReceiveMemoryWarning,
+                                               object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func didReceiveMemoryWarning() {
+        SwiftAssertIsOnMainThread(#function)
+
+        cacheMap.removeAll()
+        cacheOrder.removeAll()
+    }
+
+    private func updateCacheOrder(key: KeyType) {
+        cacheOrder = cacheOrder.filter { $0 != key }
+        cacheOrder.append(key)
     }
 
     public func get(key: KeyType) -> ValueType? {
         guard let value = cacheMap[key] else {
+            // Miss
             return nil
         }
 
-        // Update cache order.
-        cacheOrder = cacheOrder.filter { $0 != key }
-        cacheOrder.append(key)
+        // Hit
+        updateCacheOrder(key: key)
 
         return value
     }
@@ -51,9 +71,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public func set(key: KeyType, value: ValueType) {
         cacheMap[key] = value
 
-        // Update cache order.
-        cacheOrder = cacheOrder.filter { $0 != key }
-        cacheOrder.append(key)
+        updateCacheOrder(key: key)
 
         while cacheOrder.count > maxSize {
             guard let staleKey = cacheOrder.first else {
