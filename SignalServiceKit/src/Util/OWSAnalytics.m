@@ -399,7 +399,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 - (BOOL)isSeverityAsync:(OWSAnalyticsSeverity)severity
 {
-    return severity == OWSAnalyticsSeverityCritical;
+    return severity != OWSAnalyticsSeverityCritical;
 }
 
 #pragma mark - Logging
