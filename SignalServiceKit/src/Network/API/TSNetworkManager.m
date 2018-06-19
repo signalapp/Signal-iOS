@@ -9,6 +9,7 @@
 #import "TSAccountManager.h"
 #import "TSVerifyCodeRequest.h"
 #import <AFNetworking/AFNetworking.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NSString *const TSNetworkManagerDomain = @"org.whispersystems.signal.networkManager";
 
@@ -93,6 +94,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         }
 
         successBlock(task, responseObject);
+
+        [OutageDetection.sharedManager reportNetworkSuccess];
     };
     TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
 
@@ -151,6 +154,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];
+
+      [OutageDetection.sharedManager reportNetworkFailure];
+
       NSError *error       = [self errorWithHTTPCode:statusCode
                                    description:nil
                                  failureReason:nil
