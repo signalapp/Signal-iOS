@@ -98,8 +98,8 @@ class ReminderView: UIView {
         label.autoPinEdge(toSuperviewEdge: .top)
         label.autoPinEdge(toSuperviewEdge: .bottom)
 
-        guard mode == .nag else {
-            label.autoPinTrailingToSuperviewMargin()
+        // Show the disclosure indicator if this reminder has a tap action.
+        if tapAction == nil {
             return
         }
 
