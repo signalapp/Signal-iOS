@@ -11,7 +11,7 @@ class ReminderView: UIView {
 
     typealias Action = () -> Void
 
-    var tapAction: (() -> Void)?
+    var tapAction: Action?
 
     var text: String? {
         get {
