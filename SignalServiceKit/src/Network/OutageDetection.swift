@@ -28,14 +28,9 @@ public class OutageDetection: NSObject {
             ensureCheckTimer()
         }
     }
-<<<<<<< HEAD
 
-||||||| merged common ancestors
-
-=======
-
-    // We want to be conversative and only
->>>>>>> Outage detection.
+    // We only show the outage warning when we're certain there's an outage.
+    // DNS lookup failures, etc. are not considered an outage.
     private func checkForOutageSync() -> Bool {
         let host = CFHostCreateWithName(nil, "uptime.signal.org" as CFString).takeRetainedValue()
         CFHostStartInfoResolution(host, .addresses, nil)
