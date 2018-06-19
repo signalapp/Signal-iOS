@@ -10,6 +10,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
+{
+    switch (value) {
+        case OWSInteractionType_Unknown:
+            return @"OWSInteractionType_Unknown";
+        case OWSInteractionType_IncomingMessage:
+            return @"OWSInteractionType_IncomingMessage";
+        case OWSInteractionType_OutgoingMessage:
+            return @"OWSInteractionType_OutgoingMessage";
+        case OWSInteractionType_Error:
+            return @"OWSInteractionType_Error";
+        case OWSInteractionType_Call:
+            return @"OWSInteractionType_Call";
+        case OWSInteractionType_Info:
+            return @"OWSInteractionType_Info";
+        case OWSInteractionType_UnreadIndicator:
+            return @"OWSInteractionType_UnreadIndicator";
+        case OWSInteractionType_Offer:
+            return @"OWSInteractionType_Offer";
+    }
+}
+
 @implementation TSInteraction
 
 + (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp

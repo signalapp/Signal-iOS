@@ -19,6 +19,8 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Offer,
 };
 
+NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
+
 @protocol OWSPreviewText
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction;
