@@ -10,10 +10,15 @@ public class OutageDetection: NSObject {
     @objc(sharedManager)
     public static let shared = OutageDetection()
 
+    @objc public static let outageStateDidChange = Notification.Name("OutageStateDidChange")
+
     // These properties should only be accessed on the main thread.
-    private var hasOutage = false {
+    @objc
+    public var hasOutage = false {
         didSet {
             SwiftAssertIsOnMainThread(#function)
+
+            NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
         }
     }
     private var mayHaveOutage = false {
@@ -23,7 +28,14 @@ public class OutageDetection: NSObject {
             ensureCheckTimer()
         }
     }
+<<<<<<< HEAD
 
+||||||| merged common ancestors
+
+=======
+
+    // We want to be conversative and only
+>>>>>>> Outage detection.
     private func checkForOutageSync() -> Bool {
         let host = CFHostCreateWithName(nil, "uptime.signal.org" as CFString).takeRetainedValue()
         CFHostStartInfoResolution(host, .addresses, nil)
@@ -42,9 +54,14 @@ public class OutageDetection: NSObject {
             if getnameinfo(address.bytes.assumingMemoryBound(to: sockaddr.self), socklen_t(address.length),
                            &hostname, socklen_t(hostname.count), nil, 0, NI_NUMERICHOST) == 0 {
                 let addressString = String(cString: hostname)
-                if addressString != "127.0.0.1" {
-                    Logger.verbose("\(logTag) addressString: \(addressString)")
+                let kHealthyAddress = "127.0.0.1"
+                let kOutageAddress = "127.0.0.2"
+                if addressString == kHealthyAddress {
+                    // Do nothing.
+                } else if addressString == kOutageAddress {
                     isOutageDetected = true
+                } else {
+                    owsFail("\(logTag) unexpected address: \(addressString)")
                 }
             }
         }
