@@ -60,13 +60,11 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
 
         let contactsManager = Environment.current().contactsManager
         guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
-            // TODO: Alert?
-            Logger.warn("\(logTag) could not load old CNContact.")
+            owsFail("\(logTag) could not load old CNContact.")
             return
         }
         guard let newCNContact = OWSContacts.systemContact(for: self.contactShare.dbRecord, imageData: self.contactShare.avatarImageData) else {
-            // TODO: Alert?
-            Logger.warn("\(logTag) could not load new CNContact.")
+            owsFail("\(logTag) could not load new CNContact.")
             return
         }
         merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
