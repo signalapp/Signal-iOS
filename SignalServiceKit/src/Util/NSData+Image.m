@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "MIMETypeUtil.h"
 
 typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
@@ -43,6 +43,9 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     // load a .gif with a .png file extension.
     //
     // Instead, use the "magic numbers" in the file data to determine the image format.
+    //
+    // If the image has a declared MIME type, ensure that agrees with the
+    // deduced image format.
     ImageFormat imageFormat = [self ows_guessImageFormat];
     switch (imageFormat) {
         case ImageFormat_Unknown:
@@ -50,6 +53,9 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         case ImageFormat_Png:
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImagePng]);
         case ImageFormat_Gif:
+            if (![self ows_hasValidGifSize]) {
+                return NO;
+            }
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageGif]);
         case ImageFormat_Tiff:
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageTiff1] ||
@@ -59,13 +65,6 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         case ImageFormat_Bmp:
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
                 [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
-    }
-    if (imageFormat == ImageFormat_Gif) {
-        return [self ows_hasValidGifSize];
-    } else if (imageFormat == ImageFormat_Unknown) {
-        return NO;
-    } else {
-        return YES;
     }
 }
 
