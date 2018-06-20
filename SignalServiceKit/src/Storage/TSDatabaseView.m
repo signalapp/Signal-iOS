@@ -127,13 +127,14 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
+        if (![object isKindOfClass:[TSInteraction class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
+            return nil;
+        }
         TSInteraction *interaction = (TSInteraction *)object;
         if ([interaction isDynamicInteraction]) {
             return interaction.uniqueThreadId;
         } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-            TSInteraction *interaction = (TSInteraction *)object;
             return interaction.uniqueThreadId;
         } else if ([object isKindOfClass:[TSErrorMessage class]]) {
             TSErrorMessage *errorMessage = (TSErrorMessage *)object;
@@ -154,9 +155,12 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        OWSAssert([object isKindOfClass:[TSInteraction class]]);
-
+        if (![object isKindOfClass:[TSInteraction class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
+            return nil;
+        }
         TSInteraction *interaction = (TSInteraction *)object;
+
         return interaction.uniqueThreadId;
     }];
 
@@ -193,9 +197,9 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
         if (![object isKindOfClass:[TSThread class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
             return nil;
         }
-
         TSThread *thread = (TSThread *)object;
 
         if (thread.isGroupThread) {
@@ -258,43 +262,52 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
 + (YapDatabaseViewSorting *)threadSorting {
     return [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-                                                                       NSString *group,
-                                                                       NSString *collection1,
-                                                                       NSString *key1,
-                                                                       id object1,
-                                                                       NSString *collection2,
-                                                                       NSString *key2,
-                                                                       id object2) {
-      if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
-          if ([object1 isKindOfClass:[TSThread class]] && [object2 isKindOfClass:[TSThread class]]) {
-              TSThread *thread1 = (TSThread *)object1;
-              TSThread *thread2 = (TSThread *)object2;
+        NSString *group,
+        NSString *collection1,
+        NSString *key1,
+        id object1,
+        NSString *collection2,
+        NSString *key2,
+        id object2) {
+        if (![object1 isKindOfClass:[TSThread class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
+            return NSOrderedSame;
+        }
+        if (![object2 isKindOfClass:[TSThread class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
+            return NSOrderedSame;
+        }
+        TSThread *thread1 = (TSThread *)object1;
+        TSThread *thread2 = (TSThread *)object2;
+        if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
+            return [thread1.lastMessageDate compare:thread2.lastMessageDate];
+        }
 
-              return [thread1.lastMessageDate compare:thread2.lastMessageDate];
-          }
-      }
-
-      return NSOrderedSame;
+        return NSOrderedSame;
     }];
 }
 
 + (YapDatabaseViewSorting *)messagesSorting {
     return [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-                                                                       NSString *group,
-                                                                       NSString *collection1,
-                                                                       NSString *key1,
-                                                                       id object1,
-                                                                       NSString *collection2,
-                                                                       NSString *key2,
-                                                                       id object2) {
-      if ([object1 isKindOfClass:[TSInteraction class]] && [object2 isKindOfClass:[TSInteraction class]]) {
-          TSInteraction *message1 = (TSInteraction *)object1;
-          TSInteraction *message2 = (TSInteraction *)object2;
+        NSString *group,
+        NSString *collection1,
+        NSString *key1,
+        id object1,
+        NSString *collection2,
+        NSString *key2,
+        id object2) {
+        if (![object1 isKindOfClass:[TSInteraction class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
+            return NSOrderedSame;
+        }
+        if (![object2 isKindOfClass:[TSInteraction class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
+            return NSOrderedSame;
+        }
+        TSInteraction *message1 = (TSInteraction *)object1;
+        TSInteraction *message2 = (TSInteraction *)object2;
 
-          return [message1 compareForSorting:message2];
-      }
-
-      return NSOrderedSame;
+        return [message1 compareForSorting:message2];
     }];
 }
 
@@ -302,33 +315,39 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *_Nullable(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object isKindOfClass:[OWSDevice class]]) {
-            OWSDevice *device = (OWSDevice *)object;
-            if (![device isPrimaryDevice]) {
-                return TSSecondaryDevicesGroup;
-            }
+        if (![object isKindOfClass:[OWSDevice class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object class], collection);
+            return nil;
+        }
+        OWSDevice *device = (OWSDevice *)object;
+        if (![device isPrimaryDevice]) {
+            return TSSecondaryDevicesGroup;
         }
         return nil;
     }];
 
-    YapDatabaseViewSorting *viewSorting =
-        [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(YapDatabaseReadTransaction *transaction,
-            NSString *group,
-            NSString *collection1,
-            NSString *key1,
-            id object1,
-            NSString *collection2,
-            NSString *key2,
-            id object2) {
-            if ([object1 isKindOfClass:[OWSDevice class]] && [object2 isKindOfClass:[OWSDevice class]]) {
-                OWSDevice *device1 = (OWSDevice *)object1;
-                OWSDevice *device2 = (OWSDevice *)object2;
-
-                return [device2.createdAt compare:device1.createdAt];
-            }
-
+    YapDatabaseViewSorting *viewSorting = [YapDatabaseViewSorting withObjectBlock:^NSComparisonResult(
+        YapDatabaseReadTransaction *transaction,
+        NSString *group,
+        NSString *collection1,
+        NSString *key1,
+        id object1,
+        NSString *collection2,
+        NSString *key2,
+        id object2) {
+        if (![object1 isKindOfClass:[OWSDevice class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
             return NSOrderedSame;
-        }];
+        }
+        if (![object2 isKindOfClass:[OWSDevice class]]) {
+            OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
+            return NSOrderedSame;
+        }
+        OWSDevice *device1 = (OWSDevice *)object1;
+        OWSDevice *device2 = (OWSDevice *)object2;
+
+        return [device2.createdAt compare:device1.createdAt];
+    }];
 
     YapDatabaseViewOptions *options = [YapDatabaseViewOptions new];
     options.isPersistent = YES;
@@ -371,11 +390,11 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         NSString *collection2,
         NSString *key2,
         id object2) {
-        if (![object1 isKindOfClass:[TSAttachment class]]) {
+        if (![object1 isKindOfClass:[TSAttachmentStream class]]) {
             OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object1 class], collection1);
             return NSOrderedSame;
         }
-        if (![object2 isKindOfClass:[TSAttachment class]]) {
+        if (![object2 isKindOfClass:[TSAttachmentStream class]]) {
             OWSProdLogAndFail(@"%@ Unexpected entity %@ in collection: %@", self.logTag, [object2 class], collection2);
             return NSOrderedSame;
         }
