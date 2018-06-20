@@ -679,7 +679,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     // If socket opens, we know we're not de-registered.
     [TSAccountManager.sharedInstance setIsDeregistered:NO];
 
-    [OutageDetection.sharedManager reportNetworkSuccess];
+    [OutageDetection.sharedManager reportConnectionSuccess];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error {
@@ -826,7 +826,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
         [self applyDesiredSocketState];
     }
 
-    [OutageDetection.sharedManager reportNetworkFailure];
+    [OutageDetection.sharedManager reportConnectionFailure];
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket

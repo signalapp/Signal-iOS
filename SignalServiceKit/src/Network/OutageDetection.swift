@@ -18,10 +18,14 @@ public class OutageDetection: NSObject {
         didSet {
             SwiftAssertIsOnMainThread(#function)
 
-            NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
+            if hasOutage != oldValue {
+                Logger.info("\(self.logTag) hasOutage: \(hasOutage).")
+
+                NotificationCenter.default.postNotificationNameAsync(OutageDetection.outageStateDidChange, object: nil)
+            }
         }
     }
-    private var mayHaveOutage = false {
+    private var shouldCheckForOutage = false {
         didSet {
             SwiftAssertIsOnMainThread(#function)
 
@@ -64,6 +68,8 @@ public class OutageDetection: NSObject {
     }
 
     private func checkForOutageAsync() {
+        Logger.info("\(self.logTag) \(#function).")
+
         DispatchQueue.global().async {
             let isOutageDetected = self.checkForOutageSync()
             DispatchQueue.main.async {
@@ -79,7 +85,7 @@ public class OutageDetection: NSObject {
             return
         }
 
-        if mayHaveOutage {
+        if shouldCheckForOutage {
             if checkTimer != nil {
                 // Already has timer.
                 return
@@ -106,17 +112,17 @@ public class OutageDetection: NSObject {
     }
 
     @objc
-    public func reportNetworkSuccess() {
+    public func reportConnectionSuccess() {
         SwiftAssertIsOnMainThread(#function)
 
-        mayHaveOutage = true
+        shouldCheckForOutage = false
         hasOutage = false
     }
 
     @objc
-    public func reportNetworkFailure() {
+    public func reportConnectionFailure() {
         SwiftAssertIsOnMainThread(#function)
 
-        mayHaveOutage = false
+        shouldCheckForOutage = true
     }
 }

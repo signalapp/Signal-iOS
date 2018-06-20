@@ -95,7 +95,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
         successBlock(task, responseObject);
 
-        [OutageDetection.sharedManager reportNetworkSuccess];
+        [OutageDetection.sharedManager reportConnectionSuccess];
     };
     TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
 
@@ -155,9 +155,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     return ^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull networkError) {
       NSInteger statusCode = [task statusCode];
 
-      [OutageDetection.sharedManager reportNetworkFailure];
+      [OutageDetection.sharedManager reportConnectionFailure];
 
-      NSError *error       = [self errorWithHTTPCode:statusCode
+      NSError *error = [self errorWithHTTPCode:statusCode
                                    description:nil
                                  failureReason:nil
                             recoverySuggestion:nil
