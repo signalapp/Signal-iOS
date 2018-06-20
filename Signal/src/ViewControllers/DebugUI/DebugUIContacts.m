@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIContacts.h"
@@ -1164,7 +1164,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(count > 0);
     OWSAssert(batchCompletionHandler);
 
-    DDLogDebug(@"createRandomContactsBatch: %zd", count);
+    DDLogDebug(@"createRandomContactsBatch: %zu", count);
 
     CNAuthorizationStatus status = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (status == CNAuthorizationStatusDenied || status == CNAuthorizationStatusRestricted) {
@@ -1219,7 +1219,7 @@ NS_ASSUME_NONNULL_BEGIN
                          }
                      }
 
-                     DDLogError(@"Saving fake contacts: %zd", contacts.count);
+                     DDLogError(@"Saving fake contacts: %zu", contacts.count);
 
                      NSError *saveError = nil;
                      if (![store executeSaveRequest:request error:&saveError]) {

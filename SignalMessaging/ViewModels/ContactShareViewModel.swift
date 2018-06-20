@@ -149,17 +149,6 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public func cnContact(mergedWithExistingContact existingContact: Contact) -> CNContact? {
-
-        guard let newCNContact = OWSContacts.systemContact(for: self.dbRecord, imageData: self.avatarImageData) else {
-            owsFail("\(logTag) in \(#function) newCNContact was unexpectedly nil")
-            return nil
-        }
-
-        return existingContact.buildCNContact(mergedWithNewContact: newCNContact)
-    }
-
-    @objc
     public func copy(withName name: OWSContactName) -> ContactShareViewModel {
 
         // TODO move the `copy` logic into the view model?
@@ -177,5 +166,4 @@ public class ContactShareViewModel: NSObject {
         // If we want to keep the avatar image, the caller will need to re-apply it.
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
     }
-
 }

@@ -28,11 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (readonly, nonatomic) NSString *uniqueId;
 @property (nonatomic, readonly) BOOL isSignalContact;
-#if TARGET_OS_IOS
-@property (nullable, readonly, nonatomic) UIImage *image;
-@property (nullable, readonly, nonatomic) NSData *imageData;
-@property (nullable, nonatomic, readonly) CNContact *cnContact;
-#endif // TARGET_OS_IOS
+@property (nonatomic, readonly) NSString *cnContactId;
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 // TODO: Remove this method.
@@ -40,8 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithSystemContact:(CNContact *)contact NS_AVAILABLE_IOS(9_0);
+- (instancetype)initWithSystemContact:(CNContact *)cnContact NS_AVAILABLE_IOS(9_0);
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
++ (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
 - (NSString *)nameForPhoneNumber:(NSString *)recipientId;
 
@@ -51,7 +48,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formattedFullNameWithCNContact:(CNContact *)cnContact NS_SWIFT_NAME(formattedFullName(cnContact:));
 + (nullable NSString *)localizedStringForCNLabel:(nullable NSString *)cnLabel;
 
-- (CNContact *)buildCNContactMergedWithNewContact:(CNContact *)newCNContact NS_SWIFT_NAME(buildCNContact(mergedWithNewContact:));
++ (CNContact *)mergeCNContact:(CNContact *)oldCNContact
+                 newCNContact:(CNContact *)newCNContact NS_SWIFT_NAME(merge(cnContact:newCNContact:));
+
++ (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact;
 
 @end
 

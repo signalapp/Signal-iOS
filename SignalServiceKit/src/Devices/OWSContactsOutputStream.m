@@ -4,6 +4,7 @@
 
 #import "OWSContactsOutputStream.h"
 #import "Contact.h"
+#import "ContactsManagerProtocol.h"
 #import "Cryptography.h"
 #import "MIMETypeUtil.h"
 #import "NSData+keyVersionByte.h"
@@ -22,9 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)writeSignalAccount:(SignalAccount *)signalAccount
          recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
             profileKeyData:(nullable NSData *)profileKeyData
+           contactsManager:(id<ContactsManagerProtocol>)contactsManager
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
+    OWSAssert(contactsManager);
 
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
@@ -38,15 +41,18 @@ NS_ASSUME_NONNULL_BEGIN
         contactBuilder.verifiedBuilder = verifiedBuilder;
     }
 
-    NSData *avatarPng;
-    if (signalAccount.contact.image) {
-        OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
-            [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
+    UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
+    NSData *_Nullable avatarPng;
+    if (rawAvatar) {
+        avatarPng = UIImagePNGRepresentation(rawAvatar);
+        if (avatarPng) {
+            OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
+                [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
 
-        [avatarBuilder setContentType:OWSMimeTypeImagePng];
-        avatarPng = UIImagePNGRepresentation(signalAccount.contact.image);
-        [avatarBuilder setLength:(uint32_t)avatarPng.length];
-        [contactBuilder setAvatarBuilder:avatarBuilder];
+            [avatarBuilder setContentType:OWSMimeTypeImagePng];
+            [avatarBuilder setLength:(uint32_t)avatarPng.length];
+            [contactBuilder setAvatarBuilder:avatarBuilder];
+        }
     }
 
     if (profileKeyData) {
@@ -79,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegateStream writeRawVarint32:contactDataLength];
     [self.delegateStream writeRawData:contactData];
 
-    if (signalAccount.contact.image) {
+    if (avatarPng) {
         [self.delegateStream writeRawData:avatarPng];
     }
 }

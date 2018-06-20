@@ -74,10 +74,11 @@ class ContactCell: UITableViewCell {
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
-        titleLabel.attributedText = contact.cnContact?.formattedFullName(font: titleLabel.font)
+        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
+        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
-        if let contactImage = contact.image {
+        if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
             contactImageView.image = contactImage
         } else {
             let contactIdForDeterminingBackgroundColor: String

@@ -36,6 +36,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
+@property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
+@property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 
 @end
 
@@ -60,6 +62,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
+    _cnContactCache = [NSCache new];
+    _cnContactCache.countLimit = 50;
+    _cnContactAvatarCache = [NSCache new];
+    _cnContactAvatarCache.countLimit = 25;
 
     OWSSingletonAssert();
 
@@ -131,6 +137,63 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (BOOL)supportsContactEditing
 {
     return self.systemContactsFetcher.supportsContactEditing;
+}
+
+#pragma mark - CNContacts
+
+- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
+{
+    OWSAssert(contactId.length > 0);
+    OWSAssert(self.cnContactCache);
+
+    if (!contactId) {
+        return nil;
+    }
+
+    CNContact *_Nullable cnContact;
+    @synchronized(self.cnContactCache) {
+        cnContact = [self.cnContactCache objectForKey:contactId];
+        if (!cnContact) {
+            cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
+            if (cnContact) {
+                [self.cnContactCache setObject:cnContact forKey:contactId];
+            }
+        }
+    }
+
+    return cnContact;
+}
+
+- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId
+{
+    // Don't bother to cache avatar data.
+    CNContact *_Nullable cnContact = [self cnContactWithId:contactId];
+    return [Contact avatarDataForCNContact:cnContact];
+}
+
+- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
+{
+    OWSAssert(self.cnContactAvatarCache);
+
+    if (!contactId) {
+        return nil;
+    }
+
+    UIImage *_Nullable avatarImage;
+    @synchronized(self.cnContactAvatarCache) {
+        avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
+        if (!avatarImage) {
+            NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
+            if (avatarData) {
+                avatarImage = [UIImage imageWithData:avatarData];
+            }
+            if (avatarImage) {
+                [self.cnContactAvatarCache setObject:avatarImage forKey:contactId];
+            }
+        }
+    }
+
+    return avatarImage;
 }
 
 #pragma mark - SystemContactsFetcherDelegate
@@ -232,6 +295,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         dispatch_async(dispatch_get_main_queue(), ^{
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
+            [self.cnContactCache removeAllObjects];
+            [self.cnContactAvatarCache removeAllObjects];
 
             [self.avatarCache removeAllImages];
 
@@ -584,7 +649,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        CNContact *_Nullable cnContact = self.allContactsMap[recipientId].cnContact;
+        NSString *_Nullable cnContactId = self.allContactsMap[recipientId].cnContactId;
+        CNContact *_Nullable cnContact = [self cnContactWithId:cnContactId];
         if (!cnContact) {
             // If we don't have a CNContact for this recipient id, make one.
             // Presumably [CNContactFormatter nameOrderForContact:] tries
@@ -765,7 +831,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         contact = [self signalAccountForRecipientId:identifier].contact;
     }
 
-    return contact.image;
+    return [self avatarImageForCNContactId:contact.cnContactId];
 }
 
 - (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier

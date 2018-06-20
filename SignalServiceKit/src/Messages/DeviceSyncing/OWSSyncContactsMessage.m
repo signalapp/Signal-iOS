@@ -13,6 +13,7 @@
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
+#import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,6 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSData *)buildPlainTextAttachmentData
 {
+    id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
+
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
     // and uploading with streams).
@@ -82,10 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSRecipientIdentity *_Nullable recipientIdentity =
             [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
-        
+
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
-                                  profileKeyData:profileKeyData];
+                                  profileKeyData:profileKeyData
+                                 contactsManager:contactsManager];
     }
 
     [contactsOutputStream flush];

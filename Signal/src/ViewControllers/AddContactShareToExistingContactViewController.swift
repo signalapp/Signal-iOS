@@ -55,17 +55,29 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         navigationController.popViewController(animated: true)
     }
 
-    func contactsPicker(_: ContactsPicker, didSelectContact contact: Contact) {
+    func contactsPicker(_: ContactsPicker, didSelectContact oldContact: Contact) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        guard let mergedContact: CNContact = self.contactShare.cnContact(mergedWithExistingContact: contact) else {
-            owsFail("\(logTag) in \(#function) mergedContact was unexpectedly nil")
+        let contactsManager = Environment.current().contactsManager
+        guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
+            owsFail("\(logTag) could not load old CNContact.")
             return
         }
+        guard let newCNContact = OWSContacts.systemContact(for: self.contactShare.dbRecord, imageData: self.contactShare.avatarImageData) else {
+            owsFail("\(logTag) could not load new CNContact.")
+            return
+        }
+        merge(oldCNContact: oldCNContact, newCNContact: newCNContact)
+    }
+
+    func merge(oldCNContact: CNContact, newCNContact: CNContact) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        let mergedCNContact: CNContact = Contact.merge(cnContact: oldCNContact, newCNContact: newCNContact)
 
         // Not actually a "new" contact, but this brings up the edit form rather than the "Read" form
         // saving our users a tap in some cases when we already know they want to edit.
-        let contactViewController: CNContactViewController = CNContactViewController(forNewContact: mergedContact)
+        let contactViewController: CNContactViewController = CNContactViewController(forNewContact: mergedCNContact)
 
         // Default title is "New Contact". We could give a more descriptive title, but anything
         // seems redundant - the context is sufficiently clear.

@@ -5118,18 +5118,23 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
 - (void)contactsPicker:(ContactsPicker *)contactsPicker didSelectContact:(Contact *)contact
 {
     OWSAssert(contact);
-    OWSAssert(contact.cnContact);
+
+    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+    if (!cnContact) {
+        OWSFail(@"%@ Could not load system contact.", self.logTag);
+        return;
+    }
 
     DDLogDebug(@"%@ in %s with contact: %@", self.logTag, __PRETTY_FUNCTION__, contact);
 
-    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:contact.cnContact];
+    OWSContact *_Nullable contactShareRecord = [OWSContacts contactForSystemContact:cnContact];
     if (!contactShareRecord) {
-        DDLogError(@"%@ Could not convert system contact.", self.logTag);
+        OWSFail(@"%@ Could not convert system contact.", self.logTag);
         return;
     }
 
     BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = contact.imageData;
+    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
     for (NSString *recipientId in contact.textSecureIdentifiers) {
         if (avatarImageData) {
             break;
