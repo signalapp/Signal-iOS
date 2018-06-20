@@ -619,19 +619,19 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage databaseFilePath]];
-}
-
-- (void)deleteDatabaseFile
-{
-    [OWSFileSystem deleteFile:[self databaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
 }
 
 - (void)resetStorage
 {
     self.database = nil;
 
-    [self deleteDatabaseFile];
+    [OWSStorage deleteDatabaseFiles];
 }
 
 + (void)resetAllStorage
