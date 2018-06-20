@@ -78,6 +78,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) NSLayoutConstraint *hideDeregisteredViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
+@property (nonatomic) NSLayoutConstraint *outageViewConstraint;
 
 @property (nonatomic) TSThread *lastThread;
 
@@ -166,6 +167,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(deregistrationStateDidChange:)
                                                  name:DeregistrationStateDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(outageStateDidChange:)
+                                                 name:OutageDetection.outageStateDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -192,6 +197,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 }
 
 - (void)deregistrationStateDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateReminderViews];
+}
+
+- (void)outageStateDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -232,6 +244,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [reminderStackView addArrangedSubview:deregisteredView];
     self.hideDeregisteredViewConstraint = [deregisteredView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideDeregisteredViewConstraint.priority = UILayoutPriorityRequired;
+
+    ReminderView *outageView = [ReminderView
+        nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
+          tapAction:nil];
+    [reminderStackView addArrangedSubview:outageView];
+    self.outageViewConstraint = [outageView autoSetDimension:ALDimensionHeight toSize:0];
+    self.outageViewConstraint.priority = UILayoutPriorityRequired;
 
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
@@ -291,16 +310,19 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     BOOL shouldHideArchiveReminderView = self.homeViewMode != HomeViewMode_Archive;
     BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
     BOOL shouldHideDeregisteredView = !TSAccountManager.sharedInstance.isDeregistered;
+    BOOL shouldHideOutageView = !OutageDetection.sharedManager.hasOutage;
 
     if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
         && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView
-        && self.hideDeregisteredViewConstraint.active == shouldHideDeregisteredView) {
+        && self.hideDeregisteredViewConstraint.active == shouldHideDeregisteredView
+        && self.outageViewConstraint.active == shouldHideOutageView) {
         return;
     }
 
     self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
     self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
     self.hideDeregisteredViewConstraint.active = shouldHideDeregisteredView;
+    self.outageViewConstraint.active = shouldHideOutageView;
 
     [self.view setNeedsLayout];
     [self.view layoutSubviews];

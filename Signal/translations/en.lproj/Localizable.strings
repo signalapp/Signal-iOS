@@ -1405,6 +1405,9 @@
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ set disappearing message time to %@.";
 
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Outgoing call";
 

@@ -96,7 +96,6 @@
 		346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129591FD1D74B00532771 /* SignalKeyingStorage.m */; };
 		346129731FD1E01700532771 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
 		346129741FD1E02D00532771 /* PromiseKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451DE9F11DC1585F00810E42 /* PromiseKit.framework */; };
-		346129761FD1E0B500532771 /* WeakTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129751FD1E0B500532771 /* WeakTimer.swift */; };
 		346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129931FD1E30000532771 /* OWSDatabaseMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129941FD1E30000532771 /* OWSDatabaseMigration.m */; };
 		346129991FD1E4DA00532771 /* SignalApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129971FD1E4D900532771 /* SignalApp.m */; };
@@ -697,7 +696,6 @@
 		346129571FD1D74B00532771 /* Release.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Release.m; sourceTree = "<group>"; };
 		346129581FD1D74B00532771 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
 		346129591FD1D74B00532771 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
-		346129751FD1E0B500532771 /* WeakTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeakTimer.swift; sourceTree = "<group>"; };
 		346129931FD1E30000532771 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDatabaseMigration.h; sourceTree = "<group>"; };
 		346129941FD1E30000532771 /* OWSDatabaseMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDatabaseMigration.m; sourceTree = "<group>"; };
 		346129971FD1E4D900532771 /* SignalApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalApp.m; sourceTree = "<group>"; };
@@ -1461,7 +1459,6 @@
 				B97940251832BD2400BD66CB /* UIUtil.h */,
 				B97940261832BD2400BD66CB /* UIUtil.m */,
 				45F170D51E315310003FC1F2 /* Weak.swift */,
-				346129751FD1E0B500532771 /* WeakTimer.swift */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -3076,7 +3073,6 @@
 				344F249A200FD03300CFB4F4 /* MessageApprovalViewController.swift in Sources */,
 				450998681FD8C0FF00D89EB3 /* AttachmentSharing.m in Sources */,
 				347850711FDAEB17007B8332 /* OWSUserProfile.m in Sources */,
-				346129761FD1E0B500532771 /* WeakTimer.swift in Sources */,
 				346129F81FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.m in Sources */,
 				34074F61203D0CBE004596AE /* OWSSounds.m in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
