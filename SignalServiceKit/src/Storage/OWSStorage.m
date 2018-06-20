@@ -212,6 +212,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    OWSRaiseException(
+        @"OWSStorageExceptionName_SaveToUnknownCollection", @"Tried to save object from unknown collection");
 }
 
 @end
@@ -230,8 +232,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     cannotDecodeObjectOfClassName:(NSString *)name
                   originalClasses:(NSArray<NSString *> *)classNames
 {
-    DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
-    OWSProdError([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
+    OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
+    OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
 }
 
@@ -458,7 +460,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             return [unarchiver decodeObjectForKey:@"root"];
         } @catch (NSException *exception) {
             // Sync log in case we bail.
-            OWSProdError([OWSAnalyticsEvents storageErrorDeserialization]);
+            OWSProdLogAndFail(@"%@ error deserializing object: %@", self.logTag, collection);
+            OWSProdCritical([OWSAnalyticsEvents storageErrorDeserialization]);
             @throw exception;
         }
     };
