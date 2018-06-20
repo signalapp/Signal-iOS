@@ -212,6 +212,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
 {
+    OWSRaiseException(
+        @"OWSStorageExceptionName_SaveToUnknownCollection", @"Tried to save object from unknown collection");
 }
 
 @end
