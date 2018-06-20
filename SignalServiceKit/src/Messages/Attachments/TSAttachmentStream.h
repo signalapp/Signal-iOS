@@ -74,6 +74,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Non-nil for attachments which need "lazy backup restore."
 - (nullable OWSBackupFragment *)lazyRestoreFragment;
 
+#pragma mark - Image Validation
+
+- (BOOL)isValidImage;
+
 #pragma mark - Update With... Methods
 
 // Marks attachment as needing "lazy backup restore."

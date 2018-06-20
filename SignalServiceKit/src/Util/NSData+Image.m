@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+Image.h"
+#import "MIMETypeUtil.h"
 
 typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Unknown,
@@ -17,28 +18,53 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath
 {
+    return [self ows_isValidImageAtPath:filePath mimeType:nil];
+}
+
+- (BOOL)ows_isValidImage
+{
+    return [self ows_isValidImageWithMimeType:nil];
+}
+
++ (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
+{
     NSError *error = nil;
     NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
     if (error) {
         DDLogError(@"%@ could not read image data: %@", self.logTag, error);
     }
 
-    return [data ows_isValidImage];
+    return [data ows_isValidImageWithMimeType:mimeType];
 }
 
-- (BOOL)ows_isValidImage
+- (BOOL)ows_isValidImageWithMimeType:(nullable NSString *)mimeType
 {
     // Don't trust the file extension; iOS (e.g. UIKit, Core Graphics) will happily
     // load a .gif with a .png file extension.
     //
     // Instead, use the "magic numbers" in the file data to determine the image format.
+    //
+    // If the image has a declared MIME type, ensure that agrees with the
+    // deduced image format.
     ImageFormat imageFormat = [self ows_guessImageFormat];
-    if (imageFormat == ImageFormat_Gif) {
-        return [self ows_hasValidGifSize];
-    } else if (imageFormat == ImageFormat_Unknown) {
-        return NO;
-    } else {
-        return YES;
+    switch (imageFormat) {
+        case ImageFormat_Unknown:
+            return NO;
+        case ImageFormat_Png:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImagePng]);
+        case ImageFormat_Gif:
+            if (![self ows_hasValidGifSize]) {
+                return NO;
+            }
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageGif]);
+        case ImageFormat_Tiff:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageTiff1] ||
+                [mimeType isEqualToString:OWSMimeTypeImageTiff2]);
+        case ImageFormat_Jpeg:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageJpeg]);
+        case ImageFormat_Bmp:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
+                [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
     }
 }
 

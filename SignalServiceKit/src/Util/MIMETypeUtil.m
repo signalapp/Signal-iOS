@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSMimeTypeApplicationOctetStream = @"application/octet-stream";
 NSString *const OWSMimeTypeImagePng = @"image/png";
 NSString *const OWSMimeTypeImageJpeg = @"image/jpeg";
+NSString *const OWSMimeTypeImageGif = @"image/gif";
+NSString *const OWSMimeTypeImageTiff1 = @"image/tiff";
+NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
+NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
+NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
@@ -76,7 +81,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @{
-            @"image/jpeg" : @"jpeg",
+            OWSMimeTypeImageJpeg : @"jpeg",
             @"image/pjpeg" : @"jpeg",
             OWSMimeTypeImagePng : @"png",
             @"image/tiff" : @"tif",
@@ -93,7 +98,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @{
-            @"image/gif" : @"gif",
+            OWSMimeTypeImageGif : @"gif",
         };
     });
     return result;
@@ -183,7 +188,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = @{
-            @"gif" : @"image/gif",
+            @"gif" : OWSMimeTypeImageGif,
         };
     });
     return result;
