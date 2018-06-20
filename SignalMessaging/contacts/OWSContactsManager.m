@@ -36,8 +36,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
-@property (nonatomic, readonly) AnyLRUCache *cnContactCache;
-@property (nonatomic, readonly) AnyLRUCache *cnContactAvatarCache;
+@property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
+@property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 
 @end
 
@@ -62,8 +62,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
-    _cnContactCache = [[AnyLRUCache alloc] initWithMaxSize:50];
-    _cnContactAvatarCache = [[AnyLRUCache alloc] initWithMaxSize:25];
+    _cnContactCache = [NSCache new];
+    _cnContactCache.countLimit = 50;
+    _cnContactAvatarCache = [NSCache new];
+    _cnContactAvatarCache.countLimit = 25;
 
     OWSSingletonAssert();
 
@@ -150,11 +152,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
     CNContact *_Nullable cnContact;
     @synchronized(self.cnContactCache) {
-        cnContact = (CNContact * _Nullable)[self.cnContactCache getWithKey:contactId];
+        cnContact = [self.cnContactCache objectForKey:contactId];
         if (!cnContact) {
             cnContact = [self.systemContactsFetcher fetchCNContactWithContactId:contactId];
             if (cnContact) {
-                [self.cnContactCache setWithKey:contactId value:cnContact];
+                [self.cnContactCache setObject:cnContact forKey:contactId];
             }
         }
     }
@@ -179,14 +181,14 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
     UIImage *_Nullable avatarImage;
     @synchronized(self.cnContactAvatarCache) {
-        avatarImage = (UIImage * _Nullable)[self.cnContactAvatarCache getWithKey:contactId];
+        avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
         if (!avatarImage) {
             NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
             if (avatarData) {
                 avatarImage = [UIImage imageWithData:avatarData];
             }
             if (avatarImage) {
-                [self.cnContactAvatarCache setWithKey:contactId value:avatarImage];
+                [self.cnContactAvatarCache setObject:avatarImage forKey:contactId];
             }
         }
     }
@@ -293,8 +295,8 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         dispatch_async(dispatch_get_main_queue(), ^{
             self.allContacts = contacts;
             self.allContactsMap = [allContactsMap copy];
-            [self.cnContactCache clear];
-            [self.cnContactAvatarCache clear];
+            [self.cnContactCache removeAllObjects];
+            [self.cnContactAvatarCache removeAllObjects];
 
             [self.avatarCache removeAllImages];
 
