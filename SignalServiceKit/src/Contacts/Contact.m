@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable NSString *)uniqueId
+- (NSString *)uniqueId
 {
     return self.cnContactId;
 }
