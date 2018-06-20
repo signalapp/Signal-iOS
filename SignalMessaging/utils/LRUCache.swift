@@ -43,10 +43,20 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
                                                selector: #selector(didReceiveMemoryWarning),
                                                name: NSNotification.Name.UIApplicationDidReceiveMemoryWarning,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(didEnterBackground),
+                                               name: NSNotification.Name.OWSApplicationDidEnterBackground,
+                                               object: nil)
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func didEnterBackground() {
+        SwiftAssertIsOnMainThread(#function)
+
+        clear()
     }
 
     @objc func didReceiveMemoryWarning() {
