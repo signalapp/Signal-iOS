@@ -24,14 +24,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSAccountManager (DebugUI)
-
-- (void)resetForRegistration;
-
-@end
-
-#pragma mark -
-
 @interface OWSStorage (DebugUI)
 
 - (NSData *)databasePassword;
@@ -147,7 +139,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reregister
 {
     DDLogInfo(@"%@ re-registering.", self.logTag);
-    [[TSAccountManager sharedInstance] resetForRegistration];
+
+    if (![[TSAccountManager sharedInstance] resetForReregistration]) {
+        OWSFail(@"%@ could not reset for re-registration.", self.logTag);
+        return;
+    }
+
     [[Environment current].preferences unsetRecordedAPNSTokens];
 
     RegistrationViewController *viewController = [RegistrationViewController new];

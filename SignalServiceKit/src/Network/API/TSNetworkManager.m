@@ -87,6 +87,11 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     // TODO: Remove this logging when the call connection issues have been resolved.
     TSNetworkManagerSuccess success = ^(NSURLSessionDataTask *task, _Nullable id responseObject) {
         DDLogInfo(@"%@ request succeeded : %@", self.logTag, request);
+
+        if (request.shouldHaveAuthorizationHeaders) {
+            [TSAccountManager.sharedInstance setIsDeregistered:NO];
+        }
+
         successBlock(task, responseObject);
     };
     TSNetworkManagerFailure failure = [TSNetworkManager errorPrettifyingForFailureBlock:failureBlock request:request];
@@ -166,6 +171,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           }
           case 400: {
               DDLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
+
+              [TSAccountManager.sharedInstance setIsDeregistered:YES];
+
               failureBlock(task, error);
               break;
           }

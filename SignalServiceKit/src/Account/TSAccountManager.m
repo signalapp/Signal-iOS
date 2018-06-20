@@ -16,6 +16,7 @@
 #import "TSPreKeyManager.h"
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,9 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
+NSString *const DeregistrationStateDidChangeNotification = @"DeregistrationStateDidChangeNotification";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
+NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
+NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
@@ -43,6 +47,8 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+
+@property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
 
 @end
 
@@ -101,21 +107,6 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
                                                            userInfo:nil];
 }
 
-- (void)resetForRegistration
-{
-    @synchronized(self)
-    {
-        _isRegistered = NO;
-        _cachedLocalNumber = nil;
-        _phoneNumberAwaitingVerification = nil;
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
-
-            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
-        }];
-    }
-}
-
 + (BOOL)isRegistered
 {
     return [[self sharedInstance] isRegistered];
@@ -152,6 +143,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     // Warm these cached values.
     [self isRegistered];
     [self localNumber];
+    [self isDeregistered];
 }
 
 + (nullable NSString *)localNumber
@@ -191,6 +183,13 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
         [self.dbConnection setObject:localNumber
                               forKey:TSAccountManager_RegisteredNumberKey
                         inCollection:TSAccountManager_UserAccountCollection];
+
+        [self.dbConnection removeObjectForKey:TSAccountManager_ReregisteringPhoneNumberKey
+                                 inCollection:TSAccountManager_UserAccountCollection];
+
+        self.phoneNumberAwaitingVerification = nil;
+
+        self.cachedLocalNumber = localNumber;
     }
 }
 
@@ -522,6 +521,91 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     {
         _isRegistered = NO;
     }
+}
+
+#pragma mark - De-Registration
+
+- (BOOL)isDeregistered
+{
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self) {
+        if (self.cachedIsDeregistered == nil) {
+            self.cachedIsDeregistered = @([self.dbConnection boolForKey:TSAccountManager_IsDeregisteredKey
+                                                           inCollection:TSAccountManager_UserAccountCollection
+                                                           defaultValue:NO]);
+        }
+
+        OWSAssert(self.cachedIsDeregistered);
+        return self.cachedIsDeregistered.boolValue;
+    }
+}
+
+- (void)setIsDeregistered:(BOOL)isDeregistered
+{
+    @synchronized(self) {
+        if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered) {
+            return;
+        }
+
+        DDLogWarn(@"%@ isDeregistered: %d", self.logTag, isDeregistered);
+
+        self.cachedIsDeregistered = @(isDeregistered);
+    }
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:@(isDeregistered)
+                        forKey:TSAccountManager_IsDeregisteredKey
+                  inCollection:TSAccountManager_UserAccountCollection];
+    }];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:DeregistrationStateDidChangeNotification
+                                                             object:nil
+                                                           userInfo:nil];
+}
+
+#pragma mark - Re-registration
+
+- (BOOL)resetForReregistration
+{
+    @synchronized(self) {
+        NSString *_Nullable localNumber = self.localNumber;
+        if (!localNumber) {
+            OWSFail(@"%@ can't re-register without valid local number.", self.logTag);
+            return NO;
+        }
+
+        _isRegistered = NO;
+        _cachedLocalNumber = nil;
+        _phoneNumberAwaitingVerification = nil;
+        _cachedIsDeregistered = nil;
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
+
+            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
+
+            [transaction setObject:localNumber
+                            forKey:TSAccountManager_ReregisteringPhoneNumberKey
+                      inCollection:TSAccountManager_UserAccountCollection];
+        }];
+        return YES;
+    }
+}
+
+- (NSString *)reregisterationPhoneNumber
+{
+    OWSAssert([self isReregistering]);
+
+    NSString *_Nullable result = [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
+                                                    inCollection:TSAccountManager_UserAccountCollection];
+    OWSAssert(result);
+    return result;
+}
+
+- (BOOL)isReregistering
+{
+    return nil !=
+        [self.dbConnection stringForKey:TSAccountManager_ReregisteringPhoneNumberKey
+                           inCollection:TSAccountManager_UserAccountCollection];
 }
 
 @end

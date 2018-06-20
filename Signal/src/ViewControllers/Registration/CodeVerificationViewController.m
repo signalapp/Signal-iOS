@@ -112,16 +112,25 @@ NS_ASSUME_NONNULL_BEGIN
     [titleLabel autoSetDimension:ALDimensionHeight toSize:40];
     [titleLabel autoHCenterInSuperview];
 
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [backButton
-        setTitle:NSLocalizedString(@"VERIFICATION_BACK_BUTTON", @"button text for back button on verification view")
-        forState:UIControlStateNormal];
-    [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
-    [header addSubview:backButton];
-    [backButton autoPinLeadingToSuperviewMarginWithInset:10.f];
-    [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
-    [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    // This view is used in more than one context.
+    //
+    // * Usually, it is pushed atop RegistrationViewController in which
+    //   case we want a "back" button.
+    // * It can also be used to re-register from the app's "de-registration"
+    //   views, in which case RegistrationViewController is not used and we
+    //   do _not_ want a "back" button.
+    if (self.navigationController.viewControllers.count > 1) {
+        UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [backButton
+            setTitle:NSLocalizedString(@"VERIFICATION_BACK_BUTTON", @"button text for back button on verification view")
+            forState:UIControlStateNormal];
+        [backButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        backButton.titleLabel.font = [UIFont ows_mediumFontWithSize:14.f];
+        [header addSubview:backButton];
+        [backButton autoPinLeadingToSuperviewMarginWithInset:10.f];
+        [backButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:titleLabel];
+        [backButton addTarget:self action:@selector(backButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    }
 
     _phoneNumberLabel = [UILabel new];
     _phoneNumberLabel.textColor = [UIColor ows_darkGrayColor];

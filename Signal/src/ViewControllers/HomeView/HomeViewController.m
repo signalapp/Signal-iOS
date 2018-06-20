@@ -11,6 +11,7 @@
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
 #import "PushManager.h"
+#import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
@@ -25,6 +26,7 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/Threading.h>
 #import <YapDatabase/YapDatabase.h>
@@ -73,6 +75,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Views
 
+@property (nonatomic) NSLayoutConstraint *hideDeregisteredViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideArchiveReminderViewConstraint;
 @property (nonatomic) NSLayoutConstraint *hideMissingContactsPermissionViewConstraint;
 
@@ -159,6 +162,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(yapDatabaseModifiedExternally:)
                                                  name:YapDatabaseModifiedExternallyNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deregistrationStateDidChange:)
+                                                 name:DeregistrationStateDidChangeNotification
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -184,6 +191,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self reloadTableViewData];
 }
 
+- (void)deregistrationStateDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateReminderViews];
+}
+
 #pragma mark - View Life Cycle
 
 - (void)loadView
@@ -197,12 +211,32 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [SignalApp.sharedApp setHomeViewController:self];
     }
 
+    UIStackView *reminderStackView = [UIStackView new];
+    reminderStackView.axis = UILayoutConstraintAxisVertical;
+    reminderStackView.spacing = 0;
+    [self.view addSubview:reminderStackView];
+    [reminderStackView autoPinWidthToSuperview];
+    [reminderStackView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+
+    __weak HomeViewController *weakSelf = self;
+    ReminderView *deregisteredView =
+        [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
+                                      @"Label warning the user that they have been de-registered.")
+                        tapAction:^{
+                            HomeViewController *strongSelf = weakSelf;
+                            if (!strongSelf) {
+                                return;
+                            }
+                            [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
+                        }];
+    [reminderStackView addArrangedSubview:deregisteredView];
+    self.hideDeregisteredViewConstraint = [deregisteredView autoSetDimension:ALDimensionHeight toSize:0];
+    self.hideDeregisteredViewConstraint.priority = UILayoutPriorityRequired;
+
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
                                               @"Label reminding the user that they are in archive mode.")];
-    [self.view addSubview:archiveReminderView];
-    [archiveReminderView autoPinWidthToSuperview];
-    [archiveReminderView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [reminderStackView addArrangedSubview:archiveReminderView];
     self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
 
@@ -212,9 +246,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
           tapAction:^{
               [[UIApplication sharedApplication] openSystemSettings];
           }];
-    [self.view addSubview:missingContactsPermissionView];
-    [missingContactsPermissionView autoPinWidthToSuperview];
-    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
+    [reminderStackView addArrangedSubview:missingContactsPermissionView];
     self.hideMissingContactsPermissionViewConstraint =
         [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
@@ -228,7 +260,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:reminderStackView];
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
@@ -258,12 +290,18 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     BOOL shouldHideArchiveReminderView = self.homeViewMode != HomeViewMode_Archive;
     BOOL shouldHideMissingContactsPermissionView = !self.shouldShowMissingContactsPermissionView;
+    BOOL shouldHideDeregisteredView = !TSAccountManager.sharedInstance.isDeregistered;
+
     if (self.hideArchiveReminderViewConstraint.active == shouldHideArchiveReminderView
-        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView) {
+        && self.hideMissingContactsPermissionViewConstraint.active == shouldHideMissingContactsPermissionView
+        && self.hideDeregisteredViewConstraint.active == shouldHideDeregisteredView) {
         return;
     }
+
     self.hideArchiveReminderViewConstraint.active = shouldHideArchiveReminderView;
     self.hideMissingContactsPermissionViewConstraint.active = shouldHideMissingContactsPermissionView;
+    self.hideDeregisteredViewConstraint.active = shouldHideDeregisteredView;
+
     [self.view setNeedsLayout];
     [self.view layoutSubviews];
 }
@@ -788,11 +826,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Constrain to cell margins.
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
 
     return cell;
 }

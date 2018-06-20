@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
+extern NSString *const DeregistrationStateDidChangeNotification;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class OWSPrimaryStorage;
@@ -115,6 +116,26 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 #endif
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock;
+
+#pragma mark - De-Registration
+
+// De-registration reflects whether or not the "last known contact"
+// with the service was:
+//
+// * A 403 from the service, indicating de-registration.
+// * A successful auth'd request _or_ websocket connection indicating
+//   valid registration.
+- (BOOL)isDeregistered;
+- (void)setIsDeregistered:(BOOL)isDeregistered;
+
+#pragma mark - Re-registration
+
+// Re-registration is the process of re-registering _with the same phone number_.
+
+// Returns YES on success.
+- (BOOL)resetForReregistration;
+- (NSString *)reregisterationPhoneNumber;
+- (BOOL)isReregistering;
 
 @end
 
