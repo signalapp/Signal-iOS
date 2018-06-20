@@ -59,8 +59,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
 - (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
 
-- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
-
 #pragma mark - Util
 
 - (BOOL)isSystemContact:(NSString *)recipientId;

@@ -9,6 +9,7 @@
 #import "PhoneNumber.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
+#import "TextSecureKitEnv.h"
 
 @import Contacts;
 
@@ -17,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface Contact ()
 
 @property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap;
+@property (nonatomic, readonly) NSUInteger imageHash;
 
 @end
 
@@ -26,25 +28,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
 @synthesize comparableNameLastFirst = _comparableNameLastFirst;
-@synthesize image = _image;
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithSystemContact:(CNContact *)contact
+- (instancetype)initWithSystemContact:(CNContact *)cnContact
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _cnContactId = contact.identifier;
-    _firstName = contact.givenName.ows_stripped;
-    _lastName = contact.familyName.ows_stripped;
-    _fullName = [Contact formattedFullNameWithCNContact:contact];
+    _cnContactId = cnContact.identifier;
+    _firstName = cnContact.givenName.ows_stripped;
+    _lastName = cnContact.familyName.ows_stripped;
+    _fullName = [Contact formattedFullNameWithCNContact:cnContact];
 
     NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
     NSMutableDictionary<NSString *, NSString *> *phoneNumberNameMap = [NSMutableDictionary new];
-    for (CNLabeledValue *phoneNumberField in contact.phoneNumbers) {
+    for (CNLabeledValue *phoneNumberField in cnContact.phoneNumbers) {
         if ([phoneNumberField.value isKindOfClass:[CNPhoneNumber class]]) {
             CNPhoneNumber *phoneNumber = (CNPhoneNumber *)phoneNumberField.value;
             [phoneNumbers addObject:phoneNumber.stringValue];
@@ -96,18 +97,21 @@ NS_ASSUME_NONNULL_BEGIN
         [self parsedPhoneNumbersFromUserTextPhoneNumbers:phoneNumbers phoneNumberNameMap:phoneNumberNameMap];
 
     NSMutableArray<NSString *> *emailAddresses = [NSMutableArray new];
-    for (CNLabeledValue *emailField in contact.emailAddresses) {
+    for (CNLabeledValue *emailField in cnContact.emailAddresses) {
         if ([emailField.value isKindOfClass:[NSString class]]) {
             [emailAddresses addObject:(NSString *)emailField.value];
         }
     }
     _emails = [emailAddresses copy];
 
-    if (contact.thumbnailImageData) {
-        _imageData = [contact.thumbnailImageData copy];
-    } else if (contact.imageData) {
-        // This only occurs when sharing a contact via the share extension
-        _imageData = [contact.imageData copy];
+    NSData *_Nullable avatarData = [Contact avatarDataForCNContact:cnContact];
+    if (avatarData) {
+        NSUInteger hashValue = 0;
+        NSData *hashData = [Cryptography computeSHA256Digest:avatarData truncatedToBytes:sizeof(hashValue)];
+        [hashData getBytes:&hashValue length:sizeof(hashValue)];
+        _imageHash = hashValue;
+    } else {
+        _imageHash = 0;
     }
 
     return self;
@@ -122,29 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [[self alloc] initWithSystemContact:cnContact];
-}
-
-- (nullable UIImage *)image
-{
-    if (_image) {
-        return _image;
-    }
-
-    if (!self.imageData) {
-        return nil;
-    }
-
-    _image = [UIImage imageWithData:self.imageData];
-    return _image;
-}
-
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
-{
-    if ([propertyKey isEqualToString:@"cnContact"] || [propertyKey isEqualToString:@"image"]) {
-        return MTLPropertyStorageTransitory;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
 }
 
 #endif // TARGET_OS_IOS
@@ -277,6 +258,20 @@ NS_ASSUME_NONNULL_BEGIN
     return value;
 }
 
++ (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact
+{
+    if (cnContact.thumbnailImageData) {
+        return cnContact.thumbnailImageData.copy;
+    } else if (cnContact.imageData) {
+        // This only occurs when sharing a contact via the share extension
+        return cnContact.imageData.copy;
+    } else {
+        return nil;
+    }
+}
+
+// This method is used to de-bounce system contact fetch notifications
+// by checking for changes in the contact data.
 - (NSUInteger)hash
 {
     // base hash is some arbitrary number
@@ -284,13 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     hash = hash ^ self.fullName.hash;
 
-    if (self.imageData) {
-        NSUInteger thumbnailHash = 0;
-        NSData *thumbnailHashData =
-            [Cryptography computeSHA256Digest:self.imageData truncatedToBytes:sizeof(thumbnailHash)];
-        [thumbnailHashData getBytes:&thumbnailHash length:sizeof(thumbnailHash)];
-        hash = hash ^ thumbnailHash;
-    }
+    hash = hash ^ self.imageHash;
 
     for (PhoneNumber *phoneNumber in self.parsedPhoneNumbers) {
         hash = hash ^ phoneNumber.toE164.hash;

@@ -5134,7 +5134,7 @@ interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransiti
     }
 
     BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = contact.imageData;
+    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
     for (NSString *recipientId in contact.textSecureIdentifiers) {
         if (avatarImageData) {
             break;

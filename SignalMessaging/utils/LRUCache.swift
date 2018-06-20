@@ -5,7 +5,7 @@
 @objc
 public class AnyLRUCache: NSObject {
 
-    let backingCache: LRUCache<NSObject, NSObject>
+    private let backingCache: LRUCache<NSObject, NSObject>
 
     @objc
     public init(maxSize: Int) {
@@ -20,6 +20,11 @@ public class AnyLRUCache: NSObject {
     @objc
     public func set(key: NSObject, value: NSObject) {
         self.backingCache.set(key: key, value: value)
+    }
+
+    @objc
+    public func clear() {
+        self.backingCache.clear()
     }
 }
 
@@ -47,8 +52,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     @objc func didReceiveMemoryWarning() {
         SwiftAssertIsOnMainThread(#function)
 
-        cacheMap.removeAll()
-        cacheOrder.removeAll()
+        clear()
     }
 
     private func updateCacheOrder(key: KeyType) {
@@ -81,5 +85,11 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
             cacheOrder.removeFirst()
             cacheMap.removeValue(forKey: staleKey)
         }
+    }
+
+    @objc
+    public func clear() {
+        cacheMap.removeAll()
+        cacheOrder.removeAll()
     }
 }

@@ -78,7 +78,7 @@ class ContactCell: UITableViewCell {
         titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
-        if let contactImage = contact.image {
+        if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
             contactImageView.image = contactImage
         } else {
             let contactIdForDeterminingBackgroundColor: String

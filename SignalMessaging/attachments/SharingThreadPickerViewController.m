@@ -187,7 +187,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     }
 
     BOOL isProfileAvatar = NO;
-    NSData *_Nullable avatarImageData = contact.imageData;
+    NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:contact.cnContactId];
     for (NSString *recipientId in contact.textSecureIdentifiers) {
         if (avatarImageData) {
             break;

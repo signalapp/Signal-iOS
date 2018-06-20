@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class CNContact;
 @class Contact;
 @class PhoneNumber;
 @class SignalAccount;
@@ -19,6 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
                          withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));
+
+#pragma mark - CNContacts
+
+- (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;
+- (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId;
+- (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId;
 
 @end
 

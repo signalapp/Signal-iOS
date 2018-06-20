@@ -28,10 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
 @property (nonatomic, readonly) BOOL isSignalContact;
 @property (nonatomic, readonly) NSString *cnContactId;
-#if TARGET_OS_IOS
-@property (nullable, readonly, nonatomic) UIImage *image;
-@property (nullable, readonly, nonatomic) NSData *imageData;
-#endif // TARGET_OS_IOS
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 // TODO: Remove this method.
@@ -39,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if TARGET_OS_IOS
 
-- (instancetype)initWithSystemContact:(CNContact *)contact NS_AVAILABLE_IOS(9_0);
+- (instancetype)initWithSystemContact:(CNContact *)cnContact NS_AVAILABLE_IOS(9_0);
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
@@ -53,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CNContact *)mergeCNContact:(CNContact *)oldCNContact
                  newCNContact:(CNContact *)newCNContact NS_SWIFT_NAME(merge(cnContact:newCNContact:));
+
++ (nullable NSData *)avatarDataForCNContact:(nullable CNContact *)cnContact;
 
 @end
 
