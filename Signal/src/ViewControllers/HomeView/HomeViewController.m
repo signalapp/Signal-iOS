@@ -211,6 +211,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [SignalApp.sharedApp setHomeViewController:self];
     }
 
+    UIStackView *reminderStackView = [UIStackView new];
+    reminderStackView.axis = UILayoutConstraintAxisVertical;
+    reminderStackView.spacing = 0;
+    [self.view addSubview:reminderStackView];
+    [reminderStackView autoPinWidthToSuperview];
+    [reminderStackView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+
     __weak HomeViewController *weakSelf = self;
     ReminderView *deregisteredView =
         [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
@@ -222,18 +229,14 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             }
                             [RegistrationUtils showReregistrationUIFromViewController:strongSelf];
                         }];
-    [self.view addSubview:deregisteredView];
-    [deregisteredView autoPinWidthToSuperview];
-    [deregisteredView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [reminderStackView addArrangedSubview:deregisteredView];
     self.hideDeregisteredViewConstraint = [deregisteredView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideDeregisteredViewConstraint.priority = UILayoutPriorityRequired;
 
     ReminderView *archiveReminderView =
         [ReminderView explanationWithText:NSLocalizedString(@"INBOX_VIEW_ARCHIVE_MODE_REMINDER",
                                               @"Label reminding the user that they are in archive mode.")];
-    [self.view addSubview:archiveReminderView];
-    [archiveReminderView autoPinWidthToSuperview];
-    [archiveReminderView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:deregisteredView];
+    [reminderStackView addArrangedSubview:archiveReminderView];
     self.hideArchiveReminderViewConstraint = [archiveReminderView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideArchiveReminderViewConstraint.priority = UILayoutPriorityRequired;
 
@@ -243,9 +246,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
           tapAction:^{
               [[UIApplication sharedApplication] openSystemSettings];
           }];
-    [self.view addSubview:missingContactsPermissionView];
-    [missingContactsPermissionView autoPinWidthToSuperview];
-    [missingContactsPermissionView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:archiveReminderView];
+    [reminderStackView addArrangedSubview:missingContactsPermissionView];
     self.hideMissingContactsPermissionViewConstraint =
         [missingContactsPermissionView autoSetDimension:ALDimensionHeight toSize:0];
     self.hideMissingContactsPermissionViewConstraint.priority = UILayoutPriorityRequired;
@@ -259,7 +260,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:missingContactsPermissionView];
+    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:reminderStackView];
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
@@ -825,11 +826,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // Constrain to cell margins.
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
     [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+    [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
 
     return cell;
 }
