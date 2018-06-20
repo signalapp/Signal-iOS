@@ -1598,6 +1598,10 @@ typedef enum : NSUInteger {
     if (hasEarlierUnseenMessages && !self.focusMessageIdOnOpen) {
         // Ensure view items are updated before trying to scroll to the
         // unread indicator.
+        //
+        // loadNMoreMessages calls resetMappings which calls ensureDynamicInteractions,
+        // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
+        // to work properly, the view items need to be updated to reflect that change.
         [[OWSPrimaryStorage sharedManager] updateUIDatabaseConnectionToLatest];
 
         [self scrollToUnreadIndicatorAnimated];
