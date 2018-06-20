@@ -340,7 +340,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         }
     };
 
-    if ([self isSeverityAsync:severity]) {
+    if ([self shouldReportAsync:severity]) {
         dispatch_async(self.serialQueue, addEvent);
     } else {
         dispatch_sync(self.serialQueue, addEvent);
@@ -383,12 +383,19 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     // Log the event.
     NSString *logString = [NSString stringWithFormat:@"%s:%d %@", location, line, eventName];
     if (!parameters) {
-        LOG_MAYBE([self isSeverityAsync:severity], LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@", logString);
+        LOG_MAYBE([self shouldReportAsync:severity], LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@", logString);
     } else {
-        LOG_MAYBE(
-            [self isSeverityAsync:severity], LOG_LEVEL_DEF, logFlag, 0, nil, location, @"%@ %@", logString, parameters);
+        LOG_MAYBE([self shouldReportAsync:severity],
+            LOG_LEVEL_DEF,
+            logFlag,
+            0,
+            nil,
+            location,
+            @"%@ %@",
+            logString,
+            parameters);
     }
-    if (![self isSeverityAsync:severity]) {
+    if (![self shouldReportAsync:severity]) {
         [DDLog flushLog];
     }
 
@@ -397,7 +404,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     [self addEvent:eventName severity:severity properties:eventProperties];
 }
 
-- (BOOL)isSeverityAsync:(OWSAnalyticsSeverity)severity
+- (BOOL)shouldReportAsync:(OWSAnalyticsSeverity)severity
 {
     return severity != OWSAnalyticsSeverityCritical;
 }
