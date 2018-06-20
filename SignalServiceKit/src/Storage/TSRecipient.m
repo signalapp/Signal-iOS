@@ -8,14 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSRecipient
 
-- (void)encodeWithCoder:(nonnull NSCoder *)aCoder {
-    return;
-}
-
-- (nullable instancetype)initWithCoder:(nonnull NSCoder *)aDecoder {
-    return nil;
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
