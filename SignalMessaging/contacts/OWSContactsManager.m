@@ -318,13 +318,13 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             for (Contact *contact in contacts) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
-                contactIdToSignalRecipientsMap[contact.cnContactId] = signalRecipients;
+                contactIdToSignalRecipientsMap[contact.uniqueId] = signalRecipients;
             }
         }];
 
         NSMutableSet<NSString *> *seenRecipientIds = [NSMutableSet new];
         for (Contact *contact in contacts) {
-            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.cnContactId];
+            NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector(compare:)]) {
                 if ([seenRecipientIds containsObject:signalRecipient.recipientId]) {
                     DDLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);

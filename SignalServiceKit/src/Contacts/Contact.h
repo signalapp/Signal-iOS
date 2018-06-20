@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSArray<PhoneNumber *> *parsedPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *userTextPhoneNumbers;
 @property (readonly, nonatomic) NSArray<NSString *> *emails;
+@property (readonly, nonatomic) NSString *uniqueId;
 @property (nonatomic, readonly) BOOL isSignalContact;
 @property (nonatomic, readonly) NSString *cnContactId;
 

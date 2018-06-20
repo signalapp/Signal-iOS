@@ -117,6 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (nullable NSString *)uniqueId
+{
+    return self.cnContactId;
+}
+
 + (nullable Contact *)contactWithVCardData:(NSData *)data
 {
     CNContact *_Nullable cnContact = [self cnContactWithVCardData:data];
