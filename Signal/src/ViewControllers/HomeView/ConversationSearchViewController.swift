@@ -5,7 +5,15 @@
 import Foundation
 
 @objc
+protocol ConversationSearchViewDelegate: class {
+    func conversationSearchViewWillBeginDragging()
+}
+
+@objc
 class ConversationSearchViewController: UITableViewController {
+
+    @objc
+    public weak var delegate: ConversationSearchViewDelegate?
 
     @objc
     public var searchText = "" {
@@ -299,6 +307,12 @@ class ConversationSearchViewController: UITableViewController {
 
         // TODO: more performant way to do this?
         self.tableView.reloadData()
+    }
+
+    // MARK: - UIScrollViewDelegate
+
+    override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        delegate?.conversationSearchViewWillBeginDragging()
     }
 }
 

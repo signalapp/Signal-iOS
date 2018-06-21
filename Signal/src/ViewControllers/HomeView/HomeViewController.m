@@ -45,7 +45,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
-    UISearchBarDelegate>
+    UISearchBarDelegate,
+    ConversationSearchViewDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) UILabel *emptyBoxLabel;
@@ -378,6 +379,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.tableView.tableHeaderView = self.searchBar;
 
     ConversationSearchViewController *searchResultsController = [ConversationSearchViewController new];
+    searchResultsController.delegate = self;
     self.searchResultsController = searchResultsController;
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
@@ -938,16 +940,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView setContentOffset:CGPointZero animated:NO];
 
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -959,7 +967,17 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     self.searchBar.text = nil;
 
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
+
     [self updateSearchResultsVisibility];
+
+    [self ensureSearchBarCancelButton];
+}
+
+- (void)ensureSearchBarCancelButton
+{
+    self.searchBar.showsCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
 }
 
 - (void)updateSearchResultsVisibility
@@ -977,6 +995,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     } else {
         self.tableView.scrollEnabled = YES;
     }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
+}
+
+#pragma mark - ConversationSearchViewDelegate
+
+- (void)conversationSearchViewWillBeginDragging
+{
+    [self.searchBar resignFirstResponder];
+    OWSAssert(!self.searchBar.isFirstResponder);
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
