@@ -208,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                             [cell configureWithThread:thread contactsManager:helper.contactsManager];
 
-                            if (cell.accessoryView == nil) {
+                            if (!cell.hasAccessoryText) {
                                 // Don't add a disappearing messages indicator if we've already added a "blocked" label.
                                 __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
                                 [self.uiDatabaseConnection
@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     disappearingTimerConfigurationView.tintColor =
                                         [UIColor colorWithWhite:0.5f alpha:1.f];
 
-                                    cell.accessoryView = disappearingTimerConfigurationView;
+                                    [cell ows_setAccessoryView:disappearingTimerConfigurationView];
                                 }
                             }
 
@@ -282,8 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
                             if (isBlocked) {
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                            } else {
-                                OWSAssert(cell.accessoryMessage == nil);
                             }
                             [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
                             return cell;

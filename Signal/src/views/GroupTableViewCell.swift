@@ -39,10 +39,10 @@ import SignalServiceKit
 
         avatarView.autoPinLeadingToSuperviewMargin()
         avatarView.autoVCenterInSuperview()
-        avatarView.autoSetDimension(.width, toSize: CGFloat(kContactTableViewCellAvatarSize))
+        avatarView.autoSetDimension(.width, toSize: CGFloat(kContactCellAvatarSize))
         avatarView.autoPinToSquareAspectRatio()
 
-        textContainer.autoPinEdge(.leading, to: .trailing, of: avatarView, withOffset: kContactTableViewCellAvatarTextMargin)
+        textContainer.autoPinEdge(.leading, to: .trailing, of: avatarView, withOffset: kContactCellAvatarTextMargin)
         textContainer.autoPinTrailingToSuperviewMargin()
         textContainer.autoVCenterInSuperview()
     }
@@ -65,7 +65,7 @@ import SignalServiceKit
         }.joined(separator: ", ")
         self.subtitleLabel.text = groupMemberNames
 
-        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kContactTableViewCellAvatarSize, contactsManager: contactsManager)
+        self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kContactCellAvatarSize, contactsManager: contactsManager)
     }
 
 }

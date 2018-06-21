@@ -238,19 +238,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                         addDivider()
                     }
 
-                    let cell = ContactTableViewCell()
-                    cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
-                    let statusLabel = UILabel()
+                    // We use ContactCellView, not ContactTableViewCell.
+                    // Table view cells don't layout properly outside the
+                    // context of a table view.
+                    let cellView = ContactCellView()
+                    cellView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
                     // We use the "short" status message to avoid being redundant with the section title.
-                    statusLabel.text = shortStatusMessage
-                    statusLabel.textColor = UIColor.ows_darkGray
-                    statusLabel.font = .ows_dynamicTypeFootnote
-                    statusLabel.adjustsFontSizeToFitWidth = true
-                    statusLabel.sizeToFit()
-                    cell.accessoryView = statusLabel
-                    cell.setContentHuggingLow()
-                    cell.isUserInteractionEnabled = false
-                    groupRows.append(cell)
+                    cellView.accessoryMessage = shortStatusMessage
+                    cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    groupRows.append(cellView)
                 }
 
                 if groupRows.count > 0 {
