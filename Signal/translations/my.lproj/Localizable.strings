@@ -647,6 +647,12 @@
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
+/* Label for button that lets users re-register using the same phone number. */
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+
+/* Label warning the user that they have been de-registered. */
+"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "%@ကသုံးခဲ့သည် ";
 
@@ -658,6 +664,9 @@
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "စာများပျောက်သွားနေသည် ";
+
+/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "ဖွင့်လိုက်ပါက ဤပြောစကားတွင် ပေးပို့ ၊ လက်ခံရရှိသော သတင်းစကားများသည် ဖတ်ရှုပြီးပါက အလိုအလျောက် ပျောက်သွားပါသည်။ ";
@@ -820,6 +829,9 @@
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+
+/* Error indicating that a socket request timed out. */
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
@@ -985,6 +997,12 @@
 
 /* A label for conversations with blocked users. */
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "ဘလော့လုပ်ပြီး";
+
+/* Placeholder text for search bar which filters conversations. */
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+
+/* Format string when search returns no results. Embeds {{search term}} */
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archive";
@@ -1196,7 +1214,7 @@
 /* message footer for read messages */
 "MESSAGE_STATUS_READ" = "ဖတ်ပြီး";
 
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account. */
+/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
 
 /* message status while message is sending. */
@@ -1297,6 +1315,9 @@
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTING" = "ချိတ်ဆက်နေသည်";
 
+/* Error indicating that this device is no longer registered. */
+"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "ကွန်ယက်အခြေအနေ";
 
@@ -1383,6 +1404,9 @@
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@က သတင်းစကားပျောက်ကွယ်ရန်အချိန်ကို %@ဟုသတ်မှတ်သည်။ ";
+
+/* Label warning the user that the Signal service may be down. */
+"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "ဖုန်းခေါ်ဆိုမှု";
@@ -1618,6 +1642,15 @@
 /* alert body during registration */
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "ပို့လိုက်သည့် ကုဒ်ဖြင့် အတည်မပြုနိုင်ပါက သင့်ကိုယ်ပိုင်စာရင်း ကိုအတည်ပြုပေးလို့ မရပါ။";
 
+/* alert body when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+
+/* button text to proceed with registration when on an iPad */
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+
+/* alert title when registering an iPad */
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Terms & Privacy Policy";
 
@@ -1649,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Incorrect Registration Lock PIN.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "ဤဖုန်းကို ဖွင့်လိုက်သည်။ ";
+"REGISTRATION_VERIFY_DEVICE" = "Register";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "စာရင်းသွင်းရန် ဆီလျော်သည့် ဖုန်းနံပါတ်ကို ထည့်သွင်းပါ။ ";
@@ -1749,6 +1782,15 @@
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "အမည် သို့မဟုတ် နံပါတ်နှင့် ရှာပါ";
+
+/* section header for search results that match a contact who doesn't have an existing conversation */
+"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+
+/* section header for search results that match existing conversations (either group or contact conversations) */
+"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+
+/* section header for search results that match a message in a conversation */
+"SEARCH_SECTION_MESSAGES" = "Messages";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "လုံခြုံသောဆက်ရှင်ကို ပြန်ပြင်လိုက်ပြီ။ ";
@@ -1891,6 +1933,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ကိုယ်ပိုင်စာရင်း ကိုဖျက်ပါ";
 
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "အရင်စာရင်း​တွေ (စာများ၊ ပူးတွဲဖိုင်များ၊ ဖုန်းခေါ်ဆိုမှုစာရင်း၊ ...) ကို ဖျက်ချင်တာ သေချာပါသလား? လုပ်ပြီးမှ ပြန်ပြင်လို့ မရပါ။";
 
@@ -1950,6 +1995,9 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "စာများကို ဖတ်ပြီးကြောင်း ပြလို့ ရပါတယ်။ ဒီအပြင်အဆင်က ရွေးချယ်လို့ရပြီး စကားဝိုင်းတွေအားလုံးအတွက် အကျုံးဝင်သွားမှာ ဖြစ်ပါတယ်။";
+
+/* Label for re-registration button. */
+"SETTINGS_REREGISTER_BUTTON" = "Re-register";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Screen Lock Timeout";
@@ -2237,7 +2285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "အတည်ပြုသည့် အခြေအနေ ပြောင်းသွားသည်။";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "လုံခြုံရေးနံပါတ်ကို ပြပါ";
+"VERIFY_PRIVACY" = "View Safety Number";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "လုံခြုံရေးနံပါတ်ကို ပြန်စစ်ပါ";
