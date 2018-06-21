@@ -26,6 +26,8 @@ extern const CGFloat kContactTableViewCellAvatarTextMargin;
 
 + (NSString *)reuseIdentifier;
 
+- (instancetype)initWithCustomContentView:(UIView *)customContentView;
+
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
