@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSAttributedString *)verifiedSubtitle;
 
+- (BOOL)hasAccessoryText;
+
+- (void)ows_setAccessoryView:(UIView *)accessoryView;
+
 @end
 
 NS_ASSUME_NONNULL_END

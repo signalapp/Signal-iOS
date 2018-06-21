@@ -24,8 +24,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UIImageView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
-@property (nonatomic) UILabel *ows_accessoryView;
+@property (nonatomic) UILabel *ows_accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
+@property (nonatomic) UIView *ows_accessoryViewContainer;
 
 @property (nonatomic) OWSContactsManager *contactsManager;
 @property (nonatomic) NSString *recipientId;
@@ -65,9 +66,11 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel = [UILabel new];
     self.subtitleLabel.textColor = [UIColor ows_darkGrayColor];
 
-    self.ows_accessoryView = [[UILabel alloc] init];
-    self.ows_accessoryView.textAlignment = NSTextAlignmentRight;
-    self.ows_accessoryView.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+    self.ows_accessoryLabel = [[UILabel alloc] init];
+    self.ows_accessoryLabel.textAlignment = NSTextAlignmentRight;
+    self.ows_accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+
+    self.ows_accessoryViewContainer = [UIView containerView];
 
     self.nameContainerView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
@@ -77,10 +80,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
     self.nameContainerView.alignment = UIStackViewAlignmentFill;
 
+    [self.avatarView setContentHuggingHorizontalHigh];
+    [self.nameContainerView setContentHuggingHorizontalLow];
+    [self.ows_accessoryViewContainer setContentHuggingHorizontalHigh];
+
     UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.avatarView,
         self.nameContainerView,
-        self.ows_accessoryView,
+        self.ows_accessoryViewContainer,
     ]];
     hStackView.axis = UILayoutConstraintAxisHorizontal;
     hStackView.spacing = kContactCellAvatarTextMargin;
@@ -101,7 +108,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
-    self.ows_accessoryView.font = [UIFont ows_mediumFontWithSize:13.f];
+    self.ows_accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
 }
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
@@ -131,7 +138,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self updateAvatar];
 
     if (self.accessoryMessage) {
-        self.ows_accessoryView.text = self.accessoryMessage;
+        self.ows_accessoryLabel.text = self.accessoryMessage;
+        [self ows_setAccessoryView:self.ows_accessoryLabel];
     }
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
@@ -172,7 +180,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         [OWSAvatarBuilder buildImageForThread:thread diameter:kContactCellAvatarSize contactsManager:contactsManager];
 
     if (self.accessoryMessage) {
-        self.ows_accessoryView.text = self.accessoryMessage;
+        self.ows_accessoryLabel.text = self.accessoryMessage;
+        [self ows_setAccessoryView:self.ows_accessoryLabel];
     }
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
@@ -235,7 +244,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel.text = nil;
     self.subtitleLabel.text = nil;
     self.profileNameLabel.text = nil;
-    self.ows_accessoryView.text = nil;
+    self.ows_accessoryLabel.text = nil;
+    for (UIView *subview in self.ows_accessoryViewContainer.subviews) {
+        [subview removeFromSuperview];
+    }
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -270,6 +282,26 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
 {
     self.subtitleLabel.attributedText = attributedSubtitle;
+}
+
+- (BOOL)hasAccessoryText
+{
+    return self.accessoryMessage.length > 0;
+}
+
+- (void)ows_setAccessoryView:(UIView *)accessoryView
+{
+    OWSAssert(accessoryView);
+    OWSAssert(self.ows_accessoryViewContainer);
+    OWSAssert(self.ows_accessoryViewContainer.subviews.count < 1);
+
+    [self.ows_accessoryViewContainer addSubview:accessoryView];
+
+    // Trailing-align the accessory view.
+    [accessoryView autoPinEdgeToSuperviewMargin:ALEdgeTop];
+    [accessoryView autoPinEdgeToSuperviewMargin:ALEdgeBottom];
+    [accessoryView autoPinEdgeToSuperviewMargin:ALEdgeTrailing];
+    [accessoryView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
 }
 
 @end

@@ -97,6 +97,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.accessoryType = UITableViewCellAccessoryNone;
 }
 
+- (BOOL)hasAccessoryText
+{
+    return [self.cellView hasAccessoryText];
+}
+
+- (void)ows_setAccessoryView:(UIView *)accessoryView
+{
+    return [self.cellView ows_setAccessoryView:accessoryView];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
