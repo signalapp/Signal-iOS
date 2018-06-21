@@ -105,7 +105,7 @@ public class MessageRecipientStatusUtils: NSObject {
             return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         case .skipped:
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
-                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or deactivated their Signal account.")
+                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")
             return (status:.skipped, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         }
     }
