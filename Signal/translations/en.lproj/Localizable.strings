@@ -1933,6 +1933,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Delete Account";
 
+/* Label for 'delete data' button. */
+"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all your history (messages, attachments, call history …) ? This action cannot be reverted.";
 
