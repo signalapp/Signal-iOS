@@ -2,17 +2,18 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSContactsManager.h"
-
 NS_ASSUME_NONNULL_BEGIN
+
+extern const NSUInteger kContactCellAvatarSize;
+extern const CGFloat kContactCellAvatarTextMargin;
 
 @class OWSContactsManager;
 @class SignalAccount;
 @class TSThread;
 
-@interface ContactTableViewCell : UITableViewCell
+@interface ContactCellView : UIView
 
-+ (NSString *)reuseIdentifier;
+@property (nonatomic, nullable) NSString *accessoryMessage;
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
@@ -20,13 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager;
 
-// This method should be called _before_ the configure... methods.
-- (void)setAccessoryMessage:(nullable NSString *)accessoryMessage;
-
-// This method should be called _after_ the configure... methods.
-- (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
+- (void)prepareForReuse;
 
 - (NSAttributedString *)verifiedSubtitle;
+
+- (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle;
 
 @end
 

@@ -282,8 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
                             if (isBlocked) {
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                            } else {
-                                OWSAssert(cell.accessoryMessage == nil);
                             }
                             [cell configureWithSignalAccount:signalAccount contactsManager:helper.contactsManager];
                             return cell;

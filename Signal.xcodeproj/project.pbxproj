@@ -212,6 +212,8 @@
 		34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */; };
 		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
+		34D2015120DC160E00A6FD3A /* ContactCellView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D2014F20DC160D00A6FD3A /* ContactCellView.h */; };
+		34D2015220DC160E00A6FD3A /* ContactCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2015020DC160D00A6FD3A /* ContactCellView.m */; };
 		34D2CCD220618B3000CB1A14 /* OWSBackupLazyRestoreJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */; };
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
@@ -858,6 +860,8 @@
 		34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
 		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
+		34D2014F20DC160D00A6FD3A /* ContactCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactCellView.h; path = SignalMessaging/Views/ContactCellView.h; sourceTree = SOURCE_ROOT; };
+		34D2015020DC160D00A6FD3A /* ContactCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactCellView.m; path = SignalMessaging/Views/ContactCellView.m; sourceTree = SOURCE_ROOT; };
 		34D2CCD120618B2F00CB1A14 /* OWSBackupLazyRestoreJob.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupLazyRestoreJob.swift; sourceTree = "<group>"; };
 		34D2CCD82062E7D000CB1A14 /* OWSScreenLockUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSScreenLockUI.h; sourceTree = "<group>"; };
 		34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSScreenLockUI.m; sourceTree = "<group>"; };
@@ -1595,6 +1599,8 @@
 			children = (
 				45F3AEB51DFDE7900080CE33 /* AvatarImageView.swift */,
 				346129D11FD2085A00532771 /* CommonStrings.swift */,
+				34D2014F20DC160D00A6FD3A /* ContactCellView.h */,
+				34D2015020DC160D00A6FD3A /* ContactCellView.m */,
 				340CB2221EAC155C0001CAA1 /* ContactsViewHelper.h */,
 				340CB2231EAC155C0001CAA1 /* ContactsViewHelper.m */,
 				76EB052E18170B33006006FC /* ContactTableViewCell.h */,
@@ -2431,6 +2437,7 @@
 				346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */,
 				45194F961FD7226300333B2C /* SelectThreadViewController.h in Headers */,
 				346129B41FD1F7E800532771 /* OWSProfileManager.h in Headers */,
+				34D2015120DC160E00A6FD3A /* ContactCellView.h in Headers */,
 				346129FA1FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
 				34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */,
@@ -3154,6 +3161,7 @@
 				451F8A381FD7117E005CB9DA /* OWSViewController.m in Sources */,
 				450C801120AD1CDB00F3A091 /* ReturnToCallViewController.swift in Sources */,
 				450C800C20AD191E00F3A091 /* OWSNavigationController.m in Sources */,
+				34D2015220DC160E00A6FD3A /* ContactCellView.m in Sources */,
 				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,

@@ -238,13 +238,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                         addDivider()
                     }
 
-                    let contentView  = UIView()
-                    contentView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
-                    let cell = ContactTableViewCell(customContentView: contentView)
+                    // We use ContactCellView, not ContactTableViewCell.
+                    // Table view cells don't layout properly outside the
+                    // context of a table view.
+                    let cellView = ContactCellView()
+                    cellView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
                     // We use the "short" status message to avoid being redundant with the section title.
-                    cell.accessoryMessage = shortStatusMessage
-                    cell.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
-                    groupRows.append(contentView)
+                    cellView.accessoryMessage = shortStatusMessage
+                    cellView.configure(withRecipientId: recipientId, contactsManager: self.contactsManager)
+                    groupRows.append(cellView)
                 }
 
                 if groupRows.count > 0 {
