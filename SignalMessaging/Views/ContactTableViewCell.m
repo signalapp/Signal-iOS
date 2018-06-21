@@ -34,6 +34,8 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 
 @end
 
+#pragma mark -
+
 @implementation ContactTableViewCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
@@ -52,6 +54,8 @@ const CGFloat kContactTableViewCellAvatarTextMargin = 12;
 - (void)configureProgrammatically
 {
     OWSAssert(!self.nameLabel);
+    
+    self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
     _avatarView = [AvatarImageView new];
     [self.contentView addSubview:_avatarView];
