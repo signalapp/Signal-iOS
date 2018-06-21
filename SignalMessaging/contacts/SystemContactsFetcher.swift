@@ -396,8 +396,6 @@ public class SystemContactsFetcher: NSObject {
 
     @objc
     public func fetchCNContact(contactId: String) -> CNContact? {
-        SwiftAssertIsOnMainThread(#function)
-
         guard authorizationStatus == .authorized else {
             Logger.error("\(logTag) contact fetch failed; no access.")
             return nil
