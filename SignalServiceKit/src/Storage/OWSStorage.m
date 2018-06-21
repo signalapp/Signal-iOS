@@ -207,7 +207,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    return nil;
+    // We return self instead of, e.g. nil, to avoid a crash when YapDB enumerates
+    // all old objects when building a DB extension.
+    return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder
