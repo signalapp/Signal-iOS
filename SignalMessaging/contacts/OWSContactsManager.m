@@ -143,7 +143,6 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId
 {
-    OWSAssert(contactId.length > 0);
     OWSAssert(self.cnContactCache);
 
     if (!contactId) {
