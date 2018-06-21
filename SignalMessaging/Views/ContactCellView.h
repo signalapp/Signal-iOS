@@ -29,7 +29,7 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 - (BOOL)hasAccessoryText;
 
-- (void)ows_setAccessoryView:(UIView *)accessoryView;
+- (void)setAccessoryView:(UIView *)accessoryView;
 
 @end
 
