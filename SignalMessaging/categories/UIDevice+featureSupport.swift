@@ -33,4 +33,12 @@ public extension UIDevice {
             return false
         }
     }
+
+    @objc
+    public var isIPad: Bool {
+        let isNativeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
+        let isCompatabilityModeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone && self.model.hasPrefix("iPad")
+
+        return isNativeIPad || isCompatabilityModeIPad
+    }
 }

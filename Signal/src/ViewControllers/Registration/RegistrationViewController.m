@@ -232,7 +232,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                                                         titleColor:[UIColor whiteColor]
                                                    backgroundColor:[UIColor ows_signalBrandBlueColor]
                                                             target:self
-                                                          selector:@selector(sendCodeAction)];
+                                                          selector:@selector(didTapRegisterButton)];
     self.activateButton = activateButton;
     [contentView addSubview:activateButton];
     [activateButton autoPinLeadingAndTrailingToSuperviewMargin];
@@ -378,7 +378,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 #pragma mark - Actions
 
-- (void)sendCodeAction
+- (void)didTapRegisterButton
 {
     NSString *phoneNumberText = [_phoneNumberTextField.text ows_stripped];
     if (phoneNumberText.length < 1) {
@@ -390,6 +390,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
                                @"Message of alert indicating that users needs to enter a phone number to register.")];
         return;
     }
+
     NSString *countryCode = self.countryCode;
     NSString *phoneNumber = [NSString stringWithFormat:@"%@%@", _callingCode, phoneNumberText];
     PhoneNumber *localNumber = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:phoneNumber];
@@ -404,6 +405,29 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
         return;
     }
 
+    if (UIDevice.currentDevice.isIPad) {
+        [OWSAlerts showConfirmationAlertWithTitle:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_TITLE",
+                                                      @"alert title when registering an iPad")
+                                          message:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_BODY",
+                                                      @"alert body when registering an iPad")
+                                     proceedTitle:NSLocalizedString(@"REGISTRATION_IPAD_CONFIRM_BUTTON",
+                                                      @"button text to proceed with registration when on an iPad")
+                                    proceedAction:^(UIAlertAction *_Nonnull action) {
+                                        [self sendCodeActionWithParsedPhoneNumber:parsedPhoneNumber
+                                                                  phoneNumberText:phoneNumberText
+                                                                      countryCode:countryCode];
+                                    }];
+    } else {
+        [self sendCodeActionWithParsedPhoneNumber:parsedPhoneNumber
+                                  phoneNumberText:phoneNumberText
+                                      countryCode:countryCode];
+    }
+}
+
+- (void)sendCodeActionWithParsedPhoneNumber:(NSString *)parsedPhoneNumber
+                            phoneNumberText:(NSString *)phoneNumberText
+                                countryCode:(NSString *)countryCode
+{
     [self.activateButton setEnabled:NO];
     [self.spinnerView startAnimating];
     [self.phoneNumberTextField resignFirstResponder];
@@ -519,7 +543,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [self sendCodeAction];
+    [self didTapRegisterButton];
     [textField resignFirstResponder];
     return NO;
 }
