@@ -113,16 +113,16 @@ public class OutageDetection: NSObject {
 
     @objc
     public func reportConnectionSuccess() {
-        SwiftAssertIsOnMainThread(#function)
-
-        shouldCheckForOutage = false
-        hasOutage = false
+        DispatchMainThreadSafe {
+            self.shouldCheckForOutage = false
+            self.hasOutage = false
+        }
     }
 
     @objc
     public func reportConnectionFailure() {
-        SwiftAssertIsOnMainThread(#function)
-
-        shouldCheckForOutage = true
+        DispatchMainThreadSafe {
+            self.shouldCheckForOutage = true
+        }
     }
 }
