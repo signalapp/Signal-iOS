@@ -68,6 +68,7 @@ public class ConversationLayoutInfo: NSObject {
         fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
         maxMessageWidth = floor(contentWidth * 0.8)
-        maxFooterWidth = floor(contentWidth - 100)
+        // TODO: Should this be different?
+        maxFooterWidth = maxMessageWidth - 10
     }
 }

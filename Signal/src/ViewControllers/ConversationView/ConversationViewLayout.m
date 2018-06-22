@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(layoutSize.width <= viewWidth);
         layoutSize.width = MIN(viewWidth, layoutSize.width);
 
-        // All cell are "full width" and are responsible for aligning their own content.
+        // All cells are "full width" and are responsible for aligning their own content.
         CGRect itemFrame = CGRectMake(0, y, viewWidth, layoutSize.height);
 
         NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];

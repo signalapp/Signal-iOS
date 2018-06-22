@@ -246,9 +246,6 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize bodyMediaContentSize = [self bodyMediaSize];
     CGSize bodyTextContentSize = [self bodyTextSize:NO];
 
-    self.bubbleView.isOutgoing = self.isOutgoing;
-    self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail && !self.alwaysShowBubbleTail;
-
     if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasBubbleBackground) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
         self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
@@ -278,11 +275,9 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedMessageView createContents];
         [self.bubbleView addSubview:quotedMessageView];
 
-        CGFloat bubbleLeadingMargin = (self.isIncoming ? kBubbleThornSideInset : 0.f);
-        CGFloat bubbleTrailingMargin = (self.isIncoming ? 0.f : kBubbleThornSideInset);
         [self.viewConstraints addObjectsFromArray:@[
-            [quotedMessageView autoPinLeadingToSuperviewMarginWithInset:bubbleLeadingMargin],
-            [quotedMessageView autoPinTrailingToSuperviewMarginWithInset:bubbleTrailingMargin],
+            [quotedMessageView autoPinLeadingToSuperviewMargin],
+            [quotedMessageView autoPinTrailingToSuperviewMargin],
         ]];
         [self.viewConstraints
             addObject:[quotedMessageView autoSetDimension:ALDimensionHeight toSize:quotedMessageContentSize.height]];
@@ -1026,18 +1021,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)textLeadingMargin
 {
     CGFloat result = kBubbleTextHInset;
-    if (self.isIncoming) {
-        result += kBubbleThornSideInset;
-    }
     return result;
 }
 
 - (CGFloat)textTrailingMargin
 {
     CGFloat result = kBubbleTextHInset;
-    if (!self.isIncoming) {
-        result += kBubbleThornSideInset;
-    }
     return result;
 }
 
@@ -1048,7 +1037,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)textBottomMargin
 {
-    return kBubbleTextBottomInset + kBubbleThornVInset;
+    return kBubbleTextBottomInset;
 }
 
 - (UIColor *)bodyTextColor

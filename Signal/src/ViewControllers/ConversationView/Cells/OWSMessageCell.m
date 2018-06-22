@@ -20,11 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 // * MessageView (message)
 // * dateHeaderLabel (above message)
 // * footerView (below message)
-// * failedSendBadgeView ("trailing" beside message)
 
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
@@ -53,11 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.preservesSuperviewLayoutMargins = NO;
     self.contentView.preservesSuperviewLayoutMargins = NO;
-
-    _viewConstraints = [NSMutableArray new];
-
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
+
+    _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     [self.contentView addSubview:self.messageBubbleView];
@@ -112,28 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-- (BOOL)shouldHaveFailedSendBadge
-{
-    if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        return NO;
-    }
-    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
-}
-
-- (UIImage *)failedSendBadge
-{
-    UIImage *image = [UIImage imageNamed:@"message_send_failure"];
-    OWSAssert(image);
-    OWSAssert(image.size.width == self.failedSendBadgeSize && image.size.height == self.failedSendBadgeSize);
-    return image;
-}
-
-- (CGFloat)failedSendBadgeSize
-{
-    return 20.f;
-}
-
 #pragma mark - Convenience Accessors
 
 - (OWSMessageCellType)cellType
@@ -177,25 +152,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.font = self.dateHeaderDateFont;
     self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
 
-    if (self.shouldHaveFailedSendBadge) {
-        self.failedSendBadgeView = [UIImageView new];
-        self.failedSendBadgeView.image =
-            [self.failedSendBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.failedSendBadgeView.tintColor = [UIColor ows_destructiveRedColor];
-        [self.contentView addSubview:self.failedSendBadgeView];
-
+    if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.failedSendBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoPinTrailingToSuperviewMargin],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.layoutInfo.gutterLeading],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                     withInset:self.layoutInfo.gutterTrailing
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.messageBubbleView autoPinTrailingToSuperviewMargin],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                     withInset:self.layoutInfo.gutterLeading
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.layoutInfo.gutterTrailing],
         ]];
     }
 
@@ -313,6 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFooter
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
         || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
 
@@ -342,10 +312,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.viewConstraints addObjectsFromArray:@[
-        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:kBubbleThornSideInset]
-                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:kBubbleThornSideInset]),
-        (self.isIncoming ? [self.footerView autoPinTrailingToSuperviewMargin]
-                         : [self.footerView autoPinLeadingToSuperviewMargin]),
+        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading]
+                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing]),
     ]];
 
     [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
@@ -418,7 +386,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-
 - (CGSize)cellSize
 {
     OWSAssert(self.layoutInfo);
@@ -439,10 +406,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldShowFooter) {
         cellSize.height += self.footerVSpacing;
         cellSize.height += self.footerHeight;
-    }
-
-    if (self.shouldHaveFailedSendBadge) {
-        cellSize.width += self.failedSendBadgeSize;
     }
 
     cellSize = CGSizeCeil(cellSize);
@@ -474,8 +437,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
-    [self.failedSendBadgeView removeFromSuperview];
-    self.failedSendBadgeView = nil;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
 
