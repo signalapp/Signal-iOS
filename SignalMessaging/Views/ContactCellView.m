@@ -94,8 +94,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     hStackView.distribution = UIStackViewDistributionFill;
     [self addSubview:hStackView];
     [hStackView autoVCenterInSuperview];
-    [hStackView autoPinLeadingToSuperviewMargin];
-    [hStackView autoPinTrailingToSuperviewMargin];
+    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeLeading];
+    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing];
+
     // Ensure that the cell's contents never overflow the cell bounds.
     [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
     [hStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
