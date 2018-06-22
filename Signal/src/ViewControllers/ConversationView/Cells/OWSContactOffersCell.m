@@ -67,8 +67,20 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"Message shown in conversation view that offers to block an unknown user.")
                            selector:@selector(block)];
 
+    UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.addToContactsButton,
+        self.addToProfileWhitelistButton,
+        self.blockButton,
+    ]];
+    buttonStackView.axis = UILayoutConstraintAxisVertical;
+    buttonStackView.spacing = self.vSpacing;
+    // Ensure all of the buttons have the same width.
+    buttonStackView.alignment = UIStackViewAlignmentFill;
+    buttonStackView.layoutMargins = UIEdgeInsetsZero;
+
     self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.titleLabel,
+        buttonStackView,
     ]];
     self.stackView.axis = UILayoutConstraintAxisVertical;
     self.stackView.spacing = self.vSpacing;
@@ -118,37 +130,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(
         interaction.hasBlockOffer || interaction.hasAddToContactsOffer || interaction.hasAddToProfileWhitelistOffer);
 
-    CGFloat buttonWidth = 0.f;
-    if (interaction.hasAddToContactsOffer) {
-        [self.stackView addArrangedSubview:self.addToContactsButton];
-        buttonWidth = MAX(buttonWidth, [self.addToContactsButton sizeThatFits:CGSizeZero].width);
-    }
-    if (interaction.hasAddToProfileWhitelistOffer) {
-        [self.stackView addArrangedSubview:self.addToProfileWhitelistButton];
-        buttonWidth = MAX(buttonWidth, [self.addToProfileWhitelistButton sizeThatFits:CGSizeZero].width);
-    }
-    if (interaction.hasBlockOffer) {
-        [self.stackView addArrangedSubview:self.blockButton];
-        buttonWidth = MAX(buttonWidth, [self.blockButton sizeThatFits:CGSizeZero].width);
-    }
+    self.addToContactsButton.hidden = !interaction.hasAddToContactsOffer;
+    self.addToProfileWhitelistButton.hidden = !interaction.hasAddToProfileWhitelistOffer;
+    self.blockButton.hidden = !interaction.hasBlockOffer;
 
-    buttonWidth = (2 * self.buttonHPadding + (CGFloat)ceil(buttonWidth));
-
-    CGFloat hMargins = (self.layoutInfo.fullWidthGutterLeading + self.layoutInfo.fullWidthGutterTrailing);
-    CGFloat maxButtonWidth = self.layoutInfo.viewWidth - hMargins;
-    buttonWidth = MIN(buttonWidth, maxButtonWidth);
-
-    CGFloat buttonHeight = self.buttonHeight;
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = @[
-        [self.addToContactsButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
-        [self.addToProfileWhitelistButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
-        [self.blockButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
-
-        [self.addToContactsButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
-        [self.addToProfileWhitelistButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
-        [self.blockButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
-
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
         // TODO: Honor "full-width gutters"?
@@ -170,11 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)buttonVPadding
 {
     return 5.f;
-}
-
-- (CGFloat)buttonHPadding
-{
-    return 60.f;
 }
 
 - (CGFloat)vSpacing
@@ -246,15 +228,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.interaction);
 
     [self.delegate tappedUnknownContactBlockOfferMessage:self.interaction];
-}
-
-- (void)prepareForReuse
-{
-    [super prepareForReuse];
-
-    [self.addToContactsButton removeFromSuperview];
-    [self.addToProfileWhitelistButton removeFromSuperview];
-    [self.blockButton removeFromSuperview];
 }
 
 @end
