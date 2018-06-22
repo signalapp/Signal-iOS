@@ -35,6 +35,8 @@ typedef enum {
 
 - (void)updateCallType:(RPRecentCallType)callType;
 
+- (NSString *)previewText;
+
 @end
 
 NS_ASSUME_NONNULL_END

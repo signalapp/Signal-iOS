@@ -61,6 +61,8 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
                  expiresInSeconds:(uint32_t)expiresInSeconds
                   expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
+- (NSString *)previewText;
+
 @end
 
 NS_ASSUME_NONNULL_END

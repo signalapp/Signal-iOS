@@ -4,6 +4,7 @@
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
+#import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
@@ -37,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commontInit
 {
     OWSAssert(!self.titleLabel);
+
+    self.preservesSuperviewLayoutMargins = NO;
+    self.contentView.preservesSuperviewLayoutMargins = NO;
+    self.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     //    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
@@ -169,15 +175,17 @@ NS_ASSUME_NONNULL_BEGIN
     layoutButton(self.blockButton, interaction.hasBlockOffer);
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSize
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 
     // TODO: Should we use viewWidth?
-    CGSize result = CGSizeMake(viewWidth, 0);
+    CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 

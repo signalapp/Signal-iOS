@@ -174,6 +174,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
+@property (nonatomic, readonly) ConversationLayoutInfo *layoutInfo;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
@@ -217,7 +218,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleTimestamp;
 
-@property (nonatomic, readonly) BOOL isGroupConversation;
 @property (nonatomic) BOOL isUserScrolling;
 
 @property (nonatomic) NSLayoutConstraint *scrollDownButtonButtomConstraint;
@@ -356,6 +356,13 @@ typedef enum : NSUInteger {
                                                object:nil];
 }
 
+- (BOOL)isGroupConversation
+{
+    OWSAssert(self.thread);
+
+    return self.thread.isGroupThread;
+}
+
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -435,12 +442,12 @@ typedef enum : NSUInteger {
     OWSAssert(thread);
 
     _thread = thread;
-    _isGroupConversation = [self.thread isKindOfClass:[TSGroupThread class]];
     self.actionOnOpen = action;
     self.focusMessageIdOnOpen = focusMessageId;
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
+    _layoutInfo = [[ConversationLayoutInfo alloc] initWithThread:thread];
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
@@ -526,7 +533,11 @@ typedef enum : NSUInteger {
 
 - (void)createContents
 {
-    _layout = [ConversationViewLayout new];
+    OWSAssert(self.layoutInfo);
+
+    _layout = [[ConversationViewLayout alloc] initWithLayoutInfo:self.layoutInfo];
+    self.layoutInfo.viewWidth = self.view.width;
+
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
     // view so that its contents can be laid out immediately.
@@ -982,15 +993,16 @@ typedef enum : NSUInteger {
                                                @"numbers of multiple users.")
                                          : NSLocalizedString(@"VERIFY_PRIVACY",
                                                @"Label for button or row which allows users to verify the safety "
-                                               @"number of another user."))style:UIAlertActionStyleDefault
-                    handler:^(UIAlertAction *_Nonnull action) {
+                                               @"number of another user."))
+                      style:UIAlertActionStyleDefault
+                    handler:^(UIAlertAction *action) {
                         [weakSelf showNoLongerVerifiedUI];
                     }];
         [actionSheetController addAction:verifyAction];
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
-                                                              handler:^(UIAlertAction *_Nonnull action) {
+                                                              handler:^(UIAlertAction *action) {
                                                                   [weakSelf resetVerificationStateToDefault];
                                                               }];
         [actionSheetController addAction:dismissAction];
@@ -1656,7 +1668,7 @@ typedef enum : NSUInteger {
 
 - (void)updateDisappearingMessagesConfiguration
 {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
             [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
     }];
@@ -1747,7 +1759,7 @@ typedef enum : NSUInteger {
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                handler:^(UIAlertAction *action) {
                                                                     [message remove];
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
@@ -1755,17 +1767,17 @@ typedef enum : NSUInteger {
     UIAlertAction *retryAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MESSAGES_VIEW_FAILED_DOWNLOAD_RETRY_ACTION", @"Action sheet button text")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     OWSAttachmentsProcessor *processor =
                         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                                     networkManager:self.networkManager];
                     [processor fetchAttachmentsForMessage:message
                         primaryStorage:self.primaryStorage
-                        success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+                        success:^(TSAttachmentStream *attachmentStream) {
                             DDLogInfo(
                                 @"%@ Successfully redownloaded attachment in thread: %@", self.logTag, message.thread);
                         }
-                        failure:^(NSError *_Nonnull error) {
+                        failure:^(NSError *error) {
                             DDLogWarn(@"%@ Failed to redownload message with error: %@", self.logTag, error);
                         }];
                 }];
@@ -1787,7 +1799,7 @@ typedef enum : NSUInteger {
 
     UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
                                                                   style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *_Nonnull action) {
+                                                                handler:^(UIAlertAction *action) {
                                                                     [message remove];
                                                                 }];
     [actionSheetController addAction:deleteMessageAction];
@@ -1795,12 +1807,12 @@ typedef enum : NSUInteger {
     UIAlertAction *resendMessageAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    [self.messageSender enqueueMessage:message
                                        success:^{
                                            DDLogInfo(@"%@ Successfully resent failed message.", self.logTag);
                                        }
-                                       failure:^(NSError *_Nonnull error) {
+                                       failure:^(NSError *error) {
                                            DDLogWarn(@"%@ Failed to send message with error: %@", self.logTag, error);
                                        }];
                                }];
@@ -1922,7 +1934,7 @@ typedef enum : NSUInteger {
     UIAlertAction *resetSessionAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     if (![self.thread isKindOfClass:[TSContactThread class]]) {
                         // Corrupt Message errors only appear in contact threads.
                         DDLogError(@"%@ Unexpected request to reset session in group thread. Refusing", self.logTag);
@@ -1955,7 +1967,7 @@ typedef enum : NSUInteger {
     UIAlertAction *showSafteyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    DDLogInfo(@"%@ Remote Key Changed actions: Show fingerprint display", self.logTag);
                                    [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
                                }];
@@ -1964,7 +1976,7 @@ typedef enum : NSUInteger {
     UIAlertAction *acceptSafetyNumberAction =
         [UIAlertAction actionWithTitle:NSLocalizedString(@"ACCEPT_NEW_IDENTITY_ACTION", @"Action sheet item")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    DDLogInfo(@"%@ Remote Key Changed actions: Accepted new identity key", self.logTag);
 
                                    // DEPRECATED: we're no longer creating these incoming SN error's per message,
@@ -2000,7 +2012,7 @@ typedef enum : NSUInteger {
     __weak ConversationViewController *weakSelf = self;
     UIAlertAction *callAction = [UIAlertAction actionWithTitle:[CallStrings callBackAlertCallButton]
                                                          style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *_Nonnull action) {
+                                                       handler:^(UIAlertAction *action) {
                                                            [weakSelf startAudioCall];
                                                        }];
     [alertController addAction:callAction];
@@ -2044,7 +2056,7 @@ typedef enum : NSUInteger {
         actionWithTitle:NSLocalizedString(
                             @"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION", @"Action sheet that will block an unknown user.")
                   style:UIAlertActionStyleDestructive
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     DDLogInfo(@"%@ Blocking an unknown user.", self.logTag);
                     [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                     // Delete the offers.
@@ -2283,20 +2295,20 @@ typedef enum : NSUInteger {
         [[OWSAttachmentsProcessor alloc] initWithAttachmentPointer:attachmentPointer
                                                     networkManager:self.networkManager];
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [processor fetchAttachmentsForMessage:nil
             transaction:transaction
-            success:^(TSAttachmentStream *_Nonnull attachmentStream) {
+            success:^(TSAttachmentStream *attachmentStream) {
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                         [message saveWithTransaction:postSuccessTransaction];
                     }];
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogWarn(@"%@ Failed to redownload thumbnail with error: %@", self.logTag, error);
                 [self.editingDatabaseConnection
-                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull postSuccessTransaction) {
+                    asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
                         [message touchWithTransaction:transaction];
                     }];
             }];
@@ -2443,6 +2455,7 @@ typedef enum : NSUInteger {
     MessageDetailViewController *view =
         [[MessageDetailViewController alloc] initWithViewItem:conversationItem
                                                       message:message
+                                                       thread:self.thread
                                                          mode:MessageMetadataViewModeFocusOnMetadata];
     [self.navigationController pushViewController:view animated:YES];
 }
@@ -2452,7 +2465,7 @@ typedef enum : NSUInteger {
     DDLogDebug(@"%@ user did tap reply", self.logTag);
 
     __block OWSQuotedReplyModel *quotedReply;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         quotedReply = [OWSQuotedReplyModel quotedReplyForConversationViewItem:conversationItem transaction:transaction];
     }];
 
@@ -3739,7 +3752,7 @@ typedef enum : NSUInteger {
     UIAlertAction *takeMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self takePictureOrVideo];
                 }];
     UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
@@ -3750,7 +3763,7 @@ typedef enum : NSUInteger {
     UIAlertAction *chooseMediaAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self chooseFromLibraryAsMedia];
                 }];
     UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
@@ -3761,7 +3774,7 @@ typedef enum : NSUInteger {
     UIAlertAction *gifAction = [UIAlertAction
         actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON", @"Label for 'select GIF to attach' action sheet button")
                   style:UIAlertActionStyleDefault
-                handler:^(UIAlertAction *_Nonnull action) {
+                handler:^(UIAlertAction *action) {
                     [self showGifPicker];
                 }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
@@ -3773,7 +3786,7 @@ typedef enum : NSUInteger {
         [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
                                            @"action sheet button title when choosing attachment type")
                                  style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *_Nonnull action) {
+                               handler:^(UIAlertAction *action) {
                                    [self showAttachmentDocumentPickerMenu];
                                }];
     UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
@@ -3786,7 +3799,7 @@ typedef enum : NSUInteger {
             [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
                                                @"attachment menu option to send contact")
                                      style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *_Nonnull action) {
+                                   handler:^(UIAlertAction *action) {
                                        [self chooseContactForSending];
                                    }];
         UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
@@ -3948,7 +3961,7 @@ typedef enum : NSUInteger {
                     successCompletion();
                 }
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogError(@"%@ Failed to send group avatar update with error: %@", self.logTag, error);
             }];
     } else {
@@ -3959,7 +3972,7 @@ typedef enum : NSUInteger {
                     successCompletion();
                 }
             }
-            failure:^(NSError *_Nonnull error) {
+            failure:^(NSError *error) {
                 DDLogError(@"%@ Failed to send group update with error: %@", self.logTag, error);
             }];
     }
@@ -4754,6 +4767,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self updateLastVisibleTimestamp];
+    self.layoutInfo.viewWidth = self.collectionView.width;
 }
 
 #pragma mark - View Items
@@ -4799,7 +4813,8 @@ typedef enum : NSUInteger {
             } else {
                 viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
                                                                isGroupThread:isGroupThread
-                                                                 transaction:transaction];
+                                                                 transaction:transaction
+                                                                  layoutInfo:self.layoutInfo];
             }
             viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
@@ -4966,9 +4981,9 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
     }
-    cell.contentWidth = self.layout.contentWidth;
+    cell.layoutInfo = self.layoutInfo;
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [cell loadForDisplayWithTransaction:transaction];
     }];
 

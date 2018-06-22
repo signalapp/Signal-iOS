@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
+@class ConversationLayoutInfo;
 @class ConversationViewItem;
 @class OWSContact;
 @class OWSQuotedReplyModel;
@@ -53,11 +54,13 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @end
 
+#pragma mark -
+
 @interface OWSMessageBubbleView : UIView
 
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
 
-@property (nonatomic) int contentWidth;
+@property (nonatomic) ConversationLayoutInfo *layoutInfo;
 
 @property (nonatomic) NSCache *cellMediaCache;
 
@@ -78,7 +81,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)loadContent;
 - (void)unloadContent;
 
-- (CGSize)sizeForContentWidth:(int)contentWidth;
+- (CGSize)measureSize;
 
 - (void)prepareForReuse;
 

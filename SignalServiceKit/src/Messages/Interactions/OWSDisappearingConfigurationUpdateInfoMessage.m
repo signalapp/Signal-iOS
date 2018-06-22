@@ -51,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    return [self previewText];
+}
+
+- (NSString *)previewText
+{
     if (self.createdInExistingGroup) {
         OWSAssert(self.configurationIsEnabled && self.configurationDurationSeconds > 0);
         NSString *infoFormat = NSLocalizedString(@"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT",

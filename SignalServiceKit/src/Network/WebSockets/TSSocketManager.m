@@ -629,16 +629,6 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
             [socketMessage didFailWithStatusCode:(NSInteger)responseStatus responseData:responseData error:error];
         }
     }
-
-    DDLogVerbose(@"%@ received WebSocket response: %llu, %zd, %@, %zd, %@, %d, %@.",
-        self.logTag,
-        (unsigned long long)requestId,
-        (NSInteger)responseStatus,
-        responseMessage,
-        responseData.length,
-        responseHeaders,
-        socketMessage != nil,
-        responseObject);
 }
 
 - (void)failAllPendingSocketMessagesIfNecessary

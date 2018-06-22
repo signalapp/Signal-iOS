@@ -77,7 +77,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // contents.
 //
 // NOTE: the margin values are inverted in RTL layouts.
+//
+// TODO: Remove this in favor of AppContext.isRTL()
 - (BOOL)isRTL;
+
 - (NSArray<NSLayoutConstraint *> *)autoPinLeadingAndTrailingToSuperviewMargin;
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewMargin;
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewMarginWithInset:(CGFloat)margin;
@@ -148,6 +151,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 CG_INLINE CGSize CGSizeCeil(CGSize size)
 {
     return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
+}
+
+CG_INLINE CGSize CGSizeFloor(CGSize size)
+{
+    return CGSizeMake((CGFloat)floor(size.width), (CGFloat)floor(size.height));
 }
 
 CG_INLINE CGSize CGSizeRound(CGSize size)

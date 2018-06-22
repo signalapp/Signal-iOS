@@ -4,6 +4,7 @@
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
+#import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -22,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIImageView *imageView;
 @property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UIStackView *stackView;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
 @end
 
@@ -43,19 +46,31 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.imageView);
 
-    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.preservesSuperviewLayoutMargins = NO;
+    self.contentView.preservesSuperviewLayoutMargins = NO;
+    self.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.backgroundColor = [UIColor whiteColor];
 
     self.imageView = [UIImageView new];
-    [self.contentView addSubview:self.imageView];
+    [self.imageView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [self.imageView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [self.imageView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
     self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
-    self.titleLabel.font = [self titleFont];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [self.contentView addSubview:self.titleLabel];
+
+    self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.imageView,
+        self.titleLabel,
+    ]];
+    self.stackView.axis = UILayoutConstraintAxisHorizontal;
+    self.stackView.spacing = self.hSpacing;
+    self.stackView.alignment = UIStackViewAlignmentCenter;
+    [self.contentView addSubview:self.stackView];
 
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
@@ -66,6 +81,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self addGestureRecognizer:longPress];
 }
 
+- (void)configureFonts
+{
+    // Update cell to reflect changes in dynamic text.
+    self.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -73,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
 
     TSInteraction *interaction = self.viewItem.interaction;
@@ -81,9 +103,27 @@ NS_ASSUME_NONNULL_BEGIN
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.imageView.tintColor = [self iconColorForInteraction:interaction];
     self.titleLabel.textColor = [self textColor];
-    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
+    [self applyTitleForInteraction:interaction label:self.titleLabel];
 
-    [self setNeedsLayout];
+    CGSize titleSize = [self titleSize];
+
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = @[
+        [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
+        [self.stackView autoHCenterInSuperview],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                         withInset:self.layoutInfo.fullWidthGutterLeading + self.hMargin
+                                          relation:NSLayoutRelationGreaterThanOrEqual],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                         withInset:self.layoutInfo.fullWidthGutterTrailing + self.hMargin
+                                          relation:NSLayoutRelationGreaterThanOrEqual],
+    ];
+
+    [self.contentView logFrameLaterWithLabel:@"contentView"];
+    [self.stackView logFrameLaterWithLabel:@"stackView"];
+    [self.titleLabel logFrameLaterWithLabel:@"titleLabel"];
 }
 
 - (UIColor *)textColor
@@ -162,19 +202,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyTitleForInteraction:(TSInteraction *)interaction
                            label:(UILabel *)label
-                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(interaction);
     OWSAssert(label);
 
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = [self titleFont];
+    [self configureFonts];
 
     // TODO: Should we move the copy generation into this view?
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        label.text = [errorMessage previewTextWithTransaction:transaction];
+        label.text = [errorMessage previewText];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
         if ([infoMessage isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
@@ -199,20 +237,15 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"another device. Embeds {{user's name or phone number}}.")));
             label.text = [NSString stringWithFormat:titleFormat, displayName];
         } else {
-            label.text = [infoMessage previewTextWithTransaction:transaction];
+            label.text = [infoMessage previewText];
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         TSCall *call = (TSCall *)interaction;
-        label.text = [call previewTextWithTransaction:transaction];
+        label.text = [call previewText];
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
         label.text = nil;
     }
-}
-
-- (UIFont *)titleFont
-{
-    return UIFont.ows_dynamicTypeFootnoteFont;
 }
 
 - (CGFloat)hMargin
@@ -240,48 +273,30 @@ NS_ASSUME_NONNULL_BEGIN
     return 20.f;
 }
 
-- (void)layoutSubviews
+- (CGSize)titleSize
 {
-    [super layoutSubviews];
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.viewItem);
 
-    CGFloat maxTitleWidth = (self.contentView.width - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
-    CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-
-    CGFloat contentWidth = ([self iconSize] + [self hSpacing] + titleSize.width);
-
-    CGFloat contentLeft = round((self.contentView.width - contentWidth) * 0.5f);
-    CGFloat imageLeft = ([self isRTL] ? round(contentLeft + contentWidth - [self iconSize]) : contentLeft);
-    CGFloat titleLeft = ([self isRTL] ? contentLeft : round(imageLeft + [self iconSize] + [self hSpacing]));
-
-    self.imageView.frame = CGRectMake(
-        imageLeft, round((self.contentView.height - [self iconSize]) * 0.5f), [self iconSize], [self iconSize]);
-
-    self.titleLabel.frame = CGRectMake(titleLeft,
-        round((self.contentView.height - titleSize.height) * 0.5f),
-        ceil(titleSize.width + 1.f),
-        ceil(titleSize.height + 1.f));
+    CGFloat maxTitleWidth
+        = (CGFloat)floor(self.layoutInfo.fullWidthContentWidth - (2 * self.hMargin + self.iconSize + self.hSpacing));
+    return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSize
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
-    CGSize result = CGSizeMake(contentWidth, 0);
-    result.height += self.topVMargin;
-    result.height += self.bottomVMargin;
+    CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
 
-    // FIXME pass in transaction from the uiDBConnection.
-    [[TSYapDatabaseObject dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
-    }];
+    [self applyTitleForInteraction:interaction label:self.titleLabel];
 
-    CGFloat maxTitleWidth = (contentWidth - ([self hMargin] * 2.f + [self hSpacing] + [self iconSize]));
-    CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
-
+    CGSize titleSize = [self titleSize];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));
-    result.height += contentHeight;
+    result.height = (contentHeight + self.topVMargin + self.bottomVMargin);
 
     return result;
 }

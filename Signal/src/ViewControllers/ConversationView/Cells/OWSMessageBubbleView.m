@@ -237,14 +237,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureViews
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.contentWidth > 0);
 
-    CGSize quotedMessageContentSize = [self quotedMessageSizeForContentWidth:self.contentWidth includeMargins:NO];
-    CGSize bodyMediaContentSize = [self bodyMediaSizeForContentWidth:self.contentWidth];
-    CGSize bodyTextContentSize = [self bodyTextSizeForContentWidth:self.contentWidth includeMargins:NO];
+    CGSize quotedMessageContentSize = [self quotedMessageSize];
+    CGSize bodyMediaContentSize = [self bodyMediaSize];
+    CGSize bodyTextContentSize = [self bodyTextSize:NO];
 
     self.bubbleView.isOutgoing = self.isOutgoing;
     self.bubbleView.hideTail = self.viewItem.shouldHideBubbleTail && !self.alwaysShowBubbleTail;
@@ -855,18 +855,18 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Measurement
 
 // Size of "message body" text, not quoted reply text.
-- (CGSize)bodyTextSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
+- (CGSize)bodyTextSize:(BOOL)includeMargins
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
+
     if (!self.hasBodyText) {
         return CGSizeZero;
     }
 
-    BOOL isRTL = self.isRTL;
-    CGFloat leftMargin = isRTL ? self.textTrailingMargin : self.textLeadingMargin;
-    CGFloat rightMargin = isRTL ? self.textLeadingMargin : self.textTrailingMargin;
+    CGFloat hMargins = self.textTrailingMargin + self.textLeadingMargin;
 
-    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-    const int maxTextWidth = (int)floor(maxMessageWidth - (leftMargin + rightMargin));
+    const int maxTextWidth = (int)floor(self.layoutInfo.maxMessageWidth - hMargins);
 
     OWSMessageTextView *bodyTextView = [self configureBodyTextView];
     CGSize textSize = CGSizeCeil([bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
@@ -874,22 +874,27 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize result = textSize;
 
     if (includeMargins) {
-        result.width += leftMargin + rightMargin;
+        result.width += hMargins;
         result.height += self.textTopMargin + self.textBottomMargin;
     }
 
     return CGSizeCeil(result);
 }
 
-- (CGSize)bodyMediaSizeForContentWidth:(int)contentWidth
+- (CGSize)bodyMediaSize
 {
-    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
 
+    CGFloat maxMessageWidth = self.layoutInfo.maxMessageWidth;
+
+    CGSize result = CGSizeZero;
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
         case OWSMessageCellType_OversizeTextMessage: {
-            return CGSizeZero;
+            result = CGSizeZero;
+            break;
         }
         case OWSMessageCellType_StillImage:
         case OWSMessageCellType_AnimatedImage:
@@ -926,28 +931,32 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             return CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
+            break;
         }
         case OWSMessageCellType_Audio:
-            return CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            break;
         case OWSMessageCellType_GenericAttachment:
-            return CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            result = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+            break;
         case OWSMessageCellType_DownloadingAttachment:
-            return CGSizeMake(200, 90);
+            result = CGSizeMake(200, 90);
+            break;
         case OWSMessageCellType_ContactShare:
             OWSAssert(self.viewItem.contactShare);
 
-            return CGSizeMake(
+            result = CGSizeMake(
                 maxMessageWidth, [OWSContactShareView bubbleHeightForContactShare:self.viewItem.contactShare]);
+            break;
     }
+
+    return CGSizeCeil(result);
 }
 
-- (int)maxMessageWidthForContentWidth:(int)contentWidth
+- (CGSize)quotedMessageSize
 {
-    return (int)floor(contentWidth * 0.8f);
-}
-
-- (CGSize)quotedMessageSizeForContentWidth:(int)contentWidth includeMargins:(BOOL)includeMargins
-{
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -963,31 +972,28 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
                                                     isOutgoing:isOutgoing];
-    const int maxMessageWidth = [self maxMessageWidthForContentWidth:contentWidth];
-    CGSize result = [quotedMessageView sizeForMaxWidth:maxMessageWidth - kBubbleThornSideInset];
-    if (includeMargins) {
-        result.width += kBubbleThornSideInset;
-    }
-
-    return result;
+    CGSize result = [quotedMessageView sizeForMaxWidth:self.layoutInfo.maxMessageWidth];
+    return CGSizeCeil(result);
 }
 
-- (CGSize)sizeForContentWidth:(int)contentWidth
+- (CGSize)measureSize
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     CGSize cellSize = CGSizeZero;
 
-    CGSize quotedMessageSize = [self quotedMessageSizeForContentWidth:contentWidth includeMargins:YES];
+    CGSize quotedMessageSize = [self quotedMessageSize];
     cellSize.width = MAX(cellSize.width, quotedMessageSize.width);
     cellSize.height += quotedMessageSize.height;
 
-    CGSize mediaContentSize = [self bodyMediaSizeForContentWidth:contentWidth];
+    CGSize mediaContentSize = [self bodyMediaSize];
     cellSize.width = MAX(cellSize.width, mediaContentSize.width);
     cellSize.height += mediaContentSize.height;
 
-    CGSize textContentSize = [self bodyTextSizeForContentWidth:contentWidth includeMargins:YES];
+    CGSize textContentSize = [self bodyTextSize:YES];
     cellSize.width = MAX(cellSize.width, textContentSize.width);
     cellSize.height += textContentSize.height;
 

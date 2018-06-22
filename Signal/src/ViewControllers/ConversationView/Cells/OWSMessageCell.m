@@ -51,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure only called once.
     OWSAssert(!self.messageBubbleView);
 
+    self.preservesSuperviewLayoutMargins = NO;
+    self.contentView.preservesSuperviewLayoutMargins = NO;
+
     _viewConstraints = [NSMutableArray new];
 
     self.layoutMargins = UIEdgeInsetsZero;
@@ -95,6 +98,13 @@ NS_ASSUME_NONNULL_BEGIN
         initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
                    action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
+}
+
+- (void)setLayoutInfo:(nullable ConversationLayoutInfo *)layoutInfo
+{
+    [super setLayoutInfo:layoutInfo];
+
+    self.messageBubbleView.layoutInfo = layoutInfo;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -152,14 +162,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.contentWidth > 0);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
@@ -209,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateDateHeader
 {
-    OWSAssert(self.contentWidth > 0);
+    OWSAssert(self.layoutInfo);
 
     static NSDateFormatter *dateHeaderDateFormatter = nil;
     static NSDateFormatter *dateHeaderTimeFormatter = nil;
@@ -256,11 +265,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateHeaderLabel.hidden = NO;
 
         [self.viewConstraints addObjectsFromArray:@[
-            // Date headers should be visually centered within the conversation view,
-            // so they need to extend outside the cell's boundaries.
-            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:self.contentWidth],
-            (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
-                             : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
+            // TODO: Are data headers symmetric or are they asymmetric? gutters are asymmetric?
+            [self.dateHeaderLabel autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading],
+            [self.dateHeaderLabel autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing],
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
         ]];
@@ -362,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
     // we want to leave spaces for an expiration timer and
     // include padding so that they still visually "cling" to the
     // appropriate incoming/outgoing edge.
-    const CGFloat maxFooterLabelWidth = self.contentWidth - 100;
+    const CGFloat maxFooterLabelWidth = self.layoutInfo.maxFooterWidth;
     if (hasExpirationTimer &&
         attributedText) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -411,16 +418,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+
+- (CGSize)cellSize
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView sizeForContentWidth:contentWidth];
+    CGSize messageBubbleSize = [self.messageBubbleView measureSize];
 
     CGSize cellSize = messageBubbleSize;
 

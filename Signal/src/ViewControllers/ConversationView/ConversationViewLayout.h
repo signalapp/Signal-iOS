@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// TODO: Remove this enum.
 typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
     // We use incoming/outgoing, not left/right to support RTL.
     ConversationViewLayoutAlignment_Incoming,
@@ -12,11 +13,15 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
     ConversationViewLayoutAlignment_Center,
 };
 
+@class ConversationLayoutInfo;
+
 @protocol ConversationViewLayoutItem <NSObject>
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
+- (CGSize)cellSize;
 
 - (ConversationViewLayoutAlignment)layoutAlignment;
+
+- (CGFloat)vSpacingWithLastLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem;
 
 @end
 
@@ -39,7 +44,11 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
 @property (nonatomic, readonly) BOOL hasLayout;
 @property (nonatomic, readonly) BOOL hasEverHadLayout;
-@property (nonatomic, readonly) int contentWidth;
+@property (nonatomic, readonly) ConversationLayoutInfo *layoutInfo;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo;
 
 @end
 

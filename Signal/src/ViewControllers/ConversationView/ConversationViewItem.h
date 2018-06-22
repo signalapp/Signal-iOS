@@ -66,10 +66,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // previous update.
 @property (nonatomic) NSInteger previousRow;
 
+@property (nonatomic, readonly) ConversationLayoutInfo *layoutInfo;
+
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction;
+                        transaction:(YapDatabaseReadTransaction *)transaction
+                         layoutInfo:(ConversationLayoutInfo *)layoutInfo;
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
