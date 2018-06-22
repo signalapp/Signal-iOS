@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateTimeLabel.text
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
-    if (hasUnreadMessages) {
+    if (hasUnreadMessages && overrideSnippet == nil) {
         self.dateTimeLabel.textColor = [UIColor ows_blackColor];
         self.dateTimeLabel.font = self.unreadFont.ows_mediumWeight;
     } else {
@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSUInteger unreadCount = thread.unreadCount;
-    if (unreadCount == 0) {
+    if (unreadCount == 0 || overrideSnippet != nil) {
         [self.viewConstraints addObject:[self.payloadView autoPinTrailingToSuperviewMargin]];
     } else {
         [self.contentView addSubview:self.unreadBadge];
