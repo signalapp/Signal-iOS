@@ -93,7 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.cellView prepareForReuse];
 
-    self.accessoryView = nil;
     self.accessoryType = UITableViewCellAccessoryNone;
 }
 
