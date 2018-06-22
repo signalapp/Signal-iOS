@@ -73,49 +73,36 @@ class ReminderView: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
         self.addGestureRecognizer(tapGesture)
 
-        let container = UIView()
+        let container = UIStackView()
+        container.axis = .horizontal
+        container.alignment = .center
+        container.isLayoutMarginsRelativeArrangement = true
 
         self.addSubview(container)
-        container.autoPinWidthToSuperview(withMargin: 16)
-        switch (mode) {
-        case .nag:
-            container.autoPinHeightToSuperview(withMargin: 16)
-        case .explanation:
-            container.autoPinHeightToSuperview(withMargin: 12)
-        }
-
-        // Margin: top and bottom 12 left and right 16.
+        container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+        container.autoPinToSuperviewEdges()
 
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
-        container.addSubview(label)
+        container.addArrangedSubview(label)
         label.textColor = UIColor.black.withAlphaComponent(0.9)
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.autoPinLeadingToSuperviewMargin()
-        label.autoPinEdge(toSuperviewEdge: .top)
-        label.autoPinEdge(toSuperviewEdge: .bottom)
 
         // Show the disclosure indicator if this reminder has a tap action.
-        if tapAction == nil {
-            return
+        if tapAction != nil {
+            // Icon
+            let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
+            guard let iconImage = UIImage(named: iconName) else {
+                owsFail("\(logTag) missing icon.")
+                return
+            }
+            let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
+            iconView.contentMode = .scaleAspectFit
+            iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
+            iconView.autoSetDimension(.width, toSize: 13)
+            container.addArrangedSubview(iconView)
         }
-
-        // Icon
-        let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
-        guard let iconImage = UIImage(named: iconName) else {
-            owsFail("\(logTag) missing icon.")
-            return
-        }
-        let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
-        iconView.contentMode = .scaleAspectFit
-        iconView.tintColor = UIColor.black.withAlphaComponent(0.6)
-        container.addSubview(iconView)
-
-        iconView.autoPinLeading(toTrailingEdgeOf: label, offset: 28)
-        iconView.autoPinTrailingToSuperviewMargin()
-        iconView.autoVCenterInSuperview()
-        iconView.autoSetDimension(.width, toSize: 13)
     }
 
     @objc func handleTap(gestureRecognizer: UIGestureRecognizer) {

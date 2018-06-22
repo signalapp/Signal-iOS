@@ -171,6 +171,11 @@ public class SystemContactsFetcher: NSObject {
     }
 
     @objc
+    public var isDenied: Bool {
+        return self.authorizationStatus == .denied
+    }
+
+    @objc
     public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
     private var hasSetupObservation = false
 
