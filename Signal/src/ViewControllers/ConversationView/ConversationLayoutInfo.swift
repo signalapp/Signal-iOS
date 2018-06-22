@@ -53,10 +53,10 @@ public class ConversationLayoutInfo: NSObject {
 
     private func updateProperties() {
         if thread.isGroupThread() {
-            gutterLeading = 16
+            gutterLeading = 40
             gutterTrailing = 20
         } else {
-            gutterLeading = 40
+            gutterLeading = 16
             gutterTrailing = 20
         }
         // TODO: Should these be symmetric? Should they reflect the other gutters?
