@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton *addToContactsButton;
 @property (nonatomic) UIButton *addToProfileWhitelistButton;
 @property (nonatomic) UIButton *blockButton;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
+@property (nonatomic) UIStackView *stackView;
 
 @end
 
@@ -44,16 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
-    //    [self setTranslatesAutoresizingMaskIntoConstraints:NO];
-
     self.titleLabel = [UILabel new];
     self.titleLabel.textColor = [UIColor blackColor];
-    self.titleLabel.font = [self titleFont];
     self.titleLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE",
         @"Title for the group of buttons show for unknown contacts offering to add them to contacts, etc.");
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.contentView addSubview:self.titleLabel];
 
     self.addToContactsButton = [self
         createButtonWithTitle:
@@ -68,6 +66,25 @@ NS_ASSUME_NONNULL_BEGIN
         [self createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER",
                                         @"Message shown in conversation view that offers to block an unknown user.")
                            selector:@selector(block)];
+
+    self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.titleLabel,
+    ]];
+    self.stackView.axis = UILayoutConstraintAxisVertical;
+    self.stackView.spacing = self.vSpacing;
+    self.stackView.alignment = UIStackViewAlignmentCenter;
+    self.stackView.layoutMargins = UIEdgeInsetsZero;
+    [self.contentView addSubview:self.stackView];
+}
+
+- (void)configureFonts
+{
+    self.titleLabel.font = UIFont.ows_dynamicTypeBodyFont.ows_mediumWeight;
+
+    UIFont *buttonFont = UIFont.ows_dynamicTypeBodyFont;
+    self.addToContactsButton.titleLabel.font = buttonFont;
+    self.addToProfileWhitelistButton.titleLabel.font = buttonFont;
+    self.blockButton.titleLabel.font = buttonFont;
 }
 
 - (UIButton *)createButtonWithTitle:(NSString *)title selector:(SEL)selector
@@ -75,12 +92,10 @@ NS_ASSUME_NONNULL_BEGIN
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTitle:title forState:UIControlStateNormal];
     [button setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
-    button.titleLabel.font = self.buttonFont;
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
     [button setBackgroundColor:[UIColor colorWithRGBHex:0xf5f5f5]];
     button.layer.cornerRadius = 5.f;
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:button];
     return button;
 }
 
@@ -91,30 +106,55 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
+
+    [self configureFonts];
 
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 
     OWSAssert(
         interaction.hasBlockOffer || interaction.hasAddToContactsOffer || interaction.hasAddToProfileWhitelistOffer);
 
-    [self setNeedsLayout];
-}
+    CGFloat buttonWidth = 0.f;
+    if (interaction.hasAddToContactsOffer) {
+        [self.stackView addArrangedSubview:self.addToContactsButton];
+        buttonWidth = MAX(buttonWidth, [self.addToContactsButton sizeThatFits:CGSizeZero].width);
+    }
+    if (interaction.hasAddToProfileWhitelistOffer) {
+        [self.stackView addArrangedSubview:self.addToProfileWhitelistButton];
+        buttonWidth = MAX(buttonWidth, [self.addToProfileWhitelistButton sizeThatFits:CGSizeZero].width);
+    }
+    if (interaction.hasBlockOffer) {
+        [self.stackView addArrangedSubview:self.blockButton];
+        buttonWidth = MAX(buttonWidth, [self.blockButton sizeThatFits:CGSizeZero].width);
+    }
 
-- (UIFont *)titleFont
-{
-    return UIFont.ows_dynamicTypeBodyFont.ows_mediumWeight;
-}
+    buttonWidth = (2 * self.buttonHPadding + (CGFloat)ceil(buttonWidth));
 
-- (UIFont *)buttonFont
-{
-    return UIFont.ows_dynamicTypeBodyFont;
-}
+    CGFloat hMargins = (self.layoutInfo.fullWidthGutterLeading + self.layoutInfo.fullWidthGutterTrailing);
+    CGFloat maxButtonWidth = self.layoutInfo.viewWidth - hMargins;
+    buttonWidth = MIN(buttonWidth, maxButtonWidth);
 
-- (CGFloat)hMargin
-{
-    return 10.f;
+    CGFloat buttonHeight = self.buttonHeight;
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = @[
+        [self.addToContactsButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
+        [self.addToProfileWhitelistButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
+        [self.blockButton autoSetDimension:ALDimensionWidth toSize:buttonWidth],
+
+        [self.addToContactsButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
+        [self.addToProfileWhitelistButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
+        [self.blockButton autoSetDimension:ALDimensionHeight toSize:buttonHeight],
+
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
+        // TODO: Honor "full-width gutters"?
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.layoutInfo.fullWidthGutterLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.layoutInfo.fullWidthGutterTrailing],
+    ];
 }
 
 - (CGFloat)topVMargin
@@ -132,47 +172,19 @@ NS_ASSUME_NONNULL_BEGIN
     return 5.f;
 }
 
-- (CGFloat)buttonVSpacing
+- (CGFloat)buttonHPadding
+{
+    return 60.f;
+}
+
+- (CGFloat)vSpacing
 {
     return 5.f;
 }
 
-- (void)layoutSubviews
+- (CGFloat)buttonHeight
 {
-    [super layoutSubviews];
-
-    OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
-
-    // We're using a bit of a hack to get this and the unread indicator to layout as
-    // "full width" cells.  These cells will end up with an erroneous left margin that we
-    // want to reverse.
-    CGFloat contentWidth = self.width;
-    CGFloat left = -self.left;
-
-    CGRect titleFrame = self.contentView.bounds;
-    titleFrame.origin = CGPointMake(left + self.hMargin, self.topVMargin);
-    titleFrame.size.width = contentWidth - 2 * self.hMargin;
-    titleFrame.size.height = ceil([self.titleLabel sizeThatFits:CGSizeZero].height);
-    self.titleLabel.frame = titleFrame;
-
-    __block CGFloat y = round(self.titleLabel.bottom + self.buttonVSpacing);
-    void (^layoutButton)(UIButton *, BOOL) = ^(UIButton *button, BOOL isVisible) {
-        if (isVisible) {
-            button.hidden = NO;
-
-            button.frame = CGRectMake(round(left + self.hMargin),
-                round(y),
-                floor(contentWidth - 2 * self.hMargin),
-                ceil([button sizeThatFits:CGSizeZero].height + self.buttonVPadding));
-            y = round(button.bottom + self.buttonVSpacing);
-        } else {
-            button.hidden = YES;
-        }
-    };
-
-    layoutButton(self.addToContactsButton, interaction.hasAddToContactsOffer);
-    layoutButton(self.addToProfileWhitelistButton, interaction.hasAddToProfileWhitelistOffer);
-    layoutButton(self.blockButton, interaction.hasBlockOffer);
+    return (self.buttonVPadding + CGSizeCeil([self.addToContactsButton sizeThatFits:CGSizeZero]).height);
 }
 
 - (CGSize)cellSize
@@ -182,9 +194,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 
+    [self configureFonts];
+
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 
-    // TODO: Should we use viewWidth?
     CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
@@ -193,8 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     int buttonCount = ((interaction.hasBlockOffer ? 1 : 0) + (interaction.hasAddToContactsOffer ? 1 : 0)
         + (interaction.hasAddToProfileWhitelistOffer ? 1 : 0));
-    result.height += buttonCount
-        * (self.buttonVPadding + self.buttonVSpacing + ceil([self.addToContactsButton sizeThatFits:CGSizeZero].height));
+    result.height += buttonCount * (self.vSpacing + self.buttonHeight);
 
     return result;
 }
@@ -234,6 +246,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.interaction);
 
     [self.delegate tappedUnknownContactBlockOfferMessage:self.interaction];
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+
+    [self.addToContactsButton removeFromSuperview];
+    [self.addToProfileWhitelistButton removeFromSuperview];
+    [self.blockButton removeFromSuperview];
 }
 
 @end

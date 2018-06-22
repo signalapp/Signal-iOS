@@ -20,8 +20,8 @@ public class ConversationLayoutInfo: NSObject {
         }
     }
 
-    @objc public let contentMarginTop: CGFloat = 0
-    @objc public let contentMarginBottom: CGFloat = 0
+    @objc public let contentMarginTop: CGFloat = 10
+    @objc public let contentMarginBottom: CGFloat = 10
 
     @objc public var gutterLeading: CGFloat = 0
     @objc public var gutterTrailing: CGFloat = 0
@@ -59,9 +59,9 @@ public class ConversationLayoutInfo: NSObject {
             gutterLeading = 40
             gutterTrailing = 20
         }
-        // TODO: Should these be symmetric?
-        fullWidthGutterLeading = gutterLeading
-        fullWidthGutterTrailing = gutterTrailing
+        // TODO: Should these be symmetric? Should they reflect the other gutters?
+        fullWidthGutterLeading = 20
+        fullWidthGutterTrailing = 20
 
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)
 

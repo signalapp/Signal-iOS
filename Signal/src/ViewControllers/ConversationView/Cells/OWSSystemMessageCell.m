@@ -51,8 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor whiteColor];
-
     self.imageView = [UIImageView new];
     [self.imageView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.imageView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
@@ -70,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
     self.stackView.spacing = self.hSpacing;
     self.stackView.alignment = UIStackViewAlignmentCenter;
+    self.stackView.layoutMargins = UIEdgeInsetsZero;
     [self.contentView addSubview:self.stackView];
 
     UITapGestureRecognizer *tap =
@@ -112,18 +111,15 @@ NS_ASSUME_NONNULL_BEGIN
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
+        // H-center the stack.
         [self.stackView autoHCenterInSuperview],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                         withInset:self.layoutInfo.fullWidthGutterLeading + self.hMargin
+                                         withInset:self.layoutInfo.fullWidthGutterLeading
                                           relation:NSLayoutRelationGreaterThanOrEqual],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                         withInset:self.layoutInfo.fullWidthGutterTrailing + self.hMargin
+                                         withInset:self.layoutInfo.fullWidthGutterTrailing
                                           relation:NSLayoutRelationGreaterThanOrEqual],
     ];
-
-    [self.contentView logFrameLaterWithLabel:@"contentView"];
-    [self.stackView logFrameLaterWithLabel:@"stackView"];
-    [self.titleLabel logFrameLaterWithLabel:@"titleLabel"];
 }
 
 - (UIColor *)textColor
@@ -248,11 +244,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (CGFloat)hMargin
-{
-    return 25.f;
-}
-
 - (CGFloat)topVMargin
 {
     return 5.f;
@@ -278,8 +269,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
 
+    CGFloat hMargins = (self.layoutInfo.fullWidthGutterLeading + self.layoutInfo.fullWidthGutterTrailing);
     CGFloat maxTitleWidth
-        = (CGFloat)floor(self.layoutInfo.fullWidthContentWidth - (2 * self.hMargin + self.iconSize + self.hSpacing));
+        = (CGFloat)floor(self.layoutInfo.fullWidthContentWidth - (hMargins + self.iconSize + self.hSpacing));
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
