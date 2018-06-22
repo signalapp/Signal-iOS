@@ -177,18 +177,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.payloadView.spacing = 0.f;
     self.topRowView.spacing = self.topRowHSpacing;
 
+    // We update the fonts every time this cell is configured to ensure that
+    // changes to the dynamic type settings are reflected.
+    self.snippetLabel.font = [self snippetFont];
+
     if (overrideSnippet) {
         self.snippetLabel.attributedText = overrideSnippet;
     } else {
         self.snippetLabel.attributedText =
             [self attributedSnippetForThread:thread blockedPhoneNumberSet:blockedPhoneNumberSet];
     }
-    // We update the fonts every time this cell is configured to ensure that
-    // changes to the dynamic type settings are reflected.
-    //
-    // Note: we apply this font _after_ we set the attributed text to
-    // override any font attributes.
-    self.snippetLabel.font = [self snippetFont];
 
     self.dateTimeLabel.text
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
