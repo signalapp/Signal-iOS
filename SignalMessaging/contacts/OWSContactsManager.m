@@ -129,6 +129,11 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return self.systemContactsFetcher.isAuthorized;
 }
 
+- (BOOL)isSystemContactsDenied
+{
+    return self.systemContactsFetcher.isDenied;
+}
+
 - (BOOL)systemContactsHaveBeenRequestedAtLeastOnce
 {
     return self.systemContactsFetcher.systemContactsHaveBeenRequestedAtLeastOnce;

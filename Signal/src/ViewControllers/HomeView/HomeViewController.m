@@ -304,7 +304,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)updateReminderViews
 {
     self.archiveReminderView.hidden = self.homeViewMode != HomeViewMode_Archive;
-    self.missingContactsPermissionView.hidden = !self.shouldShowMissingContactsPermissionView;
+    self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 }
@@ -697,15 +697,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)tableViewSetUp
 {
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-}
-
-- (BOOL)shouldShowMissingContactsPermissionView
-{
-    if (!self.contactsManager.systemContactsHaveBeenRequestedAtLeastOnce) {
-        return NO;
-    }
-
-    return !self.contactsManager.isSystemContactsAuthorized;
 }
 
 #pragma mark - Table View Data Source
