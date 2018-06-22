@@ -8,10 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const CGFloat kOWSMessageCellCornerRadius;
 
-extern const CGFloat kBubbleTextHInset;
-extern const CGFloat kBubbleTextTopInset;
-extern const CGFloat kBubbleTextBottomInset;
-
 @class OWSBubbleView;
 
 @protocol OWSBubbleViewPartner <NSObject>

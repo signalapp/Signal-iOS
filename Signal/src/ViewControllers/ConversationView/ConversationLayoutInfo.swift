@@ -5,6 +5,29 @@
 import Foundation
 
 @objc
+public class OWSTextInsets: NSObject {
+
+    @objc public let leading: CGFloat
+    @objc public let trailing: CGFloat
+    @objc public let top: CGFloat
+    @objc public let bottom: CGFloat
+
+    @objc
+    public required init(leading: CGFloat = 0,
+                         trailing: CGFloat = 0,
+                         top: CGFloat = 0,
+                         bottom: CGFloat = 0) {
+
+        self.leading = leading
+        self.trailing = trailing
+        self.top = top
+        self.bottom = bottom
+
+        super.init()
+    }
+}
+
+@objc
 public class ConversationLayoutInfo: NSObject {
 
     private let thread: TSThread
@@ -40,6 +63,8 @@ public class ConversationLayoutInfo: NSObject {
     @objc public var maxMessageWidth: CGFloat = 0
     @objc public var maxFooterWidth: CGFloat = 0
 
+    @objc public var textInsets = OWSTextInsets()
+
     @objc
     public required init(thread: TSThread) {
 
@@ -49,7 +74,24 @@ public class ConversationLayoutInfo: NSObject {
         super.init()
 
         updateProperties()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(uiContentSizeCategoryDidChange),
+                                               name: NSNotification.Name.UIContentSizeCategoryDidChange,
+                                               object: nil)
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func uiContentSizeCategoryDidChange() {
+        SwiftAssertIsOnMainThread(#function)
+
+        updateProperties()
+    }
+
+    // MARK: -
 
     private func updateProperties() {
         if thread.isGroupThread() {
@@ -70,5 +112,19 @@ public class ConversationLayoutInfo: NSObject {
         maxMessageWidth = floor(contentWidth * 0.8)
         // TODO: Should this be different?
         maxFooterWidth = maxMessageWidth - 10
+
+        let messageTextFont = UIFont.ows_dynamicTypeBody
+        // Don't include the distance from the "cap height" to the top of the UILabel
+        // in the top margin.
+        let textInsetTop = max(0, 12 - (messageTextFont.ascender - messageTextFont.capHeight))
+        // Don't include the distance from the "baseline" to the bottom of the UILabel
+        // (e.g. the descender) in the top margin. Note that UIFont.descender is a
+        // negative value.
+        let textInsetBottom = max(0, 12 - abs(messageTextFont.descender))
+
+        textInsets = OWSTextInsets(leading: 12,
+                                   trailing: 12,
+                                   top: textInsetTop,
+                                   bottom: textInsetBottom)
     }
 }
