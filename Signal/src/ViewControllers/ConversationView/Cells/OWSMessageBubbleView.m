@@ -390,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSTextInsets *textInsets = self.layoutInfo.textInsets;
+    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
     OWSAssert(textInsets);
 
     OWSMessageTextView *_Nullable bodyTextView = nil;
@@ -862,7 +862,7 @@ NS_ASSUME_NONNULL_BEGIN
         return CGSizeZero;
     }
 
-    OWSTextInsets *textInsets = self.layoutInfo.textInsets;
+    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
     OWSAssert(textInsets);
 
     CGFloat hMargins = textInsets.leading + textInsets.trailing;

@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class OWSTextInsets: NSObject {
+public class OWSDirectionalEdgeInsets: NSObject {
 
     @objc public let leading: CGFloat
     @objc public let trailing: CGFloat
@@ -13,10 +13,10 @@ public class OWSTextInsets: NSObject {
     @objc public let bottom: CGFloat
 
     @objc
-    public required init(leading: CGFloat = 0,
-                         trailing: CGFloat = 0,
-                         top: CGFloat = 0,
-                         bottom: CGFloat = 0) {
+    public required init(top: CGFloat = 0,
+                         leading: CGFloat = 0,
+                         bottom: CGFloat = 0,
+                         trailing: CGFloat = 0) {
 
         self.leading = leading
         self.trailing = trailing
@@ -63,7 +63,7 @@ public class ConversationLayoutInfo: NSObject {
     @objc public var maxMessageWidth: CGFloat = 0
     @objc public var maxFooterWidth: CGFloat = 0
 
-    @objc public var textInsets = OWSTextInsets()
+    @objc public var textInsets = OWSDirectionalEdgeInsets()
 
     @objc
     public required init(thread: TSThread) {
@@ -122,9 +122,9 @@ public class ConversationLayoutInfo: NSObject {
         // negative value.
         let textInsetBottom = max(0, 12 - abs(messageTextFont.descender))
 
-        textInsets = OWSTextInsets(leading: 12,
-                                   trailing: 12,
-                                   top: textInsetTop,
-                                   bottom: textInsetBottom)
+        textInsets = OWSDirectionalEdgeInsets(top: textInsetTop,
+                                   leading: 12,
+                                   bottom: textInsetBottom,
+                                   trailing: 12)
     }
 }
