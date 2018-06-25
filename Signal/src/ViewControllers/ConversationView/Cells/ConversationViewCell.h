@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationViewCell;
 @class ConversationViewItem;
 @class OWSContactOffersInteraction;
+@class OWSContactsManager;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
@@ -46,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Messages
 
 - (void)didTapFailedOutgoingMessage:(TSOutgoingMessage *)message;
+
+#pragma mark - Contacts
+
+- (OWSContactsManager *)contactsManager;
 
 @end
 

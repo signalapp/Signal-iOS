@@ -3,6 +3,7 @@
 //
 
 #import "OWSMessageCell.h"
+#import "OWSContactAvatarBuilder.h"
 #import "OWSExpirationTimerView.h"
 #import "OWSMessageBubbleView.h"
 #import "Signal-Swift.h"
@@ -24,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) UIView *footerView;
+@property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
 
@@ -71,9 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.footerLabel.textColor = [UIColor lightGrayColor];
     [self.footerView addSubview:self.footerLabel];
 
+    self.avatarView = [[AvatarImageView alloc] init];
+    [self.contentView addSubview:self.avatarView];
+    [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
+    [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
+
     // Hide these views by default.
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.hidden = YES;
+    self.avatarView.hidden = YES;
 
     [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderLabel];
 
@@ -93,6 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
         initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
                    action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setLayoutInfo:(nullable ConversationLayoutInfo *)layoutInfo
@@ -168,6 +181,20 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateDateHeader];
     [self updateFooter];
+
+    if ([self updateAvatarView]) {
+        CGFloat avatarBottomMargin = round(self.layoutInfo.lastTextLineAxis - self.avatarSize * 0.5f);
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
+            // TODO: We actually want a slightly different alignment.
+            [self.messageBubbleView autoPinEdge:ALEdgeBottom
+                                         toEdge:ALEdgeBottom
+                                         ofView:self.avatarView
+                                     withOffset:avatarBottomMargin],
+        ]];
+        [self.messageBubbleView logFrameLaterWithLabel:@"messageBubbleView"];
+        [self.avatarView logFrameLaterWithLabel:@"avatarView"];
+    }
 }
 
 // * If cell is visible, lazy-load (expensive) view contents.
@@ -382,6 +409,74 @@ NS_ASSUME_NONNULL_BEGIN
     return UIFont.ows_dynamicTypeCaption1Font;
 }
 
+#pragma mark - Avatar
+
+// Returns YES IFF the avatar view is appropriate and configured.
+- (BOOL)updateAvatarView
+{
+    if (!self.viewItem.isGroupThread) {
+        return NO;
+    }
+    if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return NO;
+    }
+    if (self.viewItem.shouldHideAvatar) {
+        return NO;
+    }
+
+    OWSContactsManager *contactsManager = self.delegate.contactsManager;
+    if (contactsManager == nil) {
+        OWSFail(@"%@ contactsManager should not be nil", self.logTag);
+        return NO;
+    }
+
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
+    OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                                               diameter:self.avatarSize
+                                                                        contactsManager:contactsManager];
+    self.avatarView.image = [avatarBuilder build];
+    self.avatarView.hidden = NO;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(otherUsersProfileDidChange:)
+                                                 name:kNSNotificationName_OtherUsersProfileDidChange
+                                               object:nil];
+
+    return YES;
+}
+
+- (NSUInteger)avatarSize
+{
+    return 24.f;
+}
+
+- (void)otherUsersProfileDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.viewItem.isGroupThread) {
+        return;
+    }
+    if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return;
+    }
+    if (self.viewItem.shouldHideAvatar) {
+        return;
+    }
+
+    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    if (recipientId.length == 0) {
+        return;
+    }
+    TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
+
+    if (![incomingMessage.authorId isEqualToString:recipientId]) {
+        return;
+    }
+
+    [self updateAvatarView];
+}
+
 #pragma mark - Measurement
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -421,7 +516,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark -
+#pragma mark - Reuse
 
 - (void)prepareForReuse
 {
@@ -437,12 +532,16 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.hidden = YES;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
+    self.avatarView.image = nil;
+    self.avatarView.hidden = YES;
 
     [self.expirationTimerView clearAnimations];
     [self.expirationTimerView removeFromSuperview];
     self.expirationTimerView = nil;
 
     [self hideMenuControllerIfNecessary];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Notifications
@@ -671,11 +770,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
     }
     self.isPresentingMenuController = NO;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

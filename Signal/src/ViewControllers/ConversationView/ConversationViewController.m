@@ -4882,7 +4882,7 @@ typedef enum : NSUInteger {
     NSString *_Nullable lastIncomingSenderId = nil;
     for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
         BOOL shouldHideRecipientStatus = NO;
-        BOOL shouldHideBubbleTail = NO;
+        BOOL shouldHideAvatar = NO;
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
@@ -4899,14 +4899,12 @@ typedef enum : NSUInteger {
                     = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus);
             }
 
-            shouldHideBubbleTail = interactionType == lastInteractionType;
-
             lastReceiptStatus = receiptStatus;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
-            shouldHideBubbleTail = (interactionType == lastInteractionType &&
+            shouldHideAvatar = (interactionType == lastInteractionType &&
                 [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
             lastIncomingSenderId = incomingSenderId;
         }
@@ -4919,7 +4917,7 @@ typedef enum : NSUInteger {
             [rowsThatChangedSize addObject:@(viewItem.previousRow)];
         }
         viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
-        viewItem.shouldHideBubbleTail = shouldHideBubbleTail;
+        viewItem.shouldHideAvatar = shouldHideAvatar;
     }
 
     self.viewItems = viewItems;
