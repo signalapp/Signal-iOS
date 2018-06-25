@@ -40,8 +40,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
-    var conversationLayoutInfo: ConversationLayoutInfo
-
     private var contactShareViewHelper: ContactShareViewHelper
 
     // MARK: Initializers
@@ -59,7 +57,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.mode = mode
         self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
-        self.conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -345,7 +342,9 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.layoutInfo = self.conversationLayoutInfo
+        let conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
+        conversationLayoutInfo.viewWidth = self.view.width()
+        messageBubbleView.layoutInfo = conversationLayoutInfo
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
 

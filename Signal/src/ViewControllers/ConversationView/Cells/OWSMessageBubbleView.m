@@ -404,9 +404,9 @@ NS_ASSUME_NONNULL_BEGIN
         [self.viewConstraints addObjectsFromArray:@[
             [bodyTextView autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
             [bodyTextView autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
+            [bodyTextView autoSetDimension:ALDimensionWidth toSize:bodyTextContentSize.width],
+            [bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height],
         ]];
-        [self.viewConstraints
-            addObject:[bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height]];
 
         if (lastSubview) {
             [self.viewConstraints addObject:[bodyTextView autoPinEdge:ALEdgeTop
