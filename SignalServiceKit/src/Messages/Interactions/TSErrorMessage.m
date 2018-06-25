@@ -105,11 +105,6 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self previewText];
-}
-
-- (NSString *)previewText
-{
     switch (_errorType) {
         case TSErrorMessageNoSession:
             return NSLocalizedString(@"ERROR_MESSAGE_NO_SESSION", @"");

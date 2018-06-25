@@ -384,7 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.layoutInfo.viewWidth > 0);

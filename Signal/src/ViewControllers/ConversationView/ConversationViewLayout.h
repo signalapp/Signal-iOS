@@ -14,10 +14,12 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 };
 
 @class ConversationLayoutInfo;
+@class YapDatabaseConnection;
+@class YapDatabaseReadTransaction;
 
 @protocol ConversationViewLayoutItem <NSObject>
 
-- (CGSize)cellSize;
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (ConversationViewLayoutAlignment)layoutAlignment;
 
@@ -48,7 +50,8 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo;
+- (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo
+              uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
 
 @end
 

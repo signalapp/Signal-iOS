@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (CGSize)cellSize;
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

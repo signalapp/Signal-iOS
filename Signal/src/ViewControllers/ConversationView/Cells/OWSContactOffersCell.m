@@ -165,7 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.buttonVPadding + CGSizeCeil([self.addToContactsButton sizeThatFits:CGSizeZero]).height);
 }
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.layoutInfo.viewWidth > 0);

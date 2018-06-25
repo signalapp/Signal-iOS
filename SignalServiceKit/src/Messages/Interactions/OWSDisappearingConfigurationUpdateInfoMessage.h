@@ -20,8 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
               createdByRemoteName:(nullable NSString *)remoteName
            createdInExistingGroup:(BOOL)createdInExistingGroup;
 
-- (NSString *)previewText;
-
 @end
 
 NS_ASSUME_NONNULL_END

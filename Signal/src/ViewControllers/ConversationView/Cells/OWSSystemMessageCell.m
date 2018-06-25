@@ -92,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
+    OWSAssert(transaction);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -99,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.imageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.imageView.tintColor = [self iconColorForInteraction:interaction];
     self.titleLabel.textColor = [self textColor];
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
+    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
 
     CGSize titleSize = [self titleSize];
 
@@ -195,9 +196,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applyTitleForInteraction:(TSInteraction *)interaction
                            label:(UILabel *)label
+                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(interaction);
     OWSAssert(label);
+    OWSAssert(transaction);
 
     [self configureFonts];
 
@@ -205,7 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
-        label.text = [errorMessage previewText];
+        label.text = [errorMessage previewTextWithTransaction:transaction];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         TSInfoMessage *infoMessage = (TSInfoMessage *)interaction;
         if ([infoMessage isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
@@ -230,11 +233,11 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"another device. Embeds {{user's name or phone number}}.")));
             label.text = [NSString stringWithFormat:titleFormat, displayName];
         } else {
-            label.text = [infoMessage previewText];
+            label.text = [infoMessage previewTextWithTransaction:transaction];
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         TSCall *call = (TSCall *)interaction;
-        label.text = [call previewText];
+        label.text = [call previewTextWithTransaction:transaction];
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
         label.text = nil;
@@ -272,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
@@ -281,7 +284,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
 
-    [self applyTitleForInteraction:interaction label:self.titleLabel];
+    [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
 
     CGSize titleSize = [self titleSize];
     CGFloat contentHeight = ceil(MAX([self iconSize], titleSize.height));

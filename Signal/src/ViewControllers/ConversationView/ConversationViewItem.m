@@ -178,8 +178,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.cachedCellSize = nil;
 }
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
     OWSAssertIsOnMainThread();
     OWSAssert(self.layoutInfo);
 
@@ -187,7 +188,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
         measurementCell.layoutInfo = self.layoutInfo;
-        CGSize cellSize = [measurementCell cellSize];
+        CGSize cellSize = [measurementCell cellSizeWithTransaction:transaction];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];
     }

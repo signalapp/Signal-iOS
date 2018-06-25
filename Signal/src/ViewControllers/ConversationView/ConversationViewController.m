@@ -535,7 +535,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert(self.layoutInfo);
 
-    _layout = [[ConversationViewLayout alloc] initWithLayoutInfo:self.layoutInfo];
+    _layout = [[ConversationViewLayout alloc] initWithLayoutInfo:self.layoutInfo
+                                            uiDatabaseConnection:self.uiDatabaseConnection];
     self.layoutInfo.viewWidth = self.view.width;
 
     self.layout.delegate = self;

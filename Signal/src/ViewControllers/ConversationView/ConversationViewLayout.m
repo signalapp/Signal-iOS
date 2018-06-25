@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationViewLayout ()
 
+@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
+
 @property (nonatomic) CGSize contentSize;
 
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
@@ -29,10 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ConversationViewLayout
 
 - (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo
+              uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     if (self = [super init]) {
         _itemAttributesMap = [NSMutableDictionary new];
         _layoutInfo = layoutInfo;
+        _uiDatabaseConnection = uiDatabaseConnection;
     }
 
     return self;
@@ -94,6 +98,15 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO: Remove this log statement after we've reduced the invalidation churn.
     DDLogVerbose(@"%@ prepareLayout", self.logTag);
 
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self prepareLayoutWithTransaction:transaction];
+    }];
+}
+
+- (void)prepareLayoutWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssert(transaction);
+
     const CGFloat viewWidth = self.layoutInfo.viewWidth;
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
@@ -108,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
             y += [layoutItem vSpacingWithPreviousLayoutItem:previousLayoutItem];
         }
 
-        CGSize layoutSize = CGSizeCeil([layoutItem cellSize]);
+        CGSize layoutSize = CGSizeCeil([layoutItem cellSizeWithTransaction:transaction]);
 
         // Ensure cell fits within view.
         OWSAssert(layoutSize.width <= viewWidth);

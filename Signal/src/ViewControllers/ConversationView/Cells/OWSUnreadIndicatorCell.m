@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
         .uppercaseString;
 }
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);

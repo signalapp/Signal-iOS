@@ -69,11 +69,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self previewText];
-}
-
-- (NSString *)previewText
-{
     // We don't actually use the `transaction` but other sibling classes do.
     switch (_callType) {
         case RPRecentCallTypeIncoming:

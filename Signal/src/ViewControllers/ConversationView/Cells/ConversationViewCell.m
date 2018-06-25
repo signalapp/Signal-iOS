@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWS_ABSTRACT_METHOD();
 }
 
-- (CGSize)cellSize
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWS_ABSTRACT_METHOD();
 

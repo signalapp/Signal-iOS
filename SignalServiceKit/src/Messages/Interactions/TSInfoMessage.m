@@ -113,11 +113,6 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
 - (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self previewText];
-}
-
-- (NSString *)previewText
-{
     switch (_messageType) {
         case TSInfoMessageTypeSessionDidEnd:
             return NSLocalizedString(@"SECURE_SESSION_RESET", nil);

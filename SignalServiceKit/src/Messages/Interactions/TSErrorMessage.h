@@ -27,9 +27,6 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 
 @interface TSErrorMessage : TSMessage <OWSReadTracking>
 
-@property (nonatomic, readonly) TSErrorMessageType errorType;
-@property (nullable, nonatomic, readonly) NSString *recipientId;
-
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
                              messageBody:(nullable NSString *)body
@@ -73,7 +70,8 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
 
-- (NSString *)previewText;
+@property (nonatomic, readonly) TSErrorMessageType errorType;
+@property (nullable, nonatomic, readonly) NSString *recipientId;
 
 @end
 
