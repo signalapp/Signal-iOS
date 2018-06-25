@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
+@property (nonatomic) UIStackView *stackView;
+
 @property (nonatomic) OWSMessageTextView *bodyTextView;
 
 @property (nonatomic, nullable) UIView *quotedMessageView;
@@ -70,6 +72,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
+
+    self.stackView = [UIStackView new];
+    self.stackView.axis = UILayoutConstraintAxisVertical;
+    self.stackView.alignment = UIStackViewAlignmentFill;
+    [self addSubview:self.stackView];
+    [self.stackView autoPinEdgesToSuperviewEdges];
 
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
@@ -248,6 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     CGSize quotedMessageContentSize = [self quotedMessageSize];
+    // TODO:
     CGSize bodyMediaContentSize = [self bodyMediaSize];
     CGSize bodyTextContentSize = [self bodyTextSizeWithIncludeMargins:NO];
 
@@ -260,12 +269,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.bubbleView.bubbleColor = nil;
     }
 
-    UIView *_Nullable lastSubview = nil;
-    CGFloat bottomMargin = 0;
+    //    CGFloat bottomMargin = 0;
 
     if (self.isQuotedReply) {
-        OWSAssert(!lastSubview);
-
         BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
         DisplayableText *_Nullable displayableQuotedText
             = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
@@ -278,23 +284,11 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
-        [self.bubbleView addSubview:quotedMessageView];
-
-        [self.viewConstraints addObjectsFromArray:@[
-            [quotedMessageView autoPinLeadingToSuperviewMargin],
-            [quotedMessageView autoPinTrailingToSuperviewMargin],
-        ]];
+        [self.stackView addArrangedSubview:quotedMessageView];
         [self.viewConstraints
             addObject:[quotedMessageView autoSetDimension:ALDimensionHeight toSize:quotedMessageContentSize.height]];
 
-        if (lastSubview) {
-            [self.viewConstraints
-                addObject:[quotedMessageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview]];
-        } else {
-            [self.viewConstraints addObject:[quotedMessageView autoPinEdgeToSuperviewEdge:ALEdgeTop]];
-        }
-        lastSubview = quotedMessageView;
-        bottomMargin = 0;
+        //        bottomMargin = 0;
 
         [self.bubbleView addPartnerView:quotedMessageView.boundsStrokeView];
     }
@@ -349,34 +343,28 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView.layer.opacity = 0.75f;
         }
 
-        [self.bubbleView addSubview:bodyMediaView];
-        // This layout can lead to extreme cropping of media content,
-        // e.g. a very tall portrait image + long caption.  The media
-        // view will have "max width", so the image will be cropped to
-        // roughly a square.
-        // TODO: Myles is considering alternatives.
-        [self.viewConstraints addObjectsFromArray:@[
-            [bodyMediaView autoPinLeadingToSuperviewMarginWithInset:0],
-            [bodyMediaView autoPinTrailingToSuperviewMarginWithInset:0],
-        ]];
-        // We need constraints to control the vertical sizing of the media view, but we use
-        // lower priority so that when a message only contains media it uses the exact bounds of
-        // the message view.
-        [NSLayoutConstraint
-            autoSetPriority:UILayoutPriorityDefaultLow
-             forConstraints:^{
-                 [self.viewConstraints
-                     addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaContentSize.height]];
-             }];
+        [self.stackView addArrangedSubview:bodyMediaView];
+        //        // This layout can lead to extreme cropping of media content,
+        //        // e.g. a very tall portrait image + long caption.  The media
+        //        // view will have "max width", so the image will be cropped to
+        //        // roughly a square.
+        //        // TODO: Myles is considering alternatives.
+        //        [self.viewConstraints addObjectsFromArray:@[
+        //            [bodyMediaView autoPinLeadingToSuperviewMarginWithInset:0],
+        //            [bodyMediaView autoPinTrailingToSuperviewMarginWithInset:0],
+        //        ]];
+        //        // We need constraints to control the vertical sizing of the media view, but we use
+        //        // lower priority so that when a message only contains media it uses the exact bounds of
+        //        // the message view.
+        //        [NSLayoutConstraint
+        //            autoSetPriority:UILayoutPriorityDefaultLow
+        //             forConstraints:^{
+        //                 [self.viewConstraints
+        //                     addObject:[bodyMediaView autoSetDimension:ALDimensionHeight
+        //                     toSize:bodyMediaContentSize.height]];
+        //             }];
 
-        if (lastSubview) {
-            [self.viewConstraints
-                addObject:[bodyMediaView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview withOffset:0]];
-        } else {
-            [self.viewConstraints addObject:[bodyMediaView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0]];
-        }
-        lastSubview = bodyMediaView;
-        bottomMargin = 0;
+        //        bottomMargin = 0;
 
         BOOL shouldStrokeMediaView = ([bodyMediaView isKindOfClass:[UIImageView class]] ||
             [bodyMediaView isKindOfClass:[OWSContactShareView class]]);
@@ -395,70 +383,73 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSDirectionalEdgeInsets *textInsets = self.conversationStyle.textInsets;
-    OWSAssert(textInsets);
-
     OWSMessageTextView *_Nullable bodyTextView = nil;
+    UIStackView *_Nullable textStackView = [UIStackView new];
+
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
     if (self.hasBodyText || !bodyMediaView) {
         bodyTextView = [self configureBodyTextView];
     }
     if (bodyTextView) {
-        [self.bubbleView addSubview:bodyTextView];
+        textStackView = [UIStackView new];
+        textStackView.axis = UILayoutConstraintAxisVertical;
+        textStackView.alignment = UIStackViewAlignmentFill;
+        // TODO: Review
+        textStackView.spacing = self.textViewVSpacing;
+        textStackView.layoutMarginsRelativeArrangement = YES;
+        textStackView.layoutMargins = UIEdgeInsetsMake(self.conversationStyle.textInsetTop,
+            self.conversationStyle.textInsetHorizontal,
+            self.conversationStyle.textInsetBottom,
+            self.conversationStyle.textInsetHorizontal);
+        [self.stackView addArrangedSubview:textStackView];
+        [textStackView addArrangedSubview:bodyTextView];
+
         [self.viewConstraints addObjectsFromArray:@[
-            [bodyTextView autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
-            [bodyTextView autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
-            [bodyTextView autoSetDimension:ALDimensionWidth toSize:bodyTextContentSize.width],
+            //            [bodyTextView autoSetDimension:ALDimensionWidth toSize:bodyTextContentSize.width
+            //            relation:NSLayoutRelationLessThanOrEqual],
             [bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height],
         ]];
 
-        if (lastSubview) {
-            [self.viewConstraints addObject:[bodyTextView autoPinEdge:ALEdgeTop
-                                                               toEdge:ALEdgeBottom
-                                                               ofView:lastSubview
-                                                           withOffset:textInsets.top]];
-        } else {
-            [self.viewConstraints
-                addObject:[bodyTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textInsets.top]];
+        UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
+        if (tapForMoreLabel) {
+            [textStackView addArrangedSubview:tapForMoreLabel];
+            [self.viewConstraints addObjectsFromArray:@[
+                //                                                        [tapForMoreLabel autoPinEdge:ALEdgeTop
+                //                                                        toEdge:ALEdgeBottom ofView:lastSubview],
+                [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+            ]];
         }
-        lastSubview = bodyTextView;
-        bottomMargin = textInsets.bottom;
-    }
-
-    UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
-    if (tapForMoreLabel) {
-        OWSAssert(lastSubview);
-        OWSAssert(lastSubview == bodyTextView);
-        [self.bubbleView addSubview:tapForMoreLabel];
-        [self.viewConstraints addObjectsFromArray:@[
-            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
-            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
-            [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
-            [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
-        ]];
-        lastSubview = tapForMoreLabel;
-        bottomMargin = textInsets.bottom;
     }
 
     OWSMessageFooterView *footerView = self.footerView;
     [footerView configureWithConversationViewItem:self.viewItem];
-    if (self.footerView) {
-        [self.bubbleView addSubview:self.footerView];
+    if (textStackView) {
+        [textStackView addArrangedSubview:self.footerView];
+    } else if (bodyMediaView) {
+        [bodyMediaView addSubview:footerView];
+
+        bodyMediaView.layoutMargins = UIEdgeInsetsZero;
         [self.viewConstraints addObjectsFromArray:@[
-            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
-            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
-            [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
-            [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+            [footerView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.textInsetHorizontal],
+            [footerView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.textInsetHorizontal],
+            [footerView autoPinBottomToSuperviewMarginWithInset:self.conversationStyle.textInsetBottom],
         ]];
-        lastSubview = tapForMoreLabel;
-        bottomMargin = textInsets.bottom;
+        // TODO: Drop shadow.
+    } else {
+        // Display footer over media.
+        OWSFail(@"%@ could not display footer.", self.logTag);
     }
 
-    OWSAssert(lastSubview);
-    [self.viewConstraints addObjectsFromArray:@[
-        [lastSubview autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:bottomMargin],
-    ]];
+    // TODO: Should we do this for media content too?
+    if (textStackView) {
+        CGSize bubbleSize = [self measureSize];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width relation:NSLayoutRelationLessThanOrEqual],
+            //                                                    [bodyTextView autoSetDimension:ALDimensionHeight
+            //                                                    toSize:bodyTextContentSize.height],
+        ]];
+    }
 }
 
 // We now eagerly create our view hierarchy (to do this exactly once per cell usage)
@@ -496,6 +487,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self showAttachmentErrorViewWithMediaView:mediaView];
     }
     return cellMedia;
+}
+
+- (CGFloat)textViewVSpacing
+{
+    return 5.f;
 }
 
 #pragma mark - Load / Unload
@@ -881,10 +877,7 @@ NS_ASSUME_NONNULL_BEGIN
         return CGSizeZero;
     }
 
-    OWSDirectionalEdgeInsets *textInsets = self.conversationStyle.textInsets;
-    OWSAssert(textInsets);
-
-    CGFloat hMargins = textInsets.leading + textInsets.trailing;
+    CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
 
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
 
@@ -895,7 +888,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeMargins) {
         result.width += hMargins;
-        result.height += textInsets.top + textInsets.bottom;
+        result.height += (self.conversationStyle.textInsetTop + self.conversationStyle.textInsetBottom);
     }
 
     return CGSizeCeil(result);
@@ -1023,13 +1016,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
     if (self.hasTapForMore) {
-        cellSize.height += self.tapForMoreHeight;
+        cellSize.height += self.tapForMoreHeight + self.textViewVSpacing;
     }
 
-    if (self.hasFooter) {
+    // TODO: Update this to reflect generic attachment, downloading attachments and
+    //       contact shares.
+    if (self.hasFooter && self.hasBodyText) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
         cellSize.width = MAX(cellSize.width, footerSize.width);
-        cellSize.height += self.footerVSpacing + footerSize.height;
+        cellSize.height += self.textViewVSpacing + footerSize.height;
     }
 
     cellSize = CGSizeCeil(cellSize);
@@ -1051,11 +1046,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)tapForMoreHeight
 {
     return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
-}
-
-- (CGFloat)footerVSpacing
-{
-    return 10.f;
 }
 
 #pragma mark -

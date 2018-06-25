@@ -74,6 +74,8 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
         TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto relay:relay];
 
+        DDLogVerbose(@"%@ ---- creating attachment: %@", self.logTag, pointer.uniqueId);
+        [DDLog flushLog];
         [attachmentIds addObject:pointer.uniqueId];
         [pointer saveWithTransaction:transaction];
         [attachmentPointers addObject:pointer];

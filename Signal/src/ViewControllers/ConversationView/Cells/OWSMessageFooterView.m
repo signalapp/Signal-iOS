@@ -4,7 +4,6 @@
 
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
-#import "OWSExpirationTimerView.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.timestampLabel = [UILabel new];
     // TODO: Color
     self.timestampLabel.textColor = [UIColor lightGrayColor];
+    [self addSubview:self.timestampLabel];
 
     self.statusLabel = [UILabel new];
     // TODO: Color
@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
     statusStackView.axis = UILayoutConstraintAxisHorizontal;
     statusStackView.spacing = self.hSpacing;
+    [self addSubview:statusStackView];
 
     [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];

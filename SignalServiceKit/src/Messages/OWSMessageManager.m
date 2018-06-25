@@ -561,6 +561,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    DDLogVerbose(@"%@ ---- creating message: %@", self.logTag, attachmentsProcessor.attachmentIds);
+    [DDLog flushLog];
+
     TSIncomingMessage *_Nullable createdMessage = [self handleReceivedEnvelope:envelope
                                                                withDataMessage:dataMessage
                                                                  attachmentIds:attachmentsProcessor.attachmentIds
@@ -1106,6 +1109,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ Can't finalize missing message", self.logTag);
         return;
     }
+
+    DDLogVerbose(@"%@ ---- creating message 2: %@", self.logTag, incomingMessage.attachmentIds);
+    [DDLog flushLog];
 
     [incomingMessage saveWithTransaction:transaction];
 
