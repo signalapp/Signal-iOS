@@ -235,7 +235,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
-    private var localVideoSource: RTCAVFoundationVideoSource?
+    private var localVideoSource: RTCVideoSource?
 
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
     // causing deadlock in its destructor.  Therefore we take great care

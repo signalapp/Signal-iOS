@@ -73,6 +73,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var localVideoView: RTCCameraPreviewView!
     var hasShownLocalVideo = false
     weak var localVideoTrack: RTCVideoTrack?
+    weak var localCaptureSession: AVCaptureSession?
     weak var remoteVideoTrack: RTCVideoTrack?
 
     override public var canBecomeFirstResponder: Bool {
@@ -1001,18 +1002,19 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Video
 
-    internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
+    // MJK TODO remove localVideoTrack?
+    internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?,
+                                        captureSession: AVCaptureSession?) {
+
         SwiftAssertIsOnMainThread(#function)
         guard self.localVideoTrack != localVideoTrack else {
             return
         }
 
         self.localVideoTrack = localVideoTrack
+        localVideoView.captureSession = captureSession
+        let isHidden = captureSession == nil
 
-        let source = localVideoTrack?.source as? RTCAVFoundationVideoSource
-
-        localVideoView.captureSession = source?.captureSession
-        let isHidden = source == nil
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
         localVideoView.isHidden = isHidden
 
@@ -1117,12 +1119,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         // Do nothing.
     }
 
+    // TODO remove localCaptureSession:
     internal func didUpdateVideoTracks(call: SignalCall?,
                                        localVideoTrack: RTCVideoTrack?,
+                                       localCaptureSession: AVCaptureSession?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)
 
-        updateLocalVideoTrack(localVideoTrack: localVideoTrack)
+        updateLocalVideoTrack(localVideoTrack: localVideoTrack, captureSession: localCaptureSession)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
 }
