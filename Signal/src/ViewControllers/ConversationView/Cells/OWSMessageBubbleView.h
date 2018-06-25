@@ -66,8 +66,6 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
-@property (nonatomic) BOOL alwaysShowBubbleTail;
-
 @property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
