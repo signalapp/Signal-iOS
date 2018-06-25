@@ -244,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize quotedMessageContentSize = [self quotedMessageSize];
     CGSize bodyMediaContentSize = [self bodyMediaSize];
-    CGSize bodyTextContentSize = [self bodyTextSize:NO];
+    CGSize bodyTextContentSize = [self bodyTextSizeWithIncludeMargins:NO];
 
     if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasBubbleBackground) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
@@ -850,7 +850,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Measurement
 
 // Size of "message body" text, not quoted reply text.
-- (CGSize)bodyTextSize:(BOOL)includeMargins
+- (CGSize)bodyTextSizeWithIncludeMargins:(BOOL)includeMargins
 {
     OWSAssert(self.layoutInfo);
     OWSAssert(self.layoutInfo.maxMessageWidth > 0);
@@ -988,7 +988,7 @@ NS_ASSUME_NONNULL_BEGIN
     cellSize.width = MAX(cellSize.width, mediaContentSize.width);
     cellSize.height += mediaContentSize.height;
 
-    CGSize textContentSize = [self bodyTextSize:YES];
+    CGSize textContentSize = [self bodyTextSizeWithIncludeMargins:YES];
     cellSize.width = MAX(cellSize.width, textContentSize.width);
     cellSize.height += textContentSize.height;
 
