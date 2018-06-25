@@ -4,7 +4,6 @@
 
 #import "OWSMessageCell.h"
 #import "OWSContactAvatarBuilder.h"
-#import "OWSExpirationTimerView.h"
 #import "OWSMessageBubbleView.h"
 #import "Signal-Swift.h"
 
@@ -24,10 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic) UIView *footerView;
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UILabel *footerLabel;
-@property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
+@property (nonatomic) OWSMessageFooterView *footerView2;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;

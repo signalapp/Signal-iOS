@@ -10,6 +10,7 @@
 #import "OWSBubbleView.h"
 #import "OWSContactShareView.h"
 #import "OWSGenericAttachmentView.h"
+#import "OWSMessageFooterView.h"
 #import "OWSMessageTextView.h"
 #import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
@@ -35,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) dispatch_block_t unloadCellContentBlock;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
+
+@property (nonatomic) OWSMessageFooterView *footerView;
 
 @end
 
@@ -73,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.bodyTextView.dataDetectorTypes
         = (UIDataDetectorTypeLink | UIDataDetectorTypeAddress | UIDataDetectorTypeCalendarEvent);
     self.bodyTextView.hidden = YES;
+
+    self.footerView = [OWSMessageFooterView new];
 }
 
 - (OWSMessageTextView *)newTextView
@@ -426,6 +431,20 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(lastSubview);
         OWSAssert(lastSubview == bodyTextView);
         [self.bubbleView addSubview:tapForMoreLabel];
+        [self.viewConstraints addObjectsFromArray:@[
+            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
+            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
+            [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
+            [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
+        ]];
+        lastSubview = tapForMoreLabel;
+        bottomMargin = textInsets.bottom;
+    }
+
+    OWSMessageFooterView *footerView = self.footerView;
+    [footerView configureWithConversationViewItem:self.viewItem];
+    if (self.footerView) {
+        [self.bubbleView addSubview:self.footerView];
         [self.viewConstraints addObjectsFromArray:@[
             [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
             [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
@@ -1007,9 +1026,21 @@ NS_ASSUME_NONNULL_BEGIN
         cellSize.height += self.tapForMoreHeight;
     }
 
+    if (self.hasFooter) {
+        CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
+        cellSize.width = MAX(cellSize.width, footerSize.width);
+        cellSize.height += self.footerVSpacing + footerSize.height;
+    }
+
     cellSize = CGSizeCeil(cellSize);
 
     return cellSize;
+}
+
+- (BOOL)hasFooter
+{
+    // TODO:
+    return YES;
 }
 
 - (UIFont *)tapForMoreFont
@@ -1020,6 +1051,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)tapForMoreHeight
 {
     return (CGFloat)ceil([self tapForMoreFont].lineHeight * 1.25);
+}
+
+- (CGFloat)footerVSpacing
+{
+    return 10.f;
 }
 
 #pragma mark -
@@ -1082,6 +1118,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;
+
+    [self.footerView removeFromSuperview];
 }
 
 #pragma mark - Gestures
