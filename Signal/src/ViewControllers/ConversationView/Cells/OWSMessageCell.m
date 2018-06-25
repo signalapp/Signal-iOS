@@ -185,8 +185,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self updateAvatarView]) {
         CGFloat avatarBottomMargin = round(self.layoutInfo.lastTextLineAxis - self.avatarSize * 0.5f);
         [self.viewConstraints addObjectsFromArray:@[
+            // V-align the "group sender" avatar with the
+            // last line of the text (if any, or where it
+            // would be).
             [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            // TODO: We actually want a slightly different alignment.
             [self.messageBubbleView autoPinEdge:ALEdgeBottom
                                          toEdge:ALEdgeBottom
                                          ofView:self.avatarView
