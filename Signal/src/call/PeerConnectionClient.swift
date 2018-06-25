@@ -367,7 +367,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             }
 
             captureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
-            captureController.startCapture()
         }
     }
 
@@ -426,7 +425,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // MARK: VideoCaptureSettingsDelegate
 
-    // MJK: fixme
     var videoWidth: Int32 {
         return 400
     }
@@ -764,6 +762,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         videoSender = nil
         localVideoTrack = nil
         remoteVideoTrack = nil
+        videoCaptureController = nil
 
         if let peerConnection = peerConnection {
             peerConnection.delegate = nil
@@ -1117,9 +1116,16 @@ protocol VideoCaptureSettingsDelegate: class {
 
 class VideoCaptureController {
 
+    let serialQueue = DispatchQueue(label: "org.signal.videoCaptureController")
     let capturer: RTCCameraVideoCapturer
     weak var settingsDelegate: VideoCaptureSettingsDelegate?
     var isUsingFrontCamera: Bool = true
+
+    func assertIsOnSerialQueue() {
+        if _isDebugAssertConfiguration(), #available(iOS 10.0, *) {
+            assertOnQueue(serialQueue)
+        }
+    }
 
     public init(capturer: RTCCameraVideoCapturer, settingsDelegate: VideoCaptureSettingsDelegate) {
         self.capturer = capturer
@@ -1127,6 +1133,18 @@ class VideoCaptureController {
     }
 
     public func startCapture() {
+        serialQueue.sync { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.startCaptureSync()
+        }
+    }
+
+    private func startCaptureSync() {
+        assertIsOnSerialQueue()
+
         let position: AVCaptureDevice.Position = isUsingFrontCamera ? .front : .back
         guard let device: AVCaptureDevice = self.device(position: position) else {
             owsFail("unable to find captureDevice")
@@ -1139,17 +1157,24 @@ class VideoCaptureController {
         }
 
         let fps = self.framesPerSecond(format: format)
-
         capturer.startCapture(with: device, format: format, fps: fps)
     }
 
     public func stopCapture() {
-        self.capturer.stopCapture()
+        serialQueue.sync { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.capturer.stopCapture()
+        }
     }
 
     public func switchCamera(isUsingFrontCamera: Bool) {
-        self.isUsingFrontCamera = isUsingFrontCamera
-        self.startCapture()
+        serialQueue.sync {
+            self.isUsingFrontCamera = isUsingFrontCamera
+            self.startCaptureSync()
+        }
     }
 
     private func device(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
@@ -1177,6 +1202,11 @@ class VideoCaptureController {
                 selectedFormat = format
                 currentDiff = diff
             }
+        }
+
+        if _isDebugAssertConfiguration(), let selectedFormat = selectedFormat {
+            let dimension = CMVideoFormatDescriptionGetDimensions(selectedFormat.formatDescription)
+            Logger.debug("in \(#function) selected format width: \(dimension.width) height: \(dimension.height)")
         }
 
         assert(selectedFormat != nil)
