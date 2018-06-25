@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
-@class ConversationLayoutInfo;
+@class ConversationStyle;
 @class ConversationViewItem;
 @class OWSContact;
 @class OWSQuotedReplyModel;
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic, nullable) ConversationViewItem *viewItem;
 
-@property (nonatomic) ConversationLayoutInfo *layoutInfo;
+@property (nonatomic) ConversationStyle *conversationStyle;
 
 @property (nonatomic) NSCache *cellMediaCache;
 

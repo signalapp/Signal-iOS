@@ -174,7 +174,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) ConversationInputToolbar *inputToolbar;
 @property (nonatomic, readonly) ConversationCollectionView *collectionView;
 @property (nonatomic, readonly) ConversationViewLayout *layout;
-@property (nonatomic, readonly) ConversationLayoutInfo *layoutInfo;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic) NSArray<ConversationViewItem *> *viewItems;
 @property (nonatomic) NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache;
@@ -447,7 +447,7 @@ typedef enum : NSUInteger {
     _cellMediaCache = [NSCache new];
     // Cache the cell media for ~24 cells.
     self.cellMediaCache.countLimit = 24;
-    _layoutInfo = [[ConversationLayoutInfo alloc] initWithThread:thread];
+    _conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
@@ -533,11 +533,11 @@ typedef enum : NSUInteger {
 
 - (void)createContents
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
 
-    _layout = [[ConversationViewLayout alloc] initWithLayoutInfo:self.layoutInfo
-                                            uiDatabaseConnection:self.uiDatabaseConnection];
-    self.layoutInfo.viewWidth = self.view.width;
+    _layout = [[ConversationViewLayout alloc] initWithConversationStyle:self.conversationStyle
+                                                   uiDatabaseConnection:self.uiDatabaseConnection];
+    self.conversationStyle.viewWidth = self.view.width;
 
     self.layout.delegate = self;
     // We use the root view bounds as the initial frame for the collection
@@ -4768,7 +4768,7 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self updateLastVisibleTimestamp];
-    self.layoutInfo.viewWidth = self.collectionView.width;
+    self.conversationStyle.viewWidth = self.collectionView.width;
 }
 
 #pragma mark - View Items
@@ -4815,7 +4815,7 @@ typedef enum : NSUInteger {
                 viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
                                                                isGroupThread:isGroupThread
                                                                  transaction:transaction
-                                                                  layoutInfo:self.layoutInfo];
+                                                           conversationStyle:self.conversationStyle];
             }
             viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
@@ -4980,7 +4980,7 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
     }
-    cell.layoutInfo = self.layoutInfo;
+    cell.conversationStyle = self.conversationStyle;
 
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [cell loadForDisplayWithTransaction:transaction];

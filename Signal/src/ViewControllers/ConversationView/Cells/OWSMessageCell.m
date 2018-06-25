@@ -108,11 +108,11 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)setLayoutInfo:(nullable ConversationLayoutInfo *)layoutInfo
+- (void)setConversationStyle:(nullable ConversationStyle *)conversationStyle
 {
-    [super setLayoutInfo:layoutInfo];
+    [super setConversationStyle:conversationStyle];
 
-    self.messageBubbleView.layoutInfo = layoutInfo;
+    self.messageBubbleView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -165,17 +165,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.layoutInfo.gutterLeading],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                     withInset:self.conversationStyle.gutterLeading],
             [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                     withInset:self.layoutInfo.gutterTrailing
+                                                     withInset:self.conversationStyle.gutterTrailing
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
             [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                     withInset:self.layoutInfo.gutterLeading
+                                                     withInset:self.conversationStyle.gutterLeading
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.layoutInfo.gutterTrailing],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                     withInset:self.conversationStyle.gutterTrailing],
         ]];
     }
 
@@ -183,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateFooter];
 
     if ([self updateAvatarView]) {
-        CGFloat avatarBottomMargin = round(self.layoutInfo.lastTextLineAxis - self.avatarSize * 0.5f);
+        CGFloat avatarBottomMargin = round(self.conversationStyle.lastTextLineAxis - self.avatarSize * 0.5f);
         [self.viewConstraints addObjectsFromArray:@[
             // V-align the "group sender" avatar with the
             // last line of the text (if any, or where it
@@ -214,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateDateHeader
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
 
     static NSDateFormatter *dateHeaderDateFormatter = nil;
     static NSDateFormatter *dateHeaderTimeFormatter = nil;
@@ -262,8 +264,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.viewConstraints addObjectsFromArray:@[
             // TODO: Are data headers symmetric or are they asymmetric? gutters are asymmetric?
-            [self.dateHeaderLabel autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading],
-            [self.dateHeaderLabel autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing],
+            [self.dateHeaderLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.gutterLeading],
+            [self.dateHeaderLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.gutterTrailing],
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
         ]];
@@ -309,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFooter
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
         || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
 
@@ -339,8 +341,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.viewConstraints addObjectsFromArray:@[
-        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading]
-                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing]),
+        (self.isIncoming
+                ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.gutterLeading]
+                : [self.footerView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.gutterTrailing]),
     ]];
 
     [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
@@ -364,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
     // we want to leave spaces for an expiration timer and
     // include padding so that they still visually "cling" to the
     // appropriate incoming/outgoing edge.
-    const CGFloat maxFooterLabelWidth = self.layoutInfo.maxFooterWidth;
+    const CGFloat maxFooterLabelWidth = self.conversationStyle.maxFooterWidth;
     if (hasExpirationTimer &&
         attributedText) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -483,8 +486,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.viewWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssert(self.messageBubbleView);

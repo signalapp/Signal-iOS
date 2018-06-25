@@ -114,8 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.viewWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 
@@ -135,8 +135,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
         // TODO: Honor "full-width gutters"?
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.layoutInfo.fullWidthGutterLeading],
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.layoutInfo.fullWidthGutterTrailing],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                         withInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                         withInset:self.conversationStyle.fullWidthGutterTrailing],
     ];
 }
 
@@ -167,8 +169,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.viewWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 
@@ -176,7 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 
-    CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
+    CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
     result.height += self.topVMargin;
     result.height += self.bottomVMargin;
 

@@ -40,7 +40,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
-    var conversationLayoutInfo: ConversationLayoutInfo
+    var conversationStyle: ConversationStyle
 
     private var contactShareViewHelper: ContactShareViewHelper
 
@@ -59,7 +59,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.mode = mode
         self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
-        self.conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
+        self.conversationStyle = ConversationStyle(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -74,7 +74,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.uiDatabaseConnection.beginLongLivedReadTransaction()
         updateDBConnectionAndMessageToLatest()
 
-        self.conversationLayoutInfo.viewWidth = view.width()
+        self.conversationStyle.viewWidth = view.width()
 
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
@@ -94,7 +94,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         super.viewWillTransition(to: size, with: coordinator)
 
-        self.conversationLayoutInfo.viewWidth = size.width
+        self.conversationStyle.viewWidth = size.width
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -345,7 +345,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.layoutInfo = conversationLayoutInfo
+        messageBubbleView.conversationStyle = conversationStyle
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
 

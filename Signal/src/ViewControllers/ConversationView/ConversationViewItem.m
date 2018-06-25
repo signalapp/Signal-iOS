@@ -77,11 +77,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
                         transaction:(YapDatabaseReadTransaction *)transaction
-                         layoutInfo:(ConversationLayoutInfo *)layoutInfo
+                  conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssert(interaction);
     OWSAssert(transaction);
-    OWSAssert(layoutInfo);
+    OWSAssert(conversationStyle);
 
     self = [super init];
 
@@ -91,7 +91,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
-    _layoutInfo = layoutInfo;
+    _conversationStyle = conversationStyle;
     self.row = NSNotFound;
     self.previousRow = NSNotFound;
 
@@ -182,12 +182,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssert(transaction);
     OWSAssertIsOnMainThread();
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
 
     if (!self.cachedCellSize) {
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
-        measurementCell.layoutInfo = self.layoutInfo;
+        measurementCell.conversationStyle = self.conversationStyle;
         CGSize cellSize = [measurementCell cellSizeWithTransaction:transaction];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];

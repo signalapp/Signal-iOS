@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.viewItem = nil;
     self.delegate = nil;
     self.isCellVisible = NO;
-    self.layoutInfo = nil;
+    self.conversationStyle = nil;
 }
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction

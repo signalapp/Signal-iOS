@@ -13,7 +13,7 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
     ConversationViewLayoutAlignment_Center,
 };
 
-@class ConversationLayoutInfo;
+@class ConversationStyle;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 
@@ -46,12 +46,12 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @property (nonatomic, weak) id<ConversationViewLayoutDelegate> delegate;
 @property (nonatomic, readonly) BOOL hasLayout;
 @property (nonatomic, readonly) BOOL hasEverHadLayout;
-@property (nonatomic, readonly) ConversationLayoutInfo *layoutInfo;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo
-              uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
+                     uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
 
 @end
 

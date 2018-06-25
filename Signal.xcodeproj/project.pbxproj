@@ -224,7 +224,7 @@
 		34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0241ED3673300188D7C /* DebugUIMessages.m */; };
 		34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C0261ED3673300188D7C /* DebugUITableViewController.m */; };
 		34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D8C02A1ED3685800188D7C /* DebugUIContacts.m */; };
-		34D920E220DD39EA00D51158 /* ConversationLayoutInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D920E120DD39E900D51158 /* ConversationLayoutInfo.swift */; };
+		34D920E220DD39EA00D51158 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D920E120DD39E900D51158 /* ConversationStyle.swift */; };
 		34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */; };
 		34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DB0BEC2011548B007B313F /* OWSDatabaseConverterTest.m */; };
 		34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34DBEFFF206BD5A400025978 /* OWSMessageTextView.m */; };
@@ -882,7 +882,7 @@
 		34D8C0291ED3685800188D7C /* DebugUIContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIContacts.h; sourceTree = "<group>"; };
 		34D8C02A1ED3685800188D7C /* DebugUIContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIContacts.m; sourceTree = "<group>"; };
 		34D913491F62D4A500722898 /* SignalAttachment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAttachment.swift; sourceTree = "<group>"; };
-		34D920E120DD39E900D51158 /* ConversationLayoutInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationLayoutInfo.swift; sourceTree = "<group>"; };
+		34D920E120DD39E900D51158 /* ConversationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationStyle.swift; sourceTree = "<group>"; };
 		34D99C8A1F27B13B00D284D6 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
 		34D99C8B1F27B13B00D284D6 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSViewController.m; sourceTree = "<group>"; };
 		34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAnalytics.swift; sourceTree = "<group>"; };
@@ -1503,9 +1503,9 @@
 				34D1F0681F8678AA0066283D /* ConversationInputTextView.m */,
 				34D1F0691F8678AA0066283D /* ConversationInputToolbar.h */,
 				34D1F06A1F8678AA0066283D /* ConversationInputToolbar.m */,
-				34D920E120DD39E900D51158 /* ConversationLayoutInfo.swift */,
 				343A65971FC4CFE7000477A1 /* ConversationScrollButton.h */,
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
+				34D920E120DD39E900D51158 /* ConversationStyle.swift */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
 				34D1F06F1F8678AA0066283D /* ConversationViewItem.h */,
@@ -3313,7 +3313,7 @@
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				45F659731E1BD99C00444429 /* CallKitCallUIAdaptee.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
-				34D920E220DD39EA00D51158 /* ConversationLayoutInfo.swift in Sources */,
+				34D920E220DD39EA00D51158 /* ConversationStyle.swift in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,

@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ConversationLayoutInfo;
+@class ConversationStyle;
 @class ConversationViewCell;
 @class ConversationViewItem;
 @class OWSContactOffersInteraction;
@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 // * Users enters another view (e.g. conversation settings view, call screen, etc.).
 @property (nonatomic) BOOL isCellVisible;
 
-@property (nonatomic, nullable) ConversationLayoutInfo *layoutInfo;
+@property (nonatomic, nullable) ConversationStyle *conversationStyle;
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
 

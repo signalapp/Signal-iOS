@@ -33,7 +33,7 @@ public class OWSDirectionalEdgeInsets: NSObject {
 }
 
 @objc
-public class ConversationLayoutInfo: NSObject {
+public class ConversationStyle: NSObject {
 
     private let thread: TSThread
 

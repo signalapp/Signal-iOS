@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(transaction);
 
@@ -112,10 +112,10 @@ NS_ASSUME_NONNULL_BEGIN
         // H-center the stack.
         [self.stackView autoHCenterInSuperview],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                         withInset:self.layoutInfo.fullWidthGutterLeading
+                                         withInset:self.conversationStyle.fullWidthGutterLeading
                                           relation:NSLayoutRelationGreaterThanOrEqual],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                         withInset:self.layoutInfo.fullWidthGutterTrailing
+                                         withInset:self.conversationStyle.fullWidthGutterTrailing
                                           relation:NSLayoutRelationGreaterThanOrEqual],
     ];
 }
@@ -266,23 +266,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)titleSize
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
 
-    CGFloat hMargins = (self.layoutInfo.fullWidthGutterLeading + self.layoutInfo.fullWidthGutterTrailing);
+    CGFloat hMargins = (self.conversationStyle.fullWidthGutterLeading + self.conversationStyle.fullWidthGutterTrailing);
     CGFloat maxTitleWidth
-        = (CGFloat)floor(self.layoutInfo.fullWidthContentWidth - (hMargins + self.iconSize + self.hSpacing));
+        = (CGFloat)floor(self.conversationStyle.fullWidthContentWidth - (hMargins + self.iconSize + self.hSpacing));
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
 
     TSInteraction *interaction = self.viewItem.interaction;
 
-    CGSize result = CGSizeMake(self.layoutInfo.viewWidth, 0);
+    CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
 
     [self applyTitleForInteraction:interaction label:self.titleLabel transaction:transaction];
 
