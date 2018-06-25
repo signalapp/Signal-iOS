@@ -233,9 +233,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     // Video
 
     private var videoCaptureController: VideoCaptureController?
-    private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
-    private var localVideoSource: RTCVideoSource?
 
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
     // causing deadlock in its destructor.  Therefore we take great care
@@ -340,20 +338,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let videoSource = factory.videoSource()
 
-        // TODO - MJK I don't think anyone cares about videoSource, just the capturer. Remove it?
-        self.localVideoSource = videoSource
-        let capturer = RTCCameraVideoCapturer(delegate: videoSource)
-        self.videoCaptureSession = capturer.captureSession
-
         let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
         self.localVideoTrack = localVideoTrack
-        self.videoCaptureController = VideoCaptureController(capturer: capturer, settingsDelegate: self)
-
         // Disable by default until call is connected.
         // FIXME - do we require mic permissions at this point?
         // if so maybe it would be better to not even add the track until the call is connected
         // instead of creating it and disabling it.
         localVideoTrack.isEnabled = false
+
+        let capturer = RTCCameraVideoCapturer(delegate: videoSource)
+        self.videoCaptureController = VideoCaptureController(capturer: capturer, settingsDelegate: self)
 
         let videoSender = peerConnection.sender(withKind: kVideoTrackType, streamId: Identifiers.mediaStream.rawValue)
         videoSender.track = localVideoTrack
@@ -382,12 +376,20 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         let proxyCopy = self.proxy
         let completion = {
             guard let strongSelf = proxyCopy.get() else { return }
-
-            // Should these really be guards? Don't we want to pass nil when it's been disabled?
-            guard let videoCaptureSession = strongSelf.videoCaptureSession else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
 
-            let captureSession = enabled ? videoCaptureSession : nil
+            let captureSession: AVCaptureSession? = {
+                guard enabled else {
+                    return nil
+                }
+
+                guard let captureController = strongSelf.videoCaptureController else {
+                    owsFail("\(self.logTag) in \(#function) videoCaptureController was unexpectedly nil")
+                    return nil
+                }
+
+                return captureController.capturer.captureSession
+            }()
 
             strongDelegate.peerConnectionClient(strongSelf, didUpdateLocalVideoCaptureSession: captureSession)
         }
@@ -760,7 +762,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         audioSender = nil
         audioTrack = nil
         videoSender = nil
-        localVideoSource = nil
         localVideoTrack = nil
         remoteVideoTrack = nil
 
