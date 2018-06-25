@@ -87,20 +87,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
-    override public func viewWillLayoutSubviews() {
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         Logger.debug("\(self.logTag) in \(#function)")
 
-        super.viewWillLayoutSubviews()
+        super.viewWillTransition(to: size, with: coordinator)
 
-        self.conversationLayoutInfo.viewWidth = self.view.width()
-    }
-
-    override public func viewDidLayoutSubviews() {
-        Logger.debug("\(self.logTag) in \(#function)")
-
-        super.viewDidLayoutSubviews()
-
-        self.conversationLayoutInfo.viewWidth = self.view.width()
+        self.conversationLayoutInfo.viewWidth = size.width
     }
 
     override func viewWillAppear(_ animated: Bool) {

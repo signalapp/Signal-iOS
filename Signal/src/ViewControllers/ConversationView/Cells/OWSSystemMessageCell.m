@@ -46,8 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.imageView);
 
-    self.preservesSuperviewLayoutMargins = NO;
-    self.contentView.preservesSuperviewLayoutMargins = NO;
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
