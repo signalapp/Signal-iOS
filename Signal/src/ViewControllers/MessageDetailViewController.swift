@@ -74,6 +74,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.uiDatabaseConnection.beginLongLivedReadTransaction()
         updateDBConnectionAndMessageToLatest()
 
+        self.conversationLayoutInfo.viewWidth = view.width()
+
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
 

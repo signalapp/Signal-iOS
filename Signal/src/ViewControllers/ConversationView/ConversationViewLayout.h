@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 
 - (ConversationViewLayoutAlignment)layoutAlignment;
 
-- (CGFloat)vSpacingWithLastLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem;
+- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem;
 
 @end
 

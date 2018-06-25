@@ -260,7 +260,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return measurementCell;
 }
 
-- (CGFloat)vSpacingWithLastLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem
+- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem
 {
     OWSAssert(lastLayoutItem);
 

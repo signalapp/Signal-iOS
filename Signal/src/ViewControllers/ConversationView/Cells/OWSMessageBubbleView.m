@@ -925,7 +925,7 @@ NS_ASSUME_NONNULL_BEGIN
                 mediaHeight *= factor;
             }
 
-            return CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
+            result = CGSizeRound(CGSizeMake(mediaWidth, mediaHeight));
             break;
         }
         case OWSMessageCellType_Audio:

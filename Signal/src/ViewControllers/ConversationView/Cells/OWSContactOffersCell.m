@@ -74,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     buttonStackView.spacing = self.vSpacing;
     // Ensure all of the buttons have the same width.
     buttonStackView.alignment = UIStackViewAlignmentFill;
-    buttonStackView.layoutMargins = UIEdgeInsetsZero;
 
     self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.titleLabel,
@@ -83,7 +82,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView.axis = UILayoutConstraintAxisVertical;
     self.stackView.spacing = self.vSpacing;
     self.stackView.alignment = UIStackViewAlignmentCenter;
-    self.stackView.layoutMargins = UIEdgeInsetsZero;
     [self.contentView addSubview:self.stackView];
 }
 

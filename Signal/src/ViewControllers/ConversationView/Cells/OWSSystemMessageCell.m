@@ -66,7 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView.axis = UILayoutConstraintAxisHorizontal;
     self.stackView.spacing = self.hSpacing;
     self.stackView.alignment = UIStackViewAlignmentCenter;
-    self.stackView.layoutMargins = UIEdgeInsetsZero;
     [self.contentView addSubview:self.stackView];
 
     UITapGestureRecognizer *tap =
