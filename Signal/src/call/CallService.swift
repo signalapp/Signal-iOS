@@ -94,7 +94,7 @@ protocol CallServiceObserver: class {
      * Fired whenever the local or remote video track become active or inactive.
      */
     func didUpdateVideoTracks(call: SignalCall?,
-                              localVideoTrack: RTCVideoTrack?,
+                              localCaptureSession: AVCaptureSession?,
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
@@ -117,7 +117,7 @@ private class SignalCallData: NSObject {
     let rejectReadyToSendIceUpdatesPromise: ((Error) -> Void)
     let readyToSendIceUpdatesPromise: Promise<Void>
 
-    weak var localVideoTrack: RTCVideoTrack? {
+    weak var localCaptureSession: AVCaptureSession? {
         didSet {
             SwiftAssertIsOnMainThread(#function)
 
@@ -275,13 +275,15 @@ private class SignalCallData: NSObject {
             return callData?.peerConnectionClient
         }
     }
-    var localVideoTrack: RTCVideoTrack? {
+
+    weak var localCaptureSession: AVCaptureSession? {
         get {
             SwiftAssertIsOnMainThread(#function)
 
-            return callData?.localVideoTrack
+            return callData?.localCaptureSession
         }
     }
+
     var remoteVideoTrack: RTCVideoTrack? {
         get {
             SwiftAssertIsOnMainThread(#function)
@@ -1259,20 +1261,14 @@ private class SignalCallData: NSObject {
         self.setHasLocalVideo(hasLocalVideo: true)
     }
 
-    func setCameraSource(call: SignalCall, useBackCamera: Bool) {
+    func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
-        guard call == self.call else {
-            owsFail("\(logTag) in \(#function) for non-current call.")
-            return
-        }
-
         guard let peerConnectionClient = self.peerConnectionClient else {
-            owsFail("\(logTag) in \(#function) peerConnectionClient was unexpectedly nil")
             return
         }
 
-        peerConnectionClient.setCameraSource(useBackCamera: useBackCamera)
+        peerConnectionClient.setCameraSource(isUsingFrontCamera: isUsingFrontCamera)
     }
 
     /**
@@ -1409,7 +1405,7 @@ private class SignalCallData: NSObject {
         self.handleDataChannelMessage(dataChannelMessage)
     }
 
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocalVideoCaptureSession captureSession: AVCaptureSession?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1421,11 +1417,11 @@ private class SignalCallData: NSObject {
             return
         }
 
-        callData.localVideoTrack = videoTrack
+        callData.localCaptureSession = captureSession
         fireDidUpdateVideoTracks()
     }
 
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemoteVideoTrack videoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1622,11 +1618,9 @@ private class SignalCallData: NSObject {
         observers.append(Weak(value: observer))
 
         // Synchronize observer with current call state
-        let call = self.call
-        let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-        observer.didUpdateVideoTracks(call: call,
-                                      localVideoTrack: localVideoTrack,
+        observer.didUpdateVideoTracks(call: self.call,
+                                      localCaptureSession: self.localCaptureSession,
                                       remoteVideoTrack: remoteVideoTrack)
     }
 
@@ -1649,13 +1643,10 @@ private class SignalCallData: NSObject {
     private func fireDidUpdateVideoTracks() {
         SwiftAssertIsOnMainThread(#function)
 
-        let call = self.call
-        let localVideoTrack = self.localVideoTrack
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
-
         for observer in observers {
-            observer.value?.didUpdateVideoTracks(call: call,
-                                                 localVideoTrack: localVideoTrack,
+            observer.value?.didUpdateVideoTracks(call: self.call,
+                                                 localCaptureSession: self.localCaptureSession,
                                                  remoteVideoTrack: remoteVideoTrack)
         }
     }
