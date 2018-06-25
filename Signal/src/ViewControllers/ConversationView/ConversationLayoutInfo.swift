@@ -25,6 +25,11 @@ public class OWSDirectionalEdgeInsets: NSObject {
 
         super.init()
     }
+
+    static var zero = OWSDirectionalEdgeInsets(top: 0,
+                                               leading: 0,
+                                               bottom: 0,
+                                               trailing: 0)
 }
 
 @objc
@@ -63,7 +68,7 @@ public class ConversationLayoutInfo: NSObject {
     @objc public var maxMessageWidth: CGFloat = 0
     @objc public var maxFooterWidth: CGFloat = 0
 
-    @objc public var textInsets = OWSDirectionalEdgeInsets()
+    @objc public var textInsets = OWSDirectionalEdgeInsets.zero
 
     @objc
     public required init(thread: TSThread) {
