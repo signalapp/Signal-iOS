@@ -263,7 +263,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (CGFloat)vSpacingWithPreviousLayoutItem:(ConversationViewItem *)previousLayoutItem
 {
-    OWSAssert(lastItem);
+    OWSAssert(previousLayoutItem);
 
     if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
         || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
