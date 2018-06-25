@@ -58,7 +58,7 @@ protocol PeerConnectionClientDelegate: class {
     /**
      * Fired whenever the local video track become active or inactive.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocalVideoTrack videoTrack: RTCVideoTrack?, captureSession: AVCaptureSession?)
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocalVideoCaptureSession captureSession: AVCaptureSession?)
 
     /**
      * Fired whenever the remote video track become active or inactive.
@@ -235,12 +235,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
     private var videoCaptureController: VideoCaptureController?
     private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
-    private var localVideoTrack: RTCVideoTrack?
     private var localVideoSource: RTCVideoSource?
 
     // RTCVideoTrack is fragile and prone to throwing exceptions and/or
     // causing deadlock in its destructor.  Therefore we take great care
     // with this property.
+    private var localVideoTrack: RTCVideoTrack?
     private var remoteVideoTrack: RTCVideoTrack?
     private var cameraConstraints: RTCMediaConstraints
 
@@ -347,7 +347,6 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
         let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
         self.localVideoTrack = localVideoTrack
-
         self.videoCaptureController = VideoCaptureController(capturer: capturer, settingsDelegate: self)
 
         // Disable by default until call is connected.
@@ -385,14 +384,12 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             guard let strongSelf = proxyCopy.get() else { return }
 
             // Should these really be guards? Don't we want to pass nil when it's been disabled?
-            guard let localVideoTrack = strongSelf.localVideoTrack else { return }
             guard let videoCaptureSession = strongSelf.videoCaptureSession else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
 
-            let videoTrack = enabled ? localVideoTrack : nil
             let captureSession = enabled ? videoCaptureSession : nil
 
-            strongDelegate.peerConnectionClient(strongSelf, didUpdateLocalVideoTrack: videoTrack, captureSession: captureSession)
+            strongDelegate.peerConnectionClient(strongSelf, didUpdateLocalVideoCaptureSession: captureSession)
         }
 
         PeerConnectionClient.signalingQueue.async {
@@ -401,29 +398,24 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            guard let localVideoTrack = strongSelf.localVideoTrack else {
+
+            guard let videoCaptureController = strongSelf.videoCaptureController else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-//            guard let videoCaptureSession = strongSelf.videoCaptureSession else {
-//                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
-//                return
-//            }
 
-            guard let videoCaptureController = strongSelf.videoCaptureController else {
+            guard let localVideoTrack = strongSelf.localVideoTrack else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
             localVideoTrack.isEnabled = enabled
 
             if enabled {
-                Logger.debug("\(strongSelf.logTag) in \(#function) starting videoCaptureSession")
+                Logger.debug("\(strongSelf.logTag) in \(#function) starting video capture")
                 videoCaptureController.startCapture()
-//                videoCaptureSession.startRunning()
             } else {
-                Logger.debug("\(strongSelf.logTag) in \(#function) stopping videoCaptureSession")
+                Logger.debug("\(strongSelf.logTag) in \(#function) stopping video capture")
                 videoCaptureController.stopCapture()
-//                videoCaptureSession.stopRunning()
             }
 
             DispatchQueue.main.async(execute: completion)

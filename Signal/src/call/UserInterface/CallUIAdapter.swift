@@ -272,7 +272,6 @@ extension CallUIAdaptee {
     }
 
     internal func didUpdateVideoTracks(call: SignalCall?,
-                                       localVideoTrack: RTCVideoTrack?,
                                        localCaptureSession: AVCaptureSession?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)

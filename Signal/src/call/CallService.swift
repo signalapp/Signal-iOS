@@ -93,9 +93,7 @@ protocol CallServiceObserver: class {
     /**
      * Fired whenever the local or remote video track become active or inactive.
      */
-    // TODO remove localCaptureSession:
     func didUpdateVideoTracks(call: SignalCall?,
-                              localVideoTrack: RTCVideoTrack?,
                               localCaptureSession: AVCaptureSession?,
                               remoteVideoTrack: RTCVideoTrack?)
 }
@@ -118,14 +116,6 @@ private class SignalCallData: NSObject {
     let fulfillReadyToSendIceUpdatesPromise: (() -> Void)
     let rejectReadyToSendIceUpdatesPromise: ((Error) -> Void)
     let readyToSendIceUpdatesPromise: Promise<Void>
-
-    weak var localVideoTrack: RTCVideoTrack? {
-        didSet {
-            SwiftAssertIsOnMainThread(#function)
-
-            Logger.info("\(self.logTag) \(#function)")
-        }
-    }
 
     weak var localCaptureSession: AVCaptureSession? {
         didSet {
@@ -283,13 +273,6 @@ private class SignalCallData: NSObject {
             SwiftAssertIsOnMainThread(#function)
 
             return callData?.peerConnectionClient
-        }
-    }
-    var localVideoTrack: RTCVideoTrack? {
-        get {
-            SwiftAssertIsOnMainThread(#function)
-
-            return callData?.localVideoTrack
         }
     }
 
@@ -1422,7 +1405,7 @@ private class SignalCallData: NSObject {
         self.handleDataChannelMessage(dataChannelMessage)
     }
 
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocalVideoTrack videoTrack: RTCVideoTrack?, captureSession: AVCaptureSession?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocalVideoCaptureSession captureSession: AVCaptureSession?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1434,8 +1417,6 @@ private class SignalCallData: NSObject {
             return
         }
 
-        // MJK TODO remove localVideo Track?
-        callData.localVideoTrack = videoTrack
         callData.localCaptureSession = captureSession
         fireDidUpdateVideoTracks()
     }
@@ -1639,7 +1620,6 @@ private class SignalCallData: NSObject {
         // Synchronize observer with current call state
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
         observer.didUpdateVideoTracks(call: self.call,
-                                      localVideoTrack: self.localVideoTrack,
                                       localCaptureSession: self.localCaptureSession,
                                       remoteVideoTrack: remoteVideoTrack)
     }
@@ -1666,7 +1646,6 @@ private class SignalCallData: NSObject {
         let remoteVideoTrack = self.isRemoteVideoEnabled ? self.remoteVideoTrack : nil
         for observer in observers {
             observer.value?.didUpdateVideoTracks(call: self.call,
-                                                 localVideoTrack: self.localVideoTrack,
                                                  localCaptureSession: self.localCaptureSession,
                                                  remoteVideoTrack: remoteVideoTrack)
         }
