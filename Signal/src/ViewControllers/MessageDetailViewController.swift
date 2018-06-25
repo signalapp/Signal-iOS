@@ -345,7 +345,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.layoutInfo = self.conversationLayoutInfo
+        let conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
+        messageBubbleView.layoutInfo = conversationLayoutInfo
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
 

@@ -261,12 +261,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return measurementCell;
 }
 
-- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem
+- (CGFloat)vSpacingWithPreviousLayoutItem:(ConversationViewItem *)previousLayoutItem
 {
-    OWSAssert(lastLayoutItem);
+    OWSAssert(previousLayoutItem);
+
+    if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
+        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
+        // The unread indicator has its own v-margins.
+        return 0.f;
+    }
 
     // TODO:
-    return 0.f;
+    return 4.f;
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
