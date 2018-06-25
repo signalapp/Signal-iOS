@@ -883,13 +883,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didPressFlipCamera(sender: UIButton) {
-        // toggle value
         sender.isSelected = !sender.isSelected
 
-        let useBackCamera = sender.isSelected
-        Logger.info("\(TAG) in \(#function) with useBackCamera: \(useBackCamera)")
+        let isUsingFrontCamera = !sender.isSelected
+        Logger.info("\(TAG) in \(#function) with isUsingFrontCamera: \(isUsingFrontCamera)")
 
-        callUIAdapter.setCameraSource(call: call, useBackCamera: useBackCamera)
+        callUIAdapter.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 
     /**

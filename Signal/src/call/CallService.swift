@@ -1278,20 +1278,14 @@ private class SignalCallData: NSObject {
         self.setHasLocalVideo(hasLocalVideo: true)
     }
 
-    func setCameraSource(call: SignalCall, useBackCamera: Bool) {
+    func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
-        guard call == self.call else {
-            owsFail("\(logTag) in \(#function) for non-current call.")
-            return
-        }
-
         guard let peerConnectionClient = self.peerConnectionClient else {
-            owsFail("\(logTag) in \(#function) peerConnectionClient was unexpectedly nil")
             return
         }
 
-        peerConnectionClient.setCameraSource(useBackCamera: useBackCamera)
+        peerConnectionClient.setCameraSource(isUsingFrontCamera: isUsingFrontCamera)
     }
 
     /**

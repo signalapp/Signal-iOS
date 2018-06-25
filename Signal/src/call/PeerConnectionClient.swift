@@ -192,7 +192,7 @@ class PeerConnectionProxy: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDe
  * It is primarily a wrapper around `RTCPeerConnection`, which is responsible for sending and receiving our call data
  * including audio, video, and some post-connected signaling (hangup, add video)
  */
-class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate {
+class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDelegate, VideoCaptureSettingsDelegate {
 
     enum Identifiers: String {
         case mediaStream = "ARDAMS",
@@ -232,6 +232,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
     // Video
 
+    private var videoCaptureController: VideoCaptureController?
     private var videoCaptureSession: AVCaptureSession?
     private var videoSender: RTCRtpSender?
     private var localVideoTrack: RTCVideoTrack?
@@ -307,15 +308,21 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         let configuration = RTCDataChannelConfiguration()
         // Insist upon an "ordered" TCP data channel for delivery reliability.
         configuration.isOrdered = true
-        let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
-                                                     configuration: configuration)
+
+        guard let dataChannel = peerConnection.dataChannel(forLabel: Identifiers.dataChannelSignaling.rawValue,
+                                                           configuration: configuration) else {
+
+                                                            // TODO fail outgoing call?
+                                                            owsFail("dataChannel was unexpectedly nil")
+                                                            return
+        }
         dataChannel.delegate = proxy
 
         assert(self.dataChannel == nil)
         self.dataChannel = dataChannel
     }
 
-    // MARK: Video
+    // MARK: - Video
 
     fileprivate func createVideoSender() {
         SwiftAssertIsOnMainThread(#function)
@@ -331,19 +338,17 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
             return
         }
 
-        // TODO: We could cap the maximum video size.
-        let cameraConstraints = RTCMediaConstraints(mandatoryConstraints: nil,
-                                                    optionalConstraints: nil)
+        let videoSource = factory.videoSource()
 
-        // TODO: Revisit the cameraConstraints.
-        let videoSource = factory.avFoundationVideoSource(with: cameraConstraints)
+        // TODO - MJK I don't think anyone cares about videoSource, just the capturer. Remove it?
         self.localVideoSource = videoSource
-
-        self.videoCaptureSession = videoSource.captureSession
-        videoSource.useBackCamera = false
+        let capturer = RTCCameraVideoCapturer(delegate: videoSource)
+        self.videoCaptureSession = capturer.captureSession
 
         let localVideoTrack = factory.videoTrack(with: videoSource, trackId: Identifiers.videoTrack.rawValue)
         self.localVideoTrack = localVideoTrack
+
+        self.videoCaptureController = VideoCaptureController(capturer: capturer, settingsDelegate: self)
 
         // Disable by default until call is connected.
         // FIXME - do we require mic permissions at this point?
@@ -356,24 +361,20 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         self.videoSender = videoSender
     }
 
-    public func setCameraSource(useBackCamera: Bool) {
+    public func setCameraSource(isUsingFrontCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
         let proxyCopy = self.proxy
         PeerConnectionClient.signalingQueue.async {
             guard let strongSelf = proxyCopy.get() else { return }
-            guard let localVideoSource = strongSelf.localVideoSource else {
-                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
+
+            guard let captureController = strongSelf.videoCaptureController else {
+                owsFail("\(self.logTag) in \(#function) captureController was unexpectedly nil")
                 return
             }
 
-            // certain devices, e.g. 16GB iPod touch don't have a back camera
-            guard localVideoSource.canUseBackCamera else {
-                owsFail("\(strongSelf.logTag) in \(#function) canUseBackCamera was unexpectedly false")
-                return
-            }
-
-            localVideoSource.useBackCamera = useBackCamera
+            captureController.switchCamera(isUsingFrontCamera: isUsingFrontCamera)
+            captureController.startCapture()
         }
     }
 
@@ -416,7 +417,18 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
-    // MARK: Audio
+    // MARK: VideoCaptureSettingsDelegate
+
+    // MJK: fixme
+    var videoWidth: Int32 {
+        return 400
+    }
+
+    var videoHeight: Int32 {
+        return 400
+    }
+
+    // MARK: - Audio
 
     fileprivate func createAudioSender() {
         SwiftAssertIsOnMainThread(#function)
@@ -1089,6 +1101,90 @@ class HardenedRTCSessionDescription {
         description = audioLevelRegex.stringByReplacingMatches(in: description, options: [], range: NSRange(location: 0, length: description.count), withTemplate: "")
 
         return RTCSessionDescription.init(type: rtcSessionDescription.type, sdp: description)
+    }
+}
+
+protocol VideoCaptureSettingsDelegate: class {
+    var videoWidth: Int32 { get }
+    var videoHeight: Int32 { get }
+}
+
+class VideoCaptureController {
+
+    let capturer: RTCCameraVideoCapturer
+    weak var settingsDelegate: VideoCaptureSettingsDelegate?
+    var isUsingFrontCamera: Bool = true
+
+    public init(capturer: RTCCameraVideoCapturer, settingsDelegate: VideoCaptureSettingsDelegate) {
+        self.capturer = capturer
+        self.settingsDelegate = settingsDelegate
+    }
+
+    public func startCapture() {
+        let position: AVCaptureDevice.Position = isUsingFrontCamera ? .front : .back
+        guard let device: AVCaptureDevice = self.device(position: position) else {
+            owsFail("unable to find captureDevice")
+            return
+        }
+
+        guard let format: AVCaptureDevice.Format = self.format(device: device) else {
+            owsFail("unable to find captureDevice")
+            return
+        }
+
+        let fps = self.framesPerSecond(format: format)
+
+        capturer.startCapture(with: device, format: format, fps: fps)
+    }
+
+    public func stopCapture() {
+        self.capturer.stopCapture()
+    }
+
+    public func switchCamera(isUsingFrontCamera: Bool) {
+        self.isUsingFrontCamera = isUsingFrontCamera
+        self.startCapture()
+    }
+
+    private func device(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        let captureDevices = RTCCameraVideoCapturer.captureDevices()
+        guard let device = (captureDevices.first { $0.position == position }) else {
+            Logger.debug("unable to find desired position: \(position)")
+            return captureDevices.first
+        }
+
+        return device
+    }
+
+    private func format(device: AVCaptureDevice) -> AVCaptureDevice.Format? {
+        let formats = RTCCameraVideoCapturer.supportedFormats(for: device)
+        let targetWidth = settingsDelegate?.videoWidth ?? 0
+        let targetHeight = settingsDelegate?.videoHeight ?? 0
+
+        var selectedFormat: AVCaptureDevice.Format?
+        var currentDiff: Int32 = Int32.max
+
+        for format in formats {
+            let dimension = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+            let diff = abs(targetWidth - dimension.width) + abs(targetHeight - dimension.height)
+            if diff < currentDiff {
+                selectedFormat = format
+                currentDiff = diff
+            }
+        }
+
+        assert(selectedFormat != nil)
+
+        return selectedFormat
+    }
+
+    private func framesPerSecond(format: AVCaptureDevice.Format) -> Int {
+        var maxFrameRate: Float64 = 0
+        for range in format.videoSupportedFrameRateRanges {
+            maxFrameRate = max(maxFrameRate, range.maxFrameRate)
+        }
+
+        return Int(maxFrameRate)
     }
 }
 

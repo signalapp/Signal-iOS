@@ -250,10 +250,10 @@ extension CallUIAdaptee {
         call.audioSource = audioSource
     }
 
-    internal func setCameraSource(call: SignalCall, useBackCamera: Bool) {
+    internal func setCameraSource(call: SignalCall, isUsingFrontCamera: Bool) {
         SwiftAssertIsOnMainThread(#function)
 
-        callService.setCameraSource(call: call, useBackCamera: useBackCamera)
+        callService.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 
     // CallKit handles ringing state on it's own. But for non-call kit we trigger ringing start/stop manually.
