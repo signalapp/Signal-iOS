@@ -479,7 +479,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         self.uiDatabaseConnection.read { transaction in
             let message = galleryItem.message
             let thread = message.thread(with: transaction)
-            fetchedItem = ConversationViewItem(interaction: message, isGroupThread: thread.isGroupThread(), transaction: transaction)
+            let conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
+            fetchedItem = ConversationViewItem(interaction: message,
+                                               isGroupThread: thread.isGroupThread(),
+                                               transaction: transaction,
+                                               layoutInfo: conversationLayoutInfo)
         }
 
         guard let viewItem = fetchedItem else {

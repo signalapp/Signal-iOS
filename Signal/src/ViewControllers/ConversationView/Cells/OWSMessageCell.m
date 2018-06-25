@@ -20,11 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 // * MessageView (message)
 // * dateHeaderLabel (above message)
 // * footerView (below message)
-// * failedSendBadgeView ("trailing" beside message)
 
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UILabel *dateHeaderLabel;
-@property (nonatomic, nullable) UIImageView *failedSendBadgeView;
 @property (nonatomic) UIView *footerView;
 @property (nonatomic) UILabel *footerLabel;
 @property (nonatomic, nullable) OWSExpirationTimerView *expirationTimerView;
@@ -51,10 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Ensure only called once.
     OWSAssert(!self.messageBubbleView);
 
-    _viewConstraints = [NSMutableArray new];
-
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
+
+    _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     [self.contentView addSubview:self.messageBubbleView];
@@ -97,31 +95,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self addGestureRecognizer:panGesture];
 }
 
+- (void)setLayoutInfo:(nullable ConversationLayoutInfo *)layoutInfo
+{
+    [super setLayoutInfo:layoutInfo];
+
+    self.messageBubbleView.layoutInfo = layoutInfo;
+}
+
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
-}
-
-- (BOOL)shouldHaveFailedSendBadge
-{
-    if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
-        return NO;
-    }
-    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
-}
-
-- (UIImage *)failedSendBadge
-{
-    UIImage *image = [UIImage imageNamed:@"message_send_failure"];
-    OWSAssert(image);
-    OWSAssert(image.size.width == self.failedSendBadgeSize && image.size.height == self.failedSendBadgeSize);
-    return image;
-}
-
-- (CGFloat)failedSendBadgeSize
-{
-    return 20.f;
 }
 
 #pragma mark - Convenience Accessors
@@ -152,14 +135,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssert(self.contentWidth > 0);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
@@ -168,25 +150,19 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.font = self.dateHeaderDateFont;
     self.footerLabel.font = UIFont.ows_dynamicTypeCaption2Font;
 
-    if (self.shouldHaveFailedSendBadge) {
-        self.failedSendBadgeView = [UIImageView new];
-        self.failedSendBadgeView.image =
-            [self.failedSendBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.failedSendBadgeView.tintColor = [UIColor ows_destructiveRedColor];
-        [self.contentView addSubview:self.failedSendBadgeView];
-
+    if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.failedSendBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.messageBubbleView],
-            [self.failedSendBadgeView autoPinTrailingToSuperviewMargin],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionWidth toSize:self.failedSendBadgeSize],
-            [self.failedSendBadgeView autoSetDimension:ALDimensionHeight toSize:self.failedSendBadgeSize],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.layoutInfo.gutterLeading],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                     withInset:self.layoutInfo.gutterTrailing
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinLeadingToSuperviewMargin],
-            [self.messageBubbleView autoPinTrailingToSuperviewMargin],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                     withInset:self.layoutInfo.gutterLeading
+                                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.layoutInfo.gutterTrailing],
         ]];
     }
 
@@ -209,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateDateHeader
 {
-    OWSAssert(self.contentWidth > 0);
+    OWSAssert(self.layoutInfo);
 
     static NSDateFormatter *dateHeaderDateFormatter = nil;
     static NSDateFormatter *dateHeaderTimeFormatter = nil;
@@ -256,11 +232,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.dateHeaderLabel.hidden = NO;
 
         [self.viewConstraints addObjectsFromArray:@[
-            // Date headers should be visually centered within the conversation view,
-            // so they need to extend outside the cell's boundaries.
-            [self.dateHeaderLabel autoSetDimension:ALDimensionWidth toSize:self.contentWidth],
-            (self.isIncoming ? [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading]
-                             : [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTrailing]),
+            // TODO: Are data headers symmetric or are they asymmetric? gutters are asymmetric?
+            [self.dateHeaderLabel autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading],
+            [self.dateHeaderLabel autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing],
             [self.dateHeaderLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.dateHeaderLabel autoSetDimension:ALDimensionHeight toSize:self.dateHeaderHeight],
         ]];
@@ -306,6 +280,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateFooter
 {
+    OWSAssert(self.layoutInfo);
     OWSAssert(self.viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage
         || self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
 
@@ -335,10 +310,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.viewConstraints addObjectsFromArray:@[
-        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:kBubbleThornSideInset]
-                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:kBubbleThornSideInset]),
-        (self.isIncoming ? [self.footerView autoPinTrailingToSuperviewMargin]
-                         : [self.footerView autoPinLeadingToSuperviewMargin]),
+        (self.isIncoming ? [self.footerView autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.gutterLeading]
+                         : [self.footerView autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.gutterTrailing]),
     ]];
 
     [self.viewConstraints addObject:[self.footerView autoPinEdge:ALEdgeTop
@@ -362,7 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
     // we want to leave spaces for an expiration timer and
     // include padding so that they still visually "cling" to the
     // appropriate incoming/outgoing edge.
-    const CGFloat maxFooterLabelWidth = self.contentWidth - 100;
+    const CGFloat maxFooterLabelWidth = self.layoutInfo.maxFooterWidth;
     if (hasExpirationTimer &&
         attributedText) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -411,16 +384,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(self.layoutInfo);
+    OWSAssert(self.layoutInfo.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssert(self.messageBubbleView);
 
     self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.contentWidth = self.contentWidth;
     self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView sizeForContentWidth:contentWidth];
+    CGSize messageBubbleSize = [self.messageBubbleView measureSize];
 
     CGSize cellSize = messageBubbleSize;
 
@@ -430,10 +404,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.shouldShowFooter) {
         cellSize.height += self.footerVSpacing;
         cellSize.height += self.footerHeight;
-    }
-
-    if (self.shouldHaveFailedSendBadge) {
-        cellSize.width += self.failedSendBadgeSize;
     }
 
     cellSize = CGSizeCeil(cellSize);
@@ -465,8 +435,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.dateHeaderLabel.text = nil;
     self.dateHeaderLabel.hidden = YES;
-    [self.failedSendBadgeView removeFromSuperview];
-    self.failedSendBadgeView = nil;
     self.footerLabel.text = nil;
     self.footerLabel.hidden = YES;
 

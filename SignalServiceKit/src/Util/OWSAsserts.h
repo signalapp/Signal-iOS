@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #endif
 
-#define OWS_ABSTRACT_METHOD() OWSFail(@"Method needs to be implemented by subclasses.")
+#define OWS_ABSTRACT_METHOD() OWSFail(@"%@ Method needs to be implemented by subclasses.", self.logTag)
 
 #pragma mark - Singleton Asserts
 

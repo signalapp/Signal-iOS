@@ -40,6 +40,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     var attachmentStream: TSAttachmentStream?
     var messageBody: String?
 
+    var conversationLayoutInfo: ConversationLayoutInfo
+
     private var contactShareViewHelper: ContactShareViewHelper
 
     // MARK: Initializers
@@ -50,13 +52,15 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
     }
 
     @objc
-    required init(viewItem: ConversationViewItem, message: TSMessage, mode: MessageMetadataViewMode) {
+    required init(viewItem: ConversationViewItem, message: TSMessage, thread: TSThread, mode: MessageMetadataViewMode) {
         self.contactsManager = Environment.current().contactsManager
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
         self.uiDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
+        self.conversationLayoutInfo = ConversationLayoutInfo(thread: thread)
+
         super.init(nibName: nil, bundle: nil)
 
         contactShareViewHelper.delegate = self
@@ -70,6 +74,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.uiDatabaseConnection.beginLongLivedReadTransaction()
         updateDBConnectionAndMessageToLatest()
 
+        self.conversationLayoutInfo.viewWidth = view.width()
+
         self.navigationItem.title = NSLocalizedString("MESSAGE_METADATA_VIEW_TITLE",
                                                       comment: "Title for the 'message metadata' view.")
 
@@ -81,6 +87,14 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             selector: #selector(yapDatabaseModified),
             name: NSNotification.Name.YapDatabaseModified,
             object: OWSPrimaryStorage.shared().dbNotificationObject)
+    }
+
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        Logger.debug("\(self.logTag) in \(#function)")
+
+        super.viewWillTransition(to: size, with: coordinator)
+
+        self.conversationLayoutInfo.viewWidth = size.width
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -331,7 +345,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleView = messageBubbleView
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
-        messageBubbleView.contentWidth = contentWidth()
+        messageBubbleView.layoutInfo = self.conversationLayoutInfo
         messageBubbleView.alwaysShowBubbleTail = true
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
@@ -574,10 +588,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     // MARK: - Message Bubble Layout
 
-    private func contentWidth() -> Int32 {
-        return Int32(round(self.view.width() - (2 * bubbleViewHMargin)))
-    }
-
     private func updateMessageBubbleViewLayout() {
         guard let messageBubbleView = messageBubbleView else {
             return
@@ -589,9 +599,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             return
         }
 
-        messageBubbleView.contentWidth = contentWidth()
-
-        let messageBubbleSize = messageBubbleView.size(forContentWidth: contentWidth())
+        let messageBubbleSize = messageBubbleView.measureSize()
         messageBubbleViewWidthLayoutConstraint.constant = messageBubbleSize.width
         messageBubbleViewHeightLayoutConstraint.constant = messageBubbleSize.height
     }

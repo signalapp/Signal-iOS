@@ -1963,6 +1963,9 @@ NS_ASSUME_NONNULL_BEGIN
         [prepareBlocks addObject:replyAssetLoader.prepareBlock];
     }
 
+    // We don't need to configure ConversationLayoutInfo's view width in this case.
+    ConversationLayoutInfo *layoutInfo = [[ConversationLayoutInfo alloc] initWithThread:thread];
+
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
         unstaggeredActionBlock:^(NSUInteger index, YapDatabaseReadWriteTransaction *transaction) {
@@ -1980,7 +1983,10 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSAssert(messageToQuote);
                 DDLogVerbose(@"%@ %@", self.logTag, label);
                 [DDLog flushLog];
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
+                                                                                     isGroupThread:thread.isGroupThread
+                                                                                       transaction:transaction
+                                                                                        layoutInfo:layoutInfo];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
@@ -1994,7 +2000,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                   transaction:transaction];
                 OWSAssert(messageToQuote);
 
-                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote isGroupThread:thread.isGroupThread transaction:transaction];
+                ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
+                                                                                     isGroupThread:thread.isGroupThread
+                                                                                       transaction:transaction
+                                                                                        layoutInfo:layoutInfo];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             }
             OWSAssert(quotedMessage);

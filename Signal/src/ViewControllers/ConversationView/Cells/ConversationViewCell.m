@@ -16,17 +16,18 @@ NS_ASSUME_NONNULL_BEGIN
     self.viewItem = nil;
     self.delegate = nil;
     self.isCellVisible = NO;
-    self.contentWidth = 0;
+    self.layoutInfo = nil;
 }
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSFail(@"%@ This method should be overridden.", self.logTag);
+    OWS_ABSTRACT_METHOD();
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSFail(@"%@ This method should be overridden.", self.logTag);
+    OWS_ABSTRACT_METHOD();
+
     return CGSizeZero;
 }
 

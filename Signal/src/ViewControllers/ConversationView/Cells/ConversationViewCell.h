@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ConversationLayoutInfo;
 @class ConversationViewCell;
 @class ConversationViewItem;
 @class OWSContactOffersInteraction;
@@ -69,12 +70,11 @@ NS_ASSUME_NONNULL_BEGIN
 // * Users enters another view (e.g. conversation settings view, call screen, etc.).
 @property (nonatomic) BOOL isCellVisible;
 
-// The width of the collection view.
-@property (nonatomic) int contentWidth;
+@property (nonatomic, nullable) ConversationLayoutInfo *layoutInfo;
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth;
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

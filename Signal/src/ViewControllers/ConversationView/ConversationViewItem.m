@@ -77,7 +77,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
                         transaction:(YapDatabaseReadTransaction *)transaction
+                         layoutInfo:(ConversationLayoutInfo *)layoutInfo
 {
+    OWSAssert(interaction);
+    OWSAssert(transaction);
+    OWSAssert(layoutInfo);
+
     self = [super init];
 
     if (!self) {
@@ -86,6 +91,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     _interaction = interaction;
     _isGroupThread = isGroupThread;
+    _layoutInfo = layoutInfo;
     self.row = NSNotFound;
     self.previousRow = NSNotFound;
 
@@ -172,14 +178,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.cachedCellSize = nil;
 }
 
-- (CGSize)cellSizeForViewWidth:(int)viewWidth contentWidth:(int)contentWidth
+- (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
     OWSAssertIsOnMainThread();
+    OWSAssert(self.layoutInfo);
 
     if (!self.cachedCellSize) {
         ConversationViewCell *_Nullable measurementCell = [self measurementCell];
         measurementCell.viewItem = self;
-        CGSize cellSize = [measurementCell cellSizeForViewWidth:viewWidth contentWidth:contentWidth];
+        measurementCell.layoutInfo = self.layoutInfo;
+        CGSize cellSize = [measurementCell cellSizeWithTransaction:transaction];
         self.cachedCellSize = [NSValue valueWithCGSize:cellSize];
         [measurementCell prepareForReuse];
     }
@@ -250,6 +259,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     return measurementCell;
+}
+
+- (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)lastLayoutItem
+{
+    OWSAssert(lastLayoutItem);
+
+    // TODO:
+    return 0.f;
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView

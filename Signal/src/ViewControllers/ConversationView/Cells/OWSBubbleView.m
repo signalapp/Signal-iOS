@@ -9,10 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 const CGFloat kOWSMessageCellCornerRadius = 18;
 
-const CGFloat kBubbleVRounding = kOWSMessageCellCornerRadius;
-const CGFloat kBubbleHRounding = kOWSMessageCellCornerRadius;
-const CGFloat kBubbleThornSideInset = 5.f;
-const CGFloat kBubbleThornVInset = 0;
 const CGFloat kBubbleTextHInset = 10.f;
 const CGFloat kBubbleTextTopInset = 8.f;
 const CGFloat kBubbleTextBottomInset = 6.f;
@@ -46,39 +42,6 @@ const CGFloat kBubbleTextBottomInset = 6.f;
     _partnerViews = [NSMutableArray new];
 
     return self;
-}
-
-- (void)setIsOutgoing:(BOOL)isOutgoing
-{
-    BOOL didChange = _isOutgoing != isOutgoing;
-
-    _isOutgoing = isOutgoing;
-
-    if (didChange) {
-        [self updateLayers];
-    }
-}
-
-- (void)setHideTail:(BOOL)hideTail
-{
-    BOOL didChange = _hideTail != hideTail;
-
-    _hideTail = hideTail;
-
-    if (didChange) {
-        [self updateLayers];
-    }
-}
-
-- (void)setIsTruncated:(BOOL)isTruncated
-{
-    BOOL didChange = _isTruncated != isTruncated;
-
-    _isTruncated = isTruncated;
-
-    if (didChange) {
-        [self updateLayers];
-    }
 }
 
 - (void)setFrame:(CGRect)frame
@@ -165,64 +128,14 @@ const CGFloat kBubbleTextBottomInset = 6.f;
 
 - (UIBezierPath *)maskPath
 {
-    return [self.class maskPathForSize:self.bounds.size
-                            isOutgoing:self.isOutgoing
-                              hideTail:self.hideTail
-                           isTruncated:self.isTruncated
-                                 isRTL:self.isRTL];
+    return [self.class maskPathForSize:self.bounds.size];
 }
 
 + (UIBezierPath *)maskPathForSize:(CGSize)size
-                       isOutgoing:(BOOL)isOutgoing
-                         hideTail:(BOOL)hideTail
-                      isTruncated:(BOOL)isTruncated
-                            isRTL:(BOOL)isRTL
 {
-    UIBezierPath *bezierPath = [UIBezierPath new];
-
-    CGFloat bubbleLeft = 0.f;
-    CGFloat bubbleRight = size.width - kBubbleThornSideInset;
-    CGFloat bubbleTop = 0.f;
-    CGFloat bubbleBottom = size.height - kBubbleThornVInset;
-
-    [bezierPath moveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleTop)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + kBubbleVRounding)
-                       controlPoint:CGPointMake(bubbleRight, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding)];
-
-    if (hideTail) {
-        [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
-                           controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-    } else {
-        // Thorn Tip
-        CGPoint thornTip = CGPointMake(size.width + 1, size.height);
-        CGPoint thornB = CGPointMake(bubbleRight, bubbleBottom - kBubbleVRounding);
-        // Approximate intersection of the thorn and the bubble edge.
-        CGPoint thornPrime
-            = CGPointMake(bubbleRight - kBubbleHRounding * 0.25f, bubbleBottom - kBubbleVRounding * 0.25f);
-        CGPoint thornPrimeA = CGPointMake(thornPrime.x, bubbleBottom - kBubbleVRounding * 0.08f);
-
-        [bezierPath addQuadCurveToPoint:thornTip controlPoint:CGPointMake(thornB.x, bubbleBottom)];
-        [bezierPath addQuadCurveToPoint:thornPrime controlPoint:thornPrimeA];
-        [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - kBubbleHRounding, bubbleBottom)
-                           controlPoint:thornPrimeA];
-    }
-
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleBottom)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - kBubbleVRounding)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + kBubbleVRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + kBubbleHRounding, bubbleTop)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
-
-    // Horizontal Flip If Necessary
-    BOOL shouldFlip = isOutgoing == isRTL;
-    if (shouldFlip) {
-        CGAffineTransform flipTransform = CGAffineTransformMakeTranslation(size.width, 0.0);
-        flipTransform = CGAffineTransformScale(flipTransform, -1.0, 1.0);
-        [bezierPath applyTransform:flipTransform];
-    }
+    CGRect bounds = CGRectZero;
+    bounds.size = size;
+    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:kOWSMessageCellCornerRadius];
     return bezierPath;
 }
 
@@ -255,7 +168,7 @@ const CGFloat kBubbleTextBottomInset = 6.f;
 
 + (CGFloat)minWidth
 {
-    return (kBubbleHRounding * 2 + kBubbleThornSideInset);
+    return (kOWSMessageCellCornerRadius * 2);
 }
 
 @end
