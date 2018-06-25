@@ -390,6 +390,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
+    OWSAssert(textInsets);
+
     OWSMessageTextView *_Nullable bodyTextView = nil;
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
@@ -399,8 +402,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (bodyTextView) {
         [self.bubbleView addSubview:bodyTextView];
         [self.viewConstraints addObjectsFromArray:@[
-            [bodyTextView autoPinLeadingToSuperviewMarginWithInset:self.textLeadingMargin],
-            [bodyTextView autoPinTrailingToSuperviewMarginWithInset:self.textTrailingMargin],
+            [bodyTextView autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
+            [bodyTextView autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
         ]];
         [self.viewConstraints
             addObject:[bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height]];
@@ -409,13 +412,13 @@ NS_ASSUME_NONNULL_BEGIN
             [self.viewConstraints addObject:[bodyTextView autoPinEdge:ALEdgeTop
                                                                toEdge:ALEdgeBottom
                                                                ofView:lastSubview
-                                                           withOffset:self.textTopMargin]];
+                                                           withOffset:textInsets.top]];
         } else {
             [self.viewConstraints
-                addObject:[bodyTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.textTopMargin]];
+                addObject:[bodyTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textInsets.top]];
         }
         lastSubview = bodyTextView;
-        bottomMargin = self.textBottomMargin;
+        bottomMargin = textInsets.bottom;
     }
 
     UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
@@ -424,13 +427,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(lastSubview == bodyTextView);
         [self.bubbleView addSubview:tapForMoreLabel];
         [self.viewConstraints addObjectsFromArray:@[
-            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:self.textLeadingMargin],
-            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:self.textTrailingMargin],
+            [tapForMoreLabel autoPinLeadingToSuperviewMarginWithInset:textInsets.leading],
+            [tapForMoreLabel autoPinTrailingToSuperviewMarginWithInset:textInsets.trailing],
             [tapForMoreLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastSubview],
             [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
         ]];
         lastSubview = tapForMoreLabel;
-        bottomMargin = self.textBottomMargin;
+        bottomMargin = textInsets.bottom;
     }
 
     OWSAssert(lastSubview);
@@ -859,7 +862,10 @@ NS_ASSUME_NONNULL_BEGIN
         return CGSizeZero;
     }
 
-    CGFloat hMargins = self.textTrailingMargin + self.textLeadingMargin;
+    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
+    OWSAssert(textInsets);
+
+    CGFloat hMargins = textInsets.leading + textInsets.trailing;
 
     const int maxTextWidth = (int)floor(self.layoutInfo.maxMessageWidth - hMargins);
 
@@ -870,7 +876,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (includeMargins) {
         result.width += hMargins;
-        result.height += self.textTopMargin + self.textBottomMargin;
+        result.height += textInsets.top + textInsets.bottom;
     }
 
     return CGSizeCeil(result);
@@ -1017,28 +1023,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (CGFloat)textLeadingMargin
-{
-    CGFloat result = kBubbleTextHInset;
-    return result;
-}
-
-- (CGFloat)textTrailingMargin
-{
-    CGFloat result = kBubbleTextHInset;
-    return result;
-}
-
-- (CGFloat)textTopMargin
-{
-    return kBubbleTextTopInset;
-}
-
-- (CGFloat)textBottomMargin
-{
-    return kBubbleTextBottomInset;
-}
 
 - (UIColor *)bodyTextColor
 {
