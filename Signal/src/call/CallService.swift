@@ -1422,7 +1422,7 @@ private class SignalCallData: NSObject {
         self.handleDataChannelMessage(dataChannelMessage)
     }
 
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateLocalVideoTrack videoTrack: RTCVideoTrack?, captureSession: AVCaptureSession?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1434,11 +1434,13 @@ private class SignalCallData: NSObject {
             return
         }
 
+        // MJK TODO remove localVideo Track?
         callData.localVideoTrack = videoTrack
+        callData.localCaptureSession = captureSession
         fireDidUpdateVideoTracks()
     }
 
-    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?) {
+    internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, didUpdateRemoteVideoTrack videoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)
 
         guard peerConnectionClient == self.peerConnectionClient else {

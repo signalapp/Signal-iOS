@@ -58,12 +58,12 @@ protocol PeerConnectionClientDelegate: class {
     /**
      * Fired whenever the local video track become active or inactive.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocal videoTrack: RTCVideoTrack?)
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateLocalVideoTrack videoTrack: RTCVideoTrack?, captureSession: AVCaptureSession?)
 
     /**
      * Fired whenever the remote video track become active or inactive.
      */
-    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemote videoTrack: RTCVideoTrack?)
+    func peerConnectionClient(_ peerconnectionClient: PeerConnectionClient, didUpdateRemoteVideoTrack videoTrack: RTCVideoTrack?)
 }
 
 // In Swift (at least in Swift v3.3), weak variables aren't thread safe. It
@@ -383,9 +383,16 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         let proxyCopy = self.proxy
         let completion = {
             guard let strongSelf = proxyCopy.get() else { return }
+
+            // Should these really be guards? Don't we want to pass nil when it's been disabled?
             guard let localVideoTrack = strongSelf.localVideoTrack else { return }
+            guard let videoCaptureSession = strongSelf.videoCaptureSession else { return }
             guard let strongDelegate = strongSelf.delegate else { return }
-            strongDelegate.peerConnectionClient(strongSelf, didUpdateLocal: enabled ? localVideoTrack : nil)
+
+            let videoTrack = enabled ? localVideoTrack : nil
+            let captureSession = enabled ? videoCaptureSession : nil
+
+            strongDelegate.peerConnectionClient(strongSelf, didUpdateLocalVideoTrack: videoTrack, captureSession: captureSession)
         }
 
         PeerConnectionClient.signalingQueue.async {
@@ -398,19 +405,25 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-            guard let videoCaptureSession = strongSelf.videoCaptureSession else {
+//            guard let videoCaptureSession = strongSelf.videoCaptureSession else {
+//                Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
+//                return
+//            }
+
+            guard let videoCaptureController = strongSelf.videoCaptureController else {
                 Logger.debug("\(strongSelf.logTag) \(#function) Ignoring obsolete event in terminated client")
                 return
             }
-
             localVideoTrack.isEnabled = enabled
 
             if enabled {
                 Logger.debug("\(strongSelf.logTag) in \(#function) starting videoCaptureSession")
-                videoCaptureSession.startRunning()
+                videoCaptureController.startCapture()
+//                videoCaptureSession.startRunning()
             } else {
                 Logger.debug("\(strongSelf.logTag) in \(#function) stopping videoCaptureSession")
-                videoCaptureSession.stopRunning()
+                videoCaptureController.stopCapture()
+//                videoCaptureSession.stopRunning()
             }
 
             DispatchQueue.main.async(execute: completion)
@@ -872,7 +885,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
 
             // TODO: Consider checking for termination here.
 
-            strongDelegate.peerConnectionClient(strongSelf, didUpdateRemote: remoteVideoTrack)
+            strongDelegate.peerConnectionClient(strongSelf, didUpdateRemoteVideoTrack: remoteVideoTrack)
         }
 
         PeerConnectionClient.signalingQueue.async {
