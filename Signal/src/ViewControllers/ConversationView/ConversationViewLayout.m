@@ -30,12 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ConversationViewLayout
 
-- (instancetype)initWithLayoutInfo:(ConversationLayoutInfo *)layoutInfo
-              uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
+                     uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     if (self = [super init]) {
         _itemAttributesMap = [NSMutableDictionary new];
-        _layoutInfo = layoutInfo;
+        _conversationStyle = conversationStyle;
         _uiDatabaseConnection = uiDatabaseConnection;
     }
 
@@ -107,11 +107,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(transaction);
 
-    const CGFloat viewWidth = self.layoutInfo.viewWidth;
+    const CGFloat viewWidth = self.conversationStyle.viewWidth;
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
-    CGFloat y = self.layoutInfo.contentMarginTop + self.delegate.layoutHeaderHeight;
+    CGFloat y = self.conversationStyle.contentMarginTop + self.delegate.layoutHeaderHeight;
     CGFloat contentBottom = y;
 
     NSInteger row = 0;
@@ -142,7 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
         previousLayoutItem = layoutItem;
     }
 
-    contentBottom += self.layoutInfo.contentMarginBottom;
+    contentBottom += self.conversationStyle.contentMarginBottom;
     self.contentSize = CGSizeMake(viewWidth, contentBottom);
 }
 

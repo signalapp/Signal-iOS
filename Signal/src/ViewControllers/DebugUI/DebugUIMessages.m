@@ -1963,8 +1963,8 @@ NS_ASSUME_NONNULL_BEGIN
         [prepareBlocks addObject:replyAssetLoader.prepareBlock];
     }
 
-    // We don't need to configure ConversationLayoutInfo's view width in this case.
-    ConversationLayoutInfo *layoutInfo = [[ConversationLayoutInfo alloc] initWithThread:thread];
+    // We don't need to configure ConversationStyle's view width in this case.
+    ConversationStyle *conversationStyle = [[ConversationStyle alloc] initWithThread:thread];
 
     return [DebugUIMessagesSingleAction
                actionWithLabel:label
@@ -1986,7 +1986,7 @@ NS_ASSUME_NONNULL_BEGIN
                 ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
                                                                                      isGroupThread:thread.isGroupThread
                                                                                        transaction:transaction
-                                                                                        layoutInfo:layoutInfo];
+                                                                                 conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
@@ -2003,7 +2003,7 @@ NS_ASSUME_NONNULL_BEGIN
                 ConversationViewItem *viewItem = [[ConversationViewItem alloc] initWithInteraction:messageToQuote
                                                                                      isGroupThread:thread.isGroupThread
                                                                                        transaction:transaction
-                                                                                        layoutInfo:layoutInfo];
+                                                                                 conversationStyle:conversationStyle];
                 quotedMessage = [[OWSQuotedReplyModel quotedReplyForConversationViewItem:viewItem transaction:transaction] buildQuotedMessage];
             }
             OWSAssert(quotedMessage);

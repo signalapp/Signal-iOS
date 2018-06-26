@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureViews
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(self.viewItem.interaction);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
@@ -390,7 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
+    OWSDirectionalEdgeInsets *textInsets = self.conversationStyle.textInsets;
     OWSAssert(textInsets);
 
     OWSMessageTextView *_Nullable bodyTextView = nil;
@@ -855,19 +855,19 @@ NS_ASSUME_NONNULL_BEGIN
 // Size of "message body" text, not quoted reply text.
 - (CGSize)bodyTextSizeWithIncludeMargins:(BOOL)includeMargins
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
 
     if (!self.hasBodyText) {
         return CGSizeZero;
     }
 
-    OWSDirectionalEdgeInsets *textInsets = self.layoutInfo.textInsets;
+    OWSDirectionalEdgeInsets *textInsets = self.conversationStyle.textInsets;
     OWSAssert(textInsets);
 
     CGFloat hMargins = textInsets.leading + textInsets.trailing;
 
-    const int maxTextWidth = (int)floor(self.layoutInfo.maxMessageWidth - hMargins);
+    const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
 
     OWSMessageTextView *bodyTextView = [self configureBodyTextView];
     CGSize textSize = CGSizeCeil([bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
@@ -884,10 +884,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)bodyMediaSize
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
 
-    CGFloat maxMessageWidth = self.layoutInfo.maxMessageWidth;
+    CGFloat maxMessageWidth = self.conversationStyle.maxMessageWidth;
 
     CGSize result = CGSizeZero;
     switch (self.cellType) {
@@ -956,8 +956,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)quotedMessageSize
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.maxMessageWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
@@ -973,14 +973,14 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
                                                     isOutgoing:isOutgoing];
-    CGSize result = [quotedMessageView sizeForMaxWidth:self.layoutInfo.maxMessageWidth];
+    CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return CGSizeCeil(result);
 }
 
 - (CGSize)measureSize
 {
-    OWSAssert(self.layoutInfo);
-    OWSAssert(self.layoutInfo.viewWidth > 0);
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.viewWidth > 0);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 

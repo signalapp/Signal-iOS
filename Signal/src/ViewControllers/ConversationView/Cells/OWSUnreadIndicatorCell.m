@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
 
@@ -87,13 +87,13 @@ NS_ASSUME_NONNULL_BEGIN
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = @[
         [self.titleLabel autoVCenterInSuperview],
-        [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.fullWidthGutterLeading],
-        [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.fullWidthGutterTrailing],
+        [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
 
         // TODO: offset.
         [self.strokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.titleLabel withOffset:0.f],
-        [self.strokeView autoPinLeadingToSuperviewMarginWithInset:self.layoutInfo.fullWidthGutterLeading],
-        [self.strokeView autoPinTrailingToSuperviewMarginWithInset:self.layoutInfo.fullWidthGutterTrailing],
+        [self.strokeView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.strokeView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
         [self.strokeView autoSetDimension:ALDimensionHeight toSize:1.f],
     ];
 }
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssert(self.layoutInfo);
+    OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSUnreadIndicatorInteraction class]]);
 
@@ -114,7 +114,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: offset.
     CGFloat vOffset = 24.f;
-    CGSize result = CGSizeMake(self.layoutInfo.fullWidthContentWidth, self.titleLabel.font.lineHeight + vOffset * 2);
+    CGSize result
+        = CGSizeMake(self.conversationStyle.fullWidthContentWidth, self.titleLabel.font.lineHeight + vOffset * 2);
 
     return CGSizeCeil(result);
 }
