@@ -211,8 +211,7 @@ public class FullTextSearchFinder: NSObject {
         var oversizeText: String?
         dbConnection.read({ (transaction) in
             guard let attachment = message.attachment(with: transaction) else {
-                // This can happen during the initial save of incoming messages.
-                Logger.warn("Could not load attachment for search indexing.")
+                owsFail("Could not load attachment for search indexing.")
                 return
             }
             guard let attachmentStream = attachment as? TSAttachmentStream else {

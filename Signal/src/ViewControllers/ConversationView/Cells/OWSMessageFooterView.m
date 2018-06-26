@@ -55,31 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.statusIndicatorView autoSetDimension:ALDimensionWidth toSize:self.statusIndicatorSize];
     [self.statusIndicatorView autoSetDimension:ALDimensionHeight toSize:self.statusIndicatorSize];
     self.statusIndicatorView.layer.cornerRadius = self.statusIndicatorSize * 0.5f;
-
-    //    // TODO: Review constant with Myles.0
-    //    UIStackView *statusStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    //        self.statusLabel,
-    //        self.statusIndicatorView,
-    //    ]];
-    //    statusStackView.axis = UILayoutConstraintAxisHorizontal;
-    //    statusStackView.spacing = self.hSpacing;
-    //    [self addSubview:statusStackView];
-
-    //    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    //    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    //    [self.timestampLabel autoVCenterInSuperview];
-    //    [statusStackView autoVCenterInSuperview];
-    //    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0
-    //    relation:NSLayoutRelationGreaterThanOrEqual]; [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom
-    //                                          withInset:0
-    //                                           relation:NSLayoutRelationGreaterThanOrEqual];
-    //    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0
-    //    relation:NSLayoutRelationGreaterThanOrEqual]; [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom
-    //    withInset:0 relation:NSLayoutRelationGreaterThanOrEqual]; [statusStackView autoPinEdge:ALEdgeLeading
-    //                          toEdge:ALEdgeTrailing
-    //                          ofView:self.timestampLabel
-    //                      withOffset:self.hSpacing
-    //                        relation:NSLayoutRelationGreaterThanOrEqual];
 }
 
 - (void)configureFonts

@@ -269,8 +269,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.bubbleView.bubbleColor = nil;
     }
 
-    //    CGFloat bottomMargin = 0;
-
     if (self.isQuotedReply) {
         BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
         DisplayableText *_Nullable displayableQuotedText
@@ -287,8 +285,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self.stackView addArrangedSubview:quotedMessageView];
         [self.viewConstraints
             addObject:[quotedMessageView autoSetDimension:ALDimensionHeight toSize:quotedMessageContentSize.height]];
-
-        //        bottomMargin = 0;
 
         [self.bubbleView addPartnerView:quotedMessageView.boundsStrokeView];
     }
@@ -344,27 +340,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self.stackView addArrangedSubview:bodyMediaView];
-        //        // This layout can lead to extreme cropping of media content,
-        //        // e.g. a very tall portrait image + long caption.  The media
-        //        // view will have "max width", so the image will be cropped to
-        //        // roughly a square.
-        //        // TODO: Myles is considering alternatives.
-        //        [self.viewConstraints addObjectsFromArray:@[
-        //            [bodyMediaView autoPinLeadingToSuperviewMarginWithInset:0],
-        //            [bodyMediaView autoPinTrailingToSuperviewMarginWithInset:0],
-        //        ]];
-        //        // We need constraints to control the vertical sizing of the media view, but we use
-        //        // lower priority so that when a message only contains media it uses the exact bounds of
-        //        // the message view.
-        //        [NSLayoutConstraint
-        //            autoSetPriority:UILayoutPriorityDefaultLow
-        //             forConstraints:^{
-        //                 [self.viewConstraints
-        //                     addObject:[bodyMediaView autoSetDimension:ALDimensionHeight
-        //                     toSize:bodyMediaContentSize.height]];
-        //             }];
-
-        //        bottomMargin = 0;
 
         BOOL shouldStrokeMediaView = ([bodyMediaView isKindOfClass:[UIImageView class]] ||
             [bodyMediaView isKindOfClass:[OWSContactShareView class]]);
@@ -437,13 +412,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"%@ could not display footer.", self.logTag);
     }
 
-    // TODO: Should we do this for media content too?
     if (textStackView) {
         CGSize bubbleSize = [self measureSize];
         [self.viewConstraints addObjectsFromArray:@[
             [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width relation:NSLayoutRelationLessThanOrEqual],
-            //                                                    [bodyTextView autoSetDimension:ALDimensionHeight
-            //                                                    toSize:bodyTextContentSize.height],
         ]];
     }
 }
