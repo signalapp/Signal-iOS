@@ -4910,13 +4910,15 @@ typedef enum : NSUInteger {
         }
         lastInteractionType = interactionType;
 
-        // If this is an existing view item and it has changed size,
-        // note that so that we can reload this cell while doing
-        // incremental updates.
+        // When `shouldHideRecipientStatus` changes, reload the cell if necessary.
         if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.previousRow != NSNotFound) {
             [rowsThatChangedSize addObject:@(viewItem.previousRow)];
         }
         viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
+        // When `shouldHideAvatar` changes, reload the cell if necessary.
+        if (viewItem.shouldHideAvatar != shouldHideAvatar && viewItem.previousRow != NSNotFound) {
+            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
+        }
         viewItem.shouldHideAvatar = shouldHideAvatar;
     }
 

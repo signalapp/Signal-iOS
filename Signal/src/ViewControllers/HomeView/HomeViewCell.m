@@ -233,7 +233,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                relation:NSLayoutRelationGreaterThanOrEqual],
                                      [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
                                  ]];
-
                              }];
 
         const CGFloat kMinVMargin = 5;
