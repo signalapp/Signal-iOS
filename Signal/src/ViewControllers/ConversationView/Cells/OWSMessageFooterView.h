@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageFooterView : UIView
+@interface OWSMessageFooterView : UIStackView
 
 - (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem;
 

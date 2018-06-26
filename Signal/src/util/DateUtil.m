@@ -165,6 +165,29 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
                                                                 isRTL:isRTL];
 }
 
++ (NSString *)formatTimestampShort:(uint64_t)timestamp
+{
+    return [self formatDateShort:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
+}
+
++ (NSString *)formatDateShort:(NSDate *)date
+{
+    OWSAssert(date);
+
+    NSString *dateTimeString;
+    if (![DateUtil dateIsThisYear:date]) {
+        dateTimeString = [[DateUtil dateFormatter] stringFromDate:date];
+    } else if ([DateUtil dateIsOlderThanOneWeek:date]) {
+        dateTimeString = [[DateUtil monthAndDayFormatter] stringFromDate:date];
+    } else if ([DateUtil dateIsOlderThanToday:date]) {
+        dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
+    } else {
+        dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
+    }
+
+    return dateTimeString.uppercaseString;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

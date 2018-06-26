@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageFooterView ()
 
 @property (nonatomic) UILabel *timestampLabel;
+@property (nonatomic) UIView *spacerView;
 @property (nonatomic) UILabel *statusLabel;
 @property (nonatomic) UIView *statusIndicatorView;
 
@@ -35,10 +36,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.layoutMargins = UIEdgeInsetsZero;
 
+    self.axis = UILayoutConstraintAxisHorizontal;
+    self.spacing = self.hSpacing;
+    self.alignment = UIStackViewAlignmentCenter;
+
     self.timestampLabel = [UILabel new];
     // TODO: Color
     self.timestampLabel.textColor = [UIColor lightGrayColor];
-    [self addSubview:self.timestampLabel];
+
+    self.spacerView = [UIView new];
+    [self.spacerView setContentHuggingLow];
 
     self.statusLabel = [UILabel new];
     // TODO: Color
@@ -49,30 +56,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self.statusIndicatorView autoSetDimension:ALDimensionHeight toSize:self.statusIndicatorSize];
     self.statusIndicatorView.layer.cornerRadius = self.statusIndicatorSize * 0.5f;
 
-    // TODO: Review constant with Myles.0
-    UIStackView *statusStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.statusLabel,
-        self.statusIndicatorView,
-    ]];
-    statusStackView.axis = UILayoutConstraintAxisHorizontal;
-    statusStackView.spacing = self.hSpacing;
-    [self addSubview:statusStackView];
+    //    // TODO: Review constant with Myles.0
+    //    UIStackView *statusStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    //        self.statusLabel,
+    //        self.statusIndicatorView,
+    //    ]];
+    //    statusStackView.axis = UILayoutConstraintAxisHorizontal;
+    //    statusStackView.spacing = self.hSpacing;
+    //    [self addSubview:statusStackView];
 
-    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading];
-    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [self.timestampLabel autoVCenterInSuperview];
-    [statusStackView autoVCenterInSuperview];
-    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom
-                                          withInset:0
-                                           relation:NSLayoutRelationGreaterThanOrEqual];
-    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [statusStackView autoPinEdge:ALEdgeLeading
-                          toEdge:ALEdgeTrailing
-                          ofView:self.timestampLabel
-                      withOffset:self.hSpacing
-                        relation:NSLayoutRelationGreaterThanOrEqual];
+    //    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    //    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    //    [self.timestampLabel autoVCenterInSuperview];
+    //    [statusStackView autoVCenterInSuperview];
+    //    [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0
+    //    relation:NSLayoutRelationGreaterThanOrEqual]; [self.timestampLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom
+    //                                          withInset:0
+    //                                           relation:NSLayoutRelationGreaterThanOrEqual];
+    //    [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0
+    //    relation:NSLayoutRelationGreaterThanOrEqual]; [statusStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom
+    //    withInset:0 relation:NSLayoutRelationGreaterThanOrEqual]; [statusStackView autoPinEdge:ALEdgeLeading
+    //                          toEdge:ALEdgeTrailing
+    //                          ofView:self.timestampLabel
+    //                      withOffset:self.hSpacing
+    //                        relation:NSLayoutRelationGreaterThanOrEqual];
 }
 
 - (void)configureFonts
@@ -84,13 +91,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)statusIndicatorSize
 {
     // TODO: Review constant.
-    return 16.f;
+    return 12.f;
 }
 
 - (CGFloat)hSpacing
 {
     // TODO: Review constant.
-    return 10.f;
+    return 8.f;
 }
 
 #pragma mark - Load
@@ -102,7 +109,23 @@ NS_ASSUME_NONNULL_BEGIN
     [self configureLabelsWithConversationViewItem:viewItem];
 
     // TODO:
-    self.statusIndicatorView.backgroundColor = [UIColor redColor];
+    self.statusIndicatorView.backgroundColor = [UIColor orangeColor];
+
+    for (UIView *subview in @[
+             self.timestampLabel,
+             self.statusLabel,
+             self.statusIndicatorView,
+         ]) {
+        [subview removeFromSuperview];
+    }
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        [self addArrangedSubview:self.timestampLabel];
+        [self addArrangedSubview:self.spacerView];
+        [self addArrangedSubview:self.statusLabel];
+        [self addArrangedSubview:self.statusIndicatorView];
+    } else {
+        [self addArrangedSubview:self.timestampLabel];
+    }
 }
 
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
@@ -111,9 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    // TODO: Correct text.
-    self.timestampLabel.text =
-        [DateUtil formatPastTimestampRelativeToNow:viewItem.interaction.timestamp isRTL:CurrentAppContext().isRTL];
+    self.timestampLabel.text = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
     self.statusLabel.text = [self messageStatusTextForConversationViewItem:viewItem];
 }
 
@@ -126,8 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGSize result = CGSizeZero;
     result.height
         = MAX(self.timestampLabel.font.lineHeight, MAX(self.statusLabel.font.lineHeight, self.statusIndicatorSize));
-    result.width = ([self.timestampLabel sizeThatFits:CGSizeZero].width +
-        [self.statusLabel sizeThatFits:CGSizeZero].width + self.statusIndicatorSize + self.hSpacing * 2.f);
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        result.width = ([self.timestampLabel sizeThatFits:CGSizeZero].width +
+            [self.statusLabel sizeThatFits:CGSizeZero].width + self.statusIndicatorSize + self.hSpacing * 3.f);
+    } else {
+        result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
+    }
     return CGSizeCeil(result);
 }
 
