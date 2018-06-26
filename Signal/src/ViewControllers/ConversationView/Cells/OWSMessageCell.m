@@ -77,12 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.dateHeaderLabel withOffset:0.f];
 
     self.avatarView = [[AvatarImageView alloc] init];
-    [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-
-    // Hide these views by default.
-    self.avatarView.hidden = YES;
 
     [self.messageBubbleView autoPinBottomToSuperviewMarginWithInset:0];
 
@@ -193,8 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          ofView:self.avatarView
                                      withOffset:avatarBottomMargin],
         ]];
-        [self.messageBubbleView logFrameLaterWithLabel:@"messageBubbleView"];
-        [self.avatarView logFrameLaterWithLabel:@"avatarView"];
     }
 }
 
@@ -310,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                diameter:self.avatarSize
                                                                         contactsManager:contactsManager];
     self.avatarView.image = [avatarBuilder build];
-    self.avatarView.hidden = NO;
+    [self.contentView addSubview:self.avatarView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -408,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateHeaderView removeFromSuperview];
 
     self.avatarView.image = nil;
-    self.avatarView.hidden = YES;
+    [self.avatarView removeFromSuperview];
 
     [self hideMenuControllerIfNecessary];
 
