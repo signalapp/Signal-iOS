@@ -415,7 +415,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (textStackView) {
         CGSize bubbleSize = [self measureSize];
-        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityRequired
                              forConstraints:^{
                                  [self.viewConstraints addObjectsFromArray:@[
                                      [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
