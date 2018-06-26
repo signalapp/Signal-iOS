@@ -162,13 +162,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldHideBubbleTail:(BOOL)shouldHideBubbleTail
+- (void)setShouldHideAvatar:(BOOL)shouldHideAvatar
 {
-    if (_shouldHideBubbleTail == shouldHideBubbleTail) {
+    if (_shouldHideAvatar == shouldHideAvatar) {
         return;
     }
 
-    _shouldHideBubbleTail = shouldHideBubbleTail;
+    _shouldHideAvatar = shouldHideAvatar;
 
     [self clearCachedLayoutState];
 }

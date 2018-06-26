@@ -70,6 +70,14 @@ public class ConversationLayoutInfo: NSObject {
 
     @objc public var textInsets = OWSDirectionalEdgeInsets.zero
 
+    // We want to align "group sender" avatars with the v-center of the
+    // "last line" of the message body text - or where it would be for
+    // non-text content.
+    //
+    // This is the distance from that v-center to the bottom of the
+    // message bubble.
+    @objc public var lastTextLineAxis: CGFloat = 0
+
     @objc
     public required init(thread: TSThread) {
 
@@ -131,5 +139,6 @@ public class ConversationLayoutInfo: NSObject {
                                    leading: 12,
                                    bottom: textInsetBottom,
                                    trailing: 12)
+        lastTextLineAxis = CGFloat(round(12 + messageTextFont.capHeight * 0.5))
     }
 }

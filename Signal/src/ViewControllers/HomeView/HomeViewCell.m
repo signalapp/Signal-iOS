@@ -64,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.avatarView = [[AvatarImageView alloc] init];
-
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
@@ -123,6 +122,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 + (NSString *)cellReuseIdentifier
@@ -418,6 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.thread = nil;
     self.contactsManager = nil;
+    self.avatarView.image = nil;
 
     [self.unreadBadge removeFromSuperview];
 
