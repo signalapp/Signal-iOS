@@ -45,12 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.strokeView = [UIView new];
     // TODO: color.
-    self.strokeView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
+    self.strokeView.backgroundColor = [UIColor blackColor];
     [self.contentView addSubview:self.strokeView];
 
     self.titleLabel = [UILabel new];
     // TODO: color.
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    self.titleLabel.textColor = [UIColor blackColor];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.titleLabel];
 
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Update cell to reflect changes in dynamic text.
     //
     // TODO: Font size.
-    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
+    self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_bold;
 }
 
 + (NSString *)cellReuseIdentifier
