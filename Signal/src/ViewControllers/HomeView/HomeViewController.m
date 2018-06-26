@@ -529,18 +529,24 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     self.isViewVisible = YES;
 
-    // When returning to home view, try to ensure that the "last" thread is still
-    // visible.  The threads often change ordering while in conversation view due
-    // to incoming & outgoing messages.
-    if (self.lastThread) {
+    BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
+    if (isShowingSearchResults) {
+        OWSAssert(self.searchBar.text.ows_stripped.length > 0);
+        self.tableView.contentOffset = CGPointZero;
+    } else if (self.lastThread) {
+        OWSAssert(self.searchBar.text.ows_stripped.length == 0);
+        
+        // When returning to home view, try to ensure that the "last" thread is still
+        // visible.  The threads often change ordering while in conversation view due
+        // to incoming & outgoing messages.
         __block NSIndexPath *indexPathOfLastThread = nil;
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             indexPathOfLastThread =
-                [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
-                                                                              inCollection:[TSThread collection]
-                                                                              withMappings:self.threadMappings];
+            [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
+                                                                          inCollection:[TSThread collection]
+                                                                          withMappings:self.threadMappings];
         }];
-
+        
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
