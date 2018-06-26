@@ -648,10 +648,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "重定向至 GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "重新註冊此電話號碼";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "本裝置不再被註冊。你的電話號碼可能被註冊於不同的裝置。點取來重新註冊。";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "最近一次上線時間：%@";
@@ -666,7 +666,7 @@
 "DISAPPEARING_MESSAGES" = "自動銷毀訊息";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "在本對話的訊息將於%@之後消失。";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "開啟此功能後，在對話視窗中寄出或接收的訊息在讀取後銷毀。";
@@ -831,7 +831,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "連線要求失敗。";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "網路要求超時。";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "服務的無效回應。";
@@ -999,10 +999,10 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "已封鎖";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "搜尋";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "找不到有關 '%@' 的結果";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "封存";
@@ -1316,7 +1316,7 @@
 "NETWORK_STATUS_CONNECTING" = "連線中";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "不再被註冊的狀態";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "網路狀態";
@@ -1406,7 +1406,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@設定訊息銷毀時間為%@。";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+"OUTAGE_WARNING" = "Signal 正面臨技術上的問題。我們正在盡力的盡快地回復服務。";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "撥出電話";
@@ -1643,13 +1643,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "我們無法啟用你的帳號直到驗證我們寄送給你的驗證碼。";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "這個電話號碼註冊將使 Signal 無法註冊於其他的裝置。";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "註冊於此 iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "已經有 Signal 帳號了嗎？";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "條款和隱私政策";
@@ -1682,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "不正確的註冊鎖定 PIN 碼。";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Register";
+"REGISTRATION_VERIFY_DEVICE" = "註冊";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "請輸入有效的電話號碼來註冊。";
@@ -1784,13 +1784,13 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "依名字或號碼來搜尋";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+"SEARCH_SECTION_CONTACTS" = "其他聯絡人";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+"SEARCH_SECTION_CONVERSATIONS" = "對話";
 
 /* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_MESSAGES" = "訊息";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "安全會話已重設";
@@ -1934,7 +1934,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "刪除帳戶";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "刪除所有資料";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "你確定要刪除所有歷史資訊 (訊息、附件、通話紀錄...)？這個操作將無法取消。";
@@ -1997,7 +1997,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "訊息可以在被讀取後查看與分享。這個設定是可選設定，且對所有對話有效。";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "重新註冊";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "螢幕鎖定逾時";
@@ -2285,7 +2285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "驗證狀態已改變。";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "檢視安全碼";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "檢查安全碼";

@@ -648,10 +648,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirigir a GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Volver a registrar este número";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado en Signal, pero tu número puede estar registrado con Signal con otro dispositivo. Toca para volver a registrarse.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Última conexión: %@";
@@ -666,7 +666,7 @@
 "DISAPPEARING_MESSAGES" = "Mensajes con caducidad";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Los mensajes de este chat desaparecerán tras %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Al activar, los mensajes en este chat desaparecerán tras cumplirse el tiempo seleccionado.";
@@ -831,7 +831,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Fallo en la petición de red.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Se superó el tiempo de espera para la petición de red.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Respuesta del servidor inválida.";
@@ -999,10 +999,10 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloqueado";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No se encontraron resultados para '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archivo";
@@ -1316,7 +1316,7 @@
 "NETWORK_STATUS_CONNECTING" = "Conectando";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Número dado de baja";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Estado de la red";
@@ -1406,7 +1406,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha fijado la caducidad de mensajes a %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+"OUTAGE_WARNING" = "Signal tiene problemas técnicos. Estamos trabajando para restaurar el servicio lo antes posible.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Llamada realizada";
@@ -1643,13 +1643,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "No podemos activar tu cuenta hasta que no verifiques el código que te hemos enviado.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Registrar el número desactivará Signal en todos los dispositivos que están registrados bajo este número.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registrar este iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "¿Ya tienes una cuenta de Signal?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Aviso legal y privacidad";
@@ -1682,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Número PIN de bloqueo de registro incorrecto.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Register";
+"REGISTRATION_VERIFY_DEVICE" = "Registrar";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Para registrarte introduce un número de teléfono válido.";
@@ -1784,13 +1784,13 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Buscar por nombre o número";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+"SEARCH_SECTION_CONTACTS" = "Otros contactos";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+"SEARCH_SECTION_CONVERSATIONS" = "Chats";
 
 /* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_MESSAGES" = "Mensajes";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Reinicializada sesión segura";
@@ -1934,7 +1934,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Borrar cuenta";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Borrar todos los datos";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "¿Estás seguro de querer borrar todo el historial (mensajes, adjuntos, lista de llamadas...)? Esta acción es irreversible.";
@@ -1997,7 +1997,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Al activar puedes ver cuando tus mensajes han sido leídos y hacer saber a tus remitentes cuándo has leído los suyos. Este ajuste es opcional y se aplica a todos los chats.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Volver a registrarse";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Bloquear acceso tras";
@@ -2285,7 +2285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Cambio en estado de verificación de cifras de seguridad.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Ver cifras de seguridad";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Verificar cifras de seguridad";

@@ -648,10 +648,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Preusmeritev na GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Ponovna prijava telefonske številke";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Naprava ni več prijavljena v omrežje Signal. Vaša telefonska številka je lahko prijavljena na drugi napravi. Tapnite za ponovno prijavo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Nazadnje aktivna: %@";
@@ -666,7 +666,7 @@
 "DISAPPEARING_MESSAGES" = "Izginjajoča sporočila";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Sporočila v tem pogovoru bodo izginila po preteku %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Sporočila, poslana ali prejeta v tem pogovoru, bodo izginila po tem, ko bodo prebrana.";
@@ -831,7 +831,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Zahteva strežniku ni bila uspešna.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Zahteva omrežju je potekla.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Neveljaven odziv strežnika.";
@@ -999,10 +999,10 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Blokirano";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Iskanje";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ni rezultatov za '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arhiv";
@@ -1316,7 +1316,7 @@
 "NETWORK_STATUS_CONNECTING" = "Povezujem";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Naprava ni prijavljana v omrežje";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Stanje omrežja";
@@ -1406,7 +1406,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Uporabnik %@ je nastavil čas izginjanja sporočil na %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+"OUTAGE_WARNING" = "V omrežju Signal prihaja do tehničnih težav. Ekipa vzdrževalcev se trudi, da bodo čim hitreje odpravljene.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Odhodni klic";
@@ -1643,13 +1643,13 @@
 "REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Vašega računa na moremo aktivirati dokler ne potrdite kode, ki smo vam jo poslali.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "Prijava bo onemogočila delovanje storitve Signal na vseh drugih napravah, ki so trenutno prijavljene s to številko.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Prijavi ta iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Že imate račun v omrežju Signal?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Pogoji uporabe in politika zasebnosti";
@@ -1682,7 +1682,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Napačen PIN za prijavo v omrežje.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Register";
+"REGISTRATION_VERIFY_DEVICE" = "Prijava";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Za registracijo morate vnesti veljavno telefonsko številko.";
@@ -1784,13 +1784,13 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Iskanje po imenu ali številki";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+"SEARCH_SECTION_CONTACTS" = "Drugi stiki";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+"SEARCH_SECTION_CONVERSATIONS" = "Pogovori";
 
 /* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_MESSAGES" = "Sporočila";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Varna seja je bila ponastavljena.";
@@ -1934,7 +1934,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Izbriši račun";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Izbris vseh podatkov";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Ste prepričani, da želite izbrisati celotno svojo zgodovino (sporočila, priponke, zgodovino klicev...)? Te poteze ni mogoče preklicati.";
@@ -1997,7 +1997,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Pošiljatelj je obveščen kadar prejemnik prebere njegovo sporočilo. Ta nastavitev je izbirna in velja za vse pogovore.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Ponovna prijava";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Časovni interval pred zaklepom aplikacije";
@@ -2285,7 +2285,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Status istovetnosti je bil spremenjen.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Pregled varnostnega števila";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Preglej varnostna števila";
