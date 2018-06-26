@@ -72,7 +72,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     var remoteVideoView: RemoteVideoView!
     var localVideoView: RTCCameraPreviewView!
     var hasShownLocalVideo = false
-    weak var localVideoTrack: RTCVideoTrack?
+    weak var localCaptureSession: AVCaptureSession?
     weak var remoteVideoTrack: RTCVideoTrack?
 
     override public var canBecomeFirstResponder: Bool {
@@ -882,13 +882,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didPressFlipCamera(sender: UIButton) {
-        // toggle value
         sender.isSelected = !sender.isSelected
 
-        let useBackCamera = sender.isSelected
-        Logger.info("\(TAG) in \(#function) with useBackCamera: \(useBackCamera)")
+        let isUsingFrontCamera = !sender.isSelected
+        Logger.info("\(TAG) in \(#function) with isUsingFrontCamera: \(isUsingFrontCamera)")
 
-        callUIAdapter.setCameraSource(call: call, useBackCamera: useBackCamera)
+        callUIAdapter.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 
     /**
@@ -1001,18 +1000,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Video
 
-    internal func updateLocalVideoTrack(localVideoTrack: RTCVideoTrack?) {
+    internal func updateLocalVideo(captureSession: AVCaptureSession?) {
+
         SwiftAssertIsOnMainThread(#function)
-        guard self.localVideoTrack != localVideoTrack else {
-            return
-        }
 
-        self.localVideoTrack = localVideoTrack
+        localVideoView.captureSession = captureSession
+        let isHidden = captureSession == nil
 
-        let source = localVideoTrack?.source as? RTCAVFoundationVideoSource
-
-        localVideoView.captureSession = source?.captureSession
-        let isHidden = source == nil
         Logger.info("\(TAG) \(#function) isHidden: \(isHidden)")
         localVideoView.isHidden = isHidden
 
@@ -1118,11 +1112,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     internal func didUpdateVideoTracks(call: SignalCall?,
-                                       localVideoTrack: RTCVideoTrack?,
+                                       localCaptureSession: AVCaptureSession?,
                                        remoteVideoTrack: RTCVideoTrack?) {
         SwiftAssertIsOnMainThread(#function)
 
-        updateLocalVideoTrack(localVideoTrack: localVideoTrack)
+        updateLocalVideo(captureSession: localCaptureSession)
         updateRemoteVideoTrack(remoteVideoTrack: remoteVideoTrack)
     }
 }
