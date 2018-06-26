@@ -73,8 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateStrokeView autoSetDimension:ALDimensionHeight toSize:1.f];
     [self.dateHeaderLabel autoPinWidthToSuperview];
     [self.dateHeaderLabel autoVCenterInSuperview];
-    // TODO: offset.
-    [self.dateStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.dateHeaderLabel withOffset:0.f];
+    [self.dateStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.dateHeaderLabel];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -232,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
 
         NSAttributedString *attributedText = [NSAttributedString new];
-        attributedText = [attributedText rtlSafeAppend:dateString
+        attributedText = [attributedText rtlSafeAppend:dateString.uppercaseString
                                             attributes:@{
                                                 NSFontAttributeName : self.dateHeaderDateFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],
