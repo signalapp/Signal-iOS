@@ -383,15 +383,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    OWSMessageTextView *_Nullable bodyTextView = nil;
-    UIStackView *_Nullable textStackView = [UIStackView new];
+    UIStackView *_Nullable textStackView = nil;
 
     // We render malformed messages as "empty text" messages,
     // so create a text view if there is no body media view.
     if (self.hasBodyText || !bodyMediaView) {
+        OWSMessageTextView *_Nullable bodyTextView = nil;
         bodyTextView = [self configureBodyTextView];
-    }
-    if (bodyTextView) {
+
         textStackView = [UIStackView new];
         textStackView.axis = UILayoutConstraintAxisVertical;
         textStackView.alignment = UIStackViewAlignmentFill;
@@ -406,8 +405,6 @@ NS_ASSUME_NONNULL_BEGIN
         [textStackView addArrangedSubview:bodyTextView];
 
         [self.viewConstraints addObjectsFromArray:@[
-            //            [bodyTextView autoSetDimension:ALDimensionWidth toSize:bodyTextContentSize.width
-            //            relation:NSLayoutRelationLessThanOrEqual],
             [bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextContentSize.height],
         ]];
 
@@ -415,8 +412,6 @@ NS_ASSUME_NONNULL_BEGIN
         if (tapForMoreLabel) {
             [textStackView addArrangedSubview:tapForMoreLabel];
             [self.viewConstraints addObjectsFromArray:@[
-                //                                                        [tapForMoreLabel autoPinEdge:ALEdgeTop
-                //                                                        toEdge:ALEdgeBottom ofView:lastSubview],
                 [tapForMoreLabel autoSetDimension:ALDimensionHeight toSize:self.tapForMoreHeight],
             ]];
         }
@@ -426,6 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
     [footerView configureWithConversationViewItem:self.viewItem];
     if (textStackView) {
         [textStackView addArrangedSubview:self.footerView];
+        [self.footerView setHasShadows:NO viewItem:self.viewItem];
     } else if (bodyMediaView) {
         [bodyMediaView addSubview:footerView];
 
@@ -435,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
             [footerView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.textInsetHorizontal],
             [footerView autoPinBottomToSuperviewMarginWithInset:self.conversationStyle.textInsetBottom],
         ]];
-        // TODO: Drop shadow.
+        [self.footerView setHasShadows:YES viewItem:self.viewItem];
     } else {
         // Display footer over media.
         OWSFail(@"%@ could not display footer.", self.logTag);
@@ -1023,7 +1019,7 @@ NS_ASSUME_NONNULL_BEGIN
     //       contact shares.
     if (self.hasFooter && self.hasBodyText) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
-        cellSize.width = MAX(cellSize.width, footerSize.width);
+        cellSize.width = MAX(cellSize.width, footerSize.width + self.conversationStyle.textInsetHorizontal * 2);
         cellSize.height += self.textViewVSpacing + footerSize.height;
     }
 
@@ -1110,6 +1106,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.quotedMessageView = nil;
 
     [self.footerView removeFromSuperview];
+
+    for (UIView *subview in self.stackView.subviews) {
+        [subview removeFromSuperview];
+    }
 }
 
 #pragma mark - Gestures

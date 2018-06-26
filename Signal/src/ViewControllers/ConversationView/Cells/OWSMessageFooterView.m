@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)statusIndicatorSize
 {
     // TODO: Review constant.
-    return 20.f;
+    return 16.f;
 }
 
 - (CGFloat)hSpacing
@@ -100,10 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(viewItem);
 
     [self configureLabelsWithConversationViewItem:viewItem];
-    ;
 
     // TODO:
-    self.statusIndicatorView.backgroundColor = [UIColor ows_materialBlueColor];
+    self.statusIndicatorView.backgroundColor = [UIColor redColor];
 }
 
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
@@ -123,7 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(viewItem);
 
     [self configureLabelsWithConversationViewItem:viewItem];
-    ;
 
     CGSize result = CGSizeZero;
     result.height
@@ -144,6 +142,42 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *statusMessage =
         [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
     return statusMessage;
+}
+
+#pragma mark - Shadows
+
+- (void)setHasShadows:(BOOL)hasShadows viewItem:(ConversationViewItem *)viewItem
+{
+    // TODO: Constants
+    for (UIView *subview in @[
+             self.timestampLabel,
+             self.statusLabel,
+             self.statusIndicatorView,
+         ]) {
+        if (hasShadows) {
+            subview.layer.shadowColor = [UIColor blackColor].CGColor;
+            subview.layer.shadowOpacity = 0.35f;
+            subview.layer.shadowOffset = CGSizeZero;
+            subview.layer.shadowRadius = 0.5f;
+        } else {
+            subview.layer.shadowColor = nil;
+            subview.layer.shadowOpacity = 0.f;
+            subview.layer.shadowOffset = CGSizeZero;
+            subview.layer.shadowRadius = 0.f;
+        }
+    }
+
+    UIColor *textColor;
+    if (hasShadows) {
+        textColor = [UIColor whiteColor];
+    } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+        // TODO:
+        textColor = [UIColor lightGrayColor];
+    } else {
+        textColor = [UIColor whiteColor];
+    }
+    self.timestampLabel.textColor = textColor;
+    self.statusLabel.textColor = textColor;
 }
 
 @end

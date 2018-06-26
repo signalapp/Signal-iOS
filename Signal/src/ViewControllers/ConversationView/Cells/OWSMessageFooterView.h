@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem;
 
+- (void)setHasShadows:(BOOL)hasShadows viewItem:(ConversationViewItem *)viewItem;
+
 @end
 
 NS_ASSUME_NONNULL_END
