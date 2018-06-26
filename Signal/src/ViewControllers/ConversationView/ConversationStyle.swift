@@ -38,9 +38,6 @@ public class ConversationStyle: NSObject {
     @objc public var fullWidthContentWidth: CGFloat = 0
 
     @objc public var maxMessageWidth: CGFloat = 0
-    // TODO: Can we eliminate this after moving timestamps and
-    //       message status inside the message bubbles.
-    @objc public var maxFooterWidth: CGFloat = 0
 
     @objc public var textInsetTop: CGFloat = 0
     @objc public var textInsetBottom: CGFloat = 0
@@ -98,8 +95,6 @@ public class ConversationStyle: NSObject {
         fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
         maxMessageWidth = floor(contentWidth - 48)
-        // TODO: Should this be different?
-        maxFooterWidth = maxMessageWidth - 10
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
         // Don't include the distance from the "cap height" to the top of the UILabel
