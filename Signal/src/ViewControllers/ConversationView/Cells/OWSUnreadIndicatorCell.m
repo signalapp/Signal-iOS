@@ -134,11 +134,6 @@ NS_ASSUME_NONNULL_BEGIN
                   @"Messages that indicates that there are more unseen messages including safety number changes."));
 }
 
-- (CGFloat)subtitleHMargin
-{
-    return 20.f;
-}
-
 - (CGFloat)subtitleVSpacing
 {
     return 3.f;
