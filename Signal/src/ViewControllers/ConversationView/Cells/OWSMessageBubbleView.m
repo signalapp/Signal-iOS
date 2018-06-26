@@ -395,9 +395,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageFooterView *footerView = self.footerView;
     [footerView configureWithConversationViewItem:self.viewItem];
     if (textStackView) {
+        // Display footer below text.
         [textStackView addArrangedSubview:self.footerView];
         [self.footerView setHasShadows:NO viewItem:self.viewItem];
     } else if (bodyMediaView) {
+        // Display footer over media.
         [bodyMediaView addSubview:footerView];
 
         bodyMediaView.layoutMargins = UIEdgeInsetsZero;
@@ -408,7 +410,6 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
         [self.footerView setHasShadows:YES viewItem:self.viewItem];
     } else {
-        // Display footer over media.
         OWSFail(@"%@ could not display footer.", self.logTag);
     }
 

@@ -43,18 +43,22 @@ NS_ASSUME_NONNULL_BEGIN
     self.timestampLabel = [UILabel new];
     // TODO: Color
     self.timestampLabel.textColor = [UIColor lightGrayColor];
+    [self addArrangedSubview:self.timestampLabel];
 
     self.spacerView = [UIView new];
     [self.spacerView setContentHuggingLow];
+    [self addArrangedSubview:self.spacerView];
 
     self.statusLabel = [UILabel new];
     // TODO: Color
     self.statusLabel.textColor = [UIColor lightGrayColor];
+    [self addArrangedSubview:self.statusLabel];
 
     self.statusIndicatorView = [UIView new];
     [self.statusIndicatorView autoSetDimension:ALDimensionWidth toSize:self.statusIndicatorSize];
     [self.statusIndicatorView autoSetDimension:ALDimensionHeight toSize:self.statusIndicatorSize];
     self.statusIndicatorView.layer.cornerRadius = self.statusIndicatorSize * 0.5f;
+    [self addArrangedSubview:self.statusIndicatorView];
 }
 
 - (void)configureFonts
@@ -86,20 +90,13 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO:
     self.statusIndicatorView.backgroundColor = [UIColor orangeColor];
 
+    BOOL isOutgoing = (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
     for (UIView *subview in @[
-             self.timestampLabel,
+             self.spacerView,
              self.statusLabel,
              self.statusIndicatorView,
          ]) {
-        [subview removeFromSuperview];
-    }
-    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        [self addArrangedSubview:self.timestampLabel];
-        [self addArrangedSubview:self.spacerView];
-        [self addArrangedSubview:self.statusLabel];
-        [self addArrangedSubview:self.statusIndicatorView];
-    } else {
-        [self addArrangedSubview:self.timestampLabel];
+        subview.hidden = !isOutgoing;
     }
 }
 
