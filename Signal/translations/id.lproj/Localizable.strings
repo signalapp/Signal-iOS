@@ -32,13 +32,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Tambahkan anggota";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Apakah anda ingin membagikan profil anda pada group ini?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda pada group ini?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Apakah anda ingin menambahkan penguna ini menjadi kontak anda?";
+"ADD_TO_CONTACTS_OFFER" = "Apakah Anda ingin menambahkan penguna ini menjadi kontak Anda?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah anda ingin membagikan profil anda kepada pengguna ini?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Apakah Anda ingin membagikan profil Anda kepada pengguna ini?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Buang";
@@ -47,7 +47,7 @@
 "ALERT_DONT_SAVE" = "Jangan disimpan";
 
 /* No comment provided by engineer. */
-"ALERT_ERROR_TITLE" = "Keliru";
+"ALERT_ERROR_TITLE" = "Galat";
 
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Simpan";
@@ -74,7 +74,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Galat";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Masukkan nama anda";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Masukkan nama Anda";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versi %@ telah tersedia di App Store.";
@@ -221,7 +221,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Memulihkan Berkas-berkas";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "Pengguna yang diblokir tidak dapat menghubungi anda atau mengirimkan anda pesan.";
+"BLOCK_BEHAVIOR_EXPLANATION" = "Pengguna terblokir tidak bisa menghubungi atau mengirimkan pesan kepada Anda.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokir";
@@ -242,7 +242,7 @@
 "BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_MESSAGE" = "Gagal Memblokir Pengguna.";
 
 /* The title of the 'block user failed' alert. */
-"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Gagal";
+"BLOCK_LIST_VIEW_BLOCK_FAILED_ALERT_TITLE" = "Galat";
 
 /* The message format of the 'user blocked' alert. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ telah diblokir";
@@ -251,16 +251,16 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Pengguna telah diblokir";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Anda tidak bisa memblokir diri anda.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Anda tidak bisa memblokir diri Anda sendiri.";
 
 /* The title of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Gagal";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Galat";
 
 /* The title of the 'unblock user failed' alert. */
 "BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_MESSAGE" = "Gagal Menghapus Blokir Pengguna.";
 
 /* The title of the 'unblock user failed' alert. */
-"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Gagal";
+"BLOCK_LIST_VIEW_UNBLOCK_FAILED_ALERT_TITLE" = "Galat";
 
 /* The message format of the 'user unblocked' alert. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_MESSAGE_FORMAT" = "%@ telah dibuka blokirnya";
@@ -284,7 +284,7 @@
 "BUTTON_SELECT" = "Pilih";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal memerlukan akses ke mikrofon anda untuk membuat panggilan dan merekam pesan suara. Anda dapat memberikan izin di Pengaturan.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal memerlukan akses ke mikrofon Anda untuk membuat panggilan dan merekam pesan suara. Anda dapat memberikan izin di Pengaturan.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Akses Mikropon Diperlukan";
@@ -302,7 +302,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Panggil";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Apakah anda ingin memangil  %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Apakah Anda ingin memanggil %@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Panggil?";
@@ -323,10 +323,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Bisu";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Anda dapat menjawab panggilan langsung dari layar terkunci dan melihat nama dan nomor telepon dari panggilan masuk bila anda mengubah pengaturan anda.\n\nLihat pengaturan privasi untuk lebih rinci.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Anda dapat menjawab panggilan langsung dari layar terkunci dan melihat nama dan nomor telepon dari panggilan masuk bila mengubah pengaturan Anda.\n\nLihat pengaturan privasi untuk lebih rinci.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Anda bisa melihat nama dan nomor telepon anda untuk panggilan masuk jika anda membuat perubahan pada pengaturan. lihat pada pengaturan privasi dengan jelas";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Anda bisa melihat nama dan nomor telepon Anda untuk panggilan masuk jika Anda mengubah pengaturan. Lihat pengaturan privasi lebih detail.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Tidak Sekarang";
@@ -353,7 +353,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Penguna jaringan";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Penguna ini tidak bisa diverifikasi sampai anda menggantikan pesan dengan mereka";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Penguna ini tidak bisa diverifikasi sampai Anda menggantikan pesan dengan mereka.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Gagal";
@@ -383,25 +383,25 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Undang";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Untuk melihat kontak anda yang menggunakan Signal, perbolehkan mengakses kontak di dalam setelan sistem anda.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Untuk melihat kontak Anda yang menggunakan Signal, izinkan mengakses kontak di dalam setelan sistem Anda.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tindakan ini akan mengatur kembali aplikasi dengan menghapus pesan anda dan menghapus anda dari server. Aplikasi akan menutup setelah menghapus semua data.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tindakan ini akan mengatur kembali aplikasi dengan menghapus pesan Anda dan menghapus Anda dari peladen. Aplikasi akan menutup setelah menghapus semua data.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Apakah kamu yakin ingin menghapus akun anda?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Apakah kamu yakin ingin menghapus akun Anda?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Anda tidak dapat lagi mengirim atau menerima pesan dari grup ini.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Apakah benar anda ingin keluar?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Apakah Anda benar-benar ingin keluar?";
 
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Tautkan Perangkat Baru";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "1%@ boleh dipasang atau menggantikan peralatan. Verifikasi nomor pengaman anda dengan mereka untuk mejamin keamanan";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "1%@ boleh dipasang atau menggantikan perangkat. Verifikasi nomor pengaman Anda dengan mereka untuk mejamin keamanan.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "nomor pengaman dengan 1%@ sudah diganti";
@@ -548,10 +548,10 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Tidak Senyap";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Grup ini dapat melihat profil anda.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Grup ini dapat melihat profil Anda.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Pengguna ini dapat emlihat profil anda.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Pengguna ini dapat melihat profil Anda.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Bagikan Profil";
@@ -569,7 +569,7 @@
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bagikan Profil Anda pada Pengguna Ini";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Pengguna ini tidak ada di dalam kontak anda.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Pengguna ini tidak ada di dalam kontak Anda.";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan ...";
@@ -581,7 +581,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokir Pengguna Ini";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Pengaturan ulang bagianmu yang bisa menuruti anda untuk menerima pesan dimasa depan dari 1%@, tapi itu tidak akan memulihkan pesan yang sudah rusak";
+"CORRUPTED_SESSION_DESCRIPTION" = "Mengatur ulang sesi Anda akan mengizinkan Anda untuk menerima pesan di masa depan dari 1%@, tapi itu tidak akan memulihkan pesan yang sudah rusak.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Pilih Kode Negara";
@@ -651,7 +651,7 @@
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Daftarkan ulang nomor telpon ini";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Perangkat tidak lagi terdaftar. Nomor telpon Anda mungkin terdaftar ke Signal melalui perangkat yang berbeda. Ketuk untuk mendaftar ulang.";
+"DEREGISTRATION_WARNING" = "Perangkat tidak lagi terdaftar. Nomor telpon Anda mungkin terdaftar ke Signal di perangkat lain. Ketuk untuk daftar ulang.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Terakir aktif: %@";
@@ -711,7 +711,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Perbarui";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Anda telah mengubah grup ini. Apakah anda ingin menyimpan perubahan ini?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Anda telah mengubah grup ini. Apakah Anda ingin menyimpan perubahan ini?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
@@ -732,7 +732,7 @@
 "EDIT_TXT" = "Ubah";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Hai,\n\nBelakangan ini saya menggunakan Signal untuk menjaga percakapan di iPhone tetap privat. Saya ingin anda memasangnya juga, agar kita bisa yakin bahwa hanya anda dan saya yang bisa membaca pesan dan mendengar percakapan kita.\n\nSignal tersedia untuk iPhone dan Android. Dapatkan di sini: %@\n\nSignal bekerja seperti aplikasi bertukar pesan anda yang sudah ada. Kita dapat mengirim gambar dan video, membuat panggilan, dan memulai percakapan grup. Bagian terbaiknya adalah, tidak ada yang bisa melihatnya, bahkan orang yang membuat Signal!\n\nAnda dapat membaca lebih lanjut tentang Open Whisper Systems, orang-orang yang membuat Signal, di sini: %@";
+"EMAIL_INVITE_BODY" = "Hai,\n\nBelakangan ini saya menggunakan Signal untuk menjaga percakapan di iPhone tetap privat. Saya ingin Anda memasangnya juga, agar kita bisa yakin bahwa hanya Anda dan saya yang bisa membaca pesan dan mendengar percakapan kita.\n\nSignal tersedia untuk iPhone dan Android. Dapatkan di sini: %@\n\nSignal bekerja seperti aplikasi bertukar pesan Anda yang sudah ada. Kita dapat mengirim gambar dan video, membuat panggilan, dan memulai percakapan grup. Bagian terbaiknya adalah, tidak ada yang bisa melihatnya, bahkan orang yang membuat Signal!\n\nAnda dapat membaca lebih lanjut tentang Open Whisper Systems, orang-orang yang membuat Signal, di sini: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Pindah ke Signal";
@@ -741,7 +741,7 @@
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Sentuh pada tombol menulis";
 
 /* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "Mulai percakapan pertama anda di Signal!";
+"EMPTY_ARCHIVE_FIRST_TITLE" = "Mulai percakapan pertama Anda di Signal!";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TEXT" = "Percakapan yang tidak aktif dapat anda simpan dalam arsip untuk kebutuhan mendatang";
@@ -750,10 +750,10 @@
 "EMPTY_ARCHIVE_TITLE" = "Bersihkan Percakapan Anda.";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Tak satupun kontak anda memiliki Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Tak satupun kontak Anda memiliki Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE2" = "Mengapa anda tidak mengundang seseorang?";
+"EMPTY_CONTACTS_LABEL_LINE2" = "Mengapa Anda tidak mengundang seseorang?";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TEXT" = "Tips: tambah sebuah percakapan sebagai pengingat!";
@@ -768,7 +768,7 @@
 "EMPTY_INBOX_TITLE" = "Kosong melompong";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Konfirmasi PIN anda.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Konfirmasi PIN Anda.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Tidak dapat menonaktifkan Kunci Pendaftaran.";
@@ -816,7 +816,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Tak dapat mengirimkan karena privasi data buruk.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal mengirim pesan ke pengguna karena anda memblokir mereka.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal mengirim pesan ke pengguna karena Anda memblokir mereka.";
 
 /* Error message indicating that message send failed due to failed attachment write */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Gagal karena gagal menulis pada lampiran.";
@@ -837,7 +837,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Tanggapan tidak valid dari layanan.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Peralatan anda tidak lagi terdaftar dengan nomor telepon anda. Anda mesti membuang dan menginstall ulang Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Peralatan Anda tidak lagi terdaftar dengan nomor telepon Anda. Anda mesti membuang dan memasang ulang Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Server Gagal. Mohon coba lagi nanti.";
@@ -858,7 +858,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kunci penerima tidak cocok";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Penerima pesan tidak sinkron. Ketuk untuk menyetel ulang sesi aman anda.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Penerima pesan tidak sinkron. Ketuk untuk menyetel ulang sesi aman Anda.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Menerima pesan yang tidak cocok dengan versi ini";
@@ -870,7 +870,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Nomor keamanan diubah.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Nomor keamanan anda %@ telah berubah.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Nomor keamanan Anda %@ telah berubah.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Sebuah kegagagalan tak dikenal muncul.";
@@ -912,7 +912,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Lampiran";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Gagal untuk menghadirkan GIF diinginkan. Mohon verifikasi anda online.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Gagal untuk menghadirkan GIF yang diinginkan. Mohon verifikasi Anda daring.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Terjadi kegagalan yang tidak diketahui.";
@@ -933,7 +933,7 @@
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Tak Ada Hasil.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Masukkan pencarian anda";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Masukkan pencarian Anda";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Avatar telah diubah";
@@ -1029,7 +1029,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Percakapan ini telah terarsipkan. Mereka akan tampil dalam kotak masuk jika pesan baru diterima.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Untuk melihat nama kontak anda, perbarui pengaturan sistem untuk memperbolehkan mengakses kontak.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Untuk melihat nama kontak Anda, perbarui pengaturan sistem untuk memperbolehkan mengakses kontak.";
 
 /* notification body */
 "INCOMING_CALL" = "Panggilan masuk";
@@ -1050,7 +1050,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Berkas audio tidak valid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Untuk mengundang kontak anda, anda butuh untuk memperbolehkan akses kontak anda di dalam Pengaturan aplikasi.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Untuk mengundang kontak, Anda memerlukan untuk memperbolehkan akses kontak Anda di dalam Pengaturan aplikasi.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Perbolehkan Akses Kontak";
@@ -1080,13 +1080,13 @@
 "LEAVE_GROUP_ACTION" = "Meninggalkan Grup.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Kode QR tidak valid, pastikan anda memindai kode QR yang ditampilkan pada peralatan yang telah anda kaitkan.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Kode QR tidak valid, pastikan Anda memindai kode QR yang ditampilkan pada peralatan yang telah Anda kaitkan.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Tautan Peralatan Telah Gagal.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Peralatan ini dapat melilhat grup dan kontak anda, membaca semua pesan anda dan mengirim pesan dalam nama anda.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Perangkat ini dapat melilhat grup dan kontak Anda, membaca semua pesan Anda dan mengirim pesan dalam nama Anda.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Tautkan Perangkat?";
@@ -1304,7 +1304,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Lewati";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Harap periksa jika anda terhubung dan coba kembali";
+"NETWORK_ERROR_RECOVERY" = "Harap periksa jika Anda terhubung dan coba kembali.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Sensorsip Gimik: Aktif";
@@ -1478,7 +1478,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Bersihkan Verifikasi";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ini tidak tampak seperti nomor keamanan Anda dengan %@. Apakah Anda memverifikasi nomor yang benar?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ini tidak terlihat seperti nomor keamanan Anda dengan %@. Apakah Anda memverifikasi nomor yang benar?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Nomor di dalam papan klip Anda tak tampak seperti nomor keamanan yang benar untuk percakapan ini.";
@@ -1640,7 +1640,7 @@
 "REGISTRATION_ERROR" = "Terjadi Kesalahan Saat Mendaftar";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Kami tidak bisa mengaktifkan akun anda hingga setelah anda memverifikasi kode yang kami kirimkan.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Kami tidak bisa mengaktifkan akun Anda hingga setelah Anda memverifikasi kode yang kami kirimkan.";
 
 /* alert body when registering an iPad */
 "REGISTRATION_IPAD_CONFIRM_BODY" = "Mendaftar sekarang akan menonaktifkan Signal di perangkat lain yang terdaftar dengan nomor telpon ini.";
@@ -1670,13 +1670,13 @@
 "REGISTRATION_RESTRICTED_MESSAGE" = "Seseorang telah bersemangat untuk mengirim pesan pertamanya! Anda harus daftar terlebih dahulu sebelum melakukan hal tersebut.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Nomor telefon anda";
+"REGISTRATION_TITLE_LABEL" = "Nomor telepon Anda";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifikasi gagal";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Jumlah yang anda masukkan tidak sesuai dari apa yang telah kami kirimkan. Ingin memeriksa kembali?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Angka yang Anda masukkan tidak sesuai dengan apa yang telah kami kirimkan. Mau periksa lagi?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Kunci Pendaftaran Salah";
@@ -1700,7 +1700,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "Tolak";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Nomor telfon yang anda coba daftarkan telah terdaftar di server lain, harap keluar dari server tersebut dan coba kembali";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Nomor telepon yang Anda coba daftarkan telah terdaftar di peladen lain, harap keluar dari peladen tersebut dan coba kembali.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY" = "Kunci Pendaftaran telah diaktifkan untuk nomor telpon Anda. Untuk membantu Anda mengingat PIN Kunci Pendaftaran, Signal akan secara berkala menanyakannya pada Anda untuk mengkonfirmasinya.";
@@ -1715,7 +1715,7 @@
 "REMINDER_2FA_NAV_TITLE" = "Masukkan PIN Kunci Pendaftaran Anda";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Anda dapat menyetel PIN baru dalam pengaturan privasi Anda.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Anda dapat mengatur PIN baru dalam pengaturan privasi Anda.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Ini bukan PIN yang benar.";
@@ -1742,10 +1742,10 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Nomor aman Signal kami \n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nomor aman anda dengan %@ telah berubah. Anda kemungkinan bermaksud untuk memverifikasi";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Nomor keamanan Anda dengan %@ telah berubah. Anda mungkin mau memverifikasi.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Pindai kode QR pada perangkat kontak anda";
+"SCAN_CODE_INSTRUCTIONS" = "Pindai kode QR pada perangkat kontak Anda";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Pindai kode QR";
@@ -1814,7 +1814,7 @@
 "SEND_INVITE_FAILURE" = "Pengiriman undangan gagal, mohon nanti mencoba kembali";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "Anda telah mengundang kawan anda untuk menggunakan Signal";
+"SEND_INVITE_SUCCESS" = "Anda telah mengundang kawan Anda untuk menggunakan Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Undang melalui %@";
@@ -1844,16 +1844,16 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Lokasi %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Jika aktif, Signal akan mencegah penghindaran penyensoran. Jangan non-aktifkan fitur ini kecuali anda berada dilokasi dimana Signal di sensor";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Jika diaktifkan, Signal akan menggagalkan penyensoran. Jangan nonaktifkan fitur ini kecuali Anda berada di lokasi di mana Signal disensor.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Penghindar Penyensoran telah diaktifkan berdasarkan  nomor telepon akun anda";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Pengelabuan Penyensoran telah diaktifkan berdasarkan nomor telepon Anda.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Penghindar penyensoran hanya dapat diaktifkan ketika terkoneksi dengan internet";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Penghindar penyensoran tidak diperlukan; anda telah terhubung dengan layanan Signal";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Pengelabuan penyensoran tidak diperlukan; Anda telah terhubung dengan layanan Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Menghindari Penyensoran ";
@@ -1907,7 +1907,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Tambahkan";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Anda tidak mempunyai kontak pada Signal";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Anda tidak mempunyai kontak di Signal.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Tidak ada hasil pencarian";
@@ -1922,7 +1922,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Selalu relay panggilan";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay semua panggilan melalui server Signal untuk menghindari mengungkapkan alamat IP Anda ke kontak Anda. Mengaktifkannya akan mengurangi kualitas panggilan.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Siarkan semua panggilan melalui peladen Signal untuk menghindari pengungkapan alamat IP Anda ke kontak Anda. Mengaktifkannya akan mengurangi kualitas panggilan.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Hapus Riwayat Percakapan";
@@ -1937,7 +1937,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Hapus Semua Data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Apakah anda yaking ingin menghapus seluruh riwayat (pesan, tautan, dan panggilan)? Langkah ini tidak dapat dipulihkan";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Apakah Anda yakin ingin menghapus seluruh riwayat (pesan, lampiran, dan panggilan)? Langkah ini tidak dapat dipulihkan.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Hapus Semuanya";
@@ -1955,7 +1955,7 @@
 "SETTINGS_INVITE_TITLE" = "Undang Temanmu";
 
 /* content of tweet when inviting via twitter */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Anda dapat menghubungi saya melalui @signalapp. Dapatkan sekarang: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Anda bisa menghubungi saya melalui @signalapp. Dapatkan sekarang: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Suara Pesan";
@@ -2096,13 +2096,13 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Tunjukkan pembicaraan";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Aku mengundang anda untuk memasang Signal! Tautan tersedia disini:";
+"SMS_INVITE_BODY" = "Saya mengundang Anda untuk memasang Signal! Tautan tersedia di sini:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Kosong";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nomor keamanan anda sesuai dengan %@. Anda dapat menandai kontak ini sebagai verifikasi";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Nomor keamanan Anda sesuai dengan %@. Anda dapat menandai kontak ini sebagai terverifikasi.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Nomor keamanan sesuai";
@@ -2162,7 +2162,7 @@
 "UNKNOWN_ATTACHMENT_LABEL" = "Lampiran tidak dikenal";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Pengguna tidak terdapat didalam kontak. Apakah anda ingin memblokir pengguna ini?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Pengguna tidak terdapat di dalam kontak. Apakah Anda ingin memblokir pengguna ini?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Panggilan Tak Dikenal";
@@ -2195,13 +2195,13 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Perangkat Anda tidak mendukung fitur ini.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Anda tidak dapat mengeluarkan anggota kelompok. Mereka akan baik keluar, atau anda dapat membuat kelompok baru tanpa anggota tersebut. ";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Anda tidak dapat mengeluarkan anggota grup. Mereka akan keluar, atau Anda dapat membuat kelompok baru tanpa anggota tersebut. ";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Tidak diijinkan";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Menjawab panggilan dari layar yang terkunci lebih mudah dengan panggilan iOS terintegrasi. Kami menganonimkan panggilan anda secara otomatis, jadi hal ini juga sangat privasi";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Menjawab panggilan dari layar terkunci lebih mudah dengan panggilan iOS terintegrasi. Kami menganonimkan panggilan Anda secara otomatis, jadi hal ini juga sangat privat.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Pelajari lebih lanjut pada pengaturan pribadi";
@@ -2210,7 +2210,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Geser untuk menjawab";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Anda sekarang dapat memilih bunyi pemberitahuan untuk umum maupun untuk tiap percakapan, serta panggilan akan mengikuti ringtone yang telah Anda pilih untuk setiap kontak.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Anda sekarang dapat memilih bunyi pemberitahuan untuk umum maupun untuk tiap percakapan, serta panggilan akan mengikuti nada dering yang telah Anda pilih untuk setiap kontak.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Tinjau Pengaturan Notifikasi";
@@ -2219,19 +2219,19 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Bunyi Panggilan dan Pesan telah Diperbarui";
 
 /* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Siapkan profile anda";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Siapkan profil Anda";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Sekarang anda dapat membagikan nama dan foto profil dengan kawan anda di Signal";
+"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Sekarang Anda dapat membagikan nama dan foto profil dengan kawan Anda di Signal.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Siap foto wajah";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Anda saat ini mempunyai pilihan melihat dan berbagi ketika pesan telah dibaca";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Anda saat ini mempunyai pilihan melihat dan berbagi ketika pesan telah dibaca.";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktifkan pesan terbaca pada pengaturan pribadi anda";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktifkan pesan terbaca pada pengaturan privasi Anda.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Perkenalkan pesan terbaca";
@@ -2270,16 +2270,16 @@
 "VERIFICATION_PHONE_NUMBER_FORMAT" = "Masukkan kode verifikasi yang telah dikirimkan pada %@";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Anda menandai  %@ sebagai tidak terverifikasi";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Anda menandai  %@ sebagai tidak terverifikasi.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Anda menandai  %@ sebagai tidak terverifikasi pada perangkat yang lain";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Anda menandai  %@ sebagai tidak terverifikasi pada perangkat lain.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Anda menandai %@ sebagai terverifikasi";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Anda menandai %@ sebagai terverifikasi.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Anda menandai %@ sebagai terverifikasi pada perangkat yang lain";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Anda menandai %@ sebagai terverifikasi pada perangkat lain.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Keadaan verifikasi berubah";

@@ -16,35 +16,27 @@ import SignalServiceKit
     init() {
         super.init(style: .default, reuseIdentifier: TAG)
 
-        self.contentView.addSubview(avatarView)
-
-        let textContainer = UIView.container()
-        textContainer.addSubview(nameLabel)
-        textContainer.addSubview(subtitleLabel)
-        self.contentView.addSubview(textContainer)
-
         // Font config
         nameLabel.font = .ows_dynamicTypeBody
         subtitleLabel.font = UIFont.ows_regularFont(withSize: 11.0)
         subtitleLabel.textColor = UIColor.ows_darkGray
 
-        // Listen to notifications...
-        // TODO avatar, group name change, group membership change, group member name change
-
         // Layout
 
-        nameLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .bottom)
-        subtitleLabel.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .top)
-        subtitleLabel.autoPinEdge(.top, to: .bottom, of: nameLabel)
-
-        avatarView.autoPinLeadingToSuperviewMargin()
-        avatarView.autoVCenterInSuperview()
         avatarView.autoSetDimension(.width, toSize: CGFloat(kContactCellAvatarSize))
         avatarView.autoPinToSquareAspectRatio()
 
-        textContainer.autoPinEdge(.leading, to: .trailing, of: avatarView, withOffset: kContactCellAvatarTextMargin)
-        textContainer.autoPinTrailingToSuperviewMargin()
-        textContainer.autoVCenterInSuperview()
+        let textRows = UIStackView(arrangedSubviews: [nameLabel, subtitleLabel])
+        textRows.axis = .vertical
+        textRows.alignment = .leading
+
+        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        columns.axis = .horizontal
+        columns.alignment = .center
+        columns.spacing = kContactCellAvatarTextMargin
+
+        self.contentView.addSubview(columns)
+        columns.autoPinEdgesToSuperviewMargins()
     }
 
     required init?(coder aDecoder: NSCoder) {

@@ -387,7 +387,7 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
                     return nil
                 }
 
-                return captureController.capturer.captureSession
+                return captureController.captureSession
             }()
 
             strongDelegate.peerConnectionClient(strongSelf, didUpdateLocalVideoCaptureSession: captureSession)
@@ -1116,15 +1116,13 @@ protocol VideoCaptureSettingsDelegate: class {
 
 class VideoCaptureController {
 
-    let serialQueue = DispatchQueue(label: "org.signal.videoCaptureController")
-    let capturer: RTCCameraVideoCapturer
-    weak var settingsDelegate: VideoCaptureSettingsDelegate?
-    var isUsingFrontCamera: Bool = true
+    private let capturer: RTCCameraVideoCapturer
+    private weak var settingsDelegate: VideoCaptureSettingsDelegate?
+    private let serialQueue = DispatchQueue(label: "org.signal.videoCaptureController")
+    private var isUsingFrontCamera: Bool = true
 
-    func assertIsOnSerialQueue() {
-        if _isDebugAssertConfiguration(), #available(iOS 10.0, *) {
-            assertOnQueue(serialQueue)
-        }
+    public var captureSession: AVCaptureSession {
+        return capturer.captureSession
     }
 
     public init(capturer: RTCCameraVideoCapturer, settingsDelegate: VideoCaptureSettingsDelegate) {
@@ -1139,6 +1137,33 @@ class VideoCaptureController {
             }
 
             strongSelf.startCaptureSync()
+        }
+    }
+
+    public func stopCapture() {
+        serialQueue.sync { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.capturer.stopCapture()
+        }
+    }
+
+    public func switchCamera(isUsingFrontCamera: Bool) {
+        serialQueue.sync { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+
+            strongSelf.isUsingFrontCamera = isUsingFrontCamera
+            strongSelf.startCaptureSync()
+        }
+    }
+
+    private func assertIsOnSerialQueue() {
+        if _isDebugAssertConfiguration(), #available(iOS 10.0, *) {
+            assertOnQueue(serialQueue)
         }
     }
 
@@ -1158,23 +1183,6 @@ class VideoCaptureController {
 
         let fps = self.framesPerSecond(format: format)
         capturer.startCapture(with: device, format: format, fps: fps)
-    }
-
-    public func stopCapture() {
-        serialQueue.sync { [weak self] in
-            guard let strongSelf = self else {
-                return
-            }
-
-            strongSelf.capturer.stopCapture()
-        }
-    }
-
-    public func switchCamera(isUsingFrontCamera: Bool) {
-        serialQueue.sync {
-            self.isUsingFrontCamera = isUsingFrontCamera
-            self.startCaptureSync()
-        }
     }
 
     private func device(position: AVCaptureDevice.Position) -> AVCaptureDevice? {
