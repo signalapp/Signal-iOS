@@ -342,18 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
         return @"";
     }
 
-    NSString *dateTimeString;
-    if (![DateUtil dateIsThisYear:date]) {
-        dateTimeString = [[DateUtil dateFormatter] stringFromDate:date];
-    } else if ([DateUtil dateIsOlderThanOneWeek:date]) {
-        dateTimeString = [[DateUtil monthAndDayFormatter] stringFromDate:date];
-    } else if ([DateUtil dateIsOlderThanToday:date]) {
-        dateTimeString = [[DateUtil shortDayOfWeekFormatter] stringFromDate:date];
-    } else {
-        dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
-    }
-
-    return dateTimeString.uppercaseString;
+    return [DateUtil formatDateShort:date];
 }
 
 #pragma mark - Constants

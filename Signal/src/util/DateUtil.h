@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
                                          isRTL:(BOOL)isRTL NS_SWIFT_NAME(formatPastTimestampRelativeToNow(_:isRTL:));
 
++ (NSString *)formatTimestampShort:(uint64_t)timestamp;
++ (NSString *)formatDateShort:(NSDate *)date;
+
 @end
 
 NS_ASSUME_NONNULL_END
