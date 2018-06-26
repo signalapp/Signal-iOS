@@ -48,8 +48,8 @@ public class ConversationStyle: NSObject {
         }
     }
 
-    @objc public let contentMarginTop: CGFloat = 10
-    @objc public let contentMarginBottom: CGFloat = 10
+    @objc public let contentMarginTop: CGFloat = 24
+    @objc public let contentMarginBottom: CGFloat = 24
 
     @objc public var gutterLeading: CGFloat = 0
     @objc public var gutterTrailing: CGFloat = 0
@@ -66,6 +66,8 @@ public class ConversationStyle: NSObject {
     @objc public var fullWidthContentWidth: CGFloat = 0
 
     @objc public var maxMessageWidth: CGFloat = 0
+    // TODO: Can we eliminate this after moving timestamps and
+    //       message status inside the message bubbles.
     @objc public var maxFooterWidth: CGFloat = 0
 
     @objc public var textInsets = OWSDirectionalEdgeInsets.zero
@@ -114,15 +116,14 @@ public class ConversationStyle: NSObject {
             gutterLeading = 16
             gutterTrailing = 20
         }
-        // TODO: Should these be symmetric? Should they reflect the other gutters?
-        fullWidthGutterLeading = 20
-        fullWidthGutterTrailing = 20
+        fullWidthGutterLeading = gutterLeading
+        fullWidthGutterTrailing = gutterTrailing
 
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)
 
         fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
-        maxMessageWidth = floor(contentWidth * 0.9)
+        maxMessageWidth = floor(contentWidth - 48)
         // TODO: Should this be different?
         maxFooterWidth = maxMessageWidth - 10
 
