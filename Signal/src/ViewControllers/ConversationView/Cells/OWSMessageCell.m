@@ -15,12 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
 
-// The cell's contentView contains:
-//
-// * MessageView (message)
-// * dateHeaderLabel (above message)
-// * footerView (below message)
-
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UIView *dateHeaderView;
 @property (nonatomic) UIView *dateStrokeView;
@@ -282,13 +276,15 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES IFF the avatar view is appropriate and configured.
 - (BOOL)updateAvatarView
 {
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return NO;
+    }
     if (!self.viewItem.isGroupThread) {
+        OWSFail(@"%@ not a group thread.", self.logTag);
         return NO;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        return NO;
-    }
-    if (self.viewItem.shouldHideAvatar) {
+        OWSFail(@"%@ not an incoming message.", self.logTag);
         return NO;
     }
 
@@ -322,13 +318,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    if (!self.viewItem.shouldShowSenderAvatar) {
+        return;
+    }
     if (!self.viewItem.isGroupThread) {
+        OWSFail(@"%@ not a group thread.", self.logTag);
         return;
     }
     if (self.viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
-        return;
-    }
-    if (self.viewItem.shouldHideAvatar) {
+        OWSFail(@"%@ not an incoming message.", self.logTag);
         return;
     }
 

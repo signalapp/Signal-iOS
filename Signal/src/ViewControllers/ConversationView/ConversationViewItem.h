@@ -55,10 +55,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL hasQuotedText;
 
 @property (nonatomic) BOOL shouldShowDate;
-// TODO: Consider renaming to shouldHideFooter.
-@property (nonatomic) BOOL shouldHideRecipientStatus;
-// Used to suppress "group sender" avatars.
-@property (nonatomic) BOOL shouldHideAvatar;
+@property (nonatomic) BOOL shouldShowSenderAvatar;
+@property (nonatomic, nullable) NSString *senderName;
+@property (nonatomic) BOOL shouldHideFooter;
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 

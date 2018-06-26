@@ -149,24 +149,35 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldHideRecipientStatus:(BOOL)shouldHideRecipientStatus
+- (void)setShouldShowSenderAvatar:(BOOL)shouldShowSenderAvatar
 {
-    if (_shouldHideRecipientStatus == shouldHideRecipientStatus) {
+    if (_shouldShowSenderAvatar == shouldShowSenderAvatar) {
         return;
     }
 
-    _shouldHideRecipientStatus = shouldHideRecipientStatus;
+    _shouldShowSenderAvatar = shouldShowSenderAvatar;
 
     [self clearCachedLayoutState];
 }
 
-- (void)setShouldHideAvatar:(BOOL)shouldHideAvatar
+- (void)setSenderName:(nullable NSString *)senderName
 {
-    if (_shouldHideAvatar == shouldHideAvatar) {
+    if ([NSObject isNullableObject:senderName equalTo:_senderName]) {
         return;
     }
 
-    _shouldHideAvatar = shouldHideAvatar;
+    _senderName = senderName;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setShouldHideFooter:(BOOL)shouldHideFooter
+{
+    if (_shouldHideFooter == shouldHideFooter) {
+        return;
+    }
+
+    _shouldHideFooter = shouldHideFooter;
 
     [self clearCachedLayoutState];
 }
