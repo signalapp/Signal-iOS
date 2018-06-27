@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.text = topText;
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    topLabel.font = [OWSGenericAttachmentView bottomLabelFont];
+    topLabel.font = [OWSGenericAttachmentView topLabelFont];
     [labelsView addArrangedSubview:topLabel];
 
     NSError *error;
@@ -153,12 +153,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)topLabelFont
 {
-    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
+    return [UIFont ows_dynamicTypeCaption1Font];
 }
 
 + (UIFont *)bottomLabelFont
 {
-    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+    return [UIFont ows_dynamicTypeCaption2Font];
 }
 
 + (CGFloat)labelVSpacing

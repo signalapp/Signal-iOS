@@ -260,7 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)labelFont
 {
-    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+    return [UIFont ows_dynamicTypeCaption2Font];
 }
 
 + (CGFloat)labelVSpacing

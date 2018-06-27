@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (CGFloat)iconHMargin
+- (CGFloat)hMargin
 {
     return 12.f;
 }
@@ -143,11 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
     return 10.f;
 }
 
-- (UIColor *)bubbleBackgroundColor
-{
-    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
-}
-
 + (UIFont *)nameFont
 {
     return [UIFont ows_dynamicTypeBodyFont];
@@ -175,17 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents
 {
-    self.backgroundColor = [UIColor colorWithRGBHex:0xefeff4];
     self.layoutMargins = UIEdgeInsetsZero;
-
-    // TODO: Verify that this layout works in RTL.
-    const CGFloat kBubbleTailWidth = 6.f;
-
-    UIView *contentView = [UIView containerView];
-    [self addSubview:contentView];
-    [contentView autoPinLeadingToSuperviewMarginWithInset:self.isIncoming ? kBubbleTailWidth : 0.f];
-    [contentView autoPinTrailingToSuperviewMarginWithInset:self.isIncoming ? 0.f : kBubbleTailWidth];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
 
     AvatarImageView *avatarView = [AvatarImageView new];
     avatarView.image =
@@ -226,23 +211,23 @@ NS_ASSUME_NONNULL_BEGIN
     [disclosureImageView setCompressionResistanceHigh];
     [disclosureImageView setContentHuggingHigh];
 
-    UIStackView *stackView = [UIStackView new];
-    stackView.axis = UILayoutConstraintAxisHorizontal;
-    stackView.spacing = self.iconHSpacing;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    [contentView addSubview:stackView];
-    [stackView autoPinLeadingToSuperviewMarginWithInset:self.iconHMargin];
-    [stackView autoPinTrailingToSuperviewMarginWithInset:self.iconHMargin];
-    [stackView autoVCenterInSuperview];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    // We pin to the superview _edge_ and not _margin_ for the purposes
-    // of overflow, so that changes to the margins do not trip these safe guards.
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
-    [stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:0 relation:NSLayoutRelationGreaterThanOrEqual];
+    UIStackView *hStackView = [UIStackView new];
+    hStackView.axis = UILayoutConstraintAxisHorizontal;
+    hStackView.spacing = self.iconHSpacing;
+    hStackView.alignment = UIStackViewAlignmentCenter;
+    hStackView.layoutMarginsRelativeArrangement = YES;
+    hStackView.layoutMargins = UIEdgeInsetsMake(self.vMargin, self.hMargin, self.vMargin, self.hMargin);
+    [hStackView addArrangedSubview:avatarView];
+    [hStackView addArrangedSubview:labelsView];
+    [hStackView addArrangedSubview:disclosureImageView];
 
-    [stackView addArrangedSubview:avatarView];
-    [stackView addArrangedSubview:labelsView];
-    [stackView addArrangedSubview:disclosureImageView];
+    UIStackView *vStackView = [UIStackView new];
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.spacing = 0;
+    vStackView.alignment = UIStackViewAlignmentFill;
+    [self addSubview:vStackView];
+    [vStackView autoPinToSuperviewEdges];
+    [vStackView addArrangedSubview:hStackView];
 
     if ([OWSContactShareView hasAnyButton:self.contactShare contactsManager:self.contactsManager]) {
         UILabel *label = [UILabel new];
@@ -261,13 +246,8 @@ NS_ASSUME_NONNULL_BEGIN
         label.textColor = UIColor.ows_materialBlueColor;
         label.textAlignment = NSTextAlignmentCenter;
         label.backgroundColor = [UIColor whiteColor];
-        [self addSubview:label];
-        [label autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contentView withOffset:self.vMargin];
-        [label autoPinWidthToSuperview];
-        [label autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+        [vStackView addArrangedSubview:label];
         [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareView.buttonHeight];
-    } else {
-        [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
     }
 }
 
