@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isQuotedReply) {
         // Flush any pending "text" subviews.
-        [self insertTextViewsIntoStackViewIfNecessary:textViews];
+        [self insertAnyTextViewsIntoStackView:textViews];
         [textViews removeAllObjects];
 
         BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
@@ -323,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
         shouldFooterOverlayMedia = self.canFooterOverlayMedia;
 
         // Flush any pending "text" subviews.
-        [self insertTextViewsIntoStackViewIfNecessary:textViews];
+        [self insertAnyTextViewsIntoStackView:textViews];
         [textViews removeAllObjects];
 
         bodyMediaView.clipsToBounds = YES;
@@ -376,7 +376,6 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
         OWSAssert(bodyMediaView);
-        // Display footer over media.
         [self.footerView configureWithConversationViewItem:self.viewItem hasShadows:YES];
         [bodyMediaView addSubview:self.footerView];
 
@@ -387,12 +386,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self.footerView autoPinBottomToSuperviewMarginWithInset:self.conversationStyle.textInsetBottom],
         ]];
     } else {
-        // Display footer at bottom of message bubble.
         [self.footerView configureWithConversationViewItem:self.viewItem hasShadows:NO];
         [textViews addObject:self.footerView];
     }
 
-    [self insertTextViewsIntoStackViewIfNecessary:textViews];
+    [self insertAnyTextViewsIntoStackView:textViews];
 
     CGSize bubbleSize = [self measureSize];
     [NSLayoutConstraint autoSetPriority:UILayoutPriorityRequired
@@ -407,6 +405,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateBubbleColorWithBodyMediaView:(nullable UIView *)bodyMediaView
 {
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
     BOOL hasOnlyBodyMediaView = NO;
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
@@ -423,7 +423,7 @@ NS_ASSUME_NONNULL_BEGIN
             hasOnlyBodyMediaView = (bodyMediaView && self.stackView.subviews.count == 1);
             break;
     }
-    if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && !hasOnlyBodyMediaView) {
+    if (!hasOnlyBodyMediaView) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
         self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
     } else {
@@ -452,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)insertTextViewsIntoStackViewIfNecessary:(NSArray<UIView *> *)textViews
+- (void)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
 {
     if (textViews.count < 1) {
         return;
