@@ -465,6 +465,7 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // Cells' appearance can depend on adjacent cells in both directions.
     [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
         @(-1),
         @(+1),
