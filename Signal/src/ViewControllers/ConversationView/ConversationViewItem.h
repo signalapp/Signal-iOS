@@ -60,8 +60,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // Used to suppress "group sender" avatars.
 @property (nonatomic) BOOL shouldHideAvatar;
 
-@property (nonatomic) NSInteger row;
-
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 - (instancetype)init NS_UNAVAILABLE;

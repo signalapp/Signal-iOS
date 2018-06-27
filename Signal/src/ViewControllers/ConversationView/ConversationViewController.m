@@ -3313,10 +3313,13 @@ typedef enum : NSUInteger {
                     ConversationViewItem *_Nullable viewItem = self.viewItemCache[collectionKey.key];
                     if (viewItem) {
                         [self reloadInteractionForViewItem:viewItem];
+                    } else {
+                        hasMalformedRowChange = YES;
                     }
                 } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
                     // Do nothing, this is a pseudo-update generated due to
                     // setCellDrawingDependencyOffsets.
+                    OWSAssert(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
                     hasMalformedRowChange = YES;
                 }
@@ -4807,7 +4810,6 @@ typedef enum : NSUInteger {
                                                                  transaction:transaction
                                                            conversationStyle:self.conversationStyle];
             }
-            viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
             OWSAssert(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
