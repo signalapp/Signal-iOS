@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSBubbleShapeView *mediaClipView;
 
+@property (nonatomic) OWSBubbleShapeView *bubbleStrokeView;
+
 @property (nonatomic) UIStackView *stackView;
 
 @property (nonatomic) UILabel *senderNameLabel;
@@ -81,6 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.mediaShadowView = [OWSBubbleShapeView bubbleShadowView];
     self.mediaClipView = [OWSBubbleShapeView bubbleClipView];
+    self.bubbleStrokeView = [OWSBubbleShapeView bubbleDrawView];
 
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
@@ -333,44 +336,57 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView.layer.opacity = 0.75f;
         }
 
-        if (self.hasBodyMediaWithThumbnail) {
+        if (self.hasFullWidthMediaView) {
             // Flush any pending "text" subviews.
             OWSAssert(!topTextStackView);
             topTextStackView = [self insertAnyTextViewsIntoStackView:textViews];
             [textViews removeAllObjects];
 
-            // The "body media" view casts a shadow "downward" onto adjacent views,
-            // so we use a "proxy" view to take its place within the v-stack
-            // view and then insert the body media view above its proxy so that
-            // it floats above the other content of the bubble view.
+            if (self.hasBodyMediaWithThumbnail) {
 
-            UIView *bodyProxyView = [UIView new];
-            [self.stackView addArrangedSubview:bodyProxyView];
+                // The "body media" view casts a shadow "downward" onto adjacent views,
+                // so we use a "proxy" view to take its place within the v-stack
+                // view and then insert the body media view above its proxy so that
+                // it floats above the other content of the bubble view.
 
-            [self addSubview:self.mediaShadowView];
-            [self.mediaShadowView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyProxyView];
-            [self.mediaShadowView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyProxyView];
-            [self.mediaShadowView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:bodyProxyView];
-            [self.mediaShadowView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:bodyProxyView];
+                UIView *bodyProxyView = [UIView new];
+                [self.stackView addArrangedSubview:bodyProxyView];
 
-            [self.mediaShadowView addSubview:self.mediaClipView];
-            [self.mediaClipView autoPinToSuperviewEdges];
+                [self addSubview:self.mediaShadowView];
+                [self.mediaShadowView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyProxyView];
+                [self.mediaShadowView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyProxyView];
+                [self.mediaShadowView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:bodyProxyView];
+                [self.mediaShadowView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:bodyProxyView];
 
-            [self.mediaClipView addSubview:bodyMediaView];
-            [bodyMediaView autoPinToSuperviewEdges];
+                [self.mediaShadowView addSubview:self.mediaClipView];
+                [self.mediaClipView autoPinToSuperviewEdges];
 
-            [self.bubbleView addPartnerView:self.mediaClipView];
-            [self.bubbleView addPartnerView:self.mediaShadowView];
+                [self.mediaClipView addSubview:bodyMediaView];
+                [bodyMediaView autoPinToSuperviewEdges];
 
-            // TODO: Constants
-            // TODO: What's the difference between an inner and outer shadow?
-            self.mediaShadowView.fillColor = self.bubbleColor;
-            self.mediaShadowView.layer.shadowColor = [UIColor blackColor].CGColor;
-            self.mediaShadowView.layer.shadowOpacity = 0.12f;
-            self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
-            self.mediaShadowView.layer.shadowRadius = 0.5f;
+                [self.bubbleView addPartnerView:self.mediaClipView];
+                [self.bubbleView addPartnerView:self.mediaShadowView];
+
+                // TODO: Constants
+                // TODO: What's the difference between an inner and outer shadow?
+                self.mediaShadowView.fillColor = self.bubbleColor;
+                self.mediaShadowView.layer.shadowColor = [UIColor blackColor].CGColor;
+                self.mediaShadowView.layer.shadowOpacity = 0.12f;
+                self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
+                self.mediaShadowView.layer.shadowRadius = 0.5f;
+            } else {
+                OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
+
+                [self.stackView addArrangedSubview:bodyMediaView];
+
+                // TODO: Constants.
+                self.bubbleStrokeView.strokeColor = [UIColor lightGrayColor];
+                self.bubbleStrokeView.strokeThickness = 1.f;
+                [self.bubbleView addSubview:self.bubbleStrokeView];
+                [self.bubbleStrokeView autoPinToSuperviewEdges];
+                [self.bubbleView addPartnerView:self.bubbleStrokeView];
+            }
         } else {
-            //            [self.stackView addArrangedSubview:bodyMediaView];
             [textViews addObject:bodyMediaView];
         }
     }
@@ -432,7 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateBubbleColor
 {
-    BOOL hasOnlyBodyMediaView = ([self hasBodyMediaWithThumbnail] && self.stackView.subviews.count == 1);
+    BOOL hasOnlyBodyMediaView = ([self hasFullWidthMediaView] && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
         self.bubbleView.bubbleColor = self.bubbleColor;
     } else {
@@ -469,9 +485,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)hasFullWidthMediaView
+{
+    return (self.hasBodyMediaWithThumbnail || self.cellType == OWSMessageCellType_ContactShare);
+}
+
+// Returns YES if there is a footer displayed _at the bottom_
+// of the message bubble (as opposed to overlaid on a body media
+// thumbnail).
 - (BOOL)canFooterOverlayMedia
 {
     return self.hasBodyMediaWithThumbnail;
+}
+
+- (BOOL)hasBottomFooter
+{
+    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && !self.hasBodyText);
+    return !self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia;
 }
 
 - (nullable UIView *)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
@@ -1080,7 +1110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable bodyMediaSize = [self bodyMediaSize];
     if (bodyMediaSize) {
-        if (self.hasBodyMediaWithThumbnail) {
+        if (self.hasFullWidthMediaView) {
             cellSize.width = MAX(cellSize.width, bodyMediaSize.CGSizeValue.width);
             cellSize.height += bodyMediaSize.CGSizeValue.height;
         } else {
@@ -1104,8 +1134,7 @@ NS_ASSUME_NONNULL_BEGIN
         [textViewSizes addObject:bodyTextSize];
     }
 
-    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && !self.hasBodyText);
-    if (!self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia) {
+    if (self.hasBottomFooter) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
         [textViewSizes addObject:[NSValue valueWithCGSize:footerSize]];
     }
