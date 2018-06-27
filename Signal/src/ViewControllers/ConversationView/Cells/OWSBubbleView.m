@@ -160,7 +160,6 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
     for (id<OWSBubbleViewPartner> partnerView in self.partnerViews) {
         [partnerView updateLayers];
     }
-    [self.delegate updateLayers];
 }
 
 + (CGFloat)minWidth
