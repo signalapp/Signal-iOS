@@ -365,10 +365,9 @@ NS_ASSUME_NONNULL_BEGIN
             // TODO: What's the difference between an inner and outer shadow?
             self.mediaShadowView.fillColor = self.bubbleColor;
             self.mediaShadowView.layer.shadowColor = [UIColor blackColor].CGColor;
-            self.mediaShadowView.layer.shadowOpacity = 0.08f;
-            self.mediaShadowView.layer.shadowOpacity = 1.f;
-            self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 2.f);
-            self.mediaShadowView.layer.shadowRadius = 8.f;
+            self.mediaShadowView.layer.shadowOpacity = 0.12f;
+            self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
+            self.mediaShadowView.layer.shadowRadius = 0.5f;
         } else {
             [self.stackView addArrangedSubview:bodyMediaView];
         }
