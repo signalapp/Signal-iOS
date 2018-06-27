@@ -76,8 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
     self.stackView.alignment = UIStackViewAlignmentFill;
-    [self addSubview:self.stackView];
-    [self.stackView autoPinEdgesToSuperviewEdges];
 
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
@@ -259,6 +257,9 @@ NS_ASSUME_NONNULL_BEGIN
     // TODO:
     CGSize bodyMediaContentSize = [self bodyMediaSize];
     CGSize bodyTextContentSize = [self bodyTextSizeWithIncludeMargins:NO];
+
+    [self.bubbleView addSubview:self.stackView];
+    [self.viewConstraints addObjectsFromArray:[self.stackView autoPinEdgesToSuperviewEdges]];
 
     if ([self.viewItem.interaction isKindOfClass:[TSMessage class]] && self.hasBubbleBackground) {
         TSMessage *message = (TSMessage *)self.viewItem.interaction;
