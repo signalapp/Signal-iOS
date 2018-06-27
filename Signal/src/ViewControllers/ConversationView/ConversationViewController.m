@@ -4861,12 +4861,15 @@ typedef enum : NSUInteger {
     }
 
     // Update the "shouldShowDate" property of the view items.
+    //
+    // First iterate in reverse order.
     OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
     MessageReceiptStatus lastReceiptStatus = MessageReceiptStatusUploading;
     NSString *_Nullable lastIncomingSenderId = nil;
     for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
-        BOOL shouldHideRecipientStatus = NO;
-        BOOL shouldHideAvatar = NO;
+        BOOL shouldShowSenderAvatar = NO;
+        BOOL shouldHideFooter = NO;
+
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
@@ -4875,27 +4878,51 @@ typedef enum : NSUInteger {
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage
                                                                   referenceView:self.view];
 
-            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-                // always show "failed to send" status
-                shouldHideRecipientStatus = NO;
-            } else {
-                shouldHideRecipientStatus
-                    = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus);
-            }
+            // Always show "failed to send" status.
+            shouldHideFooter = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus
+                && outgoingMessage.messageState != TSOutgoingMessageStateFailed);
 
             lastReceiptStatus = receiptStatus;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
-            shouldHideAvatar = (interactionType == lastInteractionType &&
+            BOOL isCollapsed = (interactionType == lastInteractionType &&
                 [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
             lastIncomingSenderId = incomingSenderId;
+
+            shouldShowSenderAvatar = viewItem.isGroupThread && !isCollapsed;
         }
         lastInteractionType = interactionType;
 
-        viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
-        viewItem.shouldHideAvatar = shouldHideAvatar;
+        viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
+        viewItem.shouldHideFooter = shouldHideFooter;
+    }
+
+    // Iterate again in forward order.
+    lastInteractionType = OWSInteractionType_Unknown;
+    lastReceiptStatus = MessageReceiptStatusUploading;
+    lastIncomingSenderId = nil;
+    for (ConversationViewItem *viewItem in viewItems) {
+        NSString *_Nullable senderName = nil;
+
+        OWSInteractionType interactionType = viewItem.interaction.interactionType;
+
+        if (interactionType == OWSInteractionType_IncomingMessage) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
+            NSString *incomingSenderId = incomingMessage.authorId;
+            OWSAssert(incomingSenderId.length > 0);
+            BOOL isCollapsed = (interactionType == lastInteractionType &&
+                [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
+            lastIncomingSenderId = incomingSenderId;
+
+            if (viewItem.isGroupThread && !isCollapsed) {
+                senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
+            }
+        }
+        lastInteractionType = interactionType;
+
+        viewItem.senderName = senderName;
     }
 
     self.viewItems = viewItems;

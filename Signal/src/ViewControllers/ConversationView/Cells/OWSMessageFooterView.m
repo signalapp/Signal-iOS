@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem
+- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem hasShadows:(BOOL)hasShadows
 {
     OWSAssert(viewItem);
 
@@ -98,6 +98,8 @@ NS_ASSUME_NONNULL_BEGIN
          ]) {
         subview.hidden = !isOutgoing;
     }
+
+    [self setHasShadows:hasShadows viewItem:viewItem];
 }
 
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem

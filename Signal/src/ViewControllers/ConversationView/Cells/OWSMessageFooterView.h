@@ -8,11 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageFooterView : UIStackView
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem;
+- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem hasShadows:(BOOL)hasShadows;
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem;
-
-- (void)setHasShadows:(BOOL)hasShadows viewItem:(ConversationViewItem *)viewItem;
 
 @end
 
