@@ -32,6 +32,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 
+#pragma mark - New Colors
+
++ (UIColor *)ows_SignalBlueColor;
++ (UIColor *)ows_GreenColor;
++ (UIColor *)ows_RedColor;
++ (UIColor *)ows_WhiteColor;
++ (UIColor *)ows_Light02Color;
++ (UIColor *)ows_Light10Color;
++ (UIColor *)ows_Light35Color;
++ (UIColor *)ows_Light45Color;
++ (UIColor *)ows_Light60Color;
++ (UIColor *)ows_Light90Color;
++ (UIColor *)ows_Dark05Color;
++ (UIColor *)ows_Dark30Color;
++ (UIColor *)ows_Dark55Color;
++ (UIColor *)ows_Dark60Color;
++ (UIColor *)ows_Dark70Color;
++ (UIColor *)ows_Dark85Color;
++ (UIColor *)ows_Dark95Color;
++ (UIColor *)ows_BlackColor;
++ (UIColor *)ows_Red700Color;
++ (UIColor *)ows_Pink600Color;
++ (UIColor *)ows_Purple600Color;
++ (UIColor *)ows_Indigo600Color;
++ (UIColor *)ows_Blue700Color;
++ (UIColor *)ows_Cyan800Color;
++ (UIColor *)ows_Teal700Color;
++ (UIColor *)ows_Green800Color;
++ (UIColor *)ows_DeepOrange900Color;
++ (UIColor *)ows_Grey600Color;
+
 @end
 
 NS_ASSUME_NONNULL_END
