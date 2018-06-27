@@ -854,9 +854,8 @@ NS_ASSUME_NONNULL_BEGIN
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
 
     OWSMessageTextView *bodyTextView = [self configureBodyTextView];
-    CGSize textSize = CGSizeCeil([bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-    textSize.width = MIN(textSize.width, maxTextWidth);
-    CGSize result = textSize;
+    const int kMaxIterations = 5;
+    CGSize result = [bodyTextView compactSizeThatFitsMaxWidth:maxTextWidth maxIterations:kMaxIterations];
 
     if (includeMargins) {
         result.width += hMargins;
