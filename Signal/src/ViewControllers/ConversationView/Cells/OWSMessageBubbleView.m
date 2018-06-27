@@ -425,31 +425,14 @@ NS_ASSUME_NONNULL_BEGIN
                              ]];
                          }];
 
-    [self updateBubbleColorWithBodyMediaView:bodyMediaView];
+    [self updateBubbleColor];
 
     [self logFrameLaterWithLabel:@"----- message bubble"];
 }
 
-- (void)updateBubbleColorWithBodyMediaView:(nullable UIView *)bodyMediaView
+- (void)updateBubbleColor
 {
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
-    BOOL hasOnlyBodyMediaView = NO;
-    switch (self.cellType) {
-        case OWSMessageCellType_Unknown:
-        case OWSMessageCellType_TextMessage:
-        case OWSMessageCellType_OversizeTextMessage:
-        case OWSMessageCellType_GenericAttachment:
-        case OWSMessageCellType_DownloadingAttachment:
-        case OWSMessageCellType_ContactShare:
-            break;
-        case OWSMessageCellType_StillImage:
-        case OWSMessageCellType_AnimatedImage:
-        case OWSMessageCellType_Audio:
-        case OWSMessageCellType_Video:
-            hasOnlyBodyMediaView = (bodyMediaView && self.stackView.subviews.count == 1);
-            break;
-    }
+    BOOL hasOnlyBodyMediaView = ([self hasBodyMediaWithThumbnail] && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
         self.bubbleView.bubbleColor = self.bubbleColor;
     } else {

@@ -93,13 +93,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIcon:(UIImage *)icon iconColor:(UIColor *)iconColor
 {
+    OWSAssert(icon.size.height == self.iconSize);
+
     icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
     _audioPlayPauseButton.imageView.tintColor = self.bubbleBackgroundColor;
     _audioPlayPauseButton.backgroundColor = iconColor;
-    _audioPlayPauseButton.layer.cornerRadius
-        = MIN(_audioPlayPauseButton.bounds.size.width, _audioPlayPauseButton.bounds.size.height) * 0.5f;
+    _audioPlayPauseButton.layer.cornerRadius = self.iconSize * 0.5f;
 }
 
 - (void)setAudioIconToPlay
@@ -127,29 +128,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (CGFloat)audioIconHMargin
+- (CGFloat)hMargin
 {
-    return 12.f;
+    return 0.f;
 }
 
-- (CGFloat)audioIconHSpacing
+- (CGFloat)hSpacing
 {
     return 8.f;
 }
 
-+ (CGFloat)audioIconVMargin
++ (CGFloat)vMargin
 {
-    return 12.f;
+    return 0.f;
 }
 
-- (CGFloat)audioIconVMargin
+- (CGFloat)vMargin
 {
-    return [OWSAudioMessageView audioIconVMargin];
+    return [OWSAudioMessageView vMargin];
 }
 
 + (CGFloat)bubbleHeight
 {
-    return self.iconSize + self.audioIconVMargin * 2;
+    CGFloat iconHeight = self.iconSize;
+    CGFloat labelsHeight = ([OWSAudioMessageView labelFont].lineHeight * 2 +
+        [OWSAudioMessageView audioProgressViewHeight] + [OWSAudioMessageView labelVSpacing] * 2);
+    CGFloat contentHeight = MAX(iconHeight, labelsHeight);
+    return contentHeight + self.vMargin * 2;
 }
 
 - (CGFloat)bubbleHeight
@@ -195,36 +200,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIColor *textColor = [self audioTextColor];
 
-    self.backgroundColor = self.bubbleBackgroundColor;
-    self.layoutMargins = UIEdgeInsetsZero;
-
-    // TODO: Verify that this layout works in RTL.
-    const CGFloat kBubbleTailWidth = 6.f;
-
-    UIView *contentView = [UIView containerView];
-    [self addSubview:contentView];
-    [contentView autoPinLeadingToSuperviewMarginWithInset:self.isIncoming ? kBubbleTailWidth : 0.f];
-    [contentView autoPinTrailingToSuperviewMarginWithInset:self.isIncoming ? 0.f : kBubbleTailWidth];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.audioIconVMargin];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.audioIconVMargin];
+    self.axis = UILayoutConstraintAxisHorizontal;
+    self.alignment = UIStackViewAlignmentCenter;
+    self.spacing = self.hSpacing;
 
     _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.audioPlayPauseButton.enabled = NO;
-    [contentView addSubview:self.audioPlayPauseButton];
-    [self.audioPlayPauseButton autoPinLeadingToSuperviewMarginWithInset:self.audioIconHMargin];
-    [self.audioPlayPauseButton autoVCenterInSuperview];
-    [self.audioPlayPauseButton autoSetDimension:ALDimensionWidth toSize:self.iconSize];
-    [self.audioPlayPauseButton autoSetDimension:ALDimensionHeight toSize:self.iconSize];
+    [self addArrangedSubview:self.audioPlayPauseButton];
+    [self.audioPlayPauseButton setContentHuggingHigh];
 
-    const CGFloat kLabelHSpacing = self.audioIconHSpacing;
+    UIStackView *labelsView = [UIStackView new];
+    labelsView.axis = UILayoutConstraintAxisVertical;
+    labelsView.spacing = [OWSAudioMessageView labelVSpacing];
+    labelsView.alignment = UIStackViewAlignmentFill;
+    [self addArrangedSubview:labelsView];
 
-    UIView *labelsView = [UIView containerView];
-    [contentView addSubview:labelsView];
-    [labelsView autoPinLeadingToTrailingEdgeOfView:self.audioPlayPauseButton offset:kLabelHSpacing];
-    [labelsView autoPinTrailingToSuperviewMarginWithInset:self.audioIconHMargin];
-    [labelsView autoVCenterInSuperview];
-
-    const CGFloat kLabelVSpacing = 2;
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
         filename = [[self.attachmentStream filePath] lastPathComponent];
@@ -243,32 +233,39 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.text = topText;
     topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [labelsView addSubview:topLabel];
-    [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [topLabel autoPinWidthToSuperview];
+    topLabel.font = [OWSAudioMessageView labelFont];
+    [labelsView addArrangedSubview:topLabel];
 
-    const CGFloat kAudioProgressViewHeight = 12.f;
     AudioProgressView *audioProgressView = [AudioProgressView new];
     self.audioProgressView = audioProgressView;
     [self updateAudioProgressView];
-    [labelsView addSubview:audioProgressView];
-    [audioProgressView autoPinWidthToSuperview];
-    [audioProgressView autoSetDimension:ALDimensionHeight toSize:kAudioProgressViewHeight];
-    [audioProgressView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:kLabelVSpacing];
+    [labelsView addArrangedSubview:audioProgressView];
+    [audioProgressView autoSetDimension:ALDimensionHeight toSize:[OWSAudioMessageView audioProgressViewHeight]];
 
     UILabel *bottomLabel = [UILabel new];
     self.audioBottomLabel = bottomLabel;
     [self updateAudioBottomLabel];
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [labelsView addSubview:bottomLabel];
-    [bottomLabel autoPinWidthToSuperview];
-    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:audioProgressView withOffset:kLabelVSpacing];
-    [bottomLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    bottomLabel.font = [OWSAudioMessageView labelFont];
+    [labelsView addArrangedSubview:bottomLabel];
 
     [self updateContents];
+}
+
++ (CGFloat)audioProgressViewHeight
+{
+    return 12.f;
+}
+
++ (UIFont *)labelFont
+{
+    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+}
+
++ (CGFloat)labelVSpacing
+{
+    return 2.f;
 }
 
 @end

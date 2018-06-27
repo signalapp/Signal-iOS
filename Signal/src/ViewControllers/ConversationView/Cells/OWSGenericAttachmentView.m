@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     return 0.f;
 }
 
-- (CGFloat)iconHSpacing
+- (CGFloat)hSpacing
 {
     return 8.f;
 }
@@ -63,7 +63,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)bubbleHeight
 {
-    return self.iconHeight + self.vMargin * 2;
+    CGFloat iconHeight = self.iconHeight;
+    CGFloat labelsHeight = ([OWSGenericAttachmentView topLabelFont].lineHeight +
+        [OWSGenericAttachmentView bottomLabelFont].lineHeight + [OWSGenericAttachmentView labelVSpacing]);
+    CGFloat contentHeight = MAX(iconHeight, labelsHeight);
+    return contentHeight + self.vMargin * 2;
 }
 
 - (CGFloat)bubbleHeight
@@ -100,10 +104,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIColor *textColor = (self.isIncoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
 
-    self.layoutMargins = UIEdgeInsetsZero;
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
-    self.spacing = self.iconHSpacing;
+    self.spacing = self.hSpacing;
 
     // attachment_file
     UIImage *image = [UIImage imageNamed:@"generic-attachment"];
@@ -117,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;
-    labelsView.spacing = 2;
+    labelsView.spacing = [OWSGenericAttachmentView labelVSpacing];
     labelsView.alignment = UIStackViewAlignmentLeading;
     [self addArrangedSubview:labelsView];
 
@@ -132,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.text = topText;
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
+    topLabel.font = [OWSGenericAttachmentView bottomLabelFont];
     [labelsView addArrangedSubview:topLabel];
 
     NSError *error;
@@ -144,8 +147,23 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.text = bottomText;
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+    bottomLabel.font = [OWSGenericAttachmentView bottomLabelFont];
     [labelsView addArrangedSubview:bottomLabel];
+}
+
++ (UIFont *)topLabelFont
+{
+    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
+}
+
++ (UIFont *)bottomLabelFont
+{
+    return [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
+}
+
++ (CGFloat)labelVSpacing
+{
+    return 2.f;
 }
 
 @end
