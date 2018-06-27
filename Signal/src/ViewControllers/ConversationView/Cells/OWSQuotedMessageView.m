@@ -5,7 +5,7 @@
 #import "OWSQuotedMessageView.h"
 #import "ConversationViewItem.h"
 #import "Environment.h"
-#import "OWSBubbleStrokeView.h"
+#import "OWSBubbleShapeView.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSQuotedReplyModel *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 
-@property (nonatomic, nullable) OWSBubbleStrokeView *boundsStrokeView;
+@property (nonatomic, nullable) OWSBubbleShapeView *boundsStrokeView;
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
 
@@ -119,7 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
     self.clipsToBounds = YES;
 
-    self.boundsStrokeView = [OWSBubbleStrokeView new];
+    self.boundsStrokeView = [OWSBubbleShapeView new];
     self.boundsStrokeView.strokeColor = OWSMessagesBubbleImageFactory.bubbleColorIncoming;
     self.boundsStrokeView.strokeThickness = 1.f;
     [self addSubview:self.boundsStrokeView];

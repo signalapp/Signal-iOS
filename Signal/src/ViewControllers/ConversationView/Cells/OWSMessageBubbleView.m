@@ -6,7 +6,7 @@
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
 #import "OWSAudioMessageView.h"
-#import "OWSBubbleStrokeView.h"
+#import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
 #import "OWSContactShareView.h"
 #import "OWSGenericAttachmentView.h"
@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
+
+@property (nonatomic) OWSBubbleShapeView *mediaShadowView;
+
+@property (nonatomic) OWSBubbleShapeView *mediaClipView;
 
 @property (nonatomic) UIStackView *stackView;
 
@@ -74,6 +78,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
+
+    self.mediaShadowView = [OWSBubbleShapeView bubbleShadowView];
+    self.mediaClipView = [OWSBubbleShapeView bubbleClipView];
 
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
@@ -278,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIView *_Nullable bodyMediaView = nil;
-    BOOL bodyMediaViewHasGreedyWidth = NO;
+    BOOL hasThumbnailForBodyMedia = NO;
     switch (self.cellType) {
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextMessage:
@@ -287,40 +294,36 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StillImage:
             OWSAssert(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForStillImage];
+            hasThumbnailForBodyMedia = YES;
             break;
         case OWSMessageCellType_AnimatedImage:
             OWSAssert(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAnimatedImage];
+            hasThumbnailForBodyMedia = YES;
             break;
         case OWSMessageCellType_Video:
             OWSAssert(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForVideo];
+            hasThumbnailForBodyMedia = YES;
             break;
         case OWSMessageCellType_Audio:
             OWSAssert(self.viewItem.attachmentStream);
             bodyMediaView = [self loadViewForAudio];
-            bodyMediaViewHasGreedyWidth = YES;
             break;
         case OWSMessageCellType_GenericAttachment:
             bodyMediaView = [self loadViewForGenericAttachment];
-            bodyMediaViewHasGreedyWidth = YES;
             break;
         case OWSMessageCellType_DownloadingAttachment:
             bodyMediaView = [self loadViewForDownloadingAttachment];
-            bodyMediaViewHasGreedyWidth = YES;
             break;
         case OWSMessageCellType_ContactShare:
             bodyMediaView = [self loadViewForContactShare];
-            bodyMediaViewHasGreedyWidth = YES;
             break;
     }
 
-    BOOL shouldFooterOverlayMedia = NO;
     if (bodyMediaView) {
         OWSAssert(self.loadCellContentBlock);
         OWSAssert(self.unloadCellContentBlock);
-
-        shouldFooterOverlayMedia = self.canFooterOverlayMedia;
 
         // Flush any pending "text" subviews.
         [self insertAnyTextViewsIntoStackView:textViews];
@@ -334,22 +337,39 @@ NS_ASSUME_NONNULL_BEGIN
             bodyMediaView.layer.opacity = 0.75f;
         }
 
-        [self.stackView addArrangedSubview:bodyMediaView];
+        if (hasThumbnailForBodyMedia) {
+            // The "body media" view casts a shadow "downward" onto adjacent views,
+            // so we use a "proxy" view to take its place within the v-stack
+            // view and then insert the body media view above its proxy so that
+            // it floats above the other content of the bubble view.
 
-        BOOL shouldStrokeMediaView = ([bodyMediaView isKindOfClass:[UIImageView class]] ||
-            [bodyMediaView isKindOfClass:[OWSContactShareView class]]);
-        if (shouldStrokeMediaView) {
-            OWSBubbleStrokeView *bubbleStrokeView = [OWSBubbleStrokeView new];
-            bubbleStrokeView.strokeThickness = 1.f;
-            bubbleStrokeView.strokeColor = [UIColor colorWithWhite:0.f alpha:0.1f];
+            UIView *bodyProxyView = [UIView new];
+            [self.stackView addArrangedSubview:bodyProxyView];
 
-            [self.bubbleView addSubview:bubbleStrokeView];
-            [bubbleStrokeView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyMediaView];
-            [bubbleStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyMediaView];
-            [bubbleStrokeView autoPinEdge:ALEdgeLeft toEdge:ALEdgeLeft ofView:bodyMediaView];
-            [bubbleStrokeView autoPinEdge:ALEdgeRight toEdge:ALEdgeRight ofView:bodyMediaView];
+            [self addSubview:self.mediaShadowView];
+            [self.mediaShadowView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyProxyView];
+            [self.mediaShadowView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyProxyView];
+            [self.mediaShadowView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:bodyProxyView];
+            [self.mediaShadowView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:bodyProxyView];
 
-            [self.bubbleView addPartnerView:bubbleStrokeView];
+            [self.mediaShadowView addSubview:self.mediaClipView];
+            [self.mediaClipView autoPinToSuperviewEdges];
+
+            [self.mediaClipView addSubview:bodyMediaView];
+            [bodyMediaView autoPinToSuperviewEdges];
+
+            [self.bubbleView addPartnerView:self.mediaClipView];
+            [self.bubbleView addPartnerView:self.mediaShadowView];
+
+            // TODO: Constants
+            // TODO: What's the difference between an inner and outer shadow?
+            self.mediaShadowView.fillColor = self.bubbleColor;
+            self.mediaShadowView.layer.shadowColor = [UIColor blackColor].CGColor;
+            self.mediaShadowView.layer.shadowOpacity = 0.12f;
+            self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
+            self.mediaShadowView.layer.shadowRadius = 0.5f;
+        } else {
+            [self.stackView addArrangedSubview:bodyMediaView];
         }
     }
 
@@ -372,6 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && bodyMediaView && !self.hasBodyText);
     if (self.viewItem.shouldHideFooter) {
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
@@ -424,13 +445,20 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
     if (!hasOnlyBodyMediaView) {
-        TSMessage *message = (TSMessage *)self.viewItem.interaction;
-        self.bubbleView.bubbleColor = [self.bubbleFactory bubbleColorWithMessage:message];
+        self.bubbleView.bubbleColor = self.bubbleColor;
     } else {
         // Media-only messages should have no background color; they will fill the bubble's bounds
         // and we don't want artifacts at the edges.
         self.bubbleView.bubbleColor = nil;
     }
+}
+
+- (UIColor *)bubbleColor
+{
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    return [self.bubbleFactory bubbleColorWithMessage:message];
 }
 
 - (BOOL)canFooterOverlayMedia
@@ -1089,7 +1117,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // TODO: Update this to reflect generic attachment, downloading attachments and
     //       contact shares.
-    if (!self.viewItem.shouldHideFooter && !self.canFooterOverlayMedia) {
+    BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && !self.hasBodyText);
+    if (!self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
         cellSize.width = MAX(cellSize.width, footerSize.width + self.conversationStyle.textInsetHorizontal * 2);
         cellSize.height += self.textViewVSpacing + footerSize.height;
@@ -1173,6 +1202,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;
+
+    [self.mediaShadowView removeFromSuperview];
+    [self.mediaClipView removeFromSuperview];
 
     [self.footerView removeFromSuperview];
 
