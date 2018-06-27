@@ -92,8 +92,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _interaction = interaction;
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
-    self.row = NSNotFound;
-    self.previousRow = NSNotFound;
 
     [self ensureViewState:transaction];
 
@@ -271,8 +269,21 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         return 0.f;
     }
 
+    // "Bubble Collapse".  Adjacent messages with the same author should be close together.
+    if (self.interaction.interactionType == OWSInteractionType_IncomingMessage
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+        TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
+        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
+            return 2.f;
+        }
+    } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
+        && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        return 2.f;
+    }
+
     // TODO:
-    return 4.f;
+    return 10.f;
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView

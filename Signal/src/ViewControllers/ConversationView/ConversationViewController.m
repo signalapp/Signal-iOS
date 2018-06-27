@@ -465,6 +465,13 @@ typedef enum : NSUInteger {
         return;
     }
 
+    // Cells' appearance can depend on adjacent cells in both directions.
+    [self.messageMappings setCellDrawingDependencyOffsets:[NSSet setWithArray:@[
+        @(-1),
+        @(+1),
+    ]]
+                                                 forGroup:self.thread.uniqueId];
+
     // We need to impose the range restrictions on the mappings immediately to avoid
     // doing a great deal of unnecessary work and causing a perf hotspot.
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -3303,8 +3310,16 @@ typedef enum : NSUInteger {
             case YapDatabaseViewChangeUpdate: {
                 YapCollectionKey *collectionKey = rowChange.collectionKey;
                 if (collectionKey.key) {
-                    ConversationViewItem *viewItem = self.viewItemCache[collectionKey.key];
-                    [self reloadInteractionForViewItem:viewItem];
+                    ConversationViewItem *_Nullable viewItem = self.viewItemCache[collectionKey.key];
+                    if (viewItem) {
+                        [self reloadInteractionForViewItem:viewItem];
+                    } else {
+                        hasMalformedRowChange = YES;
+                    }
+                } else if (rowChange.indexPath && rowChange.originalIndex < self.viewItems.count) {
+                    // Do nothing, this is a pseudo-update generated due to
+                    // setCellDrawingDependencyOffsets.
+                    OWSAssert(rowChange.changes == YapDatabaseViewChangedDependency);
                 } else {
                     hasMalformedRowChange = YES;
                 }
@@ -3332,7 +3347,8 @@ typedef enum : NSUInteger {
     if (hasMalformedRowChange) {
         // These errors seems to be very rare; they can only be reproduced
         // using the more extreme actions in the debug UI.
-        DDLogError(@"%@ hasMalformedRowChange", self.logTag);
+        OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
+        [self reloadViewItems];
         [self.collectionView reloadData];
         [self updateLastVisibleTimestamp];
         [self cleanUpUnreadIndicatorIfNecessary];
@@ -3340,7 +3356,7 @@ typedef enum : NSUInteger {
     }
 
     NSUInteger oldViewItemCount = self.viewItems.count;
-    NSMutableSet<NSNumber *> *rowsThatChangedSize = [[self reloadViewItems] mutableCopy];
+    [self reloadViewItems];
 
     BOOL wasAtBottom = [self isScrolledToBottom];
     // We want sending messages to feel snappy.  So, if the only
@@ -3372,8 +3388,6 @@ typedef enum : NSUInteger {
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
                     [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
-                    // We don't want to reload a row that we just inserted.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -3392,8 +3406,6 @@ typedef enum : NSUInteger {
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
                     [self.collectionView moveItemAtIndexPath:rowChange.indexPath toIndexPath:rowChange.newIndexPath];
-                    // We don't want to reload a row that we just moved.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
                 case YapDatabaseViewChangeUpdate: {
@@ -3402,22 +3414,9 @@ typedef enum : NSUInteger {
                         rowChange.indexPath,
                         rowChange.finalIndex);
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
-                    // We don't want to reload a row that we've already reloaded.
-                    [rowsThatChangedSize removeObject:@(rowChange.originalIndex)];
                     break;
                 }
             }
-        }
-
-        // The changes performed above may affect the size of neighboring cells,
-        // as they may affect which cells show "date" headers or "status" footers.
-        NSMutableArray<NSIndexPath *> *rowsToReload = [NSMutableArray new];
-        for (NSNumber *row in rowsThatChangedSize) {
-            DDLogVerbose(@"rowsToReload: %@", row);
-            [rowsToReload addObject:[NSIndexPath indexPathForRow:row.integerValue inSection:0]];
-        }
-        if (rowsToReload.count > 0) {
-            [self.collectionView reloadItemsAtIndexPaths:rowsToReload];
         }
     };
 
@@ -4775,11 +4774,7 @@ typedef enum : NSUInteger {
 
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
-//
-// Returns a list of the rows which may have changed size and
-// need to be reloaded if we're doing an incremental update
-// of the view.
-- (NSSet<NSNumber *> *)reloadViewItems
+- (void)reloadViewItems
 {
     NSMutableArray<ConversationViewItem *> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, ConversationViewItem *> *viewItemCache = [NSMutableDictionary new];
@@ -4809,22 +4804,17 @@ typedef enum : NSUInteger {
             }
 
             ConversationViewItem *_Nullable viewItem = self.viewItemCache[interaction.uniqueId];
-            if (viewItem) {
-                viewItem.previousRow = viewItem.row;
-            } else {
+            if (!viewItem) {
                 viewItem = [[ConversationViewItem alloc] initWithInteraction:interaction
                                                                isGroupThread:isGroupThread
                                                                  transaction:transaction
                                                            conversationStyle:self.conversationStyle];
             }
-            viewItem.row = (NSInteger)row;
             [viewItems addObject:viewItem];
             OWSAssert(!viewItemCache[interaction.uniqueId]);
             viewItemCache[interaction.uniqueId] = viewItem;
         }
     }];
-
-    NSMutableSet<NSNumber *> *rowsThatChangedSize = [NSMutableSet new];
 
     // Update the "shouldShowDate" property of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
@@ -4865,12 +4855,6 @@ typedef enum : NSUInteger {
             shouldShowDateOnNextViewItem = NO;
         }
 
-        // If this is an existing view item and it has changed size,
-        // note that so that we can reload this cell while doing
-        // incremental updates.
-        if (viewItem.shouldShowDate != shouldShowDate && viewItem.previousRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
-        }
         viewItem.shouldShowDate = shouldShowDate;
 
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
@@ -4910,20 +4894,12 @@ typedef enum : NSUInteger {
         }
         lastInteractionType = interactionType;
 
-        // If this is an existing view item and it has changed size,
-        // note that so that we can reload this cell while doing
-        // incremental updates.
-        if (viewItem.shouldHideRecipientStatus != shouldHideRecipientStatus && viewItem.previousRow != NSNotFound) {
-            [rowsThatChangedSize addObject:@(viewItem.previousRow)];
-        }
         viewItem.shouldHideRecipientStatus = shouldHideRecipientStatus;
         viewItem.shouldHideAvatar = shouldHideAvatar;
     }
 
     self.viewItems = viewItems;
     self.viewItemCache = viewItemCache;
-
-    return [rowsThatChangedSize copy];
 }
 
 // Whenever an interaction is modified, we need to reload it from the DB
