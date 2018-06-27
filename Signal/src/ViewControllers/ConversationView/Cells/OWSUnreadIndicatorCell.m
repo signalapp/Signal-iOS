@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) TSUnreadIndicatorInteraction *interaction;
 
 @property (nonatomic) UILabel *titleLabel;
+@property (nonatomic) UILabel *subtitleLabel;
 @property (nonatomic) UIView *strokeView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
@@ -45,14 +46,23 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.strokeView = [UIView new];
     // TODO: color.
-    self.strokeView.backgroundColor = [UIColor colorWithRGBHex:0xf6eee3];
+    self.strokeView.backgroundColor = [UIColor blackColor];
     [self.contentView addSubview:self.strokeView];
 
     self.titleLabel = [UILabel new];
     // TODO: color.
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
+    self.titleLabel.textColor = [UIColor blackColor];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.contentView addSubview:self.titleLabel];
+
+    self.subtitleLabel = [UILabel new];
+    // TODO: color.
+    self.subtitleLabel.textColor = [UIColor lightGrayColor];
+    // The subtitle may wrap to a second line.
+    self.subtitleLabel.numberOfLines = 0;
+    self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    [self.contentView addSubview:self.subtitleLabel];
 
     [self configureFonts];
 }
@@ -62,7 +72,8 @@ NS_ASSUME_NONNULL_BEGIN
     // Update cell to reflect changes in dynamic text.
     //
     // TODO: Font size.
-    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
+    self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+    self.subtitleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -81,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
 
     self.titleLabel.text = [self titleForInteraction:interaction];
+    self.subtitleLabel.text = [self subtitleForInteraction:interaction];
 
     self.backgroundColor = [UIColor whiteColor];
 
@@ -90,11 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
         [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
         [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
 
-        // TODO: offset.
-        [self.strokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.titleLabel withOffset:0.f],
+        [self.strokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.titleLabel],
         [self.strokeView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
         [self.strokeView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
         [self.strokeView autoSetDimension:ALDimensionHeight toSize:1.f],
+
+        [self.subtitleLabel autoPinEdge:ALEdgeTop
+                                 toEdge:ALEdgeBottom
+                                 ofView:self.titleLabel
+                             withOffset:self.subtitleVSpacing],
+        [self.subtitleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.subtitleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
     ];
 }
 
@@ -102,6 +120,23 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.")
         .uppercaseString;
+}
+
+- (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
+{
+    if (!interaction.hasMoreUnseenMessages) {
+        return nil;
+    }
+    return (interaction.missingUnseenSafetyNumberChangeCount > 0
+            ? NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES",
+                  @"Messages that indicates that there are more unseen messages.")
+            : NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES",
+                  @"Messages that indicates that there are more unseen messages including safety number changes."));
+}
+
+- (CGFloat)subtitleVSpacing
+{
+    return 3.f;
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -116,6 +151,15 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat vOffset = 24.f;
     CGSize result
         = CGSizeMake(self.conversationStyle.fullWidthContentWidth, self.titleLabel.font.lineHeight + vOffset * 2);
+
+    TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
+    self.subtitleLabel.text = [self subtitleForInteraction:interaction];
+    if (self.subtitleLabel.text.length > 0) {
+        result.height += self.subtitleVSpacing;
+        result.height += ceil(
+            [self.subtitleLabel sizeThatFits:CGSizeMake(self.conversationStyle.fullWidthContentWidth, CGFLOAT_MAX)]
+                .height);
+    }
 
     return CGSizeCeil(result);
 }
