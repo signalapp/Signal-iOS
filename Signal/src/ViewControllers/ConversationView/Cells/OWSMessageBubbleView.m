@@ -263,11 +263,9 @@ NS_ASSUME_NONNULL_BEGIN
         [textViews addObject:self.senderNameLabel];
     }
 
-    UIView *_Nullable topTextStackView = nil;
     if (self.isQuotedReply) {
         // Flush any pending "text" subviews.
-        OWSAssert(!topTextStackView);
-        topTextStackView = [self insertAnyTextViewsIntoStackView:textViews];
+        [self insertAnyTextViewsIntoStackView:textViews];
         [textViews removeAllObjects];
 
         BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
@@ -338,8 +336,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (self.hasFullWidthMediaView) {
             // Flush any pending "text" subviews.
-            OWSAssert(!topTextStackView);
-            topTextStackView = [self insertAnyTextViewsIntoStackView:textViews];
+            [self insertAnyTextViewsIntoStackView:textViews];
             [textViews removeAllObjects];
 
             if (self.hasBodyMediaWithThumbnail) {
@@ -448,7 +445,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateBubbleColor
 {
-    BOOL hasOnlyBodyMediaView = ([self hasFullWidthMediaView] && self.stackView.subviews.count == 1);
+    BOOL hasOnlyBodyMediaView = (self.hasBodyMediaWithThumbnail && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
         self.bubbleView.bubbleColor = self.bubbleColor;
     } else {
@@ -504,10 +501,10 @@ NS_ASSUME_NONNULL_BEGIN
     return !self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia;
 }
 
-- (nullable UIView *)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
+- (void)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
 {
     if (textViews.count < 1) {
-        return nil;
+        return;
     }
 
     UIStackView *textStackView = [[UIStackView alloc] initWithArrangedSubviews:textViews];
@@ -521,7 +518,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.conversationStyle.textInsetBottom,
         self.conversationStyle.textInsetHorizontal);
     [self.stackView addArrangedSubview:textStackView];
-    return textStackView;
 }
 
 // We now eagerly create our view hierarchy (to do this exactly once per cell usage)
