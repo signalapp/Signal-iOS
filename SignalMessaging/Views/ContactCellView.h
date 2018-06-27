@@ -11,7 +11,7 @@ extern const CGFloat kContactCellAvatarTextMargin;
 @class SignalAccount;
 @class TSThread;
 
-@interface ContactCellView : UIView
+@interface ContactCellView : UIStackView
 
 @property (nonatomic, nullable) NSString *accessoryMessage;
 

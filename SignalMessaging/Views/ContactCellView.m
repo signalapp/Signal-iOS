@@ -84,22 +84,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self.nameContainerView setContentHuggingHorizontalLow];
     [self.accessoryViewContainer setContentHuggingHorizontalHigh];
 
-    UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.avatarView,
-        self.nameContainerView,
-        self.accessoryViewContainer,
-    ]];
-    hStackView.axis = UILayoutConstraintAxisHorizontal;
-    hStackView.spacing = kContactCellAvatarTextMargin;
-    hStackView.distribution = UIStackViewDistributionFill;
-    [self addSubview:hStackView];
-    [hStackView autoVCenterInSuperview];
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeLeading];
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing];
-
-    // Ensure that the cell's contents never overflow the cell bounds.
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    self.axis = UILayoutConstraintAxisHorizontal;
+    self.spacing = kContactCellAvatarTextMargin;
+    self.alignment = UIStackViewAlignmentCenter;
+    [self addArrangedSubview:self.avatarView];
+    [self addArrangedSubview:self.nameContainerView];
+    [self addArrangedSubview:self.accessoryViewContainer];
 
     [self configureFonts];
 }
