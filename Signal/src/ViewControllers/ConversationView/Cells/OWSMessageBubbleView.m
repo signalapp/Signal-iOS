@@ -439,8 +439,6 @@ NS_ASSUME_NONNULL_BEGIN
                          }];
 
     [self updateBubbleColor];
-
-    [self logFrameLaterWithLabel:@"----- message bubble"];
 }
 
 - (void)updateBubbleColor
@@ -1110,7 +1108,6 @@ NS_ASSUME_NONNULL_BEGIN
             cellSize.width = MAX(cellSize.width, bodyMediaSize.CGSizeValue.width);
             cellSize.height += bodyMediaSize.CGSizeValue.height;
         } else {
-            DDLogVerbose(@"%@ ---- bodyMediaSize: %@", self.logTag, bodyMediaSize);
             [textViewSizes addObject:bodyMediaSize];
             bodyMediaSize = nil;
         }
@@ -1151,8 +1148,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     cellSize = CGSizeCeil(cellSize);
-
-    DDLogVerbose(@"%@ ---- cellSize: %@", self.logTag, NSStringFromCGSize(cellSize));
 
     return cellSize;
 }
