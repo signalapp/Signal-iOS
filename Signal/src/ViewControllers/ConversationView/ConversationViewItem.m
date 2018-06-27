@@ -93,7 +93,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
     self.row = NSNotFound;
-    self.previousRow = NSNotFound;
 
     [self ensureViewState:transaction];
 

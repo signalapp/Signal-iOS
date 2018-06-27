@@ -61,12 +61,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL shouldHideAvatar;
 
 @property (nonatomic) NSInteger row;
-// During updates, we sometimes need the previous row index
-// (before this update) of this item.
-//
-// If NSNotFound, this view item was just created in the
-// previous update.
-@property (nonatomic) NSInteger previousRow;
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 

@@ -526,7 +526,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     NSError *error;
     BOOL wasScheduled = [self.websocket sendDataNoCopy:messageData error:&error];
     if (!wasScheduled || error) {
-        OWSProdLogAndFail(@"%@ could not serialize request JSON: %@", self.logTag, error);
+        OWSProdLogAndFail(@"%@ could not send socket request: %@", self.logTag, error);
         [socketMessage didFailBeforeSending];
         return;
     }
