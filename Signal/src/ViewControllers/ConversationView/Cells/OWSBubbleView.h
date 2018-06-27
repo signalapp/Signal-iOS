@@ -24,6 +24,8 @@ extern const CGFloat kOWSMessageCellCornerRadius;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
+@property (nonatomic, nullable, weak) id<OWSBubbleViewPartner> delegate;
+
 - (UIBezierPath *)maskPath;
 
 #pragma mark - Coordination
