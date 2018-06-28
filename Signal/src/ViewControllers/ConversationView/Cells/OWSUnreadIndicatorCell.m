@@ -98,14 +98,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = @[
-        [self.titleLabel autoVCenterInSuperview],
-        [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
-
-        [self.strokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.titleLabel],
+        [self.strokeView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         [self.strokeView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
         [self.strokeView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
-        [self.strokeView autoSetDimension:ALDimensionHeight toSize:1.f],
+        [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeHeight],
+
+        [self.titleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.strokeView],
+        [self.titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
 
         [self.subtitleLabel autoPinEdge:ALEdgeTop
                                  toEdge:ALEdgeBottom
@@ -134,6 +135,11 @@ NS_ASSUME_NONNULL_BEGIN
                   @"Messages that indicates that there are more unseen messages including safety number changes."));
 }
 
+- (CGFloat)strokeHeight
+{
+    return 1.f;
+}
+
 - (CGFloat)subtitleVSpacing
 {
     return 3.f;
@@ -147,10 +153,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    // TODO: offset.
-    CGFloat vOffset = 24.f;
     CGSize result
-        = CGSizeMake(self.conversationStyle.fullWidthContentWidth, self.titleLabel.font.lineHeight + vOffset * 2);
+        = CGSizeMake(self.conversationStyle.fullWidthContentWidth, self.strokeHeight + self.titleLabel.font.lineHeight);
 
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];

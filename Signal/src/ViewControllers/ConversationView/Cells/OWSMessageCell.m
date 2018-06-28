@@ -64,10 +64,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateHeaderView addSubview:self.dateHeaderLabel];
 
     [self.dateStrokeView autoPinWidthToSuperview];
+    [self.dateStrokeView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.dateStrokeView autoSetDimension:ALDimensionHeight toSize:1.f];
     [self.dateHeaderLabel autoPinWidthToSuperview];
-    [self.dateHeaderLabel autoVCenterInSuperview];
-    [self.dateStrokeView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.dateHeaderLabel];
+    [self.dateHeaderLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateStrokeView];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -368,7 +368,7 @@ NS_ASSUME_NONNULL_BEGIN
     return cellSize;
 }
 
-- (CGFloat)dateHeaderVSpacing
+- (CGFloat)dateHeaderBottomMargin
 {
     return 24.f;
 }
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.viewItem.shouldShowDate) {
         CGFloat textHeight = MAX(self.dateHeaderDateFont.capHeight, self.dateHeaderTimeFont.capHeight);
-        return (CGFloat)ceil(textHeight + self.dateHeaderVSpacing * 2);
+        return (CGFloat)ceil(textHeight + self.dateHeaderBottomMargin);
     } else {
         return 0.f;
     }

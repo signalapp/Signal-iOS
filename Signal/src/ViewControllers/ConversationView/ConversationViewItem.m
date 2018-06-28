@@ -275,9 +275,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     OWSAssert(previousLayoutItem);
 
     if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
-        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
-        // The unread indicator has its own v-margins.
-        return 0.f;
+        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator
+        || self.shouldShowDate) {
+        return 20.f;
     }
 
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
