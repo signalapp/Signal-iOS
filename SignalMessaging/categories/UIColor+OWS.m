@@ -21,12 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
 }
 
-+ (UIColor *)ows_blackColor
-{
-    // black: #080A00
-    return [UIColor colorWithRed:8.f / 255.f green:10.f / 255.f blue:0. / 255.f alpha:1.f];
-}
-
 + (UIColor *)ows_darkIconColor
 {
     return [UIColor colorWithRGBHex:0x505050];
@@ -62,18 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)ows_reminderDarkYellowColor
 {
     return [UIColor colorWithRGBHex:0xFCDA91];
-}
-
-+ (UIColor *)ows_greenColor
-{
-    // green: #BF4240
-    return [UIColor colorWithRed:66.f / 255.f green:191.f / 255.f blue:64.f / 255.f alpha:1.f];
-}
-
-+ (UIColor *)ows_redColor
-{
-    // red: #FF3867
-    return [UIColor colorWithRed:255. / 255.f green:56.f / 255.f blue:103.f / 255.f alpha:1.f];
 }
 
 + (UIColor *)ows_destructiveRedColor
@@ -182,142 +164,142 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - New Colors
 
-+ (UIColor *)ows_SignalBlueColor
++ (UIColor *)ows_signalBlueColor
 {
     return [UIColor colorWithRGBHex:0x2090EA];
 }
 
-+ (UIColor *)ows_GreenColor
++ (UIColor *)ows_greenColor
 {
     return [UIColor colorWithRGBHex:0x4caf50];
 }
 
-+ (UIColor *)ows_RedColor
++ (UIColor *)ows_redColor
 {
     return [UIColor colorWithRGBHex:0xf44336];
 }
 
-+ (UIColor *)ows_WhiteColor
++ (UIColor *)ows_whiteColor
 {
     return [UIColor colorWithRGBHex:0xFFFFFF];
 }
 
-+ (UIColor *)ows_Light02Color
++ (UIColor *)ows_light02Color
 {
     return [UIColor colorWithRGBHex:0xF9FAFA];
 }
 
-+ (UIColor *)ows_Light10Color
++ (UIColor *)ows_light10Color
 {
     return [UIColor colorWithRGBHex:0xEEEFEF];
 }
 
-+ (UIColor *)ows_Light35Color
++ (UIColor *)ows_light35Color
 {
     return [UIColor colorWithRGBHex:0xA4A6A9];
 }
 
-+ (UIColor *)ows_Light45Color
++ (UIColor *)ows_light45Color
 {
     return [UIColor colorWithRGBHex:0x8B8E91];
 }
 
-+ (UIColor *)ows_Light60Color
++ (UIColor *)ows_light60Color
 {
     return [UIColor colorWithRGBHex:0x62656A];
 }
 
-+ (UIColor *)ows_Light90Color
++ (UIColor *)ows_light90Color
 {
     return [UIColor colorWithRGBHex:0x070C14];
 }
 
-+ (UIColor *)ows_Dark05Color
++ (UIColor *)ows_dark05Color
 {
     return [UIColor colorWithRGBHex:0xEFEFEF];
 }
 
-+ (UIColor *)ows_Dark30Color
++ (UIColor *)ows_dark30Color
 {
     return [UIColor colorWithRGBHex:0xA8A9AA];
 }
 
-+ (UIColor *)ows_Dark55Color
++ (UIColor *)ows_dark55Color
 {
     return [UIColor colorWithRGBHex:0x88898C];
 }
 
-+ (UIColor *)ows_Dark60Color
++ (UIColor *)ows_dark60Color
 {
     return [UIColor colorWithRGBHex:0x797A7C];
 }
 
-+ (UIColor *)ows_Dark70Color
++ (UIColor *)ows_dark70Color
 {
     return [UIColor colorWithRGBHex:0x414347];
 }
 
-+ (UIColor *)ows_Dark85Color
++ (UIColor *)ows_dark85Color
 {
     return [UIColor colorWithRGBHex:0x1A1C20];
 }
 
-+ (UIColor *)ows_Dark95Color
++ (UIColor *)ows_dark95Color
 {
     return [UIColor colorWithRGBHex:0x0A0C11];
 }
 
-+ (UIColor *)ows_BlackColor
++ (UIColor *)ows_blackColor
 {
     return [UIColor colorWithRGBHex:0x000000];
 }
 
-+ (UIColor *)ows_Red700Color
++ (UIColor *)ows_red700Color
 {
     return [UIColor colorWithRGBHex:0xd32f2f];
 }
 
-+ (UIColor *)ows_Pink600Color
++ (UIColor *)ows_pink600Color
 {
     return [UIColor colorWithRGBHex:0xd81b60];
 }
 
-+ (UIColor *)ows_Purple600Color
++ (UIColor *)ows_purple600Color
 {
     return [UIColor colorWithRGBHex:0x8e24aa];
 }
 
-+ (UIColor *)ows_Indigo600Color
++ (UIColor *)ows_indigo600Color
 {
     return [UIColor colorWithRGBHex:0x3949ab];
 }
 
-+ (UIColor *)ows_Blue700Color
++ (UIColor *)ows_blue700Color
 {
     return [UIColor colorWithRGBHex:0x1976d2];
 }
 
-+ (UIColor *)ows_Cyan800Color
++ (UIColor *)ows_cyan800Color
 {
     return [UIColor colorWithRGBHex:0x00838f];
 }
 
-+ (UIColor *)ows_Teal700Color
++ (UIColor *)ows_teal700Color
 {
     return [UIColor colorWithRGBHex:0x00796b];
 }
 
-+ (UIColor *)ows_Green800Color
++ (UIColor *)ows_green800Color
 {
     return [UIColor colorWithRGBHex:0x2e7d32];
 }
 
-+ (UIColor *)ows_DeepOrange900Color
++ (UIColor *)ows_deepOrange900Color
 {
     return [UIColor colorWithRGBHex:0xbf360c];
 }
 
-+ (UIColor *)ows_Grey600Color
++ (UIColor *)ows_grey600Color
 {
     return [UIColor colorWithRGBHex:0x757575];
 }

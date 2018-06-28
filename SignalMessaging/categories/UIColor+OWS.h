@@ -18,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_yellowColor;
 @property (class, readonly, nonatomic) UIColor *ows_reminderYellowColor;
 @property (class, readonly, nonatomic) UIColor *ows_reminderDarkYellowColor;
-@property (class, readonly, nonatomic) UIColor *ows_greenColor;
-@property (class, readonly, nonatomic) UIColor *ows_redColor;
-@property (class, readonly, nonatomic) UIColor *ows_blackColor;
 @property (class, readonly, nonatomic) UIColor *ows_darkIconColor;
 @property (class, readonly, nonatomic) UIColor *ows_errorMessageBorderColor;
 @property (class, readonly, nonatomic) UIColor *ows_infoMessageBorderColor;
@@ -34,34 +31,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - New Colors
 
-+ (UIColor *)ows_SignalBlueColor;
-+ (UIColor *)ows_GreenColor;
-+ (UIColor *)ows_RedColor;
-+ (UIColor *)ows_WhiteColor;
-+ (UIColor *)ows_Light02Color;
-+ (UIColor *)ows_Light10Color;
-+ (UIColor *)ows_Light35Color;
-+ (UIColor *)ows_Light45Color;
-+ (UIColor *)ows_Light60Color;
-+ (UIColor *)ows_Light90Color;
-+ (UIColor *)ows_Dark05Color;
-+ (UIColor *)ows_Dark30Color;
-+ (UIColor *)ows_Dark55Color;
-+ (UIColor *)ows_Dark60Color;
-+ (UIColor *)ows_Dark70Color;
-+ (UIColor *)ows_Dark85Color;
-+ (UIColor *)ows_Dark95Color;
-+ (UIColor *)ows_BlackColor;
-+ (UIColor *)ows_Red700Color;
-+ (UIColor *)ows_Pink600Color;
-+ (UIColor *)ows_Purple600Color;
-+ (UIColor *)ows_Indigo600Color;
-+ (UIColor *)ows_Blue700Color;
-+ (UIColor *)ows_Cyan800Color;
-+ (UIColor *)ows_Teal700Color;
-+ (UIColor *)ows_Green800Color;
-+ (UIColor *)ows_DeepOrange900Color;
-+ (UIColor *)ows_Grey600Color;
+@property (class, readonly, nonatomic) UIColor *ows_signalBlueColor;
+@property (class, readonly, nonatomic) UIColor *ows_greenColor;
+@property (class, readonly, nonatomic) UIColor *ows_redColor;
+@property (class, readonly, nonatomic) UIColor *ows_whiteColor;
+@property (class, readonly, nonatomic) UIColor *ows_light02Color;
+@property (class, readonly, nonatomic) UIColor *ows_light10Color;
+@property (class, readonly, nonatomic) UIColor *ows_light35Color;
+@property (class, readonly, nonatomic) UIColor *ows_light45Color;
+@property (class, readonly, nonatomic) UIColor *ows_light60Color;
+@property (class, readonly, nonatomic) UIColor *ows_light90Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark05Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark30Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark55Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark60Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark70Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark85Color;
+@property (class, readonly, nonatomic) UIColor *ows_dark95Color;
+@property (class, readonly, nonatomic) UIColor *ows_blackColor;
+@property (class, readonly, nonatomic) UIColor *ows_red700Color;
+@property (class, readonly, nonatomic) UIColor *ows_pink600Color;
+@property (class, readonly, nonatomic) UIColor *ows_purple600Color;
+@property (class, readonly, nonatomic) UIColor *ows_indigo600Color;
+@property (class, readonly, nonatomic) UIColor *ows_blue700Color;
+@property (class, readonly, nonatomic) UIColor *ows_cyan800Color;
+@property (class, readonly, nonatomic) UIColor *ows_teal700Color;
+@property (class, readonly, nonatomic) UIColor *ows_green800Color;
+@property (class, readonly, nonatomic) UIColor *ows_deepOrange900Color;
+@property (class, readonly, nonatomic) UIColor *ows_grey600Color;
 
 @end
 
