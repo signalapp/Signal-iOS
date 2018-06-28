@@ -41,29 +41,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (CGFloat)iconHMargin
+- (CGFloat)hMargin
 {
-    return 12.f;
+    return 0.f;
 }
 
-- (CGFloat)iconHSpacing
+- (CGFloat)hSpacing
 {
     return 8.f;
 }
 
-+ (CGFloat)iconVMargin
++ (CGFloat)vMargin
 {
-    return 12.f;
+    return 0.f;
 }
 
-- (CGFloat)iconVMargin
+- (CGFloat)vMargin
 {
-    return [OWSGenericAttachmentView iconVMargin];
+    return [OWSGenericAttachmentView vMargin];
 }
 
 + (CGFloat)bubbleHeight
 {
-    return self.iconSize + self.iconVMargin * 2;
+    CGFloat iconHeight = self.iconHeight;
+    CGFloat labelsHeight = ([OWSGenericAttachmentView topLabelFont].lineHeight +
+        [OWSGenericAttachmentView bottomLabelFont].lineHeight + [OWSGenericAttachmentView labelVSpacing]);
+    CGFloat contentHeight = MAX(iconHeight, labelsHeight);
+    return contentHeight + self.vMargin * 2;
 }
 
 - (CGFloat)bubbleHeight
@@ -71,19 +75,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSGenericAttachmentView bubbleHeight];
 }
 
-+ (CGFloat)iconSize
++ (CGFloat)iconHeight
 {
-    return 44.f;
+    return 48.f;
 }
 
-- (CGFloat)iconSize
+- (CGFloat)iconHeight
 {
-    return [OWSGenericAttachmentView iconSize];
-}
-
-- (CGFloat)vMargin
-{
-    return 10.f;
+    return [OWSGenericAttachmentView iconHeight];
 }
 
 - (UIColor *)bubbleBackgroundColor
@@ -105,45 +104,26 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIColor *textColor = (self.isIncoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
 
-    self.backgroundColor = self.bubbleBackgroundColor;
-    self.layoutMargins = UIEdgeInsetsZero;
+    self.axis = UILayoutConstraintAxisHorizontal;
+    self.alignment = UIStackViewAlignmentCenter;
+    self.spacing = self.hSpacing;
 
-    // TODO: Verify that this layout works in RTL.
-    const CGFloat kBubbleTailWidth = 6.f;
-
-    UIView *contentView = [UIView containerView];
-    [self addSubview:contentView];
-    [contentView autoPinLeadingToSuperviewMarginWithInset:self.isIncoming ? kBubbleTailWidth : 0.f];
-    [contentView autoPinTrailingToSuperviewMarginWithInset:self.isIncoming ? 0.f : kBubbleTailWidth];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.vMargin];
-    [contentView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.vMargin];
-
-    UIView *iconCircleView = [UIView containerView];
-    iconCircleView.backgroundColor
-        = (self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self foregroundColorWithOpacity:0.15f]);
-    iconCircleView.layer.cornerRadius = self.iconSize * 0.5f;
-    [contentView addSubview:iconCircleView];
-    [iconCircleView autoPinLeadingToSuperviewMarginWithInset:self.iconHMargin];
-    [iconCircleView autoVCenterInSuperview];
-    [iconCircleView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
-    [iconCircleView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
-
-    UIImage *image = [UIImage imageNamed:@"attachment_file"];
+    // attachment_file
+    UIImage *image = [UIImage imageNamed:@"generic-attachment"];
     OWSAssert(image);
+    OWSAssert(image.size.height == self.iconHeight);
     UIImageView *imageView = [UIImageView new];
-    imageView.image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    imageView.image = image;
     imageView.tintColor = self.bubbleBackgroundColor;
-    [iconCircleView addSubview:imageView];
-    [imageView autoCenterInSuperview];
+    [self addArrangedSubview:imageView];
+    [imageView setContentHuggingHigh];
 
-    const CGFloat kLabelHSpacing = self.iconHSpacing;
-    UIView *labelsView = [UIView containerView];
-    [contentView addSubview:labelsView];
-    [labelsView autoPinLeadingToTrailingEdgeOfView:iconCircleView offset:kLabelHSpacing];
-    [labelsView autoPinTrailingToSuperviewMarginWithInset:self.iconHMargin];
-    [labelsView autoVCenterInSuperview];
+    UIStackView *labelsView = [UIStackView new];
+    labelsView.axis = UILayoutConstraintAxisVertical;
+    labelsView.spacing = [OWSGenericAttachmentView labelVSpacing];
+    labelsView.alignment = UIStackViewAlignmentLeading;
+    [self addArrangedSubview:labelsView];
 
-    const CGFloat kLabelVSpacing = 2;
     NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];
     if (topText.length < 1) {
         topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
@@ -155,10 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.text = topText;
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    topLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 15.f)];
-    [labelsView addSubview:topLabel];
-    [topLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [topLabel autoPinWidthToSuperview];
+    topLabel.font = [OWSGenericAttachmentView topLabelFont];
+    [labelsView addArrangedSubview:topLabel];
 
     NSError *error;
     unsigned long long fileSize =
@@ -169,11 +147,23 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.text = bottomText;
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-    bottomLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 13.f)];
-    [labelsView addSubview:bottomLabel];
-    [bottomLabel autoPinWidthToSuperview];
-    [bottomLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topLabel withOffset:kLabelVSpacing];
-    [bottomLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    bottomLabel.font = [OWSGenericAttachmentView bottomLabelFont];
+    [labelsView addArrangedSubview:bottomLabel];
+}
+
++ (UIFont *)topLabelFont
+{
+    return [UIFont ows_dynamicTypeCaption1Font];
+}
+
++ (UIFont *)bottomLabelFont
+{
+    return [UIFont ows_dynamicTypeCaption2Font];
+}
+
++ (CGFloat)labelVSpacing
+{
+    return 2.f;
 }
 
 @end

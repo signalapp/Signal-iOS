@@ -29,6 +29,8 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
         return self;
     }
 
+    self.layoutMargins = UIEdgeInsetsZero;
+
     self.shapeLayer = [CAShapeLayer new];
     [self.layer addSublayer:self.shapeLayer];
 

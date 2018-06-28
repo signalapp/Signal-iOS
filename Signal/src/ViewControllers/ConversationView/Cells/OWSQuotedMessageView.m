@@ -176,6 +176,7 @@ NS_ASSUME_NONNULL_BEGIN
             quotedAttachmentView.backgroundColor = self.highlightColor;
             quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
 
+            // TODO: Use new icons.
             UIImage *contentIcon =
                 [UIImage imageNamed:(self.isAudioAttachment ? @"attachment_audio" : @"attachment_file")];
             contentIcon = [contentIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

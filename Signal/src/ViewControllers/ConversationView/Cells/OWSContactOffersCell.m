@@ -72,8 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
     ]];
     buttonStackView.axis = UILayoutConstraintAxisVertical;
     buttonStackView.spacing = self.vSpacing;
-    // Ensure all of the buttons have the same width.
-    buttonStackView.alignment = UIStackViewAlignmentFill;
 
     self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.titleLabel,
