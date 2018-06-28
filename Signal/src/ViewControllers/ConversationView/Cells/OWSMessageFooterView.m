@@ -11,9 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageFooterView ()
 
 @property (nonatomic) UILabel *timestampLabel;
-@property (nonatomic) UIView *spacerView;
-@property (nonatomic) UILabel *statusLabel;
-@property (nonatomic) UIView *statusIndicatorView;
+@property (nonatomic) UIImageView *statusIndicatorImageView;
 
 @end
 
@@ -41,42 +39,32 @@ NS_ASSUME_NONNULL_BEGIN
     self.alignment = UIStackViewAlignmentCenter;
 
     self.timestampLabel = [UILabel new];
-    // TODO: Color
-    self.timestampLabel.textColor = [UIColor lightGrayColor];
     [self addArrangedSubview:self.timestampLabel];
 
-    self.spacerView = [UIView new];
-    [self.spacerView setContentHuggingLow];
-    [self addArrangedSubview:self.spacerView];
-
-    self.statusLabel = [UILabel new];
-    // TODO: Color
-    self.statusLabel.textColor = [UIColor lightGrayColor];
-    [self addArrangedSubview:self.statusLabel];
-
-    self.statusIndicatorView = [UIView new];
-    [self.statusIndicatorView autoSetDimension:ALDimensionWidth toSize:self.statusIndicatorSize];
-    [self.statusIndicatorView autoSetDimension:ALDimensionHeight toSize:self.statusIndicatorSize];
-    self.statusIndicatorView.layer.cornerRadius = self.statusIndicatorSize * 0.5f;
-    [self addArrangedSubview:self.statusIndicatorView];
+    self.statusIndicatorImageView = [UIImageView new];
+    [self.statusIndicatorImageView setContentHuggingHigh];
+    [self addArrangedSubview:self.statusIndicatorImageView];
 }
 
 - (void)configureFonts
 {
-    self.timestampLabel.font = UIFont.ows_dynamicTypeCaption2Font;
-    self.statusLabel.font = UIFont.ows_dynamicTypeCaption2Font;
-}
-
-- (CGFloat)statusIndicatorSize
-{
-    // TODO: Review constant.
-    return 12.f;
+    self.timestampLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 }
 
 - (CGFloat)hSpacing
 {
     // TODO: Review constant.
     return 8.f;
+}
+
+- (CGFloat)maxImageWidth
+{
+    return 18.f;
+}
+
+- (CGFloat)imageHeight
+{
+    return 12.f;
 }
 
 #pragma mark - Load
@@ -87,71 +75,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
-    // TODO:
-    self.statusIndicatorView.backgroundColor = [UIColor orangeColor];
 
-    BOOL isOutgoing = (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage);
-    for (UIView *subview in @[
-             self.spacerView,
-             self.statusLabel,
-             self.statusIndicatorView,
-         ]) {
-        subview.hidden = !isOutgoing;
-    }
-
-    [self setHasShadows:hasShadows viewItem:viewItem];
-}
-
-- (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
-{
-    OWSAssert(viewItem);
-
-    [self configureFonts];
-
-    self.timestampLabel.text = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
-    self.statusLabel.text = [self messageStatusTextForConversationViewItem:viewItem];
-}
-
-- (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
-{
-    OWSAssert(viewItem);
-
-    [self configureLabelsWithConversationViewItem:viewItem];
-
-    CGSize result = CGSizeZero;
-    result.height
-        = MAX(self.timestampLabel.font.lineHeight, MAX(self.statusLabel.font.lineHeight, self.statusIndicatorSize));
-    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        result.width = ([self.timestampLabel sizeThatFits:CGSizeZero].width +
-            [self.statusLabel sizeThatFits:CGSizeZero].width + self.statusIndicatorSize + self.hSpacing * 3.f);
-    } else {
-        result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
-    }
-    return CGSizeCeil(result);
-}
-
-- (nullable NSString *)messageStatusTextForConversationViewItem:(ConversationViewItem *)viewItem
-{
-    OWSAssert(viewItem);
-    if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage) {
-        return nil;
-    }
-
-    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
-    NSString *statusMessage =
-        [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
-    return statusMessage;
-}
-
-#pragma mark - Shadows
-
-- (void)setHasShadows:(BOOL)hasShadows viewItem:(ConversationViewItem *)viewItem
-{
     // TODO: Constants
     for (UIView *subview in @[
              self.timestampLabel,
-             self.statusLabel,
-             self.statusIndicatorView,
+             self.statusIndicatorImageView,
          ]) {
         if (hasShadows) {
             subview.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -170,13 +98,90 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasShadows) {
         textColor = [UIColor whiteColor];
     } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-        // TODO:
-        textColor = [UIColor lightGrayColor];
+        textColor = [UIColor colorWithWhite:1.f alpha:0.7f];
     } else {
-        textColor = [UIColor whiteColor];
+        textColor = [UIColor ows_light60Color];
     }
     self.timestampLabel.textColor = textColor;
-    self.statusLabel.textColor = textColor;
+
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+
+        UIImage *_Nullable statusIndicatorImage = nil;
+        MessageReceiptStatus messageStatus =
+            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage referenceView:self];
+        switch (messageStatus) {
+            case MessageReceiptStatusUploading:
+            case MessageReceiptStatusSending:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                break;
+            case MessageReceiptStatusSent:
+            case MessageReceiptStatusSkipped:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
+                break;
+            case MessageReceiptStatusDelivered:
+            case MessageReceiptStatusRead:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                break;
+            case MessageReceiptStatusFailed:
+                // TODO:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                break;
+        }
+
+        OWSAssert(statusIndicatorImage);
+        OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
+        self.statusIndicatorImageView.image =
+            [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        if (messageStatus == MessageReceiptStatusRead) {
+            // TODO: Tint the icon with the conversation color.
+            self.statusIndicatorImageView.tintColor = textColor;
+        } else {
+            self.statusIndicatorImageView.tintColor = textColor;
+        }
+        self.statusIndicatorImageView.hidden = NO;
+    } else {
+        self.statusIndicatorImageView.image = nil;
+        self.statusIndicatorImageView.hidden = YES;
+    }
+}
+
+- (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
+{
+    OWSAssert(viewItem);
+
+    [self configureFonts];
+
+    self.timestampLabel.text = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
+}
+
+- (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
+{
+    OWSAssert(viewItem);
+
+    [self configureLabelsWithConversationViewItem:viewItem];
+
+    CGSize result = CGSizeZero;
+    result.height = MAX(self.timestampLabel.font.lineHeight, self.imageHeight);
+    if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        result.width = ([self.timestampLabel sizeThatFits:CGSizeZero].width + self.maxImageWidth + self.hSpacing);
+    } else {
+        result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
+    }
+    return CGSizeCeil(result);
+}
+
+- (nullable NSString *)messageStatusTextForConversationViewItem:(ConversationViewItem *)viewItem
+{
+    OWSAssert(viewItem);
+    if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage) {
+        return nil;
+    }
+
+    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+    NSString *statusMessage =
+        [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+    return statusMessage;
 }
 
 @end
