@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.strokeView = [UIView new];
     self.strokeView.backgroundColor = [UIColor ows_light60Color];
-    [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeHeight];
+    [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeThickness];
     [self.strokeView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
@@ -126,9 +126,9 @@ NS_ASSUME_NONNULL_BEGIN
                   @"Messages that indicates that there are more unseen messages including safety number changes."));
 }
 
-- (CGFloat)strokeHeight
+- (CGFloat)strokeThickness
 {
-    return 1.f;
+    return 1.f / UIScreen.mainScreen.scale;
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -139,8 +139,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    CGSize result
-        = CGSizeMake(self.conversationStyle.fullWidthContentWidth, self.strokeHeight + self.titleLabel.font.lineHeight);
+    CGSize result = CGSizeMake(
+        self.conversationStyle.fullWidthContentWidth, self.strokeThickness + self.titleLabel.font.lineHeight);
 
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];
