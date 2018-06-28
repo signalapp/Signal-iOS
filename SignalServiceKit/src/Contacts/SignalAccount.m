@@ -20,6 +20,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalAccount
 
++ (NSString *)collection
+{
+    return @"SignalAccount2";
+}
+
++ (NSString *)collection_old
+{
+    return @"SignalAccount";
+}
+
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
     OWSAssert(signalRecipient);

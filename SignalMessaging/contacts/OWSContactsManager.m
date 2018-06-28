@@ -75,7 +75,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
 - (void)loadSignalAccountsFromCache
 {
     __block NSMutableArray<SignalAccount *> *signalAccounts;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
         DDLogInfo(@"%@ loading %lu signal accounts from cache.", self.logTag, (unsigned long)signalAccountCount);
 
@@ -350,15 +350,15 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         }
 
         NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-            [SignalAccount
-                enumerateCollectionObjectsWithTransaction:transaction
-                                               usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
-                                                   OWSAssert([object isKindOfClass:[SignalAccount class]]);
-                                                   SignalAccount *oldSignalAccount = (SignalAccount *)object;
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [SignalAccount enumerateCollectionObjectsWithTransaction:transaction
+                                                          usingBlock:^(id _Nonnull object, BOOL *stop) {
+                                                              OWSAssert([object isKindOfClass:[SignalAccount class]]);
+                                                              SignalAccount *oldSignalAccount = (SignalAccount *)object;
 
-                                                   oldSignalAccounts[oldSignalAccount.uniqueId] = oldSignalAccount;
-                                               }];
+                                                              oldSignalAccounts[oldSignalAccount.uniqueId]
+                                                                  = oldSignalAccount;
+                                                          }];
         }];
 
         NSMutableArray *accountsToSave = [NSMutableArray new];
@@ -384,7 +384,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         }
 
         // Update cached SignalAccounts on disk
-        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Clear legacy collection.
+            [transaction removeAllObjectsInCollection:[SignalAccount collection_old]];
+
             DDLogInfo(@"%@ Saving %lu SignalAccounts", self.logTag, (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
                 DDLogVerbose(@"%@ Saving SignalAccount: %@", self.logTag, signalAccount);
@@ -808,7 +811,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction:transaction];
         }];
     }
