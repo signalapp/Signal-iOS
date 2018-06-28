@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem hasShadows:(BOOL)hasShadows
+- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem isOverlayingMedia:(BOOL)isOverlayingMedia
 {
     OWSAssert(viewItem);
 
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
              self.timestampLabel,
              self.statusIndicatorImageView,
          ]) {
-        if (hasShadows) {
+        if (isOverlayingMedia) {
             subview.layer.shadowColor = [UIColor blackColor].CGColor;
             subview.layer.shadowOpacity = 0.35f;
             subview.layer.shadowOffset = CGSizeZero;
@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIColor *textColor;
-    if (hasShadows) {
+    if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
     } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         textColor = [UIColor colorWithWhite:1.f alpha:0.7f];
