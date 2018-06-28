@@ -23,7 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
-@property (nonatomic) OWSBubbleShapeView *mediaShadowView;
+// TODO: We may only end up using a single shadow.
+@property (nonatomic) OWSBubbleShapeView *mediaShadowView1;
+
+@property (nonatomic) OWSBubbleShapeView *mediaShadowView2;
 
 @property (nonatomic) OWSBubbleShapeView *mediaClipView;
 
@@ -81,7 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
 
-    self.mediaShadowView = [OWSBubbleShapeView bubbleShadowView];
+    self.mediaShadowView1 = [OWSBubbleShapeView bubbleShadowView];
+    self.mediaShadowView2 = [OWSBubbleShapeView bubbleShadowView];
     self.mediaClipView = [OWSBubbleShapeView bubbleClipView];
     self.bubbleStrokeView = [OWSBubbleShapeView bubbleDrawView];
 
@@ -348,28 +352,33 @@ NS_ASSUME_NONNULL_BEGIN
                 UIView *bodyProxyView = [UIView new];
                 [self.stackView addArrangedSubview:bodyProxyView];
 
-                [self addSubview:self.mediaShadowView];
-                [self.mediaShadowView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:bodyProxyView];
-                [self.mediaShadowView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:bodyProxyView];
-                [self.mediaShadowView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:bodyProxyView];
-                [self.mediaShadowView autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:bodyProxyView];
+                [self addSubview:self.mediaShadowView1];
+                [self addSubview:self.mediaShadowView2];
+                [self addSubview:self.mediaClipView];
 
-                [self.mediaShadowView addSubview:self.mediaClipView];
-                [self.mediaClipView autoPinToSuperviewEdges];
+                [self.viewConstraints addObjectsFromArray:[self.mediaShadowView1 autoPinToEdgesOfView:bodyProxyView]];
+                [self.viewConstraints addObjectsFromArray:[self.mediaShadowView2 autoPinToEdgesOfView:bodyProxyView]];
+                [self.viewConstraints addObjectsFromArray:[self.mediaClipView autoPinToEdgesOfView:bodyProxyView]];
 
                 [self.mediaClipView addSubview:bodyMediaView];
-                [bodyMediaView autoPinToSuperviewEdges];
+                [self.viewConstraints addObjectsFromArray:[bodyMediaView autoPinToSuperviewEdges]];
 
+                [self.bubbleView addPartnerView:self.mediaShadowView1];
+                [self.bubbleView addPartnerView:self.mediaShadowView2];
                 [self.bubbleView addPartnerView:self.mediaClipView];
-                [self.bubbleView addPartnerView:self.mediaShadowView];
 
-                // TODO: Constants
-                // TODO: What's the difference between an inner and outer shadow?
-                self.mediaShadowView.fillColor = self.bubbleColor;
-                self.mediaShadowView.layer.shadowColor = [UIColor blackColor].CGColor;
-                self.mediaShadowView.layer.shadowOpacity = 0.12f;
-                self.mediaShadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
-                self.mediaShadowView.layer.shadowRadius = 0.5f;
+                // TODO: Consider only using a single shadow for perf.
+                self.mediaShadowView1.fillColor = self.bubbleColor;
+                self.mediaShadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
+                self.mediaShadowView1.layer.shadowOpacity = 0.2f;
+                self.mediaShadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
+                self.mediaShadowView1.layer.shadowRadius = 20.f;
+
+                self.mediaShadowView2.fillColor = self.bubbleColor;
+                self.mediaShadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
+                self.mediaShadowView2.layer.shadowOpacity = 0.08f;
+                self.mediaShadowView2.layer.shadowOffset = CGSizeZero;
+                self.mediaShadowView2.layer.shadowRadius = 4.f;
             } else {
                 OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
 
@@ -379,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
                 self.bubbleStrokeView.strokeColor = [UIColor lightGrayColor];
                 self.bubbleStrokeView.strokeThickness = 1.f;
                 [self.bubbleView addSubview:self.bubbleStrokeView];
-                [self.bubbleStrokeView autoPinToSuperviewEdges];
+                [self.viewConstraints addObjectsFromArray:[self.bubbleStrokeView autoPinToSuperviewEdges]];
                 [self.bubbleView addPartnerView:self.bubbleStrokeView];
             }
         } else {
@@ -1235,7 +1244,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;
 
-    [self.mediaShadowView removeFromSuperview];
+    [self.mediaShadowView1 removeFromSuperview];
+    [self.mediaShadowView2 removeFromSuperview];
     [self.mediaClipView removeFromSuperview];
 
     [self.footerView removeFromSuperview];
