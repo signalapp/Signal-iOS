@@ -209,11 +209,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:self.audioPlayPauseButton];
     [self.audioPlayPauseButton setContentHuggingHigh];
 
-    UIStackView *labelsView = [UIStackView new];
-    labelsView.axis = UILayoutConstraintAxisVertical;
-    labelsView.spacing = [OWSAudioMessageView labelVSpacing];
-    [self addArrangedSubview:labelsView];
-
     NSString *filename = self.attachmentStream.sourceFilename;
     if (!filename) {
         filename = [[self.attachmentStream filePath] lastPathComponent];
@@ -233,12 +228,10 @@ NS_ASSUME_NONNULL_BEGIN
     topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSAudioMessageView labelFont];
-    [labelsView addArrangedSubview:topLabel];
 
     AudioProgressView *audioProgressView = [AudioProgressView new];
     self.audioProgressView = audioProgressView;
     [self updateAudioProgressView];
-    [labelsView addArrangedSubview:audioProgressView];
     [audioProgressView autoSetDimension:ALDimensionHeight toSize:[OWSAudioMessageView audioProgressViewHeight]];
 
     UILabel *bottomLabel = [UILabel new];
@@ -247,7 +240,23 @@ NS_ASSUME_NONNULL_BEGIN
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSAudioMessageView labelFont];
+
+    UIStackView *labelsView = [UIStackView new];
+    labelsView.axis = UILayoutConstraintAxisVertical;
+    labelsView.spacing = [OWSAudioMessageView labelVSpacing];
+    [labelsView addArrangedSubview:topLabel];
+    [labelsView addArrangedSubview:audioProgressView];
     [labelsView addArrangedSubview:bottomLabel];
+
+    // Ensure the "audio progress" and "play button" are v-center-aligned using a container.
+    UIView *labelsContainerView = [UIView containerView];
+    [self addArrangedSubview:labelsContainerView];
+    [labelsContainerView addSubview:labelsView];
+    [labelsView autoPinWidthToSuperview];
+    [labelsView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [labelsView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+
+    [audioProgressView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.audioPlayPauseButton];
 
     [self updateContents];
 }
