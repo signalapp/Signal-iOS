@@ -4860,17 +4860,19 @@ typedef enum : NSUInteger {
         previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
     }
 
-    // Update the "shouldShowDate" property of the view items.
+    // Update the properties of the view items.
     //
-    // First iterate in reverse order.
-    OWSInteractionType lastInteractionType = OWSInteractionType_Unknown;
-    MessageReceiptStatus lastReceiptStatus = MessageReceiptStatusUploading;
-    NSString *_Nullable lastIncomingSenderId = nil;
-    for (ConversationViewItem *viewItem in viewItems.reverseObjectEnumerator) {
+    // NOTE: This logic uses shouldShowDate which is set in the previous pass.
+    for (NSUInteger i = 0; i < viewItems.count; i++) {
+        ConversationViewItem *viewItem = viewItems[i];
+        ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
+        ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
         BOOL shouldShowSenderAvatar = NO;
         BOOL shouldHideFooter = NO;
+        NSString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
+        NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
 
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
@@ -4878,50 +4880,69 @@ typedef enum : NSUInteger {
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage
                                                                   referenceView:self.view];
 
-            // Always show "failed to send" status.
-            shouldHideFooter = (interactionType == lastInteractionType && receiptStatus == lastReceiptStatus
-                && outgoingMessage.messageState != TSOutgoingMessageStateFailed);
+            if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
+                MessageReceiptStatus nextReceiptStatus =
+                    [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:nextOutgoingMessage
+                                                                      referenceView:self.view];
+                NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
 
-            lastReceiptStatus = receiptStatus;
+                // We can skip the "outgoing message status" footer if the next message
+                // has the same footer and no "date break" separates us...
+                // ...but always show "failed to send" status.
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText]
+                    && receiptStatus == nextReceiptStatus
+                    && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.shouldShowDate);
+            }
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
+
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
-            BOOL isCollapsed = (interactionType == lastInteractionType &&
-                [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
-            lastIncomingSenderId = incomingSenderId;
 
-            shouldShowSenderAvatar = viewItem.isGroupThread && !isCollapsed;
+            if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
+                // We can skip the "incoming message status" footer if the next message
+                // has the same footer and no "date break" separates us.
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate);
+            }
+
+            if (viewItem.isGroupThread) {
+                // Show the sender name for incoming group messages unless
+                // the previous message has the same sender name and
+                // no "date break" separates us.
+                BOOL shouldShowSenderName = YES;
+                if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
+
+                    TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
+                    NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
+                    OWSAssert(previousIncomingSenderId.length > 0);
+
+                    shouldShowSenderName
+                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
+                            || viewItem.shouldShowDate);
+                }
+                if (shouldShowSenderName) {
+                    senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
+                }
+
+                // Show the sender avatar for incoming group messages unless
+                // the next message has the same sender avatar and
+                // no "date break" separates us.
+                shouldShowSenderAvatar = YES;
+                if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                    TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
+                    NSString *nextIncomingSenderId = nextIncomingMessage.authorId;
+                    OWSAssert(nextIncomingSenderId.length > 0);
+
+                    shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                        || nextViewItem.shouldShowDate);
+                }
+            }
         }
-        lastInteractionType = interactionType;
 
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
-    }
-
-    // Iterate again in forward order.
-    lastInteractionType = OWSInteractionType_Unknown;
-    lastReceiptStatus = MessageReceiptStatusUploading;
-    lastIncomingSenderId = nil;
-    for (ConversationViewItem *viewItem in viewItems) {
-        NSString *_Nullable senderName = nil;
-
-        OWSInteractionType interactionType = viewItem.interaction.interactionType;
-
-        if (interactionType == OWSInteractionType_IncomingMessage) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
-            NSString *incomingSenderId = incomingMessage.authorId;
-            OWSAssert(incomingSenderId.length > 0);
-            BOOL isCollapsed = (interactionType == lastInteractionType &&
-                [NSObject isNullableObject:lastIncomingSenderId equalTo:incomingSenderId]);
-            lastIncomingSenderId = incomingSenderId;
-
-            if (viewItem.isGroupThread && !isCollapsed) {
-                senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
-            }
-        }
-        lastInteractionType = interactionType;
-
         viewItem.senderName = senderName;
     }
 
