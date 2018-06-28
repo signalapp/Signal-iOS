@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *subtitleLabel;
 @property (nonatomic) UIView *strokeView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
+@property (nonatomic) UIStackView *stackView;
 
 @end
 
@@ -45,24 +46,28 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.strokeView = [UIView new];
-    // TODO: color.
-    self.strokeView.backgroundColor = [UIColor blackColor];
-    [self.contentView addSubview:self.strokeView];
+    self.strokeView.backgroundColor = [UIColor ows_light60Color];
+    [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeHeight];
+    [self.strokeView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
-    // TODO: color.
-    self.titleLabel.textColor = [UIColor blackColor];
+    self.titleLabel.textColor = [UIColor ows_light90Color];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.contentView addSubview:self.titleLabel];
 
     self.subtitleLabel = [UILabel new];
-    // TODO: color.
-    self.subtitleLabel.textColor = [UIColor lightGrayColor];
+    self.subtitleLabel.textColor = [UIColor ows_light90Color];
     // The subtitle may wrap to a second line.
     self.subtitleLabel.numberOfLines = 0;
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.subtitleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.contentView addSubview:self.subtitleLabel];
+
+    self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.strokeView,
+        self.titleLabel,
+        self.subtitleLabel,
+    ]];
+    self.stackView.axis = NSTextLayoutOrientationVertical;
+    [self.contentView addSubview:self.stackView];
 
     [self configureFonts];
 }
@@ -70,8 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureFonts
 {
     // Update cell to reflect changes in dynamic text.
-    //
-    // TODO: Font size.
     self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
     self.subtitleLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 }
@@ -94,26 +97,14 @@ NS_ASSUME_NONNULL_BEGIN
     self.titleLabel.text = [self titleForInteraction:interaction];
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];
 
-    self.backgroundColor = [UIColor whiteColor];
+    self.subtitleLabel.hidden = self.subtitleLabel.text.length < 1;
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = @[
-        [self.strokeView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.strokeView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.strokeView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
-        [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeHeight],
-
-        [self.titleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.strokeView],
-        [self.titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.titleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.titleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
-
-        [self.subtitleLabel autoPinEdge:ALEdgeTop
-                                 toEdge:ALEdgeBottom
-                                 ofView:self.titleLabel
-                             withOffset:self.subtitleVSpacing],
-        [self.subtitleLabel autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.subtitleLabel autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom],
+        [self.stackView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.stackView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
     ];
 }
 
@@ -140,11 +131,6 @@ NS_ASSUME_NONNULL_BEGIN
     return 1.f;
 }
 
-- (CGFloat)subtitleVSpacing
-{
-    return 3.f;
-}
-
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(self.conversationStyle);
@@ -159,7 +145,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSUnreadIndicatorInteraction *interaction = (TSUnreadIndicatorInteraction *)self.viewItem.interaction;
     self.subtitleLabel.text = [self subtitleForInteraction:interaction];
     if (self.subtitleLabel.text.length > 0) {
-        result.height += self.subtitleVSpacing;
         result.height += ceil(
             [self.subtitleLabel sizeThatFits:CGSizeMake(self.conversationStyle.fullWidthContentWidth, CGFLOAT_MAX)]
                 .height);
