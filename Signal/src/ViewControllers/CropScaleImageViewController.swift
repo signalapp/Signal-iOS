@@ -155,7 +155,7 @@ import SignalMessaging
         self.view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
 
-        let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] in
+        let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateImageLayout()
         })
