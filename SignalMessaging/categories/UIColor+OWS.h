@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 
-#pragma mark - New Colors
+#pragma mark -
 
 @property (class, readonly, nonatomic) UIColor *ows_signalBlueColor;
 @property (class, readonly, nonatomic) UIColor *ows_greenColor;
