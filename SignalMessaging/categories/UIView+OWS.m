@@ -402,6 +402,18 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     self.layoutMargins = layoutMargins;
 }
 
+- (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view
+{
+    OWSAssert(view);
+
+    return @[
+        [self autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:view],
+        [self autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:view],
+        [self autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:view],
+        [self autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:view],
+    ];
+}
+
 #pragma mark - Containers
 
 + (UIView *)containerView
