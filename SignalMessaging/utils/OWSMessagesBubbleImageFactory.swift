@@ -5,6 +5,7 @@
 import Foundation
 import SignalServiceKit
 
+// TODO: Possibly pull this into Conversation Style.
 @objc
 public class OWSMessagesBubbleColors: NSObject {
 
@@ -15,14 +16,17 @@ public class OWSMessagesBubbleColors: NSObject {
     @objc
     public static let shared = OWSMessagesBubbleColors()
 
+    // TODO: Remove this!  Incoming bubble colors are now dynamic.
     @objc
     public static let bubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
+    // TODO:
     @objc
-    public static let bubbleColorOutgoingUnsent = UIColor.gray
+    public static let bubbleColorOutgoingUnsent = UIColor.ows_red
 
+    // TODO:
     @objc
-    public static let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
+    public static let bubbleColorOutgoingSending = UIColor.ows_light35
 
     @objc
     public static let bubbleColorOutgoingSent = UIColor.ows_light10
@@ -39,6 +43,25 @@ public class OWSMessagesBubbleColors: NSObject {
                 return OWSMessagesBubbleColors.bubbleColorOutgoingSending
             default:
                 return OWSMessagesBubbleColors.bubbleColorOutgoingSent
+            }
+        } else {
+            owsFail("Unexpected message type: \(message)")
+            return UIColor.ows_materialBlue
+        }
+    }
+
+    @objc
+    public static func bubbleTextColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return UIColor.ows_white
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed:
+                return UIColor.ows_black
+            case .sending:
+                return UIColor.ows_black
+            default:
+                return UIColor.ows_black
             }
         } else {
             owsFail("Unexpected message type: \(message)")

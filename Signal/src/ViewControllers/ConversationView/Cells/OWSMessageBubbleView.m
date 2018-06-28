@@ -1180,7 +1180,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)bodyTextColor
 {
-    return self.isIncoming ? [UIColor blackColor] : [UIColor whiteColor];
+    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    return [OWSMessagesBubbleColors bubbleTextColorWithMessage:message];
 }
 
 - (BOOL)isMediaBeingSent
