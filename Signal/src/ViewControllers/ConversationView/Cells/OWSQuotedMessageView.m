@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)highlightColor
 {
     BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isQuotingSelf ? OWSMessagesBubbleColors.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
+    return (isQuotingSelf ? ConversationStyle.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
 }
 
 #pragma mark -
@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     self.boundsStrokeView = [OWSBubbleShapeView new];
-    self.boundsStrokeView.strokeColor = OWSMessagesBubbleColors.bubbleColorIncoming;
+    self.boundsStrokeView.strokeColor = ConversationStyle.bubbleColorIncoming;
     self.boundsStrokeView.strokeThickness = 1.f;
     [self addSubview:self.boundsStrokeView];
     [self.boundsStrokeView autoPinToSuperviewEdges];

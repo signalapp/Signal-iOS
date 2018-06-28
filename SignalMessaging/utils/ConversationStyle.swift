@@ -107,4 +107,59 @@ public class ConversationStyle: NSObject {
 
         lastTextLineAxis = CGFloat(round(12 + messageTextFont.capHeight * 0.5))
     }
+
+    // MARK: Colors
+
+    // TODO: Remove this!  Incoming bubble colors are now dynamic.
+    @objc
+    public static let bubbleColorIncoming = UIColor.ows_messageBubbleLightGray
+
+    // TODO:
+    @objc
+    public static let bubbleColorOutgoingUnsent = UIColor.ows_red
+
+    // TODO:
+    @objc
+    public static let bubbleColorOutgoingSending = UIColor.ows_light35
+
+    @objc
+    public static let bubbleColorOutgoingSent = UIColor.ows_light10
+
+    @objc
+    public static func bubbleColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return ConversationStyle.bubbleColorIncoming
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed:
+                return ConversationStyle.bubbleColorOutgoingUnsent
+            case .sending:
+                return ConversationStyle.bubbleColorOutgoingSending
+            default:
+                return ConversationStyle.bubbleColorOutgoingSent
+            }
+        } else {
+            owsFail("Unexpected message type: \(message)")
+            return UIColor.ows_materialBlue
+        }
+    }
+
+    @objc
+    public static func bubbleTextColor(message: TSMessage) -> UIColor {
+        if message is TSIncomingMessage {
+            return UIColor.ows_white
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            switch outgoingMessage.messageState {
+            case .failed:
+                return UIColor.ows_black
+            case .sending:
+                return UIColor.ows_black
+            default:
+                return UIColor.ows_black
+            }
+        } else {
+            owsFail("Unexpected message type: \(message)")
+            return UIColor.ows_materialBlue
+        }
+    }
 }
