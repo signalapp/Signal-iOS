@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 //
 @interface SignalAccount : TSYapDatabaseObject
 
++ (NSString *)collection_old;
+
 // An E164 value identifying the signal account.
 //
 // This is the key property of this class and it
