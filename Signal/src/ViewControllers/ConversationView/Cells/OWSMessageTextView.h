@@ -8,8 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldIgnoreEvents;
 
-- (CGSize)compactSizeThatFitsMaxWidth:(CGFloat)maxWidth maxIterations:(NSUInteger)maxIterations;
-
 @end
 
 NS_ASSUME_NONNULL_END

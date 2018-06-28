@@ -958,8 +958,8 @@ NS_ASSUME_NONNULL_BEGIN
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
 
     [self configureBodyTextView];
-    const int kMaxIterations = 5;
-    CGSize result = [self.bodyTextView compactSizeThatFitsMaxWidth:maxTextWidth maxIterations:kMaxIterations];
+
+    CGSize result = CGSizeCeil([self.bodyTextView sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
 
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
