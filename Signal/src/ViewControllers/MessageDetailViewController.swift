@@ -20,7 +20,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     let uiDatabaseConnection: YapDatabaseConnection
 
-    let bubbleFactory = OWSMessagesBubbleImageFactory()
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
