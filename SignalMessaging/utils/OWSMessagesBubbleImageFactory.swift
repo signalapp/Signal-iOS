@@ -6,16 +6,14 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public class OWSMessagesBubbleImageFactory: NSObject {
+public class OWSMessagesBubbleColors: NSObject {
+
+    override private init() {
+        super.init()
+    }
 
     @objc
-    public static let shared = OWSMessagesBubbleImageFactory()
-
-    // TODO: UIView is a little bit expensive to instantiate.
-    //       Can we cache this value?
-    private lazy var isRTL: Bool = {
-        return UIView().isRTL()
-    }()
+    public static let shared = OWSMessagesBubbleColors()
 
     @objc
     public static let bubbleColorIncoming = UIColor.ows_messageBubbleLightGray
@@ -27,20 +25,20 @@ public class OWSMessagesBubbleImageFactory: NSObject {
     public static let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
 
     @objc
-    public static let bubbleColorOutgoingSent = UIColor.ows_materialBlue
+    public static let bubbleColorOutgoingSent = UIColor.ows_light10
 
     @objc
-    public func bubbleColor(message: TSMessage) -> UIColor {
+    public static func bubbleColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return OWSMessagesBubbleImageFactory.bubbleColorIncoming
+            return OWSMessagesBubbleColors.bubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
-                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
+                return OWSMessagesBubbleColors.bubbleColorOutgoingUnsent
             case .sending:
-                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
+                return OWSMessagesBubbleColors.bubbleColorOutgoingSending
             default:
-                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
+                return OWSMessagesBubbleColors.bubbleColorOutgoingSent
             }
         } else {
             owsFail("Unexpected message type: \(message)")

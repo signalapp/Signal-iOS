@@ -457,7 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [self.bubbleFactory bubbleColorWithMessage:message];
+    return [OWSMessagesBubbleColors bubbleColorWithMessage:message];
 }
 
 - (BOOL)hasBodyMediaWithThumbnail
@@ -1200,11 +1200,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
     return outgoingMessage.messageState == TSOutgoingMessageStateSending;
-}
-
-- (OWSMessagesBubbleImageFactory *)bubbleFactory
-{
-    return [OWSMessagesBubbleImageFactory shared];
 }
 
 - (void)prepareForReuse
