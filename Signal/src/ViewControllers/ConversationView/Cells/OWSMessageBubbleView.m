@@ -889,26 +889,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.attachmentPointer);
 
-    UIView *customView = [UIView new];
-    switch (self.attachmentPointer.state) {
-        case TSAttachmentPointerStateEnqueued:
-            customView.backgroundColor
-                = (self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
-            break;
-        case TSAttachmentPointerStateDownloading:
-            customView.backgroundColor
-                = (self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_fadedBlueColor]);
-            break;
-        case TSAttachmentPointerStateFailed:
-            customView.backgroundColor = [UIColor grayColor];
-            break;
-    }
-
-    AttachmentPointerView *attachmentPointerView =
+    AttachmentPointerView *downloadView =
         [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer isIncoming:self.isIncoming];
-    [customView addSubview:attachmentPointerView];
-    [attachmentPointerView autoPinWidthToSuperviewWithMargin:20.f];
-    [attachmentPointerView autoVCenterInSuperview];
+
+    UIView *wrapper = [UIView new];
+    [wrapper addSubview:downloadView];
+    [downloadView autoPinWidthToSuperview];
+    [downloadView autoVCenterInSuperview];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -917,7 +904,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
-    return customView;
+    return wrapper;
 }
 
 - (UIView *)loadViewForContactShare
@@ -1058,7 +1045,7 @@ NS_ASSUME_NONNULL_BEGIN
             result = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
             break;
         case OWSMessageCellType_DownloadingAttachment:
-            result = CGSizeMake(200, 90);
+            result = CGSizeMake(200, [AttachmentPointerView measureHeight]);
             break;
         case OWSMessageCellType_ContactShare:
             OWSAssert(self.viewItem.contactShare);

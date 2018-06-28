@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-class AttachmentPointerView: UIView {
+class AttachmentPointerView: UIStackView {
 
     let TAG = "[AttachmentPointerView]"
 
@@ -72,77 +72,37 @@ class AttachmentPointerView: UIView {
         self.progress = CGFloat(progress.floatValue)
     }
 
-    @available(*, unavailable)
-    override init(frame: CGRect) {
-        owsFail("invalid constructor")
-        // This initializer should never be called, but we assign some bogus values to keep the compiler happy.
-        self.filename = genericFilename
-        self.isIncoming = false
-        self.attachmentPointer = TSAttachmentPointer()
-        super.init(frame: frame)
-        self.createSubviews()
-        self.updateViews()
+    @available(*, unavailable, message: "use init(call:) constructor instead.")
+    required init(coder aDecoder: NSCoder) {
+        fatalError("Unimplemented")
     }
 
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        owsFail("Invalid constructor")
-
-        // This initializer should never be called, but we assign some bogus values to keep the compiler happy.
-        self.filename = genericFilename
-        self.isIncoming = false
-        self.attachmentPointer = TSAttachmentPointer()
-        super.init(coder: aDecoder)
-        self.createSubviews()
-        self.updateViews()
-    }
+    private static var vSpacing: CGFloat = 5
+    private static var nameFont = UIFont.ows_dynamicTypeBody
+    private static var statusFont = UIFont.ows_dynamicTypeCaption1
 
     func createSubviews() {
-        self.addSubview(nameLabel)
         // truncate middle to be sure we include file extension
         nameLabel.lineBreakMode = .byTruncatingMiddle
         nameLabel.textAlignment = .center
-
         nameLabel.textColor = self.textColor
-        nameLabel.font = UIFont.ows_dynamicTypeBody
+        nameLabel.font = AttachmentPointerView.nameFont
 
-        nameLabel.autoPinWidthToSuperview()
-        nameLabel.autoPinEdge(toSuperviewEdge: .top)
-
-        self.addSubview(progressView)
-        progressView.autoPinWidthToSuperview()
-        progressView.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: 6)
-
-        self.addSubview(statusLabel)
         statusLabel.textAlignment = .center
         statusLabel.adjustsFontSizeToFitWidth = true
         statusLabel.numberOfLines = 2
-
         statusLabel.textColor = self.textColor
-        statusLabel.font = UIFont.ows_regularFont(withSize: 11.0)
+        statusLabel.font = AttachmentPointerView.statusFont
 
-        statusLabel.autoPinWidthToSuperview()
-        statusLabel.autoPinEdge(.top, to: .bottom, of: progressView, withOffset: 4)
-        statusLabel.autoPinEdge(toSuperviewEdge: .bottom)
-    }
-
-    func emojiForContentType(_ contentType: String) -> String {
-        if MIMETypeUtil.isImage(contentType) {
-            return "📷"
-        } else if MIMETypeUtil.isVideo(contentType) {
-            return "📽"
-        } else if MIMETypeUtil.isAudio(contentType) {
-            return "📻"
-        } else if MIMETypeUtil.isAnimated(contentType) {
-            return "🎡"
-        } else {
-            // generic file
-            return "📁"
-        }
+        self.axis = .vertical
+        self.spacing = AttachmentPointerView.vSpacing
+        addArrangedSubview(nameLabel)
+        addArrangedSubview(progressView)
+        addArrangedSubview(statusLabel)
     }
 
     func updateViews() {
-        let emoji = self.emojiForContentType(self.attachmentPointer.contentType)
+        let emoji = TSAttachment.emoji(forMimeType: self.attachmentPointer.contentType)
         nameLabel.text = "\(emoji) \(self.filename)"
 
         statusLabel.text = {
@@ -167,5 +127,13 @@ class AttachmentPointerView: UIView {
 
     var textColor: UIColor {
         return self.isIncoming ? UIColor.darkText : UIColor.white
+    }
+
+    @objc
+    public class func measureHeight() -> CGFloat {
+        return ceil(nameFont.lineHeight +
+            statusFont.lineHeight +
+            OWSProgressView.defaultSize().height +
+            vSpacing * 2)
     }
 }
