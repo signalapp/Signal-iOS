@@ -77,7 +77,7 @@
 		344F248A20069F0600CFB4F4 /* ViewControllerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 344F248820069F0600CFB4F4 /* ViewControllerUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		344F248B20069F0600CFB4F4 /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F248920069F0600CFB4F4 /* ViewControllerUtils.m */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
-		344F248F2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift */; };
+		344F248F2007D7F200CFB4F4 /* OWSMessagesBubbleColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleColors.swift */; };
 		344F2499200FD03300CFB4F4 /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 344F2495200FD03200CFB4F4 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		344F249A200FD03300CFB4F4 /* MessageApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F2496200FD03200CFB4F4 /* MessageApprovalViewController.swift */; };
 		344F249B200FD03300CFB4F4 /* SharingThreadPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 344F2497200FD03200CFB4F4 /* SharingThreadPickerViewController.m */; };
@@ -681,7 +681,7 @@
 		344F248820069F0600CFB4F4 /* ViewControllerUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ViewControllerUtils.h; path = SignalMessaging/contacts/ViewControllerUtils.h; sourceTree = SOURCE_ROOT; };
 		344F248920069F0600CFB4F4 /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ViewControllerUtils.m; path = SignalMessaging/contacts/ViewControllerUtils.m; sourceTree = SOURCE_ROOT; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
-		344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessagesBubbleImageFactory.swift; sourceTree = "<group>"; };
+		344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessagesBubbleColors.swift; sourceTree = "<group>"; };
 		344F2495200FD03200CFB4F4 /* SharingThreadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SharingThreadPickerViewController.h; path = SignalMessaging/attachments/SharingThreadPickerViewController.h; sourceTree = SOURCE_ROOT; };
 		344F2496200FD03200CFB4F4 /* MessageApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MessageApprovalViewController.swift; path = SignalMessaging/attachments/MessageApprovalViewController.swift; sourceTree = SOURCE_ROOT; };
 		344F2497200FD03200CFB4F4 /* SharingThreadPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SharingThreadPickerViewController.m; path = SignalMessaging/attachments/SharingThreadPickerViewController.m; sourceTree = SOURCE_ROOT; };
@@ -1449,7 +1449,7 @@
 				45666EC81D994C0D008FE134 /* OWSGroupAvatarBuilder.m */,
 				34480B481FD0A60200BC14EF /* OWSMath.h */,
 				3461293B1FD1D46900532771 /* OWSMath.m */,
-				344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift */,
+				344F248E2007D7F200CFB4F4 /* OWSMessagesBubbleColors.swift */,
 				346129371FD1B47200532771 /* OWSPreferences.h */,
 				346129381FD1B47200532771 /* OWSPreferences.m */,
 				34641E172088D7E900E2EDE5 /* OWSScreenLock.swift */,
@@ -3133,7 +3133,7 @@
 				4565ED06200EA29900C46DBB /* VideoPlayerView.swift in Sources */,
 				3461295B1FD1D74C00532771 /* Environment.m in Sources */,
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
-				344F248F2007D7F200CFB4F4 /* OWSMessagesBubbleImageFactory.swift in Sources */,
+				344F248F2007D7F200CFB4F4 /* OWSMessagesBubbleColors.swift in Sources */,
 				451F8A431FD714FE005CB9DA /* AvatarImageView.swift in Sources */,
 				346129C91FD2072E00532771 /* NSString+OWS.m in Sources */,
 				346129CB1FD2072E00532771 /* Promise+retainUntilComplete.swift in Sources */,
