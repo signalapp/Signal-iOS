@@ -34,7 +34,6 @@ public class ConversationStyle: NSObject {
     @objc public var contentWidth: CGFloat = 0
 
     // viewWidth - (gutterfullWidthGutterLeadingLeading + fullWidthGutterTrailing)
-    // TODO: Is this necessary?
     @objc public var fullWidthContentWidth: CGFloat = 0
 
     @objc public var maxMessageWidth: CGFloat = 0
