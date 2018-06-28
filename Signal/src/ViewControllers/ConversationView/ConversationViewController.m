@@ -564,7 +564,7 @@ typedef enum : NSUInteger {
 
     [self.collectionView applyScrollViewInsetsFix];
 
-    _inputToolbar = [ConversationInputToolbar new];
+    _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
@@ -4324,6 +4324,13 @@ typedef enum : NSUInteger {
                
                [message remove];
            }];
+}
+
+- (void)conversationColorWasUpdated
+{
+    [self.conversationStyle updateProperties];
+    [self.headerView updateAvatar];
+    [self.collectionView reloadData];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel

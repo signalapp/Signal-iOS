@@ -27,6 +27,8 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate>
 
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
+
 @property (nonatomic, readonly) UIView *composeContainer;
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
 @property (nonatomic, readonly) UIStackView *contentStackView;
@@ -66,12 +68,16 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 @implementation ConversationInputToolbar
 
-- (instancetype)init
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
 {
     self = [super init];
+    
+    _conversationStyle = conversationStyle;
+    
     if (self) {
         [self createContents];
     }
+    
 
     return self;
 }
@@ -268,7 +274,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         return;
     }
 
-    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply];
+    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
     self.quotedMessagePreview.delegate = self;
 
     // TODO animate

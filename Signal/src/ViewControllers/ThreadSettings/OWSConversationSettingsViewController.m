@@ -37,10 +37,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSConversationSettingsViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
+@interface OWSConversationSettingsViewController () <ContactEditingDelegate,
+    ContactsViewHelperDelegate,
+    ColorPickerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
+@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
@@ -121,6 +124,11 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationName_OtherUsersProfileDidChange
                                                object:nil];
+}
+
+- (YapDatabaseConnection *)editingDatabaseConnection
+{
+    return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
 }
 
 - (NSString *)threadName
@@ -269,6 +277,19 @@ NS_ASSUME_NONNULL_BEGIN
     }
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
+                             }]];
+
+
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 NSString *colorName = self.thread.conversationColorName;
+                                 UIColor *currentColor = [UIColor ows_conversationColorForColorName:colorName];
+                                 NSString *title = NSLocalizedString(@"CONVERSATION_SETTINGS_CONVERSATION_COLOR",
+                                     @"Label for table cell which leads to picking a new conversation color");
+                                 return [weakSelf disclosureCellWithName:title iconColor:currentColor];
+                             }
+                             actionBlock:^{
+                                 [weakSelf showColorPicker];
                              }]];
 
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
@@ -621,6 +642,39 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)iconSpacing
 {
     return 12.f;
+}
+
+- (UITableViewCell *)disclosureCellWithName:(NSString *)name iconColor:(UIColor *)iconColor
+{
+    OWSAssert(name.length > 0);
+
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.preservesSuperviewLayoutMargins = YES;
+    cell.contentView.preservesSuperviewLayoutMargins = YES;
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+    UIView *swatchView = [NeverClearView new];
+    const CGFloat kSwatchWidth = 24;
+    [swatchView autoSetDimension:ALDimensionWidth toSize:kSwatchWidth];
+    [swatchView autoSetDimension:ALDimensionHeight toSize:kSwatchWidth];
+    swatchView.layer.cornerRadius = kSwatchWidth / 2;
+    swatchView.backgroundColor = iconColor;
+
+    [cell.contentView addSubview:swatchView];
+    [swatchView autoVCenterInSuperview];
+    [swatchView autoPinLeadingToSuperviewMargin];
+
+    UILabel *rowLabel = [UILabel new];
+    rowLabel.text = name;
+    rowLabel.textColor = [UIColor blackColor];
+    rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+    rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    [cell.contentView addSubview:rowLabel];
+    [rowLabel autoVCenterInSuperview];
+    [rowLabel autoPinLeadingToTrailingEdgeOfView:swatchView offset:self.iconSpacing];
+    [rowLabel autoPinTrailingToSuperviewMargin];
+
+    return cell;
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
@@ -1158,7 +1212,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
-    [self.thread updateWithMutedUntilDate:value];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        [self.thread updateWithMutedUntilDate:value transaction:transaction];
+    }];
+    
     [self updateTableContents];
 }
 
@@ -1198,6 +1255,36 @@ NS_ASSUME_NONNULL_BEGIN
         [self.thread.contactIdentifier isEqualToString:recipientId]) {
         [self updateTableContents];
     }
+}
+
+#pragma mark - ColorPickerDelegate
+
+- (void)showColorPicker
+{
+    ColorPickerViewController *pickerController = [[ColorPickerViewController alloc] initWithThread:self.thread];
+    pickerController.delegate = self;
+    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:pickerController];
+
+    [self presentViewController:modal animated:YES completion:nil];
+}
+
+- (void)colorPicker:(ColorPickerViewController *)colorPicker didPickColorName:(NSString *)colorName
+{
+    DDLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.thread updateConversationColorName:colorName transaction:transaction];
+
+        [self.contactsManager.avatarCache removeAllImages];
+        [self updateTableContents];
+        [self.conversationSettingsViewDelegate conversationColorWasUpdated];
+        
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }];
+}
+
+- (void)colorPickerDidCancel:(ColorPickerViewController *)colorPicker
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

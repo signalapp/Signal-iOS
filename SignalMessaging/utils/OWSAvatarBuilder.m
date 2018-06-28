@@ -27,7 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAvatarBuilder *avatarBuilder;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *colorName = thread.conversationColorName;
+        UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
         avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
+                                                                    color:color
                                                                  diameter:diameter
                                                           contactsManager:contactsManager];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {

@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ConversationStyle;
 @class OWSQuotedReplyModel;
 @class SignalAttachment;
 
@@ -32,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationInputTextViewDelegate;
 
 @interface ConversationInputToolbar : UIView
+
+- (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 

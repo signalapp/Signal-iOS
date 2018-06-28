@@ -296,6 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     OWSAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorId
+                                                                                  color:self.conversationStyle.primaryColor
                                                                                diameter:self.avatarSize
                                                                         contactsManager:contactsManager];
     self.avatarView.image = [avatarBuilder build];

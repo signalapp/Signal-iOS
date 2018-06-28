@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ConversationStyle;
 @class DisplayableText;
 @class OWSBubbleShapeView;
 @class OWSQuotedReplyModel;
@@ -33,10 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 // Factory method for "message bubble" views.
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                                         conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing;
 
 // Factory method for "message compose" views.
-+ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage;
++ (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
+                                    conversationStyle:(ConversationStyle *)conversationStyle;
 
 @end
 

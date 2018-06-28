@@ -15,6 +15,7 @@ class QuotedReplyPreview: UIView {
     public weak var delegate: QuotedReplyPreviewDelegate?
 
     private let quotedReply: OWSQuotedReplyModel
+    private let conversationStyle: ConversationStyle
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
@@ -24,8 +25,9 @@ class QuotedReplyPreview: UIView {
     }
 
     @objc
-    init(quotedReply: OWSQuotedReplyModel) {
+    init(quotedReply: OWSQuotedReplyModel, conversationStyle: ConversationStyle) {
         self.quotedReply = quotedReply
+        self.conversationStyle = conversationStyle
 
         super.init(frame: .zero)
 
@@ -42,7 +44,7 @@ class QuotedReplyPreview: UIView {
         // We instantiate quotedMessageView late to ensure that it is updated
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
         // sizes changes).
-        let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply)
+        let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
         self.quotedMessageView = quotedMessageView
 
         quotedMessageView.backgroundColor = .clear

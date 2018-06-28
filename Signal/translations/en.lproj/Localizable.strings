@@ -511,6 +511,9 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
 
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Group Info";
 

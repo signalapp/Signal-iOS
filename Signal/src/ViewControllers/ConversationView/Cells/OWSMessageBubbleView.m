@@ -277,6 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSQuotedMessageView *quotedMessageView =
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
+                                                 conversationStyle:self.conversationStyle
                                                         isOutgoing:isOutgoing];
         quotedMessageView.delegate = self;
 
@@ -494,7 +495,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [ConversationStyle bubbleColorWithMessage:message];
+    return [self.conversationStyle bubbleColorWithMessage:message];
 }
 
 - (BOOL)hasBodyMediaWithThumbnail
@@ -1084,6 +1085,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSQuotedMessageView *quotedMessageView =
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
+                                             conversationStyle:self.conversationStyle
                                                     isOutgoing:isOutgoing];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
@@ -1214,7 +1216,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [ConversationStyle bubbleTextColorWithMessage:message];
+    return [self.conversationStyle bubbleTextColorWithMessage:message];
 }
 
 - (BOOL)isMediaBeingSent
