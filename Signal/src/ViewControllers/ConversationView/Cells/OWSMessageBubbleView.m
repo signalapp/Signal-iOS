@@ -457,7 +457,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [OWSMessagesBubbleColors bubbleColorWithMessage:message];
+    return [ConversationStyle bubbleColorWithMessage:message];
 }
 
 - (BOOL)hasBodyMediaWithThumbnail
@@ -1183,7 +1183,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [OWSMessagesBubbleColors bubbleTextColorWithMessage:message];
+    return [ConversationStyle bubbleTextColorWithMessage:message];
 }
 
 - (BOOL)isMediaBeingSent
