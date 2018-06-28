@@ -122,6 +122,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unreadLabel autoCenterInSuperview];
     [self.unreadLabel setContentHuggingHigh];
     [self.unreadLabel setCompressionResistanceHigh];
+
+    self.payloadView.userInteractionEnabled = NO;
 }
 
 - (void)dealloc

@@ -45,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];
     [self.cellView autoPinEdgesToSuperviewMargins];
+    self.cellView.userInteractionEnabled = NO;
 }
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager

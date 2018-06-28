@@ -212,7 +212,6 @@ NS_ASSUME_NONNULL_BEGIN
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;
     labelsView.spacing = [OWSAudioMessageView labelVSpacing];
-    labelsView.alignment = UIStackViewAlignmentFill;
     [self addArrangedSubview:labelsView];
 
     NSString *filename = self.attachmentStream.sourceFilename;

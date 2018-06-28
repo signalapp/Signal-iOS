@@ -224,7 +224,6 @@ NS_ASSUME_NONNULL_BEGIN
     UIStackView *vStackView = [UIStackView new];
     vStackView.axis = UILayoutConstraintAxisVertical;
     vStackView.spacing = 0;
-    vStackView.alignment = UIStackViewAlignmentFill;
     [self addSubview:vStackView];
     [vStackView autoPinToSuperviewEdges];
     [vStackView addArrangedSubview:hStackView];

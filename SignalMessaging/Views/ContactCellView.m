@@ -78,7 +78,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.subtitleLabel,
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
-    self.nameContainerView.alignment = UIStackViewAlignmentFill;
 
     [self.avatarView setContentHuggingHorizontalHigh];
     [self.nameContainerView setContentHuggingHorizontalLow];

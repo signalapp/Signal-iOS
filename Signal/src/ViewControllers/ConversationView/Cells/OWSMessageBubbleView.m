@@ -87,7 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
-    self.stackView.alignment = UIStackViewAlignmentFill;
 
     self.senderNameLabel = [UILabel new];
 
@@ -485,9 +484,6 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.hasBodyMediaWithThumbnail || self.cellType == OWSMessageCellType_ContactShare);
 }
 
-// Returns YES if there is a footer displayed _at the bottom_
-// of the message bubble (as opposed to overlaid on a body media
-// thumbnail).
 - (BOOL)canFooterOverlayMedia
 {
     return self.hasBodyMediaWithThumbnail;
@@ -507,7 +503,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIStackView *textStackView = [[UIStackView alloc] initWithArrangedSubviews:textViews];
     textStackView.axis = UILayoutConstraintAxisVertical;
-    textStackView.alignment = UIStackViewAlignmentFill;
     // TODO: Review
     textStackView.spacing = self.textViewVSpacing;
     textStackView.layoutMarginsRelativeArrangement = YES;
