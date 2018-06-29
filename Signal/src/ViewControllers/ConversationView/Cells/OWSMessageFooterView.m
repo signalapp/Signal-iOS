@@ -5,6 +5,7 @@
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
 #import "Signal-Swift.h"
+#import <QuartzCore/QuartzCore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -114,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
             case MessageReceiptStatusUploading:
             case MessageReceiptStatusSending:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                [self animateSpinningIcon];
                 break;
             case MessageReceiptStatusSent:
             case MessageReceiptStatusSkipped:
@@ -144,6 +146,19 @@ NS_ASSUME_NONNULL_BEGIN
         self.statusIndicatorImageView.image = nil;
         self.statusIndicatorImageView.hidden = YES;
     }
+}
+
+- (void)animateSpinningIcon
+{
+    CABasicAnimation *animation;
+    animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    animation.toValue = @(M_PI * 2.0);
+    const CGFloat kPeriodSeconds = 1.f;
+    animation.duration = kPeriodSeconds;
+    animation.cumulative = YES;
+    animation.repeatCount = HUGE_VALF;
+
+    [self.statusIndicatorImageView.layer addAnimation:animation forKey:@"animation"];
 }
 
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
@@ -182,6 +197,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *statusMessage =
         [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
     return statusMessage;
+}
+
+- (void)prepareForReuse
+{
+    [self.statusIndicatorImageView.layer removeAllAnimations];
 }
 
 @end

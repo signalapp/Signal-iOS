@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem;
 
+- (void)prepareForReuse;
+
 @end
 
 NS_ASSUME_NONNULL_END
