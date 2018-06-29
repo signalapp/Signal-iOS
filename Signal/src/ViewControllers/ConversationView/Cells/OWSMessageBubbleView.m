@@ -1149,7 +1149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable quotedMessageSize = [self quotedMessageSize];
     if (quotedMessageSize) {
-        if (senderNameSize) {
+        if (!senderNameSize) {
             cellSize.height += self.quotedReplyTopMargin;
         }
         cellSize.width = MAX(cellSize.width, quotedMessageSize.CGSizeValue.width);

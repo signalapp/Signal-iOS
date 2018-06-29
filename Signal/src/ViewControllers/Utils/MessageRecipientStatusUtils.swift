@@ -159,4 +159,24 @@ public class MessageRecipientStatusUtils: NSObject {
                                                               referenceView: referenceView)
         return status
     }
+
+    @objc
+    public class func description(forMessageReceiptStatus value: MessageReceiptStatus) -> String {
+        switch(value) {
+        case .read:
+            return "read"
+        case .uploading:
+            return "uploading"
+        case .delivered:
+            return "delivered"
+        case .sent:
+            return "sent"
+        case .sending:
+            return "sending"
+        case .failed:
+            return "failed"
+        case .skipped:
+            return "skipped"
+        }
+    }
 }
