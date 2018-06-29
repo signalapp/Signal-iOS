@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
+@property (nonatomic, readonly) BOOL sharesTopBorderWithMessageBubble;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -39,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
+                          sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
 {
     OWSAssert(quotedMessage);
 
@@ -46,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          displayableQuotedText:displayableQuotedText
                                              conversationStyle:conversationStyle
                                                   isForPreview:NO
-                                                    isOutgoing:isOutgoing];
+                                                    isOutgoing:isOutgoing
+                              sharesTopBorderWithMessageBubble:sharesTopBorderWithMessageBubble];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
@@ -63,7 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    displayableQuotedText:displayableQuotedText
                                                                        conversationStyle:conversationStyle
                                                                             isForPreview:YES
-                                                                              isOutgoing:YES];
+                                                                              isOutgoing:YES
+                                                        sharesTopBorderWithMessageBubble:NO];
     [instance createContents];
     return instance;
 }
@@ -73,6 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
                     conversationStyle:(ConversationStyle *)conversationStyle
                          isForPreview:(BOOL)isForPreview
                            isOutgoing:(BOOL)isOutgoing
+     sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
 {
     self = [super init];
 
@@ -87,6 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isForPreview = isForPreview;
     _conversationStyle = conversationStyle;
     _isOutgoing = isOutgoing;
+    _sharesTopBorderWithMessageBubble = sharesTopBorderWithMessageBubble;
 
     _quotedAuthorLabel = [UILabel new];
     _quotedTextLabel = [UILabel new];
@@ -140,6 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
+    BOOL sharesTopBorderWithMessageBubble = self.sharesTopBorderWithMessageBubble;
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
         layoutCallback:^(UIView *layerView) {
@@ -151,9 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat bubbleRight = layerFrame.size.width;
             CGFloat bubbleTop = 0.f;
             CGFloat bubbleBottom = layerFrame.size.height;
-            // TODO:
-            CGFloat bubbleTopRounding = 12.f;
-            CGFloat bubbleBottomRounding = 12.f;
+            CGFloat bubbleTopRounding = (sharesTopBorderWithMessageBubble ? 10.f : 4.f);
+            CGFloat bubbleBottomRounding = 4.f;
 
             [bezierPath moveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)];
             [bezierPath addLineToPoint:CGPointMake(bubbleRight - bubbleTopRounding, bubbleTop)];
@@ -172,8 +178,9 @@ NS_ASSUME_NONNULL_BEGIN
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    // TODO: Color.
-    innerBubbleView.backgroundColor = [[UIColor ows_cyan800Color] colorWithAlphaComponent:0.25f];
+    innerBubbleView.backgroundColor
+        = (self.isOutgoing ? [self.conversationStyle.primaryColor colorWithAlphaComponent:0.25f]
+                           : [UIColor colorWithWhite:1.f alpha:0.75f]);
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
@@ -187,8 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     [hStackView autoPinToSuperviewEdges];
 
     UIView *stripeView = [UIView new];
-    // TODO: Color.
-    stripeView.backgroundColor = [UIColor ows_cyan800Color];
+    stripeView.backgroundColor = (self.isOutgoing ? [self.conversationStyle primaryColor] : [UIColor whiteColor]);
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];

@@ -285,7 +285,8 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
                                                  conversationStyle:self.conversationStyle
-                                                        isOutgoing:isOutgoing];
+                                                        isOutgoing:isOutgoing
+                                  sharesTopBorderWithMessageBubble:!self.shouldShowSenderName];
         quotedMessageView.delegate = self;
 
         self.quotedMessageView = quotedMessageView;
@@ -1130,7 +1131,8 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
                                              conversationStyle:self.conversationStyle
-                                                    isOutgoing:isOutgoing];
+                                                    isOutgoing:isOutgoing
+                              sharesTopBorderWithMessageBubble:NO];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }

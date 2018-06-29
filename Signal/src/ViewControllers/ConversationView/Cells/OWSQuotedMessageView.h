@@ -34,7 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
-                                                isOutgoing:(BOOL)isOutgoing;
+                                                isOutgoing:(BOOL)isOutgoing
+                          sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble;
 
 // Factory method for "message compose" views.
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage

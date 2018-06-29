@@ -172,6 +172,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
+    UIColor *textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
+
     AvatarImageView *avatarView = [AvatarImageView new];
     avatarView.image =
         [self.contactShare getAvatarImageWithDiameter:self.iconSize contactsManager:self.contactsManager];
@@ -183,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *topLabel = [UILabel new];
     topLabel.text = self.contactShare.displayName;
-    topLabel.textColor = [UIColor blackColor];
+    topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     topLabel.font = OWSContactShareView.nameFont;
 
@@ -197,7 +199,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (firstPhoneNumber.length > 0) {
         UILabel *bottomLabel = [UILabel new];
         bottomLabel.text = [PhoneNumber bestEffortLocalizedPhoneNumberWithE164:firstPhoneNumber];
-        bottomLabel.textColor = [UIColor ows_darkGrayColor];
+        // TODO:
+        bottomLabel.textColor = [textColor colorWithAlphaComponent:0.7f];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         bottomLabel.font = OWSContactShareView.subtitleFont;
         [labelsView addArrangedSubview:bottomLabel];
@@ -208,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    disclosureImageView.tintColor = [UIColor blackColor];
+    disclosureImageView.tintColor = textColor;
     [disclosureImageView setCompressionResistanceHigh];
     [disclosureImageView setContentHuggingHigh];
 
