@@ -1320,11 +1320,11 @@ typedef enum : NSUInteger {
         if (OWSWindowManager.sharedManager.hasCall) {
             callButton.enabled = NO;
             callButton.userInteractionEnabled = NO;
-            callButton.tintColor = UIColor.lightGrayColor;
+            callButton.tintColor = [UIColor.ows_navbarForegroundColor colorWithAlphaComponent:0.7];
         } else {
             callButton.enabled = YES;
             callButton.userInteractionEnabled = YES;
-            callButton.tintColor = UIColor.whiteColor;
+            callButton.tintColor = UIColor.ows_navbarForegroundColor;
         }
 
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
@@ -1352,7 +1352,7 @@ typedef enum : NSUInteger {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
-        timerView.tintColor = UIColor.whiteColor;
+        timerView.tintColor = UIColor.ows_navbarForegroundColor;
 
         // As of iOS11, we can size barButton item custom views with autoLayout.
         // Before that, though we can still use autoLayout *within* the customView,

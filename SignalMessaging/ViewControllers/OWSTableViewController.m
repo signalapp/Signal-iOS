@@ -457,9 +457,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView applyScrollViewInsetsFix];
 
     [self.view addSubview:self.tableView];
-    [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.tableView autoPinEdgesToSuperviewEdges];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 }

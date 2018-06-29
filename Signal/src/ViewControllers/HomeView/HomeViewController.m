@@ -275,6 +275,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.view addSubview:self.tableView];
     [self.tableView autoPinWidthToSuperview];
     [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    // TODO - have content scroll behind navbar will require changing this.
     [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:reminderStackView];
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
