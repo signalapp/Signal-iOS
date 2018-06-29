@@ -347,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
         font = self.fileTypeFont;
     }
 
-    self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 3;
+    self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedTextLabel.text = text;
     self.quotedTextLabel.textColor = textColor;
