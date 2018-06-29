@@ -10,6 +10,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UIColor (OWS)
 
+#pragma mark - Global App Colors
+
++ (UIColor *)ows_navbarBackgroundColor
+{
+    return UIColor.ows_whiteColor;
+}
+
++ (UIColor *)ows_navbarForegroundColor
+{
+//    return UIColor.ows_blackColor;
+    
+    return UIColor.greenColor;
+}
+
+#pragma mark -
+
 + (UIColor *)ows_signalBrandBlueColor
 {
     return [UIColor colorWithRed:0.1135657504 green:0.4787300229 blue:0.89595204589999999 alpha:1.];

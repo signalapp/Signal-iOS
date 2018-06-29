@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIUtil.h"
+#import "UIColor+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 
 #define CONTACT_PICTURE_VIEW_BORDER_WIDTH 0.5f
@@ -34,31 +35,32 @@
 
 + (void)applyDefaultSystemAppearence
 {
-    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
-    [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
-    [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
-    [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
-    [[UINavigationBar appearance] setTitleTextAttributes:@{
-        NSForegroundColorAttributeName : [UIColor blackColor],
-    }];
+//    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
+//    [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
+//    [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
+//    [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
+//    [[UINavigationBar appearance] setTitleTextAttributes:@{
+//        NSForegroundColorAttributeName : [UIColor blackColor],
+//    }];
 }
 
 + (void)applySignalAppearence
 {
-    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
-    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    //    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
+    UINavigationBar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
+    //    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
+    UINavigationBar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
 
-    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+//    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
 
     [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
-    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
+//    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
 
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-    [[UINavigationBar appearance] setTitleTextAttributes:@{
-        NSForegroundColorAttributeName : [UIColor whiteColor],
-    }];
+    UINavigationBar.appearance.titleTextAttributes = @{
+        NSForegroundColorAttributeName : UIColor.ows_navbarForegroundColor
+    };
 }
 
 @end

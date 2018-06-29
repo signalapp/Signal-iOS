@@ -8,6 +8,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UIColor (OWS)
 
+#pragma mark - Global App Colors
+
+@property (class, readonly, nonatomic) UIColor *ows_navbarBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_navbarForegroundColor;
+
+#pragma mark -
+
 @property (class, readonly, nonatomic) UIColor *ows_systemPrimaryButtonColor;
 @property (class, readonly, nonatomic) UIColor *ows_signalBrandBlueColor;
 @property (class, readonly, nonatomic) UIColor *ows_materialBlueColor;
