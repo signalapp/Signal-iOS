@@ -249,6 +249,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self.dateHeaderView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.gutterTrailing],
             [self.dateHeaderView autoPinEdgeToSuperviewEdge:ALEdgeTop],
 
+            // DO NOT pin to the bottom of dateHeaderView.
+            //
+            // Being a UIStackView, it doesn't reflect the spacing below the date
+            // header contents.  Instead pin using dateHeaderHeight which includes
+            // the spacing.
             [self.messageBubbleView autoPinEdge:ALEdgeTop
                                          toEdge:ALEdgeTop
                                          ofView:self.dateHeaderView
@@ -365,7 +370,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)dateHeaderStrokeThickness
 {
-    return 1.f / UIScreen.mainScreen.scale;
+    return CGHairlineWidth();
 }
 
 - (CGFloat)dateHeaderBottomMargin

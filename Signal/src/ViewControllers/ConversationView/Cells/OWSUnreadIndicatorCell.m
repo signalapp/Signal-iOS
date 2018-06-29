@@ -103,8 +103,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutConstraints = @[
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-        [self.stackView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.stackView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                         withInset:self.conversationStyle.fullWidthGutterLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                         withInset:self.conversationStyle.fullWidthGutterTrailing],
     ];
 }
 
@@ -128,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)strokeThickness
 {
-    return 1.f / UIScreen.mainScreen.scale;
+    return CGHairlineWidth();
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
