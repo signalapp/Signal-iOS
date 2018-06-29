@@ -126,7 +126,7 @@ class AttachmentPointerView: UIStackView {
     }
 
     var textColor: UIColor {
-        return self.isIncoming ? UIColor.darkText : UIColor.white
+        return self.isIncoming ? UIColor.ows_white : UIColor.ows_light90
     }
 
     @objc
