@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_toolbarBackgroundColor
 {
-    return [self colorWithWhite:245 / 255.f alpha:1.f];
+    return self.ows_navbarBackgroundColor;
 }
 
 + (UIColor *)ows_lightBackgroundColor

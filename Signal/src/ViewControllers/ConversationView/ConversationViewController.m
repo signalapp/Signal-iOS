@@ -535,6 +535,7 @@ typedef enum : NSUInteger {
 {
     [super loadView];
 
+    // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
@@ -2582,8 +2583,7 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
 
-    self.scrollDownButtonButtomConstraint =
-        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
+    self.scrollDownButtonButtomConstraint = [self.scrollDownButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
     [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
 #ifdef DEBUG
