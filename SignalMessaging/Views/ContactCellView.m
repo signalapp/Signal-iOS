@@ -29,7 +29,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UIView *accessoryViewContainer;
 
 @property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) TSThread *thread;
+@property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) NSString *recipientId;
 
 @end
@@ -196,7 +196,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    NSString *colorName = self.thread.conversationColorName;
+    NSString *colorName = ^{
+        if (self.thread) {
+            return self.thread.conversationColorName;
+        } else {
+            OWSAssert(self.recipientId);
+            return [TSThread stableConversationColorNameForString:self.recipientId];
+        }
+    }();
     UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
     
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
