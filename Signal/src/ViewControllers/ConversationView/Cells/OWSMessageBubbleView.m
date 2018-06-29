@@ -1270,6 +1270,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleStrokeView removeFromSuperview];
 
     [self.footerView removeFromSuperview];
+    [self.footerView prepareForReuse];
 
     for (UIView *subview in self.stackView.subviews) {
         [subview removeFromSuperview];
