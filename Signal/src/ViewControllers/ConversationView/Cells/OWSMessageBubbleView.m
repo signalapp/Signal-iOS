@@ -447,6 +447,10 @@ NS_ASSUME_NONNULL_BEGIN
                          }];
 
     [self updateBubbleColor];
+
+    // If we're stroking the bubble edge, ensure the stroke
+    // view is in front of its peers to prevent it from being occluded.
+    [self.bubbleStrokeView.superview bringSubviewToFront:self.bubbleStrokeView];
 }
 
 - (void)updateBubbleColor
@@ -1247,6 +1251,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.mediaShadowView1 removeFromSuperview];
     [self.mediaShadowView2 removeFromSuperview];
     [self.mediaClipView removeFromSuperview];
+    [self.bubbleStrokeView removeFromSuperview];
 
     [self.footerView removeFromSuperview];
 
