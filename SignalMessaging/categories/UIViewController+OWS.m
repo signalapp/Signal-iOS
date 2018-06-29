@@ -2,8 +2,9 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
+#import "UIColor+OWS.h"
+#import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,9 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
     // in a UIBarButtonItem.
     [backButton addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *backImage = [UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")];
+    UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssert(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
+    backButton.tintColor = UIColor.ows_navbarForegroundColor;
 
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
 

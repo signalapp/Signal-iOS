@@ -1379,6 +1379,7 @@ typedef enum : NSUInteger {
 {
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
 
+    UIColor *subtitleColor = [UIColor.ows_navbarForegroundColor colorWithAlphaComponent:(CGFloat)0.9];
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText
@@ -1386,7 +1387,7 @@ typedef enum : NSUInteger {
                                        initWithString:@"\ue067  "
                                            attributes:@{
                                                NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor
                                            }]];
     }
 
@@ -1405,7 +1406,7 @@ typedef enum : NSUInteger {
                                        initWithString:@"\uf00c "
                                            attributes:@{
                                                NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor,
                                            }]];
     }
 
@@ -1415,7 +1416,7 @@ typedef enum : NSUInteger {
                                        initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
                                            attributes:@{
                                                NSFontAttributeName : self.headerView.subtitleFont,
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor,
                                            }]];
     } else {
         [subtitleText appendAttributedString:
@@ -1425,7 +1426,7 @@ typedef enum : NSUInteger {
                                                  @"title can be tapped to access settings for this conversation.")
                                   attributes:@{
                                       NSFontAttributeName : self.headerView.subtitleFont,
-                                      NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                      NSForegroundColorAttributeName : subtitleColor,
                                   }]];
     }
 

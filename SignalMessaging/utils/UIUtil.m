@@ -50,13 +50,17 @@
     UINavigationBar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
     //    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     UINavigationBar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
+    UIToolbar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
+    UIToolbar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
 
-//    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor ows_materialBlueColor]];
+    UIBarButtonItem.appearance.tintColor = UIColor.ows_navbarForegroundColor;
+
+    //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
+    //    ows_materialBlueColor]];
 
     [[UISwitch appearance] setOnTintColor:[UIColor ows_materialBlueColor]];
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
-//    [[UIBarButtonItem appearance] setTintColor:[UIColor whiteColor]];
-
+    
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
     UINavigationBar.appearance.titleTextAttributes = @{
         NSForegroundColorAttributeName : UIColor.ows_navbarForegroundColor
