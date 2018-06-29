@@ -22,19 +22,29 @@ class OWSLayerView: UIView {
 
     override var bounds: CGRect {
         didSet {
-            layoutCallback(self)
+            updateLayer()
         }
     }
 
     override var frame: CGRect {
         didSet {
-            layoutCallback(self)
+            updateLayer()
         }
     }
 
     override var center: CGPoint {
         didSet {
-            layoutCallback(self)
+            updateLayer()
         }
+    }
+
+    private func updateLayer() {
+        // Prevent the shape layer from animating changes.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+
+        layoutCallback(self)
+
+        CATransaction.commit()
     }
 }

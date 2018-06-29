@@ -287,8 +287,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(quotedMessageSize);
         [self.viewConstraints addObject:[quotedMessageView autoSetDimension:ALDimensionHeight
                                                                      toSize:quotedMessageSize.CGSizeValue.height]];
-
-        [self.bubbleView addPartnerView:quotedMessageView.boundsStrokeView];
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -341,6 +339,13 @@ NS_ASSUME_NONNULL_BEGIN
             // Flush any pending "text" subviews.
             [self insertAnyTextViewsIntoStackView:textViews];
             [textViews removeAllObjects];
+
+            if (self.isQuotedReply) {
+                UIView *spacerView = [UIView containerView];
+                [spacerView autoSetDimension:ALDimensionHeight toSize:8.f];
+                [spacerView setCompressionResistanceHigh];
+                [self.stackView addArrangedSubview:spacerView];
+            }
 
             if (self.hasBodyMediaWithThumbnail) {
 

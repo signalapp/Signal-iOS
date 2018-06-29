@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
-@property (nonatomic, nullable) OWSBubbleShapeView *boundsStrokeView;
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
 
@@ -116,34 +115,108 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+- (CGFloat)bubbleHMargin
+{
+    return 6.f;
+}
+
+- (CGFloat)bubbleTopMargin
+{
+    return 6.f;
+}
+
+- (CGFloat)hSpacing
+{
+    return 8.f;
+}
+
 - (void)createContents
 {
     // Ensure only called once.
-    OWSAssert(!self.boundsStrokeView);
+    OWSAssert(self.subviews.count < 1);
 
-    self.backgroundColor = [UIColor whiteColor];
     self.userInteractionEnabled = YES;
     self.layoutMargins = UIEdgeInsetsZero;
     self.clipsToBounds = YES;
 
-    self.boundsStrokeView = [OWSBubbleShapeView new];
-    self.boundsStrokeView.strokeColor = [self.conversationStyle primaryColor];
-    self.boundsStrokeView.strokeThickness = 1.f;
-    [self addSubview:self.boundsStrokeView];
-    [self.boundsStrokeView autoPinToSuperviewEdges];
-    [self.boundsStrokeView setContentHuggingLow];
-    [self.boundsStrokeView setCompressionResistanceLow];
+    CAShapeLayer *maskLayer = [CAShapeLayer new];
+    OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
+         initWithFrame:CGRectZero
+        layoutCallback:^(UIView *layerView) {
+            CGRect layerFrame = layerView.bounds;
 
-    UIView *_Nullable quotedAttachmentView = nil;
+            UIBezierPath *bezierPath = [UIBezierPath new];
+
+            CGFloat bubbleLeft = 0.f;
+            CGFloat bubbleRight = layerFrame.size.width;
+            CGFloat bubbleTop = 0.f;
+            CGFloat bubbleBottom = layerFrame.size.height;
+            // TODO:
+            CGFloat bubbleTopRounding = 12.f;
+            CGFloat bubbleBottomRounding = 12.f;
+
+            [bezierPath moveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)];
+            [bezierPath addLineToPoint:CGPointMake(bubbleRight - bubbleTopRounding, bubbleTop)];
+            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + bubbleTopRounding)
+                               controlPoint:CGPointMake(bubbleRight, bubbleTop)];
+            [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bubbleBottomRounding)];
+            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bubbleBottomRounding, bubbleBottom)
+                               controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
+            [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bubbleBottomRounding, bubbleBottom)];
+            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bubbleBottomRounding)
+                               controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
+            [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + bubbleTopRounding)];
+            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)
+                               controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+
+            maskLayer.path = bezierPath.CGPath;
+        }];
+    innerBubbleView.layer.mask = maskLayer;
+    // TODO: Color.
+    innerBubbleView.backgroundColor = [[UIColor ows_cyan800Color] colorWithAlphaComponent:0.25f];
+    [self addSubview:innerBubbleView];
+    [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
+    [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
+    [innerBubbleView autoPinTopToSuperviewMarginWithInset:self.bubbleTopMargin];
+    [innerBubbleView autoPinBottomToSuperviewMargin];
+
+    UIStackView *hStackView = [UIStackView new];
+    hStackView.axis = UILayoutConstraintAxisHorizontal;
+    hStackView.spacing = self.hSpacing;
+    [innerBubbleView addSubview:hStackView];
+    [hStackView autoPinToSuperviewEdges];
+
+    UIView *stripeView = [UIView new];
+    // TODO: Color.
+    stripeView.backgroundColor = [UIColor ows_cyan800Color];
+    [stripeView autoSetDimension:ALDimensionWidth toSize:4];
+    [stripeView setContentHuggingHigh];
+    [stripeView setCompressionResistanceHigh];
+    [hStackView addArrangedSubview:stripeView];
+
+    UIStackView *vStackView = [UIStackView new];
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.layoutMargins = UIEdgeInsetsMake(7, 0, 7, 0);
+    vStackView.layoutMarginsRelativeArrangement = YES;
+    [hStackView addArrangedSubview:vStackView];
+
+    UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
+    [vStackView addArrangedSubview:quotedAuthorLabel];
+    [quotedAuthorLabel autoSetDimension:ALDimensionHeight toSize:self.quotedAuthorHeight];
+    [quotedAuthorLabel setContentHuggingVerticalHigh];
+    [quotedAuthorLabel setContentHuggingHorizontalLow];
+    [quotedAuthorLabel setCompressionResistanceHorizontalLow];
+
+    UILabel *quotedTextLabel = [self configureQuotedTextLabel];
+    [vStackView addArrangedSubview:quotedTextLabel];
+    [quotedTextLabel setContentHuggingLow];
+    [quotedTextLabel setCompressionResistanceLow];
+
     if (self.hasQuotedAttachment) {
+        UIView *_Nullable quotedAttachmentView = nil;
         UIImage *_Nullable thumbnailImage = [self tryToLoadThumbnailImage];
         if (thumbnailImage) {
             quotedAttachmentView = [self imageViewForImage:thumbnailImage];
-
-            // Stroke the edge softly.
-            quotedAttachmentView.layer.borderColor = [UIColor colorWithWhite:0.f alpha:0.1f].CGColor;
-            quotedAttachmentView.layer.borderWidth = 1.f;
-            quotedAttachmentView.layer.cornerRadius = 2.f;
             quotedAttachmentView.clipsToBounds = YES;
             quotedAttachmentView.backgroundColor = [UIColor whiteColor];
 
@@ -154,8 +227,6 @@ NS_ASSUME_NONNULL_BEGIN
                 contentImageView.tintColor = [UIColor whiteColor];
                 [quotedAttachmentView addSubview:contentImageView];
                 [contentImageView autoCenterInSuperview];
-                [contentImageView setContentHuggingHigh];
-                [contentImageView setCompressionResistanceHigh];
             }
         } else if (self.quotedMessage.thumbnailDownloadFailed) {
             // TODO design review icon and color
@@ -163,105 +234,40 @@ NS_ASSUME_NONNULL_BEGIN
                 [[UIImage imageNamed:@"btnRefresh--white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             UIImageView *contentImageView = [self imageViewForImage:contentIcon];
             contentImageView.contentMode = UIViewContentModeScaleAspectFit;
-            contentImageView.userInteractionEnabled = YES;
             contentImageView.tintColor = UIColor.whiteColor;
+
             quotedAttachmentView = [UIView containerView];
             [quotedAttachmentView addSubview:contentImageView];
             quotedAttachmentView.backgroundColor = self.highlightColor;
-            quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
             [contentImageView autoCenterInSuperview];
             [contentImageView
                 autoSetDimensionsToSize:CGSizeMake(self.quotedAttachmentSize * 0.5f, self.quotedAttachmentSize * 0.5f)];
-            contentImageView.layer.minificationFilter = kCAFilterTrilinear;
-            contentImageView.layer.magnificationFilter = kCAFilterTrilinear;
 
             UITapGestureRecognizer *tapGesture =
                 [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapFailedThumbnailDownload:)];
             [quotedAttachmentView addGestureRecognizer:tapGesture];
+            quotedAttachmentView.userInteractionEnabled = YES;
         } else {
-            quotedAttachmentView = [UIView containerView];
-            quotedAttachmentView.backgroundColor = self.highlightColor;
-            quotedAttachmentView.layer.cornerRadius = self.quotedAttachmentSize * 0.5f;
-
-            // TODO: Use new icons.
-            UIImage *contentIcon =
-                [UIImage imageNamed:(self.isAudioAttachment ? @"attachment_audio" : @"attachment_file")];
-            contentIcon = [contentIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            UIImage *contentIcon = [UIImage imageNamed:@"generic-attachment"];
             UIImageView *contentImageView = [self imageViewForImage:contentIcon];
-            contentImageView.tintColor = [UIColor whiteColor];
-            [quotedAttachmentView addSubview:contentImageView];
+            contentImageView.contentMode = UIViewContentModeScaleAspectFit;
+
+            UIView *wrapper = [UIView containerView];
+            [wrapper addSubview:contentImageView];
             [contentImageView autoCenterInSuperview];
-            [contentImageView setContentHuggingHigh];
-            [contentImageView setCompressionResistanceHigh];
+            [contentImageView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize - 8.f];
+            quotedAttachmentView = wrapper;
         }
 
-        quotedAttachmentView.userInteractionEnabled = YES;
-        [self addSubview:quotedAttachmentView];
-        [quotedAttachmentView autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
-        [quotedAttachmentView autoVCenterInSuperview];
         [quotedAttachmentView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize];
-        [quotedAttachmentView autoSetDimension:ALDimensionHeight toSize:self.quotedAttachmentSize];
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
-    }
-
-    UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
-    {
-        [self addSubview:quotedAuthorLabel];
-        [quotedAuthorLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.quotedAuthorTopInset];
-        [quotedAuthorLabel autoPinLeadingToSuperviewMarginWithInset:self.quotedContentHInset];
-        if (quotedAttachmentView) {
-            [quotedAuthorLabel autoPinTrailingToLeadingEdgeOfView:quotedAttachmentView
-                                                           offset:self.quotedAttachmentHSpacing];
-        } else {
-            [quotedAuthorLabel autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
-        }
-        [quotedAuthorLabel autoSetDimension:ALDimensionHeight toSize:self.quotedAuthorHeight];
-        [quotedAuthorLabel setContentHuggingLow];
-        [quotedAuthorLabel setCompressionResistanceLow];
-    }
-
-    {
-        // Stripe and text container.
-        UIView *stripeAndTextContainer = [UIView containerView];
-        [self addSubview:stripeAndTextContainer];
-        [stripeAndTextContainer autoPinEdge:ALEdgeTop
-                                     toEdge:ALEdgeBottom
-                                     ofView:quotedAuthorLabel
-                                 withOffset:self.quotedAuthorBottomSpacing];
-        [stripeAndTextContainer autoPinLeadingToSuperviewMarginWithInset:self.quotedContentHInset];
-        if (quotedAttachmentView) {
-            [stripeAndTextContainer autoPinTrailingToLeadingEdgeOfView:quotedAttachmentView
-                                                                offset:self.quotedAttachmentHSpacing];
-        } else {
-            [stripeAndTextContainer autoPinTrailingToSuperviewMarginWithInset:self.quotedContentHInset];
-        }
-        [stripeAndTextContainer autoPinBottomToSuperviewMarginWithInset:self.quotedTextBottomInset];
-        [stripeAndTextContainer setContentHuggingLow];
-        [stripeAndTextContainer setCompressionResistanceLow];
-
-        // Stripe.
-        UIView *quoteStripView = [UIView containerView];
-        quoteStripView.backgroundColor = self.highlightColor;
-        quoteStripView.userInteractionEnabled = NO;
-        quoteStripView.layer.cornerRadius = self.quotedReplyStripeRounding;
-        [stripeAndTextContainer addSubview:quoteStripView];
-        [quoteStripView autoPinHeightToSuperview];
-        [quoteStripView autoPinLeadingToSuperviewMargin];
-        [quoteStripView autoSetDimension:ALDimensionWidth toSize:self.quotedReplyStripeThickness];
-        [quoteStripView setContentHuggingVerticalLow];
-        [quoteStripView setContentHuggingHorizontalHigh];
-        [quoteStripView setCompressionResistanceHigh];
-
-        // Text.
-        UILabel *quotedTextLabel = [self configureQuotedTextLabel];
-        [stripeAndTextContainer addSubview:quotedTextLabel];
-        [quotedTextLabel autoPinTopToSuperviewMarginWithInset:self.quotedReplyStripeVExtension];
-        [quotedTextLabel autoPinBottomToSuperviewMarginWithInset:self.quotedReplyStripeVExtension];
-        [quotedTextLabel autoPinLeadingToTrailingEdgeOfView:quoteStripView offset:self.quotedReplyStripeHSpacing];
-        [quotedTextLabel autoPinTrailingToSuperviewMargin];
-        [quotedTextLabel setContentHuggingLow];
-        [quotedTextLabel setCompressionResistanceLow];
+        [hStackView addArrangedSubview:quotedAttachmentView];
+    } else {
+        UIView *emptyView = [UIView containerView];
+        [hStackView addArrangedSubview:emptyView];
+        [emptyView setContentHuggingHigh];
+        [emptyView autoSetDimension:ALDimensionWidth toSize:0.f];
     }
 }
 
@@ -423,6 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.quotedAuthorLabel.text = quotedAuthorText;
     self.quotedAuthorLabel.font = self.quotedAuthorFont;
+    // TODO:
     self.quotedAuthorLabel.textColor = [self quotedAuthorColor];
     self.quotedAuthorLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedAuthorLabel.numberOfLines = 1;
@@ -493,17 +500,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
+    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
 }
 
 - (UIColor *)quotedAuthorColor
 {
-    return [UIColor colorWithRGBHex:0x8E8E93];
+    return [UIColor ows_light90Color];
 }
 
 - (UIColor *)quotedTextColor
 {
-    return [UIColor blackColor];
+    return [UIColor ows_light90Color];
 }
 
 - (UIFont *)quotedTextFont

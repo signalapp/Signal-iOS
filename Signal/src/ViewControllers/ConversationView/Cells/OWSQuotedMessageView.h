@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSQuotedMessageView : UIView
 
-@property (nonatomic, nullable, readonly) OWSBubbleShapeView *boundsStrokeView;
 @property (nonatomic, nullable, weak) id<OWSQuotedMessageViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
