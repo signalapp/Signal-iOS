@@ -120,14 +120,14 @@ NS_ASSUME_NONNULL_BEGIN
     return 6.f;
 }
 
-- (CGFloat)bubbleTopMargin
-{
-    return 6.f;
-}
-
 - (CGFloat)hSpacing
 {
     return 8.f;
+}
+
+- (CGFloat)stripeThickness
+{
+    return 4.f;
 }
 
 - (void)createContents
@@ -177,7 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
-    [innerBubbleView autoPinTopToSuperviewMarginWithInset:self.bubbleTopMargin];
+    [innerBubbleView autoPinTopToSuperviewMargin];
     [innerBubbleView autoPinBottomToSuperviewMargin];
 
     UIStackView *hStackView = [UIStackView new];
@@ -189,14 +189,14 @@ NS_ASSUME_NONNULL_BEGIN
     UIView *stripeView = [UIView new];
     // TODO: Color.
     stripeView.backgroundColor = [UIColor ows_cyan800Color];
-    [stripeView autoSetDimension:ALDimensionWidth toSize:4];
+    [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];
     [hStackView addArrangedSubview:stripeView];
 
     UIStackView *vStackView = [UIStackView new];
     vStackView.axis = UILayoutConstraintAxisVertical;
-    vStackView.layoutMargins = UIEdgeInsetsMake(7, 0, 7, 0);
+    vStackView.layoutMargins = UIEdgeInsetsMake(self.textVMargin, 0, self.textVMargin, 0);
     vStackView.layoutMarginsRelativeArrangement = YES;
     [hStackView addArrangedSubview:vStackView];
 
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
             UIView *wrapper = [UIView containerView];
             [wrapper addSubview:contentImageView];
             [contentImageView autoCenterInSuperview];
-            [contentImageView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize - 8.f];
+            [contentImageView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize * 0.5f];
             quotedAttachmentView = wrapper;
         }
 
@@ -439,63 +439,48 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Measurement
 
+- (CGFloat)textVMargin
+{
+    return 7.f;
+}
+
 - (CGSize)sizeForMaxWidth:(CGFloat)maxWidth
 {
     CGSize result = CGSizeZero;
 
-    result.width += self.quotedContentHInset;
+    result.width += self.bubbleHMargin * 2 + self.stripeThickness + self.hSpacing * 2;
 
     CGFloat thumbnailHeight = 0.f;
     if (self.hasQuotedAttachment) {
-        result.width += self.quotedAttachmentHSpacing;
         result.width += self.quotedAttachmentSize;
 
-        thumbnailHeight += self.quotedAttachmentMinVInset;
         thumbnailHeight += self.quotedAttachmentSize;
-        thumbnailHeight += self.quotedAttachmentMinVInset;
     }
-
-    result.width += self.quotedContentHInset;
 
     // Quoted Author
-    CGFloat quotedAuthorWidth = 0.f;
+    CGFloat textWidth = 0.f;
+    CGFloat maxTextWidth = maxWidth - result.width;
+    CGFloat textHeight = self.textVMargin * 2 + self.quotedAuthorHeight;
     {
-        CGFloat maxQuotedAuthorWidth = maxWidth - result.width;
-
         UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
 
-        CGSize quotedAuthorSize
-            = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxQuotedAuthorWidth, CGFLOAT_MAX)]);
-        quotedAuthorSize.width = MIN(quotedAuthorSize.width, maxQuotedAuthorWidth);
-
-        quotedAuthorWidth = quotedAuthorSize.width;
-
-        result.height += self.quotedAuthorTopInset;
-        result.height += self.quotedAuthorHeight;
-        result.height += self.quotedAuthorBottomSpacing;
+        CGSize quotedAuthorSize = CGSizeCeil([quotedAuthorLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+        textWidth = quotedAuthorSize.width;
     }
 
-    CGFloat quotedTextWidth = 0.f;
     {
-        CGFloat maxQuotedTextWidth
-            = (maxWidth - (result.width + self.quotedReplyStripeThickness + self.quotedReplyStripeHSpacing));
-
         UILabel *quotedTextLabel = [self configureQuotedTextLabel];
 
-        CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxQuotedTextWidth, CGFLOAT_MAX)]);
-        textSize.width = MIN(textSize.width, maxQuotedTextWidth);
-
-        quotedTextWidth = textSize.width + self.quotedReplyStripeThickness + self.quotedReplyStripeHSpacing;
-        result.height += textSize.height + self.quotedReplyStripeVExtension * 2;
+        CGSize textSize = CGSizeCeil([quotedTextLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+        textWidth = MAX(textWidth, textSize.width);
+        textHeight += textSize.height;
     }
 
-    CGFloat textWidth = MAX(quotedAuthorWidth, quotedTextWidth);
+    textWidth = MIN(textWidth, maxTextWidth);
     result.width += textWidth;
+    result.height += MAX(textHeight, thumbnailHeight);
 
-    result.height += self.quotedTextBottomInset;
-    result.height = MAX(result.height, thumbnailHeight);
-
-    return result;
+    return CGSizeCeil(result);
 }
 
 - (UIFont *)quotedAuthorFont
@@ -543,63 +528,9 @@ NS_ASSUME_NONNULL_BEGIN
     return (CGFloat)ceil([self quotedAuthorFont].lineHeight * 1.f);
 }
 
-- (CGFloat)quotedAuthorTopInset
-{
-    return 8.f;
-}
-
-- (CGFloat)quotedAuthorBottomSpacing
-{
-    return 3.f;
-}
-
-- (CGFloat)quotedTextBottomInset
-{
-    return 8.f;
-}
-
-- (CGFloat)quotedReplyStripeThickness
-{
-    return 2.f;
-}
-
-- (CGFloat)quotedReplyStripeVExtension
-{
-    return 4.f;
-}
-
-- (CGFloat)quotedReplyStripeRounding
-{
-    return 1.f;
-}
-
-// The spacing between the vertical "quoted reply stripe"
-// and the quoted message content.
-- (CGFloat)quotedReplyStripeHSpacing
-{
-    return 4.f;
-}
-
-// Distance from top edge of "quoted message" bubble to top of message bubble.
-- (CGFloat)quotedAttachmentMinVInset
-{
-    return 12.f;
-}
-
 - (CGFloat)quotedAttachmentSize
 {
-    return 44.f;
-}
-
-- (CGFloat)quotedAttachmentHSpacing
-{
-    return 8.f;
-}
-
-// Distance from sides of the quoted content to the sides of the message bubble.
-- (CGFloat)quotedContentHInset
-{
-    return 8.f;
+    return 54.f;
 }
 
 #pragma mark -
