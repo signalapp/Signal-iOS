@@ -119,6 +119,31 @@ NS_ASSUME_NONNULL_BEGIN
     [self addArrangedSubview:imageView];
     [imageView setContentHuggingHigh];
 
+    NSString *filename = self.attachmentStream.sourceFilename;
+    if (!filename) {
+        filename = [[self.attachmentStream filePath] lastPathComponent];
+    }
+    NSString *fileExtension = filename.pathExtension;
+    if (fileExtension.length < 1) {
+        [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType];
+    }
+    if (fileExtension.length < 1) {
+        fileExtension = NSLocalizedString(@"GENERIC_ATTACHMENT_DEFAULT_TYPE",
+            @"A default label for attachment whose file extension cannot be determined.");
+    }
+
+    UILabel *fileTypeLabel = [UILabel new];
+    fileTypeLabel.text = fileExtension.uppercaseString;
+    fileTypeLabel.textColor = UIColor.ows_light90Color;
+    fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
+    fileTypeLabel.adjustsFontSizeToFitWidth = YES;
+    fileTypeLabel.textAlignment = NSTextAlignmentCenter;
+    // Center on icon.
+    [imageView addSubview:fileTypeLabel];
+    [fileTypeLabel autoCenterInSuperview];
+    [fileTypeLabel autoSetDimension:ALDimensionWidth toSize:self.iconWidth - 20.f];
+
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;
     labelsView.spacing = [OWSGenericAttachmentView labelVSpacing];
