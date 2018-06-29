@@ -70,8 +70,8 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
 {
-    self = [super init];
-    
+    self = [super initWithFrame:CGRectZero];
+
     _conversationStyle = conversationStyle;
     
     if (self) {
