@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor blackColor];
+    self.titleLabel.textColor = [UIColor ows_light60Color];
     self.titleLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE",
         @"Title for the group of buttons show for unknown contacts offering to add them to contacts, etc.");
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -85,9 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureFonts
 {
-    self.titleLabel.font = UIFont.ows_dynamicTypeBodyFont.ows_mediumWeight;
+    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
 
-    UIFont *buttonFont = UIFont.ows_dynamicTypeBodyFont;
+    UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
     self.addToContactsButton.titleLabel.font = buttonFont;
     self.addToProfileWhitelistButton.titleLabel.font = buttonFont;
     self.blockButton.titleLabel.font = buttonFont;
@@ -97,10 +97,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [button setBackgroundColor:[UIColor colorWithRGBHex:0xf5f5f5]];
-    button.layer.cornerRadius = 5.f;
+    [button setBackgroundColor:[UIColor ows_light02Color]];
+    button.layer.cornerRadius = 4.f;
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
     return button;
 }
@@ -130,6 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
     self.layoutConstraints = @[
+        [self.addToContactsButton autoSetDimension:ALDimensionHeight toSize:self.buttonHeight],
+        [self.addToProfileWhitelistButton autoSetDimension:ALDimensionHeight toSize:self.buttonHeight],
+        [self.blockButton autoSetDimension:ALDimensionHeight toSize:self.buttonHeight],
+
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
         // TODO: Honor "full-width gutters"?
@@ -142,27 +146,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)topVMargin
 {
-    return 5.f;
+    return 0.f;
 }
 
 - (CGFloat)bottomVMargin
 {
-    return 5.f;
-}
-
-- (CGFloat)buttonVPadding
-{
-    return 5.f;
+    return 0.f;
 }
 
 - (CGFloat)vSpacing
 {
-    return 5.f;
+    return 8.f;
 }
 
 - (CGFloat)buttonHeight
 {
-    return (self.buttonVPadding + CGSizeCeil([self.addToContactsButton sizeThatFits:CGSizeZero]).height);
+    return (24.f + self.addToContactsButton.titleLabel.font.lineHeight);
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
