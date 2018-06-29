@@ -415,7 +415,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // The contents of the navigation bar are cramped in this view.
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     UIImage *image = [[UIImage imageNamed:@"button_settings_white"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    button.tintColor = UIColor.ows_navbarForegroundColor;
+    button.tintColor = UIColor.ows_navbarIconColor;
     [button setImage:image forState:UIControlStateNormal];
     UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
     // We normally would want to use left and right insets that ensure the button

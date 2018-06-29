@@ -27,11 +27,11 @@
 + (void)setupSignalAppearence
 {
     UINavigationBar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
-    UINavigationBar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
+    UINavigationBar.appearance.tintColor = UIColor.ows_navbarIconColor;
     UIToolbar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
-    UIToolbar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
+    UIToolbar.appearance.tintColor = UIColor.ows_navbarIconColor;
 
-    UIBarButtonItem.appearance.tintColor = UIColor.ows_navbarForegroundColor;
+    UIBarButtonItem.appearance.tintColor = UIColor.ows_navbarIconColor;
     // Because our launch screen is blue, we specify the light content in our plist
     // but once the app has loaded we want to switch to dark.
     [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
@@ -43,9 +43,7 @@
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-    UINavigationBar.appearance.titleTextAttributes = @{
-        NSForegroundColorAttributeName : UIColor.ows_navbarForegroundColor
-    };
+    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : UIColor.ows_navbarTitleColor };
 }
 
 @end

@@ -17,11 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
     return UIColor.ows_whiteColor;
 }
 
-+ (UIColor *)ows_navbarForegroundColor
++ (UIColor *)ows_navbarIconColor
 {
-//    return UIColor.ows_blackColor;
-    
-    return UIColor.greenColor;
+    return UIColor.ows_light60Color;
+}
+
++ (UIColor *)ows_navbarTitleColor
+{
+    return UIColor.ows_light90Color;
 }
 
 #pragma mark -

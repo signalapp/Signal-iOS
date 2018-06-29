@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Global App Colors
 
 @property (class, readonly, nonatomic) UIColor *ows_navbarBackgroundColor;
-@property (class, readonly, nonatomic) UIColor *ows_navbarForegroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_navbarIconColor;
+@property (class, readonly, nonatomic) UIColor *ows_navbarTitleColor;
 
 #pragma mark -
 
