@@ -4,7 +4,6 @@
 
 #import "OWSGenericAttachmentView.h"
 #import "OWSBezierPathView.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
@@ -85,25 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     return 48.f;
 }
 
-- (UIColor *)bubbleBackgroundColor
-{
-    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
-}
-
-- (UIColor *)textColor
-{
-    return (self.isIncoming ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor whiteColor]);
-}
-
-- (UIColor *)foregroundColorWithOpacity:(CGFloat)alpha
-{
-    return [self.textColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
-}
-
 - (void)createContents
 {
-    UIColor *textColor = (self.isIncoming ? [UIColor colorWithWhite:0.2 alpha:1.f] : [UIColor whiteColor]);
-
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = self.hSpacing;
@@ -115,7 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(image.size.height == self.iconHeight);
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
-    imageView.tintColor = self.bubbleBackgroundColor;
     [self addArrangedSubview:imageView];
     [imageView setContentHuggingHigh];
 
@@ -130,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *fileTypeLabel = [UILabel new];
     fileTypeLabel.text = fileExtension.uppercaseString;
-    fileTypeLabel.textColor = UIColor.ows_light90Color;
+    fileTypeLabel.textColor = [UIColor ows_light90Color];
     fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
     fileTypeLabel.adjustsFontSizeToFitWidth = YES;
@@ -156,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *topLabel = [UILabel new];
     self.topLabel = topLabel;
     topLabel.text = topText;
-    topLabel.textColor = textColor;
+    topLabel.textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSGenericAttachmentView topLabelFont];
     [labelsView addArrangedSubview:topLabel];
@@ -169,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *bottomLabel = [UILabel new];
     self.bottomLabel = bottomLabel;
     bottomLabel.text = bottomText;
-    bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+    bottomLabel.textColor = (self.isIncoming ? [UIColor colorWithWhite:1.f alpha:0.7f] : [UIColor ows_light60Color]);
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSGenericAttachmentView bottomLabelFont];
     [labelsView addArrangedSubview:bottomLabel];
