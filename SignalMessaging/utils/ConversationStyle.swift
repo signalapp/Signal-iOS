@@ -9,8 +9,6 @@ public class ConversationStyle: NSObject {
 
     private let thread: TSThread
 
-    private let isRTL: Bool
-
     // The width of the collection view.
     @objc public var viewWidth: CGFloat = 0 {
         didSet {
@@ -54,7 +52,6 @@ public class ConversationStyle: NSObject {
     public required init(thread: TSThread) {
 
         self.thread = thread
-        self.isRTL = CurrentAppContext().isRTL
         self.primaryColor = ConversationStyle.primaryColor(thread: thread)
 
         super.init()

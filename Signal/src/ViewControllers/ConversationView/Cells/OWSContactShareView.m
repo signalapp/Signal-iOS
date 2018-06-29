@@ -203,7 +203,8 @@ NS_ASSUME_NONNULL_BEGIN
         [labelsView addArrangedSubview:bottomLabel];
     }
 
-    UIImage *disclosureImage = [UIImage imageNamed:(self.isRTL ? @"small_chevron_left" : @"small_chevron_right")];
+    UIImage *disclosureImage =
+        [UIImage imageNamed:(CurrentAppContext().isRTL ? @"small_chevron_left" : @"small_chevron_right")];
     OWSAssert(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

@@ -219,7 +219,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         backButton.autoPinEdge(toSuperviewEdge: .top)
         backButton.autoPinLeadingToSuperviewMargin()
 
-        let backIconName = (self.view.isRTL() ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
+        let backIconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator" : "system_disclosure_indicator_rtl")
         guard let backIconImage = UIImage(named: backIconName) else {
             owsFail("\(logTag) missing icon.")
             return topView

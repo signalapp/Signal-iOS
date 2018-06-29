@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)dateIsYesterday:(NSDate *)date;
 
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
-                                         isRTL:(BOOL)isRTL NS_SWIFT_NAME(formatPastTimestampRelativeToNow(_:isRTL:));
+    NS_SWIFT_NAME(formatPastTimestampRelativeToNow(_:));
 
 + (NSString *)formatTimestampShort:(uint64_t)timestamp;
 + (NSString *)formatDateShort:(NSDate *)date;

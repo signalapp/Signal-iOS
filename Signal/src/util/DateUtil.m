@@ -145,7 +145,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return [[calendar components:NSCalendarUnitDay fromDate:date1 toDate:date2 options:0] day];
 }
 
-+ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp isRTL:(BOOL)isRTL
++ (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
 {
     OWSCAssert(pastTimestamp > 0);
 
@@ -161,8 +161,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     } else {
         dateString = [[self dateFormatter] stringFromDate:pastDate];
     }
-    return [[dateString rtlSafeAppend:@" " isRTL:isRTL] rtlSafeAppend:[[self timeFormatter] stringFromDate:pastDate]
-                                                                isRTL:isRTL];
+    return [[dateString rtlSafeAppend:@" "] rtlSafeAppend:[[self timeFormatter] stringFromDate:pastDate]];
 }
 
 + (NSString *)formatTimestampShort:(uint64_t)timestamp

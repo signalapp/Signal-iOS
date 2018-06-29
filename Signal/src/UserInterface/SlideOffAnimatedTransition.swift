@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -21,7 +21,7 @@ class SlideOffAnimatedTransition: NSObject, UIViewControllerAnimatedTransitionin
         }
 
         let width = containerView.frame.width
-        let offsetFrame = fromView.frame.offsetBy(dx: (containerView.isRTL() ? +width : -width), dy: 0)
+        let offsetFrame = fromView.frame.offsetBy(dx: (CurrentAppContext().isRTL ? +width : -width), dy: 0)
         toView.frame = fromView.frame
 
         fromView.layer.shadowRadius = 15.0
@@ -29,7 +29,7 @@ class SlideOffAnimatedTransition: NSObject, UIViewControllerAnimatedTransitionin
         toView.layer.opacity = 0.9
 
         containerView.insertSubview(toView, belowSubview: fromView)
-        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay:0, options: .curveLinear, animations: {
+        UIView.animate(withDuration: transitionDuration(using: transitionContext), delay: 0, options: .curveLinear, animations: {
             fromView.frame = offsetFrame
 
             toView.layer.opacity = 1.0

@@ -4864,14 +4864,12 @@ typedef enum : NSUInteger {
         if (interactionType == OWSInteractionType_OutgoingMessage) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
             MessageReceiptStatus receiptStatus =
-                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage
-                                                                  referenceView:self.view];
+                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
                 MessageReceiptStatus nextReceiptStatus =
-                    [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:nextOutgoingMessage
-                                                                      referenceView:self.view];
+                    [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:nextOutgoingMessage];
                 NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
 
                 // We can skip the "outgoing message status" footer if the next message
@@ -5013,7 +5011,7 @@ typedef enum : NSUInteger {
     self.currentShowMessageDetailsPanGesture = gestureRecognizer;
 
     const CGFloat swipeTranslation
-        = ([gestureRecognizer translationInView:self.view].x * (self.view.isRTL ? +1.f : -1.f));
+        = ([gestureRecognizer translationInView:self.view].x * (CurrentAppContext().isRTL ? +1.f : -1.f));
     const CGFloat ratioComplete = CGFloatClamp(swipeTranslation / self.view.frame.size.width, 0, 1);
 
     switch (gestureRecognizer.state) {

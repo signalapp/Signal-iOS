@@ -515,7 +515,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
     const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
-    NSString *arrowHead = (self.isRTL ? @"\uf105" : @"\uf104");
+    NSString *arrowHead = (CurrentAppContext().isRTL ? @"\uf105" : @"\uf104");
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:arrowHead
@@ -589,7 +589,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     CGRect cancelLabelStartFrame = cancelLabel.frame;
     CGRect cancelLabelEndFrame = cancelLabel.frame;
     cancelLabelStartFrame.origin.x
-        = (self.isRTL ? -self.voiceMemoUI.bounds.size.width : self.voiceMemoUI.bounds.size.width);
+        = (CurrentAppContext().isRTL ? -self.voiceMemoUI.bounds.size.width : self.voiceMemoUI.bounds.size.width);
     cancelLabel.frame = cancelLabelStartFrame;
     [UIView animateWithDuration:0.35f
                           delay:0.f

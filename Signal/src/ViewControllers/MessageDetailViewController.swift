@@ -235,7 +235,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                         continue
                     }
 
-                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState, referenceView: self.view)
+                    let (recipientStatus, shortStatusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage, recipientState: recipientState)
 
                     guard recipientStatus == recipientStatusGroup else {
                         continue
@@ -279,14 +279,12 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                                      comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp,
-                                                                              isRTL: self.view.isRTL())))
+                             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)))
 
         if message as? TSIncomingMessage != nil {
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                                          comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting(),
-                                                                                  isRTL: self.view.isRTL())))
+                                 value: DateUtil.formatPastTimestampRelativeToNow(message.timestampForSorting())))
         }
 
         rows += addAttachmentMetadataRows()
