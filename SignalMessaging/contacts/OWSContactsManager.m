@@ -617,8 +617,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return [self displayNameForPhoneIdentifier:signalAccount.recipientId];
 }
 
-- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount
-                                                                font:(UIFont *_Nonnull)font
+- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font
 {
     OWSAssert(signalAccount);
     OWSAssert(font);

@@ -683,9 +683,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.senderNameLabel);
     OWSAssert(self.shouldShowSenderName);
 
-    self.senderNameLabel.text = self.viewItem.senderName.uppercaseString;
-    self.senderNameLabel.textColor = self.bodyTextColor;
+    self.senderNameLabel.text = self.viewItem.senderName;
     self.senderNameLabel.font = UIFont.ows_dynamicTypeCaption2Font;
+    self.senderNameLabel.textColor = self.bodyTextColor;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 

@@ -4910,7 +4910,7 @@ typedef enum : NSUInteger {
                             || viewItem.shouldShowDate);
                 }
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
+                    senderName = [self.contactsManager contactOrProfileNameForPhoneIdentifier:incomingSenderId];
                 }
 
                 // Show the sender avatar for incoming group messages unless
