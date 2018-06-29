@@ -253,8 +253,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
     NSValue *_Nullable quotedMessageSize = [self quotedMessageSize];
-    // TODO:
-    //    CGSize bodyMediaContentSize = [self bodyMediaSize];
+    NSValue *_Nullable bodyMediaSize = [self bodyMediaSize];
     NSValue *_Nullable bodyTextSize = [self bodyTextSize];
 
     [self.bubbleView addSubview:self.stackView];
@@ -464,6 +463,11 @@ NS_ASSUME_NONNULL_BEGIN
                                  [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
                              ]];
                          }];
+    if (bodyMediaView) {
+        OWSAssert(bodyMediaSize);
+        [self.viewConstraints
+            addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.CGSizeValue.height]];
+    }
 
     [self updateBubbleColor];
 
