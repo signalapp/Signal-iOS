@@ -210,7 +210,6 @@
 		34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B31F86D31D0066283D /* ConversationCollectionView.m */; };
 		34D1F0B71F87F8850066283D /* OWSGenericAttachmentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B61F87F8850066283D /* OWSGenericAttachmentView.m */; };
 		34D1F0BA1F8800D90066283D /* OWSAudioMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */; };
-		34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */; };
 		34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */; };
 		34D2015120DC160E00A6FD3A /* ContactCellView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D2014F20DC160D00A6FD3A /* ContactCellView.h */; };
 		34D2015220DC160E00A6FD3A /* ContactCellView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2015020DC160D00A6FD3A /* ContactCellView.m */; };
@@ -857,8 +856,6 @@
 		34D1F0B61F87F8850066283D /* OWSGenericAttachmentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSGenericAttachmentView.m; sourceTree = "<group>"; };
 		34D1F0B81F8800D90066283D /* OWSAudioMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSAudioMessageView.h; sourceTree = "<group>"; };
 		34D1F0B91F8800D90066283D /* OWSAudioMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAudioMessageView.m; sourceTree = "<group>"; };
-		34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AttachmentUploadView.h; sourceTree = "<group>"; };
-		34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentUploadView.m; sourceTree = "<group>"; };
 		34D1F0BF1F8EC1760066283D /* MessageRecipientStatusUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageRecipientStatusUtils.swift; sourceTree = "<group>"; };
 		34D2014F20DC160D00A6FD3A /* ContactCellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactCellView.h; path = SignalMessaging/Views/ContactCellView.h; sourceTree = SOURCE_ROOT; };
 		34D2015020DC160D00A6FD3A /* ContactCellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactCellView.m; path = SignalMessaging/Views/ContactCellView.m; sourceTree = SOURCE_ROOT; };
@@ -1738,8 +1735,6 @@
 		34D1F0951F867BFC0066283D /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				34D1F0BB1F8D108C0066283D /* AttachmentUploadView.h */,
-				34D1F0BC1F8D108C0066283D /* AttachmentUploadView.m */,
 				34D1F0961F867BFC0066283D /* ConversationViewCell.h */,
 				34D1F0971F867BFC0066283D /* ConversationViewCell.m */,
 				34D1F0B81F8800D90066283D /* OWSAudioMessageView.h */,
@@ -3186,7 +3181,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
-				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
 				34386A52207D0C01009F5D9C /* HomeViewCell.m in Sources */,
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
