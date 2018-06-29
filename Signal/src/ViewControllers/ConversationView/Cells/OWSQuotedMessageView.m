@@ -264,6 +264,9 @@ NS_ASSUME_NONNULL_BEGIN
         [quotedAttachmentView setCompressionResistanceHigh];
         [hStackView addArrangedSubview:quotedAttachmentView];
     } else {
+        // If there's no attachment, add an empty view so that
+        // the stack view's spacing serves as a margin between
+        // the text views and the trailing edge.
         UIView *emptyView = [UIView containerView];
         [hStackView addArrangedSubview:emptyView];
         [emptyView setContentHuggingHigh];

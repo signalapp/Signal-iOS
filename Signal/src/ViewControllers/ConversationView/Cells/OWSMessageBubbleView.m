@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             if (self.isQuotedReply) {
                 UIView *spacerView = [UIView containerView];
-                [spacerView autoSetDimension:ALDimensionHeight toSize:self.bodyMedaQuotedReplyVSpacing];
+                [spacerView autoSetDimension:ALDimensionHeight toSize:self.bodyMediaQuotedReplyVSpacing];
                 [spacerView setCompressionResistanceHigh];
                 [self.stackView addArrangedSubview:spacerView];
             }
@@ -606,7 +606,7 @@ NS_ASSUME_NONNULL_BEGIN
     return 2.f;
 }
 
-- (CGFloat)bodyMedaQuotedReplyVSpacing
+- (CGFloat)bodyMediaQuotedReplyVSpacing
 {
     return 8.f;
 }
@@ -1176,7 +1176,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (bodyMediaSize && quotedMessageSize && self.hasFullWidthMediaView) {
-            cellSize.height += self.bodyMedaQuotedReplyVSpacing;
+            cellSize.height += self.bodyMediaQuotedReplyVSpacing;
         }
     }
 
