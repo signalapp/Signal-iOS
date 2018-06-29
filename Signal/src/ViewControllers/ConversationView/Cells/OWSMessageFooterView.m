@@ -76,25 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
-
-    // TODO: Constants
-    for (UIView *subview in @[
-             self.timestampLabel,
-             self.statusIndicatorImageView,
-         ]) {
-        if (isOverlayingMedia) {
-            subview.layer.shadowColor = [UIColor blackColor].CGColor;
-            subview.layer.shadowOpacity = 0.35f;
-            subview.layer.shadowOffset = CGSizeZero;
-            subview.layer.shadowRadius = 0.5f;
-        } else {
-            subview.layer.shadowColor = nil;
-            subview.layer.shadowOpacity = 0.f;
-            subview.layer.shadowOffset = CGSizeZero;
-            subview.layer.shadowRadius = 0.f;
-        }
-    }
-
     UIColor *textColor;
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
