@@ -267,8 +267,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isQuotedReply) {
         // Flush any pending "text" subviews.
-        [self insertAnyTextViewsIntoStackView:textViews];
+        BOOL isFirstSubview = ![self insertAnyTextViewsIntoStackView:textViews];
         [textViews removeAllObjects];
+
+        if (isFirstSubview) {
+            UIView *spacerView = [UIView containerView];
+            [spacerView autoSetDimension:ALDimensionHeight toSize:self.quotedReplyTopMargin];
+            [spacerView setCompressionResistanceHigh];
+            [self.stackView addArrangedSubview:spacerView];
+        }
 
         BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
         DisplayableText *_Nullable displayableQuotedText
@@ -287,8 +294,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssert(quotedMessageSize);
         [self.viewConstraints addObject:[quotedMessageView autoSetDimension:ALDimensionHeight
                                                                      toSize:quotedMessageSize.CGSizeValue.height]];
-
-        [self.bubbleView addPartnerView:quotedMessageView.boundsStrokeView];
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -341,6 +346,13 @@ NS_ASSUME_NONNULL_BEGIN
             // Flush any pending "text" subviews.
             [self insertAnyTextViewsIntoStackView:textViews];
             [textViews removeAllObjects];
+
+            if (self.isQuotedReply) {
+                UIView *spacerView = [UIView containerView];
+                [spacerView autoSetDimension:ALDimensionHeight toSize:self.bodyMediaQuotedReplyVSpacing];
+                [spacerView setCompressionResistanceHigh];
+                [self.stackView addArrangedSubview:spacerView];
+            }
 
             if (self.hasBodyMediaWithThumbnail) {
 
@@ -533,10 +545,10 @@ NS_ASSUME_NONNULL_BEGIN
     return !self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia;
 }
 
-- (void)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
+- (BOOL)insertAnyTextViewsIntoStackView:(NSArray<UIView *> *)textViews
 {
     if (textViews.count < 1) {
-        return;
+        return NO;
     }
 
     UIStackView *textStackView = [[UIStackView alloc] initWithArrangedSubviews:textViews];
@@ -549,6 +561,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.conversationStyle.textInsetBottom,
         self.conversationStyle.textInsetHorizontal);
     [self.stackView addArrangedSubview:textStackView];
+    return YES;
 }
 
 // We now eagerly create our view hierarchy (to do this exactly once per cell usage)
@@ -591,6 +604,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)textViewVSpacing
 {
     return 2.f;
+}
+
+- (CGFloat)bodyMediaQuotedReplyVSpacing
+{
+    return 8.f;
+}
+
+- (CGFloat)quotedReplyTopMargin
+{
+    return 7.f;
 }
 
 #pragma mark - Load / Unload
@@ -1126,6 +1149,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSValue *_Nullable quotedMessageSize = [self quotedMessageSize];
     if (quotedMessageSize) {
+        if (!senderNameSize) {
+            cellSize.height += self.quotedReplyTopMargin;
+        }
         cellSize.width = MAX(cellSize.width, quotedMessageSize.CGSizeValue.width);
         cellSize.height += quotedMessageSize.CGSizeValue.height;
     }
@@ -1147,6 +1173,10 @@ NS_ASSUME_NONNULL_BEGIN
             cellSize.width = MAX(cellSize.width, groupSize.width);
             cellSize.height += groupSize.height;
             [textViewSizes removeAllObjects];
+        }
+
+        if (bodyMediaSize && quotedMessageSize && self.hasFullWidthMediaView) {
+            cellSize.height += self.bodyMediaQuotedReplyVSpacing;
         }
     }
 
