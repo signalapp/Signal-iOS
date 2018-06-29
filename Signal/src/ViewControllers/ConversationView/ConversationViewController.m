@@ -559,15 +559,13 @@ typedef enum : NSUInteger {
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
-    [self.collectionView autoPinWidthToSuperview];
-    [self.collectionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.collectionView autoPinEdgesToSuperviewEdges];
 
     [self.collectionView applyScrollViewInsetsFix];
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
-    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
