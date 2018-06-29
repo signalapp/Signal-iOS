@@ -422,7 +422,26 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
         OWSAssert(bodyMediaView);
-        [self.footerView configureWithConversationViewItem:self.viewItem hasShadows:YES];
+
+        CGFloat maxGradientHeight = 48.f;
+        CAGradientLayer *gradientLayer = [CAGradientLayer new];
+        gradientLayer.colors = @[
+            (id)[UIColor colorWithWhite:0.f alpha:0.f].CGColor,
+            (id)[UIColor colorWithWhite:0.f alpha:0.4f].CGColor,
+        ];
+        OWSLayerView *gradientView =
+            [[OWSLayerView alloc] initWithFrame:CGRectZero
+                                 layoutCallback:^(UIView *layerView) {
+                                     CGRect layerFrame = layerView.bounds;
+                                     layerFrame.size.height = MIN(maxGradientHeight, layerView.height);
+                                     layerFrame.origin.y = layerView.height - layerFrame.size.height;
+                                     gradientLayer.frame = layerFrame;
+                                 }];
+        [gradientView.layer addSublayer:gradientLayer];
+        [bodyMediaView addSubview:gradientView];
+        [self.viewConstraints addObjectsFromArray:[gradientView autoPinToSuperviewEdges]];
+
+        [self.footerView configureWithConversationViewItem:self.viewItem isOverlayingMedia:YES];
         [bodyMediaView addSubview:self.footerView];
 
         bodyMediaView.layoutMargins = UIEdgeInsetsZero;
@@ -432,7 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.footerView autoPinBottomToSuperviewMarginWithInset:self.conversationStyle.textInsetBottom],
         ]];
     } else {
-        [self.footerView configureWithConversationViewItem:self.viewItem hasShadows:NO];
+        [self.footerView configureWithConversationViewItem:self.viewItem isOverlayingMedia:NO];
         [textViews addObject:self.footerView];
     }
 
@@ -1242,6 +1261,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.loadCellContentBlock = nil;
     self.unloadCellContentBlock = nil;
 
+    for (UIView *subview in self.bodyMediaView.subviews) {
+        [subview removeFromSuperview];
+    }
     [self.bodyMediaView removeFromSuperview];
     self.bodyMediaView = nil;
 

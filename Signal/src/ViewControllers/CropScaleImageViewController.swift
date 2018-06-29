@@ -6,33 +6,6 @@ import Foundation
 import MediaPlayer
 import SignalMessaging
 
-class OWSLayerView: UIView {
-    let layoutCallback : (() -> Void)
-
-    required init(frame: CGRect, layoutCallback : @escaping () -> Void) {
-        self.layoutCallback = layoutCallback
-        super.init(frame: frame)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        self.layoutCallback = {
-        }
-        super.init(coder: aDecoder)
-    }
-
-    override var bounds: CGRect {
-        didSet {
-            layoutCallback()
-        }
-    }
-
-    override var frame: CGRect {
-        didSet {
-            layoutCallback()
-        }
-    }
-}
-
 // This kind of view is tricky.  I've tried to organize things in the 
 // simplest possible way.
 //
@@ -182,7 +155,7 @@ class OWSLayerView: UIView {
         self.view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
 
-        let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] in
+        let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] _ in
             guard let strongSelf = self else { return }
             strongSelf.updateImageLayout()
         })
