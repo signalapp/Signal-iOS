@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.27.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.27.0.6</string>
+	<string>2.27.0.7</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -60,8 +60,11 @@
                 SUBQUERY (
                 $extensionItem.attachments,
                 $attachment,
+                (
                 ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.data"
                 || ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.url"
+                )
+                AND NOT (ANY $attachment.registeredTypeIdentifiers UTI-CONFORMS-TO "public.vcard")
                 ).@count &gt;= 1
                 ).@count == 1
             </string>

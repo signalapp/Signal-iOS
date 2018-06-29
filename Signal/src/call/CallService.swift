@@ -1696,6 +1696,15 @@ private class SignalCallData: NSObject {
             return
         }
 
+        guard !call.isTerminated else {
+            // There's a brief window between when the callViewController is removed
+            // and when this timer is terminated.
+            //
+            // We don't want to fail a call that's already terminated.
+            Logger.debug("\(logTag) in \(#function) ignoring screen protection check for already terminated call.")
+            return
+        }
+
         if !OWSWindowManager.shared().hasCall() {
             OWSProdError(OWSAnalyticsEvents.callServiceCallViewCouldNotPresent(), file: #file, function: #function, line: #line)
             owsFail("\(self.logTag) in \(#function) Call terminated due to missing call view.")
