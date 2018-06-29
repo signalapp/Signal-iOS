@@ -55,7 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.imageView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor colorWithRGBHex:0x403e3b];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
@@ -80,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureFonts
 {
     // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
+    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -122,14 +121,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)textColor
 {
-    return [UIColor colorWithRGBHex:0x303030];
+    return [UIColor ows_light60Color];
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return [UIColor colorWithRGBHex:0x404040];
+    return [UIColor ows_light60Color];
 }
 
 - (UIImage *)iconForInteraction:(TSInteraction *)interaction

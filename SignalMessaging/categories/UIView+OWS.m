@@ -542,4 +542,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 @end
 
+CGFloat CGHairlineWidth()
+{
+    return 1.f / UIScreen.mainScreen.scale;
+}
+
 NS_ASSUME_NONNULL_END

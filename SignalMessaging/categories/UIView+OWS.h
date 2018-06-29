@@ -170,4 +170,6 @@ CG_INLINE CGSize CGSizeMax(CGSize size1, CGSize size2)
     return CGSizeMake(MAX(size1.width, size2.width), MAX(size1.height, size2.height));
 }
 
+CGFloat CGHairlineWidth();
+
 NS_ASSUME_NONNULL_END
