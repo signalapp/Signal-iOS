@@ -896,6 +896,8 @@ NS_ASSUME_NONNULL_BEGIN
     [wrapper addSubview:downloadView];
     [downloadView autoPinWidthToSuperview];
     [downloadView autoVCenterInSuperview];
+    [downloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [downloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
