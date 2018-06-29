@@ -676,9 +676,6 @@ typedef enum : NSUInteger {
 
     [super viewWillAppear:animated];
 
-    // In case we're dismissing a CNContactViewController, or DocumentPicker which requires default system appearance
-    [UIUtil applySignalAppearence];
-
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self hideInputIfNeeded];
@@ -2781,10 +2778,6 @@ typedef enum : NSUInteger {
     didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
     documentPicker.delegate = self;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applyDefaultSystemAppearence];
-    }
 
     [self dismissKeyBoard];
     [self presentViewController:documentPicker animated:YES completion:nil];
@@ -2795,16 +2788,6 @@ typedef enum : NSUInteger {
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
     DDLogDebug(@"%@ Picked document at url: %@", self.logTag, url);
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applySignalAppearence];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applySignalAppearence];
-    }
 
     NSString *type;
     NSError *typeError;
@@ -2896,7 +2879,7 @@ typedef enum : NSUInteger {
         picker.delegate = self;
         
         [self dismissKeyBoard];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -2932,7 +2915,7 @@ typedef enum : NSUInteger {
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         
         [self dismissKeyBoard];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -2942,7 +2925,6 @@ typedef enum : NSUInteger {
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [UIUtil modalCompletionBlock]();
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -2959,7 +2941,6 @@ typedef enum : NSUInteger {
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-    [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
     NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];

@@ -270,7 +270,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     } else {
         OWSNavigationController *navigationController =
             [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
-        [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:navigationController animated:YES completion:nil];
     }
 }
 

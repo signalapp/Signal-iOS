@@ -87,17 +87,6 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         contactViewController.delegate = self
 
         let modal = OWSNavigationController(rootViewController: contactViewController)
-
-        // HACK otherwise CNContactViewController Navbar is shows window background color.
-        // RADAR rdar://28433898 http://www.openradar.me/28433898
-        // CNContactViewController incompatible with opaque navigation bar
-        modal.navigationBar.isTranslucent = true
-        if #available(iOS 10, *) {
-            // Contact navbar is blue in iOS9, so our white text works,
-            // but gray on iOS10+, in which case we want the system default black text.
-            UIUtil.applyDefaultSystemAppearence()
-        }
-
         self.present(modal, animated: true)
     }
 
@@ -144,16 +133,6 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
             navigationController.popViewController(animated: true)
             navigationController.popViewController(animated: true)
             return
-        }
-
-        // HACK otherwise CNContactViewController Navbar is shows window background color.
-        // RADAR rdar://28433898 http://www.openradar.me/28433898
-        // CNContactViewController incompatible with opaque navigation bar
-        navigationController.navigationBar.isTranslucent = false
-        if #available(iOS 10, *) {
-            // Contact navbar is blue in iOS9, so our white text works,
-            // but gray on iOS10+, in which case we want the system default black text.
-            UIUtil.applySignalAppearence()
         }
 
         let previousViewControllerIndex = navigationController.viewControllers.index(before: myIndex)

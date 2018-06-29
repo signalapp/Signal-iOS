@@ -24,31 +24,9 @@
     [[*imageView layer] setCornerRadius:0];
 }
 
-+ (completionBlock)modalCompletionBlock
++ (void)setupSignalAppearence
 {
-    completionBlock block = ^void() {
-        [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
-    };
-
-    return block;
-}
-
-+ (void)applyDefaultSystemAppearence
-{
-//    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
-//    [[UINavigationBar appearance] setBarStyle:UIBarStyleDefault];
-//    [[UINavigationBar appearance] setTintColor:[UIColor blackColor]];
-//    [[UIBarButtonItem appearance] setTintColor:[UIColor blackColor]];
-//    [[UINavigationBar appearance] setTitleTextAttributes:@{
-//        NSForegroundColorAttributeName : [UIColor blackColor],
-//    }];
-}
-
-+ (void)applySignalAppearence
-{
-    //    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleLightContent];
     UINavigationBar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
-    //    [[UINavigationBar appearance] setBarTintColor:[UIColor ows_materialBlueColor]];
     UINavigationBar.appearance.tintColor = UIColor.ows_navbarForegroundColor;
     UIToolbar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
     UIToolbar.appearance.tintColor = UIColor.ows_navbarForegroundColor;

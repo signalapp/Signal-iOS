@@ -74,9 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
             NSArray *__nullable returnedItems,
             NSError *__nullable activityError) {
 
-            DDLogDebug(@"%@ applying signal appearence", self.logTag);
-            [UIUtil applySignalAppearence];
-
             if (activityError) {
                 DDLogInfo(@"%@ Failed to share with activityError: %@", self.logTag, activityError);
             } else if (completed) {
@@ -93,12 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
             fromViewController = fromViewController.presentedViewController;
         }
         OWSAssert(fromViewController);
-        [fromViewController presentViewController:activityViewController
-                                         animated:YES
-                                       completion:^{
-                                           DDLogDebug(@"%@ applying default system appearence", self.logTag);
-                                           [UIUtil applyDefaultSystemAppearence];
-                                       }];
+        [fromViewController presentViewController:activityViewController animated:YES completion:nil];
     });
 }
 

@@ -78,12 +78,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Use "dark" style status bar in this view,
-        // But we don't apply the entire default system UI (UIUtil.applyDefaultSystemAppearence) because
-        // doing so while pushing onto an existing nav controller who's navbars are hidden corrupts the
-        // title label/navbar items elsewhere in the stack.
-        CurrentAppContext().setStatusBarStyle(.default)
-
         guard let navigationController = self.navigationController else {
             owsFail("\(logTag) in \(#function) navigationController was unexpectedly nil")
             return
@@ -677,7 +671,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         Logger.info("\(logTag) \(#function)")
         updateContent()
 
-        UIUtil.applySignalAppearence()
         self.dismiss(animated: true)
     }
 }

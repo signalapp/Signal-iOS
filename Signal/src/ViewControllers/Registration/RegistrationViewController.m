@@ -485,7 +485,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     countryCodeController.countryCodeDelegate = self;
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:countryCodeController];
-    [self presentViewController:navigationController animated:YES completion:[UIUtil modalCompletionBlock]];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)backgroundTapped:(UIGestureRecognizer *)sender

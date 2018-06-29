@@ -136,11 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft;
 }
 
-- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
-{
-    [[UIApplication sharedApplication] setStatusBarStyle:statusBarStyle];
-}
-
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
 {
     [[UIApplication sharedApplication] setStatusBarHidden:isHidden animated:isAnimated];
