@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return 44.f;
+    return 48.f;
 }
 
 - (CGFloat)iconSize
