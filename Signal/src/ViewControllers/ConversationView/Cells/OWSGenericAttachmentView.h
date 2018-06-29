@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createContents;
 
-+ (CGFloat)bubbleHeight;
+- (CGSize)measureSizeWithMaxMessageWidth:(CGFloat)maxMessageWidth;
 
 @end
 

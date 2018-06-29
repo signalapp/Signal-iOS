@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
+@property (nonatomic) UILabel *topLabel;
+@property (nonatomic) UILabel *bottomLabel;
 
 @end
 
@@ -51,38 +53,36 @@ NS_ASSUME_NONNULL_BEGIN
     return 8.f;
 }
 
-+ (CGFloat)vMargin
+- (CGFloat)vMargin
 {
     return 0.f;
 }
 
-- (CGFloat)vMargin
+- (CGSize)measureSizeWithMaxMessageWidth:(CGFloat)maxMessageWidth
 {
-    return [OWSGenericAttachmentView vMargin];
-}
+    CGSize result = CGSizeZero;
 
-+ (CGFloat)bubbleHeight
-{
-    CGFloat iconHeight = self.iconHeight;
     CGFloat labelsHeight = ([OWSGenericAttachmentView topLabelFont].lineHeight +
         [OWSGenericAttachmentView bottomLabelFont].lineHeight + [OWSGenericAttachmentView labelVSpacing]);
-    CGFloat contentHeight = MAX(iconHeight, labelsHeight);
-    return contentHeight + self.vMargin * 2;
+    CGFloat contentHeight = MAX(self.iconHeight, labelsHeight);
+    result.height = contentHeight + self.vMargin * 2;
+
+    CGFloat labelsWidth
+        = MAX([self.topLabel sizeThatFits:CGSizeZero].width, [self.bottomLabel sizeThatFits:CGSizeZero].width);
+    CGFloat contentWidth = (self.iconWidth + labelsWidth + self.hSpacing);
+    result.width = MIN(maxMessageWidth, contentWidth + self.hMargin * 2);
+
+    return CGSizeCeil(result);
 }
 
-- (CGFloat)bubbleHeight
+- (CGFloat)iconWidth
 {
-    return [OWSGenericAttachmentView bubbleHeight];
-}
-
-+ (CGFloat)iconHeight
-{
-    return 48.f;
+    return 36.f;
 }
 
 - (CGFloat)iconHeight
 {
-    return [OWSGenericAttachmentView iconHeight];
+    return 48.f;
 }
 
 - (UIColor *)bubbleBackgroundColor
@@ -111,6 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attachment_file
     UIImage *image = [UIImage imageNamed:@"generic-attachment"];
     OWSAssert(image);
+    OWSAssert(image.size.width == self.iconWidth);
     OWSAssert(image.size.height == self.iconHeight);
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
@@ -132,6 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
     }
     UILabel *topLabel = [UILabel new];
+    self.topLabel = topLabel;
     topLabel.text = topText;
     topLabel.textColor = textColor;
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
@@ -144,6 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(!error);
     NSString *bottomText = [OWSFormat formatFileSize:fileSize];
     UILabel *bottomLabel = [UILabel new];
+    self.bottomLabel = bottomLabel;
     bottomLabel.text = bottomText;
     bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;

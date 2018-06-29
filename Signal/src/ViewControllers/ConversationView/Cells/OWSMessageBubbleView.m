@@ -1044,9 +1044,14 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_Audio:
             result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
-        case OWSMessageCellType_GenericAttachment:
-            result = CGSizeMake(maxMessageWidth, [OWSGenericAttachmentView bubbleHeight]);
+        case OWSMessageCellType_GenericAttachment: {
+            OWSAssert(self.viewItem.attachmentStream);
+            OWSGenericAttachmentView *attachmentView =
+                [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
+            [attachmentView createContents];
+            result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
+        }
         case OWSMessageCellType_DownloadingAttachment:
             result = CGSizeMake(200, [AttachmentPointerView measureHeight]);
             break;
