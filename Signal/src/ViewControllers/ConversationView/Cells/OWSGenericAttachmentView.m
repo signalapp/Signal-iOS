@@ -125,11 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSString *fileExtension = filename.pathExtension;
     if (fileExtension.length < 1) {
-        [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType];
-    }
-    if (fileExtension.length < 1) {
-        fileExtension = NSLocalizedString(@"GENERIC_ATTACHMENT_DEFAULT_TYPE",
-            @"A default label for attachment whose file extension cannot be determined.");
+        fileExtension = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType];
     }
 
     UILabel *fileTypeLabel = [UILabel new];
