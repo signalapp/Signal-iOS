@@ -121,9 +121,14 @@ NS_ASSUME_NONNULL_BEGIN
     [CATransaction commit];
 }
 
-- (CGSize)sizeThatFits:(CGSize)size
++ (CGSize)defaultSize
 {
     return CGSizeMake(150, 16);
+}
+
+- (CGSize)sizeThatFits:(CGSize)size
+{
+    return OWSProgressView.defaultSize;
 }
 
 - (CGSize)intrinsicContentSize
