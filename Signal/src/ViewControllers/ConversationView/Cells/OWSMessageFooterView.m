@@ -117,8 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.statusIndicatorImageView.image =
             [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         if (messageStatus == MessageReceiptStatusRead) {
-            // TODO: Tint the icon with the conversation color.
-            self.statusIndicatorImageView.tintColor = textColor;
+            self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
         } else {
             self.statusIndicatorImageView.tintColor = textColor;
         }
