@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSQuotedReplyModel *quotedMessage;
 @property (nonatomic, nullable, readonly) DisplayableText *displayableQuotedText;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic, nullable) OWSBubbleShapeView *boundsStrokeView;
 @property (nonatomic, readonly) BOOL isForPreview;
@@ -37,17 +38,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSQuotedMessageView *)quotedMessageViewForConversation:(OWSQuotedReplyModel *)quotedMessage
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                                         conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
 {
     OWSAssert(quotedMessage);
 
     return [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
                                          displayableQuotedText:displayableQuotedText
+                                             conversationStyle:conversationStyle
                                                   isForPreview:NO
                                                     isOutgoing:isOutgoing];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
+                                    conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssert(quotedMessage);
 
@@ -58,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
                                                                    displayableQuotedText:displayableQuotedText
+                                                                       conversationStyle:conversationStyle
                                                                             isForPreview:YES
                                                                               isOutgoing:YES];
     [instance createContents];
@@ -66,6 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithQuotedMessage:(OWSQuotedReplyModel *)quotedMessage
                 displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
+                    conversationStyle:(ConversationStyle *)conversationStyle
                          isForPreview:(BOOL)isForPreview
                            isOutgoing:(BOOL)isOutgoing
 {
@@ -80,6 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
     _quotedMessage = quotedMessage;
     _displayableQuotedText = displayableQuotedText;
     _isForPreview = isForPreview;
+    _conversationStyle = conversationStyle;
     _isOutgoing = isOutgoing;
 
     _quotedAuthorLabel = [UILabel new];
@@ -104,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)highlightColor
 {
     BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isQuotingSelf ? ConversationStyle.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
+    return (isQuotingSelf ? self.conversationStyle.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
 }
 
 #pragma mark -
@@ -120,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     self.boundsStrokeView = [OWSBubbleShapeView new];
-    self.boundsStrokeView.strokeColor = ConversationStyle.bubbleColorIncoming;
+    self.boundsStrokeView.strokeColor = [self.conversationStyle primaryColor];
     self.boundsStrokeView.strokeThickness = 1.f;
     [self addSubview:self.boundsStrokeView];
     [self.boundsStrokeView autoPinToSuperviewEdges];

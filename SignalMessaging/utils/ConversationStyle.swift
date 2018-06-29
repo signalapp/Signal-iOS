@@ -55,6 +55,7 @@ public class ConversationStyle: NSObject {
 
         self.thread = thread
         self.isRTL = CurrentAppContext().isRTL
+        self.primaryColor = ConversationStyle.primaryColor(thread: thread)
 
         super.init()
 
@@ -78,7 +79,8 @@ public class ConversationStyle: NSObject {
 
     // MARK: -
 
-    private func updateProperties() {
+    @objc
+    public func updateProperties() {
         if thread.isGroupThread() {
             gutterLeading = 40
             gutterTrailing = 20
@@ -106,37 +108,52 @@ public class ConversationStyle: NSObject {
         textInsetHorizontal = 12
 
         lastTextLineAxis = CGFloat(round(12 + messageTextFont.capHeight * 0.5))
+
+        self.primaryColor = ConversationStyle.primaryColor(thread: thread)
     }
 
     // MARK: Colors
 
-    // TODO: Remove this!  Incoming bubble colors are now dynamic.
-    @objc
-    public static let bubbleColorIncoming = UIColor.ows_messageBubbleLightGray
+    private class func primaryColor(thread: TSThread) -> UIColor {
+        guard let colorName = thread.conversationColorName else {
+            return self.defaultBubbleColorIncoming
+        }
+
+        guard let color = UIColor.ows_conversationColor(colorName: colorName) else {
+            return self.defaultBubbleColorIncoming
+        }
+
+        return color
+    }
+
+    private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
     // TODO:
     @objc
-    public static let bubbleColorOutgoingUnsent = UIColor.ows_red
+    public let bubbleColorOutgoingUnsent = UIColor.ows_red
 
     // TODO:
     @objc
-    public static let bubbleColorOutgoingSending = UIColor.ows_light35
+    public let bubbleColorOutgoingSending = UIColor.ows_light35
 
     @objc
-    public static let bubbleColorOutgoingSent = UIColor.ows_light10
+    public let bubbleColorOutgoingSent = UIColor.ows_light10
 
     @objc
-    public static func bubbleColor(message: TSMessage) -> UIColor {
+    public var primaryColor: UIColor
+
+    @objc
+    public func bubbleColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return ConversationStyle.bubbleColorIncoming
+            return primaryColor
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
-                return ConversationStyle.bubbleColorOutgoingUnsent
+                return self.bubbleColorOutgoingUnsent
             case .sending:
-                return ConversationStyle.bubbleColorOutgoingSending
+                return self.bubbleColorOutgoingSending
             default:
-                return ConversationStyle.bubbleColorOutgoingSent
+                return self.bubbleColorOutgoingSent
             }
         } else {
             owsFail("Unexpected message type: \(message)")
@@ -145,7 +162,7 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public static func bubbleTextColor(message: TSMessage) -> UIColor {
+    public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return UIColor.ows_white
         } else if let outgoingMessage = message as? TSOutgoingMessage {

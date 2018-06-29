@@ -24,8 +24,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_toolbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *ows_messageBubbleLightGrayColor;
 
-+ (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier;
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
+
+#pragma mark - ConversationColor
+
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName NS_SWIFT_NAME(ows_conversationColor(colorName:));
++ (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
+    NS_SWIFT_NAME(ows_conversationColorName(color:));
+
+@property (class, readonly, nonatomic) NSArray<NSString *> *ows_conversationColorNames;
+@property (class, readonly, nonatomic) NSArray<UIColor *> *ows_conversationColors;
 
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 

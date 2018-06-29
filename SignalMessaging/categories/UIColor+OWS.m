@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIColor+OWS.h"
+#import "OWSMath.h"
 #import <SignalServiceKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -96,40 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)ows_messageBubbleLightGrayColor
 {
     return [UIColor colorWithHue:240.0f / 360.0f saturation:0.02f brightness:0.92f alpha:1.0f];
-}
-
-+ (UIColor *)backgroundColorForContact:(NSString *)contactIdentifier
-{
-    NSArray *colors = @[
-        [UIColor colorWithRed:204.f / 255.f green:148.f / 255.f blue:102.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:187.f / 255.f green:104.f / 255.f blue:62.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:145.f / 255.f green:78.f / 255.f blue:48.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:122.f / 255.f green:63.f / 255.f blue:41.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:80.f / 255.f green:46.f / 255.f blue:27.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:57.f / 255.f green:45.f / 255.f blue:19.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:37.f / 255.f green:38.f / 255.f blue:13.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:23.f / 255.f green:31.f / 255.f blue:10.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:6.f / 255.f green:19.f / 255.f blue:10.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:13.f / 255.f green:4.f / 255.f blue:16.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:27.f / 255.f green:12.f / 255.f blue:44.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:18.f / 255.f green:17.f / 255.f blue:64.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:20.f / 255.f green:42.f / 255.f blue:77.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:18.f / 255.f green:55.f / 255.f blue:68.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:18.f / 255.f green:68.f / 255.f blue:61.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:19.f / 255.f green:73.f / 255.f blue:26.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:13.f / 255.f green:48.f / 255.f blue:15.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:44.f / 255.f green:165.f / 255.f blue:137.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:137.f / 255.f green:181.f / 255.f blue:48.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:208.f / 255.f green:204.f / 255.f blue:78.f / 255.f alpha:1.f],
-        [UIColor colorWithRed:227.f / 255.f green:162.f / 255.f blue:150.f / 255.f alpha:1.f]
-    ];
-    NSData *contactData = [contactIdentifier dataUsingEncoding:NSUTF8StringEncoding];
-
-    NSUInteger hashingLength = 8;
-    unsigned long long choose;
-    NSData *hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
-    [hashData getBytes:&choose length:hashingLength];
-    return [colors objectAtIndex:(choose % [colors count])];
 }
 
 + (UIColor *)colorWithRGBHex:(unsigned long)value
@@ -302,6 +268,50 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)ows_grey600Color
 {
     return [UIColor colorWithRGBHex:0x757575];
+}
+
++ (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMap
+{
+    static NSDictionary<NSString *, UIColor *> *colorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        colorMap = @{
+                     @"red" : self.ows_red700Color,
+                     @"pink": self.ows_pink600Color,
+                     @"purple": self.ows_purple600Color,
+                     @"indigo": self.ows_indigo600Color,
+                     @"blue": self.ows_blue700Color,
+                     @"cyan": self.ows_cyan800Color,
+                     @"teal": self.ows_teal700Color,
+                     @"green": self.ows_green800Color,
+                     @"deep_orange": self.ows_deepOrange900Color,
+                     @"grey": self.ows_grey600Color
+                     };
+    });
+    
+    return colorMap;
+}
+
++ (NSArray<NSString *> *)ows_conversationColorNames
+{
+    return self.ows_conversationColorMap.allKeys;
+}
+
++ (NSArray<UIColor *> *)ows_conversationColors
+{
+    return self.ows_conversationColorMap.allValues;
+}
+
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
+{
+    OWSAssert(colorName.length > 0);
+    
+    return [self.ows_conversationColorMap objectForKey:colorName];
+}
+
++ (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
+{
+    return [self.ows_conversationColorMap allKeysForObject:color].firstObject;
 }
 
 @end

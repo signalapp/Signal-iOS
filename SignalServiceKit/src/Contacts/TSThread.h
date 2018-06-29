@@ -33,6 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)name;
 
+@property (readonly, nullable) NSString *conversationColorName;
+- (void)updateConversationColorName:(NSString *)colorName transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (NSString *)stableConversationColorNameForString:(NSString *)colorSeed;
+
 /**
  * @returns
  *   Signal Id (e164) of the contact if it's a contact thread.
@@ -154,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate;
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

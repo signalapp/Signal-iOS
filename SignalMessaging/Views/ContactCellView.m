@@ -29,6 +29,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UIView *accessoryViewContainer;
 
 @property (nonatomic) OWSContactsManager *contactsManager;
+@property (nonatomic) TSThread *thread;
 @property (nonatomic) NSString *recipientId;
 
 @end
@@ -139,7 +140,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(thread);
-
+    self.thread = thread;
+    
     // Update fonts to reflect changes to dynamic type.
     [self configureFonts];
 
@@ -194,7 +196,11 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
+    NSString *colorName = self.thread.conversationColorName;
+    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
+    
     self.avatarView.image = [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId
+                                                                         color:color
                                                                       diameter:kContactCellAvatarSize
                                                                contactsManager:contactsManager] build];
 }
@@ -230,6 +236,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
+    self.thread = nil;
     self.accessoryMessage = nil;
     self.nameLabel.text = nil;
     self.subtitleLabel.text = nil;

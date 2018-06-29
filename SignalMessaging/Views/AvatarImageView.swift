@@ -150,7 +150,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         self.updateImage()
     }
 
-    func updateImage() {
+    public func updateImage() {
         Logger.debug("\(self.logTag) in \(#function) updateImage")
 
         self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter, contactsManager: contactsManager)

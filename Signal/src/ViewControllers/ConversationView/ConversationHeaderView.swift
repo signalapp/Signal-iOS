@@ -53,7 +53,7 @@ public class ConversationHeaderView: UIStackView {
 
     private let titleLabel: UILabel
     private let subtitleLabel: UILabel
-    private let avatarView: AvatarImageView
+    private let avatarView: ConversationAvatarImageView
 
     @objc
     public required init(thread: TSThread, contactsManager: OWSContactsManager) {
@@ -113,6 +113,11 @@ public class ConversationHeaderView: UIStackView {
     public override var intrinsicContentSize: CGSize {
         // Grow to fill as much of the navbar as possible.
         return UILayoutFittingExpandedSize
+    }
+
+    @objc
+    public func updateAvatar() {
+        self.avatarView.updateImage()
     }
 
     // MARK: Delegate Methods

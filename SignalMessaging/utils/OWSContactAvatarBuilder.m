@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) NSString *signalId;
 @property (nonatomic, readonly) NSString *contactName;
+@property (nonatomic, readonly) UIColor *color;
 @property (nonatomic, readonly) NSUInteger diameter;
 
 @end
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactId:(NSString *)contactId
                              name:(NSString *)name
+                            color:(UIColor *)color
                          diameter:(NSUInteger)diameter
                   contactsManager:(OWSContactsManager *)contactsManager
 {
@@ -42,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _signalId = contactId;
     _contactName = name;
+    _color = color;
     _diameter = diameter;
     _contactsManager = contactsManager;
 
@@ -49,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithSignalId:(NSString *)signalId
+                           color:(UIColor *)color
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager
 {
@@ -60,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (name.length == 0) {
         name = signalId;
     }
-    return [self initWithContactId:signalId name:name diameter:diameter contactsManager:contactsManager];
+    return [self initWithContactId:signalId name:name color:color diameter:diameter contactsManager:contactsManager];
 }
 
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
@@ -68,7 +72,15 @@ NS_ASSUME_NONNULL_BEGIN
                              diameter:(NSUInteger)diameter
                       contactsManager:(OWSContactsManager *)contactsManager
 {
-    return [self initWithContactId:colorSeed name:nonSignalName diameter:diameter contactsManager:contactsManager];
+    
+    NSString *colorName = [TSThread stableConversationColorNameForString:colorSeed];
+    UIColor *color = [UIColor ows_conversationColorForColorName:colorName];
+    OWSAssert(color);
+    return [self initWithContactId:colorSeed
+                              name:nonSignalName
+                             color:color
+                          diameter:diameter
+                   contactsManager:contactsManager];
 }
 
 #pragma mark - Instance methods
@@ -113,9 +125,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGFloat fontSize = (CGFloat)self.diameter / 2.8;
-    UIColor *backgroundColor = [UIColor backgroundColorForContact:self.signalId];
+    
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
-                                                                 backgroundColor:backgroundColor
+                                                                 backgroundColor:self.color
                                                                        textColor:[UIColor whiteColor]
                                                                             font:[UIFont ows_boldFontWithSize:fontSize]
                                                                         diameter:self.diameter] avatarImage];

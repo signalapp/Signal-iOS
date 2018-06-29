@@ -14,7 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Build an avatar for a Signal recipient
  */
+
 - (instancetype)initWithSignalId:(NSString *)signalId
+                           color:(UIColor *)color
                         diameter:(NSUInteger)diameter
                  contactsManager:(OWSContactsManager *)contactsManager;
 
@@ -25,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
                             colorSeed:(NSString *)colorSeed
                              diameter:(NSUInteger)diameter
                       contactsManager:(OWSContactsManager *)contactsManager;
-
 
 @end
 

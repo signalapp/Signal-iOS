@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol OWSConversationSettingsViewDelegate <NSObject>
 
+- (void)conversationColorWasUpdated;
 - (void)groupWasUpdated:(TSGroupModel *)groupModel;
 
 - (void)popAllConversationSettingsViews;
