@@ -149,7 +149,6 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
         if hasMediaAttachment {
             let footer = UIToolbar()
-            footer.barTintColor = UIColor.ows_materialBlue
             view.addSubview(footer)
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)

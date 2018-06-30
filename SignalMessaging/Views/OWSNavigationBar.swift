@@ -41,9 +41,6 @@ public class OWSNavigationBar: UINavigationBar {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.isOpaque = false
-        self.isTranslucent = true
-
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
     }
