@@ -609,12 +609,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bodyMediaQuotedReplyVSpacing
 {
-    return 8.f;
+    return 6.f;
 }
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 7.f;
+    return 6.f;
 }
 
 #pragma mark - Load / Unload
@@ -1026,7 +1026,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
-
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
 
     [self configureBodyTextView];
@@ -1042,6 +1041,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.conversationStyle.maxMessageWidth > 0);
 
     CGFloat maxMessageWidth = self.conversationStyle.maxMessageWidth;
+    if (!self.hasFullWidthMediaView) {
+        CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
+        maxMessageWidth -= hMargins;
+    }
 
     CGSize result = CGSizeZero;
     switch (self.cellType) {
@@ -1150,7 +1153,7 @@ NS_ASSUME_NONNULL_BEGIN
     const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
     [self configureSenderNameLabel];
     CGSize result = CGSizeCeil([self.senderNameLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-
+    result.width = MIN(result.width, maxTextWidth);
     return [NSValue valueWithCGSize:result];
 }
 
@@ -1229,6 +1232,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     cellSize = CGSizeCeil(cellSize);
+
+    OWSAssert(cellSize.width <= self.conversationStyle.maxMessageWidth);
+    cellSize.width = MIN(cellSize.width, self.conversationStyle.maxMessageWidth);
 
     return cellSize;
 }
