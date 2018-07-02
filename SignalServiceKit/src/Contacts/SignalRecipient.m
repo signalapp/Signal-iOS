@@ -9,10 +9,45 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface SignalRecipient ()
+
+@property NSOrderedSet *devices;
+
+@end
+
 @implementation SignalRecipient
 
 + (NSString *)collection {
     return @"SignalRecipient";
+}
+
++ (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
+                                    deviceId:(UInt32)deviceId
+                                       relay:(NSString *)relay
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    SignalRecipient *_Nullable existingRecipient =
+        [self recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
+    if (!existingRecipient) {
+        DDLogDebug(
+            @"%@ in %s creating recipient with deviceId: %u", self.logTag, __PRETTY_FUNCTION__, (unsigned int)deviceId);
+
+        SignalRecipient *newRecipient = [[self alloc] initWithTextSecureIdentifier:recipientId relay:relay];
+        [newRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
+        [newRecipient saveWithTransaction:transaction];
+
+        return;
+    }
+
+    if (![existingRecipient.devices containsObject:@(deviceId)]) {
+        DDLogDebug(@"%@ in %s adding device %u to existing recipient.",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            (unsigned int)deviceId);
+
+        [existingRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
+        [existingRecipient saveWithTransaction:transaction];
+    }
 }
 
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
@@ -31,16 +66,34 @@ NS_ASSUME_NONNULL_BEGIN
         // sync message to linked devices.  We shouldn't have any linked devices
         // yet when we create the "self" SignalRecipient, and we don't need to
         // send sync messages to the primary - we ARE the primary.
-        _devices = [NSMutableOrderedSet new];
+        _devices = [NSOrderedSet new];
     } else {
         // Default to sending to just primary device.
         //
         // OWSMessageSender will correct this if it is wrong the next time
         // we send a message to this recipient.
-        _devices = [NSMutableOrderedSet orderedSetWithObject:@(1)];
+        _devices = [NSOrderedSet orderedSetWithObject:@(1)];
     }
 
     _relay = [relay isEqualToString:@""] ? nil : relay;
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_devices == nil) {
+        _devices = [NSOrderedSet new];
+    }
+
+    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [self.devices containsObject:@(1)]) {
+        OWSFail(@"%@ in %s self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+    }
 
     return self;
 }
@@ -70,24 +123,25 @@ NS_ASSUME_NONNULL_BEGIN
     return myself;
 }
 
-- (NSMutableOrderedSet *)devices {
-    return [_devices copy];
-}
-
-- (void)addDevices:(NSSet *)set {
-    [self checkDevices];
-    [_devices unionSet:set];
-}
-
-- (void)removeDevices:(NSSet *)set {
-    [self checkDevices];
-    [_devices minusSet:set];
-}
-
-- (void)checkDevices {
-    if (_devices == nil || ![_devices isKindOfClass:[NSMutableOrderedSet class]]) {
-        _devices = [NSMutableOrderedSet orderedSetWithObject:[NSNumber numberWithInt:1]];
+- (void)addDevices:(NSSet *)set
+{
+    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [set containsObject:@(1)]) {
+        OWSFail(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
+        return;
     }
+
+    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    [updatedDevices unionSet:set];
+
+    self.devices = [updatedDevices copy];
+}
+
+- (void)removeDevices:(NSSet *)set
+{
+    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    [updatedDevices minusSet:set];
+
+    self.devices = [updatedDevices copy];
 }
 
 - (BOOL)supportsVoice
