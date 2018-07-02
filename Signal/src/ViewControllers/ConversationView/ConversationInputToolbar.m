@@ -159,8 +159,11 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    [self.attachmentButton setImage:[UIImage imageNamed:@"btnAttachments--blue"] forState:UIControlStateNormal];
+    UIImage *attachmentImage = [UIImage imageNamed:@"btnAttachments--blue"];
+    [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+                           forState:UIControlStateNormal];
     self.attachmentButton.contentEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 3);
+    self.attachmentButton.tintColor = UIColor.ows_navbarIconColor;
     [self.leftButtonWrapper addSubview:self.attachmentButton];
 
     // TODO: Fix layout in this class.
@@ -179,7 +182,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = [UIColor ows_materialBlueColor];
+    self.voiceMemoButton.imageView.tintColor = UIColor.ows_navbarIconColor;
     [self.rightButtonWrapper addSubview:self.voiceMemoButton];
 
     // We want to be permissive about the voice message gesture, so we hang
