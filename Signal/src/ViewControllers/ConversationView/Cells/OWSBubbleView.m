@@ -7,7 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kOWSMessageCellCornerRadius = 16;
+const CGFloat kOWSMessageCellCornerRadius_Large = 16;
+const CGFloat kOWSMessageCellCornerRadius_Small = 2;
 
 @interface OWSBubbleView ()
 
@@ -89,9 +90,7 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
 {
     _bubbleColor = bubbleColor;
 
-    if (!self.shapeLayer) {
-        [self updateLayers];
-    }
+    [self updateLayers];
 
     // Prevent the shape layer from animating changes.
     [CATransaction begin];
@@ -100,6 +99,20 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
     self.shapeLayer.fillColor = bubbleColor.CGColor;
 
     [CATransaction commit];
+}
+
+- (void)setUseSmallCorners_Top:(BOOL)useSmallCorners_Top
+{
+    _useSmallCorners_Top = useSmallCorners_Top;
+
+    [self updateLayers];
+}
+
+- (void)setUseSmallCorners_Bottom:(BOOL)useSmallCorners_Bottom
+{
+    _useSmallCorners_Bottom = useSmallCorners_Bottom;
+
+    [self updateLayers];
 }
 
 - (void)updateLayers
@@ -126,14 +139,42 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
 
 - (UIBezierPath *)maskPath
 {
-    return [self.class maskPathForSize:self.bounds.size];
+    return [self.class maskPathForSize:self.bounds.size
+                   useSmallCorners_Top:self.useSmallCorners_Top
+                useSmallCorners_Bottom:self.useSmallCorners_Bottom];
 }
 
 + (UIBezierPath *)maskPathForSize:(CGSize)size
+              useSmallCorners_Top:(BOOL)useSmallCorners_Top
+           useSmallCorners_Bottom:(BOOL)useSmallCorners_Bottom
 {
     CGRect bounds = CGRectZero;
     bounds.size = size;
-    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:bounds cornerRadius:kOWSMessageCellCornerRadius];
+
+    UIBezierPath *bezierPath = [UIBezierPath new];
+
+    CGFloat bubbleLeft = 0.f;
+    CGFloat bubbleRight = size.width;
+    CGFloat bubbleTop = 0.f;
+    CGFloat bubbleBottom = size.height;
+    CGFloat topRounding = (useSmallCorners_Top ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
+    CGFloat bottomRounding
+        = (useSmallCorners_Bottom ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
+
+    [bezierPath moveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)];
+    [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRounding, bubbleTop)];
+    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + topRounding)
+                       controlPoint:CGPointMake(bubbleRight, bubbleTop)];
+    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRounding)];
+    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bottomRounding, bubbleBottom)
+                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
+    [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom)];
+    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bottomRounding)
+                       controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
+    [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topRounding)];
+    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)
+                       controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+
     return bezierPath;
 }
 
@@ -164,9 +205,13 @@ const CGFloat kOWSMessageCellCornerRadius = 16;
     }
 }
 
-+ (CGFloat)minWidth
+- (CGFloat)minWidth
 {
-    return (kOWSMessageCellCornerRadius * 2);
+    if (self.useSmallCorners_Top && self.useSmallCorners_Bottom) {
+        return (kOWSMessageCellCornerRadius_Small * 2);
+    } else {
+        return (kOWSMessageCellCornerRadius_Large * 2);
+    }
 }
 
 @end

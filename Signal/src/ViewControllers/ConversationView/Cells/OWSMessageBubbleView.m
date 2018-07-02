@@ -488,6 +488,16 @@ NS_ASSUME_NONNULL_BEGIN
     // If we're stroking the bubble edge, ensure the stroke
     // view is in front of its peers to prevent it from being occluded.
     [self.bubbleStrokeView.superview bringSubviewToFront:self.bubbleStrokeView];
+
+    [self configureBubbleRounding];
+}
+
+- (void)configureBubbleRounding
+{
+    self.bubbleView.useSmallCorners_Top
+        = (self.hasBodyMediaWithThumbnail && !self.shouldShowSenderName && !self.isQuotedReply);
+    self.bubbleView.useSmallCorners_Bottom
+        = (self.hasBodyMediaWithThumbnail && !self.hasBodyText && !self.hasBottomFooter);
 }
 
 - (void)updateBubbleColor
@@ -1164,6 +1174,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize cellSize = CGSizeZero;
 
+    [self configureBubbleRounding];
+
     NSMutableArray<NSValue *> *textViewSizes = [NSMutableArray new];
 
     NSValue *_Nullable senderNameSize = [self senderNameSize];
@@ -1221,7 +1233,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Make sure the bubble is always wide enough to complete it's bubble shape.
-    cellSize.width = MAX(cellSize.width, OWSBubbleView.minWidth);
+    cellSize.width = MAX(cellSize.width, self.bubbleView.minWidth);
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 

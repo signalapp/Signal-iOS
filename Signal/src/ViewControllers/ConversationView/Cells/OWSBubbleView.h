@@ -6,7 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern const CGFloat kOWSMessageCellCornerRadius;
+extern const CGFloat kOWSMessageCellCornerRadius_Large;
+extern const CGFloat kOWSMessageCellCornerRadius_Small;
 
 @class OWSBubbleView;
 
@@ -24,6 +25,9 @@ extern const CGFloat kOWSMessageCellCornerRadius;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
+@property (nonatomic) BOOL useSmallCorners_Top;
+@property (nonatomic) BOOL useSmallCorners_Bottom;
+
 - (UIBezierPath *)maskPath;
 
 #pragma mark - Coordination
@@ -34,7 +38,7 @@ extern const CGFloat kOWSMessageCellCornerRadius;
 
 - (void)updatePartnerViews;
 
-+ (CGFloat)minWidth;
+- (CGFloat)minWidth;
 
 @end
 
