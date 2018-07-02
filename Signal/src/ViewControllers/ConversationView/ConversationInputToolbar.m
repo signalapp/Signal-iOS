@@ -47,7 +47,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 #pragma mark -
 
-@property (nonatomic, nullable) QuotedReplyPreview *quotedMessagePreview;
+@property (nonatomic, nullable) UIView *quotedMessagePreview;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -128,8 +128,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _composeContainer = [UIView containerView];
     _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
     _contentStackView.axis = UILayoutConstraintAxisVertical;
-    _contentStackView.layoutMargins = UIEdgeInsetsZero;
-    _contentStackView.layoutMarginsRelativeArrangement = YES;
 
     [self addSubview:_contentStackView];
     [_contentStackView autoPinEdgesToSuperviewEdges];
@@ -287,12 +285,18 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         return;
     }
 
-    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
-    self.quotedMessagePreview.delegate = self;
+    QuotedReplyPreview *quotedMessagePreview =
+        [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
+    quotedMessagePreview.delegate = self;
+
+    UIView *wrapper = [UIView containerView];
+    wrapper.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
+    [wrapper addSubview:quotedMessagePreview];
+    [quotedMessagePreview autoPinToSuperviewMargins];
 
     // TODO animate
-    [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];
-    self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
+    [self.contentStackView insertArrangedSubview:wrapper atIndex:0];
+    self.quotedMessagePreview = wrapper;
 }
 
 - (CGFloat)quotedMessageTopMargin
@@ -308,7 +312,6 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         [self.quotedMessagePreview removeFromSuperview];
         self.quotedMessagePreview = nil;
     }
-    self.contentStackView.layoutMargins = UIEdgeInsetsZero;
 }
 
 - (void)beginEditingTextMessage
