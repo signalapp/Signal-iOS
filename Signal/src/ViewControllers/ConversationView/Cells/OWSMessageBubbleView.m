@@ -8,6 +8,7 @@
 #import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
+#import "OWSContactShareButtonsView.h"
 #import "OWSContactShareView.h"
 #import "OWSGenericAttachmentView.h"
 #import "OWSMessageFooterView.h"
@@ -19,18 +20,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
-
-// TODO: We may only end up using a single shadow.
-@property (nonatomic) OWSBubbleShapeView *mediaShadowView1;
-
-@property (nonatomic) OWSBubbleShapeView *mediaShadowView2;
-
-@property (nonatomic) OWSBubbleShapeView *mediaClipView;
-
-@property (nonatomic) OWSBubbleShapeView *bubbleStrokeView;
 
 @property (nonatomic) UIStackView *stackView;
 
@@ -52,7 +44,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageFooterView *footerView;
 
+@property (nonatomic, nullable) OWSContactShareButtonsView *contactShareButtonsView;
+
 @end
+
+#pragma mark -
 
 @implementation OWSMessageBubbleView
 
@@ -83,11 +79,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
-
-    self.mediaShadowView1 = [OWSBubbleShapeView bubbleShadowView];
-    self.mediaShadowView2 = [OWSBubbleShapeView bubbleShadowView];
-    self.mediaClipView = [OWSBubbleShapeView bubbleClipView];
-    self.bubbleStrokeView = [OWSBubbleShapeView bubbleDrawView];
 
     self.stackView = [UIStackView new];
     self.stackView.axis = UILayoutConstraintAxisVertical;
@@ -356,53 +347,64 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (self.hasBodyMediaWithThumbnail) {
-
                 // The "body media" view casts a shadow "downward" onto adjacent views,
                 // so we use a "proxy" view to take its place within the v-stack
                 // view and then insert the body media view above its proxy so that
                 // it floats above the other content of the bubble view.
 
-                UIView *bodyProxyView = [UIView new];
-                [self.stackView addArrangedSubview:bodyProxyView];
+                UIView *proxyView = [UIView new];
+                [self.stackView addArrangedSubview:proxyView];
 
-                [self addSubview:self.mediaShadowView1];
-                [self addSubview:self.mediaShadowView2];
-                [self addSubview:self.mediaClipView];
+                // TODO: We may only end up using a single shadow.
+                OWSBubbleShapeView *shadowView1 = [OWSBubbleShapeView bubbleShadowView];
+                OWSBubbleShapeView *shadowView2 = [OWSBubbleShapeView bubbleShadowView];
+                OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
 
-                [self.viewConstraints addObjectsFromArray:[self.mediaShadowView1 autoPinToEdgesOfView:bodyProxyView]];
-                [self.viewConstraints addObjectsFromArray:[self.mediaShadowView2 autoPinToEdgesOfView:bodyProxyView]];
-                [self.viewConstraints addObjectsFromArray:[self.mediaClipView autoPinToEdgesOfView:bodyProxyView]];
+                [self addSubview:shadowView1];
+                [self addSubview:shadowView2];
+                [self addSubview:clipView];
 
-                [self.mediaClipView addSubview:bodyMediaView];
+                [self.viewConstraints addObjectsFromArray:[shadowView1 autoPinToEdgesOfView:proxyView]];
+                [self.viewConstraints addObjectsFromArray:[shadowView2 autoPinToEdgesOfView:proxyView]];
+                [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
+
+                [clipView addSubview:bodyMediaView];
                 [self.viewConstraints addObjectsFromArray:[bodyMediaView autoPinToSuperviewEdges]];
 
-                [self.bubbleView addPartnerView:self.mediaShadowView1];
-                [self.bubbleView addPartnerView:self.mediaShadowView2];
-                [self.bubbleView addPartnerView:self.mediaClipView];
+                [self.bubbleView addPartnerView:shadowView1];
+                [self.bubbleView addPartnerView:shadowView2];
+                [self.bubbleView addPartnerView:clipView];
 
                 // TODO: Consider only using a single shadow for perf.
-                self.mediaShadowView1.fillColor = self.bubbleColor;
-                self.mediaShadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
-                self.mediaShadowView1.layer.shadowOpacity = 0.2f;
-                self.mediaShadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
-                self.mediaShadowView1.layer.shadowRadius = 20.f;
+                shadowView1.fillColor = self.bubbleColor;
+                shadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
+                shadowView1.layer.shadowOpacity = 0.2f;
+                shadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
+                shadowView1.layer.shadowRadius = 20.f;
 
-                self.mediaShadowView2.fillColor = self.bubbleColor;
-                self.mediaShadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
-                self.mediaShadowView2.layer.shadowOpacity = 0.08f;
-                self.mediaShadowView2.layer.shadowOffset = CGSizeZero;
-                self.mediaShadowView2.layer.shadowRadius = 4.f;
+                shadowView2.fillColor = self.bubbleColor;
+                shadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
+                shadowView2.layer.shadowOpacity = 0.08f;
+                shadowView2.layer.shadowOffset = CGSizeZero;
+                shadowView2.layer.shadowRadius = 4.f;
             } else {
                 OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
 
+                if (self.contactShareHasSpacerTop) {
+                    UIView *spacerView = [UIView containerView];
+                    [spacerView autoSetDimension:ALDimensionHeight toSize:self.contactShareVSpacing];
+                    [spacerView setCompressionResistanceHigh];
+                    [self.stackView addArrangedSubview:spacerView];
+                }
+
                 [self.stackView addArrangedSubview:bodyMediaView];
 
-                // TODO: Constants.
-                self.bubbleStrokeView.strokeColor = [UIColor lightGrayColor];
-                self.bubbleStrokeView.strokeThickness = 1.f;
-                [self.bubbleView addSubview:self.bubbleStrokeView];
-                [self.viewConstraints addObjectsFromArray:[self.bubbleStrokeView autoPinToSuperviewEdges]];
-                [self.bubbleView addPartnerView:self.bubbleStrokeView];
+                if (self.contactShareHasSpacerBottom) {
+                    UIView *spacerView = [UIView containerView];
+                    [spacerView autoSetDimension:ALDimensionHeight toSize:self.contactShareVSpacing];
+                    [spacerView setCompressionResistanceHigh];
+                    [self.stackView addArrangedSubview:spacerView];
+                }
             }
         } else {
             [textViews addObject:bodyMediaView];
@@ -483,13 +485,80 @@ NS_ASSUME_NONNULL_BEGIN
             addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.CGSizeValue.height]];
     }
 
+    [self insertContactShareButtonsIfNecessary];
+
     [self updateBubbleColor];
 
-    // If we're stroking the bubble edge, ensure the stroke
-    // view is in front of its peers to prevent it from being occluded.
-    [self.bubbleStrokeView.superview bringSubviewToFront:self.bubbleStrokeView];
-
     [self configureBubbleRounding];
+}
+
+- (void)insertContactShareButtonsIfNecessary
+{
+    if (self.cellType != OWSMessageCellType_ContactShare) {
+        return;
+    }
+
+    if (![OWSContactShareButtonsView hasAnyButton:self.viewItem.contactShare]) {
+        return;
+    }
+
+    OWSAssert(self.viewItem.contactShare);
+
+    OWSContactShareButtonsView *buttonsView =
+        [[OWSContactShareButtonsView alloc] initWithContactShare:self.viewItem.contactShare delegate:self];
+    [buttonsView createContents];
+
+    NSValue *_Nullable actionButtonsSize = [self actionButtonsSize];
+    OWSAssert(actionButtonsSize);
+    [self.viewConstraints addObjectsFromArray:@[
+        [buttonsView autoSetDimension:ALDimensionHeight toSize:actionButtonsSize.CGSizeValue.height],
+    ]];
+
+    // The "body media" view casts a shadow "downward" onto adjacent views,
+    // so we use a "proxy" view to take its place within the v-stack
+    // view and then insert the body media view above its proxy so that
+    // it floats above the other content of the bubble view.
+
+    UIView *proxyView = [UIView new];
+    [self.stackView addArrangedSubview:proxyView];
+
+    // TODO: We may only end up using a single shadow.
+    OWSBubbleShapeView *shadowView = [OWSBubbleShapeView bubbleShadowView];
+    OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
+
+    [self addSubview:shadowView];
+    [self addSubview:clipView];
+
+    [self.viewConstraints addObjectsFromArray:[shadowView autoPinToEdgesOfView:proxyView]];
+    [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
+
+    [clipView addSubview:buttonsView];
+    [self.viewConstraints addObjectsFromArray:[buttonsView autoPinToSuperviewEdges]];
+
+    [self.bubbleView addPartnerView:shadowView];
+    [self.bubbleView addPartnerView:clipView];
+
+    OWSAssert(buttonsView.backgroundColor);
+    shadowView.fillColor = buttonsView.backgroundColor;
+    shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
+    shadowView.layer.shadowOpacity = 0.12f;
+    shadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
+    shadowView.layer.shadowRadius = 1.f;
+}
+
+- (BOOL)contactShareHasSpacerTop
+{
+    return (self.cellType == OWSMessageCellType_ContactShare && (self.isQuotedReply || !self.shouldShowSenderName));
+}
+
+- (BOOL)contactShareHasSpacerBottom
+{
+    return (self.cellType == OWSMessageCellType_ContactShare && !self.hasBottomFooter);
+}
+
+- (CGFloat)contactShareVSpacing
+{
+    return 12.f;
 }
 
 - (void)configureBubbleRounding
@@ -968,9 +1037,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.viewItem.contactShare);
 
-    OWSContactShareView *contactShareView = [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
-                                                                                   isIncoming:self.isIncoming
-                                                                                     delegate:self];
+    OWSContactShareView *contactShareView =
+        [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare isIncoming:self.isIncoming];
     [contactShareView createContents];
     // TODO: Should we change appearance if contact avatar is uploading?
 
@@ -1115,8 +1183,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_ContactShare:
             OWSAssert(self.viewItem.contactShare);
 
-            result = CGSizeMake(
-                maxMessageWidth, [OWSContactShareView bubbleHeightForContactShare:self.viewItem.contactShare]);
+            result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
     }
 
@@ -1165,6 +1232,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [NSValue valueWithCGSize:result];
 }
 
+- (nullable NSValue *)actionButtonsSize
+{
+    OWSAssert(self.conversationStyle);
+    OWSAssert(self.conversationStyle.maxMessageWidth > 0);
+
+    if (self.cellType == OWSMessageCellType_ContactShare) {
+        OWSAssert(self.viewItem.contactShare);
+
+        if ([OWSContactShareButtonsView hasAnyButton:self.viewItem.contactShare]) {
+            CGSize buttonsSize = CGSizeCeil(
+                CGSizeMake(self.conversationStyle.maxMessageWidth, [OWSContactShareButtonsView bubbleHeight]));
+            return [NSValue valueWithCGSize:buttonsSize];
+        }
+    }
+    return nil;
+}
+
 - (CGSize)measureSize
 {
     OWSAssert(self.conversationStyle);
@@ -1200,6 +1284,13 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [textViewSizes addObject:bodyMediaSize];
             bodyMediaSize = nil;
+        }
+
+        if (self.contactShareHasSpacerTop) {
+            cellSize.height += self.contactShareVSpacing;
+        }
+        if (self.contactShareHasSpacerBottom) {
+            cellSize.height += self.contactShareVSpacing;
         }
     }
 
@@ -1239,6 +1330,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.hasTapForMore) {
         cellSize.height += self.tapForMoreHeight + self.textViewVSpacing;
+    }
+
+    NSValue *_Nullable actionButtonsSize = [self actionButtonsSize];
+    if (actionButtonsSize) {
+        cellSize.width = MAX(cellSize.width, actionButtonsSize.CGSizeValue.width);
+        cellSize.height += actionButtonsSize.CGSizeValue.height;
     }
 
     cellSize = CGSizeCeil(cellSize);
@@ -1340,17 +1437,20 @@ NS_ASSUME_NONNULL_BEGIN
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;
 
-    [self.mediaShadowView1 removeFromSuperview];
-    [self.mediaShadowView2 removeFromSuperview];
-    [self.mediaClipView removeFromSuperview];
-    [self.bubbleStrokeView removeFromSuperview];
-
     [self.footerView removeFromSuperview];
     [self.footerView prepareForReuse];
 
     for (UIView *subview in self.stackView.subviews) {
         [subview removeFromSuperview];
     }
+    for (UIView *subview in self.subviews) {
+        if (subview != self.bubbleView) {
+            [subview removeFromSuperview];
+        }
+    }
+
+    [self.contactShareButtonsView removeFromSuperview];
+    self.contactShareButtonsView = nil;
 }
 
 #pragma mark - Gestures
@@ -1381,9 +1481,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if ([self.bodyMediaView isKindOfClass:[OWSContactShareView class]]) {
-        OWSContactShareView *contactShareView = (OWSContactShareView *)self.bodyMediaView;
-        if ([contactShareView handleTapGesture:sender]) {
+    if (self.contactShareButtonsView) {
+        if ([self.contactShareButtonsView handleTapGesture:sender]) {
             return;
         }
     }
@@ -1508,7 +1607,7 @@ NS_ASSUME_NONNULL_BEGIN
         failedThumbnailDownloadAttachmentPointer:attachmentPointer];
 }
 
-#pragma mark - OWSContactShareViewDelegate
+#pragma mark - OWSContactShareButtonsViewDelegate
 
 - (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
 {
