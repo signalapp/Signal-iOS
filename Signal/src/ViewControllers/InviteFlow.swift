@@ -189,14 +189,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     @objc
     public func sendSMSTo(phoneNumbers: [String]) {
-        if #available(iOS 10.0, *) {
-            // iOS10 message compose view doesn't respect some system appearence attributes.
-            // Specifically, the title is white, but the navbar is gray.
-            // So, we have to set system appearence before init'ing the message compose view controller in order
-            // to make its colors legible.
-            // Then we have to be sure to set it back in the ComposeViewControllerDelegate callback.
-            UIUtil.applyDefaultSystemAppearence()
-        }
         let messageComposeViewController = MFMessageComposeViewController()
         messageComposeViewController.messageComposeDelegate = self
         messageComposeViewController.recipients = phoneNumbers
@@ -209,8 +201,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
     // MARK: MessageComposeViewControllerDelegate
 
     func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
-        // Revert system styling applied to make messaging app legible on iOS10.
-        UIUtil.applySignalAppearence()
         self.presentingViewController.dismiss(animated: true) {
             switch result {
             case .failed:

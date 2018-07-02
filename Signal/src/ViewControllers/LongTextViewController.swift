@@ -81,7 +81,6 @@ public class LongTextViewController: OWSViewController {
         messageTextView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         let footer = UIToolbar()
-        footer.barTintColor = UIColor.ows_materialBlue
         view.addSubview(footer)
         footer.autoPinWidthToSuperview(withMargin: 0)
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)

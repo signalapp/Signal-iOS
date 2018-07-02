@@ -105,14 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-
-    // In case we're dismissing a CNContactViewController which requires default system appearance
-    [UIUtil applySignalAppearence];
-}
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents

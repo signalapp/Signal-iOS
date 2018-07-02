@@ -174,7 +174,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         let footerBar = UIToolbar()
         self.footerBar = footerBar
-        footerBar.barTintColor = UIColor.ows_signalBrandBlue
 
         self.videoPlayBarButton = UIBarButtonItem(barButtonSystemItem: .play, target: self, action: #selector(didPressPlayBarButton))
         self.videoPauseBarButton = UIBarButtonItem(barButtonSystemItem: .pause, target: self, action: #selector(didPressPauseBarButton))
@@ -588,7 +587,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var headerNameLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .ows_navbarTitle
         label.font = UIFont.ows_regularFont(withSize: 17)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
@@ -599,7 +598,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
     lazy private var headerDateLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .white
+        label.textColor = .ows_navbarTitle
         label.font = UIFont.ows_regularFont(withSize: 12)
         label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true

@@ -852,9 +852,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewWillAppear:animated];
 
-    // In case we're dismissing a CNContactViewController which requires default system appearance
-    [UIUtil applySignalAppearence];
-
     // HACK to unselect rows when swiping back
     // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
     [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];

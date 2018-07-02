@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
 {
-    DDLogInfo(@"Ignoring request to show/hide status bar style since we're in an app extension");
+    DDLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");
 }
 
 - (CGFloat)statusBarHeight

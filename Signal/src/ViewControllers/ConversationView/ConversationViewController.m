@@ -535,6 +535,7 @@ typedef enum : NSUInteger {
 {
     [super loadView];
 
+    // make sure toolbar extends below iPhoneX home button.
     self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
 }
 
@@ -559,15 +560,13 @@ typedef enum : NSUInteger {
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
-    [self.collectionView autoPinWidthToSuperview];
-    [self.collectionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.collectionView autoPinEdgesToSuperviewEdges];
 
     [self.collectionView applyScrollViewInsetsFix];
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
-    [self.collectionView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES",
@@ -677,9 +676,6 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 
     [super viewWillAppear:animated];
-
-    // In case we're dismissing a CNContactViewController, or DocumentPicker which requires default system appearance
-    [UIUtil applySignalAppearence];
 
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
@@ -1325,11 +1321,11 @@ typedef enum : NSUInteger {
         if (OWSWindowManager.sharedManager.hasCall) {
             callButton.enabled = NO;
             callButton.userInteractionEnabled = NO;
-            callButton.tintColor = UIColor.lightGrayColor;
+            callButton.tintColor = [UIColor.ows_navbarIconColor colorWithAlphaComponent:0.7];
         } else {
             callButton.enabled = YES;
             callButton.userInteractionEnabled = YES;
-            callButton.tintColor = UIColor.whiteColor;
+            callButton.tintColor = UIColor.ows_navbarIconColor;
         }
 
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
@@ -1357,7 +1353,7 @@ typedef enum : NSUInteger {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
-        timerView.tintColor = UIColor.whiteColor;
+        timerView.tintColor = UIColor.ows_navbarIconColor;
 
         // As of iOS11, we can size barButton item custom views with autoLayout.
         // Before that, though we can still use autoLayout *within* the customView,
@@ -1379,6 +1375,7 @@ typedef enum : NSUInteger {
 {
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
 
+    UIColor *subtitleColor = [UIColor.ows_navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText
@@ -1386,7 +1383,7 @@ typedef enum : NSUInteger {
                                        initWithString:@"\ue067  "
                                            attributes:@{
                                                NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor
                                            }]];
     }
 
@@ -1405,7 +1402,7 @@ typedef enum : NSUInteger {
                                        initWithString:@"\uf00c "
                                            attributes:@{
                                                NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor,
                                            }]];
     }
 
@@ -1415,7 +1412,7 @@ typedef enum : NSUInteger {
                                        initWithString:NSLocalizedString(@"GROUP_YOU_LEFT", @"")
                                            attributes:@{
                                                NSFontAttributeName : self.headerView.subtitleFont,
-                                               NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                               NSForegroundColorAttributeName : subtitleColor,
                                            }]];
     } else {
         [subtitleText appendAttributedString:
@@ -1425,7 +1422,7 @@ typedef enum : NSUInteger {
                                                  @"title can be tapped to access settings for this conversation.")
                                   attributes:@{
                                       NSFontAttributeName : self.headerView.subtitleFont,
-                                      NSForegroundColorAttributeName : [UIColor colorWithWhite:0.9f alpha:1.f],
+                                      NSForegroundColorAttributeName : subtitleColor,
                                   }]];
     }
 
@@ -2586,8 +2583,7 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoSetDimension:ALDimensionWidth toSize:ConversationScrollButton.buttonSize];
     [self.scrollDownButton autoSetDimension:ALDimensionHeight toSize:ConversationScrollButton.buttonSize];
 
-    self.scrollDownButtonButtomConstraint =
-        [self.scrollDownButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.collectionView];
+    self.scrollDownButtonButtomConstraint = [self.scrollDownButton autoPinEdgeToSuperviewMargin:ALEdgeBottom];
     [self.scrollDownButton autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
 
 #ifdef DEBUG
@@ -2782,10 +2778,6 @@ typedef enum : NSUInteger {
     didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
 {
     documentPicker.delegate = self;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applyDefaultSystemAppearence];
-    }
 
     [self dismissKeyBoard];
     [self presentViewController:documentPicker animated:YES completion:nil];
@@ -2796,16 +2788,6 @@ typedef enum : NSUInteger {
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
     DDLogDebug(@"%@ Picked document at url: %@", self.logTag, url);
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applySignalAppearence];
-    }
-
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        // post iOS11, document picker has no blue header.
-        [UIUtil applySignalAppearence];
-    }
 
     NSString *type;
     NSError *typeError;
@@ -2897,7 +2879,7 @@ typedef enum : NSUInteger {
         picker.delegate = self;
         
         [self dismissKeyBoard];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -2933,7 +2915,7 @@ typedef enum : NSUInteger {
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
         
         [self dismissKeyBoard];
-        [self presentViewController:picker animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -2943,7 +2925,6 @@ typedef enum : NSUInteger {
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [UIUtil modalCompletionBlock]();
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -2960,7 +2941,6 @@ typedef enum : NSUInteger {
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
-    [UIUtil modalCompletionBlock]();
     [self resetFrame];
 
     NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];

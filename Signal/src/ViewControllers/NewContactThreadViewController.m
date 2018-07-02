@@ -745,12 +745,10 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self presentedViewController]) {
         [self dismissViewControllerAnimated:YES
                                  completion:^{
-                                     [self presentViewController:alertController
-                                                        animated:YES
-                                                      completion:[UIUtil modalCompletionBlock]];
+                                     [self presentViewController:alertController animated:YES completion:nil];
                                  }];
     } else {
-        [self presentViewController:alertController animated:YES completion:[UIUtil modalCompletionBlock]];
+        [self presentViewController:alertController animated:YES completion:nil];
     }
 }
 

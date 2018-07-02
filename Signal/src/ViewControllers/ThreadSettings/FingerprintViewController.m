@@ -398,12 +398,6 @@ typedef void (^CustomLayoutBlock)(void);
     [self.view setNeedsLayout];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    // In case we're returning from activity view that needed default system styles.
-    [UIUtil applySignalAppearence];
-}
-
 #pragma mark -
 
 - (void)showSharingActivityWithCompletion:(nullable void (^)(void))completionHandler
@@ -427,7 +421,6 @@ typedef void (^CustomLayoutBlock)(void);
         if (completionHandler) {
             completionHandler();
         }
-        [UIUtil applySignalAppearence];
     };
 
     // This value was extracted by inspecting `activityType` in the activityController.completionHandler
@@ -440,7 +433,6 @@ typedef void (^CustomLayoutBlock)(void);
         iCloudActivityType // This isn't being excluded. RADAR https://openradar.appspot.com/27493621
     ];
 
-    [UIUtil applyDefaultSystemAppearence];
     [self presentViewController:activityController animated:YES completion:nil];
 }
 

@@ -180,9 +180,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
-    // In case we're dismissing a CNContactViewController which requires default system appearance
-    [UIUtil applySignalAppearence];
 }
 
 #pragma mark - Actions

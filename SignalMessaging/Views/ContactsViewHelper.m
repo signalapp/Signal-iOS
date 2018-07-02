@@ -394,16 +394,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
 
-    // HACK otherwise CNContactViewController Navbar is shows window background color.
-    // RADAR rdar://28433898 http://www.openradar.me/28433898
-    // CNContactViewController incompatible with opaque navigation bar
-    modal.navigationBar.translucent = YES;
-    if (@available(iOS 10, *)) {
-        // Contact navbar is blue in iOS9, so our white tex works,
-        // but gray on iOS10+, in which case we want the system default black text.
-        [UIUtil applyDefaultSystemAppearence];
-    }
-
     // We want the presentation to imply a "replacement" in this case.
     if (shouldEditImmediately) {
         modal.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;

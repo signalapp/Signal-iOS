@@ -70,15 +70,14 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
 {
-    self = [super init];
-    
+    self = [super initWithFrame:CGRectZero];
+
     _conversationStyle = conversationStyle;
     
     if (self) {
         [self createContents];
     }
     
-
     return self;
 }
 
@@ -104,7 +103,18 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
+    if (UIAccessibilityIsReduceTransparencyEnabled()) {
+        self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
+    } else {
+        // We can mute the blur by making our background color more opaque.
+        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.6];
+
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        [self addSubview:blurEffectView];
+        [blurEffectView autoPinEdgesToSuperviewEdges];
+    }
+
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
     UIView *borderView = [UIView new];

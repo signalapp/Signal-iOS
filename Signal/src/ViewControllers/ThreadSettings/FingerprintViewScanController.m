@@ -100,19 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:instructionsVMargin];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    // In case we're returning from activity view that needed default system styles.
-    [UIUtil applySignalAppearence];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:YES];
-}
-
 #pragma mark - Action
-
 
 - (void)viewDidAppear:(BOOL)animated
 {

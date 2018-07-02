@@ -70,7 +70,6 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         // Make navigationBar clear
         navController.navigationBar.backgroundColor = .clear
         navController.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navController.navigationBar.isTranslucent = true
         navController.navigationBar.shadowImage = UIImage()
         navController.navigationBar.clipsToBounds = true
 

@@ -248,9 +248,6 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         // animate in our view, over the existing context, similar to a cross disolve, but allowing us to have
         // more fine grained control
         self.modalPresentationStyle = .custom
-        self.navigationBar.barTintColor = UIColor.ows_materialBlue
-        self.navigationBar.isTranslucent = false
-        self.navigationBar.isOpaque = true
 
         // The presentationView is only used during present/dismiss animations.
         // It's a static image of the media content.

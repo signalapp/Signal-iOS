@@ -143,11 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     [self createContents];
-
-    // Even though bars are opaque, we want content to be layed out behind them.
-    // The bars might obscure part of the content, but they can easily be hidden by tapping
-    // The alternative would be that content would shift when the navbars hide.
-    self.extendedLayoutIncludesOpaqueBars = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated

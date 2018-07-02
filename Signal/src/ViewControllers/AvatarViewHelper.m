@@ -81,9 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
 
-        [self.delegate.fromViewController presentViewController:picker
-                                                       animated:YES
-                                                     completion:[UIUtil modalCompletionBlock]];
+        [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -103,9 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
 
-        [self.delegate.fromViewController presentViewController:picker
-                                                       animated:YES
-                                                     completion:[UIUtil modalCompletionBlock]];
+        [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil];
     }];
 }
 
@@ -144,10 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                [self.delegate avatarDidChange:dstImage];
                                            });
                                        }];
-                                   [self.delegate.fromViewController
-                                       presentViewController:vc
-                                                    animated:YES
-                                                  completion:[UIUtil modalCompletionBlock]];
+                                   [self.delegate.fromViewController presentViewController:vc
+                                                                                  animated:YES
+                                                                                completion:nil];
                                }
                            }];
 }

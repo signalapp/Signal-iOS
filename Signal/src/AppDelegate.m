@@ -171,7 +171,7 @@ static NSTimeInterval launchStartedAt;
             [self versionMigrationsDidComplete];
         }];
 
-    [UIUtil applySignalAppearence];
+    [UIUtil setupSignalAppearence];
 
     if (CurrentAppContext().isRunningTests) {
         return YES;
