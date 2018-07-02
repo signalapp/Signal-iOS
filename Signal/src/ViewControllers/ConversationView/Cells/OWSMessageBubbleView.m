@@ -691,7 +691,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)senderNameFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont;
+    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
 }
 
 + (NSDictionary *)senderNamePrimaryAttributes
