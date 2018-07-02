@@ -136,7 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
-        // TODO: Honor "full-width gutters"?
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
                                          withInset:self.conversationStyle.fullWidthGutterLeading],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing

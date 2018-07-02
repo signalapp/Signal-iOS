@@ -4,15 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// TODO: Remove this enum.
-typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
-    // We use incoming/outgoing, not left/right to support RTL.
-    ConversationViewLayoutAlignment_Incoming,
-    ConversationViewLayoutAlignment_Outgoing,
-    ConversationViewLayoutAlignment_FullWidth,
-    ConversationViewLayoutAlignment_Center,
-};
-
 @class ConversationStyle;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
@@ -20,8 +11,6 @@ typedef NS_ENUM(NSInteger, ConversationViewLayoutAlignment) {
 @protocol ConversationViewLayoutItem <NSObject>
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
-- (ConversationViewLayoutAlignment)layoutAlignment;
 
 - (CGFloat)vSpacingWithPreviousLayoutItem:(id<ConversationViewLayoutItem>)previousLayoutItem;
 

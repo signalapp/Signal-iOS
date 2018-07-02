@@ -415,7 +415,6 @@ NS_ASSUME_NONNULL_BEGIN
         [self configureBodyTextView];
         [textViews addObject:self.bodyTextView];
 
-        // TODO: Media?
         OWSAssert(bodyTextSize);
         [self.viewConstraints addObjectsFromArray:@[
             [self.bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextSize.CGSizeValue.height],
@@ -554,7 +553,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIStackView *textStackView = [[UIStackView alloc] initWithArrangedSubviews:textViews];
     textStackView.axis = UILayoutConstraintAxisVertical;
-    // TODO: Review
     textStackView.spacing = self.textViewVSpacing;
     textStackView.layoutMarginsRelativeArrangement = YES;
     textStackView.layoutMargins = UIEdgeInsetsMake(self.conversationStyle.textInsetTop,
