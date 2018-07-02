@@ -204,28 +204,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return [self.cachedCellSize CGSizeValue];
 }
 
-- (ConversationViewLayoutAlignment)layoutAlignment
-{
-    switch (self.interaction.interactionType) {
-        case OWSInteractionType_Unknown:
-            DDLogVerbose(@"%@ Unknown interaction type: %@", self.logTag, self.interaction.debugDescription);
-            OWSFail(@"%@ Unknown interaction type", self.logTag);
-            return ConversationViewLayoutAlignment_Center;
-        case OWSInteractionType_IncomingMessage:
-            return ConversationViewLayoutAlignment_Incoming;
-        case OWSInteractionType_OutgoingMessage:
-            return ConversationViewLayoutAlignment_Outgoing;
-        case OWSInteractionType_Error:
-        case OWSInteractionType_Info:
-        case OWSInteractionType_Call:
-            return ConversationViewLayoutAlignment_Center;
-        case OWSInteractionType_UnreadIndicator:
-            return ConversationViewLayoutAlignment_FullWidth;
-        case OWSInteractionType_Offer:
-            return ConversationViewLayoutAlignment_Center;
-    }
-}
-
 - (nullable ConversationViewCell *)measurementCell
 {
     OWSAssertIsOnMainThread();
