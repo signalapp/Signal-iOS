@@ -91,28 +91,26 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)setAudioIcon:(UIImage *)icon iconColor:(UIColor *)iconColor
+- (void)setAudioIcon:(UIImage *)icon
 {
     OWSAssert(icon.size.height == self.iconSize);
 
     icon = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateNormal];
     [_audioPlayPauseButton setImage:icon forState:UIControlStateDisabled];
-    _audioPlayPauseButton.imageView.tintColor = self.bubbleBackgroundColor;
-    _audioPlayPauseButton.backgroundColor = iconColor;
+    _audioPlayPauseButton.imageView.tintColor = [UIColor ows_signalBlueColor];
+    _audioPlayPauseButton.backgroundColor = [UIColor colorWithWhite:1.f alpha:0.92f];
     _audioPlayPauseButton.layer.cornerRadius = self.iconSize * 0.5f;
 }
 
 - (void)setAudioIconToPlay
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]
-             iconColor:(self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]];
 }
 
 - (void)setAudioIconToPause
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]
-             iconColor:(self.isIncoming ? [UIColor colorWithRGBHex:0x9e9e9e] : [self audioColorWithOpacity:0.15f])];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]];
 }
 
 - (void)updateAudioProgressView
@@ -120,10 +118,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioProgressView
         setProgress:(self.audioDurationSeconds > 0 ? self.audioProgressSeconds / self.audioDurationSeconds : 0.f)];
 
-    self.audioProgressView.horizontalBarColor = [self audioColorWithOpacity:0.75f];
-    self.audioProgressView.progressColor
-        = (self.isAudioPlaying ? [self audioColorWithOpacity:self.isIncoming ? 0.2f : 0.1f]
-                               : [self audioColorWithOpacity:0.4f]);
+    UIColor *progressColor = (self.isIncoming ? [UIColor ows_light02Color] : [UIColor ows_light60Color]);
+    self.audioProgressView.horizontalBarColor = progressColor;
+    self.audioProgressView.progressColor = progressColor;
 }
 
 #pragma mark -
@@ -172,34 +169,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSAudioMessageView iconSize];
 }
 
-- (UIColor *)audioTextColor
-{
-    return (self.isIncoming ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor whiteColor]);
-}
-
-- (UIColor *)audioColorWithOpacity:(CGFloat)alpha
-{
-    return [self.audioTextColor blendWithColor:self.bubbleBackgroundColor alpha:alpha];
-}
-
-- (UIColor *)bubbleBackgroundColor
-{
-    return self.isIncoming ? [UIColor ows_messageBubbleLightGrayColor] : [UIColor ows_materialBlueColor];
-}
-
 - (BOOL)isVoiceMessage
 {
-    // We want to treat "pre-voice messages flag" messages as voice messages if
-    // they have no file name.
-    //
-    // TODO: Remove this after the flag has been in production for a few months.
-    return (self.attachmentStream.isVoiceMessage || self.attachmentStream.sourceFilename.length < 1);
+    return self.attachmentStream.isVoiceMessage;
 }
 
 - (void)createContents
 {
-    UIColor *textColor = [self audioTextColor];
-
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = self.hSpacing;
@@ -225,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     UILabel *topLabel = [UILabel new];
     topLabel.text = topText;
-    topLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+    topLabel.textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSAudioMessageView labelFont];
 
@@ -237,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *bottomLabel = [UILabel new];
     self.audioBottomLabel = bottomLabel;
     [self updateAudioBottomLabel];
-    bottomLabel.textColor = [textColor colorWithAlphaComponent:0.85f];
+    bottomLabel.textColor = (self.isIncoming ? [UIColor colorWithWhite:1.f alpha:0.7f] : [UIColor ows_light60Color]);
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSAudioMessageView labelFont];
 
