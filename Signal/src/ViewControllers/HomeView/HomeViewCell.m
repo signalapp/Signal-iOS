@@ -470,9 +470,9 @@ NS_ASSUME_NONNULL_BEGIN
             name = [[NSAttributedString alloc] initWithString:thread.name];
         }
     } else {
-        name = [contactsManager attributedStringForConversationTitleWithPhoneIdentifier:thread.contactIdentifier
-                                                                            primaryFont:self.nameFont
-                                                                          secondaryFont:self.nameSecondaryFont];
+        name = [contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
+                                                                     primaryFont:self.nameFont
+                                                                   secondaryFont:self.nameSecondaryFont];
     }
 
     self.nameLabel.attributedText = name;

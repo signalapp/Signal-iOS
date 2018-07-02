@@ -1206,10 +1206,10 @@ typedef enum : NSUInteger {
         }
     } else {
         OWSAssert(self.thread.contactIdentifier);
-        name = [self.contactsManager
-            attributedStringForConversationTitleWithPhoneIdentifier:self.thread.contactIdentifier
-                                                        primaryFont:self.headerView.titlePrimaryFont
-                                                      secondaryFont:self.headerView.titleSecondaryFont];
+        name =
+            [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
+                                                                       primaryFont:self.headerView.titlePrimaryFont
+                                                                     secondaryFont:self.headerView.titleSecondaryFont];
     }
     self.title = nil;
 
@@ -4856,7 +4856,7 @@ typedef enum : NSUInteger {
         ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
         BOOL shouldShowSenderAvatar = NO;
         BOOL shouldHideFooter = NO;
-        NSString *_Nullable senderName = nil;
+        NSAttributedString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
@@ -4910,7 +4910,12 @@ typedef enum : NSUInteger {
                             || viewItem.shouldShowDate);
                 }
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager displayNameForPhoneIdentifier:incomingSenderId];
+                    senderName = [self.contactsManager
+                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
+                                                       primaryAttributes:[OWSMessageBubbleView
+                                                                             senderNamePrimaryAttributes]
+                                                     secondaryAttributes:[OWSMessageBubbleView
+                                                                             senderNameSecondaryAttributes]];
                 }
 
                 // Show the sender avatar for incoming group messages unless
