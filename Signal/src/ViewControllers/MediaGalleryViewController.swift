@@ -342,6 +342,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
         detailView.backgroundColor = .clear
         self.view.backgroundColor = .clear
 
+        // TODO: Sync with (possibly assymetrical) corner rounding in message bubbles.
         self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Large
 
         fromViewController.present(self, animated: false) {
