@@ -131,6 +131,11 @@ NS_ASSUME_NONNULL_BEGIN
     return 8.f;
 }
 
+- (CGFloat)vSpacing
+{
+    return 2.f;
+}
+
 - (CGFloat)stripeThickness
 {
     return 4.f;
@@ -204,6 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
     vStackView.axis = UILayoutConstraintAxisVertical;
     vStackView.layoutMargins = UIEdgeInsetsMake(self.textVMargin, 0, self.textVMargin, 0);
     vStackView.layoutMarginsRelativeArrangement = YES;
+    vStackView.spacing = self.vSpacing;
     [hStackView addArrangedSubview:vStackView];
 
     UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
@@ -469,7 +475,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Quoted Author
     CGFloat textWidth = 0.f;
     CGFloat maxTextWidth = maxWidth - result.width;
-    CGFloat textHeight = self.textVMargin * 2 + self.quotedAuthorHeight;
+    CGFloat textHeight = self.textVMargin * 2 + self.quotedAuthorHeight + self.vSpacing;
     {
         UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
 
