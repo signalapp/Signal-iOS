@@ -92,6 +92,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     // to determine the height of the rendered inputAccessoryView.
     CGFloat height = self.toolbarHeight + ConversationInputToolbarBorderViewHeight;
     if (self.quotedMessagePreview) {
+        height += self.quotedMessageTopMargin;
         height += self.quotedMessagePreview.intrinsicContentSize.height;
     }
     CGSize newSize = CGSizeMake(self.bounds.size.width, height);
@@ -127,6 +128,8 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     _composeContainer = [UIView containerView];
     _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
     _contentStackView.axis = UILayoutConstraintAxisVertical;
+    _contentStackView.layoutMargins = UIEdgeInsetsZero;
+    _contentStackView.layoutMarginsRelativeArrangement = YES;
 
     [self addSubview:_contentStackView];
     [_contentStackView autoPinEdgesToSuperviewEdges];
@@ -289,6 +292,12 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
     // TODO animate
     [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];
+    self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
+}
+
+- (CGFloat)quotedMessageTopMargin
+{
+    return 5.f;
 }
 
 - (void)clearQuotedMessagePreview
@@ -299,6 +308,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         [self.quotedMessagePreview removeFromSuperview];
         self.quotedMessagePreview = nil;
     }
+    self.contentStackView.layoutMargins = UIEdgeInsetsZero;
 }
 
 - (void)beginEditingTextMessage
