@@ -255,7 +255,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createContactViews() {
 
         leaveCallViewButton = UIButton()
-        let backButtonImage = self.view.isRTL() ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+        let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
         leaveCallViewButton.setImage(backButtonImage, for: .normal)
         leaveCallViewButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
         leaveCallViewButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)

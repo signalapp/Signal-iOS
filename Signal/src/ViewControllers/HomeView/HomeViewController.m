@@ -424,7 +424,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     // too far apart and too far from the edge of the screen. So we use a smaller
     // leading inset tighten up the layout.
     CGFloat hInset = round((kBarButtonSize - image.size.width) * 0.5f);
-    if (self.view.isRTL) {
+    if (CurrentAppContext().isRTL) {
         imageEdgeInsets.right = hInset;
         imageEdgeInsets.left = round((kBarButtonSize - (image.size.width + hInset)) * 0.5f);
     } else {
@@ -803,7 +803,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     cell.backgroundColor = [UIColor whiteColor];
 
-    UIImage *disclosureImage = [UIImage imageNamed:(cell.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssert(disclosureImage);
     UIImageView *disclosureImageView = [UIImageView new];
     disclosureImageView.image = [disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

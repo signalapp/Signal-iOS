@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         UIImage *_Nullable statusIndicatorImage = nil;
         MessageReceiptStatus messageStatus =
-            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage referenceView:self];
+            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
         switch (messageStatus) {
             case MessageReceiptStatusUploading:
             case MessageReceiptStatusSending:
@@ -175,8 +175,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
-    NSString *statusMessage =
-        [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage referenceView:self];
+    NSString *statusMessage = [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage];
     return statusMessage;
 }
 

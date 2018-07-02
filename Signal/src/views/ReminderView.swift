@@ -92,7 +92,7 @@ class ReminderView: UIView {
         // Show the disclosure indicator if this reminder has a tap action.
         if tapAction != nil {
             // Icon
-            let iconName = (self.isRTL() ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
+            let iconName = (CurrentAppContext().isRTL ? "system_disclosure_indicator_rtl" : "system_disclosure_indicator")
             guard let iconImage = UIImage(named: iconName) else {
                 owsFail("\(logTag) missing icon.")
                 return

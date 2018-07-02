@@ -251,12 +251,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 #pragma mark - RTL
 
-- (BOOL)isRTL
-{
-    return ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute]
-        == UIUserInterfaceLayoutDirectionRightToLeft);
-}
-
 - (NSLayoutConstraint *)autoPinLeadingToSuperviewMargin
 {
     return [self autoPinLeadingToSuperviewMarginWithInset:0];
@@ -391,7 +385,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 - (NSTextAlignment)textAlignmentUnnatural
 {
-    return (self.isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
+    return (CurrentAppContext().isRTL ? NSTextAlignmentLeft : NSTextAlignmentRight);
 }
 
 - (void)setHLayoutMargins:(CGFloat)value

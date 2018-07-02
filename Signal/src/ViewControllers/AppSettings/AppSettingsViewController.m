@@ -342,7 +342,7 @@
     [subtitleLabel autoPinLeadingToSuperviewMargin];
     [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
-    UIImage *disclosureImage = [UIImage imageNamed:(self.view.isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
+    UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssert(disclosureImage);
     UIImageView *disclosureButton =
         [[UIImageView alloc] initWithImage:[disclosureImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];

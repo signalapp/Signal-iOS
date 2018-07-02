@@ -26,7 +26,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @property (nonatomic, readonly) BOOL isMainApp;
 @property (nonatomic, readonly) BOOL isMainAppAndActive;
 
-// Whether the user is using a right-to-left language like Arabic
+// Whether the user is using a right-to-left language like Arabic.
 @property (nonatomic, readonly) BOOL isRTL;
 
 @property (nonatomic, readonly) BOOL isRunningTests;

@@ -15,6 +15,7 @@
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
@@ -241,7 +242,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     _callingCode = callingCode;
 
-    NSString *titleFormat = ([UIView new].isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
+    NSString *titleFormat = (CurrentAppContext().isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
     NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.uppercaseString];
     [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
     [self.countryCodeButton layoutSubviews];

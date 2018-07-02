@@ -4,6 +4,7 @@
 
 #import "NSString+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,19 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
-- (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView
-{
-    OWSAssert(string);
-    OWSAssert(referenceView);
-
-    return [self rtlSafeAppend:string isRTL:referenceView.isRTL];
-}
-
-- (NSString *)rtlSafeAppend:(NSString *)string isRTL:(BOOL)isRTL
+- (NSString *)rtlSafeAppend:(NSString *)string
 {
     OWSAssert(string);
 
-    if (isRTL) {
+    if (CurrentAppContext().isRTL) {
         return [string stringByAppendingString:self];
     } else {
         return [self stringByAppendingString:string];

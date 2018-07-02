@@ -132,8 +132,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isRTL
 {
-    return
-        [[UIApplication sharedApplication] userInterfaceLayoutDirection] == UIUserInterfaceLayoutDirectionRightToLeft;
+    static BOOL isRTL = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        isRTL = [[UIApplication sharedApplication] userInterfaceLayoutDirection]
+            == UIUserInterfaceLayoutDirectionRightToLeft;
+    });
+    return isRTL;
 }
 
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle

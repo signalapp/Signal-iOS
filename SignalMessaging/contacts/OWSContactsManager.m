@@ -771,11 +771,10 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     if (profileName.length > 0) {
         NSAttributedString *result =
             [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "] referenceView:[UIView new]];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~"] referenceView:[UIView new]];
-        result =
-            [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]
-                    referenceView:[UIView new]];
+        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
+        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~"]];
+        result = [result
+            rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]];
         return [result copy];
     }
 

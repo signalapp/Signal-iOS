@@ -6,6 +6,7 @@
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 
@@ -149,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kBubbleTailWidth = 6.f;
     CGRect bounds = self.bounds;
     bounds.size.width -= kBubbleTailWidth;
-    if (self.isRTL) {
+    if (CurrentAppContext().isRTL) {
         bounds.origin.x += kBubbleTailWidth;
     }
 

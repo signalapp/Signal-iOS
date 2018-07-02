@@ -84,7 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.contentView addGestureRecognizer:longPress];
 
     PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
-        initWithDirection:(self.isRTL ? PanDirectionLeft : PanDirectionRight)target:self
+        initWithDirection:(CurrentAppContext().isRTL ? PanDirectionLeft : PanDirectionRight)
+                   target:self
                    action:@selector(handlePanGesture:)];
     [self addGestureRecognizer:panGesture];
 }
@@ -227,19 +228,16 @@ NS_ASSUME_NONNULL_BEGIN
                                             attributes:@{
                                                 NSFontAttributeName : self.dateHeaderFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }
-                                         referenceView:self];
+                                            }];
         attributedText = [attributedText rtlSafeAppend:@" "
                                             attributes:@{
                                                 NSFontAttributeName : self.dateHeaderFont,
-                                            }
-                                         referenceView:self];
+                                            }];
         attributedText = [attributedText rtlSafeAppend:timeString
                                             attributes:@{
                                                 NSFontAttributeName : self.dateHeaderFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }
-                                         referenceView:self];
+                                            }];
 
         self.dateHeaderLabel.attributedText = attributedText;
 

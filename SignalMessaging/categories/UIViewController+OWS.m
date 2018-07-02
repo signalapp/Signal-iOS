@@ -2,9 +2,10 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIViewController+OWS.h"
 #import "UIColor+OWS.h"
 #import "UIView+OWS.h"
+#import "UIViewController+OWS.h"
+#import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -53,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(selector);
 
     UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    BOOL isRTL = [backButton isRTL];
+    BOOL isRTL = CurrentAppContext().isRTL;
 
     // Nudge closer to the left edge to match default back button item.
     const CGFloat kExtraLeftPadding = isRTL ? +0 : -8;

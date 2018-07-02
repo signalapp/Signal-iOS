@@ -8,8 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSString (OWS)
 
-- (NSString *)rtlSafeAppend:(NSString *)string referenceView:(UIView *)referenceView;
-- (NSString *)rtlSafeAppend:(NSString *)string isRTL:(BOOL)isRTL;
+- (NSString *)rtlSafeAppend:(NSString *)string;
 
 - (NSString *)digitsOnly;
 

@@ -123,11 +123,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isRTL
 {
-    // Borrowed from PureLayout's AppExtension compatible RTL support.
-    // App Extensions may not access -[UIApplication sharedApplication]; fall back to checking the bundle's preferred
-    // localization character direction
-    return [NSLocale characterDirectionForLanguage:[[NSBundle mainBundle] preferredLocalizations][0]]
-        == NSLocaleLanguageDirectionRightToLeft;
+    static BOOL isRTL = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Borrowed from PureLayout's AppExtension compatible RTL support.
+        // App Extensions may not access -[UIApplication sharedApplication]; fall back to checking the bundle's
+        // preferred localization character direction
+        isRTL = [NSLocale characterDirectionForLanguage:[[NSBundle mainBundle] preferredLocalizations][0]]
+            == NSLocaleLanguageDirectionRightToLeft;
+    });
+    return isRTL;
 }
 
 - (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
