@@ -4,7 +4,7 @@
 
 import Foundation
 
-let colorSwatchHeight: CGFloat = 60
+let colorSwatchHeight: CGFloat = 40
 
 class ColorView: UIView {
     let color: UIColor
@@ -102,7 +102,7 @@ class ColorPickerViewController: UIViewController, UIPickerViewDelegate, UIPicke
     // MARK: UIPickerViewDelegate
 
     public func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
-        let vMargin: CGFloat = 2
+        let vMargin: CGFloat = 16
         return colorSwatchHeight + vMargin * 2
     }
 
