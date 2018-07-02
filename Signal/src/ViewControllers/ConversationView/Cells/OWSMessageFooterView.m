@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    self.timestampLabel.text = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
+    self.timestampLabel.text = [DateUtil formatTimestampAsTimeShort:viewItem.interaction.timestamp];
 }
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem

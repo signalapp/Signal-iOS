@@ -4823,6 +4823,9 @@ typedef enum : NSUInteger {
                 break;
         }
 
+        uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
+        OWSAssert(viewItemTimestamp > 0);
+
         BOOL shouldShowDate = NO;
         if (!canShowDate) {
             shouldShowDate = NO;
@@ -4830,9 +4833,12 @@ typedef enum : NSUInteger {
         } else if (shouldShowDateOnNextViewItem) {
             shouldShowDate = YES;
             shouldShowDateOnNextViewItem = NO;
+        } else if (previousViewItemTimestamp > 0
+            && ![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
+            // Ensure we always have a date break between messages on different days.
+            shouldShowDate = YES;
+            shouldShowDateOnNextViewItem = NO;
         } else {
-            uint64_t viewItemTimestamp = viewItem.interaction.timestampForSorting;
-            OWSAssert(viewItemTimestamp > 0);
             OWSAssert(previousViewItemTimestamp > 0);
             uint64_t timeDifferenceMs = viewItemTimestamp - previousViewItemTimestamp;
             static const uint64_t kShowTimeIntervalMs = 5 * kMinuteInMs;
@@ -4844,7 +4850,7 @@ typedef enum : NSUInteger {
 
         viewItem.shouldShowDate = shouldShowDate;
 
-        previousViewItemTimestamp = viewItem.interaction.timestampForSorting;
+        previousViewItemTimestamp = viewItemTimestamp;
     }
 
     // Update the properties of the view items.
