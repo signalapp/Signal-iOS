@@ -23,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatTimestampShort:(uint64_t)timestamp;
 + (NSString *)formatDateShort:(NSDate *)date;
 
++ (NSString *)formatTimestampAsTimeShort:(uint64_t)timestamp;
++ (NSString *)formatDateAsTimeShort:(NSDate *)date;
+
++ (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
++ (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;
+
 @end
 
 NS_ASSUME_NONNULL_END

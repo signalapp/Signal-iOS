@@ -187,6 +187,30 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dateTimeString.uppercaseString;
 }
 
++ (NSString *)formatTimestampAsTimeShort:(uint64_t)timestamp
+{
+    return [self formatDateAsTimeShort:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
+}
+
++ (NSString *)formatDateAsTimeShort:(NSDate *)date
+{
+    OWSAssert(date);
+
+    NSString *dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
+    return dateTimeString.uppercaseString;
+}
+
++ (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2
+{
+    return [self isSameDayWithDate:[NSDate ows_dateWithMillisecondsSince1970:timestamp1]
+                              date:[NSDate ows_dateWithMillisecondsSince1970:timestamp2]];
+}
+
++ (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2
+{
+    NSInteger dayDifference = [self daysFromFirstDate:date1 toSecondDate:date2];
+    return dayDifference == 0;
+}
 @end
 
 NS_ASSUME_NONNULL_END
