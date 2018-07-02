@@ -47,7 +47,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 #pragma mark -
 
-@property (nonatomic, nullable) QuotedReplyPreview *quotedMessagePreview;
+@property (nonatomic, nullable) UIView *quotedMessagePreview;
 
 #pragma mark - Voice Memo Recording UI
 
@@ -92,6 +92,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     // to determine the height of the rendered inputAccessoryView.
     CGFloat height = self.toolbarHeight + ConversationInputToolbarBorderViewHeight;
     if (self.quotedMessagePreview) {
+        height += self.quotedMessageTopMargin;
         height += self.quotedMessagePreview.intrinsicContentSize.height;
     }
     CGSize newSize = CGSizeMake(self.bounds.size.width, height);
@@ -284,11 +285,23 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
         return;
     }
 
-    self.quotedMessagePreview = [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
-    self.quotedMessagePreview.delegate = self;
+    QuotedReplyPreview *quotedMessagePreview =
+        [[QuotedReplyPreview alloc] initWithQuotedReply:quotedReply conversationStyle:self.conversationStyle];
+    quotedMessagePreview.delegate = self;
+
+    UIView *wrapper = [UIView containerView];
+    wrapper.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
+    [wrapper addSubview:quotedMessagePreview];
+    [quotedMessagePreview autoPinToSuperviewMargins];
 
     // TODO animate
-    [self.contentStackView insertArrangedSubview:self.quotedMessagePreview atIndex:0];
+    [self.contentStackView insertArrangedSubview:wrapper atIndex:0];
+    self.quotedMessagePreview = wrapper;
+}
+
+- (CGFloat)quotedMessageTopMargin
+{
+    return 5.f;
 }
 
 - (void)clearQuotedMessagePreview

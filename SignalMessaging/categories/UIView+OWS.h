@@ -28,6 +28,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview;
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewEdges;
+- (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewMargins;
 
 - (NSLayoutConstraint *)autoHCenterInSuperview;
 - (NSLayoutConstraint *)autoVCenterInSuperview;
