@@ -609,12 +609,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)bodyMediaQuotedReplyVSpacing
 {
-    return 8.f;
+    return 6.f;
 }
 
 - (CGFloat)quotedReplyTopMargin
 {
-    return 7.f;
+    return 6.f;
 }
 
 #pragma mark - Load / Unload
