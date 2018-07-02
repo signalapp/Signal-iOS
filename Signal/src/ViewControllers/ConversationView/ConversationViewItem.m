@@ -293,8 +293,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         return 2.f;
     }
 
-    // TODO:
-    return 10.f;
+    return 12.f;
 }
 
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
