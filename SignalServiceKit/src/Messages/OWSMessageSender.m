@@ -949,15 +949,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
 
             return;
-        } else if (mayHaveLinkedDevices) {
+        } else if (mayHaveLinkedDevices && !hasDeviceMessages) {
             // We may have just linked a new secondary device which is not yet reflected in
             // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
             // of new secondary devices via 409 "Mismatched devices" response.
-            DDLogWarn(@"%@ sync message has no device messages but account has secondary devices.", self.logTag);
-        } else if (hasDeviceMessages) {
+            DDLogWarn(@"%@ account has secondary devices, but sync message has no device messages", self.logTag);
+        } else if (!mayHaveLinkedDevices && hasDeviceMessages) {
             OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
-        } else {
-            // Account has secondary devices; proceed as usual.
         }
     } else {
         OWSAssert(deviceMessages.count > 0);
