@@ -4,6 +4,7 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
+#import "NSAttributedString+OWS.h"
 #import "OWSFormat.h"
 #import "OWSProfileManager.h"
 #import "OWSUserProfile.h"
@@ -737,37 +738,49 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
     return [[NSAttributedString alloc] initWithString:[self contactOrProfileNameForPhoneIdentifier:recipientId]];
 }
 
-- (NSAttributedString *)attributedStringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
-                                                                    primaryFont:(UIFont *)primaryFont
-                                                                  secondaryFont:(UIFont *)secondaryFont
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+                                                             primaryFont:(UIFont *)primaryFont
+                                                           secondaryFont:(UIFont *)secondaryFont
 {
+    OWSAssert(primaryFont);
+    OWSAssert(secondaryFont);
+
+    return [self attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+                                                primaryAttributes:@{
+                                                    NSFontAttributeName : primaryFont,
+                                                }
+                                              secondaryAttributes:@{
+                                                  NSFontAttributeName : secondaryFont,
+                                              }];
+}
+
+- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+                                                       primaryAttributes:(NSDictionary *)primaryAttributes
+                                                     secondaryAttributes:(NSDictionary *)secondaryAttributes
+{
+    OWSAssert(primaryAttributes.count > 0);
+    OWSAssert(secondaryAttributes.count > 0);
+
     // Prefer a saved name from system contacts, if available
     NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
-        return [[NSAttributedString alloc] initWithString:savedContactName];
+        return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
     }
 
     NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length > 0) {
-        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
-            @"Label text combining the phone number and profile name separated by a simple demarcation character. "
-            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
-            @"with {{profile name}}");
-
-        NSString *numberAndProfileName =
-            [NSString stringWithFormat:numberAndProfileNameFormat, recipientId, profileName];
-
-        NSRange recipientIdRange = [numberAndProfileName rangeOfString:recipientId];
-        NSMutableAttributedString *attributedString =
-            [[NSMutableAttributedString alloc] initWithString:numberAndProfileName
-                                                   attributes:@{ NSFontAttributeName : secondaryFont }];
-        [attributedString addAttribute:NSFontAttributeName value:primaryFont range:recipientIdRange];
-
-        return [attributedString copy];
+        NSAttributedString *result =
+            [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
+        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "] referenceView:[UIView new]];
+        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~"] referenceView:[UIView new]];
+        result =
+            [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]
+                    referenceView:[UIView new]];
+        return [result copy];
     }
 
     // else fall back to recipient id
-    return [[NSAttributedString alloc] initWithString:recipientId];
+    return [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
 }
 
 // TODO refactor attributed counterparts to use this as a helper method?

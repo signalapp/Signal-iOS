@@ -683,10 +683,31 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.senderNameLabel);
     OWSAssert(self.shouldShowSenderName);
 
-    self.senderNameLabel.text = self.viewItem.senderName.uppercaseString;
     self.senderNameLabel.textColor = self.bodyTextColor;
-    self.senderNameLabel.font = UIFont.ows_dynamicTypeCaption2Font;
+    self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
+    self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+}
+
++ (UIFont *)senderNameFont
+{
+    return UIFont.ows_dynamicTypeCaption2Font;
+}
+
++ (NSDictionary *)senderNamePrimaryAttributes
+{
+    return @{
+        NSFontAttributeName : self.senderNameFont,
+        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
+    };
+}
+
++ (NSDictionary *)senderNameSecondaryAttributes
+{
+    return @{
+        NSFontAttributeName : self.senderNameFont,
+        NSForegroundColorAttributeName : [ConversationStyle.bubbleTextColorIncoming colorWithAlphaComponent:0.75f],
+    };
 }
 
 - (BOOL)hasTapForMore

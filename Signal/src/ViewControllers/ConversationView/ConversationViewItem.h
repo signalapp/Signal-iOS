@@ -56,7 +56,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
-@property (nonatomic, nullable) NSString *senderName;
+@property (nonatomic, nullable) NSAttributedString *senderName;
 @property (nonatomic) BOOL shouldHideFooter;
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
