@@ -37,6 +37,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const CGFloat kIconViewLength = 24;
+
 @interface OWSConversationSettingsViewController () <ContactEditingDelegate,
     ContactsViewHelperDelegate,
     ColorPickerDelegate>
@@ -648,45 +650,35 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(name.length > 0);
 
-    UITableViewCell *cell = [UITableViewCell new];
-    cell.preservesSuperviewLayoutMargins = YES;
-    cell.contentView.preservesSuperviewLayoutMargins = YES;
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    UIView *iconView = [UIView containerView];
+    [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
 
     UIView *swatchView = [NeverClearView new];
-    const CGFloat kSwatchWidth = 24;
-    [swatchView autoSetDimension:ALDimensionWidth toSize:kSwatchWidth];
-    [swatchView autoSetDimension:ALDimensionHeight toSize:kSwatchWidth];
+    const CGFloat kSwatchWidth = 20;
+    [swatchView autoSetDimensionsToSize:CGSizeMake(kSwatchWidth, kSwatchWidth)];
     swatchView.layer.cornerRadius = kSwatchWidth / 2;
     swatchView.backgroundColor = iconColor;
+    [iconView addSubview:swatchView];
+    [swatchView autoCenterInSuperview];
 
-    [cell.contentView addSubview:swatchView];
-    [swatchView autoVCenterInSuperview];
-    [swatchView autoPinLeadingToSuperviewMargin];
-
-    UILabel *rowLabel = [UILabel new];
-    rowLabel.text = name;
-    rowLabel.textColor = [UIColor blackColor];
-    rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-    rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [cell.contentView addSubview:rowLabel];
-    [rowLabel autoVCenterInSuperview];
-    [rowLabel autoPinLeadingToTrailingEdgeOfView:swatchView offset:self.iconSpacing];
-    [rowLabel autoPinTrailingToSuperviewMargin];
-
-    return cell;
+    return [self cellWithName:name iconView:iconView];
 }
 
 - (UITableViewCell *)cellWithName:(NSString *)name iconName:(NSString *)iconName
 {
-    OWSAssert(name.length > 0);
     OWSAssert(iconName.length > 0);
+    UIImageView *iconView = [self viewForIconWithName:iconName];
+    return [self cellWithName:name iconView:iconView];
+}
+
+- (UITableViewCell *)cellWithName:(NSString *)name iconView:(UIView *)iconView
+{
+    OWSAssert(name.length > 0);
 
     UITableViewCell *cell = [UITableViewCell new];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
 
-    UIImageView *iconView = [self viewForIconWithName:iconName];
     [cell.contentView addSubview:iconView];
     [iconView autoVCenterInSuperview];
     [iconView autoPinLeadingToSuperviewMargin];
@@ -843,8 +835,8 @@ NS_ASSUME_NONNULL_BEGIN
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;
 
-    [iconView autoSetDimension:ALDimensionWidth toSize:24.f];
-    [iconView autoSetDimension:ALDimensionHeight toSize:24.f];
+    [iconView autoSetDimensionsToSize:CGSizeMake(kIconViewLength, kIconViewLength)];
+
     return iconView;
 }
 
