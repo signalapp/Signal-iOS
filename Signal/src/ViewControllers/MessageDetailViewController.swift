@@ -254,6 +254,8 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     // Table view cells don't layout properly outside the
                     // context of a table view.
                     let cellView = ContactCellView()
+                    // canary in case we later add margins in the ContactCellView initializer.
+                    assert(!cellView.isLayoutMarginsRelativeArrangement)
                     cellView.isLayoutMarginsRelativeArrangement = true
                     cellView.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
                     // We use the "short" status message to avoid being redundant with the section title.
