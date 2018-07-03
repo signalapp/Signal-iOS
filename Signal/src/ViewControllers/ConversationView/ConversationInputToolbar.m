@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
+const CGFloat kMinTextViewHeight = 36;
+const CGFloat kMaxTextViewHeight = 98;
+
 #pragma mark -
 
 @interface ConversationInputToolbar () <UIGestureRecognizerDelegate,
@@ -28,21 +31,17 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
-@property (nonatomic, readonly) UIView *composeContainer;
 @property (nonatomic, readonly) ConversationInputTextView *inputTextView;
-@property (nonatomic, readonly) UIStackView *contentStackView;
+@property (nonatomic, readonly) UIStackView *contentRows;
+@property (nonatomic, readonly) UIStackView *composeRow;
 @property (nonatomic, readonly) UIButton *attachmentButton;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
-@property (nonatomic, readonly) UIView *leftButtonWrapper;
-@property (nonatomic, readonly) UIView *rightButtonWrapper;
 
-@property (nonatomic) BOOL shouldShowVoiceMemoButton;
-
-@property (nonatomic) NSArray<NSLayoutConstraint *> *contentContraints;
 @property (nonatomic) NSValue *lastTextContentSize;
 @property (nonatomic) CGFloat toolbarHeight;
 @property (nonatomic) CGFloat textViewHeight;
+@property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
 
 #pragma mark -
 
@@ -80,23 +79,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     return self;
 }
 
-- (void)dealloc
-{
-    [self removeKVOObservers];
-}
-
 - (CGSize)intrinsicContentSize
 {
-    // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
-    // to determine the height of the rendered inputAccessoryView.
-    CGFloat height = self.toolbarHeight;
-    if (self.quotedMessagePreview) {
-        height += self.quotedMessageTopMargin;
-        height += self.quotedMessagePreview.intrinsicContentSize.height;
-    }
-    CGSize newSize = CGSizeMake(self.bounds.size.width, height);
-
-    return newSize;
+    // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, we must specify
+    // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
+    return CGSizeZero;
 }
 
 - (void)createContents
@@ -111,7 +98,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
 
         // We can make our blur effect more muted by increasing this background alpha.
-        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.4];
+        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.4f];
 
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         [self addSubview:blurEffectView];
@@ -120,31 +107,13 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
 
-    _composeContainer = [UIView containerView];
-    _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
-    _contentStackView.axis = UILayoutConstraintAxisVertical;
-
-    [self addSubview:_contentStackView];
-    [_contentStackView autoPinEdgesToSuperviewEdges];
-
     _inputTextView = [ConversationInputTextView new];
+    self.inputTextView.layer.cornerRadius = kMinTextViewHeight / 2.0f;
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    [self.composeContainer addSubview:self.inputTextView];
+    [self.inputTextView setContentHuggingLow];
 
-    // We want to be permissive about taps on the send and attachment buttons,
-    // so we use wrapper views that capture nearby taps.  This is a lot easier
-    // than trying to manipulate the size of the buttons themselves, as you
-    // can't coordinate the layout of the button content (e.g. image or text)
-    // using iOS auto layout.
-    _leftButtonWrapper = [UIView containerView];
-    [self.leftButtonWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(leftButtonTapped:)]];
-    [self.composeContainer addSubview:self.leftButtonWrapper];
-    _rightButtonWrapper = [UIView containerView];
-    [self.rightButtonWrapper
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(rightButtonTapped:)]];
-    [self.composeContainer addSubview:self.rightButtonWrapper];
+    _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
     _attachmentButton = [[UIButton alloc] init];
     self.attachmentButton.accessibilityLabel
@@ -159,9 +128,9 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
                            forState:UIControlStateNormal];
     self.attachmentButton.contentEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 3);
     self.attachmentButton.tintColor = UIColor.ows_navbarIconColor;
-    [self.leftButtonWrapper addSubview:self.attachmentButton];
+    [self.attachmentButton setCompressionResistanceHigh];
+    [self.attachmentButton setContentHuggingHigh];
 
-    // TODO: Fix layout in this class.
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
@@ -169,8 +138,9 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
+    [self.sendButton setCompressionResistanceHigh];
+    [self.sendButton setContentHuggingHigh];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self.rightButtonWrapper addSubview:self.sendButton];
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
     OWSAssert(voiceMemoIcon);
@@ -178,7 +148,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = UIColor.ows_navbarIconColor;
-    [self.rightButtonWrapper addSubview:self.voiceMemoButton];
+    [self.voiceMemoButton setCompressionResistanceHigh];
+    [self.voiceMemoButton setContentHuggingHigh];
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
@@ -186,22 +157,29 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     longPressGestureRecognizer.delegate = self;
-    [self.rightButtonWrapper addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
 
-    [self addKVOObservers];
+    _composeRow = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.attachmentButton, self.inputTextView, self.voiceMemoButton, self.sendButton ]];
+    _composeRow.axis = UILayoutConstraintAxisHorizontal;
+    _composeRow.layoutMarginsRelativeArrangement = YES;
+    _composeRow.layoutMargins = UIEdgeInsetsMake(6, 8, 6, 8);
+    _composeRow.alignment = UIStackViewAlignmentBottom;
+    _composeRow.spacing = 8;
 
-    [self ensureShouldShowVoiceMemoButton];
+    _contentRows = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeRow ]];
+    _contentRows.axis = UILayoutConstraintAxisVertical;
 
-    [self ensureContentConstraints];
+    [self addSubview:_contentRows];
+    [_contentRows autoPinEdgesToSuperviewEdges];
+
+    [self ensureShouldShowVoiceMemoButtonAnimated:NO];
 }
 
 - (void)updateFontSizes
 {
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-
-    [self ensureContentConstraints];
 }
 
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value
@@ -225,7 +203,7 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     self.inputTextView.text = value;
 
-    [self ensureShouldShowVoiceMemoButton];
+    [self ensureShouldShowVoiceMemoButtonAnimated:NO];
 }
 
 - (void)clearTextMessage
@@ -252,17 +230,6 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
     self.inputTextView.keyboardType = UIKeyboardTypeDefault;
     [self.inputTextView reloadInputViews];
-}
-
-- (void)setShouldShowVoiceMemoButton:(BOOL)shouldShowVoiceMemoButton
-{
-    if (_shouldShowVoiceMemoButton == shouldShowVoiceMemoButton) {
-        return;
-    }
-
-    _shouldShowVoiceMemoButton = shouldShowVoiceMemoButton;
-
-    [self ensureContentConstraints];
 }
 
 - (void)setQuotedReply:(nullable OWSQuotedReplyModel *)quotedReply
@@ -292,8 +259,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     [wrapper addSubview:quotedMessagePreview];
     [quotedMessagePreview autoPinToSuperviewMargins];
 
-    // TODO animate
-    [self.contentStackView insertArrangedSubview:wrapper atIndex:0];
+    [self.contentRows insertArrangedSubview:wrapper atIndex:0];
+
     self.quotedMessagePreview = wrapper;
 }
 
@@ -304,9 +271,8 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (void)clearQuotedMessagePreview
 {
-    // TODO animate
     if (self.quotedMessagePreview) {
-        [self.contentStackView removeArrangedSubview:self.quotedMessagePreview];
+        [self.contentRows removeArrangedSubview:self.quotedMessagePreview];
         [self.quotedMessagePreview removeFromSuperview];
         self.quotedMessagePreview = nil;
     }
@@ -327,113 +293,38 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     return self.inputTextView.isFirstResponder;
 }
 
-- (void)ensureContentConstraints
+- (void)ensureShouldShowVoiceMemoButtonAnimated:(BOOL)isAnimated
 {
-    [NSLayoutConstraint deactivateConstraints:self.contentContraints];
+    void (^updateBlock)(void) = ^{
+        if (self.inputTextView.trimmedText.length > 0) {
+            if (!self.voiceMemoButton.isHidden) {
+                self.voiceMemoButton.hidden = YES;
+            }
 
-    const int textViewVInset = 5;
-    const int contentHInset = 6;
-    const int contentHSpacing = 6;
+            if (self.sendButton.isHidden) {
+                self.sendButton.hidden = NO;
+            }
+        } else {
+            if (self.voiceMemoButton.isHidden) {
+                self.voiceMemoButton.hidden = NO;
+            }
 
-    // I'm not sure why this addional offset is necessary, but without it our minTextViewHeight is too short.
-    const CGFloat kAdditionalUnaccountedForHeight = 1;
-
-    // We want to grow the text input area to fit its content within reason.
-    const CGFloat minTextViewHeight
-        = ceil(self.inputTextView.font.lineHeight + self.inputTextView.textContainerInset.top
-              + self.inputTextView.textContainerInset.bottom + self.inputTextView.contentInset.top
-              + self.inputTextView.contentInset.bottom)
-        + kAdditionalUnaccountedForHeight;
-
-
-    // Exactly 4 lines of text with default sizing.
-    const CGFloat kMaxTextViewHeight = 98.f;
-    const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
-        + self.inputTextView.contentInset.bottom);
-    const CGFloat textViewHeight = ceil(CGFloatClamp(textViewDesiredHeight, minTextViewHeight, kMaxTextViewHeight));
-    const CGFloat kMinContentHeight = minTextViewHeight + textViewVInset * 2;
-
-    self.textViewHeight = textViewHeight;
-    self.toolbarHeight = textViewHeight + textViewVInset * 2;
-
-    self.leftButtonWrapper.hidden = NO;
-    self.inputTextView.hidden = NO;
-    self.voiceMemoButton.hidden = NO;
-
-    UIButton *leftButton = self.attachmentButton;
-    UIButton *rightButton = (self.shouldShowVoiceMemoButton ? self.voiceMemoButton : self.sendButton);
-    UIButton *inactiveRightButton = (self.shouldShowVoiceMemoButton ? self.sendButton : self.voiceMemoButton);
-    leftButton.enabled = YES;
-    rightButton.enabled = YES;
-    inactiveRightButton.enabled = NO;
-    leftButton.hidden = NO;
-    rightButton.hidden = NO;
-    inactiveRightButton.hidden = YES;
-
-    [leftButton setContentHuggingHigh];
-    [rightButton setContentHuggingHigh];
-    [leftButton setCompressionResistanceHigh];
-    [rightButton setCompressionResistanceHigh];
-    [self.inputTextView setCompressionResistanceLow];
-    [self.inputTextView setContentHuggingLow];
-
-    OWSAssert(leftButton.superview == self.leftButtonWrapper);
-    OWSAssert(rightButton.superview == self.rightButtonWrapper);
-
-    // The leading and trailing buttons should be center-aligned with the
-    // inputTextView when the inputTextView is at its minimum size.
-    //
-    // We want the leading and trailing buttons to hug the bottom of the input
-    // toolbar as the inputTextView expands.
-    //
-    // Therefore we fix the button heights to the size of the toolbar when
-    // inputTextView is at its minimum size.
-    //
-    // Additionally, we use "wrapper" views around the leading and trailing
-    // buttons to expand their hot area.
-    self.contentContraints = @[
-        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeLeft],
-        [self.leftButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.leftButtonWrapper autoPinBottomToSuperviewMarginWithInset:0],
-
-        [leftButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [leftButton autoPinLeadingToSuperviewMarginWithInset:contentHInset],
-        [leftButton autoPinTrailingToSuperviewMarginWithInset:contentHSpacing],
-        [leftButton autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-
-        [self.inputTextView autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.leftButtonWrapper],
-        [self.inputTextView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:textViewVInset],
-        [self.inputTextView autoPinBottomToSuperviewMarginWithInset:textViewVInset],
-        [self.inputTextView autoSetDimension:ALDimensionHeight toSize:textViewHeight],
-
-        [self.rightButtonWrapper autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:self.inputTextView],
-        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeRight],
-        [self.rightButtonWrapper autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.rightButtonWrapper autoPinBottomToSuperviewMarginWithInset:0],
-
-        [rightButton autoSetDimension:ALDimensionHeight toSize:kMinContentHeight],
-        [rightButton autoPinLeadingToSuperviewMarginWithInset:contentHSpacing],
-        [rightButton autoPinTrailingToSuperviewMarginWithInset:contentHInset],
-        [rightButton autoPinEdgeToSuperviewEdge:ALEdgeBottom]
-    ];
-
-    // Layout immediately, unless the input toolbar hasn't even been laid out yet.
-    if (self.bounds.size.width > 0 && self.bounds.size.height > 0) {
+            if (!self.sendButton.isHidden) {
+                self.sendButton.hidden = YES;
+            }
+        }
         [self layoutIfNeeded];
-    }
-}
+    };
 
-- (void)ensureShouldShowVoiceMemoButton
-{
-    self.shouldShowVoiceMemoButton = self.inputTextView.trimmedText.length < 1;
+    if (isAnimated) {
+        [UIView animateWithDuration:0.1 animations:updateBlock];
+    } else {
+        updateBlock();
+    }
 }
 
 - (void)handleLongPress:(UIGestureRecognizer *)sender
 {
-    if (!self.shouldShowVoiceMemoButton) {
-        return;
-    }
-
     switch (sender.state) {
         case UIGestureRecognizerStatePossible:
         case UIGestureRecognizerStateCancelled:
@@ -490,11 +381,11 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-    if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-        return self.shouldShowVoiceMemoButton;
-    } else {
-        return YES;
-    }
+    //    if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+    //        return self.shouldShowVoiceMemoButton;
+    //    } else {
+    return YES;
+    //    }
 }
 
 #pragma mark - Voice Memo
@@ -703,21 +594,21 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 #pragma mark - Event Handlers
 
-- (void)leftButtonTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        [self attachmentButtonPressed];
-    }
-}
+//- (void)leftButtonTapped:(UIGestureRecognizer *)sender
+//{
+//    if (sender.state == UIGestureRecognizerStateRecognized) {
+//        [self attachmentButtonPressed];
+//    }
+//}
 
-- (void)rightButtonTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state == UIGestureRecognizerStateRecognized) {
-        if (!self.shouldShowVoiceMemoButton) {
-            [self sendButtonPressed];
-        }
-    }
-}
+//- (void)rightButtonTapped:(UIGestureRecognizer *)sender
+//{
+//    if (sender.state == UIGestureRecognizerStateRecognized) {
+//        if (!self.shouldShowVoiceMemoButton) {
+//            [self sendButtonPressed];
+//        }
+//    }
+//}
 
 - (void)sendButtonPressed
 {
@@ -735,58 +626,33 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
 
 #pragma mark - ConversationTextViewToolbarDelegate
 
-- (void)textViewDidChange
+- (void)textViewDidChange:(UITextView *)textView
 {
     OWSAssert(self.inputToolbarDelegate);
-
-    [self ensureShouldShowVoiceMemoButton];
+    [self ensureShouldShowVoiceMemoButtonAnimated:YES];
+    [self updateHeightWithTextView:textView];
 }
 
-#pragma mark - Text Input Sizing
-
-- (void)addKVOObservers
+- (void)updateHeightWithTextView:(UITextView *)textView
 {
-    [self.inputTextView addObserver:self
-                         forKeyPath:NSStringFromSelector(@selector(contentSize))
-                            options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
-                            context:kConversationInputTextViewObservingContext];
-}
+    // compute new height assuming width is unchanged
+    CGSize currentSize = textView.frame.size;
+    CGFloat newHeight = [self clampedHeightWithTextView:textView fixedWidth:currentSize.width];
 
-- (void)removeKVOObservers
-{
-    @try {
-        [self.inputTextView removeObserver:self
-                                forKeyPath:NSStringFromSelector(@selector(contentSize))
-                                   context:kConversationInputTextViewObservingContext];
-    } @catch (NSException *__unused exception) {
-        // TODO: This try/catch can probably be safely removed.
-        OWSFail(@"%@ removeKVOObservers failed.", self.logTag);
+    if (newHeight != self.textViewHeight) {
+        self.textViewHeight = newHeight;
+        OWSAssert(self.textViewHeightConstraint);
+        self.textViewHeightConstraint.constant = newHeight;
+        [self invalidateIntrinsicContentSize];
     }
 }
 
-- (void)observeValueForKeyPath:(nullable NSString *)keyPath
-                      ofObject:(nullable id)object
-                        change:(nullable NSDictionary<NSKeyValueChangeKey, id> *)change
-                       context:(nullable void *)context
+- (CGFloat)clampedHeightWithTextView:(UITextView *)textView fixedWidth:(CGFloat)fixedWidth
 {
-    if (context == kConversationInputTextViewObservingContext) {
+    CGSize fixedWidthSize = CGSizeMake(fixedWidth, CGFLOAT_MAX);
+    CGSize contentSize = [textView sizeThatFits:fixedWidthSize];
 
-        if (object == self.inputTextView && [keyPath isEqualToString:NSStringFromSelector(@selector(contentSize))]) {
-            CGSize textContentSize = self.inputTextView.contentSize;
-            NSValue *_Nullable lastTextContentSize = self.lastTextContentSize;
-            self.lastTextContentSize = [NSValue valueWithCGSize:textContentSize];
-
-            // Update view constraints, but only when text content size changes.
-            //
-            // NOTE: We use a "fuzzy equals" comparison to avoid infinite recursion,
-            //       since ensureContentConstraints can affect the text content size.
-            if (!lastTextContentSize || fabs(lastTextContentSize.CGSizeValue.width - textContentSize.width) > 0.1f
-                || fabs(lastTextContentSize.CGSizeValue.height - textContentSize.height) > 0.1f) {
-                [self ensureContentConstraints];
-                [self invalidateIntrinsicContentSize];
-            }
-        }
-    }
+    return CGFloatClamp(contentSize.height, kMinTextViewHeight, kMaxTextViewHeight);
 }
 
 #pragma mark QuotedReplyPreviewViewDelegate

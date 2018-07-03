@@ -27,13 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.delegate = self;
 
-        // round edge with dynamic type.
-        CGFloat cornerRadius = 16.0f;
-
         self.backgroundColor = [UIColor ows_light02Color];
         self.layer.borderColor = [UIColor.ows_blackColor colorWithAlphaComponent:0.12f].CGColor;
         self.layer.borderWidth = 0.5f;
-        self.layer.cornerRadius = cornerRadius;
 
         self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
 
@@ -52,14 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.placeholderView = [UILabel new];
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
-        self.placeholderView.textColor = [UIColor lightGrayColor];
+        self.placeholderView.textColor = UIColor.ows_light35Color;
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textContainerInset = UIEdgeInsetsMake(4.0f, 8.0, 4.0f, 2.0f);
-        self.contentInset = UIEdgeInsetsMake(1.0f, 0.0f, 1.0f, 0.0f);
+        self.textContainerInset = UIEdgeInsetsMake(7.0f, 12.0f, 7.0f, 12.0f);
 
         [self ensurePlaceholderConstraints];
         [self updatePlaceholderVisibility];
@@ -73,6 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
     [super setFont:font];
 
     self.placeholderView.font = font;
+}
+
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)isAnimated
+{
+    [super setContentOffset:contentOffset animated:false];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updatePlaceholderVisibility];
 
-    [self.textViewToolbarDelegate textViewDidChange];
+    [self.textViewToolbarDelegate textViewDidChange:self];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
