@@ -4262,8 +4262,11 @@ typedef enum : NSUInteger {
 
     CGFloat contentHeight = self.safeContentHeight;
 
-    CGFloat dstY
-        = MAX(0, contentHeight + self.collectionView.contentInset.bottom - self.collectionView.bounds.size.height);
+    // bottomLayoutGuide accounts for extra offset needed on iPhoneX
+
+    CGFloat dstY = MAX(0,
+        contentHeight + self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length
+            - self.collectionView.bounds.size.height);
 
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:NO];
     [self didScrollToBottom];
