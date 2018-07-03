@@ -35,6 +35,11 @@ public extension UIDevice {
     }
 
     @objc
+    public var isShorterThanIPhone5: Bool {
+        return UIScreen.main.nativeBounds.height < 1136
+    }
+
+    @objc
     public var isIPad: Bool {
         let isNativeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.pad
         let isCompatabilityModeIPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone && self.model.hasPrefix("iPad")
