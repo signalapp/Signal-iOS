@@ -25,9 +25,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
 
-@interface ConversationInputToolbar () <UIGestureRecognizerDelegate,
-    ConversationTextViewToolbarDelegate,
-    QuotedReplyPreviewDelegate>
+@interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate, QuotedReplyPreviewDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -111,7 +109,7 @@ const CGFloat kMaxTextViewHeight = 98;
     self.inputTextView.layer.cornerRadius = kMinTextViewHeight / 2.0f;
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    [self.inputTextView setContentHuggingLow];
+    [self.inputTextView setContentHuggingHorizontalLow];
 
     _textViewHeightConstraint = [self.inputTextView autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
 
@@ -153,7 +151,6 @@ const CGFloat kMaxTextViewHeight = 98;
     UILongPressGestureRecognizer *longPressGestureRecognizer =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
-    longPressGestureRecognizer.delegate = self;
     [self.voiceMemoButton addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
@@ -373,17 +370,6 @@ const CGFloat kMaxTextViewHeight = 98;
             }
             break;
     }
-}
-
-#pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
-{
-    //    if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-    //        return self.shouldShowVoiceMemoButton;
-    //    } else {
-    return YES;
-    //    }
 }
 
 #pragma mark - Voice Memo
