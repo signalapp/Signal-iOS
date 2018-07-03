@@ -192,18 +192,19 @@ const CGFloat kMaxTextViewHeight = 98;
     return self.inputTextView.trimmedText;
 }
 
-- (void)setMessageText:(NSString *_Nullable)value
+- (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated
 {
     OWSAssert(self.inputTextView);
 
     self.inputTextView.text = value;
 
-    [self ensureShouldShowVoiceMemoButtonAnimated:NO];
+    [self ensureShouldShowVoiceMemoButtonAnimated:isAnimated];
+    [self updateHeightWithTextView:self.inputTextView];
 }
 
-- (void)clearTextMessage
+- (void)clearTextMessageAnimated:(BOOL)isAnimated
 {
-    [self setMessageText:nil];
+    [self setMessageText:nil animated:isAnimated];
     [self.inputTextView.undoManager removeAllActions];
 }
 
@@ -577,22 +578,6 @@ const CGFloat kMaxTextViewHeight = 98;
 }
 
 #pragma mark - Event Handlers
-
-//- (void)leftButtonTapped:(UIGestureRecognizer *)sender
-//{
-//    if (sender.state == UIGestureRecognizerStateRecognized) {
-//        [self attachmentButtonPressed];
-//    }
-//}
-
-//- (void)rightButtonTapped:(UIGestureRecognizer *)sender
-//{
-//    if (sender.state == UIGestureRecognizerStateRecognized) {
-//        if (!self.shouldShowVoiceMemoButton) {
-//            [self sendButtonPressed];
-//        }
-//    }
-//}
 
 - (void)sendButtonPressed
 {

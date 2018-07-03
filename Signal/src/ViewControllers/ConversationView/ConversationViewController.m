@@ -3980,7 +3980,7 @@ typedef enum : NSUInteger {
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         draft = [_thread currentDraftWithTransaction:transaction];
     }];
-    [self.inputToolbar setMessageText:draft];
+    [self.inputToolbar setMessageText:draft animated:NO];
 }
 
 - (void)saveDraft
@@ -4417,7 +4417,7 @@ typedef enum : NSUInteger {
     if (updateKeyboardState) {
         [self.inputToolbar toggleDefaultKeyboard];
     }
-    [self.inputToolbar clearTextMessage];
+    [self.inputToolbar clearTextMessageAnimated:YES];
     [self clearDraft];
     if (didAddToProfileWhitelist) {
         [self ensureDynamicInteractions];
