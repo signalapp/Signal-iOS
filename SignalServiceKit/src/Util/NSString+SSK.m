@@ -207,7 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     while (index < self.length) {
         // Walk the grapheme clusters in the string.
         NSRange range = [self rangeOfComposedCharacterSequenceAtIndex:index];
-        if (range.length > 4) {
+        if (range.length > 8) {
             // There are too many characters in this grapheme cluster.
             return YES;
         } else if (range.location != index || range.length < 1) {
