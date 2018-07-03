@@ -106,14 +106,13 @@ static void *kConversationInputTextViewObservingContext = &kConversationInputTex
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
         self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
     } else {
-        self.backgroundColor = [UIColor clearColor];
-
         UIBlurEffect *blurEffect;
-        if (@available(iOS 10, *)) {
-            blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleProminent];
-        } else {
-            blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-        }
+        // More muted blur effects look gray when overlayed on white.
+        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+
+        // We can make our blur effect more muted by increasing this background alpha.
+        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.4];
+
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         [self addSubview:blurEffectView];
         [blurEffectView autoPinEdgesToSuperviewEdges];
