@@ -72,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)isAnimated
 {
+    // When creating new lines, contentOffset is animated, but because because
+    // we are simultaneously resizing the text view, this can cause the
+    // text in the textview to be "too high" in the text view.
+    // Solution is to disable animation for setting content offset.
     [super setContentOffset:contentOffset animated:false];
 }
 

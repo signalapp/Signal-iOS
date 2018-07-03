@@ -36,8 +36,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *sendButton;
 @property (nonatomic, readonly) UIButton *voiceMemoButton;
 
-@property (nonatomic) NSValue *lastTextContentSize;
-@property (nonatomic) CGFloat toolbarHeight;
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
 
