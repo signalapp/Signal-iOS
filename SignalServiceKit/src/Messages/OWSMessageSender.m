@@ -625,11 +625,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             [self sendMessageToService:message
-                             recipient:recipient
-                                thread:thread
-                              attempts:OWSMessageSenderRetryAttempts
-                               success:successHandler
-                               failure:failureHandler];
+                              recipient:recipient
+                                 thread:thread
+                               attempts:OWSMessageSenderRetryAttempts
+                useWebsocketIfAvailable:YES
+                                success:successHandler
+                                failure:failureHandler];
         } else {
             // Neither a group nor contact thread? This should never happen.
             OWSFail(@"%@ Unknown message type: %@", self.logTag, NSStringFromClass([message class]));
@@ -652,6 +653,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         recipient:recipient
         thread:thread
         attempts:OWSMessageSenderRetryAttempts
+        useWebsocketIfAvailable:YES
         success:^{
             [futureSource trySetResult:@1];
         }
@@ -772,7 +774,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)sendMessageToService:(TSOutgoingMessage *)message
                    recipient:(SignalRecipient *)recipient
                       thread:(nullable TSThread *)thread
-                    attempts:(int)remainingAttempts
+                    attempts:(int)remainingAttemptsParam
+     useWebsocketIfAvailable:(BOOL)useWebsocketIfAvailable
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler
 {
@@ -806,7 +809,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return failureHandler(error);
     }
 
-    if (remainingAttempts <= 0) {
+    if (remainingAttemptsParam <= 0) {
         // We should always fail with a specific error.
         OWSProdFail([OWSAnalyticsEvents messageSenderErrorGenericSendFailure]);
 
@@ -814,7 +817,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [error setIsRetryable:YES];
         return failureHandler(error);
     }
-    remainingAttempts -= 1;
+    int remainingAttempts = remainingAttemptsParam - 1;
 
     NSArray<NSDictionary *> *deviceMessages;
     @try {
@@ -946,15 +949,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             });
 
             return;
-        } else if (mayHaveLinkedDevices) {
+        } else if (mayHaveLinkedDevices && !hasDeviceMessages) {
             // We may have just linked a new secondary device which is not yet reflected in
             // the SignalRecipient that corresponds to ourself.  Proceed.  Client should learn
             // of new secondary devices via 409 "Mismatched devices" response.
-            DDLogWarn(@"%@ sync message has no device messages but account has secondary devices.", self.logTag);
-        } else if (hasDeviceMessages) {
+            DDLogWarn(@"%@ account has secondary devices, but sync message has no device messages", self.logTag);
+        } else if (!mayHaveLinkedDevices && hasDeviceMessages) {
             OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
-        } else {
-            // Account has secondary devices; proceed as usual.
         }
     } else {
         OWSAssert(deviceMessages.count > 0);
@@ -978,7 +979,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                      messages:deviceMessages
                                                                         relay:recipient.relay
                                                                     timeStamp:message.timestamp];
-    if (TSSocketManager.canMakeRequests) {
+    if (useWebsocketIfAvailable && TSSocketManager.canMakeRequests) {
         [TSSocketManager.sharedManager makeRequest:request
             success:^(id _Nullable responseObject) {
                 [self messageSendDidSucceed:message
@@ -988,19 +989,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                     success:successHandler];
             }
             failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
-                [self messageSendDidFail:message
-                               recipient:recipient
-                                  thread:thread
-                           isLocalNumber:isLocalNumber
-                          deviceMessages:deviceMessages
-                       remainingAttempts:remainingAttempts
-                              statusCode:statusCode
-                                   error:error
-                            responseData:responseData
-                                 success:successHandler
-                                 failure:failureHandler];
+                // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket failure.
+                // Instead we fall back to REST, which will decrement retries.
+                // e.g. after linking a new device, sync messages will fail until the websocket re-opens.
+                [self sendMessageToService:message
+                                  recipient:recipient
+                                     thread:thread
+                                   attempts:remainingAttemptsParam
+                    useWebsocketIfAvailable:NO
+                                    success:successHandler
+                                    failure:failureHandler];
             }];
     } else {
+        if (!useWebsocketIfAvailable && TSSocketManager.canMakeRequests) {
+            DDLogDebug(@"%@ in %s falling back to REST since first attempt failed.", self.logTag, __PRETTY_FUNCTION__);
+        }
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 [self messageSendDidSucceed:message
@@ -1098,11 +1101,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         dispatch_async([OWSDispatch sendingQueue], ^{
             DDLogDebug(@"%@ Retrying: %@", self.logTag, message.debugDescription);
             [self sendMessageToService:message
-                             recipient:recipient
-                                thread:thread
-                              attempts:remainingAttempts
-                               success:successHandler
-                               failure:failureHandler];
+                              recipient:recipient
+                                 thread:thread
+                               attempts:remainingAttempts
+                useWebsocketIfAvailable:NO
+                                success:successHandler
+                                failure:failureHandler];
         });
     };
 
@@ -1250,6 +1254,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         recipient:[SignalRecipient selfRecipient]
         thread:message.thread
         attempts:OWSMessageSenderRetryAttempts
+        useWebsocketIfAvailable:YES
         success:^{
             DDLogInfo(@"Successfully sent sync transcript.");
         }
