@@ -19,7 +19,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
-static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 
 #pragma mark -
 
@@ -90,7 +89,7 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
 {
     // Since we have `self.autoresizingMask = UIViewAutoresizingFlexibleHeight`, the intrinsicContentSize is used
     // to determine the height of the rendered inputAccessoryView.
-    CGFloat height = self.toolbarHeight + ConversationInputToolbarBorderViewHeight;
+    CGFloat height = self.toolbarHeight;
     if (self.quotedMessagePreview) {
         height += self.quotedMessageTopMargin;
         height += self.quotedMessagePreview.intrinsicContentSize.height;
@@ -107,23 +106,20 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
         self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
     } else {
-        // We can mute the blur by making our background color more opaque.
-        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.6];
+        self.backgroundColor = [UIColor clearColor];
 
-        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        UIBlurEffect *blurEffect;
+        if (@available(iOS 10, *)) {
+            blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleProminent];
+        } else {
+            blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        }
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         [self addSubview:blurEffectView];
         [blurEffectView autoPinEdgesToSuperviewEdges];
     }
 
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-
-    UIView *borderView = [UIView new];
-    borderView.backgroundColor = [UIColor colorWithWhite:238 / 255.f alpha:1.f];
-    [self addSubview:borderView];
-    [borderView autoPinWidthToSuperview];
-    [borderView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [borderView autoSetDimension:ALDimensionHeight toSize:ConversationInputToolbarBorderViewHeight];
 
     _composeContainer = [UIView containerView];
     _contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeContainer ]];
@@ -171,9 +167,9 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     [self.sendButton
         setTitle:NSLocalizedString(@"SEND_BUTTON_TITLE", @"Label for the send button in the conversation view.")
         forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:[UIColor ows_materialBlueColor] forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:16.f];
+    self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     [self.rightButtonWrapper addSubview:self.sendButton];
 
@@ -340,16 +336,23 @@ static const CGFloat ConversationInputToolbarBorderViewHeight = 0.5;
     const int contentHInset = 6;
     const int contentHSpacing = 6;
 
+    // I'm not sure why this addional offset is necessary, but without it our minTextViewHeight is too short.
+    const CGFloat kAdditionalUnaccountedForHeight = 1;
+
     // We want to grow the text input area to fit its content within reason.
-    const CGFloat kMinTextViewHeight = ceil(self.inputTextView.font.lineHeight
-        + self.inputTextView.textContainerInset.top + self.inputTextView.textContainerInset.bottom
-        + self.inputTextView.contentInset.top + self.inputTextView.contentInset.bottom);
+    const CGFloat minTextViewHeight
+        = ceil(self.inputTextView.font.lineHeight + self.inputTextView.textContainerInset.top
+              + self.inputTextView.textContainerInset.bottom + self.inputTextView.contentInset.top
+              + self.inputTextView.contentInset.bottom)
+        + kAdditionalUnaccountedForHeight;
+
+
     // Exactly 4 lines of text with default sizing.
     const CGFloat kMaxTextViewHeight = 98.f;
     const CGFloat textViewDesiredHeight = (self.inputTextView.contentSize.height + self.inputTextView.contentInset.top
         + self.inputTextView.contentInset.bottom);
-    const CGFloat textViewHeight = ceil(CGFloatClamp(textViewDesiredHeight, kMinTextViewHeight, kMaxTextViewHeight));
-    const CGFloat kMinContentHeight = kMinTextViewHeight + textViewVInset * 2;
+    const CGFloat textViewHeight = ceil(CGFloatClamp(textViewDesiredHeight, minTextViewHeight, kMaxTextViewHeight));
+    const CGFloat kMinContentHeight = minTextViewHeight + textViewVInset * 2;
 
     self.textViewHeight = textViewHeight;
     self.toolbarHeight = textViewHeight + textViewVInset * 2;

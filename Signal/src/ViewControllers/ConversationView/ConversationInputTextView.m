@@ -27,20 +27,21 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.delegate = self;
 
-        CGFloat cornerRadius = 6.0f;
+        // round edge with dynamic type.
+        CGFloat cornerRadius = 16.0f;
 
-        self.backgroundColor = [UIColor whiteColor];
-        self.layer.borderColor = [UIColor lightGrayColor].CGColor;
+        self.backgroundColor = [UIColor ows_light02Color];
+        self.layer.borderColor = [UIColor.ows_blackColor colorWithAlphaComponent:0.12f].CGColor;
         self.layer.borderWidth = 0.5f;
         self.layer.cornerRadius = cornerRadius;
 
-        self.scrollIndicatorInsets = UIEdgeInsetsMake(cornerRadius, 0.0f, cornerRadius, 0.0f);
+        self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
 
         self.scrollEnabled = YES;
         self.scrollsToTop = NO;
         self.userInteractionEnabled = YES;
 
-        self.font = [UIFont systemFontOfSize:16.0f];
+        self.font = [UIFont ows_dynamicTypeBodyFont];
         self.textColor = [UIColor blackColor];
         self.textAlignment = NSTextAlignmentNatural;
 
@@ -57,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textContainerInset = UIEdgeInsetsMake(4.0f, 2.0f, 4.0f, 2.0f);
+        self.textContainerInset = UIEdgeInsetsMake(4.0f, 8.0, 4.0f, 2.0f);
         self.contentInset = UIEdgeInsetsMake(1.0f, 0.0f, 1.0f, 0.0f);
 
         [self ensurePlaceholderConstraints];
@@ -104,10 +105,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
     CGFloat topInset = beginningTextRect.origin.y;
+    CGFloat leftInset = beginningTextRect.origin.x;
 
+    // we use Left instead of Leading, since it's based on the prior CGRect offset
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinLeadingToSuperviewMargin],
-        [self.placeholderView autoPinTrailingToSuperviewMargin],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
