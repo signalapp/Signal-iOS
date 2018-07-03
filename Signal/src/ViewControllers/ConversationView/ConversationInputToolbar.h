@@ -47,8 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
 
 - (NSString *)messageText;
-- (void)setMessageText:(NSString *_Nullable)value;
-- (void)clearTextMessage;
+- (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
+- (void)clearTextMessageAnimated:(BOOL)isAnimated;
 - (void)toggleDefaultKeyboard;
 
 - (void)updateFontSizes;

@@ -27,20 +27,17 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.delegate = self;
 
-        CGFloat cornerRadius = 6.0f;
-
-        self.backgroundColor = [UIColor whiteColor];
-        self.layer.borderColor = [UIColor lightGrayColor].CGColor;
+        self.backgroundColor = [UIColor ows_light02Color];
+        self.layer.borderColor = [UIColor.ows_blackColor colorWithAlphaComponent:0.12f].CGColor;
         self.layer.borderWidth = 0.5f;
-        self.layer.cornerRadius = cornerRadius;
 
-        self.scrollIndicatorInsets = UIEdgeInsetsMake(cornerRadius, 0.0f, cornerRadius, 0.0f);
+        self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
 
         self.scrollEnabled = YES;
         self.scrollsToTop = NO;
         self.userInteractionEnabled = YES;
 
-        self.font = [UIFont systemFontOfSize:16.0f];
+        self.font = [UIFont ows_dynamicTypeBodyFont];
         self.textColor = [UIColor blackColor];
         self.textAlignment = NSTextAlignmentNatural;
 
@@ -51,14 +48,13 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.placeholderView = [UILabel new];
         self.placeholderView.text = NSLocalizedString(@"new_message", @"");
-        self.placeholderView.textColor = [UIColor lightGrayColor];
+        self.placeholderView.textColor = UIColor.ows_light35Color;
         self.placeholderView.userInteractionEnabled = NO;
         [self addSubview:self.placeholderView];
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textContainerInset = UIEdgeInsetsMake(4.0f, 2.0f, 4.0f, 2.0f);
-        self.contentInset = UIEdgeInsetsMake(1.0f, 0.0f, 1.0f, 0.0f);
+        self.textContainerInset = UIEdgeInsetsMake(7.0f, 12.0f, 7.0f, 12.0f);
 
         [self ensurePlaceholderConstraints];
         [self updatePlaceholderVisibility];
@@ -72,6 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
     [super setFont:font];
 
     self.placeholderView.font = font;
+}
+
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)isAnimated
+{
+    // When creating new lines, contentOffset is animated, but because because
+    // we are simultaneously resizing the text view, this can cause the
+    // text in the textview to be "too high" in the text view.
+    // Solution is to disable animation for setting content offset.
+    [super setContentOffset:contentOffset animated:NO];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
@@ -104,10 +109,12 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
     CGFloat topInset = beginningTextRect.origin.y;
+    CGFloat leftInset = beginningTextRect.origin.x;
 
+    // we use Left instead of Leading, since it's based on the prior CGRect offset
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinLeadingToSuperviewMargin],
-        [self.placeholderView autoPinTrailingToSuperviewMargin],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
@@ -178,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updatePlaceholderVisibility];
 
-    [self.textViewToolbarDelegate textViewDidChange];
+    [self.textViewToolbarDelegate textViewDidChange:self];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
