@@ -231,6 +231,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [reminderStackView autoPinWidthToSuperview];
     [reminderStackView autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
+    // Fixes ambiguous height of an empty stack view pinned above a scroll view on iOS10.
+    // Without this users would sometimes see the empty stackview take up most of their screen.
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
+                         forConstraints:^{
+                             [reminderStackView autoSetDimension:ALDimensionHeight toSize:0];
+                         }];
+
     __weak HomeViewController *weakSelf = self;
     ReminderView *deregisteredView =
         [ReminderView nagWithText:NSLocalizedString(@"DEREGISTRATION_WARNING",
