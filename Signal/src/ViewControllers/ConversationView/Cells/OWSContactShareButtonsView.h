@@ -21,8 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare
                             delegate:(id<OWSContactShareButtonsViewDelegate>)delegate;
 
-- (void)createContents;
-
 + (CGFloat)bubbleHeight;
 
 // Returns YES IFF the tap was handled.

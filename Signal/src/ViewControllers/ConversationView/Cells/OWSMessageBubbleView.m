@@ -506,7 +506,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContactShareButtonsView *buttonsView =
         [[OWSContactShareButtonsView alloc] initWithContactShare:self.viewItem.contactShare delegate:self];
-    [buttonsView createContents];
 
     NSValue *_Nullable actionButtonsSize = [self actionButtonsSize];
     OWSAssert(actionButtonsSize);
@@ -514,15 +513,14 @@ NS_ASSUME_NONNULL_BEGIN
         [buttonsView autoSetDimension:ALDimensionHeight toSize:actionButtonsSize.CGSizeValue.height],
     ]];
 
-    // The "body media" view casts a shadow "downward" onto adjacent views,
+    // The "contact share" view casts a shadow "downward" onto adjacent views,
     // so we use a "proxy" view to take its place within the v-stack
-    // view and then insert the body media view above its proxy so that
+    // view and then insert the "contact share" view above its proxy so that
     // it floats above the other content of the bubble view.
 
     UIView *proxyView = [UIView new];
     [self.stackView addArrangedSubview:proxyView];
 
-    // TODO: We may only end up using a single shadow.
     OWSBubbleShapeView *shadowView = [OWSBubbleShapeView bubbleShadowView];
     OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
 
@@ -542,7 +540,7 @@ NS_ASSUME_NONNULL_BEGIN
     shadowView.fillColor = buttonsView.backgroundColor;
     shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
     shadowView.layer.shadowOpacity = 0.12f;
-    shadowView.layer.shadowOffset = CGSizeMake(0.f, 0.f);
+    shadowView.layer.shadowOffset = CGSizeZero;
     shadowView.layer.shadowRadius = 1.f;
 }
 
