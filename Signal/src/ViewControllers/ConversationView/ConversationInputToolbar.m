@@ -126,10 +126,8 @@ const CGFloat kMaxTextViewHeight = 98;
     UIImage *attachmentImage = [UIImage imageNamed:@"btnAttachments--blue"];
     [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                            forState:UIControlStateNormal];
-    self.attachmentButton.contentEdgeInsets = UIEdgeInsetsMake(0, 3, 0, 3);
     self.attachmentButton.tintColor = UIColor.ows_navbarIconColor;
-    [self.attachmentButton setCompressionResistanceHigh];
-    [self.attachmentButton setContentHuggingHigh];
+    [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton
@@ -138,8 +136,8 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
-    [self.sendButton setCompressionResistanceHigh];
-    [self.sendButton setContentHuggingHigh];
+    self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
+    [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
 
     UIImage *voiceMemoIcon = [UIImage imageNamed:@"voice-memo-button"];
@@ -148,8 +146,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
     self.voiceMemoButton.imageView.tintColor = UIColor.ows_navbarIconColor;
-    [self.voiceMemoButton setCompressionResistanceHigh];
-    [self.voiceMemoButton setContentHuggingHigh];
+    [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
 
     // We want to be permissive about the voice message gesture, so we hang
     // the long press GR on the button's wrapper, not the button itself.
@@ -157,22 +154,23 @@ const CGFloat kMaxTextViewHeight = 98;
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     longPressGestureRecognizer.minimumPressDuration = 0;
     longPressGestureRecognizer.delegate = self;
+    [self.voiceMemoButton addGestureRecognizer:longPressGestureRecognizer];
 
     self.userInteractionEnabled = YES;
 
     _composeRow = [[UIStackView alloc]
         initWithArrangedSubviews:@[ self.attachmentButton, self.inputTextView, self.voiceMemoButton, self.sendButton ]];
-    _composeRow.axis = UILayoutConstraintAxisHorizontal;
-    _composeRow.layoutMarginsRelativeArrangement = YES;
-    _composeRow.layoutMargins = UIEdgeInsetsMake(6, 8, 6, 8);
-    _composeRow.alignment = UIStackViewAlignmentBottom;
-    _composeRow.spacing = 8;
+    self.composeRow.axis = UILayoutConstraintAxisHorizontal;
+    self.composeRow.layoutMarginsRelativeArrangement = YES;
+    self.composeRow.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
+    self.composeRow.alignment = UIStackViewAlignmentBottom;
+    self.composeRow.spacing = 8;
 
-    _contentRows = [[UIStackView alloc] initWithArrangedSubviews:@[ _composeRow ]];
-    _contentRows.axis = UILayoutConstraintAxisVertical;
+    _contentRows = [[UIStackView alloc] initWithArrangedSubviews:@[ self.composeRow ]];
+    self.contentRows.axis = UILayoutConstraintAxisVertical;
 
-    [self addSubview:_contentRows];
-    [_contentRows autoPinEdgesToSuperviewEdges];
+    [self addSubview:self.contentRows];
+    [self.contentRows autoPinEdgesToSuperviewEdges];
 
     [self ensureShouldShowVoiceMemoButtonAnimated:NO];
 }
