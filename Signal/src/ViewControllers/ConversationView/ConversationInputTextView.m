@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     // we are simultaneously resizing the text view, this can cause the
     // text in the textview to be "too high" in the text view.
     // Solution is to disable animation for setting content offset.
-    [super setContentOffset:contentOffset animated:false];
+    [super setContentOffset:contentOffset animated:NO];
 }
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
