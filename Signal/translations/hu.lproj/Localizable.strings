@@ -511,6 +511,9 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakt részletek";
 
+/* Indicates that user's profile has been shared with a group. */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Csoport részletek";
 
@@ -1112,9 +1115,6 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
-/* Label for button that loads more messages in conversation view. */
-"load_earlier_messages" = "Korábbi üzenetek betöltése";
-
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Naplózás";
 
@@ -1257,13 +1257,13 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "Olvasatlan üzenetek";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
 
-/* Messages that indicates that there are more unseen messages including safety number changes that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}}. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES_FORMAT" = "There are more unread messages (including safety number changes) above. Tap \"%@\" to see them.";
+/* Messages that indicates that there are more unseen messages. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
 
-/* Messages that indicates that there are more unseen messages that be revealed by tapping the 'load earlier messages' button. Embeds {{the name of the 'load earlier messages' button}} */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_FORMAT" = "There are more unread messages above. Tap \"%@\" to see them.";
+/* Messages that indicates that there are more unseen messages including safety number changes. */
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
 
 /* notification title */
 "MISSED_CALL" = "Nem fogadott hívás";
