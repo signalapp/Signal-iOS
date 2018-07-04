@@ -1269,6 +1269,9 @@ const CGFloat kIconViewLength = 24;
         [self.contactsManager.avatarCache removeAllImages];
         [self updateTableContents];
         [self.conversationSettingsViewDelegate conversationColorWasUpdated];
+        ConversationConfigurationSyncOperation *operation = [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
+        
+        
         
         [self dismissViewControllerAnimated:YES completion:nil];
     }];
