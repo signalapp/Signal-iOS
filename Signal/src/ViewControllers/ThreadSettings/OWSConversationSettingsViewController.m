@@ -1265,16 +1265,18 @@ const CGFloat kIconViewLength = 24;
     DDLogDebug(@"%@ in %s picked color: %@", self.logTag, __PRETTY_FUNCTION__, colorName);
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:colorName transaction:transaction];
-
-        [self.contactsManager.avatarCache removeAllImages];
-        [self updateTableContents];
-        [self.conversationSettingsViewDelegate conversationColorWasUpdated];
-        ConversationConfigurationSyncOperation *operation = [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
-        
-        
-        
-        [self dismissViewControllerAnimated:YES completion:nil];
     }];
+
+    [self.contactsManager.avatarCache removeAllImages];
+    [self updateTableContents];
+    [self.conversationSettingsViewDelegate conversationColorWasUpdated];
+
+    ConversationConfigurationSyncOperation *operation =
+        [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
+    OWSAssert(operation.isReady);
+    [operation start];
+
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)colorPickerDidCancel:(ColorPickerViewController *)colorPicker
