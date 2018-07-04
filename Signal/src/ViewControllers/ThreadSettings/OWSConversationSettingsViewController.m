@@ -1271,10 +1271,12 @@ const CGFloat kIconViewLength = 24;
     [self updateTableContents];
     [self.conversationSettingsViewDelegate conversationColorWasUpdated];
 
-    ConversationConfigurationSyncOperation *operation =
-        [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
-    OWSAssert(operation.isReady);
-    [operation start];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        ConversationConfigurationSyncOperation *operation =
+            [[ConversationConfigurationSyncOperation alloc] initWithThread:self.thread];
+        OWSAssert(operation.isReady);
+        [operation start];
+    });
 
     [self dismissViewControllerAnimated:YES completion:nil];
 }
