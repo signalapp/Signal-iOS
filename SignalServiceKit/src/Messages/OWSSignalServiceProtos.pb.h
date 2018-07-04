@@ -2840,15 +2840,18 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 #define GroupDetails_avatar @"avatar"
 #define GroupDetails_active @"active"
 #define GroupDetails_expireTimer @"expireTimer"
+#define GroupDetails_color @"color"
 @interface OWSSignalServiceProtosGroupDetails : PBGeneratedMessage<GeneratedMessageProtocol> {
 @private
   BOOL hasActive_:1;
   BOOL hasName_:1;
+  BOOL hasColor_:1;
   BOOL hasAvatar_:1;
   BOOL hasId_:1;
   BOOL hasExpireTimer_:1;
   BOOL active_:1;
   NSString* name;
+  NSString* color;
   OWSSignalServiceProtosGroupDetailsAvatar* avatar;
   NSData* id;
   UInt32 expireTimer;
@@ -2859,12 +2862,14 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (BOOL) hasAvatar;
 - (BOOL) hasActive;
 - (BOOL) hasExpireTimer;
+- (BOOL) hasColor;
 @property (readonly, strong) NSData* id;
 @property (readonly, strong) NSString* name;
 @property (readonly, strong) NSArray * members;
 @property (readonly, strong) OWSSignalServiceProtosGroupDetailsAvatar* avatar;
 - (BOOL) active;
 @property (readonly) UInt32 expireTimer;
+@property (readonly, strong) NSString* color;
 - (NSString*)membersAtIndex:(NSUInteger)index;
 
 + (instancetype) defaultInstance;
@@ -2994,6 +2999,11 @@ NSString *NSStringFromOWSSignalServiceProtosGroupContextType(OWSSignalServicePro
 - (UInt32) expireTimer;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) setExpireTimer:(UInt32) value;
 - (OWSSignalServiceProtosGroupDetailsBuilder*) clearExpireTimer;
+
+- (BOOL) hasColor;
+- (NSString*) color;
+- (OWSSignalServiceProtosGroupDetailsBuilder*) setColor:(NSString*) value;
+- (OWSSignalServiceProtosGroupDetailsBuilder*) clearColor;
 @end
 
 
