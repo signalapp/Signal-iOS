@@ -189,7 +189,13 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     [phoneNumberLabel autoVCenterInSuperview];
     [phoneNumberLabel autoPinLeadingToSuperviewMargin];
 
-    UITextField *phoneNumberTextField = [UITextField new];
+    UITextField *phoneNumberTextField;
+    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+        phoneNumberTextField = [DismissableTextField new];
+    } else {
+        phoneNumberTextField = [UITextField new];
+    }
+
     phoneNumberTextField.textAlignment = NSTextAlignmentRight;
     phoneNumberTextField.delegate = self;
     phoneNumberTextField.keyboardType = UIKeyboardTypeNumberPad;
