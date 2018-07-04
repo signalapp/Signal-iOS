@@ -95,6 +95,11 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
     [self sendSyncContactsMessageIfPossible];
 }
 
+- (YapDatabaseConnection *)editingDatabaseConnection
+{
+    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
+}
+
 #pragma mark - Methods
 
 - (void)sendSyncContactsMessageIfNecessary
@@ -119,11 +124,13 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                                    identityManager:self.identityManager
                                                     profileManager:self.profileManager];
 
-        NSData *messageData = [syncContactsMessage buildPlainTextAttachmentData];
-
-        NSData *lastMessageData =
-            [OWSPrimaryStorage.dbReadConnection objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-                                                inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
+        __block NSData *messageData;
+        __block NSData *lastMessageData;
+        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+            lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
+                                           inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
+        }];
 
         if (lastMessageData && [lastMessageData isEqual:messageData]) {
             // Ignore redundant contacts sync message.
@@ -132,17 +139,16 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
         self.isRequestInFlight = YES;
 
-        DataSource *dataSource =
-            [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+        DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
         [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage
             success:^{
                 DDLogInfo(@"%@ Successfully sent contacts sync message.", self.logTag);
 
-                [OWSPrimaryStorage.dbReadWriteConnection setObject:messageData
-                                                            forKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
-                                                      inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
+                [self.editingDatabaseConnection setObject:messageData
+                                                   forKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
+                                             inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;

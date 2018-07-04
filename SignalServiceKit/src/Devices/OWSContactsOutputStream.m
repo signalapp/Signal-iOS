@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
          recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
             profileKeyData:(nullable NSData *)profileKeyData
            contactsManager:(id<ContactsManagerProtocol>)contactsManager
+     conversationColorName:(NSString *)conversationColorName
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
+    [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
         OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];

@@ -16,10 +16,13 @@ import SignalMessaging
 
     let TAG = "[MultiDeviceProfileKeyUpdateJob]"
 
-    let profileKey: OWSAES256Key
-    let identityManager: OWSIdentityManager
-    let messageSender: MessageSender
-    let profileManager: OWSProfileManager
+    private let profileKey: OWSAES256Key
+    private let identityManager: OWSIdentityManager
+    private let messageSender: MessageSender
+    private let profileManager: OWSProfileManager
+    private var editingDatabaseConnection: YapDatabaseConnection {
+        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    }
 
    @objc public required init(profileKey: OWSAES256Key, identityManager: OWSIdentityManager, messageSender: MessageSender, profileManager: OWSProfileManager) {
         self.profileKey = profileKey
@@ -45,8 +48,17 @@ import SignalMessaging
                                                         identityManager: self.identityManager,
                                                         profileManager: self.profileManager)
 
-        let dataSource = DataSourceValue.dataSource(withSyncMessage: syncContactsMessage.buildPlainTextAttachmentData())
-        self.messageSender.enqueueTemporaryAttachment(dataSource,
+        var dataSource: DataSource? = nil
+        self.editingDatabaseConnection.readWrite { transaction in
+             dataSource = DataSourceValue.dataSource(withSyncMessageData: syncContactsMessage.buildPlainTextAttachmentData(with: transaction))
+        }
+
+        guard let attachmentDataSource = dataSource else {
+            owsFail("\(self.logTag) in \(#function) dataSource was unexpectedly nil")
+            return
+        }
+
+        self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
             contentType: OWSMimeTypeApplicationOctetStream,
             in: syncContactsMessage,
             success: {

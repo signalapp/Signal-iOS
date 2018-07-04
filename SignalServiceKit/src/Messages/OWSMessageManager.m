@@ -657,8 +657,9 @@ NS_ASSUME_NONNULL_BEGIN
                     [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                            identityManager:self.identityManager
                                                             profileManager:self.profileManager];
-                DataSource *dataSource =
-                    [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+                DataSource *dataSource = [DataSourceValue
+                    dataSourceWithSyncMessageData:[syncContactsMessage
+                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
                 [self.messageSender enqueueTemporaryAttachment:dataSource
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
@@ -673,7 +674,8 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (syncMessage.request.type == OWSSignalServiceProtosSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             DataSource *dataSource = [DataSourceValue
-                dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
+                dataSourceWithSyncMessageData:[syncGroupsMessage
+                                                  buildPlainTextAttachmentDataWithTransaction:transaction]];
             [self.messageSender enqueueTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage

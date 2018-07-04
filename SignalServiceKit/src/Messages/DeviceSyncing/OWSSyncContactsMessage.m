@@ -13,6 +13,7 @@
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
+#import "TSContactThread.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -70,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (NSData *)buildPlainTextAttachmentData
+- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
 
@@ -86,10 +87,12 @@ NS_ASSUME_NONNULL_BEGIN
             [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
 
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
-                                 contactsManager:contactsManager];
+                                 contactsManager:contactsManager
+                           conversationColorName:contactThread.conversationColorName];
     }
 
     [contactsOutputStream flush];
