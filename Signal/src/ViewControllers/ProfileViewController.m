@@ -117,7 +117,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [nameLabel autoPinLeadingToSuperviewMargin];
     [nameLabel autoPinHeightToSuperviewWithMargin:5.f];
 
-    UITextField *nameTextField = [UITextField new];
+    UITextField *nameTextField;
+    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+        nameTextField = [DismissableTextField new];
+    } else {
+        nameTextField = [UITextField new];
+    }
     _nameTextField = nameTextField;
     nameTextField.font = [UIFont ows_mediumFontWithSize:18.f];
     nameTextField.textColor = [UIColor ows_materialBlueColor];
