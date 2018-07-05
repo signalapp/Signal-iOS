@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
 
@@ -87,12 +87,22 @@ NS_ASSUME_NONNULL_BEGIN
             [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
 
-        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+
+        NSString *conversationColorName = (NSString *)^() {
+            TSContactThread *_Nullable contactThread =
+                [TSContactThread fetchObjectWithUniqueID:signalAccount.recipientId transaction:transaction];
+            if (contactThread) {
+                return contactThread.conversationColorName;
+            } else {
+                return [TSThread stableConversationColorNameForString:signalAccount.recipientId];
+            }
+        }();
+
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
                                  contactsManager:contactsManager
-                           conversationColorName:contactThread.conversationColorName];
+                           conversationColorName:conversationColorName];
     }
 
     [contactsOutputStream flush];

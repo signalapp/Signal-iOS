@@ -126,7 +126,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
         __block NSData *messageData;
         __block NSData *lastMessageData;
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.editingDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             lastMessageData = [transaction objectForKey:kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
                                            inCollection:kOWSPrimaryStorageOWSContactsSyncingCollection];

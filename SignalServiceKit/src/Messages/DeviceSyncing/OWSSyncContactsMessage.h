@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
