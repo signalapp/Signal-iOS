@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Trimiterea a eșuat din cauza datelor vechi.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Mesajul nu a fost trimis deoarece ai blocat acest utilizator.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Mesajul nu a fost trimis deoarece ai blocat acest utilizator.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Eșuat din cauza unei erori la salvarea atașamentului.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Eșuat din cauza unei erori la salvarea atașamentului.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nu s-a putut conecta la internet. Te rog să incerci dintr-o altă rețea WiFi sau folosește datele mobile.";

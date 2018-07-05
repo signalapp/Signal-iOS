@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Kunne ikke sende pga. gammel privatlivsdata.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunne ikke sende beskeden til brugeren fordi du har blokeret dem.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kunne ikke sende beskeden til brugeren fordi du har blokeret dem.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal kan ikke forbinde til internettet. Prøv et andet WIFI netværk eller benyt mobildata.";

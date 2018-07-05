@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "غير قادر على الارسال بسبب بيانات الخصوصية القديمة.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "لم ينجح بعث الرسالة لأن المستخدم محظور.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "لم ينجح بعث الرسالة لأن المستخدم محظور.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal غير قادر على الاتصال بالإنترنت. من فضلك حاول من شبكة WiFi أخرى أو استخدم بيانات الهاتف.";

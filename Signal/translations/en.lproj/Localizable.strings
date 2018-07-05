@@ -10,7 +10,8 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invite to Signal";
 
-/* Label for 'sent message' button in contact view. */
+/* Label for 'sent message' button in contact view.
+   Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Send Message";
 
 /* Label for 'share contact' button. */
@@ -511,7 +512,7 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Contact Info";
 
-/* Indicates that user's profile has been shared with a group. */
+/* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
 
 /* Navbar title when viewing settings for a group thread */
@@ -819,10 +820,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale privacy data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Failed to message user because you blocked them.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Failed due to failed attachment write.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try from another WiFi network or use mobile data.";
@@ -1206,7 +1207,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
 /* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed. Tap for info.";
+"MESSAGE_STATUS_FAILED" = "Sending failed.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Failed";
@@ -1216,6 +1217,9 @@
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Skipped";
+
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sending...";

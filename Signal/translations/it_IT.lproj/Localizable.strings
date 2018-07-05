@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Invio non riuscito a causa di informazioni sulla privacy scaduti.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Impossibile inviare un messaggio ad un utente bloccato.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Impossibile inviare un messaggio ad un utente bloccato.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Fallito a causa di un problema in scrittura.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Fallito a causa di un problema in scrittura.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal non è in grado di connettersi ad Internet. Riprovare da un'altra rete WiFi o tramite rete dati.";

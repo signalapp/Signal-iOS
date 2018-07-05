@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Lähettäminen ei onnistu vanhentuneiden yksityisyystietojen vuoksi.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Viestin lähettäminen ei onnistunut, koska olet estänyt kyseisen yhteystiedon.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Viestin lähettäminen ei onnistunut, koska olet estänyt kyseisen yhteystiedon.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Lähetys epäonnistui koska liitteen lisääminen epäonnistui.";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Lähetys epäonnistui koska liitteen lisääminen epäonnistui.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ei saanut yhteyttä internetiin. Yritä uudelleen toisesta WiFi-verkosta tai kokeile mobiiliyhteyttä.";

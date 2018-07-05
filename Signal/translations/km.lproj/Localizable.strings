@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "មិនអាចផ្ញើដោយសារទិន្នន័យឯកជនចាស់ពេក។";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "បរាជ័យក្នុងការផ្ញើសារទៅអ្នកប្រើប្រាស់ ព្រោះអ្នកបានបិទពួកគេ។";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "បរាជ័យក្នុងការផ្ញើសារទៅអ្នកប្រើប្រាស់ ព្រោះអ្នកបានបិទពួកគេ។";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "បរាជ័យដោយសារមិនអាចដាក់ឯកសារភ្ជាប់។";
+"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "បរាជ័យដោយសារមិនអាចដាក់ឯកសារភ្ជាប់។";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "ស៊ីហ្គណលមិនអាចតភ្ជាប់ទៅកាន់អ៊ីនធើណែត។ សូមព្យាយាមពីបណ្តាញ WiFi ផ្សេងទៀត ឬប្រើប្រាស់អ៊ីនធើណែតទូរសព្ទ។";
