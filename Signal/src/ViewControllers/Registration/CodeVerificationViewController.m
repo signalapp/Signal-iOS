@@ -147,7 +147,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     const CGFloat kHMargin = 36;
 
-    _challengeTextField = [UITextField new];
+    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+        _challengeTextField = [DismissableTextField new];
+    } else {
+        _challengeTextField = [UITextField new];
+    }
+
     _challengeTextField.textColor = [UIColor blackColor];
     _challengeTextField.placeholder = NSLocalizedString(@"VERIFICATION_CHALLENGE_DEFAULT_TEXT",
         @"Text field placeholder for SMS verification code during registration");

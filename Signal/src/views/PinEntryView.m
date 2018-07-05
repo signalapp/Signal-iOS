@@ -59,7 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createPinTextfield
 {
-    self.pinTextfield = [UITextField new];
+    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+        self.pinTextfield = [DismissableTextField new];
+    } else {
+        self.pinTextfield = [UITextField new];
+    }
+
     self.pinTextfield.textColor = [UIColor blackColor];
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
