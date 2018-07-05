@@ -119,7 +119,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    UIImage *attachmentImage = [UIImage imageNamed:@"btnAttachments--blue"];
+    UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
     [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                            forState:UIControlStateNormal];
     self.attachmentButton.tintColor = UIColor.ows_navbarIconColor;
