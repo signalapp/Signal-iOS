@@ -84,6 +84,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)lastMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(lastMessageText(transaction:));
 
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
+
 /**
  *  Updates the thread's caches of the latest interaction.
  *

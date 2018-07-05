@@ -246,8 +246,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([self unseenMessagesWithTransaction:transaction].count < 1);
 }
 
-- (TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
+
     __block NSUInteger missedCount = 0;
     __block TSInteraction *last = nil;
     [[transaction ext:TSMessageDatabaseViewExtensionName]
