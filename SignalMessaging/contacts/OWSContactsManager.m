@@ -772,7 +772,7 @@ NSString *const OWSContactsManagerSignalAccountsDidChangeNotification
         NSAttributedString *result =
             [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
         result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~"]];
+        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
         result = [result
             rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]];
         return [result copy];
