@@ -273,7 +273,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             stackView.axis = .horizontal
             stackView.distribution = .fillEqually
             stackView.addArrangedSubview(createCircleActionButton(text: NSLocalizedString("ACTION_SEND_MESSAGE",
-                                                                                          comment: "Label for 'sent message' button in contact view."),
+                                                                                          comment: "Label for 'send message' button in contact view."),
                                                                   imageName: "contact_view_message",
                                                                   actionBlock: { [weak self] in
                                                                     guard let strongSelf = self else { return }
@@ -539,7 +539,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         if let e164 = phoneNumber.tryToConvertToE164() {
             if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
-                                                                             comment: "Label for 'sent message' button in contact view."),
+                                                                             comment: "Label for 'send message' button in contact view."),
                                                     style: .default) { _ in
                                                         SignalApp.shared().presentConversation(forRecipientId: e164, action: .compose)
                 })

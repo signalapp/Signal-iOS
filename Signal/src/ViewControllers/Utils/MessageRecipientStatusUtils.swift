@@ -58,14 +58,14 @@ public class MessageRecipientStatusUtils: NSObject {
         switch recipientState.state {
         case .failed:
             let shortStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED_SHORT", comment: "status message for failed messages")
-            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "message footer for failed messages")
+            let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages")
             return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         case .sending:
             if outgoingMessage.hasAttachments() {
                 assert(outgoingMessage.messageState == .sending)
 
                 let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
-                                                      comment: "message footer while attachment is uploading")
+                                                      comment: "status message while attachment is uploading")
                 return (status:.uploading, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
             } else {
                 assert(outgoingMessage.messageState == .sending)
@@ -78,7 +78,7 @@ public class MessageRecipientStatusUtils: NSObject {
             if let readTimestamp = recipientState.readTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "message footer for read messages").rtlSafeAppend(" ")
+                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages").rtlSafeAppend(" ")
                     .rtlSafeAppend(timestampString)
                 return (status:.read, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
@@ -92,7 +92,7 @@ public class MessageRecipientStatusUtils: NSObject {
             }
             let statusMessage =
                 NSLocalizedString("MESSAGE_STATUS_SENT",
-                                  comment: "message footer for sent messages")
+                                  comment: "status message for sent messages")
             return (status:.sent, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
         case .skipped:
             let statusMessage = NSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
@@ -107,29 +107,29 @@ public class MessageRecipientStatusUtils: NSObject {
         switch outgoingMessage.messageState {
         case .failed:
             // Use the "long" version of this message here.
-            return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "message footer for failed messages"))
+            return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
         case .sending:
             if outgoingMessage.hasAttachments() {
                 return (.uploading, NSLocalizedString("MESSAGE_STATUS_UPLOADING",
-                                         comment: "message footer while attachment is uploading"))
+                                         comment: "status message while attachment is uploading"))
             } else {
                 return (.sending, NSLocalizedString("MESSAGE_STATUS_SENDING",
                                          comment: "message status while message is sending."))
             }
         case .sent:
             if outgoingMessage.readRecipientIds().count > 0 {
-                return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "message footer for read messages"))
+                return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
             if outgoingMessage.wasDeliveredToAnyRecipient {
                 return (.delivered, NSLocalizedString("MESSAGE_STATUS_DELIVERED",
                                          comment: "message status for message delivered to their recipient."))
             }
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
-                                     comment: "message footer for sent messages"))
+                                     comment: "status message for sent messages"))
         default:
             owsFail("\(self.logTag) Message has unexpected status: \(outgoingMessage.messageState).")
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
-                                     comment: "message footer for sent messages"))
+                                     comment: "status message for sent messages"))
         }
     }
 

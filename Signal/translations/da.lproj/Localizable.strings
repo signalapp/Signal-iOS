@@ -10,7 +10,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invitér til Signal";
 
-/* Label for 'sent message' button in contact view. */
+/* Label for 'send message' button in contact view. */
 "ACTION_SEND_MESSAGE" = "Send Besked";
 
 /* Label for 'share contact' button. */

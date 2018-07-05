@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
-- (BOOL)shouldHavesendFailureBadge
+- (BOOL)shouldHaveSendFailureBadge
 {
     if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
         return NO;
@@ -170,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
-        if (self.shouldHavesendFailureBadge) {
+        if (self.shouldHaveSendFailureBadge) {
             self.sendFailureBadgeView = [UIImageView new];
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -421,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     cellSize.height += self.dateHeaderHeight;
 
-    if (self.shouldHavesendFailureBadge) {
+    if (self.shouldHaveSendFailureBadge) {
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
     }
 
