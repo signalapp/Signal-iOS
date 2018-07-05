@@ -198,11 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
     if (hasUnreadMessages && overrideSnippet == nil) {
-        self.dateTimeLabel.textColor = [UIColor ows_blackColor];
-        self.dateTimeLabel.font = self.unreadFont.ows_mediumWeight;
+        self.dateTimeLabel.textColor = [UIColor ows_light90Color];
+        self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
     } else {
-        self.dateTimeLabel.textColor = [UIColor lightGrayColor];
-        self.dateTimeLabel.font = self.unreadFont;
+        self.dateTimeLabel.textColor = [UIColor ows_light60Color];
+        self.dateTimeLabel.font = self.dateTimeFont;
     }
 
     NSUInteger unreadCount = thread.unreadCount;
@@ -303,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           @"A label for conversations with blocked users.")
                                            attributes:@{
                                                NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                                               NSForegroundColorAttributeName : [UIColor ows_blackColor],
+                                               NSForegroundColorAttributeName : [UIColor ows_light90Color],
                                            }]];
     } else {
         if ([thread isMuted]) {
@@ -313,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
                                                             NSForegroundColorAttributeName : (hasUnreadMessages
                                                                     ? [UIColor colorWithWhite:0.1f alpha:1.f]
-                                                                    : [UIColor lightGrayColor]),
+                                                                    : [UIColor ows_light60Color]),
                                                         }]];
         }
         NSString *displayableText = thread.lastMessageText;
@@ -325,8 +325,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [UIColor ows_blackColor]
-                                                                                   : [UIColor lightGrayColor]),
+                                                                (hasUnreadMessages ? [UIColor ows_light90Color]
+                                                                                   : [UIColor ows_light60Color]),
                                                         }]];
         }
     }
@@ -353,6 +353,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
 }
 
+- (UIFont *)dateTimeFont
+{
+    return [UIFont ows_dynamicTypeCaption1Font];
+}
+
 - (UIFont *)snippetFont
 {
     return [UIFont ows_dynamicTypeSubheadlineFont];
@@ -369,22 +374,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont ows_dynamicTypeFootnoteFont];
 }
 
-// A simple function to scale dimensions to reflect dynamic type.  Given a value
-// we lerp it larger linearly to reflect size of dynamic type relative to a
-// reference value for default dynamic type sizes.
-//
-// * We _NEVER_ scale values down.
-// * We cap scaling.
-+ (CGFloat)scaleValueWithDynamicType:(CGFloat)minValue
-{
-    // The default size of dynamic "body" type.
-    const NSUInteger kReferenceFontSizeMin = 17.f;
-
-    CGFloat referenceFontSize = UIFont.ows_dynamicTypeBodyFont.pointSize;
-    CGFloat alpha = CGFloatClamp(referenceFontSize / kReferenceFontSizeMin, 1.f, 1.3f);
-    return minValue * alpha;
-}
-
 - (NSUInteger)avatarSize
 {
     return 48.f;
@@ -398,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Using an NSUInteger precludes us from negating this value
 - (CGFloat)topRowHSpacing
 {
-    return ceil([HomeViewCell scaleValueWithDynamicType:5]);
+    return 6.f;
 }
 
 #pragma mark - Reuse
