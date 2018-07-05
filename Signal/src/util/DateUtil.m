@@ -4,6 +4,7 @@
 
 #import "DateUtil.h"
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSFormat.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -187,17 +188,67 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dateTimeString.uppercaseString;
 }
 
-+ (NSString *)formatTimestampAsTimeShort:(uint64_t)timestamp
++ (NSString *)formatTimestampAsTime:(uint64_t)timestamp
 {
-    return [self formatDateAsTimeShort:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
+    return [self formatDateAsTime:[NSDate ows_dateWithMillisecondsSince1970:timestamp]];
 }
 
-+ (NSString *)formatDateAsTimeShort:(NSDate *)date
++ (NSString *)formatDateAsTime:(NSDate *)date
 {
     OWSAssert(date);
 
     NSString *dateTimeString = [[DateUtil timeFormatter] stringFromDate:date];
     return dateTimeString.uppercaseString;
+}
+
++ (NSString *)formatTimestampAsTime:(uint64_t)timestamp maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
+{
+    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
+    NSDate *now = [NSDate new];
+
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSInteger minutesDiff
+        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:now options:0] minute]);
+
+    // Treat anything in the last two minutes as "now", so that we
+    // don't have to worry about pluralization while formatting.
+    if (minutesDiff <= 1) {
+        return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
+    } else if (minutesDiff <= maxRelativeDurationMinutes) {
+        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
+        return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
+                                              @"Format string for a relative time, expressed as a certain number of "
+                                              @"minutes in the past. Embeds {{The number of minutes}}."),
+                         minutesString];
+    } else {
+        return [self formatDateAsTime:date];
+    }
+}
+
++ (BOOL)isTimestampRelative:(uint64_t)timestamp maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
+{
+    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
+    NSDate *now = [NSDate new];
+
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSInteger minutesDiff
+        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:now options:0] minute]);
+
+    return minutesDiff <= maxRelativeDurationMinutes;
+}
+
++ (NSString *)exemplaryNowTimeFormat
+{
+    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
+}
+
++ (NSString *)exemplaryRelativeTimeFormatWithMaxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
+{
+    NSString *minutesString = [OWSFormat formatInt:(int)maxRelativeDurationMinutes];
+    return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
+                                          @"Format string for a relative time, expressed as a certain number of "
+                                          @"minutes in the past. Embeds {{The number of minutes}}."),
+                     minutesString];
 }
 
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2
@@ -211,6 +262,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     NSInteger dayDifference = [self daysFromFirstDate:date1 toSecondDate:date2];
     return dayDifference == 0;
 }
+
 @end
 
 NS_ASSUME_NONNULL_END
