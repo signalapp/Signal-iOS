@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              ofView:self.sendFailureBadgeView
                                          withOffset:sendFailureBadgeBottomMargin],
                 [self.sendFailureBadgeView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                            withInset:self.conversationStyle.gutterTrailing],
+                                                            withInset:self.conversationStyle.errorGutterTrailing],
                 [self.sendFailureBadgeView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize],
                 [self.sendFailureBadgeView autoSetDimension:ALDimensionHeight toSize:self.sendFailureBadgeSize],
             ]];
