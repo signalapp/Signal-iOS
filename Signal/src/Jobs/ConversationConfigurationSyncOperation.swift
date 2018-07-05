@@ -11,35 +11,35 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         case assertionError(description: String)
     }
 
-    var dbConnection: YapDatabaseConnection {
+    private var dbConnection: YapDatabaseConnection {
         return OWSPrimaryStorage.shared().dbReadConnection
     }
 
-    var messageSender: MessageSender {
+    private var messageSender: MessageSender {
         return Environment.current().messageSender
     }
 
-    var contactsManager: OWSContactsManager {
+    private var contactsManager: OWSContactsManager {
         return Environment.current().contactsManager
     }
 
-    var profileManager: OWSProfileManager {
+    private var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }
 
-    var identityManager: OWSIdentityManager {
+    private var identityManager: OWSIdentityManager {
         return OWSIdentityManager.shared()
     }
 
-    let thread: TSThread
+    private let thread: TSThread
 
     @objc
-    init(thread: TSThread) {
+    public init(thread: TSThread) {
         self.thread = thread
         super.init()
     }
 
-    override func run() {
+    override public func run() {
         if let contactThread = thread as? TSContactThread {
             sync(contactThread: contactThread)
         } else if let groupThread = thread as? TSGroupThread {
@@ -54,7 +54,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         self.reportError(error)
     }
 
-    func sync(contactThread: TSContactThread) {
+    private func sync(contactThread: TSContactThread) {
         guard let signalAccount: SignalAccount = self.contactsManager.signalAccount(forRecipientId: contactThread.contactIdentifier()) else {
             reportAssertionError(description: "unable to find signalAccount")
             return
@@ -75,18 +75,10 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
-        self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
-                                                      contentType: OWSMimeTypeApplicationOctetStream,
-                                                      in: syncMessage,
-                                                      success: {
-                                                        self.reportSuccess()
-        },
-                                                      failure: { error in
-                                                        self.reportError(error)
-        })
+        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
     }
 
-    func sync(groupThread: TSGroupThread) {
+    private func sync(groupThread: TSGroupThread) {
         // TODO sync only the affected group
         // The current implementation works, but seems wasteful.
         // Does desktop handle single group sync correctly?
@@ -104,6 +96,10 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
 
+        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+    }
+
+    private func sendConfiguration(attachmentDataSource: DataSource, syncMessage: OWSOutgoingSyncMessage) {
         self.messageSender.enqueueTemporaryAttachment(attachmentDataSource,
                                                       contentType: OWSMimeTypeApplicationOctetStream,
                                                       in: syncMessage,
