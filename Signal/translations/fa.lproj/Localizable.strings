@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "خطا در ارسال پیام به دلیل داده قدیمی.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "امکان ارسال پیام به کاربری که مسدود کرده‌اید وجود ندارد.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "امکان ارسال پیام به کاربری که مسدود کرده‌اید وجود ندارد.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "خطا در نوشتن ضمیمه.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "خطا در نوشتن ضمیمه.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "امکان برقراری ارتباط سیگنال با اینترنت وجود ندارد. لطفاً از یک شبکه‌ی بیسیم دیگر و یا از اینترنت سیم کارت خود استفاده کنید.";

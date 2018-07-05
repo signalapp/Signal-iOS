@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ไม่สามารถส่ง เนื่องจากข้อมูลส่วนบุคคลที่หมดอายุ";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้บล็อกเขา";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "ส่งข้อความไปหาผู้ใช้ไม่สำเร็จ เนื่องจากคุณได้บล็อกเขา";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ไม่สำเร็จ เนื่องจากไม่สามารถเขียนไฟล์แนบได้";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ไม่สำเร็จ เนื่องจากไม่สามารถเขียนไฟล์แนบได้";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ไม่สามารถเชื่อมต่ออินเทอร์เน็ต โปรดลองเชื่อมต่อเครือข่าย WiFi อื่นหรือใช้งานข้อมูลโทรศัพท์มือถือ";

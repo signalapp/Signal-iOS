@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Pole võimalik saata aegunud privaatsusandmete tõttu.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kasutajale sõnumi saatmine ei õnnestunud, sest sa oled ta blokeerinud.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Kasutajale sõnumi saatmine ei õnnestunud, sest sa oled ta blokeerinud.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Ei õnnestunud manuse kirjutamise ebaõnnestumise tõttu.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Ei õnnestunud manuse kirjutamise ebaõnnestumise tõttu.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signalil ei õnnestunud Internetti ühenduda. Palun proovi mõnda teist WiFi-võrku või kasuta mobiilset andmesidet.";

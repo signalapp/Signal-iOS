@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "ကိုယ်ရေးအချက်အလက်များကြောင့် ပေးပို့နိုင်ခြင်းမရှိပါ။ ";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "သင်ဘလော့ထားသည့်အတွက် စာတိုပေးပို့နိုင်ခြင်းမရှိပါ။ ";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "သင်ဘလော့ထားသည့်အတွက် စာတိုပေးပို့နိုင်ခြင်းမရှိပါ။ ";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ပူးတွဲ ဖိုင်ချိတ်ခြင်း မအောင်မြင်ပါ။ ";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "ပူးတွဲ ဖိုင်ချိတ်ခြင်း မအောင်မြင်ပါ။ ";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal ကအင်တာနက်မချိတ်နိုင်ပါ။ အခြားဝိုင်ယာလက်ကွန်ယက် သို့မဟုတ် ဖုန်းဒေတာကွန်ယက်သို့ချိတ်ဆက်၍ ကြိုးစားကြည့်ပါ။ ";

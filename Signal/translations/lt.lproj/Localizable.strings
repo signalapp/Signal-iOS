@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Nepavyko išsiųsti dėl pasenusiųjų privatumo duomenų.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nepavyko išsiųsti naudotojui žinutės, kadangi jūs jį užblokavote.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Nepavyko išsiųsti naudotojui žinutės, kadangi jūs jį užblokavote.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Patyrė nesėkmę dėl nepavykusio įrašyti priedo.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Patyrė nesėkmę dėl nepavykusio įrašyti priedo.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal nepavyko prisijungti prie interneto. Prašome pabandyti iš kito bevielio (WiFi) tinklo arba naudoti mobiliuosius duomenis.";

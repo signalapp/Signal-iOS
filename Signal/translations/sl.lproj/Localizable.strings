@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Pošiljanje ni mogoče zaradi zastarelih podatkov o zasebnosti.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Sporočilo ni moglo biti poslano, ker je uporabnik blokiran.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Sporočilo ni moglo biti poslano, ker je uporabnik blokiran.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Pošiljanje neuspešno zaradi napake v zvezi s priponko.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Pošiljanje neuspešno zaradi napake v zvezi s priponko.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Aplikacija Signal nima dostopa do interneta. Poskusite znova iz drugega omrežja WiFi ali preko podatkovne povezave.";

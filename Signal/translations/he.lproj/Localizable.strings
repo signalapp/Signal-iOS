@@ -819,10 +819,10 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "לא היה ניתן לשלוח עקב נתוני פרטיות מיושנים.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_BLOCK_LIST" = "לא ניתן לשלוח הודעה מכיוון שהמשתמש חסום על ידך";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "לא ניתן לשלוח הודעה מכיוון שהמשתמש חסום על ידך";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_STATUS_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "נכשל עקב כתיבת כושלת של צרופה.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "נכשל עקב כתיבת כושלת של צרופה.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal לא היה מסוגל להתחבר לאינטרנט. אנא נסה מרשת WiFi אחרת או השתמש בנתונים סלולריים.";
