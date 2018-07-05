@@ -989,21 +989,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                     success:successHandler];
             }
             failure:^(NSInteger statusCode, NSData *_Nullable responseData, NSError *error) {
-                // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket failure.
-                // Instead we fall back to REST, which will decrement retries.
-                // e.g. after linking a new device, sync messages will fail until the websocket re-opens.
-                [self sendMessageToService:message
-                                  recipient:recipient
-                                     thread:thread
-                                   attempts:remainingAttemptsParam
-                    useWebsocketIfAvailable:NO
-                                    success:successHandler
-                                    failure:failureHandler];
+                dispatch_async([OWSDispatch sendingQueue], ^{
+                    DDLogDebug(
+                        @"%@ in %s falling back to REST since first attempt failed.", self.logTag, __PRETTY_FUNCTION__);
+
+                    // Websockets can fail in different ways, so we don't decrement remainingAttempts for websocket
+                    // failure. Instead we fall back to REST, which will decrement retries. e.g. after linking a new
+                    // device, sync messages will fail until the websocket re-opens.
+                    [self sendMessageToService:message
+                                      recipient:recipient
+                                         thread:thread
+                                       attempts:remainingAttemptsParam
+                        useWebsocketIfAvailable:NO
+                                        success:successHandler
+                                        failure:failureHandler];
+                });
             }];
     } else {
-        if (!useWebsocketIfAvailable && TSSocketManager.canMakeRequests) {
-            DDLogDebug(@"%@ in %s falling back to REST since first attempt failed.", self.logTag, __PRETTY_FUNCTION__);
-        }
         [self.networkManager makeRequest:request
             success:^(NSURLSessionDataTask *task, id responseObject) {
                 [self messageSendDidSucceed:message
