@@ -88,21 +88,23 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
 
 
-        NSString *conversationColorName = (NSString *)^() {
-            TSContactThread *_Nullable contactThread =
-                [TSContactThread fetchObjectWithUniqueID:signalAccount.recipientId transaction:transaction];
-            if (contactThread) {
-                return contactThread.conversationColorName;
-            } else {
-                return [TSThread stableConversationColorNameForString:signalAccount.recipientId];
-            }
-        }();
+        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
+        NSString *conversationColorName;
+        
+        TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        if (contactThread) {
+            conversationColorName = contactThread.conversationColorName;
+            disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
+        } else {
+            conversationColorName = [TSThread stableConversationColorNameForString:signalAccount.recipientId];
+        }
 
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
                                  contactsManager:contactsManager
-                           conversationColorName:conversationColorName];
+                           conversationColorName:conversationColorName
+               disappearingMessagesConfiguration:disappearingMessagesConfiguration];
     }
 
     [contactsOutputStream flush];

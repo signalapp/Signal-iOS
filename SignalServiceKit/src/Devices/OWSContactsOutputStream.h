@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSDisappearingMessagesConfiguration;
 @class OWSRecipientIdentity;
 @class SignalAccount;
 
@@ -17,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
          recipientIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
             profileKeyData:(nullable NSData *)profileKeyData
            contactsManager:(id<ContactsManagerProtocol>)contactsManager
-     conversationColorName:(NSString *)conversationColorName;
+     conversationColorName:(NSString *)conversationColorName
+disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration;
+
 
 @end
 

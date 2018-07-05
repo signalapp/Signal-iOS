@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
             profileKeyData:(nullable NSData *)profileKeyData
            contactsManager:(id<ContactsManagerProtocol>)contactsManager
      conversationColorName:(NSString *)conversationColorName
+disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration *)disappearingMessagesConfiguration
 {
     OWSAssert(signalAccount);
     OWSAssert(signalAccount.contact);
@@ -67,14 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
     // legacy client "not specifying".
     [contactBuilder setExpireTimer:0];
 
-    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId];
-    if (contactThread) {
-        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:contactThread.uniqueId];
-
-        if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-            [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
-        }
+    if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
+        [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
     if ([OWSBlockingManager.sharedManager isRecipientIdBlocked:signalAccount.recipientId]) {

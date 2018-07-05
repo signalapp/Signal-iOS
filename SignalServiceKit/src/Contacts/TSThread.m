@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
     
-    if (!_conversationColorName) {
+    if (_conversationColorName.length == 0) {
         NSString *_Nullable contactId = self.contactIdentifier;
         if (contactId.length > 0) {
             // To be consistent with colors synced to desktop
