@@ -10,7 +10,7 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Покани във Signal";
 
-/* Label for 'sent message' button in contact view. */
+/* Label for 'send message' button in contact view. */
 "ACTION_SEND_MESSAGE" = "Изпрати Съобщение";
 
 /* Label for 'share contact' button. */

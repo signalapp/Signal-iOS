@@ -20,11 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIView *dateStrokeView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) AvatarImageView *avatarView;
+@property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 @property (nonatomic) BOOL isPresentingMenuController;
 
 @end
+
+#pragma mark -
 
 @implementation OWSMessageCell
 
@@ -131,6 +134,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
+- (BOOL)shouldHaveSendFailureBadge
+{
+    if (![self.viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+        return NO;
+    }
+    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+}
+
 #pragma mark - Load
 
 - (void)loadForDisplayWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -158,13 +170,42 @@ NS_ASSUME_NONNULL_BEGIN
                                                       relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                     withInset:self.conversationStyle.gutterLeading
-                                                      relation:NSLayoutRelationGreaterThanOrEqual],
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                     withInset:self.conversationStyle.gutterTrailing],
-        ]];
+        if (self.shouldHaveSendFailureBadge) {
+            self.sendFailureBadgeView = [UIImageView new];
+            self.sendFailureBadgeView.image =
+                [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
+            [self.contentView addSubview:self.sendFailureBadgeView];
+
+            CGFloat sendFailureBadgeBottomMargin
+                = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
+            [self.viewConstraints addObjectsFromArray:@[
+                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                         withInset:self.conversationStyle.gutterLeading
+                                                          relation:NSLayoutRelationGreaterThanOrEqual],
+                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView
+                                                                       offset:self.sendFailureBadgeSpacing],
+                // V-align the "send failure" badge with the
+                // last line of the text (if any, or where it
+                // would be).
+                [self.messageBubbleView autoPinEdge:ALEdgeBottom
+                                             toEdge:ALEdgeBottom
+                                             ofView:self.sendFailureBadgeView
+                                         withOffset:sendFailureBadgeBottomMargin],
+                [self.sendFailureBadgeView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                            withInset:self.conversationStyle.errorGutterTrailing],
+                [self.sendFailureBadgeView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize],
+                [self.sendFailureBadgeView autoSetDimension:ALDimensionHeight toSize:self.sendFailureBadgeSize],
+            ]];
+        } else {
+            [self.viewConstraints addObjectsFromArray:@[
+                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                         withInset:self.conversationStyle.gutterLeading
+                                                          relation:NSLayoutRelationGreaterThanOrEqual],
+                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                         withInset:self.conversationStyle.gutterTrailing],
+            ]];
+        }
     }
 
     [self updateDateHeader];
@@ -182,6 +223,24 @@ NS_ASSUME_NONNULL_BEGIN
                                      withOffset:avatarBottomMargin],
         ]];
     }
+}
+
+- (UIImage *)sendFailureBadge
+{
+    UIImage *image = [UIImage imageNamed:@"message_send_failed"];
+    OWSAssert(image);
+    OWSAssert(image.size.width == self.sendFailureBadgeSize && image.size.height == self.sendFailureBadgeSize);
+    return image;
+}
+
+- (CGFloat)sendFailureBadgeSize
+{
+    return 20.f;
+}
+
+- (CGFloat)sendFailureBadgeSpacing
+{
+    return 8.f;
 }
 
 // * If cell is visible, lazy-load (expensive) view contents.
@@ -362,6 +421,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     cellSize.height += self.dateHeaderHeight;
 
+    if (self.shouldHaveSendFailureBadge) {
+        cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
+    }
+
     cellSize = CGSizeCeil(cellSize);
 
     return cellSize;
@@ -403,6 +466,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];
+
+    [self.sendFailureBadgeView removeFromSuperview];
+    self.sendFailureBadgeView = nil;
 
     [self hideMenuControllerIfNecessary];
 

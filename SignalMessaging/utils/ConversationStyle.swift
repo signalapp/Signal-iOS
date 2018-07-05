@@ -27,6 +27,7 @@ public class ConversationStyle: NSObject {
     // like "date headers" and "unread indicator".
     @objc public var fullWidthGutterLeading: CGFloat = 0
     @objc public var fullWidthGutterTrailing: CGFloat = 0
+    @objc public var errorGutterTrailing: CGFloat = 0
 
     // viewWidth - (gutterLeading + gutterTrailing)
     @objc public var contentWidth: CGFloat = 0
@@ -87,6 +88,7 @@ public class ConversationStyle: NSObject {
         }
         fullWidthGutterLeading = gutterLeading
         fullWidthGutterTrailing = gutterTrailing
+        errorGutterTrailing = 16
 
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)
 

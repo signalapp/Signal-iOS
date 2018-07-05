@@ -107,21 +107,24 @@ NS_ASSUME_NONNULL_BEGIN
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
                 break;
             case MessageReceiptStatusFailed:
-                // TODO:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                // No status indicator icon.
                 break;
         }
 
-        OWSAssert(statusIndicatorImage);
-        OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
-        self.statusIndicatorImageView.image =
-            [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        if (messageStatus == MessageReceiptStatusRead) {
-            self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
+        if (statusIndicatorImage) {
+            OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
+            self.statusIndicatorImageView.image =
+                [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            if (messageStatus == MessageReceiptStatusRead) {
+                self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
+            } else {
+                self.statusIndicatorImageView.tintColor = textColor;
+            }
+            self.statusIndicatorImageView.hidden = NO;
         } else {
-            self.statusIndicatorImageView.tintColor = textColor;
+            self.statusIndicatorImageView.image = nil;
+            self.statusIndicatorImageView.hidden = YES;
         }
-        self.statusIndicatorImageView.hidden = NO;
     } else {
         self.statusIndicatorImageView.image = nil;
         self.statusIndicatorImageView.hidden = YES;
@@ -141,13 +144,32 @@ NS_ASSUME_NONNULL_BEGIN
     [self.statusIndicatorImageView.layer addAnimation:animation forKey:@"animation"];
 }
 
+- (BOOL)isFailedOutgoingMessage:(ConversationViewItem *)viewItem
+{
+    OWSAssert(viewItem);
+
+    if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage) {
+        return NO;
+    }
+
+    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+    MessageReceiptStatus messageStatus =
+        [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+    return messageStatus == MessageReceiptStatusFailed;
+}
+
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssert(viewItem);
 
     [self configureFonts];
 
-    self.timestampLabel.text = [DateUtil formatTimestampAsTimeShort:viewItem.interaction.timestamp];
+    if ([self isFailedOutgoingMessage:viewItem]) {
+        self.timestampLabel.text
+            = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
+    } else {
+        self.timestampLabel.text = [DateUtil formatTimestampAsTimeShort:viewItem.interaction.timestamp];
+    }
 }
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
@@ -158,10 +180,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize result = CGSizeZero;
     result.height = MAX(self.timestampLabel.font.lineHeight, self.imageHeight);
+    result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        result.width = ([self.timestampLabel sizeThatFits:CGSizeZero].width + self.maxImageWidth + self.hSpacing);
-    } else {
-        result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
+        if (![self isFailedOutgoingMessage:viewItem]) {
+            result.width += (self.maxImageWidth + self.hSpacing);
+        }
     }
     return CGSizeCeil(result);
 }
