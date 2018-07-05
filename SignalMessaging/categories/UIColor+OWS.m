@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_destructiveRedColor
 {
-    return [UIColor colorWithRed:0.98639106750488281 green:0.10408364236354828 blue:0.33135244250297546 alpha:1.f];
+    return [UIColor colorWithRed:255.f / 255.f green:38.f / 255.f blue:31.f / 255.f alpha:1.0f];
 }
 
 + (UIColor *)ows_errorMessageBorderColor
