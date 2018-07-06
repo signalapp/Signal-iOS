@@ -161,15 +161,12 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
     CGFloat bottomRounding
         = (useSmallCorners_Bottom ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
 
-    const CGFloat topAngle = 3.0f * M_PI / 2.0f;
+    const CGFloat topAngle = 3.0f * M_PI_2;
     const CGFloat rightAngle = 0.0f;
-    const CGFloat bottomAngle = M_PI / 2.0f;
+    const CGFloat bottomAngle = M_PI_2;
     const CGFloat leftAngle = M_PI;
 
     [bezierPath moveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)];
-
-    // top line
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRounding, bubbleTop)];
 
     // top right corner
     [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRounding, bubbleTop + topRounding)
@@ -178,9 +175,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
                         endAngle:rightAngle
                        clockwise:true];
 
-    // right line
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRounding)];
-
     // bottom right corner
     [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRounding, bubbleBottom - bottomRounding)
                           radius:bottomRounding
@@ -188,18 +182,12 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
                         endAngle:bottomAngle
                        clockwise:true];
 
-    // bottom line
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom)];
-
     // bottom left corner
     [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom - bottomRounding)
                           radius:bottomRounding
                       startAngle:bottomAngle
                         endAngle:leftAngle
                        clockwise:true];
-
-    // left line
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topRounding)];
 
     // top left corner
     [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topRounding, bubbleTop + topRounding)
