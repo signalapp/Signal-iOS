@@ -172,20 +172,19 @@ NS_ASSUME_NONNULL_BEGIN
             const CGFloat topRightRounding
                 = (sharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
 
-            // bottom corners are always sharp
-            const CGFloat bottomRightRounding = sharpCornerRadius;
-            const CGFloat bottomLeftRounding = sharpCornerRadius;
+            const CGFloat bottomRightRounding
+                = (sharpCorners & UIRectCornerBottomRight) ? sharpCornerRadius : wideCornerRadius;
+            const CGFloat bottomLeftRounding
+                = (sharpCorners & UIRectCornerBottomLeft) ? sharpCornerRadius : wideCornerRadius;
 
-            const CGFloat topAngle = 3.0f * M_PI / 2.0f;
+            const CGFloat topAngle = 3.0f * M_PI_2;
             const CGFloat rightAngle = 0.0f;
-            const CGFloat bottomAngle = M_PI / 2.0f;
+            const CGFloat bottomAngle = M_PI_2;
             const CGFloat leftAngle = M_PI;
 
             // starting just to the right of the top left corner and working clockwise
             [bezierPath moveToPoint:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop)];
 
-            // top line
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRightRounding, bubbleTop)];
 
             // top right corner
             [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRightRounding, bubbleTop + topRightRounding)
@@ -193,9 +192,6 @@ NS_ASSUME_NONNULL_BEGIN
                               startAngle:topAngle
                                 endAngle:rightAngle
                                clockwise:true];
-
-            // right line
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRightRounding)];
 
             // bottom right corner
             [bezierPath
@@ -205,18 +201,12 @@ NS_ASSUME_NONNULL_BEGIN
                         endAngle:bottomAngle
                        clockwise:true];
 
-            // bottom line
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom)];
-
             // bottom left corner
             [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom - bottomLeftRounding)
                                   radius:bottomLeftRounding
                               startAngle:bottomAngle
                                 endAngle:leftAngle
                                clockwise:true];
-
-            // left line
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topLeftRounding)];
 
             // top left corner
             [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop + topLeftRounding)

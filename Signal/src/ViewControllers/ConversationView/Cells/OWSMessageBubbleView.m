@@ -578,7 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.viewItem.senderName) {
         return UIRectCornerAllCorners;
     } else {
-        return self.sharpCorners & UIRectCornerAllCorners;
+        return self.sharpCorners | UIRectCornerBottomLeft | UIRectCornerBottomRight;
     }
 }
 
