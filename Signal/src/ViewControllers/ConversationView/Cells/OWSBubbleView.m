@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kOWSMessageCellCornerRadius_Large = 16;
+const CGFloat kOWSMessageCellCornerRadius_Large = 18;
 const CGFloat kOWSMessageCellCornerRadius_Small = 2;
 
 @interface OWSBubbleView ()
@@ -161,19 +161,40 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
     CGFloat bottomRounding
         = (useSmallCorners_Bottom ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
 
+    const CGFloat topAngle = 3.0f * M_PI_2;
+    const CGFloat rightAngle = 0.0f;
+    const CGFloat bottomAngle = M_PI_2;
+    const CGFloat leftAngle = M_PI;
+
     [bezierPath moveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRounding, bubbleTop)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + topRounding)
-                       controlPoint:CGPointMake(bubbleRight, bubbleTop)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bottomRounding, bubbleBottom)
-                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bottomRounding)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
-    [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+
+    // top right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRounding, bubbleTop + topRounding)
+                          radius:topRounding
+                      startAngle:topAngle
+                        endAngle:rightAngle
+                       clockwise:true];
+
+    // bottom right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRounding, bubbleBottom - bottomRounding)
+                          radius:bottomRounding
+                      startAngle:rightAngle
+                        endAngle:bottomAngle
+                       clockwise:true];
+
+    // bottom left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom - bottomRounding)
+                          radius:bottomRounding
+                      startAngle:bottomAngle
+                        endAngle:leftAngle
+                       clockwise:true];
+
+    // top left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topRounding, bubbleTop + topRounding)
+                          radius:topRounding
+                      startAngle:leftAngle
+                        endAngle:topAngle
+                       clockwise:true];
 
     return bezierPath;
 }
