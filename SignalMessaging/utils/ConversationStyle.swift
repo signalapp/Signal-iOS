@@ -97,16 +97,25 @@ public class ConversationStyle: NSObject {
         maxMessageWidth = floor(contentWidth - 48)
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
+
+        let baseFontOffset: CGFloat = 11
+
         // Don't include the distance from the "cap height" to the top of the UILabel
         // in the top margin.
-        textInsetTop = max(0, 12 - (messageTextFont.ascender - messageTextFont.capHeight))
+        textInsetTop = max(0, round(baseFontOffset - (messageTextFont.ascender - messageTextFont.capHeight)))
         // Don't include the distance from the "baseline" to the bottom of the UILabel
         // (e.g. the descender) in the top margin. Note that UIFont.descender is a
         // negative value.
-        textInsetBottom = max(0, 12 - abs(messageTextFont.descender))
+        textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
+
+        if _isDebugAssertConfiguration(), UIFont.ows_dynamicTypeBody.pointSize == 17 {
+            assert(textInsetTop == 7)
+            assert(textInsetBottom == 7)
+        }
+
         textInsetHorizontal = 12
 
-        lastTextLineAxis = CGFloat(round(12 + messageTextFont.capHeight * 0.5))
+        lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))
 
         self.primaryColor = ConversationStyle.primaryColor(thread: thread)
     }
