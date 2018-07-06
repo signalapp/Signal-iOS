@@ -4897,7 +4897,10 @@ typedef enum : NSUInteger {
             } else {
                 isFirstInCluster = previousViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
             }
+
             if (nextViewItem == nil) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.shouldShowDate) {
                 isLastInCluster = YES;
             } else {
                 isLastInCluster = nextViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
@@ -4924,15 +4927,20 @@ typedef enum : NSUInteger {
             }
 
             // clustering
-            if (previousViewItem == nil
-                || previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+            if (previousViewItem == nil) {
+                isFirstInCluster = YES;
+            } else if (previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isFirstInCluster = YES;
             } else {
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
                 isFirstInCluster = ![incomingSenderId isEqual:previousIncomingMessage.authorId];
             }
 
-            if (nextViewItem == nil || nextViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+            if (nextViewItem == nil) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.shouldShowDate) {
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
