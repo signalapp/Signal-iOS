@@ -9,6 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 extern const CGFloat kOWSMessageCellCornerRadius_Large;
 extern const CGFloat kOWSMessageCellCornerRadius_Small;
 
+typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
+    OWSDirectionalRectCornerTopLeading = 1 << 0,
+    OWSDirectionalRectCornerTopTrailing = 1 << 1,
+    OWSDirectionalRectCornerBottomLeading = 1 << 2,
+    OWSDirectionalRectCornerBottomTrailing = 1 << 3,
+    OWSDirectionalRectCornerAllCorners = ~0UL
+};
+
 @class OWSBubbleView;
 
 @protocol OWSBubbleViewPartner <NSObject>
@@ -29,11 +37,11 @@ extern const CGFloat kOWSMessageCellCornerRadius_Small;
                                      bubbleRight:(CGFloat)bubbleRight
                                sharpCornerRadius:(CGFloat)sharpCornerRadius
                                 wideCornerRadius:(CGFloat)wideCornerRadius
-                                    sharpCorners:(UIRectCorner)sharpCorners;
+                                    sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
-@property (nonatomic) UIRectCorner sharpCorners;
+@property (nonatomic) OWSDirectionalRectCorner sharpCorners;
 
 - (UIBezierPath *)maskPath;
 

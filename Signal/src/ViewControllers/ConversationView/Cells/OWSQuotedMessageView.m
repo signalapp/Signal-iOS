@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
-@property (nonatomic, readonly) UIRectCorner sharpCorners;
+@property (nonatomic, readonly) OWSDirectionalRectCorner sharpCorners;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
-                                              sharpCorners:(UIRectCorner)sharpCorners
+                                              sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     OWSAssert(quotedMessage);
 
@@ -62,12 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
         displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
     }
 
-    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                                                   displayableQuotedText:displayableQuotedText
-                                                                       conversationStyle:conversationStyle
-                                                                            isForPreview:YES
-                                                                              isOutgoing:YES
-                                                                            sharpCorners:UIRectCornerAllCorners];
+    OWSQuotedMessageView *instance =
+        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
+                                      displayableQuotedText:displayableQuotedText
+                                          conversationStyle:conversationStyle
+                                               isForPreview:YES
+                                                 isOutgoing:YES
+                                               sharpCorners:OWSDirectionalRectCornerAllCorners];
     [instance createContents];
     return instance;
 }
@@ -77,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                     conversationStyle:(ConversationStyle *)conversationStyle
                          isForPreview:(BOOL)isForPreview
                            isOutgoing:(BOOL)isOutgoing
-                         sharpCorners:(UIRectCorner)sharpCorners
+                         sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     self = [super init];
 
@@ -151,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    UIRectCorner sharpCorners = self.sharpCorners;
+    OWSDirectionalRectCorner sharpCorners = self.sharpCorners;
 
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero

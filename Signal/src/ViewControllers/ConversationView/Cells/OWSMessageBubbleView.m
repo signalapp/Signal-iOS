@@ -558,27 +558,29 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
-- (UIRectCorner)sharpCorners
+- (OWSDirectionalRectCorner)sharpCorners
 {
-    UIRectCorner sharpCorners = 0;
+    OWSDirectionalRectCorner sharpCorners = 0;
 
     if (!self.viewItem.isFirstInCluster) {
-        sharpCorners = sharpCorners | (self.isIncoming ? UIRectCornerTopLeft : UIRectCornerTopRight);
+        sharpCorners = sharpCorners
+            | (self.isIncoming ? OWSDirectionalRectCornerTopLeading : OWSDirectionalRectCornerTopTrailing);
     }
 
     if (!self.viewItem.isLastInCluster) {
-        sharpCorners = sharpCorners | (self.isIncoming ? UIRectCornerBottomLeft : UIRectCornerBottomRight);
+        sharpCorners = sharpCorners
+            | (self.isIncoming ? OWSDirectionalRectCornerBottomLeading : OWSDirectionalRectCornerBottomTrailing);
     }
 
     return sharpCorners;
 }
 
-- (UIRectCorner)sharpCornersForQuotedMessage
+- (OWSDirectionalRectCorner)sharpCornersForQuotedMessage
 {
     if (self.viewItem.senderName) {
-        return UIRectCornerAllCorners;
+        return OWSDirectionalRectCornerAllCorners;
     } else {
-        return self.sharpCorners | UIRectCornerBottomLeft | UIRectCornerBottomRight;
+        return self.sharpCorners | OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing;
     }
 }
 

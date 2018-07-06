@@ -3,9 +3,39 @@
 //
 
 #import "OWSBubbleView.h"
+#import "MainAppContext.h"
 #import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+UIRectCorner UIRectCornerForOWSDirectionalRectCorner(OWSDirectionalRectCorner corner);
+UIRectCorner UIRectCornerForOWSDirectionalRectCorner(OWSDirectionalRectCorner corner)
+{
+    if (corner == OWSDirectionalRectCornerAllCorners) {
+        return UIRectCornerAllCorners;
+    }
+
+    UIRectCorner rectCorner = 0;
+    BOOL isRTL = CurrentAppContext().isRTL;
+
+    if (corner & OWSDirectionalRectCornerTopLeading) {
+        rectCorner = rectCorner | (isRTL ? UIRectCornerTopRight : UIRectCornerTopLeft);
+    }
+
+    if (corner & OWSDirectionalRectCornerTopTrailing) {
+        rectCorner = rectCorner | (isRTL ? UIRectCornerTopLeft : UIRectCornerTopRight);
+    }
+
+    if (corner & OWSDirectionalRectCornerBottomTrailing) {
+        rectCorner = rectCorner | (isRTL ? UIRectCornerBottomLeft : UIRectCornerBottomRight);
+    }
+
+    if (corner & OWSDirectionalRectCornerBottomLeading) {
+        rectCorner = rectCorner | (isRTL ? UIRectCornerBottomRight : UIRectCornerBottomLeft);
+    }
+
+    return rectCorner;
+}
 
 const CGFloat kOWSMessageCellCornerRadius_Large = 18;
 const CGFloat kOWSMessageCellCornerRadius_Small = 4;
@@ -101,7 +131,7 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [CATransaction commit];
 }
 
-- (void)setSharpCorners:(UIRectCorner)sharpCorners
+- (void)setSharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     _sharpCorners = sharpCorners;
 
@@ -135,12 +165,10 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     return [self.class maskPathForSize:self.bounds.size sharpCorners:self.sharpCorners];
 }
 
-+ (UIBezierPath *)maskPathForSize:(CGSize)size sharpCorners:(UIRectCorner)sharpCorners
++ (UIBezierPath *)maskPathForSize:(CGSize)size sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     CGRect bounds = CGRectZero;
     bounds.size = size;
-
-    UIBezierPath *bezierPath = [UIBezierPath new];
 
     CGFloat bubbleTop = 0.f;
     CGFloat bubbleLeft = 0.f;
@@ -162,15 +190,18 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
                                      bubbleRight:(CGFloat)bubbleRight
                                sharpCornerRadius:(CGFloat)sharpCornerRadius
                                 wideCornerRadius:(CGFloat)wideCornerRadius
-                                    sharpCorners:(UIRectCorner)sharpCorners
+                                    sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     UIBezierPath *bezierPath = [UIBezierPath new];
 
-    const CGFloat topLeftRounding = (sharpCorners & UIRectCornerTopLeft) ? sharpCornerRadius : wideCornerRadius;
-    const CGFloat topRightRounding = (sharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
+    UIRectCorner uiSharpCorners = UIRectCornerForOWSDirectionalRectCorner(sharpCorners);
 
-    const CGFloat bottomRightRounding = (sharpCorners & UIRectCornerBottomRight) ? sharpCornerRadius : wideCornerRadius;
-    const CGFloat bottomLeftRounding = (sharpCorners & UIRectCornerBottomLeft) ? sharpCornerRadius : wideCornerRadius;
+    const CGFloat topLeftRounding = (uiSharpCorners & UIRectCornerTopLeft) ? sharpCornerRadius : wideCornerRadius;
+    const CGFloat topRightRounding = (uiSharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
+
+    const CGFloat bottomRightRounding
+        = (uiSharpCorners & UIRectCornerBottomRight) ? sharpCornerRadius : wideCornerRadius;
+    const CGFloat bottomLeftRounding = (uiSharpCorners & UIRectCornerBottomLeft) ? sharpCornerRadius : wideCornerRadius;
 
     const CGFloat topAngle = 3.0f * M_PI_2;
     const CGFloat rightAngle = 0.0f;
