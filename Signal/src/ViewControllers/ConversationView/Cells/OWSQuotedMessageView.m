@@ -178,6 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
+    // TODO:
     innerBubbleView.backgroundColor
         = (self.isOutgoing ? [self.conversationStyle.primaryColor colorWithAlphaComponent:0.25f]
                            : [UIColor colorWithWhite:1.f alpha:0.75f]);
@@ -194,6 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     [hStackView autoPinToSuperviewEdges];
 
     UIView *stripeView = [UIView new];
+    // TODO:
     stripeView.backgroundColor = (self.isOutgoing ? [self.conversationStyle primaryColor] : [UIColor whiteColor]);
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];

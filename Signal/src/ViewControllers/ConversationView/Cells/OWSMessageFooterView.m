@@ -70,19 +70,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem isOverlayingMedia:(BOOL)isOverlayingMedia
+- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem
+                        isOverlayingMedia:(BOOL)isOverlayingMedia
+                        conversationStyle:(ConversationStyle *)conversationStyle
+                               isIncoming:(BOOL)isIncoming
 {
     OWSAssert(viewItem);
+    OWSAssert(conversationStyle);
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
     UIColor *textColor;
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
-    } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-        textColor = [UIColor colorWithWhite:1.f alpha:0.7f];
     } else {
-        textColor = [UIColor ows_light60Color];
+        textColor = [conversationStyle secondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
 
