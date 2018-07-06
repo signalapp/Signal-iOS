@@ -58,6 +58,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL shouldShowSenderAvatar;
 @property (nonatomic, nullable) NSAttributedString *senderName;
 @property (nonatomic) BOOL shouldHideFooter;
+@property (nonatomic) BOOL isFirstInCluster;
+@property (nonatomic) BOOL isLastInCluster;
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 

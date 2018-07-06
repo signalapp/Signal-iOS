@@ -5,7 +5,7 @@
 #import "OWSQuotedMessageView.h"
 #import "ConversationViewItem.h"
 #import "Environment.h"
-#import "OWSBubbleShapeView.h"
+#import "OWSBubbleView.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
-@property (nonatomic, readonly) BOOL sharesTopBorderWithMessageBubble;
+@property (nonatomic, readonly) OWSDirectionalRectCorner sharpCorners;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
-                          sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
+                                              sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     OWSAssert(quotedMessage);
 
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              conversationStyle:conversationStyle
                                                   isForPreview:NO
                                                     isOutgoing:isOutgoing
-                              sharesTopBorderWithMessageBubble:sharesTopBorderWithMessageBubble];
+                                                  sharpCorners:sharpCorners];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
@@ -62,12 +62,13 @@ NS_ASSUME_NONNULL_BEGIN
         displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
     }
 
-    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                                                   displayableQuotedText:displayableQuotedText
-                                                                       conversationStyle:conversationStyle
-                                                                            isForPreview:YES
-                                                                              isOutgoing:YES
-                                                        sharesTopBorderWithMessageBubble:NO];
+    OWSQuotedMessageView *instance =
+        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
+                                      displayableQuotedText:displayableQuotedText
+                                          conversationStyle:conversationStyle
+                                               isForPreview:YES
+                                                 isOutgoing:YES
+                                               sharpCorners:OWSDirectionalRectCornerAllCorners];
     [instance createContents];
     return instance;
 }
@@ -77,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                     conversationStyle:(ConversationStyle *)conversationStyle
                          isForPreview:(BOOL)isForPreview
                            isOutgoing:(BOOL)isOutgoing
-     sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
+                         sharpCorners:(OWSDirectionalRectCorner)sharpCorners
 {
     self = [super init];
 
@@ -92,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isForPreview = isForPreview;
     _conversationStyle = conversationStyle;
     _isOutgoing = isOutgoing;
-    _sharesTopBorderWithMessageBubble = sharesTopBorderWithMessageBubble;
+    _sharpCorners = sharpCorners;
 
     _quotedAuthorLabel = [UILabel new];
     _quotedTextLabel = [UILabel new];
@@ -151,34 +152,28 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    BOOL sharesTopBorderWithMessageBubble = self.sharesTopBorderWithMessageBubble;
+    OWSDirectionalRectCorner sharpCorners = self.sharpCorners;
+
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
         layoutCallback:^(UIView *layerView) {
             CGRect layerFrame = layerView.bounds;
 
-            UIBezierPath *bezierPath = [UIBezierPath new];
+            const CGFloat bubbleLeft = 0.f;
+            const CGFloat bubbleRight = layerFrame.size.width;
+            const CGFloat bubbleTop = 0.f;
+            const CGFloat bubbleBottom = layerFrame.size.height;
 
-            CGFloat bubbleLeft = 0.f;
-            CGFloat bubbleRight = layerFrame.size.width;
-            CGFloat bubbleTop = 0.f;
-            CGFloat bubbleBottom = layerFrame.size.height;
-            CGFloat bubbleTopRounding = (sharesTopBorderWithMessageBubble ? 10.f : 4.f);
-            CGFloat bubbleBottomRounding = 4.f;
+            const CGFloat sharpCornerRadius = 4;
+            const CGFloat wideCornerRadius = 10;
 
-            [bezierPath moveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight - bubbleTopRounding, bubbleTop)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + bubbleTopRounding)
-                               controlPoint:CGPointMake(bubbleRight, bubbleTop)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bubbleBottomRounding)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bubbleBottomRounding, bubbleBottom)
-                               controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bubbleBottomRounding, bubbleBottom)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bubbleBottomRounding)
-                               controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + bubbleTopRounding)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)
-                               controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+            UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
+                                                                          bubbleLeft:bubbleLeft
+                                                                        bubbleBottom:bubbleBottom
+                                                                         bubbleRight:bubbleRight
+                                                                   sharpCornerRadius:sharpCornerRadius
+                                                                    wideCornerRadius:wideCornerRadius
+                                                                        sharpCorners:sharpCorners];
 
             maskLayer.path = bezierPath.CGPath;
         }];

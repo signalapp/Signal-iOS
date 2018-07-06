@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSBubbleView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
@@ -35,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
-                          sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble;
+                                              sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
 
 // Factory method for "message compose" views.
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage

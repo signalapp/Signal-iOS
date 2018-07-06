@@ -4865,6 +4865,8 @@ typedef enum : NSUInteger {
         ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
         BOOL shouldShowSenderAvatar = NO;
         BOOL shouldHideFooter = NO;
+        BOOL isFirstInCluster = YES;
+        BOOL isLastInCluster = YES;
         NSAttributedString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
@@ -4888,6 +4890,21 @@ typedef enum : NSUInteger {
                     && receiptStatus == nextReceiptStatus
                     && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.shouldShowDate);
             }
+
+            // clustering
+            if (previousViewItem == nil) {
+                isFirstInCluster = YES;
+            } else {
+                isFirstInCluster = previousViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
+            }
+
+            if (nextViewItem == nil) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.shouldShowDate) {
+                isLastInCluster = YES;
+            } else {
+                isLastInCluster = nextViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
+            }
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
 
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
@@ -4907,6 +4924,27 @@ typedef enum : NSUInteger {
                 // has the same footer and no "date break" separates us.
                 shouldHideFooter = [timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate &&
                     [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId];
+            }
+
+            // clustering
+            if (previousViewItem == nil) {
+                isFirstInCluster = YES;
+            } else if (previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+                isFirstInCluster = YES;
+            } else {
+                TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
+                isFirstInCluster = ![incomingSenderId isEqual:previousIncomingMessage.authorId];
+            }
+
+            if (nextViewItem == nil) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+                isLastInCluster = YES;
+            } else if (nextViewItem.shouldShowDate) {
+                isLastInCluster = YES;
+            } else {
+                TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
+                isLastInCluster = ![incomingSenderId isEqual:nextIncomingMessage.authorId];
             }
 
             if (viewItem.isGroupThread) {
@@ -4944,6 +4982,8 @@ typedef enum : NSUInteger {
             }
         }
 
+        viewItem.isFirstInCluster = isFirstInCluster;
+        viewItem.isLastInCluster = isLastInCluster;
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;

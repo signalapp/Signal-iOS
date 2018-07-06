@@ -268,7 +268,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.stackView addArrangedSubview:spacerView];
         }
 
-        BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
         DisplayableText *_Nullable displayableQuotedText
             = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
 
@@ -276,8 +275,8 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
                                                  conversationStyle:self.conversationStyle
-                                                        isOutgoing:isOutgoing
-                                  sharesTopBorderWithMessageBubble:!self.shouldShowSenderName];
+                                                        isOutgoing:self.isOutgoing
+                                                      sharpCorners:self.sharpCornersForQuotedMessage];
         quotedMessageView.delegate = self;
 
         self.quotedMessageView = quotedMessageView;
@@ -559,12 +558,35 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
+- (OWSDirectionalRectCorner)sharpCorners
+{
+    OWSDirectionalRectCorner sharpCorners = 0;
+
+    if (!self.viewItem.isFirstInCluster) {
+        sharpCorners = sharpCorners
+            | (self.isIncoming ? OWSDirectionalRectCornerTopLeading : OWSDirectionalRectCornerTopTrailing);
+    }
+
+    if (!self.viewItem.isLastInCluster) {
+        sharpCorners = sharpCorners
+            | (self.isIncoming ? OWSDirectionalRectCornerBottomLeading : OWSDirectionalRectCornerBottomTrailing);
+    }
+
+    return sharpCorners;
+}
+
+- (OWSDirectionalRectCorner)sharpCornersForQuotedMessage
+{
+    if (self.viewItem.senderName) {
+        return OWSDirectionalRectCornerAllCorners;
+    } else {
+        return self.sharpCorners | OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing;
+    }
+}
+
 - (void)configureBubbleRounding
 {
-    self.bubbleView.useSmallCorners_Top
-        = (self.hasBodyMediaWithThumbnail && !self.shouldShowSenderName && !self.isQuotedReply);
-    self.bubbleView.useSmallCorners_Bottom
-        = (self.hasBodyMediaWithThumbnail && !self.hasBodyText && !self.hasBottomFooter);
+    self.bubbleView.sharpCorners = self.sharpCorners;
 }
 
 - (void)updateBubbleColor
@@ -1199,7 +1221,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
     DisplayableText *_Nullable displayableQuotedText
         = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
 
@@ -1207,8 +1228,8 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
                                              conversationStyle:self.conversationStyle
-                                                    isOutgoing:isOutgoing
-                              sharesTopBorderWithMessageBubble:NO];
+                                                    isOutgoing:self.isOutgoing
+                                                  sharpCorners:self.sharpCornersForQuotedMessage];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
