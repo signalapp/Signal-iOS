@@ -101,16 +101,9 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
     [CATransaction commit];
 }
 
-- (void)setUseSmallCorners_Top:(BOOL)useSmallCorners_Top
+- (void)setSharpCorners:(UIRectCorner)sharpCorners
 {
-    _useSmallCorners_Top = useSmallCorners_Top;
-
-    [self updateLayers];
-}
-
-- (void)setUseSmallCorners_Bottom:(BOOL)useSmallCorners_Bottom
-{
-    _useSmallCorners_Bottom = useSmallCorners_Bottom;
+    _sharpCorners = sharpCorners;
 
     [self updateLayers];
 }
@@ -139,14 +132,10 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
 
 - (UIBezierPath *)maskPath
 {
-    return [self.class maskPathForSize:self.bounds.size
-                   useSmallCorners_Top:self.useSmallCorners_Top
-                useSmallCorners_Bottom:self.useSmallCorners_Bottom];
+    return [self.class maskPathForSize:self.bounds.size sharpCorners:self.sharpCorners];
 }
 
-+ (UIBezierPath *)maskPathForSize:(CGSize)size
-              useSmallCorners_Top:(BOOL)useSmallCorners_Top
-           useSmallCorners_Bottom:(BOOL)useSmallCorners_Bottom
++ (UIBezierPath *)maskPathForSize:(CGSize)size sharpCorners:(UIRectCorner)sharpCorners
 {
     CGRect bounds = CGRectZero;
     bounds.size = size;
@@ -157,41 +146,48 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
     CGFloat bubbleRight = size.width;
     CGFloat bubbleTop = 0.f;
     CGFloat bubbleBottom = size.height;
-    CGFloat topRounding = (useSmallCorners_Top ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
-    CGFloat bottomRounding
-        = (useSmallCorners_Bottom ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
+
+    CGFloat topLeftRounding
+        = (sharpCorners & UIRectCornerTopLeft) ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large;
+    CGFloat topRightRounding
+        = (sharpCorners & UIRectCornerTopRight) ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large;
+    CGFloat bottomRightRounding = (sharpCorners & UIRectCornerBottomRight) ? kOWSMessageCellCornerRadius_Small
+                                                                           : kOWSMessageCellCornerRadius_Large;
+    CGFloat bottomLeftRounding = (sharpCorners & UIRectCornerBottomLeft) ? kOWSMessageCellCornerRadius_Small
+                                                                         : kOWSMessageCellCornerRadius_Large;
 
     const CGFloat topAngle = 3.0f * M_PI_2;
     const CGFloat rightAngle = 0.0f;
     const CGFloat bottomAngle = M_PI_2;
     const CGFloat leftAngle = M_PI;
 
-    [bezierPath moveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)];
+    // starting just to the right of the top left corner and working clockwise
+    [bezierPath moveToPoint:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop)];
 
     // top right corner
-    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRounding, bubbleTop + topRounding)
-                          radius:topRounding
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRightRounding, bubbleTop + topRightRounding)
+                          radius:topRightRounding
                       startAngle:topAngle
                         endAngle:rightAngle
                        clockwise:true];
 
     // bottom right corner
-    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRounding, bubbleBottom - bottomRounding)
-                          radius:bottomRounding
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRightRounding, bubbleBottom - bottomRightRounding)
+                          radius:bottomRightRounding
                       startAngle:rightAngle
                         endAngle:bottomAngle
                        clockwise:true];
 
     // bottom left corner
-    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom - bottomRounding)
-                          radius:bottomRounding
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom - bottomLeftRounding)
+                          radius:bottomLeftRounding
                       startAngle:bottomAngle
                         endAngle:leftAngle
                        clockwise:true];
 
     // top left corner
-    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topRounding, bubbleTop + topRounding)
-                          radius:topRounding
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop + topLeftRounding)
+                          radius:topLeftRounding
                       startAngle:leftAngle
                         endAngle:topAngle
                        clockwise:true];
@@ -228,11 +224,7 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
 
 - (CGFloat)minWidth
 {
-    if (self.useSmallCorners_Top && self.useSmallCorners_Bottom) {
-        return (kOWSMessageCellCornerRadius_Small * 2);
-    } else {
-        return (kOWSMessageCellCornerRadius_Large * 2);
-    }
+    return (kOWSMessageCellCornerRadius_Large * 2);
 }
 
 @end

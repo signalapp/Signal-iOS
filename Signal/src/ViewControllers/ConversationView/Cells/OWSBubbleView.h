@@ -25,8 +25,7 @@ extern const CGFloat kOWSMessageCellCornerRadius_Small;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
-@property (nonatomic) BOOL useSmallCorners_Top;
-@property (nonatomic) BOOL useSmallCorners_Bottom;
+@property (nonatomic) UIRectCorner sharpCorners;
 
 - (UIBezierPath *)maskPath;
 

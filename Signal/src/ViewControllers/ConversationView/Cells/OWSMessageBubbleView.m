@@ -268,7 +268,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self.stackView addArrangedSubview:spacerView];
         }
 
-        BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
         DisplayableText *_Nullable displayableQuotedText
             = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
 
@@ -276,7 +275,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                              displayableQuotedText:displayableQuotedText
                                                  conversationStyle:self.conversationStyle
-                                                        isOutgoing:isOutgoing
+                                                        isOutgoing:self.isOutgoing
                                   sharesTopBorderWithMessageBubble:!self.shouldShowSenderName];
         quotedMessageView.delegate = self;
 
@@ -561,10 +560,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureBubbleRounding
 {
-    self.bubbleView.useSmallCorners_Top
-        = (self.hasBodyMediaWithThumbnail && !self.shouldShowSenderName && !self.isQuotedReply);
-    self.bubbleView.useSmallCorners_Bottom
-        = (self.hasBodyMediaWithThumbnail && !self.hasBodyText && !self.hasBottomFooter);
+    UIRectCorner sharpCorners = 0;
+
+    if (!self.viewItem.isFirstInCluster) {
+        sharpCorners = sharpCorners | (self.isIncoming ? UIRectCornerTopLeft : UIRectCornerTopRight);
+    }
+
+    if (!self.viewItem.isLastInCluster) {
+        sharpCorners = sharpCorners | (self.isIncoming ? UIRectCornerBottomLeft : UIRectCornerBottomRight);
+    }
+
+    self.bubbleView.sharpCorners = sharpCorners;
 }
 
 - (void)updateBubbleColor
@@ -1199,7 +1205,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    BOOL isOutgoing = [self.viewItem.interaction isKindOfClass:TSOutgoingMessage.class];
     DisplayableText *_Nullable displayableQuotedText
         = (self.viewItem.hasQuotedText ? self.viewItem.displayableQuotedText : nil);
 
@@ -1207,7 +1212,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSQuotedMessageView quotedMessageViewForConversation:self.viewItem.quotedReply
                                          displayableQuotedText:displayableQuotedText
                                              conversationStyle:self.conversationStyle
-                                                    isOutgoing:isOutgoing
+                                                    isOutgoing:self.isOutgoing
                               sharesTopBorderWithMessageBubble:NO];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
