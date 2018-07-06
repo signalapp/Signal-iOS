@@ -158,8 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
         layoutCallback:^(UIView *layerView) {
             CGRect layerFrame = layerView.bounds;
 
-            UIBezierPath *bezierPath = [UIBezierPath new];
-
             const CGFloat bubbleLeft = 0.f;
             const CGFloat bubbleRight = layerFrame.size.width;
             const CGFloat bubbleTop = 0.f;
@@ -168,52 +166,13 @@ NS_ASSUME_NONNULL_BEGIN
             const CGFloat sharpCornerRadius = 4;
             const CGFloat wideCornerRadius = 10;
 
-            const CGFloat topLeftRounding = (sharpCorners & UIRectCornerTopLeft) ? sharpCornerRadius : wideCornerRadius;
-            const CGFloat topRightRounding
-                = (sharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
-
-            const CGFloat bottomRightRounding
-                = (sharpCorners & UIRectCornerBottomRight) ? sharpCornerRadius : wideCornerRadius;
-            const CGFloat bottomLeftRounding
-                = (sharpCorners & UIRectCornerBottomLeft) ? sharpCornerRadius : wideCornerRadius;
-
-            const CGFloat topAngle = 3.0f * M_PI_2;
-            const CGFloat rightAngle = 0.0f;
-            const CGFloat bottomAngle = M_PI_2;
-            const CGFloat leftAngle = M_PI;
-
-            // starting just to the right of the top left corner and working clockwise
-            [bezierPath moveToPoint:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop)];
-
-
-            // top right corner
-            [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRightRounding, bubbleTop + topRightRounding)
-                                  radius:topRightRounding
-                              startAngle:topAngle
-                                endAngle:rightAngle
-                               clockwise:true];
-
-            // bottom right corner
-            [bezierPath
-                addArcWithCenter:CGPointMake(bubbleRight - bottomRightRounding, bubbleBottom - bottomRightRounding)
-                          radius:bottomRightRounding
-                      startAngle:rightAngle
-                        endAngle:bottomAngle
-                       clockwise:true];
-
-            // bottom left corner
-            [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom - bottomLeftRounding)
-                                  radius:bottomLeftRounding
-                              startAngle:bottomAngle
-                                endAngle:leftAngle
-                               clockwise:true];
-
-            // top left corner
-            [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop + topLeftRounding)
-                                  radius:topLeftRounding
-                              startAngle:leftAngle
-                                endAngle:topAngle
-                               clockwise:true];
+            UIBezierPath *bezierPath = [OWSBubbleShapeView roundedBezierRectWithBubbleTop:bubbleTop
+                                                                               bubbleLeft:bubbleLeft
+                                                                             bubbleBottom:bubbleBottom
+                                                                              bubbleRight:bubbleRight
+                                                                        sharpCornerRadius:sharpCornerRadius
+                                                                         wideCornerRadius:wideCornerRadius
+                                                                             sharpCorners:sharpCorners];
 
             maskLayer.path = bezierPath.CGPath;
         }];

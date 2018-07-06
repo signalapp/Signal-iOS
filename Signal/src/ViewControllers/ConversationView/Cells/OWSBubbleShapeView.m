@@ -193,6 +193,60 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     [CATransaction commit];
 }
 
++ (UIBezierPath *)roundedBezierRectWithBubbleTop:(CGFloat)bubbleTop
+                                      bubbleLeft:(CGFloat)bubbleLeft
+                                    bubbleBottom:(CGFloat)bubbleBottom
+                                     bubbleRight:(CGFloat)bubbleRight
+                               sharpCornerRadius:(CGFloat)sharpCornerRadius
+                                wideCornerRadius:(CGFloat)wideCornerRadius
+                                    sharpCorners:(UIRectCorner)sharpCorners
+{
+    UIBezierPath *bezierPath = [UIBezierPath new];
+
+    const CGFloat topLeftRounding = (sharpCorners & UIRectCornerTopLeft) ? sharpCornerRadius : wideCornerRadius;
+    const CGFloat topRightRounding = (sharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
+
+    const CGFloat bottomRightRounding = (sharpCorners & UIRectCornerBottomRight) ? sharpCornerRadius : wideCornerRadius;
+    const CGFloat bottomLeftRounding = (sharpCorners & UIRectCornerBottomLeft) ? sharpCornerRadius : wideCornerRadius;
+
+    const CGFloat topAngle = 3.0f * M_PI_2;
+    const CGFloat rightAngle = 0.0f;
+    const CGFloat bottomAngle = M_PI_2;
+    const CGFloat leftAngle = M_PI;
+
+    // starting just to the right of the top left corner and working clockwise
+    [bezierPath moveToPoint:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop)];
+
+    // top right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRightRounding, bubbleTop + topRightRounding)
+                          radius:topRightRounding
+                      startAngle:topAngle
+                        endAngle:rightAngle
+                       clockwise:true];
+
+    // bottom right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRightRounding, bubbleBottom - bottomRightRounding)
+                          radius:bottomRightRounding
+                      startAngle:rightAngle
+                        endAngle:bottomAngle
+                       clockwise:true];
+
+    // bottom left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom - bottomLeftRounding)
+                          radius:bottomLeftRounding
+                      startAngle:bottomAngle
+                        endAngle:leftAngle
+                       clockwise:true];
+
+    // top left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop + topLeftRounding)
+                          radius:topLeftRounding
+                      startAngle:leftAngle
+                        endAngle:topAngle
+                       clockwise:true];
+    return bezierPath;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

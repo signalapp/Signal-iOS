@@ -30,6 +30,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (OWSBubbleShapeView *)bubbleShadowView;
 + (OWSBubbleShapeView *)bubbleClipView;
 
++ (UIBezierPath *)roundedBezierRectWithBubbleTop:(CGFloat)bubbleTop
+                                      bubbleLeft:(CGFloat)bubbleLeft
+                                    bubbleBottom:(CGFloat)bubbleBottom
+                                     bubbleRight:(CGFloat)bubbleRight
+                               sharpCornerRadius:(CGFloat)sharpCornerRadius
+                                wideCornerRadius:(CGFloat)wideCornerRadius
+                                    sharpCorners:(UIRectCorner)sharpCorners;
+
 @end
 
 NS_ASSUME_NONNULL_END
