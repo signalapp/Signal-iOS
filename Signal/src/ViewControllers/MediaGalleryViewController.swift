@@ -505,7 +505,7 @@ class MediaGalleryViewController: OWSNavigationController, MediaGalleryDataSourc
                             if changedItems {
                                 self.presentationView.alpha = 0
                             } else {
-                                self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Large
+                                self.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
                             }
             },
                            completion: { (_: Bool) in
