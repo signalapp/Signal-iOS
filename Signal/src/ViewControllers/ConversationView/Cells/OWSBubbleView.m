@@ -161,19 +161,52 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 2;
     CGFloat bottomRounding
         = (useSmallCorners_Bottom ? kOWSMessageCellCornerRadius_Small : kOWSMessageCellCornerRadius_Large);
 
+    const CGFloat topAngle = 3.0f * M_PI / 2.0f;
+    const CGFloat rightAngle = 0.0f;
+    const CGFloat bottomAngle = M_PI / 2.0f;
+    const CGFloat leftAngle = M_PI;
+
     [bezierPath moveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)];
+
+    // top line
     [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRounding, bubbleTop)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + topRounding)
-                       controlPoint:CGPointMake(bubbleRight, bubbleTop)];
+
+    // top right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRounding, bubbleTop + topRounding)
+                          radius:topRounding
+                      startAngle:topAngle
+                        endAngle:rightAngle
+                       clockwise:true];
+
+    // right line
     [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bottomRounding, bubbleBottom)
-                       controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
+
+    // bottom right corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleRight - bottomRounding, bubbleBottom - bottomRounding)
+                          radius:bottomRounding
+                      startAngle:rightAngle
+                        endAngle:bottomAngle
+                       clockwise:true];
+
+    // bottom line
     [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bottomRounding)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
+
+    // bottom left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomRounding, bubbleBottom - bottomRounding)
+                          radius:bottomRounding
+                      startAngle:bottomAngle
+                        endAngle:leftAngle
+                       clockwise:true];
+
+    // left line
     [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topRounding)];
-    [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + topRounding, bubbleTop)
-                       controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+
+    // top left corner
+    [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topRounding, bubbleTop + topRounding)
+                          radius:topRounding
+                      startAngle:leftAngle
+                        endAngle:topAngle
+                       clockwise:true];
 
     return bezierPath;
 }
