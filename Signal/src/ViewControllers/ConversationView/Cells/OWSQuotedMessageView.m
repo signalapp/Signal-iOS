@@ -5,7 +5,7 @@
 #import "OWSQuotedMessageView.h"
 #import "ConversationViewItem.h"
 #import "Environment.h"
-#import "OWSBubbleShapeView.h"
+#import "OWSBubbleView.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -166,13 +166,13 @@ NS_ASSUME_NONNULL_BEGIN
             const CGFloat sharpCornerRadius = 4;
             const CGFloat wideCornerRadius = 10;
 
-            UIBezierPath *bezierPath = [OWSBubbleShapeView roundedBezierRectWithBubbleTop:bubbleTop
-                                                                               bubbleLeft:bubbleLeft
-                                                                             bubbleBottom:bubbleBottom
-                                                                              bubbleRight:bubbleRight
-                                                                        sharpCornerRadius:sharpCornerRadius
-                                                                         wideCornerRadius:wideCornerRadius
-                                                                             sharpCorners:sharpCorners];
+            UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
+                                                                          bubbleLeft:bubbleLeft
+                                                                        bubbleBottom:bubbleBottom
+                                                                         bubbleRight:bubbleRight
+                                                                   sharpCornerRadius:sharpCornerRadius
+                                                                    wideCornerRadius:wideCornerRadius
+                                                                        sharpCorners:sharpCorners];
 
             maskLayer.path = bezierPath.CGPath;
         }];

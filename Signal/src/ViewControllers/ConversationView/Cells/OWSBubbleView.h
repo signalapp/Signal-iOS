@@ -23,6 +23,14 @@ extern const CGFloat kOWSMessageCellCornerRadius_Small;
 
 @interface OWSBubbleView : UIView
 
++ (UIBezierPath *)roundedBezierRectWithBubbleTop:(CGFloat)bubbleTop
+                                      bubbleLeft:(CGFloat)bubbleLeft
+                                    bubbleBottom:(CGFloat)bubbleBottom
+                                     bubbleRight:(CGFloat)bubbleRight
+                               sharpCornerRadius:(CGFloat)sharpCornerRadius
+                                wideCornerRadius:(CGFloat)wideCornerRadius
+                                    sharpCorners:(UIRectCorner)sharpCorners;
+
 @property (nonatomic, nullable) UIColor *bubbleColor;
 
 @property (nonatomic) UIRectCorner sharpCorners;
