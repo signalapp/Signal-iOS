@@ -4,6 +4,7 @@
 
 #import "ConversationViewItem.h"
 #import "OWSAudioMessageView.h"
+#import "OWSCallMessageCell.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
@@ -230,8 +231,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 break;
             case OWSInteractionType_Error:
             case OWSInteractionType_Info:
-            case OWSInteractionType_Call:
                 measurementCell = [OWSSystemMessageCell new];
+                break;
+            case OWSInteractionType_Call:
+                measurementCell = [OWSCallMessageCell new];
                 break;
             case OWSInteractionType_UnreadIndicator:
                 measurementCell = [OWSUnreadIndicatorCell new];
@@ -292,8 +295,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Error:
         case OWSInteractionType_Info:
-        case OWSInteractionType_Call:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
+                                                             forIndexPath:indexPath];
+        case OWSInteractionType_Call:
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSCallMessageCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
         case OWSInteractionType_UnreadIndicator:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
