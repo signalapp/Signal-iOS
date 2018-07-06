@@ -69,7 +69,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-@property (nonatomic) BOOL hasReceivedLocalNotification;
 
 @end
 
@@ -539,8 +538,10 @@ static NSTimeInterval launchStartedAt;
         [self handleActivation];
     }];
 
-    // We want to process up to one local notification per activation, so clear the flag.
-    self.hasReceivedLocalNotification = NO;
+    // There is a sequence of actions a user can take where we present a conversation from a notification
+    // multiple times, producing an undesirable "stack" of multiple conversation view controllers.
+    // So we ensure that we only present conversations once per activate.
+    [PushManager sharedManager].hasPresentedConversationSinceLastDeactivation = NO;
 
     // Clear all notifications whenever we become active.
     // When opening the app from a notification,
@@ -909,13 +910,6 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    // Don't process more than one local notification per activation.
-    if (self.hasReceivedLocalNotification) {
-        OWSFail(@"%@ %s ignoring redundant local notification.", self.logTag, __PRETTY_FUNCTION__);
-        return;
-    }
-    self.hasReceivedLocalNotification = YES;
-
     DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, notification);
 
     [AppStoreRating preventPromptAtNextTest];
@@ -956,19 +950,14 @@ static NSTimeInterval launchStartedAt;
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
+    DDLogInfo(@"%@ handling action with identifier: %@", self.logTag, identifier);
+
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
         OWSFail(@"%@ %s app launch failed", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
-
-    // Don't process more than one local notification per activation.
-    if (self.hasReceivedLocalNotification) {
-        OWSFail(@"%@ %s ignoring redundant local notification.", self.logTag, __PRETTY_FUNCTION__);
-        return;
-    }
-    self.hasReceivedLocalNotification = YES;
 
     // The docs for handleActionWithIdentifier:... state:
     // "You must call [completionHandler] at the end of your method.".

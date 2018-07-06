@@ -134,13 +134,27 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     DDLogInfo(@"%@ received content-available push", self.logTag);
 
     // If we want to re-introduce silent pushes we can remove this assert.
-    OWSFail(@"Unexpected content-available push.");
+    OWSProdLogAndFail(@"Unexpected content-available push.");
 
     [AppReadiness runNowOrWhenAppIsReady:^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             completionHandler(UIBackgroundFetchResultNewData);
         });
     }];
+}
+
+- (void)presentOncePerActivationConversationWithThreadId:(NSString *)threadId
+{
+    if (self.hasPresentedConversationSinceLastDeactivation) {
+        OWSProdLogAndFail(@"%@ in %s refusing to present conversation: %@ multiple times.",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            threadId);
+        return;
+    }
+
+    self.hasPresentedConversationSinceLastDeactivation = YES;
+    [SignalApp.sharedApp presentConversationForThreadId:threadId];
 }
 
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
@@ -151,9 +165,9 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
     NSString *_Nullable threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
     if (threadId) {
-        [SignalApp.sharedApp presentConversationForThreadId:threadId];
+        [self presentOncePerActivationConversationWithThreadId:threadId];
     } else {
-        OWSFail(@"%@ threadId was unexpectedly nil in %s", self.logTag, __PRETTY_FUNCTION__);
+        OWSProdLogAndFail(@"%@ threadId was unexpectedly nil in %s", self.logTag, __PRETTY_FUNCTION__);
     }
 
     // We only want to receive a single local notification per launch.
@@ -259,18 +273,20 @@ NSString *const Signal_Message_MarkAsRead_Identifier = @"Signal_Message_MarkAsRe
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
 
         if (threadId) {
-            [SignalApp.sharedApp presentConversationForThreadId:threadId];
+            [self presentOncePerActivationConversationWithThreadId:threadId];
         } else {
-            OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
+            OWSProdLogAndFail(
+                @"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
         }
         completionHandler();
     } else {
-        OWSFail(@"%@ Unhandled action with identifier: %@", self.logTag, identifier);
+        OWSProdLogAndFail(@"%@ Unhandled action with identifier: %@", self.logTag, identifier);
         NSString *threadId = notification.userInfo[Signal_Thread_UserInfo_Key];
         if (threadId) {
-            [SignalApp.sharedApp presentConversationForThreadId:threadId];
+            [self presentOncePerActivationConversationWithThreadId:threadId];
         } else {
-            OWSFail(@"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
+            OWSProdLogAndFail(
+                @"%@ threadId was unexpectedly nil in action with identifier: %@", self.logTag, identifier);
         }
         completionHandler();
     }

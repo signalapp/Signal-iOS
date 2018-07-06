@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -36,6 +36,8 @@ typedef void (^pushTokensSuccessBlock)(NSString *pushToken, NSString *voipToken)
  * The Push Manager is responsible for handling received push notifications.
  */
 @interface PushManager : NSObject
+
+@property (nonatomic) BOOL hasPresentedConversationSinceLastDeactivation;
 
 - (instancetype)init NS_UNAVAILABLE;
 
