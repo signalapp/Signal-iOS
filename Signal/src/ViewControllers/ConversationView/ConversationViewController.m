@@ -4894,11 +4894,19 @@ typedef enum : NSUInteger {
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
 
+            NSString *_Nullable nextIncomingSenderId = nil;
+            if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
+                TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
+                nextIncomingSenderId = nextIncomingMessage.authorId;
+                OWSAssert(nextIncomingSenderId.length > 0);
+            }
+
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 NSString *nextTimestampText = [DateUtil formatTimestampShort:nextViewItem.interaction.timestamp];
-                // We can skip the "incoming message status" footer if the next message
+                // We can skip the "incoming message status" footer in a cluster if the next message
                 // has the same footer and no "date break" separates us.
-                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate);
+                shouldHideFooter = [timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate &&
+                    [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId];
             }
 
             if (viewItem.isGroupThread) {
@@ -4930,10 +4938,6 @@ typedef enum : NSUInteger {
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
-                    TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                    NSString *nextIncomingSenderId = nextIncomingMessage.authorId;
-                    OWSAssert(nextIncomingSenderId.length > 0);
-
                     shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
                         || nextViewItem.shouldShowDate);
                 }
