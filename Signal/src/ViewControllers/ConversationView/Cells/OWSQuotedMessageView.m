@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isForPreview;
 @property (nonatomic, readonly) BOOL isOutgoing;
-@property (nonatomic, readonly) BOOL sharesTopBorderWithMessageBubble;
+@property (nonatomic, readonly) UIRectCorner sharpCorners;
 
 @property (nonatomic, readonly) UILabel *quotedAuthorLabel;
 @property (nonatomic, readonly) UILabel *quotedTextLabel;
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      displayableQuotedText:(nullable DisplayableText *)displayableQuotedText
                                          conversationStyle:(ConversationStyle *)conversationStyle
                                                 isOutgoing:(BOOL)isOutgoing
-                          sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
+                                              sharpCorners:(UIRectCorner)sharpCorners
 {
     OWSAssert(quotedMessage);
 
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              conversationStyle:conversationStyle
                                                   isForPreview:NO
                                                     isOutgoing:isOutgoing
-                              sharesTopBorderWithMessageBubble:sharesTopBorderWithMessageBubble];
+                                                  sharpCorners:sharpCorners];
 }
 
 + (OWSQuotedMessageView *)quotedMessageViewForPreview:(OWSQuotedReplyModel *)quotedMessage
@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        conversationStyle:conversationStyle
                                                                             isForPreview:YES
                                                                               isOutgoing:YES
-                                                        sharesTopBorderWithMessageBubble:NO];
+                                                                            sharpCorners:UIRectCornerAllCorners];
     [instance createContents];
     return instance;
 }
@@ -77,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
                     conversationStyle:(ConversationStyle *)conversationStyle
                          isForPreview:(BOOL)isForPreview
                            isOutgoing:(BOOL)isOutgoing
-     sharesTopBorderWithMessageBubble:(BOOL)sharesTopBorderWithMessageBubble
+                         sharpCorners:(UIRectCorner)sharpCorners
 {
     self = [super init];
 
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isForPreview = isForPreview;
     _conversationStyle = conversationStyle;
     _isOutgoing = isOutgoing;
-    _sharesTopBorderWithMessageBubble = sharesTopBorderWithMessageBubble;
+    _sharpCorners = sharpCorners;
 
     _quotedAuthorLabel = [UILabel new];
     _quotedTextLabel = [UILabel new];
@@ -151,7 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.clipsToBounds = YES;
 
     CAShapeLayer *maskLayer = [CAShapeLayer new];
-    BOOL sharesTopBorderWithMessageBubble = self.sharesTopBorderWithMessageBubble;
+    UIRectCorner sharpCorners = self.sharpCorners;
+
     OWSLayerView *innerBubbleView = [[OWSLayerView alloc]
          initWithFrame:CGRectZero
         layoutCallback:^(UIView *layerView) {
@@ -159,26 +160,70 @@ NS_ASSUME_NONNULL_BEGIN
 
             UIBezierPath *bezierPath = [UIBezierPath new];
 
-            CGFloat bubbleLeft = 0.f;
-            CGFloat bubbleRight = layerFrame.size.width;
-            CGFloat bubbleTop = 0.f;
-            CGFloat bubbleBottom = layerFrame.size.height;
-            CGFloat bubbleTopRounding = (sharesTopBorderWithMessageBubble ? 10.f : 4.f);
-            CGFloat bubbleBottomRounding = 4.f;
+            const CGFloat bubbleLeft = 0.f;
+            const CGFloat bubbleRight = layerFrame.size.width;
+            const CGFloat bubbleTop = 0.f;
+            const CGFloat bubbleBottom = layerFrame.size.height;
 
-            [bezierPath moveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight - bubbleTopRounding, bubbleTop)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight, bubbleTop + bubbleTopRounding)
-                               controlPoint:CGPointMake(bubbleRight, bubbleTop)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bubbleBottomRounding)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleRight - bubbleBottomRounding, bubbleBottom)
-                               controlPoint:CGPointMake(bubbleRight, bubbleBottom)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bubbleBottomRounding, bubbleBottom)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft, bubbleBottom - bubbleBottomRounding)
-                               controlPoint:CGPointMake(bubbleLeft, bubbleBottom)];
-            [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + bubbleTopRounding)];
-            [bezierPath addQuadCurveToPoint:CGPointMake(bubbleLeft + bubbleTopRounding, bubbleTop)
-                               controlPoint:CGPointMake(bubbleLeft, bubbleTop)];
+            const CGFloat sharpCornerRadius = 4;
+            const CGFloat wideCornerRadius = 10;
+
+            const CGFloat topLeftRounding = (sharpCorners & UIRectCornerTopLeft) ? sharpCornerRadius : wideCornerRadius;
+            const CGFloat topRightRounding
+                = (sharpCorners & UIRectCornerTopRight) ? sharpCornerRadius : wideCornerRadius;
+
+            // bottom corners are always sharp
+            const CGFloat bottomRightRounding = sharpCornerRadius;
+            const CGFloat bottomLeftRounding = sharpCornerRadius;
+
+            const CGFloat topAngle = 3.0f * M_PI / 2.0f;
+            const CGFloat rightAngle = 0.0f;
+            const CGFloat bottomAngle = M_PI / 2.0f;
+            const CGFloat leftAngle = M_PI;
+
+            // starting just to the right of the top left corner and working clockwise
+            [bezierPath moveToPoint:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop)];
+
+            // top line
+            [bezierPath addLineToPoint:CGPointMake(bubbleRight - topRightRounding, bubbleTop)];
+
+            // top right corner
+            [bezierPath addArcWithCenter:CGPointMake(bubbleRight - topRightRounding, bubbleTop + topRightRounding)
+                                  radius:topRightRounding
+                              startAngle:topAngle
+                                endAngle:rightAngle
+                               clockwise:true];
+
+            // right line
+            [bezierPath addLineToPoint:CGPointMake(bubbleRight, bubbleBottom - bottomRightRounding)];
+
+            // bottom right corner
+            [bezierPath
+                addArcWithCenter:CGPointMake(bubbleRight - bottomRightRounding, bubbleBottom - bottomRightRounding)
+                          radius:bottomRightRounding
+                      startAngle:rightAngle
+                        endAngle:bottomAngle
+                       clockwise:true];
+
+            // bottom line
+            [bezierPath addLineToPoint:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom)];
+
+            // bottom left corner
+            [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + bottomLeftRounding, bubbleBottom - bottomLeftRounding)
+                                  radius:bottomLeftRounding
+                              startAngle:bottomAngle
+                                endAngle:leftAngle
+                               clockwise:true];
+
+            // left line
+            [bezierPath addLineToPoint:CGPointMake(bubbleLeft, bubbleTop + topLeftRounding)];
+
+            // top left corner
+            [bezierPath addArcWithCenter:CGPointMake(bubbleLeft + topLeftRounding, bubbleTop + topLeftRounding)
+                                  radius:topLeftRounding
+                              startAngle:leftAngle
+                                endAngle:topAngle
+                               clockwise:true];
 
             maskLayer.path = bezierPath.CGPath;
         }];

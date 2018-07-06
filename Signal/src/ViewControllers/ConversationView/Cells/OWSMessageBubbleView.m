@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
                                              displayableQuotedText:displayableQuotedText
                                                  conversationStyle:self.conversationStyle
                                                         isOutgoing:self.isOutgoing
-                                  sharesTopBorderWithMessageBubble:!self.shouldShowSenderName];
+                                                      sharpCorners:self.sharpCornersForQuotedMessage];
         quotedMessageView.delegate = self;
 
         self.quotedMessageView = quotedMessageView;
@@ -558,7 +558,7 @@ NS_ASSUME_NONNULL_BEGIN
     return 12.f;
 }
 
-- (void)configureBubbleRounding
+- (UIRectCorner)sharpCorners
 {
     UIRectCorner sharpCorners = 0;
 
@@ -570,7 +570,21 @@ NS_ASSUME_NONNULL_BEGIN
         sharpCorners = sharpCorners | (self.isIncoming ? UIRectCornerBottomLeft : UIRectCornerBottomRight);
     }
 
-    self.bubbleView.sharpCorners = sharpCorners;
+    return sharpCorners;
+}
+
+- (UIRectCorner)sharpCornersForQuotedMessage
+{
+    if (self.viewItem.senderName) {
+        return UIRectCornerAllCorners;
+    } else {
+        return self.sharpCorners & UIRectCornerAllCorners;
+    }
+}
+
+- (void)configureBubbleRounding
+{
+    self.bubbleView.sharpCorners = self.sharpCorners;
 }
 
 - (void)updateBubbleColor
@@ -1213,7 +1227,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          displayableQuotedText:displayableQuotedText
                                              conversationStyle:self.conversationStyle
                                                     isOutgoing:self.isOutgoing
-                              sharesTopBorderWithMessageBubble:NO];
+                                                  sharpCorners:self.sharpCornersForQuotedMessage];
     CGSize result = [quotedMessageView sizeForMaxWidth:self.conversationStyle.maxMessageWidth];
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
