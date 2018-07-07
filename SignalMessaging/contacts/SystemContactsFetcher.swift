@@ -30,6 +30,16 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
     let supportsContactEditing = true
 
+    private var allContainers: [CNContainer] {
+        //  NSArray *allContainers = [store containersMatchingPredicate:nil error:nil];
+        do {
+            return try self.contactStore.containers(matching: nil)
+        } catch {
+            owsFail("\(self.logTag) in \(#function) error while fetching containers: \(error)")
+            return []
+        }
+    }
+
     public static let allowedContactKeys: [CNKeyDescriptor] = [
         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
@@ -93,15 +103,22 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
     func fetchContacts() -> Result<[Contact], Error> {
         var systemContacts = [CNContact]()
-        do {
-            let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
-            contactFetchRequest.sortOrder = .userDefault
-            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
-                systemContacts.append(contact)
+
+        for container in self.allContainers {
+            do {
+                let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
+                contactFetchRequest.sortOrder = .userDefault
+                contactFetchRequest.predicate = CNContact.predicateForContactsInContainer(withIdentifier: container.identifier)
+
+                try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                    systemContacts.append(contact)
+                }
+            } catch let error as NSError {
+                owsFail("\(self.logTag) Failed to fetch contacts with error:\(error)")
+                return .error(error)
             }
-        } catch let error as NSError {
-            owsFail("\(self.logTag) Failed to fetch contacts with error:\(error)")
-            return .error(error)
+
+            Logger.debug("\(logTag) in \(#function) merged container: \(container.identifier) systemContacts.count: \(systemContacts.count) ")
         }
 
         let contacts = systemContacts.map { Contact(systemContact: $0) }
