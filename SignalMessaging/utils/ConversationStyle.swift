@@ -136,16 +136,14 @@ public class ConversationStyle: NSObject {
 
     private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
-    // TODO:
     @objc
-    public let bubbleColorOutgoingUnsent = UIColor.ows_red
-
-    // TODO:
-    @objc
-    public let bubbleColorOutgoingSending = UIColor.ows_light35
+    public let bubbleColorOutgoingUnsent = UIColor.ows_light10
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_light10
+    public let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
+
+    @objc
+    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
 
     @objc
     public var primaryColor: UIColor
@@ -153,59 +151,108 @@ public class ConversationStyle: NSObject {
     @objc
     public func bubbleColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
-            return primaryColor
+            return ConversationStyle.defaultBubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
-                return self.bubbleColorOutgoingUnsent
+                return bubbleColorOutgoingUnsent
             case .sending:
-                return self.bubbleColorOutgoingSending
+                return bubbleColorOutgoingSending
             default:
-                return self.bubbleColorOutgoingSent
+                return bubbleColorOutgoingSent
             }
         } else {
             owsFail("Unexpected message type: \(message)")
-            return UIColor.ows_materialBlue
+            return bubbleColorOutgoingSent
         }
     }
 
     @objc
     public func bubbleColor(call: TSCall) -> UIColor {
-        if call.isIncoming {
-            return primaryColor
+        return bubbleColor(isIncoming: call.isIncoming)
+    }
+
+    @objc
+    public func bubbleColor(isIncoming: Bool) -> UIColor {
+        if isIncoming {
+            return ConversationStyle.defaultBubbleColorIncoming
         } else {
             return self.bubbleColorOutgoingSent
         }
     }
 
     @objc
-    public static var bubbleTextColorIncoming = UIColor.ows_white
+    public static var bubbleTextColorIncoming = UIColor.ows_light90
+    public static var bubbleTextColorOutgoing = UIColor.ows_white
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return ConversationStyle.bubbleTextColorIncoming
-        } else if let outgoingMessage = message as? TSOutgoingMessage {
-            switch outgoingMessage.messageState {
-            case .failed:
-                return UIColor.ows_black
-            case .sending:
-                return UIColor.ows_black
-            default:
-                return UIColor.ows_black
-            }
+        } else if message is TSOutgoingMessage {
+            return ConversationStyle.bubbleTextColorOutgoing
         } else {
             owsFail("Unexpected message type: \(message)")
-            return UIColor.ows_materialBlue
+            return ConversationStyle.bubbleTextColorOutgoing
         }
     }
 
     @objc
     public func bubbleTextColor(call: TSCall) -> UIColor {
-        if call.isIncoming {
+        return bubbleTextColor(isIncoming: call.isIncoming)
+    }
+
+    @objc
+    public func bubbleTextColor(isIncoming: Bool) -> UIColor {
+        if isIncoming {
             return ConversationStyle.bubbleTextColorIncoming
         } else {
-            return UIColor.ows_black
+            return ConversationStyle.bubbleTextColorOutgoing
         }
+    }
+
+    @objc
+    public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
+        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+    }
+
+    @objc
+    public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
+        if isIncoming {
+            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
+        } else {
+            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+        }
+    }
+
+    @objc
+    public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
+        if isIncoming {
+            return bubbleColorOutgoingSent
+        } else {
+            return UIColor.white
+        }
+    }
+
+    @objc
+    public func quotingSelfHighlightColor() -> UIColor {
+        // TODO:
+        return UIColor.init(rgbHex: 0xB5B5B5)
+    }
+
+    @objc
+    public func quotedReplyAuthorColor() -> UIColor {
+        return UIColor.ows_light90
+    }
+
+    @objc
+    public func quotedReplyTextColor() -> UIColor {
+        return UIColor.ows_light90
+    }
+
+    @objc
+    public func quotedReplyAttachmentColor() -> UIColor {
+        // TODO:
+        return UIColor(white: 0.5, alpha: 1.0)
     }
 }

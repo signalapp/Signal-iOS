@@ -4,6 +4,7 @@
 
 #import "OWSGenericAttachmentView.h"
 #import "OWSBezierPathView.h"
+#import "Signal-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "ViewControllerUtils.h"
@@ -84,8 +85,10 @@ NS_ASSUME_NONNULL_BEGIN
     return 48.f;
 }
 
-- (void)createContents
+- (void)createContentsWithConversationStyle:(ConversationStyle *)conversationStyle
 {
+    OWSAssert(conversationStyle);
+
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = self.hSpacing;
@@ -137,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *topLabel = [UILabel new];
     self.topLabel = topLabel;
     topLabel.text = topText;
-    topLabel.textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
+    topLabel.textColor = [conversationStyle bubbleTextColorWithIsIncoming:self.isIncoming];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSGenericAttachmentView topLabelFont];
     [labelsView addArrangedSubview:topLabel];
@@ -150,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *bottomLabel = [UILabel new];
     self.bottomLabel = bottomLabel;
     bottomLabel.text = bottomText;
-    bottomLabel.textColor = (self.isIncoming ? [UIColor colorWithWhite:1.f alpha:0.7f] : [UIColor ows_light60Color]);
+    bottomLabel.textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSGenericAttachmentView bottomLabelFont];
     [labelsView addArrangedSubview:bottomLabel];

@@ -45,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.statusIndicatorImageView = [UIImageView new];
     [self.statusIndicatorImageView setContentHuggingHigh];
     [self addArrangedSubview:self.statusIndicatorImageView];
+
+    self.userInteractionEnabled = NO;
 }
 
 - (void)configureFonts
@@ -70,19 +72,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Load
 
-- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem isOverlayingMedia:(BOOL)isOverlayingMedia
+- (void)configureWithConversationViewItem:(ConversationViewItem *)viewItem
+                        isOverlayingMedia:(BOOL)isOverlayingMedia
+                        conversationStyle:(ConversationStyle *)conversationStyle
+                               isIncoming:(BOOL)isIncoming
 {
     OWSAssert(viewItem);
+    OWSAssert(conversationStyle);
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
     UIColor *textColor;
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
-    } else if (viewItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
-        textColor = [UIColor colorWithWhite:1.f alpha:0.7f];
     } else {
-        textColor = [UIColor ows_light60Color];
+        textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
 
@@ -115,11 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
             self.statusIndicatorImageView.image =
                 [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            if (messageStatus == MessageReceiptStatusRead) {
-                self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
-            } else {
-                self.statusIndicatorImageView.tintColor = textColor;
-            }
+            self.statusIndicatorImageView.tintColor = textColor;
             self.statusIndicatorImageView.hidden = NO;
         } else {
             self.statusIndicatorImageView.image = nil;

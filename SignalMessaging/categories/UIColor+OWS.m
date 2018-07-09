@@ -289,6 +289,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRGBHex:0x757575];
 }
 
++ (UIColor *)ows_darkSkyBlueColor
+{
+    return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
+}
+
 + (NSDictionary<NSString *, UIColor *> *)ows_conversationColorMap
 {
     static NSDictionary<NSString *, UIColor *> *colorMap;

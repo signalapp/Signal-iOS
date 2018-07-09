@@ -10,12 +10,14 @@ class AttachmentPointerView: UIStackView {
 
     let TAG = "[AttachmentPointerView]"
 
+    let isIncoming: Bool
+    let attachmentPointer: TSAttachmentPointer
+    let conversationStyle: ConversationStyle
+
     let progressView = OWSProgressView()
     let nameLabel = UILabel()
     let statusLabel = UILabel()
-    let isIncoming: Bool
     let filename: String
-    let attachmentPointer: TSAttachmentPointer
     let genericFilename = NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "Generic filename for an attachment with no known name")
 
     var progress: CGFloat = 0 {
@@ -25,9 +27,10 @@ class AttachmentPointerView: UIStackView {
     }
 
     @objc
-    required init(attachmentPointer: TSAttachmentPointer, isIncoming: Bool) {
-        self.isIncoming = isIncoming
+    required init(attachmentPointer: TSAttachmentPointer, isIncoming: Bool, conversationStyle: ConversationStyle) {
         self.attachmentPointer = attachmentPointer
+        self.isIncoming = isIncoming
+        self.conversationStyle = conversationStyle
 
         let attachmentPointerFilename = attachmentPointer.sourceFilename
         if let filename = attachmentPointerFilename, !filename.isEmpty {
@@ -126,7 +129,7 @@ class AttachmentPointerView: UIStackView {
     }
 
     var textColor: UIColor {
-        return self.isIncoming ? UIColor.ows_white : UIColor.ows_light90
+        return conversationStyle.bubbleTextColor(isIncoming: isIncoming)
     }
 
     @objc

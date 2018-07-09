@@ -137,7 +137,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self applyTitleForCall:call label:self.titleLabel];
 
     if (self.hasFooter) {
-        [self.footerView configureWithConversationViewItem:self.viewItem isOverlayingMedia:NO];
+        [self.footerView configureWithConversationViewItem:self.viewItem
+                                         isOverlayingMedia:NO
+                                         conversationStyle:self.conversationStyle
+                                                isIncoming:call.isIncoming];
         self.footerView.hidden = NO;
     } else {
         self.footerView.hidden = YES;

@@ -454,7 +454,10 @@ NS_ASSUME_NONNULL_BEGIN
         [bodyMediaView addSubview:gradientView];
         [self.viewConstraints addObjectsFromArray:[gradientView autoPinToSuperviewEdges]];
 
-        [self.footerView configureWithConversationViewItem:self.viewItem isOverlayingMedia:YES];
+        [self.footerView configureWithConversationViewItem:self.viewItem
+                                         isOverlayingMedia:YES
+                                         conversationStyle:self.conversationStyle
+                                                isIncoming:self.isIncoming];
         [bodyMediaView addSubview:self.footerView];
 
         bodyMediaView.layoutMargins = UIEdgeInsetsZero;
@@ -465,7 +468,10 @@ NS_ASSUME_NONNULL_BEGIN
             [self.footerView autoPinBottomToSuperviewMarginWithInset:self.conversationStyle.textInsetBottom],
         ]];
     } else {
-        [self.footerView configureWithConversationViewItem:self.viewItem isOverlayingMedia:NO];
+        [self.footerView configureWithConversationViewItem:self.viewItem
+                                         isOverlayingMedia:NO
+                                         conversationStyle:self.conversationStyle
+                                                isIncoming:self.isIncoming];
         [textViews addObject:self.footerView];
     }
 
@@ -942,7 +948,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
                                                                                  isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem];
+                                                                                   viewItem:self.viewItem
+                                                                          conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
     [self addAttachmentUploadViewIfNecessary:audioMessageView];
@@ -1016,7 +1023,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.attachmentStream);
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-    [attachmentView createContents];
+    [attachmentView createContentsWithConversationStyle:self.conversationStyle];
     [self addAttachmentUploadViewIfNecessary:attachmentView];
 
     self.loadCellContentBlock = ^{
@@ -1034,7 +1041,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachmentPointer);
 
     AttachmentPointerView *downloadView =
-        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer isIncoming:self.isIncoming];
+        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
+                                                      isIncoming:self.isIncoming
+                                               conversationStyle:self.conversationStyle];
 
     UIView *wrapper = [UIView new];
     [wrapper addSubview:downloadView];
@@ -1057,8 +1066,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.viewItem.contactShare);
 
-    OWSContactShareView *contactShareView =
-        [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare isIncoming:self.isIncoming];
+    OWSContactShareView *contactShareView = [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
+                                                                                   isIncoming:self.isIncoming
+                                                                            conversationStyle:self.conversationStyle];
     [contactShareView createContents];
     // TODO: Should we change appearance if contact avatar is uploading?
 
@@ -1193,7 +1203,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(self.viewItem.attachmentStream);
             OWSGenericAttachmentView *attachmentView =
                 [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-            [attachmentView createContents];
+            [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
         }
@@ -1604,9 +1614,13 @@ NS_ASSUME_NONNULL_BEGIN
         // Treat this as a "body media" gesture if:
         //
         // * There is a "body media" view.
-        // * The gesture occured within or above the "body media" view.
+        // * The gesture occured within or above the "body media" view...
+        // * ...OR if the message doesn't have body text.
         CGPoint location = [self convertPoint:locationInMessageBubble toView:self.bodyMediaView];
         if (location.y <= self.bodyMediaView.height) {
+            return OWSMessageGestureLocation_Media;
+        }
+        if (!self.viewItem.hasBodyText) {
             return OWSMessageGestureLocation_Media;
         }
     }

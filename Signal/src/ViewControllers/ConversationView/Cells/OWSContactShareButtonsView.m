@@ -134,6 +134,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self addSubview:label];
     [label autoPinToSuperviewEdges];
     [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareButtonsView.buttonHeight];
+
+    self.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tap =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
+    [self addGestureRecognizer:tap];
 }
 
 - (BOOL)handleTapGesture:(UITapGestureRecognizer *)sender

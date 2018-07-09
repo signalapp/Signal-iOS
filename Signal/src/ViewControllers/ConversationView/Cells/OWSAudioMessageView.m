@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) TSAttachmentStream *attachmentStream;
 @property (nonatomic) BOOL isIncoming;
 @property (nonatomic, weak) ConversationViewItem *viewItem;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
 @property (nonatomic, nullable) UIButton *audioPlayPauseButton;
 @property (nonatomic, nullable) UILabel *audioBottomLabel;
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream
                         isIncoming:(BOOL)isIncoming
                           viewItem:(ConversationViewItem *)viewItem
+                 conversationStyle:(ConversationStyle *)conversationStyle
 {
     self = [super init];
 
@@ -39,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
         _attachmentStream = attachmentStream;
         _isIncoming = isIncoming;
         _viewItem = viewItem;
+        _conversationStyle = conversationStyle;
     }
 
     return self;
@@ -118,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioProgressView
         setProgress:(self.audioDurationSeconds > 0 ? self.audioProgressSeconds / self.audioDurationSeconds : 0.f)];
 
-    UIColor *progressColor = (self.isIncoming ? [UIColor ows_light02Color] : [UIColor ows_light60Color]);
+    UIColor *progressColor = [self.conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
     self.audioProgressView.horizontalBarColor = progressColor;
     self.audioProgressView.progressColor = progressColor;
 }
@@ -201,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     UILabel *topLabel = [UILabel new];
     topLabel.text = topText;
-    topLabel.textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
+    topLabel.textColor = [self.conversationStyle bubbleTextColorWithIsIncoming:self.isIncoming];
     topLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     topLabel.font = [OWSAudioMessageView labelFont];
 
@@ -213,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *bottomLabel = [UILabel new];
     self.audioBottomLabel = bottomLabel;
     [self updateAudioBottomLabel];
-    bottomLabel.textColor = (self.isIncoming ? [UIColor colorWithWhite:1.f alpha:0.7f] : [UIColor ows_light60Color]);
+    bottomLabel.textColor = [self.conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
     bottomLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     bottomLabel.font = [OWSAudioMessageView labelFont];
 
