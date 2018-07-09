@@ -10,7 +10,8 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Signal'e davet et";
 
-/* Label for 'send message' button in contact view. */
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Mesaj Gönder";
 
 /* Label for 'share contact' button. */
@@ -289,8 +290,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon Erişimi Gerekiyor";
 
+/* Message recorded in conversation history when local user declined a call. */
+"CALL_DECLINED" = "Call Declined";
+
+/* Message recorded in conversation history when local user is making or has completed a call. */
+"CALL_DEFAULT_STATUS" = "Contact Called";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ara";
+
+/* Message recorded in conversation history when local user missed a call. */
+"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Yanıt Yok.";
@@ -511,8 +521,8 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kişi Bilgisi";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+/* Label for table cell which leads to picking a new conversation color */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Renk";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grup Bilgisi";
@@ -600,6 +610,15 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Veritabanı Optimize Ediliyor";
+
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+
+/* The present; the current time. */
+"DATE_NOW" = "Now";
 
 /* The current day. */
 "DATE_TODAY" = "Bugün";
@@ -744,7 +763,7 @@
 "EMPTY_ARCHIVE_FIRST_TEXT" = "Oluştur tuşuna basın.";
 
 /* First (bolded) part of the label that shows up when there are neither active nor archived conversations */
-"EMPTY_ARCHIVE_FIRST_TITLE" = "İlk Signal görüşmene başla!";
+"EMPTY_ARCHIVE_FIRST_TITLE" = "İlk Signal sohbetinize başlayın!";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TEXT" = "Eski sohbetlerinizi sonrası için gelen kutunuzdan arşivleyebilirsiniz.";
@@ -1205,25 +1224,28 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "İletildi";
 
-/* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Gönderme başarısız oldu. Bilgi için dokunun.";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Başarısız";
 
-/* message footer for read messages */
+/* status message for read messages */
 "MESSAGE_STATUS_READ" = "Okundu";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Atlandı";
 
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Gönderiliyor...";
 
-/* message footer for sent messages */
+/* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Gönderildi";
 
-/* message footer while attachment is uploading */
+/* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Yükleniyor…";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
@@ -1257,13 +1279,13 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Ayarlar için buraya tıkla.";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Yeni Mesajlar";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Daha fazla okunmamış mesaj var.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Daha fazla okunmamış mesaj var (güvenlik numarası değişimleriyle birlikte).";
 
 /* notification title */
 "MISSED_CALL" = "Cevapsız arama";
@@ -1733,22 +1755,22 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yine de gruba ekle";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Yine de ara";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Yine de Ara";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Yine de gönder";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Yine de Gönder";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Bizim Signal Güvenlik Numarası:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Signal Güvenlik Numaramız:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ile güvenlik numaranız değişti. Doğrulamak isteyebilirsiniz.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ile olan güvenlik numaranız değişti. Doğrulamak isteyebilirsiniz.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Temas edeceğiniz kişinin cihazındaki QR kodu tarayın.";
 
 /* Title for the 'scan QR code' view. */
-"SCAN_QR_CODE_VIEW_TITLE" = "Karekodu tara";
+"SCAN_QR_CODE_VIEW_TITLE" = "Karekodu Tara";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Derhal";

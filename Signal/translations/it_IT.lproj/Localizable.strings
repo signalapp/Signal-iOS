@@ -10,7 +10,8 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Invita a Signal";
 
-/* Label for 'send message' button in contact view. */
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Manda messaggio";
 
 /* Label for 'share contact' button. */
@@ -289,8 +290,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Accesso microfono richiesto";
 
+/* Message recorded in conversation history when local user declined a call. */
+"CALL_DECLINED" = "Call Declined";
+
+/* Message recorded in conversation history when local user is making or has completed a call. */
+"CALL_DEFAULT_STATUS" = "Contact Called";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Chiama";
+
+/* Message recorded in conversation history when local user missed a call. */
+"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nessuna risposta.";
@@ -511,8 +521,8 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info Contatto";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+/* Label for table cell which leads to picking a new conversation color */
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Colore";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info Gruppo";
@@ -601,6 +611,15 @@
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ottimizzando il Database";
 
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+
+/* The present; the current time. */
+"DATE_NOW" = "Now";
+
 /* The current day. */
 "DATE_TODAY" = "Oggi";
 
@@ -651,10 +670,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ridirezione su GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registra nuovamente questo numero di telefono";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Dispositivo non più registrato. Il tuo numero di telefono potrebbe essere registrato con Signal su un altro dispositivo. Clicca per registrare di nuovo.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Ultima attività: %@";
@@ -669,7 +688,7 @@
 "DISAPPEARING_MESSAGES" = "Messaggi a scomparsa";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "I messaggi in questa conversazione scompariranno dopo %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Una volta abilitati, i messaggi inviati e ricevuti in questa conversazione spariranno dopo essere stati visti.";
@@ -834,7 +853,7 @@
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Accesso alla rete fallito.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "La richiesta di rete è scaduta.";
 
 /* Error indicating that a socket response failed. */
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Risposta del servizio non valida.";
@@ -1002,10 +1021,10 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Bloccato";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Cerca";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Nessun risultato trovato per '%@'";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Archivio";
@@ -1205,25 +1224,28 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Consegnato";
 
-/* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Invio fallito. Tocca per info.";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Fallito";
 
-/* message footer for read messages */
+/* status message for read messages */
 "MESSAGE_STATUS_READ" = "Letto";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Saltato";
 
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Invio in corso...";
 
-/* message footer for sent messages */
+/* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Inviato";
 
-/* message footer while attachment is uploading */
+/* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Aggiornamento...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
@@ -1257,10 +1279,10 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Tocca qui per impostazioni";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Nuovi messaggi";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Ci sono altri messaggi non letti.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
@@ -1316,7 +1338,7 @@
 "NETWORK_STATUS_CONNECTING" = "Connettendo";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "No Longer Registered";
+"NETWORK_STATUS_DEREGISTERED" = "Non più registrato";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_HEADER" = "Stato della Rete";
@@ -1406,7 +1428,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha impostato il tempo di scomparsa dei messaggi a %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
+"OUTAGE_WARNING" = "Signal sta riscontrando problemi tecnici. Stiamo lavorando duramente per ripristinare il servizio al più presto.";
 
 /* No comment provided by engineer. */
 "OUTGOING_CALL" = "Chiamata in uscita";
@@ -1646,10 +1668,10 @@
 "REGISTRATION_IPAD_CONFIRM_BODY" = "Registering now will disable Signal on any other device currently registered with this phone number.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Register this iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Registra questo iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "Already have a Signal account?";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "Hai già un account Signal?";
 
 /* one line label below submit button on registration screen, which links to an external webpage. */
 "REGISTRATION_LEGAL_TERMS_LINK" = "Politica e termini sulla privacy";
@@ -1682,7 +1704,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Blocco Registrazione non corretto.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Register";
+"REGISTRATION_VERIFY_DEVICE" = "Registra";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono valido per la registrazione";
@@ -1784,13 +1806,13 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Cerca per nome o numero di telefono";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Other Contacts";
+"SEARCH_SECTION_CONTACTS" = "Altri contatti";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
-"SEARCH_SECTION_CONVERSATIONS" = "Conversations";
+"SEARCH_SECTION_CONVERSATIONS" = "Conversazioni";
 
 /* section header for search results that match a message in a conversation */
-"SEARCH_SECTION_MESSAGES" = "Messages";
+"SEARCH_SECTION_MESSAGES" = "Messaggi";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "La sezione protetta è stata resettata.";
@@ -1934,7 +1956,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Cancella Account";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Cancella tutti i dati";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sei sicuro di voler cancellare tutte le tue storie (messaggi, allegati, chiamate ...) ? L'operazione non potrà essere annullata.";
@@ -1997,7 +2019,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vedi e condividi quando i messaggi vengono letti. Questa impostazione è opzionale e viene applicata a tutte le conversazioni.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Registra di nuovo";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Timeout blocco schermo";
@@ -2285,7 +2307,7 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Lo stato di verifica è stato modificato.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Guarda il codice di sicurezza";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Esamina codici di sicurezza";

@@ -10,7 +10,8 @@
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Покани във Signal";
 
-/* Label for 'send message' button in contact view. */
+/* Label for 'send message' button in contact view.
+   Label for button that lets you send a message to a contact. */
 "ACTION_SEND_MESSAGE" = "Изпрати Съобщение";
 
 /* Label for 'share contact' button. */
@@ -289,8 +290,17 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Необходимо е разрешение за достъп до микрофона";
 
+/* Message recorded in conversation history when local user declined a call. */
+"CALL_DECLINED" = "Call Declined";
+
+/* Message recorded in conversation history when local user is making or has completed a call. */
+"CALL_DEFAULT_STATUS" = "Contact Called";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Повикване";
+
+/* Message recorded in conversation history when local user missed a call. */
+"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Без Отговор.";
@@ -511,7 +521,7 @@
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Информация за контакта";
 
-/* Indicates that user's profile has been shared with a group. */
+/* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
 
 /* Navbar title when viewing settings for a group thread */
@@ -600,6 +610,15 @@
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Оптимизиране на данните";
+
+/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
+"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+
+/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+
+/* The present; the current time. */
+"DATE_NOW" = "Now";
 
 /* The current day. */
 "DATE_TODAY" = "Днес";
@@ -1205,25 +1224,28 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставено";
 
-/* message footer for failed messages */
-"MESSAGE_STATUS_FAILED" = "Изпращането се провали. Докосни за информация.";
+/* status message for failed messages */
+"MESSAGE_STATUS_FAILED" = "Sending failed.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Провалено";
 
-/* message footer for read messages */
+/* status message for read messages */
 "MESSAGE_STATUS_READ" = "Прочетено";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Пропуснато";
 
+/* Label indicating that a message failed to send. */
+"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Изпраща се...";
 
-/* message footer for sent messages */
+/* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Изпратено";
 
-/* message footer while attachment is uploading */
+/* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Качване...";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
