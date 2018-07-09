@@ -242,7 +242,55 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public func secondaryTextColor(isIncoming: Bool) -> UIColor {
+    public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
         return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+    }
+
+    @objc
+    public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
+        // TODO: Values
+        // TODO: Should this reflect "quoting self" v. "quoting other"?
+
+        if isIncoming {
+            return bubbleColorOutgoingSent.withAlphaComponent(0.7)
+        } else {
+            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.7)
+        }
+    }
+
+    @objc
+    public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
+        // TODO: Values
+        // TODO: Should this reflect "quoting self" v. "quoting other"?
+
+        if isIncoming {
+            return bubbleColorOutgoingSent
+        } else {
+            return ConversationStyle.defaultBubbleColorIncoming
+        }
+    }
+
+    @objc
+    public func quotingSelfHighlightColor() -> UIColor {
+        // TODO:
+        return UIColor.init(rgbHex: 0xB5B5B5)
+    }
+
+    @objc
+    public func quotedReplyAuthorColor() -> UIColor {
+        // TODO:
+        return UIColor.ows_light90
+    }
+
+    @objc
+    public func quotedReplyTextColor() -> UIColor {
+        // TODO:
+        return UIColor.ows_light90
+    }
+
+    @objc
+    public func quotedReplyAttachmentColor() -> UIColor {
+        // TODO:
+        return UIColor(white: 0.5, alpha: 1.0)
     }
 }

@@ -1022,7 +1022,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem.attachmentStream);
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-    [attachmentView createContents];
+    [attachmentView createContentsWithConversationStyle:self.conversationStyle];
     [self addAttachmentUploadViewIfNecessary:attachmentView];
 
     self.loadCellContentBlock = ^{
@@ -1040,7 +1040,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.attachmentPointer);
 
     AttachmentPointerView *downloadView =
-        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer isIncoming:self.isIncoming];
+        [[AttachmentPointerView alloc] initWithAttachmentPointer:self.attachmentPointer
+                                                      isIncoming:self.isIncoming
+                                               conversationStyle:self.conversationStyle];
 
     UIView *wrapper = [UIView new];
     [wrapper addSubview:downloadView];
@@ -1199,7 +1201,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(self.viewItem.attachmentStream);
             OWSGenericAttachmentView *attachmentView =
                 [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
-            [attachmentView createContents];
+            [attachmentView createContentsWithConversationStyle:self.conversationStyle];
             result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
             break;
         }

@@ -117,7 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIColor *)highlightColor
 {
     BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
-    return (isQuotingSelf ? self.conversationStyle.bubbleColorOutgoingSent : [UIColor colorWithRGBHex:0xB5B5B5]);
+    return (isQuotingSelf ? self.conversationStyle.bubbleColorOutgoingSent
+                          : [self.conversationStyle quotingSelfHighlightColor]);
 }
 
 #pragma mark -
@@ -178,10 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    // TODO:
-    innerBubbleView.backgroundColor
-        = (self.isOutgoing ? [self.conversationStyle.primaryColor colorWithAlphaComponent:0.25f]
-                           : [UIColor colorWithWhite:1.f alpha:0.75f]);
+    innerBubbleView.backgroundColor = [self.conversationStyle quotedReplyBubbleColorWithIsIncoming:!self.isOutgoing];
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
@@ -195,8 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     [hStackView autoPinToSuperviewEdges];
 
     UIView *stripeView = [UIView new];
-    // TODO:
-    stripeView.backgroundColor = (self.isOutgoing ? [self.conversationStyle primaryColor] : [UIColor whiteColor]);
+    stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];
@@ -502,12 +499,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)quotedAuthorColor
 {
-    return [UIColor ows_light90Color];
+    return [self.conversationStyle quotedReplyAuthorColor];
 }
 
 - (UIColor *)quotedTextColor
 {
-    return [UIColor ows_light90Color];
+    return [self.conversationStyle quotedReplyTextColor];
 }
 
 - (UIFont *)quotedTextFont
@@ -517,7 +514,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)fileTypeTextColor
 {
-    return [UIColor colorWithWhite:0.5f alpha:1.f];
+    return [self.conversationStyle quotedReplyAttachmentColor];
 }
 
 - (UIFont *)fileTypeFont
@@ -527,7 +524,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)filenameTextColor
 {
-    return [UIColor colorWithWhite:0.5f alpha:1.f];
+    return [self.conversationStyle quotedReplyAttachmentColor];
 }
 
 - (UIFont *)filenameFont

@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
     } else {
-        textColor = [conversationStyle secondaryTextColorWithIsIncoming:isIncoming];
+        textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
 
@@ -117,11 +117,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
             self.statusIndicatorImageView.image =
                 [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            if (messageStatus == MessageReceiptStatusRead) {
-                self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
-            } else {
-                self.statusIndicatorImageView.tintColor = textColor;
-            }
+            // TODO: How to indicate read status for transitional colors?
+            self.statusIndicatorImageView.tintColor = textColor;
             self.statusIndicatorImageView.hidden = NO;
         } else {
             self.statusIndicatorImageView.image = nil;
