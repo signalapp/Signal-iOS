@@ -5,10 +5,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
+@class ConversationStyle;
 
 @interface OWSContactShareView : UIView
 
-- (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare isIncoming:(BOOL)isIncoming;
+- (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare
+                          isIncoming:(BOOL)isIncoming
+                   conversationStyle:(ConversationStyle *)conversationStyle;
 
 - (void)createContents;
 

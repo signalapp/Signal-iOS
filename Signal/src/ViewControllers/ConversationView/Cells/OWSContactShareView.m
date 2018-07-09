@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactShareViewModel *contactShare;
 
 @property (nonatomic, readonly) BOOL isIncoming;
+@property (nonatomic, readonly) ConversationStyle *conversationStyle;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 
 @end
@@ -30,12 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithContactShare:(ContactShareViewModel *)contactShare
                           isIncoming:(BOOL)isIncoming
+                   conversationStyle:(ConversationStyle *)conversationStyle
 {
     self = [super init];
 
     if (self) {
         _contactShare = contactShare;
         _isIncoming = isIncoming;
+        _conversationStyle = conversationStyle;
         _contactsManager = [Environment current].contactsManager;
     }
 
@@ -101,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.layoutMargins = UIEdgeInsetsZero;
 
-    UIColor *textColor = (self.isIncoming ? [UIColor ows_whiteColor] : [UIColor ows_light90Color]);
+    UIColor *textColor = [self.conversationStyle bubbleTextColorWithIsIncoming:self.isIncoming];
 
     AvatarImageView *avatarView = [AvatarImageView new];
     avatarView.image =
@@ -128,8 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (firstPhoneNumber.length > 0) {
         UILabel *bottomLabel = [UILabel new];
         bottomLabel.text = [PhoneNumber bestEffortLocalizedPhoneNumberWithE164:firstPhoneNumber];
-        // TODO:
-        bottomLabel.textColor = [textColor colorWithAlphaComponent:0.7f];
+        bottomLabel.textColor = [self.conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
         bottomLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         bottomLabel.font = OWSContactShareView.subtitleFont;
         [labelsView addArrangedSubview:bottomLabel];

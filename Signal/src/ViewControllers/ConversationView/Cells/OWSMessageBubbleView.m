@@ -948,7 +948,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAudioMessageView *audioMessageView = [[OWSAudioMessageView alloc] initWithAttachment:self.attachmentStream
                                                                                  isIncoming:self.isIncoming
-                                                                                   viewItem:self.viewItem];
+                                                                                   viewItem:self.viewItem
+                                                                          conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
     [self addAttachmentUploadViewIfNecessary:audioMessageView];
@@ -1065,8 +1066,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.viewItem.contactShare);
 
-    OWSContactShareView *contactShareView =
-        [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare isIncoming:self.isIncoming];
+    OWSContactShareView *contactShareView = [[OWSContactShareView alloc] initWithContactShare:self.viewItem.contactShare
+                                                                                   isIncoming:self.isIncoming
+                                                                            conversationStyle:self.conversationStyle];
     [contactShareView createContents];
     // TODO: Should we change appearance if contact avatar is uploading?
 
@@ -1612,9 +1614,13 @@ NS_ASSUME_NONNULL_BEGIN
         // Treat this as a "body media" gesture if:
         //
         // * There is a "body media" view.
-        // * The gesture occured within or above the "body media" view.
+        // * The gesture occured within or above the "body media" view...
+        // * ...OR if the message doesn't have body text.
         CGPoint location = [self convertPoint:locationInMessageBubble toView:self.bodyMediaView];
         if (location.y <= self.bodyMediaView.height) {
+            return OWSMessageGestureLocation_Media;
+        }
+        if (!self.viewItem.hasBodyText) {
             return OWSMessageGestureLocation_Media;
         }
     }

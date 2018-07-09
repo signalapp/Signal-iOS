@@ -45,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.statusIndicatorImageView = [UIImageView new];
     [self.statusIndicatorImageView setContentHuggingHigh];
     [self addArrangedSubview:self.statusIndicatorImageView];
+
+    self.userInteractionEnabled = NO;
 }
 
 - (void)configureFonts
