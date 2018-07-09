@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.messageStatusView,
     ]];
     self.topRowView.axis = UILayoutConstraintAxisHorizontal;
-    self.topRowView.alignment = UIStackViewAlignmentCenter;
+    self.topRowView.alignment = UIStackViewAlignmentLastBaseline;
     self.topRowView.spacing = 6.f;
 
     self.snippetLabel = [UILabel new];
@@ -270,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
         UIImage *_Nullable statusIndicatorImage = nil;
         UIColor *messageStatusViewTintColor = textColor;
         BOOL shouldAnimateStatusIcon = NO;
-        if (overrideSnippet == nil && [self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
+        if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
 
             MessageReceiptStatus messageStatus =
