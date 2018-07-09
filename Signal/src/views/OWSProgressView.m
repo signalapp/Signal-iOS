@@ -3,6 +3,8 @@
 //
 
 #import "OWSProgressView.h"
+#import <SignalMessaging/OWSMath.h>
+#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.opaque = NO;
     self.userInteractionEnabled = NO;
-    self.backgroundColor = [UIColor clearColor];
     self.color = [UIColor whiteColor];
 
     // Prevent the shape layer from animating changes.
@@ -48,11 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
     [CATransaction setDisableActions:YES];
 
     self.borderLayer = [CAShapeLayer new];
-    self.borderLayer.fillColor = self.color.CGColor;
     [self.layer addSublayer:self.borderLayer];
 
     self.progressLayer = [CAShapeLayer new];
-    self.progressLayer.fillColor = self.color.CGColor;
     [self.layer addSublayer:self.progressLayer];
 
     [CATransaction commit];
@@ -89,32 +88,24 @@ NS_ASSUME_NONNULL_BEGIN
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    CGFloat kBorderThickness = self.bounds.size.height * 0.1f;
-    CGFloat kOuterRadius = self.bounds.size.height * 0.25f;
-    CGFloat kInnerRadius = kOuterRadius - kBorderThickness;
-    // We want to slightly overlap the border with the progress
-    // to achieve a clean effect.
-    CGFloat kProgressInset = kBorderThickness - 0.5f;
-
-    UIBezierPath *borderPath = [UIBezierPath new];
+    CGFloat borderThickness = MAX(CGHairlineWidth(), self.bounds.size.height * 0.1f);
+    CGFloat cornerRadius = MIN(self.bounds.size.width, self.bounds.size.height) * 0.5f;
 
     // Add the outer border.
-    [borderPath appendPath:[UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:kOuterRadius]];
-    [borderPath
-        appendPath:[UIBezierPath bezierPathWithRoundedRect:CGRectInset(self.bounds, kBorderThickness, kBorderThickness)
-                                              cornerRadius:kInnerRadius]];
-
+    UIBezierPath *borderPath = [UIBezierPath bezierPathWithRoundedRect:self.bounds cornerRadius:cornerRadius];
     self.borderLayer.path = borderPath.CGPath;
-    self.borderLayer.fillColor = self.color.CGColor;
-    self.borderLayer.fillRule = kCAFillRuleEvenOdd;
-
-    UIBezierPath *progressPath = [UIBezierPath new];
+    self.borderLayer.strokeColor = self.color.CGColor;
+    self.borderLayer.lineWidth = borderThickness;
+    self.borderLayer.fillColor = [UIColor clearColor].CGColor;
 
     // Add the inner progress.
-    CGRect progressRect = CGRectInset(self.bounds, kProgressInset, kProgressInset);
-    progressRect.size.width *= MAX(0.f, MIN(1.f, self.progress));
-    [progressPath appendPath:[UIBezierPath bezierPathWithRect:progressRect]];
-
+    CGRect progressRect = self.bounds;
+    progressRect.size.width = cornerRadius * 2;
+    CGFloat baseProgress = borderThickness * 2;
+    CGFloat minProgress = baseProgress;
+    CGFloat maxProgress = MAX(0, self.bounds.size.width - baseProgress);
+    progressRect.size.width = CGFloatLerp(minProgress, maxProgress, self.progress);
+    UIBezierPath *progressPath = [UIBezierPath bezierPathWithRoundedRect:progressRect cornerRadius:cornerRadius];
     self.progressLayer.path = progressPath.CGPath;
     self.progressLayer.fillColor = self.color.CGColor;
 

@@ -5,6 +5,7 @@
 #import "AttachmentUploadView.h"
 #import "OWSBezierPathView.h"
 #import "OWSProgressView.h"
+#import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSUploadOperation.h>
@@ -16,9 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSAttachmentStream *attachment;
 
-@property (nonatomic) OWSBezierPathView *bezierPathView;
-
 @property (nonatomic) OWSProgressView *progressView;
+
+@property (nonatomic) UILabel *progressLabel;
 
 @property (nonatomic) AttachmentStateBlock _Nullable attachmentStateCallback;
 
@@ -43,20 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.attachment = attachment;
         self.attachmentStateCallback = attachmentStateCallback;
 
-        _bezierPathView = [OWSBezierPathView new];
-        self.bezierPathView.configureShapeLayerBlock = ^(CAShapeLayer *layer, CGRect bounds) {
-            layer.path = [UIBezierPath bezierPathWithRect:bounds].CGPath;
-            layer.fillColor = [UIColor colorWithWhite:0.f alpha:0.4f].CGColor;
-        };
-        [self addSubview:self.bezierPathView];
-        [self.bezierPathView autoPinToSuperviewEdges];
-
-        // The progress view is white.  It will only be shown
-        // while the mask layer is visible, so it will show up
-        // even against all-white attachments.
-        _progressView = [OWSProgressView new];
-        self.progressView.color = [UIColor whiteColor];
-        [self addSubview:self.progressView];
+        [self createContents];
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(attachmentUploadProgress:)
@@ -77,6 +65,44 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)createContents
+{
+    // The progress view is white.  It will only be shown
+    // while the mask layer is visible, so it will show up
+    // even against all-white attachments.
+    _progressView = [OWSProgressView new];
+    self.progressView.color = [UIColor whiteColor];
+    [self.progressView autoSetDimension:ALDimensionWidth toSize:80.f];
+    [self.progressView autoSetDimension:ALDimensionHeight toSize:6.f];
+
+    self.progressLabel = [UILabel new];
+    self.progressLabel.text = NSLocalizedString(
+        @"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING", @"Status label for messages which are uploading.")
+                                  .uppercaseString;
+    self.progressLabel.textColor = UIColor.whiteColor;
+    self.progressLabel.font = [UIFont ows_dynamicTypeCaption1Font];
+    self.progressLabel.textAlignment = NSTextAlignmentCenter;
+
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.progressView,
+        self.progressLabel,
+    ]];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = 4;
+    stackView.layoutMargins = UIEdgeInsetsMake(4, 4, 4, 4);
+    stackView.layoutMarginsRelativeArrangement = YES;
+    [self addSubview:stackView];
+    [stackView autoCenterInSuperview];
+    [NSLayoutConstraint
+        autoSetPriority:UILayoutPriorityRequired
+         forConstraints:^{
+             [stackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+             [stackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+             [stackView autoPinEdgeToSuperviewMargin:ALEdgeLeading relation:NSLayoutRelationGreaterThanOrEqual];
+             [stackView autoPinEdgeToSuperviewMargin:ALEdgeTrailing relation:NSLayoutRelationGreaterThanOrEqual];
+         }];
 }
 
 - (void)setIsAttachmentReady:(BOOL)isAttachmentReady
@@ -103,8 +129,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ensureViewState
 {
-    self.bezierPathView.hidden = self.isAttachmentReady || self.lastProgress == 0;
-    self.progressView.hidden = self.isAttachmentReady || self.lastProgress == 0;
+    BOOL isUploading = !self.isAttachmentReady && self.lastProgress != 0;
+    self.backgroundColor = (isUploading ? [UIColor colorWithWhite:0.f alpha:0.2f] : nil);
+    self.progressView.hidden = !isUploading;
+    self.progressLabel.hidden = !isUploading;
 }
 
 - (void)attachmentUploadProgress:(NSNotification *)notification
@@ -122,45 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
             self.isAttachmentReady = YES;
         }
     }
-}
-
-- (void)setBounds:(CGRect)bounds
-{
-    BOOL sizeDidChange = !CGSizeEqualToSize(bounds.size, self.bounds.size);
-    [super setBounds:bounds];
-    if (sizeDidChange) {
-        [self updateLayout];
-    }
-}
-
-- (void)setFrame:(CGRect)frame
-{
-    BOOL sizeDidChange = !CGSizeEqualToSize(frame.size, self.frame.size);
-    [super setFrame:frame];
-    if (sizeDidChange) {
-        [self updateLayout];
-    }
-}
-
-- (void)updateLayout
-{
-    // Center the progress bar within the bubble mask.
-    //
-    // TODO: Verify that this layout works in RTL.
-    const CGFloat kBubbleTailWidth = 6.f;
-    CGRect bounds = self.bounds;
-    bounds.size.width -= kBubbleTailWidth;
-    if (CurrentAppContext().isRTL) {
-        bounds.origin.x += kBubbleTailWidth;
-    }
-
-    const CGFloat progressWidth = round(bounds.size.width * 0.45f);
-    const CGFloat progressHeight = round(MIN(bounds.size.height * 0.5f, progressWidth * 0.09f));
-    CGRect progressFrame = CGRectMake(round(bounds.origin.x + (bounds.size.width - progressWidth) * 0.5f),
-        round(bounds.origin.y + (bounds.size.height - progressHeight) * 0.5f),
-        progressWidth,
-        progressHeight);
-    self.progressView.frame = progressFrame;
 }
 
 @end

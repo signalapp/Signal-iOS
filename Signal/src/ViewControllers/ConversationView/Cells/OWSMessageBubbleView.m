@@ -328,11 +328,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         self.bodyMediaView = bodyMediaView;
         bodyMediaView.userInteractionEnabled = NO;
-        if (self.isMediaBeingSent) {
-            // TODO:
-            bodyMediaView.layer.opacity = 0.75f;
-        }
-
         if (self.hasFullWidthMediaView) {
             // Flush any pending "text" subviews.
             [self insertAnyTextViewsIntoStackView:textViews];
@@ -855,7 +850,7 @@ NS_ASSUME_NONNULL_BEGIN
     stillImageView.layer.minificationFilter = kCAFilterTrilinear;
     stillImageView.layer.magnificationFilter = kCAFilterTrilinear;
     stillImageView.backgroundColor = [UIColor whiteColor];
-    [self addAttachmentUploadViewIfNecessary:stillImageView];
+    [self addAttachmentUploadViewIfNecessary];
 
     __weak OWSMessageBubbleView *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -903,7 +898,7 @@ NS_ASSUME_NONNULL_BEGIN
     // might not match the aspect ratio of the view.
     animatedImageView.contentMode = UIViewContentModeScaleAspectFill;
     animatedImageView.backgroundColor = [UIColor whiteColor];
-    [self addAttachmentUploadViewIfNecessary:animatedImageView];
+    [self addAttachmentUploadViewIfNecessary];
 
     __weak OWSMessageBubbleView *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -952,7 +947,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           conversationStyle:self.conversationStyle];
     self.viewItem.lastAudioMessageView = audioMessageView;
     [audioMessageView createContents];
-    [self addAttachmentUploadViewIfNecessary:audioMessageView];
+    [self addAttachmentUploadViewIfNecessary];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -982,10 +977,9 @@ NS_ASSUME_NONNULL_BEGIN
     UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:videoPlayIcon];
     [stillImageView addSubview:videoPlayButton];
     [videoPlayButton autoCenterInSuperview];
-    [self addAttachmentUploadViewIfNecessary:stillImageView
-                     attachmentStateCallback:^(BOOL isAttachmentReady) {
-                         videoPlayButton.hidden = !isAttachmentReady;
-                     }];
+    [self addAttachmentUploadViewIfNecessary:^(BOOL isAttachmentReady) {
+        videoPlayButton.hidden = !isAttachmentReady;
+    }];
 
     __weak OWSMessageBubbleView *weakSelf = self;
     self.loadCellContentBlock = ^{
@@ -1024,7 +1018,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSGenericAttachmentView *attachmentView =
         [[OWSGenericAttachmentView alloc] initWithAttachment:self.attachmentStream isIncoming:self.isIncoming];
     [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-    [self addAttachmentUploadViewIfNecessary:attachmentView];
+    [self addAttachmentUploadViewIfNecessary];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -1082,26 +1076,26 @@ NS_ASSUME_NONNULL_BEGIN
     return contactShareView;
 }
 
-- (void)addAttachmentUploadViewIfNecessary:(UIView *)attachmentView
+- (void)addAttachmentUploadViewIfNecessary
 {
-    [self addAttachmentUploadViewIfNecessary:attachmentView
-                     attachmentStateCallback:^(BOOL isAttachmentReady){
-                     }];
+    [self addAttachmentUploadViewIfNecessary:nil];
 }
 
-- (void)addAttachmentUploadViewIfNecessary:(UIView *)attachmentView
-                   attachmentStateCallback:(AttachmentStateBlock)attachmentStateCallback
+- (void)addAttachmentUploadViewIfNecessary:(nullable AttachmentStateBlock)attachmentStateCallback
 {
-    OWSAssert(attachmentView);
-    OWSAssert(attachmentStateCallback);
     OWSAssert(self.attachmentStream);
+
+    if (!attachmentStateCallback) {
+        attachmentStateCallback = ^(BOOL isAttachmentReady) {
+        };
+    }
 
     if (self.isOutgoing) {
         if (!self.attachmentStream.isUploaded) {
             AttachmentUploadView *attachmentUploadView =
                 [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
                                          attachmentStateCallback:attachmentStateCallback];
-            [attachmentView addSubview:attachmentUploadView];
+            [self.bubbleView addSubview:attachmentUploadView];
             [attachmentUploadView autoPinToSuperviewEdges];
         }
     }
