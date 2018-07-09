@@ -18,12 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HomeViewCell ()
 
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic) UIStackView *payloadView;
 @property (nonatomic) UIStackView *topRowView;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
 @property (nonatomic) UIImageView *messageStatusView;
+
+@property (nonatomic) UIView *unreadBadge;
+@property (nonatomic) UILabel *unreadLabel;
+@property (nonatomic) UIView *unreadBadgeContainer;
 
 @property (nonatomic, nullable) ThreadViewModel *thread;
 @property (nonatomic, nullable) OWSContactsManager *contactsManager;
@@ -74,16 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
     [self.avatarView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
 
-    self.payloadView = [UIStackView new];
-    self.payloadView.axis = UILayoutConstraintAxisVertical;
-    [self.contentView addSubview:self.payloadView];
-    [self.payloadView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
-    [self.payloadView autoVCenterInSuperview];
-    // Ensure that the cell's contents never overflow the cell bounds.
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
-    [self.payloadView autoPinTrailingToSuperviewMargin];
-
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.nameLabel.font = self.nameFont;
@@ -106,17 +99,57 @@ NS_ASSUME_NONNULL_BEGIN
     self.topRowView.axis = UILayoutConstraintAxisHorizontal;
     self.topRowView.alignment = UIStackViewAlignmentCenter;
     self.topRowView.spacing = 6.f;
-    [self.payloadView addArrangedSubview:self.topRowView];
 
     self.snippetLabel = [UILabel new];
     self.snippetLabel.font = [self snippetFont];
     self.snippetLabel.numberOfLines = 1;
     self.snippetLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [self.payloadView addArrangedSubview:self.snippetLabel];
     [self.snippetLabel setContentHuggingHorizontalLow];
     [self.snippetLabel setCompressionResistanceHorizontalLow];
 
-    self.payloadView.userInteractionEnabled = NO;
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.topRowView,
+        self.snippetLabel,
+    ]];
+    vStackView.axis = UILayoutConstraintAxisVertical;
+
+    self.unreadLabel = [UILabel new];
+    self.unreadLabel.textColor = [UIColor ows_whiteColor];
+    self.unreadLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.unreadLabel.textAlignment = NSTextAlignmentCenter;
+    [self.unreadLabel setContentHuggingHigh];
+    [self.unreadLabel setCompressionResistanceHigh];
+
+    self.unreadBadge = [NeverClearView new];
+    self.unreadBadge.backgroundColor = [UIColor ows_materialBlueColor];
+    [self.unreadBadge addSubview:self.unreadLabel];
+    [self.unreadLabel autoCenterInSuperview];
+    [self.unreadBadge setContentHuggingHigh];
+    [self.unreadBadge setCompressionResistanceHigh];
+
+    self.unreadBadgeContainer = [UIView containerView];
+    [self.unreadBadgeContainer addSubview:self.unreadBadge];
+    [self.unreadBadge autoPinWidthToSuperview];
+    [self.unreadBadgeContainer setContentHuggingHigh];
+    [self.unreadBadgeContainer setCompressionResistanceHigh];
+
+    UIStackView *hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        vStackView,
+        self.unreadBadgeContainer,
+    ]];
+    hStackView.axis = UILayoutConstraintAxisHorizontal;
+    hStackView.spacing = 6.f;
+    [self.contentView addSubview:hStackView];
+    [hStackView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:self.avatarHSpacing];
+    [hStackView autoVCenterInSuperview];
+    // Ensure that the cell's contents never overflow the cell bounds.
+    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
+    [hStackView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [hStackView autoPinTrailingToSuperviewMargin];
+
+    [self.unreadBadge autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.nameLabel];
+
+    hStackView.userInteractionEnabled = NO;
 }
 
 - (void)dealloc
@@ -173,8 +206,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateNameLabel];
     [self updateAvatarView];
 
-    self.payloadView.spacing = 0.f;
-
     // We update the fonts every time this cell is configured to ensure that
     // changes to the dynamic type settings are reflected.
     self.snippetLabel.font = [self snippetFont];
@@ -198,51 +229,91 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.dateTimeLabel.textColor = textColor;
 
-    UIImage *_Nullable statusIndicatorImage = nil;
-    UIColor *messageStatusViewTintColor = textColor;
-    BOOL shouldAnimateStatusIcon = NO;
-    if (overrideSnippet == nil && [self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
+    NSUInteger unreadCount = thread.unreadCount;
+    if (overrideSnippet) {
+        // If we're using the home view cell to render search results,
+        // don't show "unread badge" or "message status" indicator.
+        self.unreadBadgeContainer.hidden = YES;
+        self.messageStatusView.hidden = YES;
+    } else if (unreadCount > 0) {
+        // If there are unread messages, show the "unread badge."
+        // The "message status" indicators is redundant.
+        self.unreadBadgeContainer.hidden = NO;
+        self.messageStatusView.hidden = YES;
 
-        MessageReceiptStatus messageStatus =
-            [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-        switch (messageStatus) {
-            case MessageReceiptStatusUploading:
-            case MessageReceiptStatusSending:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
-                shouldAnimateStatusIcon = YES;
-                break;
-            case MessageReceiptStatusSent:
-            case MessageReceiptStatusSkipped:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
-                break;
-            case MessageReceiptStatusDelivered:
-            case MessageReceiptStatusRead:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
-                break;
-            case MessageReceiptStatusFailed:
-                // TODO:
-                statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
-                break;
-        }
-        if (messageStatus == MessageReceiptStatusRead) {
-            messageStatusViewTintColor = [UIColor ows_signalBlueColor];
-        }
-    }
-    self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    self.messageStatusView.tintColor = messageStatusViewTintColor;
-    self.messageStatusView.hidden = statusIndicatorImage == nil;
-    if (shouldAnimateStatusIcon) {
-        CABasicAnimation *animation;
-        animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
-        animation.toValue = @(M_PI * 2.0);
-        const CGFloat kPeriodSeconds = 1.f;
-        animation.duration = kPeriodSeconds;
-        animation.cumulative = YES;
-        animation.repeatCount = HUGE_VALF;
-        [self.messageStatusView.layer addAnimation:animation forKey:@"animation"];
+        self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
+        self.unreadLabel.font = self.unreadFont;
+        const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
+        self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
+
+        [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
+                             forConstraints:^{
+                                 // This is a bit arbitrary, but it should scale with the size of dynamic text
+                                 CGFloat minMargin = CeilEven(unreadBadgeHeight * .5);
+
+                                 // Spec check. Should be 12pts (6pt on each side) when using default font size.
+                                 OWSAssert(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
+
+                                 [self.viewConstraints addObjectsFromArray:@[
+                                     [self.unreadBadge autoMatchDimension:ALDimensionWidth
+                                                              toDimension:ALDimensionWidth
+                                                                   ofView:self.unreadLabel
+                                                               withOffset:minMargin],
+                                     // badge sizing
+                                     [self.unreadBadge autoSetDimension:ALDimensionWidth
+                                                                 toSize:unreadBadgeHeight
+                                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                                     [self.unreadBadge autoSetDimension:ALDimensionHeight toSize:unreadBadgeHeight],
+                                 ]];
+                             }];
     } else {
-        [self.messageStatusView.layer removeAllAnimations];
+        UIImage *_Nullable statusIndicatorImage = nil;
+        UIColor *messageStatusViewTintColor = textColor;
+        BOOL shouldAnimateStatusIcon = NO;
+        if (overrideSnippet == nil && [self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
+
+            MessageReceiptStatus messageStatus =
+                [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+            switch (messageStatus) {
+                case MessageReceiptStatusUploading:
+                case MessageReceiptStatusSending:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                    shouldAnimateStatusIcon = YES;
+                    break;
+                case MessageReceiptStatusSent:
+                case MessageReceiptStatusSkipped:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
+                    break;
+                case MessageReceiptStatusDelivered:
+                case MessageReceiptStatusRead:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                    break;
+                case MessageReceiptStatusFailed:
+                    // TODO:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                    break;
+            }
+            if (messageStatus == MessageReceiptStatusRead) {
+                messageStatusViewTintColor = [UIColor ows_signalBlueColor];
+            }
+        }
+        self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.messageStatusView.tintColor = messageStatusViewTintColor;
+        self.messageStatusView.hidden = statusIndicatorImage == nil;
+        self.unreadBadgeContainer.hidden = YES;
+        if (shouldAnimateStatusIcon) {
+            CABasicAnimation *animation;
+            animation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+            animation.toValue = @(M_PI * 2.0);
+            const CGFloat kPeriodSeconds = 1.f;
+            animation.duration = kPeriodSeconds;
+            animation.cumulative = YES;
+            animation.repeatCount = HUGE_VALF;
+            [self.messageStatusView.layer addAnimation:animation forKey:@"animation"];
+        } else {
+            [self.messageStatusView.layer removeAllAnimations];
+        }
     }
 }
 
@@ -332,6 +403,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Constants
+
+- (UIFont *)unreadFont
+{
+    return [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
+}
 
 - (UIFont *)dateTimeFont
 {
