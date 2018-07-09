@@ -4940,6 +4940,8 @@ typedef enum : NSUInteger {
             // clustering
             if (previousViewItem == nil) {
                 isFirstInCluster = YES;
+            } else if (viewItem.shouldShowDate) {
+                isFirstInCluster = YES;
             } else if (previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isFirstInCluster = YES;
             } else {
