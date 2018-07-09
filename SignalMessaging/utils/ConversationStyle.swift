@@ -86,8 +86,8 @@ public class ConversationStyle: NSObject {
             gutterLeading = 16
             gutterTrailing = 20
         }
-        fullWidthGutterLeading = gutterLeading
-        fullWidthGutterTrailing = gutterTrailing
+        fullWidthGutterLeading = 16
+        fullWidthGutterTrailing = 16
         errorGutterTrailing = 16
 
         contentWidth = viewWidth - (gutterLeading + gutterTrailing)

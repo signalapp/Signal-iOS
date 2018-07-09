@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) UIStackView *dateHeaderView;
-@property (nonatomic) UIView *dateStrokeView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
@@ -54,18 +53,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.messageBubbleView = [OWSMessageBubbleView new];
     [self.contentView addSubview:self.messageBubbleView];
 
-    self.dateStrokeView = [UIView new];
-    self.dateStrokeView.backgroundColor = [UIColor ows_light45Color];
-    [self.dateStrokeView autoSetDimension:ALDimensionHeight toSize:self.dateHeaderStrokeThickness];
-    [self.dateStrokeView setContentHuggingHigh];
-
     self.dateHeaderLabel = [UILabel new];
     self.dateHeaderLabel.font = self.dateHeaderFont;
     self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
     self.dateHeaderLabel.textColor = [UIColor ows_light60Color];
 
     self.dateHeaderView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.dateStrokeView,
         self.dateHeaderLabel,
     ]];
     self.dateHeaderView.axis = NSTextLayoutOrientationVertical;
@@ -302,8 +295,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self.contentView addSubview:self.dateHeaderView];
         [self.viewConstraints addObjectsFromArray:@[
-            [self.dateHeaderView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.gutterLeading],
-            [self.dateHeaderView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.gutterTrailing],
+            [self.dateHeaderView
+                autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+            [self.dateHeaderView
+                autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
             [self.dateHeaderView autoPinEdgeToSuperviewEdge:ALEdgeTop],
 
             // DO NOT pin to the bottom of dateHeaderView.

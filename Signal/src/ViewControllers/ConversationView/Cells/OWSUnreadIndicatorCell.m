@@ -46,8 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentView.layoutMargins = UIEdgeInsetsZero;
 
     self.strokeView = [UIView new];
-    self.strokeView.backgroundColor = [UIColor ows_light60Color];
+    self.strokeView.backgroundColor = [UIColor ows_darkSkyBlueColor];
     [self.strokeView autoSetDimension:ALDimensionHeight toSize:self.strokeThickness];
+    self.strokeView.layer.cornerRadius = self.strokeThickness * 0.5f;
     [self.strokeView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
@@ -67,6 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.subtitleLabel,
     ]];
     self.stackView.axis = NSTextLayoutOrientationVertical;
+    self.stackView.spacing = 2;
     [self.contentView addSubview:self.stackView];
 
     [self configureFonts];
@@ -130,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)strokeThickness
 {
-    return CGHairlineWidth();
+    return 4.f;
 }
 
 - (CGSize)cellSizeWithTransaction:(YapDatabaseReadTransaction *)transaction
