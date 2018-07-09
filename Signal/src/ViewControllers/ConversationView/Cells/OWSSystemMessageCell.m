@@ -11,7 +11,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 
@@ -183,8 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
                 }
                 break;
         }
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [UIImage imageNamed:@"system_message_call"];
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
         return nil;
@@ -234,9 +231,6 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             label.text = [infoMessage previewTextWithTransaction:transaction];
         }
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        TSCall *call = (TSCall *)interaction;
-        label.text = [call previewTextWithTransaction:transaction];
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
         label.text = nil;

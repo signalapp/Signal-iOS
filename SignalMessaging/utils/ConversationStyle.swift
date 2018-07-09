@@ -170,6 +170,15 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
+    public func bubbleColor(call: TSCall) -> UIColor {
+        if call.isIncoming {
+            return primaryColor
+        } else {
+            return self.bubbleColorOutgoingSent
+        }
+    }
+
+    @objc
     public static var bubbleTextColorIncoming = UIColor.ows_white
 
     @objc
@@ -188,6 +197,15 @@ public class ConversationStyle: NSObject {
         } else {
             owsFail("Unexpected message type: \(message)")
             return UIColor.ows_materialBlue
+        }
+    }
+
+    @objc
+    public func bubbleTextColor(call: TSCall) -> UIColor {
+        if call.isIncoming {
+            return ConversationStyle.bubbleTextColorIncoming
+        } else {
+            return UIColor.ows_black
         }
     }
 }
