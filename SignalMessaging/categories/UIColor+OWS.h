@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_green800Color;
 @property (class, readonly, nonatomic) UIColor *ows_deepOrange900Color;
 @property (class, readonly, nonatomic) UIColor *ows_grey600Color;
+@property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
 
 @end
 

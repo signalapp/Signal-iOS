@@ -137,13 +137,13 @@ public class ConversationStyle: NSObject {
     private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
     @objc
-    public let bubbleColorOutgoingUnsent = UIColor.gray
+    public let bubbleColorOutgoingUnsent = UIColor.ows_light10
 
     @objc
     public let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_materialBlue
+    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
 
     @objc
     public var primaryColor: UIColor
@@ -182,14 +182,14 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public static var bubbleTextColorIncoming = UIColor.ows_black
+    public static var bubbleTextColorIncoming = UIColor.ows_light90
     public static var bubbleTextColorOutgoing = UIColor.ows_white
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return ConversationStyle.bubbleTextColorIncoming
-        } else if let _ = message as? TSOutgoingMessage {
+        } else if message is TSOutgoingMessage {
             return ConversationStyle.bubbleTextColorOutgoing
         } else {
             owsFail("Unexpected message type: \(message)")
@@ -218,25 +218,19 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
-        // TODO: Values
-        // TODO: Should this reflect "quoting self" v. "quoting other"?
-
         if isIncoming {
-            return bubbleColorOutgoingSent.withAlphaComponent(0.7)
+            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.7)
+            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
         }
     }
 
     @objc
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
-        // TODO: Values
-        // TODO: Should this reflect "quoting self" v. "quoting other"?
-
         if isIncoming {
             return bubbleColorOutgoingSent
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming
+            return UIColor.white
         }
     }
 
@@ -248,13 +242,11 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAuthorColor() -> UIColor {
-        // TODO:
         return UIColor.ows_light90
     }
 
     @objc
     public func quotedReplyTextColor() -> UIColor {
-        // TODO:
         return UIColor.ows_light90
     }
 

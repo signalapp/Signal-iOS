@@ -119,7 +119,6 @@ NS_ASSUME_NONNULL_BEGIN
             OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
             self.statusIndicatorImageView.image =
                 [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            // TODO: How to indicate read status for transitional colors?
             self.statusIndicatorImageView.tintColor = textColor;
             self.statusIndicatorImageView.hidden = NO;
         } else {
