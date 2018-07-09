@@ -134,36 +134,6 @@ public class ConversationStyle: NSObject {
         return color
     }
 
-//    @objc
-//    public static let bubbleColorIncoming = UIColor.ows_messageBubbleLightGray
-//
-//    @objc
-//    public static let bubbleColorOutgoingUnsent = UIColor.gray
-//
-//    @objc
-//    public static let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
-//
-//    @objc
-//    public static let bubbleColorOutgoingSent = UIColor.ows_materialBlue
-//
-//    @objc
-//    public func bubbleColor(message: TSMessage) -> UIColor {
-//        if message is TSIncomingMessage {
-//            return OWSMessagesBubbleImageFactory.bubbleColorIncoming
-//        } else if let outgoingMessage = message as? TSOutgoingMessage {
-//            switch outgoingMessage.messageState {
-//            case .failed:
-//                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingUnsent
-//            case .sending:
-//                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSending
-//            default:
-//                return OWSMessagesBubbleImageFactory.bubbleColorOutgoingSent
-//            }
-//        } else {
-//            owsFail("Unexpected message type: \(message)")
-//            return UIColor.ows_materialBlue
-//        }
-//    }
     private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
     @objc

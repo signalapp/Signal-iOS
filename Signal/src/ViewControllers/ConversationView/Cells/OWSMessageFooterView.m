@@ -120,7 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
             self.statusIndicatorImageView.image =
                 [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             // TODO: How to indicate read status for transitional colors?
+            //            if (messageStatus == MessageReceiptStatusRead) {
+            //                self.statusIndicatorImageView.tintColor = [UIColor ows_signalBlueColor];
+            //            } else {
             self.statusIndicatorImageView.tintColor = textColor;
+            //            }
             self.statusIndicatorImageView.hidden = NO;
         } else {
             self.statusIndicatorImageView.image = nil;
