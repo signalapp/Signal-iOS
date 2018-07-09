@@ -146,6 +146,9 @@ public class ConversationStyle: NSObject {
     public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
 
     @objc
+    public let dateBreakTextColor = UIColor.ows_light60
+
+    @objc
     public var primaryColor: UIColor
 
     @objc

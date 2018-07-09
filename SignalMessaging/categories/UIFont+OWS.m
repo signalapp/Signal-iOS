@@ -72,14 +72,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
 }
 
-+ (UIFont *)ows_dynamicTypeSubheadlineFont
-{
-    return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-}
-
 + (UIFont *)ows_dynamicTypeBodyFont
 {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+}
+
++ (UIFont *)ows_dynamicTypeCalloutFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+}
+
++ (UIFont *)ows_dynamicTypeSubheadlineFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
 }
 
 + (UIFont *)ows_dynamicTypeFootnoteFont

@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
 
         self.dateHeaderLabel.font = self.dateHeaderFont;
-        self.dateHeaderLabel.textColor = UIColor.lightGrayColor;
+        self.dateHeaderLabel.textColor = self.conversationStyle.dateBreakTextColor;
 
         self.dateHeaderLabel.text = dateString;
 
@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)dateHeaderFont
 {
-    return UIFont.ows_dynamicTypeCaption1Font;
+    return UIFont.ows_dynamicTypeCalloutFont;
 }
 
 #pragma mark - Avatar
