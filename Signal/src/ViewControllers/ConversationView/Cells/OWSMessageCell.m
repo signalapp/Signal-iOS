@@ -369,7 +369,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return 24.f;
+    return 36.f;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
