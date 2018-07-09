@@ -273,25 +273,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.viewItem.shouldShowDate) {
         NSDate *date = self.viewItem.interaction.dateForSorting;
         NSString *dateString = [dateHeaderDateFormatter stringFromDate:date];
-        NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
 
-        NSAttributedString *attributedText = [NSAttributedString new];
-        attributedText = [attributedText rtlSafeAppend:dateString.localizedUppercaseString
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }];
-        attributedText = [attributedText rtlSafeAppend:@" "
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                            }];
-        attributedText = [attributedText rtlSafeAppend:timeString
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }];
+        self.dateHeaderLabel.font = self.dateHeaderFont;
+        self.dateHeaderLabel.textColor = UIColor.lightGrayColor;
 
-        self.dateHeaderLabel.attributedText = attributedText;
+        self.dateHeaderLabel.text = dateString;
 
         [self.contentView addSubview:self.dateHeaderView];
         [self.viewConstraints addObjectsFromArray:@[
