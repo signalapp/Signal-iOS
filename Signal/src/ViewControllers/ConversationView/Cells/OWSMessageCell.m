@@ -260,7 +260,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSDate *date = self.viewItem.interaction.dateForSorting;
         NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
-        self.dateHeaderLabel.text = dateString;
+        self.dateHeaderLabel.text = dateString.localizedUppercaseString;
 
         [self.contentView addSubview:self.dateHeaderView];
         [self.viewConstraints addObjectsFromArray:@[
