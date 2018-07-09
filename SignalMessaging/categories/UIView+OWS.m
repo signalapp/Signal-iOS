@@ -111,14 +111,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return [self autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.superview];
 }
 
-- (void)autoPinEdgesToEdgesOfView:(UIView *)view
-{
-    OWSAssert(view);
-
-    [self autoPinWidthToWidthOfView:view];
-    [self autoPinHeightToHeightOfView:view];
-}
-
 - (void)autoPinWidthToWidthOfView:(UIView *)view
 {
     OWSAssert(view);

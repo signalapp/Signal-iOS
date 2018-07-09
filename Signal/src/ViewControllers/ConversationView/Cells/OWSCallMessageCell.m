@@ -160,10 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGSize cellSize = [self cellSizeWithTransaction:transaction];
-    [self.layoutConstraints addObjectsFromArray:@[
-        [self.bubbleView autoSetDimension:ALDimensionWidth toSize:cellSize.width],
-        [self.bubbleView autoSetDimension:ALDimensionHeight toSize:cellSize.height],
-    ]];
+    [self.layoutConstraints addObjectsFromArray:[self.bubbleView autoSetDimensionsToSize:cellSize]];
 
     self.vStackView.layoutMarginsRelativeArrangement = YES;
     self.vStackView.layoutMargins = UIEdgeInsetsMake(self.conversationStyle.textInsetTop,
