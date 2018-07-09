@@ -302,7 +302,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
                                                 @"hours in the past. Embeds {{The number of hours}}."),
                            hoursString];
     }
-    return result.uppercaseString;
+    return result;
 }
 
 + (BOOL)isTimestampFromLastHour:(uint64_t)timestamp
