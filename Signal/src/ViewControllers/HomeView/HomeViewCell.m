@@ -293,7 +293,6 @@ NS_ASSUME_NONNULL_BEGIN
                     messageStatusViewTintColor = [UIColor ows_signalBlueColor];
                     break;
                 case MessageReceiptStatusFailed:
-                    // TODO:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_failed"];
                     messageStatusViewTintColor = [UIColor ows_destructiveRedColor];
                     break;
