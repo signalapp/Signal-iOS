@@ -80,7 +80,7 @@ public class ConversationStyle: NSObject {
     @objc
     public func updateProperties() {
         if thread.isGroupThread() {
-            gutterLeading = 40
+            gutterLeading = 52
             gutterTrailing = 20
         } else {
             gutterLeading = 16
