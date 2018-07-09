@@ -1328,7 +1328,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
@@ -1336,7 +1336,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
@@ -1344,7 +1344,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self fakeOutgoingPngAction:thread
                         actionLabel:@"Fake Outgoing 'Outgoing Unsent' Png"
                           imageSize:CGSizeMake(200.f, 200.f)
-                    backgroundColor:[conversationStyle bubbleColorOutgoingUnsent]
+                    backgroundColor:[conversationStyle bubbleColorOutgoingFailed]
                           textColor:[UIColor whiteColor]
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent

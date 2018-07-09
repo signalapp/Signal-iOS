@@ -137,7 +137,7 @@ public class ConversationStyle: NSObject {
     private static let defaultBubbleColorIncoming = UIColor.ows_messageBubbleLightGray
 
     @objc
-    public let bubbleColorOutgoingUnsent = UIColor.ows_light10
+    public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
 
     @objc
     public let bubbleColorOutgoingSending = UIColor.ows_fadedBlue
@@ -155,7 +155,7 @@ public class ConversationStyle: NSObject {
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
             case .failed:
-                return bubbleColorOutgoingUnsent
+                return bubbleColorOutgoingFailed
             case .sending:
                 return bubbleColorOutgoingSending
             default:
