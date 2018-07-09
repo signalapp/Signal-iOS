@@ -263,6 +263,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
     NSCalendar *calendar = [NSCalendar currentCalendar];
 
+    // Note: we are careful to treat "future" dates as "now".
     NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:nowDate];
     NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
     NSInteger minutesDiff
