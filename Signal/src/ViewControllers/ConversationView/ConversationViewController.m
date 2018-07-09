@@ -237,6 +237,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) NSNumber *previousLastTimestamp;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
+@property (nonatomic) NSTimer *reloadTimer;
+@property (nonatomic, nullable) NSDate *lastReloadDate;
 
 @end
 
@@ -480,6 +482,39 @@ typedef enum : NSUInteger {
     }];
     [self updateMessageMappingRangeOptions];
     [self updateShouldObserveDBModifications];
+
+    self.reloadTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
+                                                            target:self
+                                                          selector:@selector(reloadTimerDidFire)
+                                                          userInfo:nil
+                                                           repeats:YES];
+}
+
+- (void)dealloc
+{
+    [self.reloadTimer invalidate];
+}
+
+- (void)reloadTimerDidFire
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.isUserScrolling || !self.isViewCompletelyAppeared || !self.isViewVisible
+        || !self.shouldObserveDBModifications || !self.viewHasEverAppeared) {
+        return;
+    }
+
+    NSDate *now = [NSDate new];
+    if (self.lastReloadDate) {
+        NSTimeInterval timeSinceLastReload = [now timeIntervalSinceDate:self.lastReloadDate];
+        const NSTimeInterval kReloadFrequency = 60.f;
+        if (timeSinceLastReload < kReloadFrequency) {
+            return;
+        }
+    }
+
+    DDLogVerbose(@"%@ reloading conversation view contents.", self.logTag);
+    [self resetContentAndLayout];
 }
 
 - (BOOL)userLeftGroup
@@ -795,6 +830,7 @@ typedef enum : NSUInteger {
     // Avoid layout corrupt issues and out-of-date message subtitles.
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
+    self.lastReloadDate = [NSDate new];
 }
 
 - (void)setUserHasScrolled:(BOOL)userHasScrolled
@@ -1669,8 +1705,7 @@ typedef enum : NSUInteger {
     self.loadMoreHeader.userInteractionEnabled = showLoadMoreHeader;
 
     if (valueChanged) {
-        [self.collectionView.collectionViewLayout invalidateLayout];
-        [self.collectionView reloadData];
+        [self resetContentAndLayout];
     }
 }
 
@@ -3341,6 +3376,7 @@ typedef enum : NSUInteger {
         OWSProdLogAndFail(@"%@ hasMalformedRowChange", self.logTag);
         [self reloadViewItems];
         [self.collectionView reloadData];
+        self.lastReloadDate = [NSDate new];
         [self updateLastVisibleTimestamp];
         [self cleanUpUnreadIndicatorIfNecessary];
         return;
@@ -3438,6 +3474,7 @@ typedef enum : NSUInteger {
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
         }];
     }
+    self.lastReloadDate = [NSDate new];
 }
 
 - (BOOL)shouldAnimateRowUpdates:(NSArray<YapDatabaseViewRowChange *> *)rowChanges
@@ -4325,6 +4362,7 @@ typedef enum : NSUInteger {
     [self.conversationStyle updateProperties];
     [self.headerView updateAvatar];
     [self.collectionView reloadData];
+    self.lastReloadDate = [NSDate new];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel

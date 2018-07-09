@@ -23,8 +23,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatTimestampShort:(uint64_t)timestamp;
 + (NSString *)formatDateShort:(NSDate *)date;
 
-+ (NSString *)formatTimestampAsTimeShort:(uint64_t)timestamp;
-+ (NSString *)formatDateAsTimeShort:(NSDate *)date;
++ (NSString *)formatTimestampAsTime:(uint64_t)timestamp;
++ (NSString *)formatDateAsTime:(NSDate *)date;
+
++ (NSString *)formatMessageTimestamp:(uint64_t)timestamp;
+
++ (BOOL)isTimestampFromLastHour:(uint64_t)timestamp;
+// These two "exemplary" values can be used by views to measure
+// the likely size for recent values formatted using isTimestampFromLastHour:.
++ (NSString *)exemplaryNowTimeFormat;
++ (NSString *)exemplaryMinutesTimeFormat;
 
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;

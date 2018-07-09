@@ -1343,6 +1343,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.hasBottomFooter) {
         CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
+        footerSize.width = MIN(footerSize.width, self.conversationStyle.maxMessageWidth);
         [textViewSizes addObject:[NSValue valueWithCGSize:footerSize]];
     }
 

@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.timestampLabel.text
             = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
     } else {
-        self.timestampLabel.text = [DateUtil formatTimestampAsTimeShort:viewItem.interaction.timestamp];
+        self.timestampLabel.text = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
     }
 }
 
@@ -180,7 +180,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGSize result = CGSizeZero;
     result.height = MAX(self.timestampLabel.font.lineHeight, self.imageHeight);
-    result.width = [self.timestampLabel sizeThatFits:CGSizeZero].width;
+
+    // Measure the actual current width, to be safe.
+    CGFloat timestampLabelWidth = [self.timestampLabel sizeThatFits:CGSizeZero].width;
+
+    // Measuring the timestamp label's width is non-trivial since its
+    // contents can be relative the current time.  We avoid having
+    // message bubbles' "visually vibrate" as their timestamp labels
+    // vary in width.  So we try to leave enough space for all possible
+    // contents of this label _for the first hour of its lifetime_, when
+    // the timestamp is particularly volatile.
+    if ([DateUtil isTimestampFromLastHour:viewItem.interaction.timestamp]) {
+        // Measure the "now" case.
+        self.timestampLabel.text = [DateUtil exemplaryNowTimeFormat];
+        timestampLabelWidth = MAX(timestampLabelWidth, [self.timestampLabel sizeThatFits:CGSizeZero].width);
+        // Measure the "relative time" case.
+        // Since this case varies with time, we multiply to leave
+        // space for the worst case (whose exact value, due to localization,
+        // is unpredictable).
+        self.timestampLabel.text = [DateUtil exemplaryMinutesTimeFormat];
+        timestampLabelWidth = MAX(timestampLabelWidth,
+            [self.timestampLabel sizeThatFits:CGSizeZero].width + self.timestampLabel.font.lineHeight * 0.5f);
+
+        // Re-configure the labels with the current appropriate value in case
+        // we are configuring this view for display.
+        [self configureLabelsWithConversationViewItem:viewItem];
+    }
+
+    result.width = timestampLabelWidth;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         if (![self isFailedOutgoingMessage:viewItem]) {
             result.width += (self.maxImageWidth + self.hSpacing);
