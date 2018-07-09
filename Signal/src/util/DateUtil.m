@@ -146,6 +146,24 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return [[calendar components:NSCalendarUnitDay fromDate:date1 toDate:date2 options:0] day];
 }
 
+// Returns the difference in years, ignoring shorter units of time.
+// If both dates fall in the same year, returns 0.
+// If firstDate is from the year before secondDate, returns 1.
+//
+// Note: Assumes both dates use the "current" calendar.
++ (NSInteger)yearsFromFirstDate:(NSDate *)firstDate toSecondDate:(NSDate *)secondDate
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSCalendarUnit units = NSCalendarUnitEra | NSCalendarUnitYear;
+    NSDateComponents *comp1 = [calendar components:units fromDate:firstDate];
+    NSDateComponents *comp2 = [calendar components:units fromDate:secondDate];
+    [comp1 setHour:12];
+    [comp2 setHour:12];
+    NSDate *date1 = [calendar dateFromComponents:comp1];
+    NSDate *date2 = [calendar dateFromComponents:comp2];
+    return [[calendar components:NSCalendarUnitYear fromDate:date1 toDate:date2 options:0] year];
+}
+
 + (NSString *)formatPastTimestampRelativeToNow:(uint64_t)pastTimestamp
 {
     OWSCAssert(pastTimestamp > 0);
@@ -201,54 +219,117 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return dateTimeString.uppercaseString;
 }
 
-+ (NSString *)formatTimestampAsTime:(uint64_t)timestamp maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
++ (NSDateFormatter *)otherYearMessageFormatter
 {
-    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
-    NSDate *now = [NSDate new];
-
-    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSInteger minutesDiff
-        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:now options:0] minute]);
-
-    // Treat anything in the last two minutes as "now", so that we
-    // don't have to worry about pluralization while formatting.
-    if (minutesDiff <= 1) {
-        return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
-    } else if (minutesDiff <= maxRelativeDurationMinutes) {
-        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
-        return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
-                                              @"Format string for a relative time, expressed as a certain number of "
-                                              @"minutes in the past. Embeds {{The number of minutes}}."),
-                         minutesString];
-    } else {
-        return [self formatDateAsTime:date];
-    }
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:@"MMM d, yyyy"];
+    });
+    return formatter;
 }
 
-+ (BOOL)isTimestampRelative:(uint64_t)timestamp maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
++ (NSDateFormatter *)thisYearMessageFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:@"MMM d"];
+    });
+    return formatter;
+}
+
++ (NSDateFormatter *)thisWeekMessageFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        [formatter setLocale:[NSLocale currentLocale]];
+        [formatter setDateFormat:@"E"];
+    });
+    return formatter;
+}
+
++ (NSString *)formatMessageTimestamp:(uint64_t)timestamp
 {
     NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
-    NSDate *now = [NSDate new];
+    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
+    NSDate *nowDate = [NSDate ows_dateWithMillisecondsSince1970:nowTimestamp];
 
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSInteger minutesDiff
-        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:now options:0] minute]);
 
-    return minutesDiff <= maxRelativeDurationMinutes;
+    NSInteger yearsDiff = [self yearsFromFirstDate:date toSecondDate:nowDate];
+    NSInteger daysDiff = [self daysFromFirstDate:date toSecondDate:nowDate];
+    NSInteger minutesDiff
+        = MAX(0, [[calendar components:NSCalendarUnitMinute fromDate:date toDate:nowDate options:0] minute]);
+    NSInteger hoursDiff
+        = MAX(0, [[calendar components:NSCalendarUnitHour fromDate:date toDate:nowDate options:0] hour]);
+
+    NSString *result;
+    if (yearsDiff > 0) {
+        // "Long date" + locale-specific "short" time format.
+        NSString *dayOfWeek = [self.otherYearMessageFormatter stringFromDate:date];
+        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
+        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+    } else if (daysDiff >= 7) {
+        // "Short date" + locale-specific "short" time format.
+        NSString *dayOfWeek = [self.thisYearMessageFormatter stringFromDate:date];
+        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
+        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+    } else if (daysDiff > 0) {
+        // "Day of week" + locale-specific "short" time format.
+        NSString *dayOfWeek = [self.thisWeekMessageFormatter stringFromDate:date];
+        NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
+        result = [[dayOfWeek rtlSafeAppend:@" "] rtlSafeAppend:formattedTime];
+    } else if (minutesDiff < 1) {
+        result = NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
+    } else if (hoursDiff < 1) {
+        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
+        result = [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
+                                                @"Format string for a relative time, expressed as a certain number of "
+                                                @"minutes in the past. Embeds {{The number of minutes}}."),
+                           minutesString];
+    } else {
+        NSString *hoursString = [OWSFormat formatInt:(int)hoursDiff];
+        result = [NSString stringWithFormat:NSLocalizedString(@"DATE_HOURS_AGO_FORMAT",
+                                                @"Format string for a relative time, expressed as a certain number of "
+                                                @"hours in the past. Embeds {{The number of hours}}."),
+                           hoursString];
+    }
+    return result.uppercaseString;
+}
+
++ (BOOL)isTimestampFromLastHour:(uint64_t)timestamp
+{
+    NSDate *date = [NSDate ows_dateWithMillisecondsSince1970:timestamp];
+    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
+    NSDate *nowDate = [NSDate ows_dateWithMillisecondsSince1970:nowTimestamp];
+
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+    NSInteger hoursDiff
+        = MAX(0, [[calendar components:NSCalendarUnitHour fromDate:date toDate:nowDate options:0] hour]);
+    return hoursDiff < 1;
 }
 
 + (NSString *)exemplaryNowTimeFormat
 {
-    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.");
+    return NSLocalizedString(@"DATE_NOW", @"The present; the current time.").uppercaseString;
 }
 
-+ (NSString *)exemplaryRelativeTimeFormatWithMaxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes
++ (NSString *)exemplaryMinutesTimeFormat
 {
-    NSString *minutesString = [OWSFormat formatInt:(int)maxRelativeDurationMinutes];
+    NSString *minutesString = [OWSFormat formatInt:(int)59];
     return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
                                           @"Format string for a relative time, expressed as a certain number of "
                                           @"minutes in the past. Embeds {{The number of minutes}}."),
-                     minutesString];
+                     minutesString]
+        .uppercaseString;
 }
 
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2

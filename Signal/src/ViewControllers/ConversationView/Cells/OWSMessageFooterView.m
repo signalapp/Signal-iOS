@@ -168,14 +168,8 @@ NS_ASSUME_NONNULL_BEGIN
         self.timestampLabel.text
             = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
     } else {
-        self.timestampLabel.text = [DateUtil formatTimestampAsTime:viewItem.interaction.timestamp
-                                        maxRelativeDurationMinutes:self.maxRelativeDurationMinutes];
+        self.timestampLabel.text = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
     }
-}
-
-- (NSInteger)maxRelativeDurationMinutes
-{
-    return 59;
 }
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem
@@ -194,9 +188,9 @@ NS_ASSUME_NONNULL_BEGIN
     // contents can be relative the current time.  We avoid having
     // message bubbles' "visually vibrate" as their timestamp labels
     // vary in width.  So we try to leave enough space for all possible
-    // contents of this label.
-    if ([DateUtil isTimestampRelative:viewItem.interaction.timestamp
-            maxRelativeDurationMinutes:self.maxRelativeDurationMinutes]) {
+    // contents of this label _for the first hour of its lifetime_, when
+    // the timestamp is particularly volatile.
+    if ([DateUtil isTimestampFromLastHour:viewItem.interaction.timestamp]) {
         // Measure the "now" case.
         self.timestampLabel.text = [DateUtil exemplaryNowTimeFormat];
         timestampLabelWidth = MAX(timestampLabelWidth, [self.timestampLabel sizeThatFits:CGSizeZero].width);
@@ -204,8 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Since this case varies with time, we multiply to leave
         // space for the worst case (whose exact value, due to localization,
         // is unpredictable).
-        self.timestampLabel.text =
-            [DateUtil exemplaryRelativeTimeFormatWithMaxRelativeDurationMinutes:self.maxRelativeDurationMinutes];
+        self.timestampLabel.text = [DateUtil exemplaryMinutesTimeFormat];
         timestampLabelWidth = MAX(timestampLabelWidth,
             [self.timestampLabel sizeThatFits:CGSizeZero].width + self.timestampLabel.font.lineHeight * 0.5f);
 

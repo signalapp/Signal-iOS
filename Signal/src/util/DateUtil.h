@@ -26,12 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)formatTimestampAsTime:(uint64_t)timestamp;
 + (NSString *)formatDateAsTime:(NSDate *)date;
 
-+ (NSString *)formatTimestampAsTime:(uint64_t)timestamp
-         maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes;
++ (NSString *)formatMessageTimestamp:(uint64_t)timestamp;
 
-+ (BOOL)isTimestampRelative:(uint64_t)timestamp maxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes;
++ (BOOL)isTimestampFromLastHour:(uint64_t)timestamp;
 + (NSString *)exemplaryNowTimeFormat;
-+ (NSString *)exemplaryRelativeTimeFormatWithMaxRelativeDurationMinutes:(NSInteger)maxRelativeDurationMinutes;
++ (NSString *)exemplaryMinutesTimeFormat;
 
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;
