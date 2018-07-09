@@ -25,6 +25,64 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
++ (NSDateFormatter *)dateBreakRelativeDateFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        formatter.locale = [NSLocale currentLocale];
+        formatter.dateStyle = NSDateFormatterShortStyle;
+        formatter.timeStyle = NSDateFormatterNoStyle;
+        formatter.doesRelativeDateFormatting = YES;
+    });
+
+    return formatter;
+}
+
++ (NSDateFormatter *)dateBreakThisWeekDateFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        formatter.locale = [NSLocale currentLocale];
+        // "Monday", "Tuesday", etc.
+        formatter.dateFormat = @"EEEE";
+    });
+
+    return formatter;
+}
+
++ (NSDateFormatter *)dateBreakThisYearDateFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        formatter.locale = [NSLocale currentLocale];
+        // Tue, Jun 6
+        formatter.dateFormat = @"EE, MMM d";
+    });
+
+    return formatter;
+}
+
++ (NSDateFormatter *)dateBreakOldDateFormatter
+{
+    static NSDateFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSDateFormatter new];
+        formatter.locale = [NSLocale currentLocale];
+        formatter.dateStyle = NSDateFormatterMediumStyle;
+        formatter.timeStyle = NSDateFormatterNoStyle;
+        formatter.doesRelativeDateFormatting = YES;
+    });
+
+    return formatter;
+}
+
 + (NSDateFormatter *)weekdayFormatter {
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
@@ -81,6 +139,17 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 {
     NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
     return dayDifference > 0;
+}
+
++ (BOOL)dateIsOlderThanYesterday:(NSDate *)date
+{
+    return [self dateIsOlderThanYesterday:date now:[NSDate date]];
+}
+
++ (BOOL)dateIsOlderThanYesterday:(NSDate *)date now:(NSDate *)now
+{
+    NSInteger dayDifference = [self daysFromFirstDate:date toSecondDate:now];
+    return dayDifference > 1;
 }
 
 + (BOOL)dateIsOlderThanOneWeek:(NSDate *)date
@@ -204,6 +273,25 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     }
 
     return dateTimeString.localizedUppercaseString;
+}
+
++ (NSString *)formatDateForConversationDateBreaks:(NSDate *)date
+{
+    OWSAssert(date);
+
+    if (![self dateIsThisYear:date]) {
+        // last year formatter: Nov 11, 2017
+        return [self.dateBreakOldDateFormatter stringFromDate:date];
+    } else if ([self dateIsOlderThanOneWeek:date]) {
+        // this year formatter: Tue, Jun 23
+        return [self.dateBreakThisYearDateFormatter stringFromDate:date];
+    } else if ([self dateIsOlderThanYesterday:date]) {
+        // day of week formatter: Thursday
+        return [self.dateBreakThisWeekDateFormatter stringFromDate:date];
+    } else {
+        // relative format: Today / Yesterday
+        return [self.dateBreakRelativeDateFormatter stringFromDate:date];
+    }
 }
 
 + (NSString *)formatTimestampAsTime:(uint64_t)timestamp

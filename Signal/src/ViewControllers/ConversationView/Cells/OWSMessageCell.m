@@ -253,26 +253,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.conversationStyle);
 
-    static NSDateFormatter *dateHeaderDateFormatter = nil;
-    static NSDateFormatter *dateHeaderTimeFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        dateHeaderDateFormatter = [NSDateFormatter new];
-        [dateHeaderDateFormatter setLocale:[NSLocale currentLocale]];
-        [dateHeaderDateFormatter setDoesRelativeDateFormatting:YES];
-        [dateHeaderDateFormatter setDateStyle:NSDateFormatterMediumStyle];
-        [dateHeaderDateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        
-        dateHeaderTimeFormatter = [NSDateFormatter new];
-        [dateHeaderTimeFormatter setLocale:[NSLocale currentLocale]];
-        [dateHeaderTimeFormatter setDoesRelativeDateFormatting:YES];
-        [dateHeaderTimeFormatter setDateStyle:NSDateFormatterNoStyle];
-        [dateHeaderTimeFormatter setTimeStyle:NSDateFormatterShortStyle];
-    });
-
     if (self.viewItem.shouldShowDate) {
         NSDate *date = self.viewItem.interaction.dateForSorting;
-        NSString *dateString = [dateHeaderDateFormatter stringFromDate:date];
+        NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
 
         self.dateHeaderLabel.font = self.dateHeaderFont;
         self.dateHeaderLabel.textColor = UIColor.lightGrayColor;
