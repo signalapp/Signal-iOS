@@ -135,11 +135,6 @@ NS_ASSUME_NONNULL_BEGIN
     return isRTL;
 }
 
-- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle
-{
-    DDLogInfo(@"Ignoring request to set status bar style since we're in an app extension");
-}
-
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated
 {
     DDLogInfo(@"Ignoring request to show/hide status bar since we're in an app extension");

@@ -32,9 +32,6 @@
     UIToolbar.appearance.tintColor = UIColor.ows_navbarIconColor;
 
     UIBarButtonItem.appearance.tintColor = UIColor.ows_navbarIconColor;
-    // Because our launch screen is blue, we specify the light content in our plist
-    // but once the app has loaded we want to switch to dark.
-    [CurrentAppContext() setStatusBarStyle:UIStatusBarStyleDefault];
 
     //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
     //    ows_materialBlueColor]];

@@ -107,12 +107,22 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-
 #pragma mark - NavBarLayoutDelegate
 
 - (void)navBarCallLayoutDidChangeWithNavbar:(OWSNavigationBar *)navbar
 {
     [self updateLayoutForNavbar:navbar];
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    if (OWSWindowManager.sharedManager.hasCall) {
+        // Status bar is overlaying the green "call banner"
+        return UIStatusBarStyleLightContent;
+    } else {
+        return super.preferredStatusBarStyle;
+    }
 }
 
 - (void)updateLayoutForNavbar:(OWSNavigationBar *)navbar

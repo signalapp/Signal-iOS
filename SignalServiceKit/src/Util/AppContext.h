@@ -74,7 +74,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 // Should only be called if isMainApp is YES.
 - (void)setMainAppBadgeNumber:(NSInteger)value;
 
-- (void)setStatusBarStyle:(UIStatusBarStyle)statusBarStyle;
 - (void)setStatusBarHidden:(BOOL)isHidden animated:(BOOL)isAnimated;
 
 @property (nonatomic, readonly) CGFloat statusBarHeight;
