@@ -36,7 +36,7 @@ public extension UIDevice {
 
     @objc
     public var isShorterThanIPhone5: Bool {
-        return UIScreen.main.nativeBounds.height < 1136
+        return UIScreen.main.bounds.height < 568
     }
 
     @objc
