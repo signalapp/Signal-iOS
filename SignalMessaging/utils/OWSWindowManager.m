@@ -50,6 +50,14 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     return UIWindowLevelStatusBar + 2.f;
 }
 
+// In front of everything, including the status bar.
+const UIWindowLevel UIWindowLevel_MessageActions(void);
+const UIWindowLevel UIWindowLevel_MessageActions(void)
+{
+    // TODO This won't cover the keyboard...
+    return UIWindowLevel_ScreenBlocking() - 1;
+}
+
 @implementation OWSWindowRootViewController
 
 - (BOOL)canBecomeFirstResponder
@@ -73,6 +81,10 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 // UIWindowLevel_CallView
 @property (nonatomic) UIWindow *callViewWindow;
 @property (nonatomic) UINavigationController *callNavigationController;
+
+// UIWindowLevel_MessageActions
+@property (nonatomic) UIWindow *messageActionsWindow;
+@property (nonatomic, nullable) UIViewController *messageActionsViewController;
 
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
@@ -127,6 +139,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
+    self.messageActionsWindow = [self createMessageActionsWindowWithRoowWindow:rootWindow];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didChangeStatusBarFrame:)
@@ -169,6 +182,20 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     return window;
 }
 
+- (UIWindow *)createMessageActionsWindowWithRoowWindow:(UIWindow *)rootWindow
+{
+    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+    window.hidden = YES;
+    window.windowLevel = UIWindowLevel_MessageActions();
+    //    window.opaque = YES;
+    window.backgroundColor = UIColor.clearColor;
+
+
+    //    window.rootViewController = navigationController;
+
+    return window;
+}
+
 - (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
 {
     OWSAssertIsOnMainThread();
@@ -204,6 +231,23 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     OWSAssertIsOnMainThread();
 
     _isScreenBlockActive = isScreenBlockActive;
+
+    [self ensureWindowState];
+}
+
+#pragma mark - Calls
+
+- (void)presentMessageActions:(UIViewController *)messageActionsViewController
+{
+    self.messageActionsViewController = messageActionsViewController;
+    self.messageActionsWindow.rootViewController = messageActionsViewController;
+    [self ensureWindowState];
+}
+
+- (void)dismissMessageActions
+{
+    self.messageActionsWindow.rootViewController = nil;
+    self.messageActionsViewController = nil;
 
     [self ensureWindowState];
 }
@@ -309,6 +353,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowHidden];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
+        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowShown];
     } else if (self.callViewController && self.shouldShowCallView) {
         // Show Call View.
@@ -316,6 +361,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowHidden];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowShown];
+        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else if (self.callViewController) {
         // Show Root Window + "Return to Call".
@@ -323,6 +369,14 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowShown];
         [self ensureReturnToCallWindowShown];
         [self ensureCallViewWindowHidden];
+        [self ensureMessageActionsWindowHidden];
+        [self ensureScreenBlockWindowHidden];
+    } else if (self.messageActionsViewController) {
+
+        [self ensureRootWindowHidden];
+        [self ensureReturnToCallWindowHidden];
+        [self ensureCallViewWindowHidden];
+        [self ensureMessageActionsWindowShown];
         [self ensureScreenBlockWindowHidden];
     } else {
         // Show Root Window
@@ -330,6 +384,7 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
         [self ensureRootWindowShown];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
+        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
     }
 }
@@ -405,6 +460,29 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     }
 
     self.callViewWindow.hidden = YES;
+}
+
+- (void)ensureMessageActionsWindowShown
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.messageActionsWindow.hidden) {
+        DDLogInfo(@"%@ showing message actions window.", self.logTag);
+    }
+
+    // Do not make key, we want the keyboard to stay popped.
+    self.messageActionsWindow.hidden = NO;
+}
+
+- (void)ensureMessageActionsWindowHidden
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.messageActionsWindow.hidden) {
+        DDLogInfo(@"%@ hiding message actions window.", self.logTag);
+    }
+
+    self.messageActionsWindow.hidden = YES;
 }
 
 - (void)ensureScreenBlockWindowShown
