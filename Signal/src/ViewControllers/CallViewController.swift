@@ -85,6 +85,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+
     // MARK: - Settings Nag Views
 
     var isShowingSettingsNag = false {
