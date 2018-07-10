@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSString *topText = [[filename stringByDeletingPathExtension] ows_stripped];
     if (topText.length < 1) {
-        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].localizedUppercaseString;
     }
     if (topText.length < 1) {
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");

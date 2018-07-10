@@ -164,12 +164,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
+    NSString *timestampLabelText;
     if ([self isFailedOutgoingMessage:viewItem]) {
-        self.timestampLabel.text
+        timestampLabelText
             = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
     } else {
-        self.timestampLabel.text = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
+        timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
     }
+
+    self.timestampLabel.text = timestampLabelText.localizedUppercaseString;
 }
 
 - (CGSize)measureWithConversationViewItem:(ConversationViewItem *)viewItem

@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UILabel *fileTypeLabel = [UILabel new];
-    fileTypeLabel.text = fileExtension.uppercaseString;
+    fileTypeLabel.text = fileExtension.localizedUppercaseString;
     fileTypeLabel.textColor = [UIColor ows_light90Color];
     fileTypeLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fileTypeLabel.font = [UIFont ows_dynamicTypeCaption1Font].ows_mediumWeight;
@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *topText = [self.attachmentStream.sourceFilename ows_stripped];
     if (topText.length < 1) {
-        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].uppercaseString;
+        topText = [MIMETypeUtil fileExtensionForMIMEType:self.attachmentStream.contentType].localizedUppercaseString;
     }
     if (topText.length < 1) {
         topText = NSLocalizedString(@"GENERIC_ATTACHMENT_LABEL", @"A label for generic attachments.");
