@@ -1982,7 +1982,8 @@ typedef enum : NSUInteger {
 
 - (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem
 {
-    MessageActionsViewController *messageActionsViewController = [MessageActionsViewController new];
+    MessageActionsViewController *messageActionsViewController =
+        [[MessageActionsViewController alloc] initWithFocusedView:cell];
     [[OWSWindowManager sharedManager] presentMessageActions:messageActionsViewController];
 }
 
