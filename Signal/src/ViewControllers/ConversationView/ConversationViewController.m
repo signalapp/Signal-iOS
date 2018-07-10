@@ -1992,14 +1992,25 @@ typedef enum : NSUInteger {
 
 - (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem
 {
-    MessageActionsViewController *messageActionsViewController =
-        [[MessageActionsViewController alloc] initWithFocusedView:cell];
+    // TODO Interpolate from 0->0.3 depending on distance to make visible.
+    NSTimeInterval animationDuration = 0.3;
 
-    messageActionsViewController.delegate = self;
+    // Instead of animating manually we could use `scrollRectToVisible:animated:YES`, but then we'd need to juggle a
+    // completion handler into scrollDidEnd
+    [UIView animateWithDuration:animationDuration
+        animations:^{
+            [self.collectionView scrollRectToVisible:cell.frame animated:NO];
+        }
+        completion:^(BOOL finished) {
+            MessageActionsViewController *messageActionsViewController =
+                [[MessageActionsViewController alloc] initWithFocusedView:cell];
 
-    [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
+            messageActionsViewController.delegate = self;
 
-    [self updateShouldObserveDBModifications];
+            [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
+
+            [self updateShouldObserveDBModifications];
+        }];
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
