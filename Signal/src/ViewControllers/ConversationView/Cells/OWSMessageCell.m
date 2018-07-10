@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const CGFloat OWSMessageCellDateHeaderVMargin = 23;
+
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
@@ -59,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.textColor = [UIColor ows_light60Color];
 
     self.dateHeaderView = [UIView new];
-    self.dateHeaderView.layoutMargins = UIEdgeInsetsMake(self.dateHeaderVMargin, 0, self.dateHeaderVMargin, 0);
+    self.dateHeaderView.layoutMargins = UIEdgeInsetsMake(0, 0, OWSMessageCellDateHeaderVMargin, 0);
     [self.dateHeaderView addSubview:self.dateHeaderLabel];
     [self.dateHeaderLabel autoPinToSuperviewMargins];
 
@@ -385,16 +387,11 @@ NS_ASSUME_NONNULL_BEGIN
     return cellSize;
 }
 
-- (CGFloat)dateHeaderVMargin
-{
-    return 23.f;
-}
-
 - (CGFloat)dateHeaderHeight
 {
     if (self.viewItem.shouldShowDate) {
         CGFloat textHeight = self.dateHeaderFont.lineHeight;
-        return (CGFloat)ceil(textHeight + self.dateHeaderVMargin * 2);
+        return (CGFloat)ceil(textHeight + OWSMessageCellDateHeaderVMargin);
     } else {
         return 0.f;
     }

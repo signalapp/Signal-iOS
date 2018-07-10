@@ -261,7 +261,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     if (self.shouldShowDate) {
-        return 0;
+        return OWSMessageCellDateHeaderVMargin;
     }
 
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
