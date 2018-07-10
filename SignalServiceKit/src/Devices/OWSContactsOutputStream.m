@@ -34,7 +34,9 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
+#ifdef CONVERSATION_COLORS_ENABLED
     [contactBuilder setColor:conversationColorName];
+#endif
 
     if (recipientIdentity != nil) {
         OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];

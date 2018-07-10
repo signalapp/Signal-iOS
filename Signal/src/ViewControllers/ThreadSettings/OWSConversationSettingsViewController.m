@@ -281,9 +281,7 @@ const CGFloat kIconViewLength = 24;
                                  [weakSelf showMediaGallery];
                              }]];
 
-
-//#define SHOW_CONVERSATION_COLORS_UI
-#ifdef SHOW_CONVERSATION_COLORS_UI
+#ifdef CONVERSATION_COLORS_ENABLED
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  NSString *colorName = self.thread.conversationColorName;
