@@ -136,6 +136,18 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)becomeFirstResponder
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    return [super becomeFirstResponder];
+}
+
+- (BOOL)resignFirstResponder
+{
+    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
+    return [super resignFirstResponder];
+}
+
 - (BOOL)pasteboardHasPossibleAttachment
 {
     // We don't want to load/convert images more than once so we
@@ -172,13 +184,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - UITextViewDelegate
 
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    // TODO: Is this necessary?
-
-    [textView becomeFirstResponder];
-}
-
 - (void)textViewDidChange:(UITextView *)textView
 {
     OWSAssert(self.textViewToolbarDelegate);
@@ -186,11 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updatePlaceholderVisibility];
 
     [self.textViewToolbarDelegate textViewDidChange:self];
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    [textView resignFirstResponder];
 }
 
 #pragma mark - Key Commands
