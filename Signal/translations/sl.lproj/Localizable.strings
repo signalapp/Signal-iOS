@@ -291,7 +291,7 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Aplikacija potrebuje dostop do mikrofona";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "Klic zavrnjen";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
 "CALL_DEFAULT_STATUS" = "Contact Called";
@@ -300,7 +300,7 @@
 "CALL_LABEL" = "Kliči";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "Zgrešen klic";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Neodgovorjeno.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimiziram bazo podatkov";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ ur nazaj";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ min nazaj";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Ravnokar";
 
 /* The current day. */
 "DATE_TODAY" = "Danes";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Dostavljeno";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Pošiljanje ni uspelo.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Neuspešno";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Izpuščeno";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Pošiljanje ni uspelo";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Pošiljam...";

@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofonin käyttöoikeutta tarvitaan";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "Hylkäsit puhelun";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "Puhelu soitettu";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Soita";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "Vastaamatta jäänyt puhelu";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ei vastausta.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Päivitetään tietokantaa";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ t sitten";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ min sitten";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Juuri äsken";
 
 /* The current day. */
 "DATE_TODAY" = "Tänään";
@@ -835,7 +835,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Viestin lähetys epäonnistui.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Lähettäminen ei onnistu vanhentuneiden yksityisyystietojen vuoksi.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Lähettäminen ei onnistu, koska salaustiedot ovat vanhetuneet.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Viestin lähettäminen ei onnistunut, koska olet estänyt kyseisen yhteystiedon.";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Toimitettu";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Lähettäminen epäonnistui.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Epäonnistui";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Sivuutettu";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Lähettäminen epäonnistui.";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Lähetetään...";

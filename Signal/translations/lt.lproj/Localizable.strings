@@ -291,7 +291,7 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Reikalinga prieiga prie mikrofono";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "Skambutis atmestas";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
 "CALL_DEFAULT_STATUS" = "Contact Called";
@@ -300,7 +300,7 @@
 "CALL_LABEL" = "Skambinti";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "Praleistas skambutis";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nėra atsakymo.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimizuojama duomenų bazė";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Prieš %@ val.";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Prieš %@ min.";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Dabar";
 
 /* The current day. */
 "DATE_TODAY" = "Šiandien";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Pristatyta";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Siuntimas nepavyko.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Nepavyko";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Praleista";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Nepavyko išsiųsti";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Siunčiama...";

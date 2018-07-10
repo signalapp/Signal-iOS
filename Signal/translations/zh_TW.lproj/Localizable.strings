@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "須要使用麥克風";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "來電拒絕";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "聯絡人曾來電";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "撥出";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "未接來電";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "無人接聽";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "最佳化資料庫";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@小時前";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@分鐘前";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "當前";
 
 /* The current day. */
 "DATE_TODAY" = "今天";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "已傳送";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "傳送失敗";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "失敗";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "略過";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "傳送失敗";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "傳送中...";

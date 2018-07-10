@@ -78,7 +78,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "プロフィール名を入力してください";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "バージョン%@がApp Storeで現在入手できます";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "バージョン%@がApp Storeで入手できます";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signalの最新版が出ています";
@@ -222,7 +222,7 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "ファイルを修復";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_BEHAVIOR_EXPLANATION" = "ブロックされるユーザーから通話もメッセージも受け付けられません。";
+"BLOCK_BEHAVIOR_EXPLANATION" = "ブロックされたユーザーは通話もメッセージも送って来れません。";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "ブロックする";
@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "マイクへのアクセスが必要です";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "通話拒否";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "通話済み";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "通話";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "不在着信";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "応答なし";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "データベースを更新中";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@時間前";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@分前";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "現在";
 
 /* The current day. */
 "DATE_TODAY" = "今日";
@@ -651,7 +651,7 @@
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "メールでのサポート";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "前のスレに送る";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "前のスレッドに送る";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "自分に送る";
@@ -856,7 +856,7 @@
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "ネットワークへの要求が時間切れになりました";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "無効な応答をサービスが返しました";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "無効な応答がサービスから返ってきました";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "電話番号と端末との結び付きがないようです。Signalを削除してインストールし直してください。";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "配信済み";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "送信失敗";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "送信に失敗";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "スキップされました";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "送信失敗";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "送信中";
@@ -1389,7 +1389,7 @@
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "連絡先を電話番号で検索";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@が再起動していた途中に、メッセージが届きましたかもしれません";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@の再起動中にメッセージが届いたかもしれません";
 
 /* No comment provided by engineer. */
 "NOTIFICATION_SEND_FAILED" = "%@へのメッセージ送信に失敗しました";
@@ -1677,7 +1677,7 @@
 "REGISTRATION_LEGAL_TERMS_LINK" = "利用規約と個人情報保護";
 
 /* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "このデバイスを登録すると、Signalの%@に同意を示します";
+"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "このデバイスを登録すると、Signalの%@に同意したことになります";
 
 /* embedded in legal topmatter, styled as a link */
 "REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "\n利用規約";

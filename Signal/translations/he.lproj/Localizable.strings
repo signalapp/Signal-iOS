@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "נדרשת גישה למיקרופון";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "שיחה נדחתה";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "איש קשר התקשר";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "חייג";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "שיחה שלא נענתה";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "אין מענה.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "ממטב מסד־נתונים";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ שעות קודם לכן";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ דקות קודם לכן";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "עכשיו";
 
 /* The current day. */
 "DATE_TODAY" = "היום";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "נשלח";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "שליחה נכשלה.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "נכשל";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "מדולג";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "שליחה נכשלה";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "שולח...";

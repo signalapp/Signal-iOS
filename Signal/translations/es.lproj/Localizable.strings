@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Signal necesita acceso al micrófono";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "Llamada rechazada";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "El contacto ha llamado";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Llamada";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "Llamada perdida";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "sin respuesta.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimizando base de datos";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Hace %@ h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Hace %@ m";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Ahora";
 
 /* The current day. */
 "DATE_TODAY" = "Hoy";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Entregado";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Fallo al enviar.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Fallo";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Omitido";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Fallo al enviar";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Enviando...";

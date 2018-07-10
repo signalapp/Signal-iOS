@@ -291,16 +291,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Lypset Hyrje Te Mikrofoni";
 
 /* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
+"CALL_DECLINED" = "Thirrje e Hedhur Tej";
 
 /* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
+"CALL_DEFAULT_STATUS" = "Kontakti u Thirr";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Thirrje";
 
 /* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
+"CALL_MISSED" = "Thirrje e Humbur";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "S\’ka Përgjigje.";
@@ -612,13 +612,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Po optimizohet Baza e të Dhënave";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ Hr Më Parë";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Min Më Parë";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Tani";
 
 /* The current day. */
 "DATE_TODAY" = "Sot";
@@ -1225,7 +1225,7 @@
 "MESSAGE_STATUS_DELIVERED" = "I dhënë";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Dërgimi dështoi.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Dështoi";
@@ -1237,7 +1237,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Anashkaluar";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Dërgimi Dështoi";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Po dërgohet…";
