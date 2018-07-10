@@ -12,6 +12,7 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
     OWSDirectionalRectCornerTopTrailing = 1 << 1,
     OWSDirectionalRectCornerBottomLeading = 1 << 2,
     OWSDirectionalRectCornerBottomTrailing = 1 << 3,
+    OWSDirectionalRectCornerNoCorners = 0,
     OWSDirectionalRectCornerAllCorners = ~0UL
 };
 

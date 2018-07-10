@@ -346,6 +346,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         messageBubbleView.viewItem = viewItem
         messageBubbleView.cellMediaCache = NSCache()
         messageBubbleView.conversationStyle = conversationStyle
+        messageBubbleView.shouldSuppressHeaderFooterAndRounding = true
         messageBubbleView.configureViews()
         messageBubbleView.loadContent()
 

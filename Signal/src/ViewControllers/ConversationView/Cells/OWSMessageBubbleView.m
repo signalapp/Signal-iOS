@@ -426,7 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && bodyMediaView && !self.hasBodyText);
-    if (self.viewItem.shouldHideFooter) {
+    if (self.shouldSuppressHeaderFooterAndRounding || self.viewItem.shouldHideFooter) {
         // Do nothing.
     } else if (shouldFooterOverlayMedia) {
         OWSAssert(bodyMediaView);
@@ -558,6 +558,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSDirectionalRectCorner)sharpCorners
 {
+    if (self.shouldSuppressHeaderFooterAndRounding) {
+        return OWSDirectionalRectCornerNoCorners;
+    }
+
     OWSDirectionalRectCorner sharpCorners = 0;
 
     if (!self.viewItem.isFirstInCluster) {
@@ -575,6 +579,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSDirectionalRectCorner)sharpCornersForQuotedMessage
 {
+    if (self.shouldSuppressHeaderFooterAndRounding) {
+        return OWSDirectionalRectCornerNoCorners;
+    }
+
     if (self.viewItem.senderName) {
         return OWSDirectionalRectCornerAllCorners;
     } else {
@@ -638,6 +646,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasBottomFooter
 {
+    if (self.shouldSuppressHeaderFooterAndRounding) {
+        return NO;
+    }
+
     BOOL shouldFooterOverlayMedia = (self.canFooterOverlayMedia && !self.hasBodyText);
     return !self.viewItem.shouldHideFooter && !shouldFooterOverlayMedia;
 }
@@ -771,6 +783,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowSenderName
 {
+    if (self.shouldSuppressHeaderFooterAndRounding) {
+        return NO;
+    }
     return self.viewItem.senderName.length > 0;
 }
 

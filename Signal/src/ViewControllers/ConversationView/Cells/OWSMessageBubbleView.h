@@ -68,6 +68,8 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 @property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
+@property (nonatomic) BOOL shouldSuppressHeaderFooterAndRounding;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
