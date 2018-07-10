@@ -373,7 +373,7 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
     _countryCode = countryCode;
     _callingCode = callingCode;
 
-    NSString *title = [NSString stringWithFormat:@"%@ (%@)", callingCode, countryCode.uppercaseString];
+    NSString *title = [NSString stringWithFormat:@"%@ (%@)", callingCode, countryCode.localizedUppercaseString];
     self.countryCodeLabel.text = title;
     [self.countryCodeLabel setNeedsLayout];
 

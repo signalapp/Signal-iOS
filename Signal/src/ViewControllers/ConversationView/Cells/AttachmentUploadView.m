@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.progressLabel = [UILabel new];
     self.progressLabel.text = NSLocalizedString(
         @"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING", @"Status label for messages which are uploading.")
-                                  .uppercaseString;
+                                  .localizedUppercaseString;
     self.progressLabel.textColor = UIColor.whiteColor;
     self.progressLabel.font = [UIFont ows_dynamicTypeCaption1Font];
     self.progressLabel.textAlignment = NSTextAlignmentCenter;

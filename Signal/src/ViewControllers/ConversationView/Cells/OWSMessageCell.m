@@ -276,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
 
         NSAttributedString *attributedText = [NSAttributedString new];
-        attributedText = [attributedText rtlSafeAppend:dateString.uppercaseString
+        attributedText = [attributedText rtlSafeAppend:dateString.localizedUppercaseString
                                             attributes:@{
                                                 NSFontAttributeName : self.dateHeaderFont,
                                                 NSForegroundColorAttributeName : [UIColor lightGrayColor],

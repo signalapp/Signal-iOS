@@ -243,7 +243,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     _callingCode = callingCode;
 
     NSString *titleFormat = (CurrentAppContext().isRTL ? @"(%2$@) %1$@" : @"%1$@ (%2$@)");
-    NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.uppercaseString];
+    NSString *title = [NSString stringWithFormat:titleFormat, callingCode, countryCode.localizedUppercaseString];
     [self.countryCodeButton setTitle:title forState:UIControlStateNormal];
     [self.countryCodeButton layoutSubviews];
 

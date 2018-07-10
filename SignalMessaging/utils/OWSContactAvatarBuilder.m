@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
             NSString *trimmedWord = [word stringByTrimmingCharactersInSet:excludeAlphanumeric];
             if (trimmedWord.length > 0) {
                 NSString *firstLetter = [trimmedWord substringToIndex:1];
-                [initials appendString:[firstLetter uppercaseString]];
+                [initials appendString:firstLetter.localizedUppercaseString];
             }
         }
 

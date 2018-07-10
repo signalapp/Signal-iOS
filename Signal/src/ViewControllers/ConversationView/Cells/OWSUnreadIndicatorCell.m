@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)titleForInteraction:(TSUnreadIndicatorInteraction *)interaction
 {
     return NSLocalizedString(@"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.")
-        .uppercaseString;
+        .localizedUppercaseString;
 }
 
 - (NSString *)subtitleForInteraction:(TSUnreadIndicatorInteraction *)interaction
