@@ -431,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Used for profile names.
 - (UIFont *)nameSecondaryFont
 {
-    return [UIFont ows_dynamicTypeFootnoteFont];
+    return [UIFont ows_dynamicTypeBodyFont].ows_italic;
 }
 
 - (NSUInteger)avatarSize

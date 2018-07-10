@@ -801,8 +801,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)senderNameSecondaryAttributes
 {
     return @{
-        NSFontAttributeName : UIFont.ows_dynamicTypeCaption2Font,
-        NSForegroundColorAttributeName : [ConversationStyle.bubbleTextColorIncoming colorWithAlphaComponent:0.75f],
+        NSFontAttributeName : self.senderNameFont.ows_italic,
+        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
     };
 }
 
