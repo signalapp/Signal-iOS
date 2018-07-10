@@ -25,6 +25,7 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 @property (nonatomic, nullable) NSTimer *animationTimer;
 
+// 0 == about to expire, 12 == just started countdown.
 @property (nonatomic) NSInteger progress12;
 
 
@@ -36,22 +37,15 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (void)dealloc
 {
-    [self.animationTimer invalidate];
-    self.animationTimer = nil;
+    [self clearAnimation];
 }
 
-- (instancetype)initWithExpiration:(uint64_t)expirationTimestamp
-            initialDurationSeconds:(uint32_t)initialDurationSeconds
-                         tintColor:(UIColor *)tintColor;
+- (instancetype)init
 {
     self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
-
-    self.expirationTimestamp = expirationTimestamp;
-    self.initialDurationSeconds = initialDurationSeconds;
-    self.tintColor = tintColor;
 
     [self commonInit];
 
@@ -65,15 +59,19 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
     [self.imageView autoPinToSuperviewEdges];
     [self.imageView autoSetDimension:ALDimensionWidth toSize:kDisappearingMessageIconSize];
     [self.imageView autoSetDimension:ALDimensionHeight toSize:kDisappearingMessageIconSize];
+}
+
+- (void)configureWithExpirationTimestamp:(uint64_t)expirationTimestamp
+                  initialDurationSeconds:(uint32_t)initialDurationSeconds
+                               tintColor:(UIColor *)tintColor;
+{
+    self.expirationTimestamp = expirationTimestamp;
+    self.initialDurationSeconds = initialDurationSeconds;
+    self.tintColor = tintColor;
 
     [self updateProgress12];
     [self updateIcon];
-
-    self.animationTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
-                                                               target:self
-                                                             selector:@selector(updateProgress12)
-                                                             userInfo:nil
-                                                              repeats:YES];
+    [self startAnimation];
 }
 
 - (void)updateProgress12
@@ -81,7 +79,7 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
     CGFloat secondsLeft = MAX(0, (self.expirationTimestamp - [NSDate ows_millisecondTimeStamp]) / 1000.f);
     CGFloat progress = 0.f;
     if (self.initialDurationSeconds > 0) {
-        progress = CGFloatClamp(1.f - (secondsLeft / self.initialDurationSeconds), 0.f, 1.f);
+        progress = CGFloatClamp(secondsLeft / self.initialDurationSeconds, 0.f, 1.f);
     }
     OWSAssert(progress >= 0.f);
     OWSAssert(progress <= 1.f);
@@ -157,6 +155,28 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
     OWSAssert(image.size.width == kDisappearingMessageIconSize);
     OWSAssert(image.size.height == kDisappearingMessageIconSize);
     return image;
+}
+
+- (void)startAnimation
+{
+    [self clearAnimation];
+
+    self.animationTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
+                                                               target:self
+                                                             selector:@selector(updateProgress12)
+                                                             userInfo:nil
+                                                              repeats:YES];
+}
+
+- (void)clearAnimation
+{
+    [self.animationTimer invalidate];
+    self.animationTimer = nil;
+}
+
+- (void)prepareForReuse
+{
+    [self clearAnimation];
 }
 
 + (CGSize)measureSize

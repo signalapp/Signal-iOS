@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
-@property (nonatomic, nullable) OWSMessageTimerView *messageTimerView;
+@property (nonatomic) OWSMessageTimerView *messageTimerView;
 
 @end
 
@@ -43,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.timestampLabel = [UILabel new];
     [self addArrangedSubview:self.timestampLabel];
+
+    self.messageTimerView = [OWSMessageTimerView new];
+    [self addArrangedSubview:self.messageTimerView];
 
     self.statusIndicatorImageView = [UIImageView new];
     [self.statusIndicatorImageView setContentHuggingHigh];
@@ -91,6 +94,18 @@ NS_ASSUME_NONNULL_BEGIN
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
+
+    if ([self isDisappearingMessage:viewItem]) {
+        TSMessage *message = (TSMessage *)viewItem.interaction;
+        uint64_t expirationTimestamp = message.expiresAt;
+        uint32_t expiresInSeconds = message.expiresInSeconds;
+        [self.messageTimerView configureWithExpirationTimestamp:expirationTimestamp
+                                         initialDurationSeconds:expiresInSeconds
+                                                      tintColor:textColor];
+        self.messageTimerView.hidden = NO;
+    } else {
+        self.messageTimerView.hidden = YES;
+    }
 
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
@@ -257,8 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [self.statusIndicatorImageView.layer removeAllAnimations];
 
-    [self.messageTimerView removeFromSuperview];
-    self.messageTimerView = nil;
+    [self.messageTimerView prepareForReuse];
 }
 
 @end
