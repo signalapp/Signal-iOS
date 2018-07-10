@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewCellDelegate <NSObject>
 
+- (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem;
+
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
 

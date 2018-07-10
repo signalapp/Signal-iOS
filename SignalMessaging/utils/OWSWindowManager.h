@@ -27,6 +27,10 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
 
+#pragma mark - Message Actions
+
+- (void)presentMessageActions:(UIViewController *)messageActionsViewController;
+
 #pragma mark - Calls
 
 @property (nonatomic, readonly) BOOL shouldShowCallView;

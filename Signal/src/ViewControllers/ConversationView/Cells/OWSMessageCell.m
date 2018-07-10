@@ -448,8 +448,7 @@ NS_ASSUME_NONNULL_BEGIN
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText: {
-            CGPoint location = [sender locationInView:self];
-            [self showTextMenuController:location];
+            [self.delegate conversationCellDidLongpressText:self viewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_Media: {

@@ -1980,6 +1980,12 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
+- (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem
+{
+    UIViewController *messageActionsViewController = [MessageActionsViewController new];
+    [[OWSWindowManager sharedManager] presentMessageActions:messageActionsViewController];
+}
+
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
     OWSAssertIsOnMainThread();
