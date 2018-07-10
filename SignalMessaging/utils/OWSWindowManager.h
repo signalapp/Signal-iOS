@@ -4,19 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class MessageActionsViewController;
-
 // This VC can become first responder
 // when presented to ensure that the input accessory is updated.
 @interface OWSWindowRootViewController : UIViewController
-
-@end
-
-#pragma mark -
-
-@protocol MessageActionsDelegate
-
-- (void)dismissMessageActions:(MessageActionsViewController *)messageActionsViewController;
 
 @end
 
@@ -27,7 +17,7 @@ const CGFloat OWSWindowManagerCallScreenHeight(void);
 
 extern const UIWindowLevel UIWindowLevel_Background;
 
-@interface OWSWindowManager : NSObject <MessageActionsDelegate>
+@interface OWSWindowManager : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -39,7 +29,10 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 #pragma mark - Message Actions
 
-- (void)presentMessageActions:(MessageActionsViewController *)messageActionsViewController;
+@property (nonatomic, readonly) BOOL isPresentingMessageActions;
+
+- (void)showMessageActionsWindow:(UIViewController *)messageActionsViewController;
+- (void)hideMessageActionsWindow:(UIViewController *)messageActionsViewController;
 
 #pragma mark - Calls
 

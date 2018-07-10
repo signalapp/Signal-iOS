@@ -131,6 +131,7 @@ typedef enum : NSUInteger {
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
+    MessageActionsDelegate,
     OWSMessageBubbleViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
@@ -1978,13 +1979,27 @@ typedef enum : NSUInteger {
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+#pragma mark - MessageActionsDelegate
+
+- (void)messageActionsDidHide:(MessageActionsViewController *)messageActionsViewController
+{
+    [[OWSWindowManager sharedManager] hideMessageActionsWindow:messageActionsViewController];
+
+    [self updateShouldObserveDBModifications];
+}
+
 #pragma mark - ConversationViewCellDelegate
 
 - (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem
 {
     MessageActionsViewController *messageActionsViewController =
         [[MessageActionsViewController alloc] initWithFocusedView:cell];
-    [[OWSWindowManager sharedManager] presentMessageActions:messageActionsViewController];
+
+    messageActionsViewController.delegate = self;
+
+    [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
+
+    [self updateShouldObserveDBModifications];
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
@@ -4432,8 +4447,23 @@ typedef enum : NSUInteger {
 
 - (void)updateShouldObserveDBModifications
 {
-    BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
-    self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
+    if (!CurrentAppContext().isAppForegroundAndActive) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    if (!self.isViewVisible) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    if (OWSWindowManager.sharedManager.isPresentingMessageActions) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    self.shouldObserveDBModifications = YES;
+    return;
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications

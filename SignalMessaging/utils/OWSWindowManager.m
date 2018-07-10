@@ -237,16 +237,20 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 #pragma mark - Message Actions
 
-- (void)presentMessageActions:(MessageActionsViewController *)messageActionsViewController
+- (BOOL)isPresentingMessageActions
 {
-    messageActionsViewController.delegate = self;
+    return self.messageActionsViewController != nil;
+}
+
+- (void)showMessageActionsWindow:(UIViewController *)messageActionsViewController
+{
     self.messageActionsViewController = messageActionsViewController;
     self.messageActionsWindow.rootViewController = messageActionsViewController;
 
     [self ensureWindowState];
 }
 
-- (void)dismissMessageActions:(UIViewController *)messageActionsViewController
+- (void)hideMessageActionsWindow:(UIViewController *)messageActionsViewController
 {
     OWSAssert(self.messageActionsViewController == messageActionsViewController);
 

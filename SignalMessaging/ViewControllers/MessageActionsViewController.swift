@@ -5,6 +5,11 @@
 import Foundation
 
 @objc
+protocol MessageActionsDelegate: class {
+    func messageActionsDidHide(_ messageActionsViewController: MessageActionsViewController)
+}
+
+@objc
 class MessageActionsViewController: UIViewController {
 
     @objc
@@ -51,6 +56,6 @@ class MessageActionsViewController: UIViewController {
 
     @objc
     func didTapBackground() {
-        self.delegate?.dismissMessageActions(self)
+        self.delegate?.messageActionsDidHide(self)
     }
 }
