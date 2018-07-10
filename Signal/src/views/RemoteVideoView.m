@@ -48,10 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
             // It's inner (private) MTKView is below the status bar.
             for (UIView *subview in [_videoRenderer subviews]) {
                 if ([subview isKindOfClass:[MTKView class]]) {
-                    [NSLayoutConstraint autoSetPriority:UILayoutPriorityRequired
-                                         forConstraints:^{
-                                             [subview autoPinEdgesToSuperviewEdges];
-                                         }];
+                    [subview autoPinEdgesToSuperviewEdges];
                 } else {
                     OWSFail(@"New subviews added to MTLVideoView. Reconsider this hack.");
                 }
