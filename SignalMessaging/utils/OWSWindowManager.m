@@ -42,19 +42,20 @@ const UIWindowLevel UIWindowLevel_CallView(void)
     return UIWindowLevelNormal + 1.f;
 }
 
-// In front of everything, including the status bar.
+// In front of the status bar and CallView
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void);
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     return UIWindowLevelStatusBar + 2.f;
 }
 
-// In front of everything, including the status bar.
+// In front of everything
 const UIWindowLevel UIWindowLevel_MessageActions(void);
 const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
-    // TODO This won't cover the keyboard...
-    return UIWindowLevel_ScreenBlocking() - 1;
+    // Note: To cover the keyboard, this is higher than the ScreenBlocking level,
+    // but this window is hidden when screen protection is shown.
+    return CGFLOAT_MAX - 100;
 }
 
 @implementation OWSWindowRootViewController
@@ -377,11 +378,14 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     } else if (self.messageActionsViewController) {
         // Show Message Actions
 
-        [self ensureRootWindowHidden];
+        [self ensureRootWindowShown];
         [self ensureReturnToCallWindowHidden];
         [self ensureCallViewWindowHidden];
         [self ensureMessageActionsWindowShown];
         [self ensureScreenBlockWindowHidden];
+
+        // Don't hide rootWindow so as not to dismiss keyboard.
+        OWSAssert(!self.rootWindow.isHidden);
     } else {
         // Show Root Window
 
