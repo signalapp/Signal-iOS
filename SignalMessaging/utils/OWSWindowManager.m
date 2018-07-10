@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
 
-
 const CGFloat OWSWindowManagerCallScreenHeight(void)
 {
     if ([UIDevice currentDevice].isIPhoneX) {
@@ -235,17 +234,21 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     [self ensureWindowState];
 }
 
-#pragma mark - Calls
+#pragma mark - Message Actions
 
-- (void)presentMessageActions:(UIViewController *)messageActionsViewController
+- (void)presentMessageActions:(MessageActionsViewController *)messageActionsViewController
 {
+    messageActionsViewController.delegate = self;
     self.messageActionsViewController = messageActionsViewController;
     self.messageActionsWindow.rootViewController = messageActionsViewController;
+
     [self ensureWindowState];
 }
 
-- (void)dismissMessageActions
+- (void)dismissMessageActions:(UIViewController *)messageActionsViewController
 {
+    OWSAssert(self.messageActionsViewController == messageActionsViewController);
+
     self.messageActionsWindow.rootViewController = nil;
     self.messageActionsViewController = nil;
 
@@ -372,6 +375,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
     } else if (self.messageActionsViewController) {
+        // Show Message Actions
 
         [self ensureRootWindowHidden];
         [self ensureReturnToCallWindowHidden];
