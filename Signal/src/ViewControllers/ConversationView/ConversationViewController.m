@@ -20,7 +20,6 @@
 #import "NSAttributedString+OWS.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
-#import "OWSCallMessageCell.h"
 #import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
@@ -642,8 +641,6 @@ typedef enum : NSUInteger {
 {
     [self.collectionView registerClass:[OWSSystemMessageCell class]
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSCallMessageCell class]
-            forCellWithReuseIdentifier:[OWSCallMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
             forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
@@ -2521,16 +2518,6 @@ typedef enum : NSUInteger {
     [self.inputToolbar beginEditingTextMessage];
 }
 
-#pragma mark - Calls
-
-- (void)didTapCall:(TSCall *)call
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert([call isKindOfClass:[TSCall class]]);
-
-    [self handleCallTap:call];
-}
-
 #pragma mark - System Messages
 
 - (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
@@ -2542,6 +2529,8 @@ typedef enum : NSUInteger {
         [self handleErrorMessageTap:(TSErrorMessage *)interaction];
     } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
         [self handleInfoMessageTap:(TSInfoMessage *)interaction];
+    } else if ([interaction isKindOfClass:[TSCall class]]) {
+        [self handleCallTap:(TSCall *)interaction];
     } else {
         OWSFail(@"Tap for system messages of unknown type: %@", [interaction class]);
     }

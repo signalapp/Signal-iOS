@@ -36,8 +36,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
-    if (_callType == RPRecentCallTypeIncomingMissed
-        || _callType == RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity) {
+    if (_callType == RPRecentCallTypeMissed || _callType == RPRecentCallTypeMissedBecauseOfChangedIdentity) {
         _read = NO;
     } else {
         _read = YES;
@@ -76,13 +75,13 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"INCOMING_CALL", @"");
         case RPRecentCallTypeOutgoing:
             return NSLocalizedString(@"OUTGOING_CALL", @"");
-        case RPRecentCallTypeIncomingMissed:
+        case RPRecentCallTypeMissed:
             return NSLocalizedString(@"MISSED_CALL", @"");
         case RPRecentCallTypeOutgoingIncomplete:
             return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"");
         case RPRecentCallTypeIncomingIncomplete:
             return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"");
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+        case RPRecentCallTypeMissedBecauseOfChangedIdentity:
             return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
         case RPRecentCallTypeIncomingDeclined:
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
@@ -140,21 +139,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         // redraw any thread-related unread count UI.
         [self touchThreadWithTransaction:transaction];
     }];
-}
-
-- (BOOL)isIncoming
-{
-    switch (self.callType) {
-        case RPRecentCallTypeIncoming:
-        case RPRecentCallTypeIncomingMissed:
-        case RPRecentCallTypeIncomingIncomplete:
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-        case RPRecentCallTypeIncomingDeclined:
-            return YES;
-        case RPRecentCallTypeOutgoing:
-        case RPRecentCallTypeOutgoingIncomplete:
-            return NO;
-    }
 }
 
 @end

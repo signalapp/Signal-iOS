@@ -12,19 +12,17 @@ NS_ASSUME_NONNULL_BEGIN
 typedef enum {
     RPRecentCallTypeIncoming = 1,
     RPRecentCallTypeOutgoing,
-    RPRecentCallTypeIncomingMissed,
+    RPRecentCallTypeMissed,
     // These call types are used until the call connects.
     RPRecentCallTypeOutgoingIncomplete,
     RPRecentCallTypeIncomingIncomplete,
-    RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
+    RPRecentCallTypeMissedBecauseOfChangedIdentity,
     RPRecentCallTypeIncomingDeclined
 } RPRecentCallType;
 
 @interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
 @property (nonatomic, readonly) RPRecentCallType callType;
-
-@property (nonatomic, readonly) BOOL isIncoming;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

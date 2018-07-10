@@ -290,17 +290,8 @@
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Microphone Access Required";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Call";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer.";

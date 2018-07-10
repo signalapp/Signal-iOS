@@ -3411,11 +3411,11 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
-                                                       callType:RPRecentCallTypeIncomingMissed
+                                                       callType:RPRecentCallTypeMissed
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
-                                                       callType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
+                                                       callType:RPRecentCallTypeMissedBecauseOfChangedIdentity
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
@@ -3424,10 +3424,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingIncomplete
-                                                       inThread:contactThread]];
-            [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
-                                                       callType:RPRecentCallTypeIncomingDeclined
                                                        inThread:contactThread]];
         }
 

@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
-@class TSCall;
 @class TSInteraction;
 @class TSMessage;
 @class TSOutgoingMessage;
@@ -25,10 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem;
 - (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem;
-
-#pragma mark - Calls
-
-- (void)didTapCall:(TSCall *)call;
 
 #pragma mark - System Cell
 

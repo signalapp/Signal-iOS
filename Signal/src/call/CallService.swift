@@ -515,12 +515,12 @@ private class SignalCallData: NSObject {
         // Insert missed call record
         if let callRecord = call.callRecord {
             if callRecord.callType == RPRecentCallTypeIncoming {
-                callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
+                callRecord.updateCallType(RPRecentCallTypeMissed)
             }
         } else {
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
-                                     callType: RPRecentCallTypeIncomingMissed,
+                                     callType: RPRecentCallTypeMissed,
                                      in: call.thread)
         }
 
@@ -602,7 +602,7 @@ private class SignalCallData: NSObject {
 
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                     withCallNumber: thread.contactIdentifier(),
-                                    callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
+                                    callType: RPRecentCallTypeMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
