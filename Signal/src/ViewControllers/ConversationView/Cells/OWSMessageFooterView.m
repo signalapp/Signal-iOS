@@ -107,8 +107,10 @@ NS_ASSUME_NONNULL_BEGIN
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
                 break;
             case MessageReceiptStatusDelivered:
-            case MessageReceiptStatusRead:
                 statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                break;
+            case MessageReceiptStatusRead:
+                statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
                 break;
             case MessageReceiptStatusFailed:
                 // No status indicator icon.
