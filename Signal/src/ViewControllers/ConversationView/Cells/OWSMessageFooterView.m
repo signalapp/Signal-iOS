@@ -40,12 +40,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.axis = UILayoutConstraintAxisHorizontal;
     self.spacing = self.hSpacing;
     self.alignment = UIStackViewAlignmentCenter;
+    self.distribution = UIStackViewDistributionEqualSpacing;
+
+    UIStackView *leftStackView = [UIStackView new];
+    leftStackView.axis = UILayoutConstraintAxisHorizontal;
+    leftStackView.spacing = self.hSpacing;
+    leftStackView.alignment = UIStackViewAlignmentCenter;
+    [self addArrangedSubview:leftStackView];
 
     self.timestampLabel = [UILabel new];
-    [self addArrangedSubview:self.timestampLabel];
+    [leftStackView addArrangedSubview:self.timestampLabel];
 
     self.messageTimerView = [OWSMessageTimerView new];
-    [self addArrangedSubview:self.messageTimerView];
+    [self.messageTimerView setContentHuggingHigh];
+    [leftStackView addArrangedSubview:self.messageTimerView];
 
     self.statusIndicatorImageView = [UIImageView new];
     [self.statusIndicatorImageView setContentHuggingHigh];
