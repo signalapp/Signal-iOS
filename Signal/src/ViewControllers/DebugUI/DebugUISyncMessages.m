@@ -99,8 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
                                                identityManager:self.identityManager
                                                 profileManager:self.profileManager];
-    DataSource *dataSource =
-        [DataSourceValue dataSourceWithSyncMessage:[syncContactsMessage buildPlainTextAttachmentData]];
+    __block DataSource *dataSource;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        dataSource = [DataSourceValue
+            dataSourceWithSyncMessageData:[syncContactsMessage
+                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
+    }];
+
     [self.messageSender enqueueTemporaryAttachment:dataSource
         contentType:OWSMimeTypeApplicationOctetStream
         inMessage:syncContactsMessage
@@ -118,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block DataSource *dataSource;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
-            dataSourceWithSyncMessage:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
+            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
     }];
     [self.messageSender enqueueTemporaryAttachment:dataSource
         contentType:OWSMimeTypeApplicationOctetStream

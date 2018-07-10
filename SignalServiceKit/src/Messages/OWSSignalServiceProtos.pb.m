@@ -12439,6 +12439,7 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
 @property (strong) OWSSignalServiceProtosGroupDetailsAvatar* avatar;
 @property BOOL active;
 @property UInt32 expireTimer;
+@property (strong) NSString* color;
 @end
 
 @implementation OWSSignalServiceProtosGroupDetails
@@ -12485,6 +12486,13 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
   hasExpireTimer_ = !!_value_;
 }
 @synthesize expireTimer;
+- (BOOL) hasColor {
+  return !!hasColor_;
+}
+- (void) setHasColor:(BOOL) _value_ {
+  hasColor_ = !!_value_;
+}
+@synthesize color;
 - (instancetype) init {
   if ((self = [super init])) {
     self.id = [NSData data];
@@ -12492,6 +12500,7 @@ static OWSSignalServiceProtosContactDetailsAvatar* defaultOWSSignalServiceProtos
     self.avatar = [OWSSignalServiceProtosGroupDetailsAvatar defaultInstance];
     self.active = YES;
     self.expireTimer = 0;
+    self.color = @"";
   }
   return self;
 }
@@ -12535,6 +12544,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   if (self.hasExpireTimer) {
     [output writeUInt32:6 value:self.expireTimer];
   }
+  if (self.hasColor) {
+    [output writeString:7 value:self.color];
+  }
   [self.unknownFields writeToCodedOutputStream:output];
 }
 - (SInt32) serializedSize {
@@ -12567,6 +12579,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasExpireTimer) {
     size_ += computeUInt32Size(6, self.expireTimer);
+  }
+  if (self.hasColor) {
+    size_ += computeStringSize(7, self.color);
   }
   size_ += self.unknownFields.serializedSize;
   memoizedSerializedSize = size_;
@@ -12624,6 +12639,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   if (self.hasExpireTimer) {
     [output appendFormat:@"%@%@: %@\n", indent, @"expireTimer", [NSNumber numberWithInteger:self.expireTimer]];
   }
+  if (self.hasColor) {
+    [output appendFormat:@"%@%@: %@\n", indent, @"color", self.color];
+  }
   [self.unknownFields writeDescriptionTo:output withIndent:indent];
 }
 - (void) storeInDictionary:(NSMutableDictionary *)dictionary {
@@ -12644,6 +12662,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasExpireTimer) {
     [dictionary setObject: [NSNumber numberWithInteger:self.expireTimer] forKey: @"expireTimer"];
+  }
+  if (self.hasColor) {
+    [dictionary setObject: self.color forKey: @"color"];
   }
   [self.unknownFields storeInDictionary:dictionary];
 }
@@ -12667,6 +12688,8 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
       (!self.hasActive || self.active == otherMessage.active) &&
       self.hasExpireTimer == otherMessage.hasExpireTimer &&
       (!self.hasExpireTimer || self.expireTimer == otherMessage.expireTimer) &&
+      self.hasColor == otherMessage.hasColor &&
+      (!self.hasColor || [self.color isEqual:otherMessage.color]) &&
       (self.unknownFields == otherMessage.unknownFields || (self.unknownFields != nil && [self.unknownFields isEqual:otherMessage.unknownFields]));
 }
 - (NSUInteger) hash {
@@ -12688,6 +12711,9 @@ static OWSSignalServiceProtosGroupDetails* defaultOWSSignalServiceProtosGroupDet
   }
   if (self.hasExpireTimer) {
     hashCode = hashCode * 31 + [[NSNumber numberWithInteger:self.expireTimer] hash];
+  }
+  if (self.hasColor) {
+    hashCode = hashCode * 31 + [self.color hash];
   }
   hashCode = hashCode * 31 + [self.unknownFields hash];
   return hashCode;
@@ -13009,6 +13035,9 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
   if (other.hasExpireTimer) {
     [self setExpireTimer:other.expireTimer];
   }
+  if (other.hasColor) {
+    [self setColor:other.color];
+  }
   [self mergeUnknownFields:other.unknownFields];
   return self;
 }
@@ -13057,6 +13086,10 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
       }
       case 48: {
         [self setExpireTimer:[input readUInt32]];
+        break;
+      }
+      case 58: {
+        [self setColor:[input readString]];
         break;
       }
     }
@@ -13175,6 +13208,22 @@ static OWSSignalServiceProtosGroupDetailsAvatar* defaultOWSSignalServiceProtosGr
 - (OWSSignalServiceProtosGroupDetailsBuilder*) clearExpireTimer {
   resultGroupDetails.hasExpireTimer = NO;
   resultGroupDetails.expireTimer = 0;
+  return self;
+}
+- (BOOL) hasColor {
+  return resultGroupDetails.hasColor;
+}
+- (NSString*) color {
+  return resultGroupDetails.color;
+}
+- (OWSSignalServiceProtosGroupDetailsBuilder*) setColor:(NSString*) value {
+  resultGroupDetails.hasColor = YES;
+  resultGroupDetails.color = value;
+  return self;
+}
+- (OWSSignalServiceProtosGroupDetailsBuilder*) clearColor {
+  resultGroupDetails.hasColor = NO;
+  resultGroupDetails.color = @"";
   return self;
 }
 @end

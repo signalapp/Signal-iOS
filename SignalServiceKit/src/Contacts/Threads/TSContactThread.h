@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          relay:(nullable NSString *)relay;
 
 // Unlike getOrCreateThreadWithContactId, this will _NOT_ create a thread if one does not already exist.
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId;
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (NSString *)contactIdentifier;
 

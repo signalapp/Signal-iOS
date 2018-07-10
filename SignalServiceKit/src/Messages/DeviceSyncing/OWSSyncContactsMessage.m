@@ -13,6 +13,7 @@
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
+#import "TSContactThread.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -70,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (NSData *)buildPlainTextAttachmentData
+- (NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     id<ContactsManagerProtocol> contactsManager = TextSecureKitEnv.sharedEnv.contactsManager;
 
@@ -86,10 +87,24 @@ NS_ASSUME_NONNULL_BEGIN
             [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
         NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
 
+
+        OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
+        NSString *conversationColorName;
+        
+        TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        if (contactThread) {
+            conversationColorName = contactThread.conversationColorName;
+            disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
+        } else {
+            conversationColorName = [TSThread stableConversationColorNameForString:signalAccount.recipientId];
+        }
+
         [contactsOutputStream writeSignalAccount:signalAccount
                                recipientIdentity:recipientIdentity
                                   profileKeyData:profileKeyData
-                                 contactsManager:contactsManager];
+                                 contactsManager:contactsManager
+                           conversationColorName:conversationColorName
+               disappearingMessagesConfiguration:disappearingMessagesConfiguration];
     }
 
     [contactsOutputStream flush];

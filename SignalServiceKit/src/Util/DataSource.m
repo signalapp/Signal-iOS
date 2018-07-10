@@ -158,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
-+ (DataSource *)dataSourceWithSyncMessage:(NSData *)data
++ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
 {
     return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
 }

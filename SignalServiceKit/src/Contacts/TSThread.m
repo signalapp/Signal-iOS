@@ -47,7 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
         _lastMessageDate = nil;
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
-        _conversationColorName = [self.class randomConversationColorName];
+
+        NSString *_Nullable contactId = self.contactIdentifier;
+        if (contactId.length > 0) {
+            // To be consistent with colors synced to desktop
+            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
+        } else {
+            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+        }
     }
 
     return self;
@@ -60,8 +67,14 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
     
-    if (!_conversationColorName) {
-        _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+    if (_conversationColorName.length == 0) {
+        NSString *_Nullable contactId = self.contactIdentifier;
+        if (contactId.length > 0) {
+            // To be consistent with colors synced to desktop
+            _conversationColorName = [self.class stableConversationColorNameForString:contactId];
+        } else {
+            _conversationColorName = [self.class stableConversationColorNameForString:self.uniqueId];
+        }
     }
     
     return self;

@@ -83,17 +83,9 @@ NS_ASSUME_NONNULL_BEGIN
     return thread;
 }
 
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId transaction:(YapDatabaseReadTransaction *)transaction;
 {
-    OWSAssert(contactId.length > 0);
-
-    __block TSContactThread *_Nullable thread;
-    [[self dbReadWriteConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        thread =
-            [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
-    }];
-
-    return thread;
+    return [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
 }
 
 - (NSString *)contactIdentifier {

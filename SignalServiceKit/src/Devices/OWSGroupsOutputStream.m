@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
     [groupBuilder setId:group.groupId];
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembersArray:group.groupMemberIds];
+#ifdef CONVERSATION_COLORS_ENABLED
+    [groupBuilder setColor:groupThread.conversationColorName];
+#endif
 
     NSData *avatarPng;
     if (group.groupImage) {
