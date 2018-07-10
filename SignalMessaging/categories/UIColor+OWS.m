@@ -117,6 +117,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithHue:240.0f / 360.0f saturation:0.02f brightness:0.92f alpha:1.0f];
 }
 
++ (UIColor *)ows_tableCellSelectedBackgroundColor
+{
+    return [[UIColor colorWithRGBHex:0x000000] colorWithAlphaComponent:0.08];
+}
+
 + (UIColor *)colorWithRGBHex:(unsigned long)value
 {
     CGFloat red = ((value >> 16) & 0xff) / 255.f;
@@ -147,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
                            alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
-#pragma mark - New Colors
+#pragma mark - Color Palette
 
 + (UIColor *)ows_signalBlueColor
 {

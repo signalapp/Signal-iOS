@@ -65,6 +65,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     _viewConstraints = [NSMutableArray new];
 
+    UIView *selectedBackgroundView = [UIView new];
+    selectedBackgroundView.backgroundColor = UIColor.ows_tableCellSelectedBackgroundColor;
+    self.selectedBackgroundView = selectedBackgroundView;
+
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
