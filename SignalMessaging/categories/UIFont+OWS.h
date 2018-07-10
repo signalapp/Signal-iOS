@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeTitle3Font;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeHeadlineFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeBodyFont;
-@property (class, readonly, nonatomic) UIFont *ows_dynamicTypeCalloutFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeSubheadlineFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeFootnoteFont;
 @property (class, readonly, nonatomic) UIFont *ows_dynamicTypeCaption1Font;
