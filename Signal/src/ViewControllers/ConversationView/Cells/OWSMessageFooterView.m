@@ -4,6 +4,7 @@
 
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
+#import "OWSMessageTimerView.h"
 #import "Signal-Swift.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -13,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
+@property (nonatomic, nullable) OWSMessageTimerView *messageTimerView;
 
 @end
 
@@ -160,6 +162,19 @@ NS_ASSUME_NONNULL_BEGIN
     return messageStatus == MessageReceiptStatusFailed;
 }
 
+- (BOOL)isDisappearingMessage:(ConversationViewItem *)viewItem
+{
+    OWSAssert(viewItem);
+
+    if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage
+        && viewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return NO;
+    }
+
+    TSMessage *message = (TSMessage *)viewItem.interaction;
+    return message.shouldStartExpireTimer;
+}
+
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
 {
     OWSAssert(viewItem);
@@ -218,6 +233,11 @@ NS_ASSUME_NONNULL_BEGIN
             result.width += (self.maxImageWidth + self.hSpacing);
         }
     }
+
+    if ([self isDisappearingMessage:viewItem]) {
+        result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
+    }
+
     return CGSizeCeil(result);
 }
 
@@ -236,6 +256,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForReuse
 {
     [self.statusIndicatorImageView.layer removeAllAnimations];
+
+    [self.messageTimerView removeFromSuperview];
+    self.messageTimerView = nil;
 }
 
 @end

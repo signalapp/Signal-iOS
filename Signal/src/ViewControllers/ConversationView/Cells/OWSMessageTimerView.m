@@ -1,0 +1,169 @@
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
+
+#import "OWSMessageTimerView.h"
+#import "ConversationViewController.h"
+#import "NSDate+OWS.h"
+#import "OWSMath.h"
+#import "UIColor+OWS.h"
+#import "UIView+OWS.h"
+#import <QuartzCore/QuartzCore.h>
+#import <SignalServiceKit/NSTimer+OWS.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+const CGFloat kDisappearingMessageIconSize = 12.f;
+
+@interface OWSMessageTimerView ()
+
+@property (nonatomic) uint32_t initialDurationSeconds;
+@property (nonatomic) uint64_t expirationTimestamp;
+@property (nonatomic) UIColor *tintColor;
+
+@property (nonatomic) UIImageView *imageView;
+
+@property (nonatomic, nullable) NSTimer *animationTimer;
+
+@property (nonatomic) NSInteger progress12;
+
+
+@end
+
+#pragma mark -
+
+@implementation OWSMessageTimerView
+
+- (void)dealloc
+{
+    [self.animationTimer invalidate];
+    self.animationTimer = nil;
+}
+
+- (instancetype)initWithExpiration:(uint64_t)expirationTimestamp
+            initialDurationSeconds:(uint32_t)initialDurationSeconds
+                         tintColor:(UIColor *)tintColor;
+{
+    self = [super initWithFrame:CGRectZero];
+    if (!self) {
+        return self;
+    }
+
+    self.expirationTimestamp = expirationTimestamp;
+    self.initialDurationSeconds = initialDurationSeconds;
+    self.tintColor = tintColor;
+
+    [self commonInit];
+
+    return self;
+}
+
+- (void)commonInit
+{
+    self.imageView = [UIImageView new];
+    [self addSubview:self.imageView];
+    [self.imageView autoPinToSuperviewEdges];
+    [self.imageView autoSetDimension:ALDimensionWidth toSize:kDisappearingMessageIconSize];
+    [self.imageView autoSetDimension:ALDimensionHeight toSize:kDisappearingMessageIconSize];
+
+    [self updateProgress12];
+    [self updateIcon];
+
+    self.animationTimer = [NSTimer weakScheduledTimerWithTimeInterval:1.f
+                                                               target:self
+                                                             selector:@selector(updateProgress12)
+                                                             userInfo:nil
+                                                              repeats:YES];
+}
+
+- (void)updateProgress12
+{
+    CGFloat secondsLeft = MAX(0, (self.expirationTimestamp - [NSDate ows_millisecondTimeStamp]) / 1000.f);
+    CGFloat progress = 0.f;
+    if (self.initialDurationSeconds > 0) {
+        progress = CGFloatClamp(1.f - (secondsLeft / self.initialDurationSeconds), 0.f, 1.f);
+    }
+    OWSAssert(progress >= 0.f);
+    OWSAssert(progress <= 1.f);
+
+    self.progress12 = (NSInteger)round(CGFloatClamp(progress, 0.f, 1.f) * 12);
+}
+
+- (void)setProgress12:(NSInteger)progress12
+{
+    if (_progress12 == progress12) {
+        return;
+    }
+    _progress12 = progress12;
+
+    [self updateIcon];
+}
+
+- (void)updateIcon
+{
+    self.imageView.image = [[self progressIcon] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.imageView.tintColor = self.tintColor;
+}
+
+- (UIImage *)progressIcon
+{
+    OWSAssert(self.progress12 >= 0);
+    OWSAssert(self.progress12 <= 12);
+
+    UIImage *_Nullable image;
+    switch (self.progress12) {
+        default:
+        case 0:
+            image = [UIImage imageNamed:@"disappearing_message_00"];
+            break;
+        case 1:
+            image = [UIImage imageNamed:@"disappearing_message_05"];
+            break;
+        case 2:
+            image = [UIImage imageNamed:@"disappearing_message_10"];
+            break;
+        case 3:
+            image = [UIImage imageNamed:@"disappearing_message_15"];
+            break;
+        case 4:
+            image = [UIImage imageNamed:@"disappearing_message_20"];
+            break;
+        case 5:
+            image = [UIImage imageNamed:@"disappearing_message_25"];
+            break;
+        case 6:
+            image = [UIImage imageNamed:@"disappearing_message_30"];
+            break;
+        case 7:
+            image = [UIImage imageNamed:@"disappearing_message_35"];
+            break;
+        case 8:
+            image = [UIImage imageNamed:@"disappearing_message_40"];
+            break;
+        case 9:
+            image = [UIImage imageNamed:@"disappearing_message_45"];
+            break;
+        case 10:
+            image = [UIImage imageNamed:@"disappearing_message_50"];
+            break;
+        case 11:
+            image = [UIImage imageNamed:@"disappearing_message_55"];
+            break;
+        case 12:
+            image = [UIImage imageNamed:@"disappearing_message_60"];
+            break;
+    }
+    OWSAssert(image);
+    OWSAssert(image.size.width == kDisappearingMessageIconSize);
+    OWSAssert(image.size.height == kDisappearingMessageIconSize);
+    return image;
+}
+
++ (CGSize)measureSize
+{
+    return CGSizeMake(kDisappearingMessageIconSize, kDisappearingMessageIconSize);
+}
+
+@end
+
+NS_ASSUME_NONNULL_END
