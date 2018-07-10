@@ -147,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
                            alpha:CGFloatLerp(a0, a1, alpha)];
 }
 
-#pragma mark - New Colors
+#pragma mark - Color Palette
 
 + (UIColor *)ows_signalBlueColor
 {

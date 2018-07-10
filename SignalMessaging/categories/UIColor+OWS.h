@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)blendWithColor:(UIColor *)otherColor alpha:(CGFloat)alpha;
 
-#pragma mark -
+#pragma mark - Color Palette
 
 @property (class, readonly, nonatomic) UIColor *ows_signalBlueColor;
 @property (class, readonly, nonatomic) UIColor *ows_greenColor;
