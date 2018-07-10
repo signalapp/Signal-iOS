@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_infoMessageBorderColor;
 @property (class, readonly, nonatomic) UIColor *ows_toolbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *ows_messageBubbleLightGrayColor;
-@property (class, readonly, nonatomic) UIColor *ows_tableCellSelectedBackgroundColor;
 
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
 
