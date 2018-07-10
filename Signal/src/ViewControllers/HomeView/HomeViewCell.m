@@ -286,16 +286,16 @@ NS_ASSUME_NONNULL_BEGIN
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_sent"];
                     break;
                 case MessageReceiptStatusDelivered:
-                case MessageReceiptStatusRead:
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
                     break;
-                case MessageReceiptStatusFailed:
-                    // TODO:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_sending"];
+                case MessageReceiptStatusRead:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_delivered"];
+                    messageStatusViewTintColor = [UIColor ows_signalBlueColor];
                     break;
-            }
-            if (messageStatus == MessageReceiptStatusRead) {
-                messageStatusViewTintColor = [UIColor ows_signalBlueColor];
+                case MessageReceiptStatusFailed:
+                    statusIndicatorImage = [UIImage imageNamed:@"message_status_failed"];
+                    messageStatusViewTintColor = [UIColor ows_destructiveRedColor];
+                    break;
             }
         }
         self.messageStatusView.image = [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];

@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)sendFailureBadge
 {
-    UIImage *image = [UIImage imageNamed:@"message_send_failed"];
+    UIImage *image = [UIImage imageNamed:@"message_status_failed_large"];
     OWSAssert(image);
     OWSAssert(image.size.width == self.sendFailureBadgeSize && image.size.height == self.sendFailureBadgeSize);
     return image;
