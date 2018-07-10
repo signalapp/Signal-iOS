@@ -4879,24 +4879,14 @@ typedef enum : NSUInteger {
         OWSAssert(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
-        if (!canShowDate) {
-            shouldShowDate = NO;
+        if (previousViewItemTimestamp == 0) {
             shouldShowDateOnNextViewItem = YES;
-        } else if (shouldShowDateOnNextViewItem) {
+        } else if (![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
+            shouldShowDateOnNextViewItem = YES;
+        }
+
+        if (shouldShowDateOnNextViewItem && canShowDate) {
             shouldShowDate = YES;
-            shouldShowDateOnNextViewItem = NO;
-        } else if (previousViewItemTimestamp > 0
-            && ![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
-            // Ensure we always have a date break between messages on different days.
-            shouldShowDate = YES;
-            shouldShowDateOnNextViewItem = NO;
-        } else {
-            OWSAssert(previousViewItemTimestamp > 0);
-            uint64_t timeDifferenceMs = viewItemTimestamp - previousViewItemTimestamp;
-            static const uint64_t kShowTimeIntervalMs = 5 * kMinuteInMs;
-            if (timeDifferenceMs > kShowTimeIntervalMs) {
-                shouldShowDate = YES;
-            }
             shouldShowDateOnNextViewItem = NO;
         }
 

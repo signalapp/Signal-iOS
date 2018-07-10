@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)exemplaryNowTimeFormat;
 + (NSString *)exemplaryMinutesTimeFormat;
 
++ (NSString *)formatDateForConversationDateBreaks:(NSDate *)date;
+
 + (BOOL)isSameDayWithTimestamp:(uint64_t)timestamp1 timestamp:(uint64_t)timestamp2;
 + (BOOL)isSameDayWithDate:(NSDate *)date1 date:(NSDate *)date2;
 

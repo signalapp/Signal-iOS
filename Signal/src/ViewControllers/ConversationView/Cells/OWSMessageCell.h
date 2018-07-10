@@ -8,6 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const CGFloat OWSMessageCellDateHeaderVMargin;
+
 @interface OWSMessageCell : ConversationViewCell
 
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;

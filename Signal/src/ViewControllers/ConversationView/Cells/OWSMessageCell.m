@@ -9,6 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const CGFloat OWSMessageCellDateHeaderVMargin = 23;
+
 @interface OWSMessageCell ()
 
 // The nullable properties are created as needed.
@@ -16,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 // to always keep one around.
 
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
-@property (nonatomic) UIStackView *dateHeaderView;
+@property (nonatomic) UIView *dateHeaderView;
 @property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
@@ -58,10 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
     self.dateHeaderLabel.textColor = [UIColor ows_light60Color];
 
-    self.dateHeaderView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.dateHeaderLabel,
-    ]];
-    self.dateHeaderView.axis = NSTextLayoutOrientationVertical;
+    self.dateHeaderView = [UIView new];
+    self.dateHeaderView.layoutMargins = UIEdgeInsetsMake(0, 0, OWSMessageCellDateHeaderVMargin, 0);
+    [self.dateHeaderView addSubview:self.dateHeaderLabel];
+    [self.dateHeaderLabel autoPinToSuperviewMargins];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -253,45 +255,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.conversationStyle);
 
-    static NSDateFormatter *dateHeaderDateFormatter = nil;
-    static NSDateFormatter *dateHeaderTimeFormatter = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        dateHeaderDateFormatter = [NSDateFormatter new];
-        [dateHeaderDateFormatter setLocale:[NSLocale currentLocale]];
-        [dateHeaderDateFormatter setDoesRelativeDateFormatting:YES];
-        [dateHeaderDateFormatter setDateStyle:NSDateFormatterMediumStyle];
-        [dateHeaderDateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        
-        dateHeaderTimeFormatter = [NSDateFormatter new];
-        [dateHeaderTimeFormatter setLocale:[NSLocale currentLocale]];
-        [dateHeaderTimeFormatter setDoesRelativeDateFormatting:YES];
-        [dateHeaderTimeFormatter setDateStyle:NSDateFormatterNoStyle];
-        [dateHeaderTimeFormatter setTimeStyle:NSDateFormatterShortStyle];
-    });
-
     if (self.viewItem.shouldShowDate) {
+
+        self.dateHeaderLabel.font = self.dateHeaderFont;
+        self.dateHeaderLabel.textColor = self.conversationStyle.dateBreakTextColor;
+
         NSDate *date = self.viewItem.interaction.dateForSorting;
-        NSString *dateString = [dateHeaderDateFormatter stringFromDate:date];
-        NSString *timeString = [dateHeaderTimeFormatter stringFromDate:date];
-
-        NSAttributedString *attributedText = [NSAttributedString new];
-        attributedText = [attributedText rtlSafeAppend:dateString.localizedUppercaseString
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }];
-        attributedText = [attributedText rtlSafeAppend:@" "
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                            }];
-        attributedText = [attributedText rtlSafeAppend:timeString
-                                            attributes:@{
-                                                NSFontAttributeName : self.dateHeaderFont,
-                                                NSForegroundColorAttributeName : [UIColor lightGrayColor],
-                                            }];
-
-        self.dateHeaderLabel.attributedText = attributedText;
+        NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
+        self.dateHeaderLabel.text = dateString.localizedUppercaseString;
 
         [self.contentView addSubview:self.dateHeaderView];
         [self.viewConstraints addObjectsFromArray:@[
@@ -300,16 +271,7 @@ NS_ASSUME_NONNULL_BEGIN
             [self.dateHeaderView
                 autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
             [self.dateHeaderView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-
-            // DO NOT pin to the bottom of dateHeaderView.
-            //
-            // Being a UIStackView, it doesn't reflect the spacing below the date
-            // header contents.  Instead pin using dateHeaderHeight which includes
-            // the spacing.
-            [self.messageBubbleView autoPinEdge:ALEdgeTop
-                                         toEdge:ALEdgeTop
-                                         ofView:self.dateHeaderView
-                                     withOffset:self.dateHeaderHeight],
+            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderView],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
@@ -425,21 +387,11 @@ NS_ASSUME_NONNULL_BEGIN
     return cellSize;
 }
 
-- (CGFloat)dateHeaderStrokeThickness
-{
-    return CGHairlineWidth();
-}
-
-- (CGFloat)dateHeaderBottomMargin
-{
-    return 20.f;
-}
-
 - (CGFloat)dateHeaderHeight
 {
     if (self.viewItem.shouldShowDate) {
-        CGFloat textHeight = self.dateHeaderFont.capHeight;
-        return (CGFloat)ceil(self.dateHeaderStrokeThickness + textHeight + self.dateHeaderBottomMargin);
+        CGFloat textHeight = self.dateHeaderFont.lineHeight;
+        return (CGFloat)ceil(textHeight + OWSMessageCellDateHeaderVMargin);
     } else {
         return 0.f;
     }
