@@ -473,12 +473,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self insertAnyTextViewsIntoStackView:textViews];
 
     CGSize bubbleSize = [self measureSize];
-    [NSLayoutConstraint autoSetPriority:UILayoutPriorityRequired
-                         forConstraints:^{
-                             [self.viewConstraints addObjectsFromArray:@[
-                                 [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
-                             ]];
-                         }];
+    [self.viewConstraints addObjectsFromArray:@[
+        [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
+    ]];
     if (bodyMediaView) {
         OWSAssert(bodyMediaSize);
         [self.viewConstraints
@@ -977,7 +974,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImageView *videoPlayButton = [[UIImageView alloc] initWithImage:videoPlayIcon];
     [stillImageView addSubview:videoPlayButton];
     [videoPlayButton autoCenterInSuperview];
-    [self addAttachmentUploadViewIfNecessary:^(BOOL isAttachmentReady) {
+    [self addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:^(BOOL isAttachmentReady) {
         videoPlayButton.hidden = !isAttachmentReady;
     }];
 
@@ -1078,10 +1075,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addAttachmentUploadViewIfNecessary
 {
-    [self addAttachmentUploadViewIfNecessary:nil];
+    [self addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:nil];
 }
 
-- (void)addAttachmentUploadViewIfNecessary:(nullable AttachmentStateBlock)attachmentStateCallback
+- (void)addAttachmentUploadViewIfNecessaryWithAttachmentStateCallback:
+    (nullable AttachmentStateBlock)attachmentStateCallback
 {
     OWSAssert(self.attachmentStream);
 
