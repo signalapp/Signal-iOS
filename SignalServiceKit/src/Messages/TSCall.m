@@ -9,6 +9,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *NSStringFromCallType(RPRecentCallType callType)
+{
+    switch (callType) {
+        case RPRecentCallTypeIncoming:
+            return @"RPRecentCallTypeIncoming";
+        case RPRecentCallTypeOutgoing:
+            return @"RPRecentCallTypeOutgoing";
+        case RPRecentCallTypeIncomingMissed:
+            return @"RPRecentCallTypeIncomingMissed";
+        case RPRecentCallTypeOutgoingIncomplete:
+            return @"RPRecentCallTypeOutgoingIncomplete";
+        case RPRecentCallTypeIncomingIncomplete:
+            return @"RPRecentCallTypeIncomingIncomplete";
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+            return @"RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity";
+        case RPRecentCallTypeIncomingDeclined:
+            return @"RPRecentCallTypeIncomingDeclined";
+        case RPRecentCallTypeOutgoingMissed:
+            return @"RPRecentCallTypeOutgoingMissed";
+    }
+}
+
 NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @interface TSCall ()
@@ -36,7 +58,11 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
-    if (_callType == RPRecentCallTypeMissed || _callType == RPRecentCallTypeMissedBecauseOfChangedIdentity) {
+
+    // Ensure users are notified of missed calls.
+    BOOL isIncomingMissed = (_callType == RPRecentCallTypeIncomingMissed
+        || _callType == RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity);
+    if (isIncomingMissed) {
         _read = NO;
     } else {
         _read = YES;
@@ -75,17 +101,20 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
             return NSLocalizedString(@"INCOMING_CALL", @"");
         case RPRecentCallTypeOutgoing:
             return NSLocalizedString(@"OUTGOING_CALL", @"");
-        case RPRecentCallTypeMissed:
+        case RPRecentCallTypeIncomingMissed:
             return NSLocalizedString(@"MISSED_CALL", @"");
         case RPRecentCallTypeOutgoingIncomplete:
             return NSLocalizedString(@"OUTGOING_INCOMPLETE_CALL", @"");
         case RPRecentCallTypeIncomingIncomplete:
             return NSLocalizedString(@"INCOMING_INCOMPLETE_CALL", @"");
-        case RPRecentCallTypeMissedBecauseOfChangedIdentity:
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
             return NSLocalizedString(@"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY", @"info message text shown in conversation view");
         case RPRecentCallTypeIncomingDeclined:
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
                                      @"info message recorded in conversation history when local user declined a call");
+        case RPRecentCallTypeOutgoingMissed:
+            return NSLocalizedString(@"OUTGOING_MISSED_CALL",
+                @"info message recorded in conversation history when local user tries and fails to call another user.");
     }
 }
 
@@ -125,20 +154,28 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)updateCallType:(RPRecentCallType)callType
 {
-    DDLogInfo(@"%@ updating call type of call: %d with uniqueId: %@ which has timestamp: %llu",
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateCallType:callType transaction:transaction];
+    }];
+}
+
+- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    DDLogInfo(@"%@ updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
         self.logTag,
-        (int)self.callType,
+        NSStringFromCallType(_callType),
+        NSStringFromCallType(callType),
         self.uniqueId,
         self.timestamp);
 
     _callType = callType;
 
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self saveWithTransaction:transaction];
-        
-        // redraw any thread-related unread count UI.
-        [self touchThreadWithTransaction:transaction];
-    }];
+    [self saveWithTransaction:transaction];
+
+    // redraw any thread-related unread count UI.
+    [self touchThreadWithTransaction:transaction];
 }
 
 @end

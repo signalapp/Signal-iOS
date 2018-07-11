@@ -11,6 +11,7 @@
 #import "OWSFailedMessagesJob.h"
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
+#import "OWSIncompleteCallsJob.h"
 #import "OWSMediaGalleryFinder.h"
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
@@ -64,9 +65,10 @@ void RunAsyncRegistrationsForStorage(OWSStorage *storage, dispatch_block_t compl
     [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:storage];
     [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:storage];
     [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
+    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
     [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:storage];
-    
+
     // NOTE: Always pass the completion to the _LAST_ of the async database
     // view registrations.
     [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:storage completion:completion];

@@ -12,13 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 typedef enum {
     RPRecentCallTypeIncoming = 1,
     RPRecentCallTypeOutgoing,
-    RPRecentCallTypeMissed,
+    RPRecentCallTypeIncomingMissed,
     // These call types are used until the call connects.
     RPRecentCallTypeOutgoingIncomplete,
     RPRecentCallTypeIncomingIncomplete,
-    RPRecentCallTypeMissedBecauseOfChangedIdentity,
-    RPRecentCallTypeIncomingDeclined
+    RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
+    RPRecentCallTypeIncomingDeclined,
+    RPRecentCallTypeOutgoingMissed,
 } RPRecentCallType;
+
+NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
@@ -34,6 +37,7 @@ typedef enum {
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (void)updateCallType:(RPRecentCallType)callType;
+- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

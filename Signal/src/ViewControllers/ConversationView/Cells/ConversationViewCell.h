@@ -11,10 +11,15 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
+@class TSCall;
+@class TSErrorMessage;
 @class TSInteraction;
+@class TSInvalidIdentityKeyErrorMessage;
+@class TSInvalidIdentityKeyErrorMessage;
 @class TSMessage;
 @class TSOutgoingMessage;
 @class TSQuotedMessage;
+@class YapDatabaseReadTransaction;
 @class YapDatabaseReadTransaction;
 
 @protocol ConversationViewCellDelegate <NSObject>
@@ -27,8 +32,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - System Cell
 
-// TODO: We might want to decompose this method.
-- (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction;
+- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;
+- (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage;
+- (void)tappedCorruptedMessage:(TSErrorMessage *)message;
+- (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message;
+- (void)showFingerprintWithRecipientId:(NSString *)recipientId;
+- (void)showConversationSettings;
+- (void)handleCallTap:(TSCall *)call;
 
 #pragma mark - Offers
 

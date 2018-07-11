@@ -1863,45 +1863,6 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-- (void)handleErrorMessageTap:(TSErrorMessage *)message
-{
-    OWSAssert(message);
-
-    switch (message.errorType) {
-        case TSErrorMessageInvalidKeyException:
-            break;
-        case TSErrorMessageNonBlockingIdentityChange:
-            [self tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-            return;
-        case TSErrorMessageWrongTrustedIdentityKey:
-            OWSAssert([message isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]);
-            [self tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-            return;
-        case TSErrorMessageMissingKeyId:
-            // Unused.
-            break;
-        case TSErrorMessageNoSession:
-            break;
-        case TSErrorMessageInvalidMessage:
-            [self tappedCorruptedMessage:message];
-            return;
-        case TSErrorMessageDuplicateMessage:
-            // Unused.
-            break;
-        case TSErrorMessageInvalidVersion:
-            break;
-        case TSErrorMessageUnknownContactBlockOffer:
-            // Unused.
-            OWSFail(@"TSErrorMessageUnknownContactBlockOffer");
-            return;
-        case TSErrorMessageGroupCreationFailed:
-            [self resendGroupUpdateForErrorMessage:message];
-            return;
-    }
-
-    DDLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
-}
-
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId
 {
     if (signalId == nil) {
@@ -1918,46 +1879,6 @@ typedef enum : NSUInteger {
     }
 
     [self showFingerprintWithRecipientId:signalId];
-}
-
-- (void)handleInfoMessageTap:(TSInfoMessage *)message
-{
-    OWSAssert(message);
-
-    switch (message.messageType) {
-        case TSInfoMessageUserNotRegistered:
-            break;
-        case TSInfoMessageTypeSessionDidEnd:
-            break;
-        case TSInfoMessageTypeUnsupportedMessage:
-            // Unused.
-            break;
-        case TSInfoMessageAddToContactsOffer:
-            // Unused.
-            OWSFail(@"TSInfoMessageAddToContactsOffer");
-            return;
-        case TSInfoMessageAddUserToProfileWhitelistOffer:
-            // Unused.
-            OWSFail(@"TSInfoMessageAddUserToProfileWhitelistOffer");
-            return;
-        case TSInfoMessageAddGroupToProfileWhitelistOffer:
-            // Unused.
-            OWSFail(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
-            return;
-        case TSInfoMessageTypeGroupUpdate:
-            [self showConversationSettings];
-            return;
-        case TSInfoMessageTypeGroupQuit:
-            break;
-        case TSInfoMessageTypeDisappearingMessagesUpdate:
-            [self showConversationSettings];
-            return;
-        case TSInfoMessageVerificationStateChange:
-            [self showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message).recipientId];
-            break;
-    }
-
-    DDLogInfo(@"%@ Unhandled tap for info message:%@", self.logTag, message);
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
@@ -2516,24 +2437,6 @@ typedef enum : NSUInteger {
 
     self.inputToolbar.quotedReply = quotedReply;
     [self.inputToolbar beginEditingTextMessage];
-}
-
-#pragma mark - System Messages
-
-- (void)didTapSystemMessageWithInteraction:(TSInteraction *)interaction
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(interaction);
-
-    if ([interaction isKindOfClass:[TSErrorMessage class]]) {
-        [self handleErrorMessageTap:(TSErrorMessage *)interaction];
-    } else if ([interaction isKindOfClass:[TSInfoMessage class]]) {
-        [self handleInfoMessageTap:(TSInfoMessage *)interaction];
-    } else if ([interaction isKindOfClass:[TSCall class]]) {
-        [self handleCallTap:(TSCall *)interaction];
-    } else {
-        OWSFail(@"Tap for system messages of unknown type: %@", [interaction class]);
-    }
 }
 
 #pragma mark - ContactEditingDelegate

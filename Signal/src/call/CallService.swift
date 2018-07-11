@@ -515,12 +515,12 @@ private class SignalCallData: NSObject {
         // Insert missed call record
         if let callRecord = call.callRecord {
             if callRecord.callType == RPRecentCallTypeIncoming {
-                callRecord.updateCallType(RPRecentCallTypeMissed)
+                callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
             }
         } else {
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
-                                     callType: RPRecentCallTypeMissed,
+                                     callType: RPRecentCallTypeIncomingMissed,
                                      in: call.thread)
         }
 
@@ -602,7 +602,7 @@ private class SignalCallData: NSObject {
 
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                     withCallNumber: thread.contactIdentifier(),
-                                    callType: RPRecentCallTypeMissedBecauseOfChangedIdentity,
+                                    callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
@@ -1106,6 +1106,14 @@ private class SignalCallData: NSObject {
         Logger.info("\(self.logTag) in \(#function): \(call.identifiersForLogs).")
 
         call.state = .localHangup
+
+        if let callRecord = call.callRecord {
+            if callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
+                callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+            }
+        } else {
+            owsFail("\(self.logTag) missing call record in \(#function)")
+        }
 
         // TODO something like this lifted from Signal-Android.
         //        this.accountManager.cancelInFlightRequests();
