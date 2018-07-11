@@ -614,7 +614,7 @@ NS_ASSUME_NONNULL_BEGIN
         missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
                      unreadIndicatorPosition:unreadIndicatorPosition
              firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp.unsignedLongLongValue];
-    DDLogInfo(@"%@ Creating TSUnreadIndicator: %llu", self.logTag, dynamicInteractions.unreadIndicator.timestamp);
+    DDLogInfo(@"%@ Creating Unread Indicator: %llu", self.logTag, dynamicInteractions.unreadIndicator.timestamp);
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread

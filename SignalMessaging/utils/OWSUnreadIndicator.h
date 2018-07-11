@@ -12,6 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSUInteger missingUnseenSafetyNumberChangeCount;
 
+// The timestamp of the oldest unseen message.
+//
+// Once we enter messages view, we mark all messages read, so we need
+// a snapshot of what the first unread message was when we entered the
+// view so that we can call ensureDynamicInteractionsForThread:...
+// repeatedly. The unread indicator should continue to show up until
+// it has been cleared, at which point hideUnreadMessagesIndicator is
+// YES in ensureDynamicInteractionsForThread:...
 @property (nonatomic, readonly) uint64_t firstUnseenInteractionTimestamp;
 
 // The index of the unseen indicator, counting from the _end_ of the conversation
