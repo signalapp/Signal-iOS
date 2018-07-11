@@ -238,8 +238,18 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
             case TSInfoMessageTypeDisappearingMessagesUpdate:
-            case TSInfoMessageVerificationStateChange:
                 return nil;
+            case TSInfoMessageVerificationStateChange:
+                OWSAssert([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
+                if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
+                    OWSVerificationStateChangeMessage *message = (OWSVerificationStateChangeMessage *)interaction;
+                    BOOL isVerified = message.verificationState == OWSVerificationStateVerified;
+                    if (!isVerified) {
+                        return nil;
+                    }
+                }
+                result = [UIImage imageNamed:@"system_message_verified"];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         return nil;
@@ -464,6 +474,7 @@ typedef void (^SystemMessageActionBlock)(void);
     }
 
     DDLogWarn(@"%@ Unhandled tap for error message:%@", self.logTag, message);
+    return nil;
 }
 
 - (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)message
@@ -491,19 +502,15 @@ typedef void (^SystemMessageActionBlock)(void);
             OWSFail(@"TSInfoMessageAddGroupToProfileWhitelistOffer");
             return nil;
         case TSInfoMessageTypeGroupUpdate:
-            return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen")
-                          block:^{
-                              [weakSelf.delegate showConversationSettings];
-                          }];
+            return nil;
         case TSInfoMessageTypeGroupQuit:
             return nil;
         case TSInfoMessageTypeDisappearingMessagesUpdate:
-            return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen")
-                          block:^{
-                              [weakSelf.delegate showConversationSettings];
-                          }];
+            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
+                                                            @"Label for button that opens conversation settings.")
+                                                  block:^{
+                                                      [weakSelf.delegate showConversationSettings];
+                                                  }];
         case TSInfoMessageVerificationStateChange:
             return [SystemMessageAction
                 actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
@@ -514,7 +521,8 @@ typedef void (^SystemMessageActionBlock)(void);
                           }];
     }
 
-    DDLogInfo(@"%@ Unhandled tap for info message:%@", self.logTag, message);
+    DDLogInfo(@"%@ Unhandled tap for info message: %@", self.logTag, message);
+    return nil;
 }
 
 - (nullable SystemMessageAction *)actionForCall:(TSCall *)call
