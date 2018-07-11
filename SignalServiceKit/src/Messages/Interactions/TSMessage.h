@@ -45,7 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
-- (BOOL)shouldStartExpireTimer;
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark - Update With... Methods

@@ -138,6 +138,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return self.hasQuotedAttachment || self.hasQuotedText;
 }
 
+- (BOOL)isExpiringMessage
+{
+    if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
+        && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return NO;
+    }
+
+    TSMessage *message = (TSMessage *)self.interaction;
+    return message.isExpiringMessage;
+}
+
 - (void)setShouldShowDate:(BOOL)shouldShowDate
 {
     if (_shouldShowDate == shouldShowDate) {
