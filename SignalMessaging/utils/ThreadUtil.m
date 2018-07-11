@@ -567,7 +567,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!interactionAfterUnreadIndicator) {
         // If we can't find an interaction after the unread indicator,
-        // remove it.  All unread messages may have been deleted or
+        // don't show it.  All unread messages may have been deleted or
         // expired.
         return;
     }

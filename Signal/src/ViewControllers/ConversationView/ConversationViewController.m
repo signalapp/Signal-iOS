@@ -3215,7 +3215,6 @@ typedef enum : NSUInteger {
 
     // We need to reload any modified interactions _before_ we call
     // reloadViewItems.
-    BOOL hasDeletions = NO;
     BOOL hasMalformedRowChange = NO;
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
@@ -3245,7 +3244,6 @@ typedef enum : NSUInteger {
                 } else {
                     hasMalformedRowChange = YES;
                 }
-                hasDeletions = YES;
                 break;
             }
             default:
@@ -3264,7 +3262,6 @@ typedef enum : NSUInteger {
         [self.collectionView reloadData];
         self.lastReloadDate = [NSDate new];
         [self updateLastVisibleTimestamp];
-        [self cleanUpUnreadIndicatorIfNecessary];
         return;
     }
 
@@ -3348,9 +3345,6 @@ typedef enum : NSUInteger {
         
         if (scrollToBottom) {
             [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
-        }
-        if (hasDeletions) {
-            [self cleanUpUnreadIndicatorIfNecessary];
         }
     };
     if (shouldAnimateUpdates) {
@@ -3783,17 +3777,6 @@ typedef enum : NSUInteger {
             [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
     }];
     self.hasUnreadMessages = numberOfUnreadMessages > 0;
-}
-
-- (void)cleanUpUnreadIndicatorIfNecessary
-{
-    BOOL hasUnreadIndicator = self.dynamicInteractions.unreadIndicator != nil;
-    if (!hasUnreadIndicator) {
-        return;
-    }
-    // If the last unread message was deleted (manually or due to disappearing messages)
-    // we may need to clean up an obsolete unread indicator.
-    [self ensureDynamicInteractions];
 }
 
 - (void)updateLastVisibleTimestamp:(uint64_t)timestamp
@@ -4923,6 +4906,11 @@ typedef enum : NSUInteger {
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
+    }
+    if (unreadIndicator) {
+        // This isn't necessarily a bug - all of the interactions after the
+        // unread indicator may have disappeared or been deleted.
+        DDLogWarn(@"%@ Couldn't find an interaction to hang the unread indicator on.", self.logTag);
     }
 
     self.viewItems = viewItems;
