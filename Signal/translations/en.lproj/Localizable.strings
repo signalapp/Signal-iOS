@@ -1161,6 +1161,21 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "This Month";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Copy message text";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this message";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "This will delete it on this device only";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Reply to this message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_TITLE_INFO" = "More info";
+
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";
 

@@ -158,7 +158,7 @@ class MessageActionView: UIView {
 
         self.addSubview(contentRow)
         contentRow.autoPinToSuperviewMargins()
-        contentRow.autoSetDimension(.height, toSize: 42, relation: .greaterThanOrEqual)
+        contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
     }
 
     required init?(coder aDecoder: NSCoder) {
