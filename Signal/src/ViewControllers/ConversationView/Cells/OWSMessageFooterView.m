@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.timestampLabel.textColor = textColor;
 
-    if ([self isDisappearingMessage:viewItem]) {
+    if ([self shouldShowDisappearingTimer:viewItem]) {
         TSMessage *message = (TSMessage *)viewItem.interaction;
         uint64_t expirationTimestamp = message.expiresAt;
         uint32_t expiresInSeconds = message.expiresInSeconds;
@@ -185,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     return messageStatus == MessageReceiptStatusFailed;
 }
 
-- (BOOL)isDisappearingMessage:(ConversationViewItem *)viewItem
+- (BOOL)shouldShowDisappearingTimer:(ConversationViewItem *)viewItem
 {
     OWSAssert(viewItem);
 
@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if ([self isDisappearingMessage:viewItem]) {
+    if ([self shouldShowDisappearingTimer:viewItem]) {
         result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
     }
 
