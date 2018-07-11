@@ -363,62 +363,63 @@ const CGFloat kIconViewLength = 24;
                                  }]];
     }
 
-    [mainSection
-        addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            OWSConversationSettingsViewController *strongSelf = weakSelf;
-            OWSCAssert(strongSelf);
-            cell.preservesSuperviewLayoutMargins = YES;
-            cell.contentView.preservesSuperviewLayoutMargins = YES;
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [mainSection addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 UITableViewCell *cell = [UITableViewCell new];
+                                 OWSConversationSettingsViewController *strongSelf = weakSelf;
+                                 OWSCAssert(strongSelf);
+                                 cell.preservesSuperviewLayoutMargins = YES;
+                                 cell.contentView.preservesSuperviewLayoutMargins = YES;
+                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-            UIView *topView = [UIView containerView];
-            [cell.contentView addSubview:topView];
-            [topView autoPinLeadingAndTrailingToSuperviewMargin];
-            [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-            [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
+                                 UIView *topView = [UIView containerView];
+                                 [cell.contentView addSubview:topView];
+                                 [topView autoPinLeadingAndTrailingToSuperviewMargin];
+                                 [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+                                 [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-            UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
-            [topView addSubview:iconView];
-            [iconView autoVCenterInSuperview];
-            [iconView autoPinLeadingToSuperviewMargin];
+                                 UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
+                                 [topView addSubview:iconView];
+                                 [iconView autoVCenterInSuperview];
+                                 [iconView autoPinLeadingToSuperviewMargin];
 
-            UILabel *rowLabel = [UILabel new];
-            rowLabel.text = NSLocalizedString(@"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
-            rowLabel.textColor = [UIColor blackColor];
-            rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [topView addSubview:rowLabel];
-            [rowLabel autoVCenterInSuperview];
-            [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
+                                 UILabel *rowLabel = [UILabel new];
+                                 rowLabel.text = NSLocalizedString(
+                                     @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
+                                 rowLabel.textColor = [UIColor blackColor];
+                                 rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                                 rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                                 [topView addSubview:rowLabel];
+                                 [rowLabel autoVCenterInSuperview];
+                                 [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
-            UISwitch *switchView = [UISwitch new];
-            switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
-            [switchView addTarget:strongSelf
-                           action:@selector(disappearingMessagesSwitchValueDidChange:)
-                 forControlEvents:UIControlEventValueChanged];
-            [topView addSubview:switchView];
-            [switchView autoVCenterInSuperview];
-            [switchView autoPinLeadingToTrailingEdgeOfView:rowLabel offset:weakSelf.iconSpacing];
-            [switchView autoPinTrailingToSuperviewMargin];
+                                 UISwitch *switchView = [UISwitch new];
+                                 switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
+                                 [switchView addTarget:strongSelf
+                                                action:@selector(disappearingMessagesSwitchValueDidChange:)
+                                      forControlEvents:UIControlEventValueChanged];
+                                 [topView addSubview:switchView];
+                                 [switchView autoVCenterInSuperview];
+                                 [switchView autoPinLeadingToTrailingEdgeOfView:rowLabel offset:weakSelf.iconSpacing];
+                                 [switchView autoPinTrailingToSuperviewMargin];
 
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.text
-                = NSLocalizedString(@"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
-            subtitleLabel.textColor = [UIColor blackColor];
-            subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
-            subtitleLabel.numberOfLines = 0;
-            subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-            [cell.contentView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
-            [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
-            [subtitleLabel autoPinTrailingToSuperviewMargin];
+                                 UILabel *subtitleLabel = [UILabel new];
+                                 subtitleLabel.text = NSLocalizedString(
+                                     @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
+                                 subtitleLabel.textColor = [UIColor blackColor];
+                                 subtitleLabel.font = [UIFont ows_dynamicTypeCaption1Font];
+                                 subtitleLabel.numberOfLines = 0;
+                                 subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                                 [cell.contentView addSubview:subtitleLabel];
+                                 [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
+                                 [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
+                                 [subtitleLabel autoPinTrailingToSuperviewMargin];
+                                 [subtitleLabel autoPinBottomToSuperviewMargin];
 
-            return cell;
-        }
-                                      // TODO: We shouldn't hard-code a row height that will contain the cell content.
-                                      customRowHeight:108.f
-                                          actionBlock:nil]];
+                                 return cell;
+                             }
+                                     customRowHeight:UITableViewAutomaticDimension
+                                         actionBlock:nil]];
 
     if (self.disappearingMessagesConfiguration.isEnabled) {
         [mainSection
@@ -445,7 +446,7 @@ const CGFloat kIconViewLength = 24;
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
                             rowLabel.textColor = [UIColor blackColor];
-                            rowLabel.font = [UIFont ows_regularFontWithSize:11.f];
+                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
                             [topView addSubview:rowLabel];
                             [rowLabel autoVCenterInSuperview];
@@ -463,11 +464,11 @@ const CGFloat kIconViewLength = 24;
                             [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
                             [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                             [slider autoPinTrailingToSuperviewMargin];
+                            [slider autoPinBottomToSuperviewMargin];
 
                             return cell;
                         }
-                                // TODO: We shouldn't hard-code a row height that will contain the cell content.
-                                customRowHeight:84.f
+                                customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:nil]];
     }
 
@@ -515,97 +516,105 @@ const CGFloat kIconViewLength = 24;
     notificationsSection.headerTitle = NSLocalizedString(
         @"SETTINGS_SECTION_NOTIFICATIONS", @"Label for the notifications section of conversation settings view.");
 
-    [notificationsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-        OWSConversationSettingsViewController *strongSelf = weakSelf;
-        OWSCAssert(strongSelf);
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    [notificationsSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        UITableViewCell *cell =
+                            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+                        OWSConversationSettingsViewController *strongSelf = weakSelf;
+                        OWSCAssert(strongSelf);
+                        cell.preservesSuperviewLayoutMargins = YES;
+                        cell.contentView.preservesSuperviewLayoutMargins = YES;
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
-        [cell.contentView addSubview:iconView];
-        [iconView autoVCenterInSuperview];
-        [iconView autoPinLeadingToSuperviewMargin];
+                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
+                        [cell.contentView addSubview:iconView];
+                        [iconView autoVCenterInSuperview];
+                        [iconView autoPinLeadingToSuperviewMargin];
 
-        UILabel *rowLabel = [UILabel new];
-        rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
-            @"Label for settings view that allows user to change the notification sound.");
-        rowLabel.textColor = [UIColor blackColor];
-        rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [cell.contentView addSubview:rowLabel];
-        [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
+                        UILabel *rowLabel = [UILabel new];
+                        rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
+                            @"Label for settings view that allows user to change the notification sound.");
+                        rowLabel.textColor = [UIColor blackColor];
+                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                        [cell.contentView addSubview:rowLabel];
+                        [rowLabel autoVCenterInSuperview];
+                        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
-        OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
-        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
-        return cell;
-    }
-                                      customRowHeight:45.f
-                                      actionBlock:^{
-                                          OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-                                          vc.thread = weakSelf.thread;
-                                          [weakSelf.navigationController pushViewController:vc animated:YES];
-                                      }]];
+                        OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
+                        cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+                        return cell;
+                    }
+                    customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
+                        vc.thread = weakSelf.thread;
+                        [weakSelf.navigationController pushViewController:vc animated:YES];
+                    }]];
 
-    [notificationsSection addItem:[OWSTableItem itemWithCustomCellBlock:^{
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-        OWSConversationSettingsViewController *strongSelf = weakSelf;
-        OWSCAssert(strongSelf);
-        cell.preservesSuperviewLayoutMargins = YES;
-        cell.contentView.preservesSuperviewLayoutMargins = YES;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    [notificationsSection
+        addItem:[OWSTableItem
+                    itemWithCustomCellBlock:^{
+                        UITableViewCell *cell =
+                            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+                        OWSConversationSettingsViewController *strongSelf = weakSelf;
+                        OWSCAssert(strongSelf);
+                        cell.preservesSuperviewLayoutMargins = YES;
+                        cell.contentView.preservesSuperviewLayoutMargins = YES;
+                        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
-        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
-        [cell.contentView addSubview:iconView];
-        [iconView autoVCenterInSuperview];
-        [iconView autoPinLeadingToSuperviewMargin];
+                        UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
+                        [cell.contentView addSubview:iconView];
+                        [iconView autoVCenterInSuperview];
+                        [iconView autoPinLeadingToSuperviewMargin];
 
-        UILabel *rowLabel = [UILabel new];
-        rowLabel.text = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_MUTE_LABEL", @"label for 'mute thread' cell in conversation settings");
-        rowLabel.textColor = [UIColor blackColor];
-        rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
-        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        [cell.contentView addSubview:rowLabel];
-        [rowLabel autoVCenterInSuperview];
-        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
+                        UILabel *rowLabel = [UILabel new];
+                        rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
+                            @"label for 'mute thread' cell in conversation settings");
+                        rowLabel.textColor = [UIColor blackColor];
+                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                        rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+                        [cell.contentView addSubview:rowLabel];
+                        [rowLabel autoVCenterInSuperview];
+                        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
-        NSString *muteStatus = NSLocalizedString(
-            @"CONVERSATION_SETTINGS_MUTE_NOT_MUTED", @"Indicates that the current thread is not muted.");
-        NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
-        NSDate *now = [NSDate date];
-        if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
-            NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
-            NSDateComponents *muteUntilComponents = [calendar components:calendarUnits fromDate:mutedUntilDate];
-            NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            if (nowComponents.year != muteUntilComponents.year || nowComponents.month != muteUntilComponents.month
-                || nowComponents.day != muteUntilComponents.day) {
+                        NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
+                            @"Indicates that the current thread is not muted.");
+                        NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
+                        NSDate *now = [NSDate date];
+                        if (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0) {
+                            NSCalendar *calendar = [NSCalendar currentCalendar];
+                            NSCalendarUnit calendarUnits = NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay;
+                            NSDateComponents *muteUntilComponents =
+                                [calendar components:calendarUnits fromDate:mutedUntilDate];
+                            NSDateComponents *nowComponents = [calendar components:calendarUnits fromDate:now];
+                            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                            if (nowComponents.year != muteUntilComponents.year
+                                || nowComponents.month != muteUntilComponents.month
+                                || nowComponents.day != muteUntilComponents.day) {
 
-                [dateFormatter setDateStyle:NSDateFormatterShortStyle];
-                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-            } else {
-                [dateFormatter setDateStyle:NSDateFormatterNoStyle];
-                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-            }
+                                [dateFormatter setDateStyle:NSDateFormatterShortStyle];
+                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                            } else {
+                                [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+                                [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+                            }
 
-            muteStatus =
-                [NSString stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
-                                               @"Indicates that this thread is muted until a given date or time. "
-                                               @"Embeds {{The date or time which the thread is muted until}}."),
-                          [dateFormatter stringFromDate:mutedUntilDate]];
-        }
+                            muteStatus = [NSString
+                                stringWithFormat:NSLocalizedString(@"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT",
+                                                     @"Indicates that this thread is muted until a given date or time. "
+                                                     @"Embeds {{The date or time which the thread is muted until}}."),
+                                [dateFormatter stringFromDate:mutedUntilDate]];
+                        }
 
-        cell.detailTextLabel.text = muteStatus;
-        return cell;
-    }
-                                      customRowHeight:45.f
-                                      actionBlock:^{
-                                          [weakSelf showMuteUnmuteActionSheet];
-                                      }]];
+                        cell.detailTextLabel.text = muteStatus;
+                        return cell;
+                    }
+                    customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        [weakSelf showMuteUnmuteActionSheet];
+                    }]];
     notificationsSection.footerTitle
         = NSLocalizedString(@"MUTE_BEHAVIOR_EXPLANATION", @"An explanation of the consequences of muting a thread.");
     [contents addSection:notificationsSection];
@@ -687,7 +696,7 @@ const CGFloat kIconViewLength = 24;
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
     rowLabel.textColor = [UIColor blackColor];
-    rowLabel.font = [UIFont ows_regularFontWithSize:17.f];
+    rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [cell.contentView addSubview:rowLabel];
     [rowLabel autoVCenterInSuperview];
