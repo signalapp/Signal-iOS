@@ -129,6 +129,8 @@ class MessageActionView: UIView {
 
         super.init(frame: CGRect.zero)
 
+        backgroundColor = .white
+
         let imageView = UIImageView(image: action.image)
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
@@ -152,10 +154,11 @@ class MessageActionView: UIView {
         contentRow.alignment = .center
         contentRow.spacing = 12
         contentRow.isLayoutMarginsRelativeArrangement = true
-        contentRow.layoutMargins = UIEdgeInsets(top: 17, left: 16, bottom: 17, right: 16)
+        contentRow.layoutMargins = UIEdgeInsets(top: 7, left: 16, bottom: 7, right: 16)
 
         self.addSubview(contentRow)
         contentRow.autoPinToSuperviewMargins()
+        contentRow.autoSetDimension(.height, toSize: 42, relation: .greaterThanOrEqual)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -168,6 +171,12 @@ class MessageActionSheetView: UIView {
     private let actionStackView: UIStackView
     private var actions: [MessageAction]
 
+    override var bounds: CGRect {
+        didSet {
+            updateMask()
+        }
+    }
+
     convenience init(actions: [MessageAction]) {
         self.init(frame: CGRect.zero)
         actions.forEach { self.addAction($0) }
@@ -175,15 +184,18 @@ class MessageActionSheetView: UIView {
 
     override init(frame: CGRect) {
         actionStackView = UIStackView()
-        self.actions = []
+        actionStackView.axis = .vertical
+        actionStackView.spacing = CGHairlineWidth()
+
+        actions = []
 
         super.init(frame: frame)
 
+        backgroundColor = UIColor.ows_light10
         addSubview(actionStackView)
         actionStackView.autoPinToSuperviewEdges()
 
-        backgroundColor = UIColor.ows_light10
-        actionStackView.axis = .vertical
+        self.clipsToBounds = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -192,21 +204,15 @@ class MessageActionSheetView: UIView {
 
     public func addAction(_ action: MessageAction) {
         let actionView = MessageActionView(action: action)
-
-        if !actions.isEmpty {
-            self.actionStackView.addArrangedSubview(buildSeparatorView())
-        }
-
         actions.append(action)
         self.actionStackView.addArrangedSubview(actionView)
     }
 
-    private func buildSeparatorView() -> UIView {
-        let separatorView = UIView()
-        separatorView.autoSetDimension(.height, toSize: CGHairlineWidth())
-        separatorView.backgroundColor = UIColor.ows_light10
-
-        return separatorView
+    private func updateMask() {
+        let cornerRadius: CGFloat = 16
+        let path: UIBezierPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        self.layer.mask = mask
     }
-
 }
