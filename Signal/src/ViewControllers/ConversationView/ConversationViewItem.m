@@ -261,9 +261,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             case OWSInteractionType_Call:
                 measurementCell = [OWSSystemMessageCell new];
                 break;
-            case OWSInteractionType_UnreadIndicator:
-                OWSFail(@"%@ unexpected unread indicator.", self.logTag);
-                return nil;
             case OWSInteractionType_Offer:
                 measurementCell = [OWSContactOffersCell new];
                 break;
@@ -279,11 +276,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 - (CGFloat)vSpacingWithPreviousLayoutItem:(ConversationViewItem *)previousLayoutItem
 {
     OWSAssert(previousLayoutItem);
-
-    if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
-        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
-        return 20.f;
-    }
 
     if (self.hasCellHeader) {
         return OWSMessageHeaderViewDateHeaderVMargin;
@@ -326,9 +318,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Call:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
-        case OWSInteractionType_UnreadIndicator:
-            OWSFail(@"%@ unexpected unread indicator.", self.logTag);
-            return nil;
         case OWSInteractionType_Offer:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];

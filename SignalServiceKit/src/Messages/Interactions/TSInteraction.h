@@ -15,8 +15,6 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Error,
     OWSInteractionType_Call,
     OWSInteractionType_Info,
-    // TODO: Obsolete, consider replacing with OWSInteractionType_Unknown.
-    OWSInteractionType_UnreadIndicator,
     OWSInteractionType_Offer,
 };
 

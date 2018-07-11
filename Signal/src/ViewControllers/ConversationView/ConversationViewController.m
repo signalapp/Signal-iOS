@@ -741,9 +741,7 @@ typedef enum : NSUInteger {
 {
     NSInteger row = 0;
     for (ConversationViewItem *viewItem in self.viewItems) {
-        OWSInteractionType interactionType
-            = (viewItem ? viewItem.interaction.interactionType : OWSInteractionType_Unknown);
-        if (interactionType == OWSInteractionType_UnreadIndicator) {
+        if (viewItem.unreadIndicator) {
             return [NSIndexPath indexPathForRow:row inSection:0];
         }
         row++;
@@ -4742,7 +4740,6 @@ typedef enum : NSUInteger {
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
-            case OWSInteractionType_UnreadIndicator:
             case OWSInteractionType_Offer:
                 canShowDate = NO;
                 break;

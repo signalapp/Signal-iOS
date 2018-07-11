@@ -603,17 +603,10 @@ NS_ASSUME_NONNULL_BEGIN
             = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
     }
 
-    // TODO:
     NSInteger unreadIndicatorPosition = visibleUnseenMessageCount;
-    // TODO:
-    //    if (dynamicInteractions.firstUnseenInteractionTimestamp) {
-    //        // The unread indicator is _before_ the last visible unseen message.
-    //        NSInteger unreadIndicatorPosition = visibleUnseenMessageCount + 1;
-    //        if (shouldHaveContactOffers) {
-    //            unreadIndicatorPosition++;
-    //        }
-    //        dynamicInteractions.unreadIndicatorPosition = @(unreadIndicatorPosition);
-    //    }
+    if (shouldHaveContactOffers) {
+        unreadIndicatorPosition++;
+    }
 
     dynamicInteractions.unreadIndicator = [[OWSUnreadIndicator alloc]
             initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForSorting

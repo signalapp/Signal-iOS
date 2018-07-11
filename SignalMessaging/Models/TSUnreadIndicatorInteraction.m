@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSInteractionType)interactionType
 {
-    return OWSInteractionType_UnreadIndicator;
+    return OWSInteractionType_Unknown;
 }
 
 @end
