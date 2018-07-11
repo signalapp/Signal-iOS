@@ -67,19 +67,51 @@ class MessageActionsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var actionSheetViewVerticalConstraint: NSLayoutConstraint?
+
     override func loadView() {
         self.view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
 
         highlightFocusedView()
 
         view.addSubview(actionSheetView)
-        actionSheetView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+
+        actionSheetView.autoPinWidthToSuperview()
         actionSheetView.setContentHuggingVerticalHigh()
         actionSheetView.setCompressionResistanceHigh()
+        self.actionSheetViewVerticalConstraint = actionSheetView.autoPinEdge(.top, to: .bottom, of: self.view)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         self.view.addGestureRecognizer(tapGesture)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
+
+        // TODO first time only?
+
+        guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
+            owsFail("\(self.logTag) in \(#function) actionSheetViewVerticalConstraint was unexpectedly nil")
+            return
+        }
+
+        // darken background
+        let backgroundDuration: TimeInterval = 0.1
+        UIView.animate(withDuration: backgroundDuration) {
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+        }
+
+        // present action sheet
+        self.actionSheetView.superview?.layoutIfNeeded()
+        NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
+        self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(toSuperviewEdge: .bottom)
+        UIView.animate(withDuration: 0.3,
+                       delay: backgroundDuration,
+                       options: .curveEaseOut,
+                       animations: {
+                         self.actionSheetView.superview?.layoutIfNeeded()
+                       },
+                       completion: nil)
     }
 
     private func highlightFocusedView() {
@@ -100,7 +132,29 @@ class MessageActionsViewController: UIViewController {
 
     @objc
     func didTapBackground() {
-        self.delegate?.messageActionsDidHide(self)
+        animateDismiss()
+    }
+
+    func animateDismiss() {
+        self.actionSheetView.superview?.layoutIfNeeded()
+
+        if let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint {
+            NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
+        } else {
+            owsFail("\(self.logTag) in \(#function) actionSheetVerticalConstraint was unexpectedly nil")
+        }
+
+        self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(.top, to: .bottom, of: self.view)
+        UIView.animate(withDuration: 0.2,
+                       delay: 0,
+                       options: .curveEaseOut,
+                       animations: {
+                        self.view.backgroundColor = UIColor.clear
+                        self.actionSheetView.superview?.layoutIfNeeded()
+        },
+                       completion: { _ in
+                        self.delegate?.messageActionsDidHide(self)
+        })
     }
 }
 
