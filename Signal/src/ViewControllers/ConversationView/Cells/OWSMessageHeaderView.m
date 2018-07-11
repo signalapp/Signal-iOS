@@ -78,6 +78,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 {
     OWSAssert(viewItem);
     OWSAssert(conversationStyle);
+    OWSAssert(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
     [self configureLabelsWithViewItem:viewItem];
 
@@ -130,9 +131,12 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     if (viewItem.unreadIndicator) {
         self.titleLabel.font = UIFont.ows_dynamicTypeCaption1Font.ows_mediumWeight;
 
-        NSString *unreadTitle = NSLocalizedString(
+        NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
-        self.titleLabel.text = [[dateString rtlSafeAppend:@" • "] rtlSafeAppend:unreadTitle].localizedUppercaseString;
+        if (viewItem.shouldShowDate) {
+            title = [[dateString rtlSafeAppend:@" • "] rtlSafeAppend:title];
+        }
+        self.titleLabel.text = title.localizedUppercaseString;
 
         if (!viewItem.unreadIndicator.hasMoreUnseenMessages) {
             self.subtitleLabel.text = nil;
@@ -157,6 +161,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
 {
     OWSAssert(viewItem);
     OWSAssert(conversationStyle);
+    OWSAssert(viewItem.unreadIndicator || viewItem.shouldShowDate);
 
     [self configureLabelsWithViewItem:viewItem];
 
