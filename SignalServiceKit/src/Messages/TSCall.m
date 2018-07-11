@@ -9,6 +9,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *NSStringFromCallType(RPRecentCallType callType)
+{
+    switch (callType) {
+        case RPRecentCallTypeIncoming:
+            return @"RPRecentCallTypeIncoming";
+        case RPRecentCallTypeOutgoing:
+            return @"RPRecentCallTypeOutgoing";
+        case RPRecentCallTypeIncomingMissed:
+            return @"RPRecentCallTypeIncomingMissed";
+        case RPRecentCallTypeOutgoingIncomplete:
+            return @"RPRecentCallTypeOutgoingIncomplete";
+        case RPRecentCallTypeIncomingIncomplete:
+            return @"RPRecentCallTypeIncomingIncomplete";
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+            return @"RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity";
+        case RPRecentCallTypeIncomingDeclined:
+            return @"RPRecentCallTypeIncomingDeclined";
+        case RPRecentCallTypeOutgoingMissed:
+            return @"RPRecentCallTypeOutgoingMissed";
+    }
+}
+
 NSUInteger TSCallCurrentSchemaVersion = 1;
 
 @interface TSCall ()
@@ -36,8 +58,11 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
-    if (_callType == RPRecentCallTypeIncomingMissed
-        || _callType == RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity) {
+
+    // Ensure users are notified of missed calls.
+    BOOL isIncomingMissed = (_callType == RPRecentCallTypeIncomingMissed
+        || _callType == RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity);
+    if (isIncomingMissed) {
         _read = NO;
     } else {
         _read = YES;
@@ -87,6 +112,9 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingDeclined:
             return NSLocalizedString(@"INCOMING_DECLINED_CALL",
                                      @"info message recorded in conversation history when local user declined a call");
+        case RPRecentCallTypeOutgoingMissed:
+            return NSLocalizedString(@"OUTGOING_MISSED_CALL",
+                @"info message recorded in conversation history when local user tries and fails to call another user.");
     }
 }
 
@@ -126,35 +154,28 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)updateCallType:(RPRecentCallType)callType
 {
-    DDLogInfo(@"%@ updating call type of call: %d with uniqueId: %@ which has timestamp: %llu",
+    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateCallType:callType transaction:transaction];
+    }];
+}
+
+- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    DDLogInfo(@"%@ updating call type of call: %@ -> %@ with uniqueId: %@ which has timestamp: %llu",
         self.logTag,
-        (int)self.callType,
+        NSStringFromCallType(_callType),
+        NSStringFromCallType(callType),
         self.uniqueId,
         self.timestamp);
 
     _callType = callType;
 
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self saveWithTransaction:transaction];
-        
-        // redraw any thread-related unread count UI.
-        [self touchThreadWithTransaction:transaction];
-    }];
-}
+    [self saveWithTransaction:transaction];
 
-- (BOOL)isIncoming
-{
-    switch (self.callType) {
-        case RPRecentCallTypeIncoming:
-        case RPRecentCallTypeIncomingMissed:
-        case RPRecentCallTypeIncomingIncomplete:
-        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
-        case RPRecentCallTypeIncomingDeclined:
-            return YES;
-        case RPRecentCallTypeOutgoing:
-        case RPRecentCallTypeOutgoingIncomplete:
-            return NO;
-    }
+    // redraw any thread-related unread count UI.
+    [self touchThreadWithTransaction:transaction];
 }
 
 @end

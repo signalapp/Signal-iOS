@@ -17,14 +17,15 @@ typedef enum {
     RPRecentCallTypeOutgoingIncomplete,
     RPRecentCallTypeIncomingIncomplete,
     RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
-    RPRecentCallTypeIncomingDeclined
+    RPRecentCallTypeIncomingDeclined,
+    RPRecentCallTypeOutgoingMissed,
 } RPRecentCallType;
+
+NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @interface TSCall : TSInteraction <OWSReadTracking, OWSPreviewText>
 
 @property (nonatomic, readonly) RPRecentCallType callType;
-
-@property (nonatomic, readonly) BOOL isIncoming;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -36,6 +37,7 @@ typedef enum {
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (void)updateCallType:(RPRecentCallType)callType;
+- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

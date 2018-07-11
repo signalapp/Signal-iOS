@@ -1107,6 +1107,14 @@ private class SignalCallData: NSObject {
 
         call.state = .localHangup
 
+        if let callRecord = call.callRecord {
+            if callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
+                callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+            }
+        } else {
+            owsFail("\(self.logTag) missing call record in \(#function)")
+        }
+
         // TODO something like this lifted from Signal-Android.
         //        this.accountManager.cancelInFlightRequests();
         //        this.messageSender.cancelInFlightRequests();

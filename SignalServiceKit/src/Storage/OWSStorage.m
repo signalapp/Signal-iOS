@@ -234,7 +234,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     cannotDecodeObjectOfClassName:(NSString *)name
                   originalClasses:(NSArray<NSString *> *)classNames
 {
-    OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
+    if ([name isEqualToString:@"TSRecipient"]) {
+        DDLogError(@"%@ Could not decode object: %@", self.logTag, name);
+    } else {
+        OWSProdLogAndFail(@"%@ Could not decode object: %@", self.logTag, name);
+    }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
 }
