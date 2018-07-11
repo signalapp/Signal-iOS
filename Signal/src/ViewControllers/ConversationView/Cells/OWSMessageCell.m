@@ -5,11 +5,10 @@
 #import "OWSMessageCell.h"
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
+#import "OWSMessageHeaderView.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-const CGFloat OWSMessageCellDateHeaderVMargin = 23;
 
 @interface OWSMessageCell ()
 
@@ -17,9 +16,8 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
 // The non-nullable properties are so frequently used that it's easier
 // to always keep one around.
 
+@property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
-@property (nonatomic) UIView *dateHeaderView;
-@property (nonatomic) UILabel *dateHeaderLabel;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
@@ -55,15 +53,7 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
     self.messageBubbleView = [OWSMessageBubbleView new];
     [self.contentView addSubview:self.messageBubbleView];
 
-    self.dateHeaderLabel = [UILabel new];
-    self.dateHeaderLabel.font = self.dateHeaderFont;
-    self.dateHeaderLabel.textAlignment = NSTextAlignmentCenter;
-    self.dateHeaderLabel.textColor = [UIColor ows_light60Color];
-
-    self.dateHeaderView = [UIView new];
-    self.dateHeaderView.layoutMargins = UIEdgeInsetsMake(0, 0, OWSMessageCellDateHeaderVMargin, 0);
-    [self.dateHeaderView addSubview:self.dateHeaderLabel];
-    [self.dateHeaderLabel autoPinToSuperviewMargins];
+    self.headerView = [OWSMessageHeaderView new];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -153,8 +143,24 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
 
-    // Update label fonts to honor dynamic type size.
-    self.dateHeaderLabel.font = self.dateHeaderFont;
+    if (self.viewItem.hasCellHeader) {
+        CGFloat headerHeight =
+            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
+                .height;
+        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
+        [self.contentView addSubview:self.headerView];
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.headerView autoSetDimension:ALDimensionHeight toSize:headerHeight],
+            [self.headerView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
+            [self.headerView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
+            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
+        ]];
+    } else {
+        [self.viewConstraints addObjectsFromArray:@[
+            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+        ]];
+    }
 
     if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
@@ -203,8 +209,6 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
         }
     }
 
-    [self updateDateHeader];
-
     if ([self updateAvatarView]) {
         CGFloat avatarBottomMargin = round(self.conversationStyle.lastTextLineAxis - self.avatarSize * 0.5f);
         [self.viewConstraints addObjectsFromArray:@[
@@ -249,40 +253,6 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
     } else {
         [self.messageBubbleView loadContent];
     }
-}
-
-- (void)updateDateHeader
-{
-    OWSAssert(self.conversationStyle);
-
-    if (self.viewItem.shouldShowDate) {
-
-        self.dateHeaderLabel.font = self.dateHeaderFont;
-        self.dateHeaderLabel.textColor = self.conversationStyle.dateBreakTextColor;
-
-        NSDate *date = self.viewItem.interaction.dateForSorting;
-        NSString *dateString = [DateUtil formatDateForConversationDateBreaks:date];
-        self.dateHeaderLabel.text = dateString.localizedUppercaseString;
-
-        [self.contentView addSubview:self.dateHeaderView];
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.dateHeaderView
-                autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterLeading],
-            [self.dateHeaderView
-                autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.fullWidthGutterTrailing],
-            [self.dateHeaderView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.dateHeaderView],
-        ]];
-    } else {
-        [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        ]];
-    }
-}
-
-- (UIFont *)dateHeaderFont
-{
-    return UIFont.ows_dynamicTypeCaption1Font;
 }
 
 #pragma mark - Avatar
@@ -376,7 +346,11 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
-    cellSize.height += self.dateHeaderHeight;
+    if (self.viewItem.hasCellHeader) {
+        cellSize.height +=
+            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
+                .height;
+    }
 
     if (self.shouldHaveSendFailureBadge) {
         cellSize.width += self.sendFailureBadgeSize + self.sendFailureBadgeSpacing;
@@ -385,16 +359,6 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
     cellSize = CGSizeCeil(cellSize);
 
     return cellSize;
-}
-
-- (CGFloat)dateHeaderHeight
-{
-    if (self.viewItem.shouldShowDate) {
-        CGFloat textHeight = self.dateHeaderFont.lineHeight;
-        return (CGFloat)ceil(textHeight + OWSMessageCellDateHeaderVMargin);
-    } else {
-        return 0.f;
-    }
 }
 
 #pragma mark - Reuse
@@ -409,7 +373,7 @@ const CGFloat OWSMessageCellDateHeaderVMargin = 23;
     [self.messageBubbleView prepareForReuse];
     [self.messageBubbleView unloadContent];
 
-    [self.dateHeaderView removeFromSuperview];
+    [self.headerView removeFromSuperview];
 
     self.avatarView.image = nil;
     [self.avatarView removeFromSuperview];

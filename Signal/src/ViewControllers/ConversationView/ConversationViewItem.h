@@ -29,6 +29,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class DisplayableText;
 @class OWSAudioMessageView;
 @class OWSQuotedReplyModel;
+@class OWSUnreadIndicator;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSInteraction;
@@ -53,6 +54,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;
+@property (nonatomic, readonly) BOOL hasCellHeader;
 
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 
@@ -62,6 +64,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic) BOOL shouldHideFooter;
 @property (nonatomic) BOOL isFirstInCluster;
 @property (nonatomic) BOOL isLastInCluster;
+
+@property (nonatomic, nullable) OWSUnreadIndicator *unreadIndicator;
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 

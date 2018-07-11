@@ -6,6 +6,7 @@
 #import "OWSContactOffersInteraction.h"
 #import "OWSContactsManager.h"
 #import "OWSQuotedReplyModel.h"
+#import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -29,13 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ThreadDynamicInteractions ()
 
-@property (nonatomic, nullable) NSNumber *unreadIndicatorPosition;
-
 @property (nonatomic, nullable) NSNumber *focusMessagePosition;
 
-@property (nonatomic, nullable) NSNumber *firstUnseenInteractionTimestamp;
-
-@property (nonatomic) BOOL hasMoreUnseenMessages;
+@property (nonatomic, nullable) OWSUnreadIndicator *unreadIndicator;
 
 @end
 
@@ -45,9 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearUnreadIndicatorState
 {
-    self.unreadIndicatorPosition = nil;
-    self.firstUnseenInteractionTimestamp = nil;
-    self.hasMoreUnseenMessages = NO;
+    self.unreadIndicator = nil;
 }
 
 @end
@@ -221,8 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-                                  firstUnseenInteractionTimestamp:
-                                      (nullable NSNumber *)firstUnseenInteractionTimestampParameter
+                                              lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize
 {
@@ -256,7 +250,6 @@ NS_ASSUME_NONNULL_BEGIN
         // Find any "dynamic" interactions and safety number changes.
         //
         // We use different views for performance reasons.
-        __block TSUnreadIndicatorInteraction *existingUnreadIndicator = nil;
         __block OWSContactOffersInteraction *existingContactOffers = nil;
         NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
         NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
@@ -280,13 +273,8 @@ NS_ASSUME_NONNULL_BEGIN
                               // the OWSContactOffersInteraction.
                               [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[TSUnreadIndicatorInteraction class]]) {
-                              OWSAssert(!existingUnreadIndicator);
-                              if (existingUnreadIndicator) {
-                                  // There should never be more than one unread indicator in
-                                  // a given thread, but if there is, discard all but one.
-                                  [interactionsToDelete addObject:existingUnreadIndicator];
-                              }
-                              existingUnreadIndicator = (TSUnreadIndicatorInteraction *)object;
+                              // Remove obsolete unread indicator interactions;
+                              [interactionsToDelete addObject:object];
                           } else if ([object isKindOfClass:[OWSContactOffersInteraction class]]) {
                               OWSAssert(!existingContactOffers);
                               if (existingContactOffers) {
@@ -318,13 +306,14 @@ NS_ASSUME_NONNULL_BEGIN
         // have been marked as read.
         //
         // IFF this variable is non-null, there are unseen messages in the thread.
-        if (firstUnseenInteractionTimestampParameter) {
-            result.firstUnseenInteractionTimestamp = firstUnseenInteractionTimestampParameter;
+        NSNumber *_Nullable firstUnseenInteractionTimestamp = nil;
+        if (lastUnreadIndicator) {
+            firstUnseenInteractionTimestamp = @(lastUnreadIndicator.firstUnseenInteractionTimestamp);
         } else {
             TSInteraction *_Nullable firstUnseenInteraction =
                 [[TSDatabaseView unseenDatabaseViewExtension:transaction] firstObjectInGroup:thread.uniqueId];
             if (firstUnseenInteraction) {
-                result.firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
+                firstUnseenInteractionTimestamp = @(firstUnseenInteraction.timestampForSorting);
             }
         }
 
@@ -481,14 +470,14 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         [self ensureUnreadIndicator:result
-                                    thread:thread
-                               transaction:transaction
-                   shouldHaveContactOffers:shouldHaveContactOffers
-                              maxRangeSize:maxRangeSize
-               blockingSafetyNumberChanges:blockingSafetyNumberChanges
-            nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
-                   existingUnreadIndicator:existingUnreadIndicator
-               hideUnreadMessagesIndicator:hideUnreadMessagesIndicator];
+                                     thread:thread
+                                transaction:transaction
+                    shouldHaveContactOffers:shouldHaveContactOffers
+                               maxRangeSize:maxRangeSize
+                blockingSafetyNumberChanges:blockingSafetyNumberChanges
+             nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
+                hideUnreadMessagesIndicator:hideUnreadMessagesIndicator
+            firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp];
 
         // Determine the position of the focus message _after_ performing any mutations
         // around dynamic interactions.
@@ -502,20 +491,31 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
-                            thread:(TSThread *)thread
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction
-           shouldHaveContactOffers:(BOOL)shouldHaveContactOffers
-                      maxRangeSize:(int)maxRangeSize
-       blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
-    nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
-           existingUnreadIndicator:(nullable TSUnreadIndicatorInteraction *)existingUnreadIndicator
-       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+                             thread:(TSThread *)thread
+                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+            shouldHaveContactOffers:(BOOL)shouldHaveContactOffers
+                       maxRangeSize:(int)maxRangeSize
+        blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
+     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
+        hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+    firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
 {
     OWSAssert(dynamicInteractions);
     OWSAssert(thread);
     OWSAssert(transaction);
     OWSAssert(blockingSafetyNumberChanges);
     OWSAssert(nonBlockingSafetyNumberChanges);
+
+    if (hideUnreadMessagesIndicator) {
+        return;
+    }
+    if (!firstUnseenInteractionTimestamp) {
+        // If there are no unseen interactions, don't show an unread indicator.
+        return;
+    }
+
+    YapDatabaseViewTransaction *threadMessagesTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
+    OWSAssert([threadMessagesTransaction isKindOfClass:[YapDatabaseViewTransaction class]]);
 
     // Determine unread indicator position, if necessary.
     //
@@ -527,137 +527,94 @@ NS_ASSUME_NONNULL_BEGIN
     // the unread indicator.
     __block long visibleUnseenMessageCount = 0;
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
+    __block BOOL hasMoreUnseenMessages = NO;
+    [threadMessagesTransaction
+        enumerateRowsInGroup:thread.uniqueId
+                 withOptions:NSEnumerationReverse
+                  usingBlock:^(
+                      NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
+                      if (![object isKindOfClass:[TSInteraction class]]) {
+                          OWSFail(@"Expected a TSInteraction: %@", [object class]);
+                          return;
+                      }
+
+                      TSInteraction *interaction = (TSInteraction *)object;
+
+                      if (interaction.isDynamicInteraction) {
+                          // Ignore dynamic interactions, if any.
+                          return;
+                      }
+
+                      if (interaction.timestampForSorting < firstUnseenInteractionTimestamp.unsignedLongLongValue) {
+                          // By default we want the unread indicator to appear just before
+                          // the first unread message.
+                          *stop = YES;
+                          return;
+                      }
+
+                      visibleUnseenMessageCount++;
+
+                      interactionAfterUnreadIndicator = interaction;
+
+                      if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
+                          // If there are more unseen messages than can be displayed in the
+                          // messages view, show the unread indicator at the top of the
+                          // displayed messages.
+                          *stop = YES;
+                          hasMoreUnseenMessages = YES;
+                      }
+                  }];
+
+    if (!interactionAfterUnreadIndicator) {
+        // If we can't find an interaction after the unread indicator,
+        // don't show it.  All unread messages may have been deleted or
+        // expired.
+        return;
+    }
+    OWSAssert(visibleUnseenMessageCount > 0);
+
     NSUInteger missingUnseenSafetyNumberChangeCount = 0;
-    if (dynamicInteractions.firstUnseenInteractionTimestamp != nil) {
-        [[transaction ext:TSMessageDatabaseViewExtensionName]
-            enumerateRowsInGroup:thread.uniqueId
-                     withOptions:NSEnumerationReverse
-                      usingBlock:^(
-                          NSString *collection, NSString *key, id object, id metadata, NSUInteger index, BOOL *stop) {
-                          if (![object isKindOfClass:[TSInteraction class]]) {
-                              OWSFail(@"Expected a TSInteraction: %@", [object class]);
-                              return;
-                          }
-
-                          TSInteraction *interaction = (TSInteraction *)object;
-
-                          if (interaction.isDynamicInteraction) {
-                              // Ignore dynamic interactions, if any.
-                              return;
-                          }
-
-                          if (interaction.timestampForSorting
-                              < dynamicInteractions.firstUnseenInteractionTimestamp.unsignedLongLongValue) {
-                              // By default we want the unread indicator to appear just before
-                              // the first unread message.
-                              *stop = YES;
-                              return;
-                          }
-
-                          visibleUnseenMessageCount++;
-
-                          interactionAfterUnreadIndicator = interaction;
-
-                          if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
-                              // If there are more unseen messages than can be displayed in the
-                              // messages view, show the unread indicator at the top of the
-                              // displayed messages.
-                              *stop = YES;
-                              dynamicInteractions.hasMoreUnseenMessages = YES;
-                          }
-                      }];
-
-        if (!interactionAfterUnreadIndicator) {
-            // If we can't find an interaction after the unread indicator,
-            // remove it.  All unread messages may have been deleted or
-            // expired.
-            dynamicInteractions.firstUnseenInteractionTimestamp = nil;
-        } else if (dynamicInteractions.hasMoreUnseenMessages) {
-            NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
-            for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
-                BOOL isUnseen = safetyNumberChange.timestampForSorting
-                    >= dynamicInteractions.firstUnseenInteractionTimestamp.unsignedLongLongValue;
-                if (!isUnseen) {
-                    continue;
-                }
-                BOOL isMissing
-                    = safetyNumberChange.timestampForSorting < interactionAfterUnreadIndicator.timestampForSorting;
-                if (!isMissing) {
-                    continue;
-                }
-
-                NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
-                if (newIdentityKey == nil) {
-                    OWSFail(@"Safety number change was missing it's new identity key.");
-                    continue;
-                }
-
-                [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
+    if (hasMoreUnseenMessages) {
+        NSMutableSet<NSData *> *missingUnseenSafetyNumberChanges = [NSMutableSet set];
+        for (TSInvalidIdentityKeyErrorMessage *safetyNumberChange in blockingSafetyNumberChanges) {
+            BOOL isUnseen
+                = safetyNumberChange.timestampForSorting >= firstUnseenInteractionTimestamp.unsignedLongLongValue;
+            if (!isUnseen) {
+                continue;
+            }
+            BOOL isMissing
+                = safetyNumberChange.timestampForSorting < interactionAfterUnreadIndicator.timestampForSorting;
+            if (!isMissing) {
+                continue;
             }
 
-            // Count the de-duplicated "blocking" safety number changes and all
-            // of the "non-blocking" safety number changes.
-            missingUnseenSafetyNumberChangeCount
-                = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
-        }
-    }
-    if (dynamicInteractions.firstUnseenInteractionTimestamp) {
-        // The unread indicator is _before_ the last visible unseen message.
-        NSInteger unreadIndicatorPosition = visibleUnseenMessageCount + 1;
-        if (shouldHaveContactOffers) {
-            unreadIndicatorPosition++;
-        }
-        dynamicInteractions.unreadIndicatorPosition = @(unreadIndicatorPosition);
-    }
-    OWSAssert((dynamicInteractions.firstUnseenInteractionTimestamp != nil)
-        == (dynamicInteractions.unreadIndicatorPosition != nil));
-
-    // Ensure unread indicator.
-    //
-    // We use this offset to control the ordering of the indicator.
-    const int kUnreadIndicatorOffset = -1;
-    NSUInteger threadMessageCount =
-        [[transaction ext:TSMessageDatabaseViewExtensionName] numberOfItemsInGroup:thread.uniqueId];
-    BOOL shouldHaveUnreadIndicator
-        = (interactionAfterUnreadIndicator && !hideUnreadMessagesIndicator && threadMessageCount > 1);
-    if (!shouldHaveUnreadIndicator) {
-        if (existingUnreadIndicator) {
-            DDLogInfo(@"%@ Removing obsolete TSUnreadIndicatorInteraction: %@",
-                self.logTag,
-                existingUnreadIndicator.uniqueId);
-            [existingUnreadIndicator removeWithTransaction:transaction];
-        }
-    } else {
-        // We want the unread indicator to appear just before the first unread incoming
-        // message in the conversation timeline...
-        //
-        // ...unless we have a fixed timestamp for the unread indicator.
-        uint64_t indicatorTimestamp
-            = (uint64_t)((long long)interactionAfterUnreadIndicator.timestampForSorting + kUnreadIndicatorOffset);
-
-        if (indicatorTimestamp && existingUnreadIndicator.timestampForSorting == indicatorTimestamp) {
-            // Keep the existing indicator; it is in the correct position.
-        } else {
-            if (existingUnreadIndicator) {
-                DDLogInfo(@"%@ Removing TSUnreadIndicatorInteraction due to changed timestamp: %@",
-                    self.logTag,
-                    existingUnreadIndicator.uniqueId);
-                [existingUnreadIndicator removeWithTransaction:transaction];
+            NSData *_Nullable newIdentityKey = safetyNumberChange.newIdentityKey;
+            if (newIdentityKey == nil) {
+                OWSFail(@"Safety number change was missing it's new identity key.");
+                continue;
             }
 
-            TSUnreadIndicatorInteraction *indicator = [[TSUnreadIndicatorInteraction alloc]
-                    initUnreadIndicatorWithTimestamp:indicatorTimestamp
-                                              thread:thread
-                               hasMoreUnseenMessages:dynamicInteractions.hasMoreUnseenMessages
-                missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount];
-            [indicator saveWithTransaction:transaction];
-
-            DDLogInfo(@"%@ Creating TSUnreadIndicatorInteraction: %@ (%llu)",
-                self.logTag,
-                indicator.uniqueId,
-                indicator.timestampForSorting);
+            [missingUnseenSafetyNumberChanges addObject:newIdentityKey];
         }
+
+        // Count the de-duplicated "blocking" safety number changes and all
+        // of the "non-blocking" safety number changes.
+        missingUnseenSafetyNumberChangeCount
+            = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
     }
+
+    NSInteger unreadIndicatorPosition = visibleUnseenMessageCount;
+    if (shouldHaveContactOffers) {
+        unreadIndicatorPosition++;
+    }
+
+    dynamicInteractions.unreadIndicator = [[OWSUnreadIndicator alloc]
+            initUnreadIndicatorWithTimestamp:interactionAfterUnreadIndicator.timestampForSorting
+                       hasMoreUnseenMessages:hasMoreUnseenMessages
+        missingUnseenSafetyNumberChangeCount:missingUnseenSafetyNumberChangeCount
+                     unreadIndicatorPosition:unreadIndicatorPosition
+             firstUnseenInteractionTimestamp:firstUnseenInteractionTimestamp.unsignedLongLongValue];
+    DDLogInfo(@"%@ Creating Unread Indicator: %llu", self.logTag, dynamicInteractions.unreadIndicator.timestamp);
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread

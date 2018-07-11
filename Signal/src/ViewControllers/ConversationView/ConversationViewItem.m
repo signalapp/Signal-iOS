@@ -6,11 +6,12 @@
 #import "OWSAudioMessageView.h"
 #import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
-#import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <SignalMessaging/NSString+OWS.h>
+#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
 
@@ -149,6 +150,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return message.isExpiringMessage;
 }
 
+- (BOOL)hasCellHeader
+{
+    return self.shouldShowDate || self.unreadIndicator;
+}
+
 - (void)setShouldShowDate:(BOOL)shouldShowDate
 {
     if (_shouldShowDate == shouldShowDate) {
@@ -189,6 +195,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _shouldHideFooter = shouldHideFooter;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setUnreadIndicator:(nullable OWSUnreadIndicator *)unreadIndicator
+{
+    if ([NSObject isNullableObject:_unreadIndicator equalTo:unreadIndicator]) {
+        return;
+    }
+
+    _unreadIndicator = unreadIndicator;
 
     [self clearCachedLayoutState];
 }
@@ -244,9 +261,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             case OWSInteractionType_Call:
                 measurementCell = [OWSSystemMessageCell new];
                 break;
-            case OWSInteractionType_UnreadIndicator:
-                measurementCell = [OWSUnreadIndicatorCell new];
-                break;
             case OWSInteractionType_Offer:
                 measurementCell = [OWSContactOffersCell new];
                 break;
@@ -263,13 +277,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssert(previousLayoutItem);
 
-    if (self.interaction.interactionType == OWSInteractionType_UnreadIndicator
-        || previousLayoutItem.interaction.interactionType == OWSInteractionType_UnreadIndicator) {
-        return 20.f;
-    }
-
-    if (self.shouldShowDate) {
-        return OWSMessageCellDateHeaderVMargin;
+    if (self.hasCellHeader) {
+        return OWSMessageHeaderViewDateHeaderVMargin;
     }
 
     // "Bubble Collapse".  Adjacent messages with the same author should be close together.
@@ -308,9 +317,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]
-                                                             forIndexPath:indexPath];
-        case OWSInteractionType_UnreadIndicator:
-            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
         case OWSInteractionType_Offer:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]
