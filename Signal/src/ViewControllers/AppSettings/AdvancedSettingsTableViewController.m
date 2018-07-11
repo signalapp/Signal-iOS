@@ -195,6 +195,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:censorshipSection];
 
+#ifdef DEBUG
+    OWSTableSection *themeSection = [OWSTableSection new];
+    themeSection.headerTitle = NSLocalizedString(@"THEME_SECTION", nil);
+    [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_THEME", @"")
+                                                      isOn:[Environment.preferences isThemeEnabled]
+                                                    target:weakSelf
+                                                  selector:@selector(didToggleThemeSwitch:)]];
+    [contents addSection:themeSection];
+#endif
+
     self.contents = contents;
 }
 
@@ -272,6 +282,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = sender.isOn;
 
     [self updateTableContents];
+}
+
+- (void)didToggleThemeSwitch:(UISwitch *)sender
+{
+    [Environment.preferences setIsThemeEnabled:sender.isOn];
+
+    // TODO: Notify and refresh.
 }
 
 @end

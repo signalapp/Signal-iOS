@@ -31,6 +31,7 @@ NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHas
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
+NSString *const OWSPreferencesKeyEnableTheme = @"OWSPreferencesKeyEnableTheme";
 
 @implementation OWSPreferences
 
@@ -58,7 +59,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     OWSAssert(key != nil);
 
     __block id result;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self tryGetValueForKey:key transaction:transaction];
     }];
     return result;
@@ -72,10 +73,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self setValueForKey:key toValue:value transaction:transaction];
-        }];
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self setValueForKey:key toValue:value transaction:transaction];
+    }];
 }
 
 - (void)setValueForKey:(NSString *)key
@@ -412,6 +412,19 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
+}
+
+- (BOOL)isThemeEnabled
+{
+    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyEnableTheme];
+    return preference ? [preference boolValue] : NO;
+}
+
+- (void)setIsThemeEnabled:(BOOL)flag
+{
+    OWSAssert(CurrentAppContext().isMainApp);
+
+    [self setValueForKey:OWSPreferencesKeyEnableTheme toValue:@(flag)];
 }
 
 #pragma mark - Push Tokens
