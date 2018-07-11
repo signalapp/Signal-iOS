@@ -182,15 +182,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [self updateExpiresAt];
 }
 
-- (BOOL)shouldStartExpireTimer
-{
-    __block BOOL result;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self shouldStartExpireTimerWithTransaction:transaction];
-    }];
-    return result;
-}
-
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return self.isExpiringMessage;

@@ -4,6 +4,7 @@
 
 #import "OWSMessageFooterView.h"
 #import "DateUtil.h"
+#import "OWSMessageTimerView.h"
 #import "Signal-Swift.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -13,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
+@property (nonatomic) OWSMessageTimerView *messageTimerView;
 
 @end
 
@@ -38,9 +40,20 @@ NS_ASSUME_NONNULL_BEGIN
     self.axis = UILayoutConstraintAxisHorizontal;
     self.spacing = self.hSpacing;
     self.alignment = UIStackViewAlignmentCenter;
+    self.distribution = UIStackViewDistributionEqualSpacing;
+
+    UIStackView *leftStackView = [UIStackView new];
+    leftStackView.axis = UILayoutConstraintAxisHorizontal;
+    leftStackView.spacing = self.hSpacing;
+    leftStackView.alignment = UIStackViewAlignmentCenter;
+    [self addArrangedSubview:leftStackView];
 
     self.timestampLabel = [UILabel new];
-    [self addArrangedSubview:self.timestampLabel];
+    [leftStackView addArrangedSubview:self.timestampLabel];
+
+    self.messageTimerView = [OWSMessageTimerView new];
+    [self.messageTimerView setContentHuggingHigh];
+    [leftStackView addArrangedSubview:self.messageTimerView];
 
     self.statusIndicatorImageView = [UIImageView new];
     [self.statusIndicatorImageView setContentHuggingHigh];
@@ -89,6 +102,18 @@ NS_ASSUME_NONNULL_BEGIN
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
+
+    if (viewItem.isExpiringMessage) {
+        TSMessage *message = (TSMessage *)viewItem.interaction;
+        uint64_t expirationTimestamp = message.expiresAt;
+        uint32_t expiresInSeconds = message.expiresInSeconds;
+        [self.messageTimerView configureWithExpirationTimestamp:expirationTimestamp
+                                         initialDurationSeconds:expiresInSeconds
+                                                      tintColor:textColor];
+        self.messageTimerView.hidden = NO;
+    } else {
+        self.messageTimerView.hidden = YES;
+    }
 
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
@@ -218,6 +243,11 @@ NS_ASSUME_NONNULL_BEGIN
             result.width += (self.maxImageWidth + self.hSpacing);
         }
     }
+
+    if (viewItem.isExpiringMessage) {
+        result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
+    }
+
     return CGSizeCeil(result);
 }
 
@@ -236,6 +266,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)prepareForReuse
 {
     [self.statusIndicatorImageView.layer removeAllAnimations];
+
+    [self.messageTimerView prepareForReuse];
 }
 
 @end
