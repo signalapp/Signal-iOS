@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Zaznacz";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal wymaga dostępu do mikrofonu aby prowadzić rozmowy i nagrywać wiadomości głosowe. Możesz nadać dostęp w aplikacji Ustawienia.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Wymagany dostęp do mikrofonu";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Połączenie";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Brak odpowiedzi.";
@@ -447,7 +441,7 @@
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Skrytka pocztowa";
 
 /* Label for the 'postcode' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POSTCODE" = "Kod pocztowy";
@@ -522,7 +516,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Informacje o kontakcie";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Kolor";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informacje o grupie";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Utwórz nowy kontakt";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Wyłącz wyciszenie";
@@ -618,7 +615,7 @@
 "DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Teraz";
 
 /* The current day. */
 "DATE_TODAY" = "Dziś";
@@ -667,7 +664,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "The gist link was copied in your clipboard. You are about to be redirected to the GitHub issue list.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Przekierowanie do GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Klucz odbiorcy nie jest poprawny.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Odebrana wiadomość nie mogła zostać zsynchronizowana. Naciśnij tu aby zresetować bezpieczne połączenie.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Otrzymano wiadomość, która nie jest kompatybilna z obecną wersją aplikacji.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Wystąpił nieznany błąd.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Kod zabezpieczenia zmienił się. Dotknij, aby zweryfikować.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Niezarejestrowany użytkownik: %@";
@@ -1021,13 +1018,13 @@
 "HOME_VIEW_BLOCKED_CONTACT_CONVERSATION" = "Zablokowany";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Search";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Szukaj";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
 
 /* Title for the home view's 'archive' mode. */
-"HOME_VIEW_TITLE_ARCHIVE" = "Archive";
+"HOME_VIEW_TITLE_ARCHIVE" = "Archiwum";
 
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
@@ -1039,7 +1036,7 @@
 "IN_CALL_RECONNECTING" = "Ponowne łączenie...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Ringing…";
+"IN_CALL_RINGING" = "Trwa łączenie...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Odebrane. Trwa zabezpieczanie...";
@@ -1048,7 +1045,7 @@
 "IN_CALL_TERMINATED" = "Połącznie zakończone.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Te konwersacje są zarchiwizowane. Pojawią się w odebranych, gdy otrzymasz nowe wiadomości.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "By zobaczyć nazwy kontaktów zezwól w ustawieniach na dostęp do kontaktów zapisanych na telefonie";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Odrzuciłeś połączenie";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incomplete incoming call from";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missed call because their safety number has changed.";
@@ -1072,13 +1069,13 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "To invite your contacts, you need to allow Signal access to your contacts in the Settings app.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "By zaprosić znajomych, musisz pozwolić Signal na dostęp do Twoich kontaktów w Ustawieniach.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Zezwól na dostęp do kontaktów";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Zaproś";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Zaproś znajomych do Signal";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Szukaj";
@@ -1132,7 +1129,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Łączenie urządzenia nie powiodło się";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Group Members";
+"LIST_GROUP_MEMBERS_ACTION" = "Członkowie grupy";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logowanie";
@@ -1153,7 +1150,7 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Biblioteka zdjęć";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Delete %d Messages";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Usunięto %d wiadomości";
 
 /* Confirmation button text to delete selected media message from the gallery */
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Usuń wiadomość";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Połączenie wychodzące";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Nieodebrane połączenie wychodzące";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@ ...";
@@ -2112,13 +2112,13 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Pokaż nowy kod zabezpieczenia";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Zapraszam Cię do Signal! Link masz poniżej:";
+"SMS_INVITE_BODY" = "Zapraszam Cię do Signal! Link do pobrania aplikacji:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@dni";
@@ -2196,7 +2199,7 @@
 "UNLINK_ACTION" = "Usuń";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "By unlinking this device, it will no longer be able to send or receive messages.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Jeśli odłączysz to urządzenie, utracisz możliwość wysyłania lub odbierania wiadomości.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Usunąć \"%@\"?";

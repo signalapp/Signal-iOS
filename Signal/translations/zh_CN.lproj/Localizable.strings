@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "选择";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal 需要访问您的麦克风用于通话和录取语音消息。您可以在系统设置中授予访问权限。";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "请求访问麦克风";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "打电话";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "没有应答。";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "新建联系人";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "取消静音";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "对方的密钥无效。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "收到的信息没有完成同步，点击以重设安全连接。";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "收到了一个此版本无法读取的消息。";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "发生未知错误。";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全码已经改变. 点击验证.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "用户未注册：%@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "您拒接了一个来电";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "未完成的来电，来自";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "来电未接，因为他们的安全码已改变。";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "去电";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "未应答的拨出呼叫";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "分享到 Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "显示新的安全码";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "显示对话";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "安全码一致！";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@天";

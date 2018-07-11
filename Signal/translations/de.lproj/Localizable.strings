@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Auswählen";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal benötigt Zugriff auf dein Mikrofon für Anrufe und Sprachnachrichten. Du kannst diese Berechtigung in der App »Einstellungen« erteilen.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Zugriff auf Mikrofon erforderlich";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Abgelehnter Anruf";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Kontakt angerufen";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Anrufen";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Entgangener Anruf";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Keine Antwort.";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Neuen Kontakt erstellen";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Stummschaltung aufheben";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Empfängerschlüssel ist ungültig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Empfangene Nachricht fehlerhaft verschlüsselt. Antippen, um die Verschlüsselung neu zu starten.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Mit dieser Signal-Version inkompatible Nachricht erhalten.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ein unbekannter Fehler ist aufgetreten.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sicherheitsnummer geändert. Zum Verifizieren antippen.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Unregistrierter Benutzer: %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Du hast einen Anruf abgelehnt";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Unvollständiger eingehender Anruf von";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Entgangener Anruf, da sich die Sicherheitsnummer des Kontakts geändert hat.";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Ausgehender Anruf";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Ausgehender, unbeantworteter Anruf";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Mit Signal teilen";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Neue Sicherheitsnummer anzeigen";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Unterhaltung anzeigen";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sicherheitsnummer stimmt überein!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ Tage";

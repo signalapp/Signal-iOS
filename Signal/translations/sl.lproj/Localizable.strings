@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Izberi";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Za klicanje in glasovna sporočila zahteva aplikacija Signal dovoljenje za dostop do mikrofona na vaši napravi. Dovoljenje lahko date v aplikaciji Nastavitve.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Aplikacija potrebuje dostop do mikrofona";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Klic zavrnjen";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Kliči";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Zgrešen klic";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Neodgovorjeno.";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Ustvari nov stik";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Prekini utišanje";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Prejemnikov ključ ni veljaven.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Prejeto sporočilo je bilo okvarjeno. Tapnite za ponastavitev varne seje.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Prejeto je bilo sporočilo, ki ni združljivo s to verzijo aplikacije.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Prišlo je do neznane napake.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Varnostno število je bilo spremenjeno. Tapnite za pregled in potrditev.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistriran uporabnik: %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Zavrnili ste klic";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Nepopoln dohodni klic od";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Zgrešen klic zaradi spremenjenega varnostnega števila.";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Odhodni klic";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Neodgovorjen odhodni klic";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Deli preko Signala";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Prikaži novo varnostno število";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Prikaži pogovor";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Varnostno število se ujema!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dni";

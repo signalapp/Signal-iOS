@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Përzgjidhni";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Që të bëjë thirrje dhe të incizojë mesazhe zanore, Signal-i lyp hyrje te mikrofoni juaj. Këtë leje mund t\’ia akordoni që nga aplikacioni Settings.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Lypset Hyrje Te Mikrofoni";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Thirrje e Hedhur Tej";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Kontakti u Thirr";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Thirrje";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Thirrje e Humbur";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "S\’ka Përgjigje.";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Krijoni Kontakt të Ri";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Çheshtoje";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kyçi i marrësit s\’është i vlefshëm.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mesazhi i marrë s\’është i njëkohësuar. Prekeni që të rifillohet sesioni juaj i sigurt.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "U mor një mesazh jo i përputhshëm me këtë version.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ndodhi një gabim i panjohur.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Ndryshoi numri i sigurisë. Prekeni që të verifikohet.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Përdorues i Paregjistruar: %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Nuk pranuat një thirrje";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Thirrje ardhëse jo e plotë nga";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "E humbët thirrjen sepse numri i sigurisë i tyre ka ndryshuar.";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Thirrje juaja";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Thirrje juaja e papërgjigjur";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Ndajeni Me të Tjerë në Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Shfaq Numër të Ri Sigurie";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Shfaq Bisedë";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Përputhje Numri Sigurie!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ ditë";

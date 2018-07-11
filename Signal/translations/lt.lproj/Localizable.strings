@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Pasirinkti";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Tam, kad galėtų skambinti ir įrašinėti balso žinutes, Signal reikia prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Reikalinga prieiga prie mikrofono";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Skambutis atmestas";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Skambinti";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Praleistas skambutis";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Nėra atsakymo.";
@@ -556,6 +550,9 @@
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Sukurti naują kontaktą";
+
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Įjungti pranešimus";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Gavėjo raktas yra neteisingas.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Gautos žinutės buvo asinchroninės. Bakstelėkite, kad atstatytumėte savo saugųjį seansą.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Gauta žinutė, kuri nesuderinama su šia versija.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Įvyko nežinoma klaida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Saugumo numeris pasikeitė. Bakstelėkite, kad patvirtintumėte.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistruotas naudotojas: %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Jūs atmetėte skambutį";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Neužbaigtas gaunamasis skambutis nuo";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Praleistas skambutis dėl to, kad pasikeitė šio kontakto saugumo numeris.";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Išsiunčiamasis skambutis";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Neatsilieptas skambutis kitam asmeniui";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Bendrinti į Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Rodyti naują saugumo numerį";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Rodyti pokalbį";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Saugumo numeris sutampa!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dienas(-ų)";

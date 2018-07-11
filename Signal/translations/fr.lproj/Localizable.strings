@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Sélectionner";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal exige l’accès à votre microphone pour effectuer des appels et enregistrer des messages vocaux. Vous pouvez accorder cette autorisation dans l’appli Réglages.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "L’accès au microphone est exigé";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Appeller";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Pas de réponse.";
@@ -557,6 +551,9 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Créer un nouveau contact";
 
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Rétablir les notifications";
 
@@ -612,13 +609,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimisation de la base de données";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Il y a %@ h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Il y a %@ min";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Maintenant";
 
 /* The current day. */
 "DATE_TODAY" = "Aujourd’hui";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clé du destinataire est invalide.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Le message reçu était désynchronisé. Touchez pour réinitialiser votre session sécurisée.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Réception d’un message incompatible avec cette version.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Une erreur inconnue est survenue.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Le numéro de sécurité a été modifié. Touchez pour le vérifier.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utilisateur non inscrit : %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Vous avez refusé un appel";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Appel entrant incomplet de";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "L’appel a été manqué, car le numéro de sécurité de l’appelant a changé.";
@@ -1225,7 +1222,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Distribué";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Échec d’envoi.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "En échec";
@@ -1237,7 +1234,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ignoré";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Échec d’envoi";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Envoi…";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Appel sortant";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Appel sortant sans réponse";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Partager vers Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Afficher le nouveau numéro de sécurité";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Afficher la conversation";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Le numéro de sécurité correspond !";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ jours";

@@ -284,23 +284,17 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Velg";
 
+/* Label for button that lets users call a contact again. */
+"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal krever tilgang til mikrofonen for å ringe og ta opp talemeldinger. Du kan gi denne tillatelsen i Innstillinger-appen.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Krever tilgang til mikrofon";
 
-/* Message recorded in conversation history when local user declined a call. */
-"CALL_DECLINED" = "Call Declined";
-
-/* Message recorded in conversation history when local user is making or has completed a call. */
-"CALL_DEFAULT_STATUS" = "Contact Called";
-
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Ring";
-
-/* Message recorded in conversation history when local user missed a call. */
-"CALL_MISSED" = "Missed Call";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Ikke noe svar.";
@@ -557,6 +551,9 @@
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Opprett ny kontakt";
 
+/* Label for button that opens conversation settings. */
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Slå på varsling igjen";
 
@@ -612,13 +609,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimaliserer database";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ time siden";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ minutt siden";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Nå";
 
 /* The current day. */
 "DATE_TODAY" = "I dag";
@@ -880,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Mottakers identitetsnøkkel er ikke gyldig.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Mottatt melding var ute av synk. Trykk for å tilbakestille den sikre tilkoblingen.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Mottok en melding som ikke er kompatibel med denne versjonen.";
@@ -898,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "En ukjent feil oppstod.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhetstallene er endret. Trykk for å verifisere.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Uregistrert bruker: %@";
@@ -1063,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Du avviste en oppringning";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Ufullstendig innkommende anrop fra";
+"INCOMING_INCOMPLETE_CALL" = "Incoming call";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Tapt anrop fordi sikkerhetsnummeret for kontakten har blitt endret.";
@@ -1225,7 +1222,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Levert";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Sending feilet.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Feilet";
@@ -1237,7 +1234,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Hoppet over";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Sending feilet";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Sender...";
@@ -1282,7 +1279,7 @@
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nye meldinger";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Det er ikke flere uleste meldinger";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Det er ikke flere uleste meldinger.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Det er flere uleste meldinger (inkludert varsler om endret sikkerhetsnummer).";
@@ -1434,7 +1431,10 @@
 "OUTGOING_CALL" = "Utgående anrop";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Ubesvart utgående samtale";
+"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+
+/* info message recorded in conversation history when local user tries and fails to call another user. */
+"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1956,7 +1956,7 @@
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Slett konto";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Slett all data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Slett alle data";
 
 /* Alert message before user confirms clearing history */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Er du sikker på at du vil slette all din historikk (meldinger, vedlegg, anropshistorikk ...) ? Denne handlingen kan ikke tilbakestilles.";
@@ -2112,7 +2112,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Del via Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Vis nytt sikkerhetsnummer";
+"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Vis samtale";
@@ -2128,6 +2128,9 @@
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Sikkerhetsnummeret stemmer!";
+
+/* Label for button to verify a user's safety number. */
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dager";
