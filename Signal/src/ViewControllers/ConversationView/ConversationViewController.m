@@ -2002,8 +2002,9 @@ typedef enum : NSUInteger {
             [self.collectionView scrollRectToVisible:cell.frame animated:NO];
         }
         completion:^(BOOL finished) {
+            // TODO pass in real actions
             MessageActionsViewController *messageActionsViewController =
-                [[MessageActionsViewController alloc] initWithFocusedView:cell];
+                [[MessageActionsViewController alloc] initWithFocusedView:cell actions:@[]];
 
             messageActionsViewController.delegate = self;
 
