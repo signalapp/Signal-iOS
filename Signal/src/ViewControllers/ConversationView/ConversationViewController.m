@@ -4807,7 +4807,7 @@ typedef enum : NSUInteger {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
             MessageReceiptStatus receiptStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-            BOOL isDisappearingMessage = outgoingMessage.shouldStartExpireTimer;
+            BOOL isDisappearingMessage = outgoingMessage.isExpiringMessage;
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
@@ -4846,7 +4846,7 @@ typedef enum : NSUInteger {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssert(incomingSenderId.length > 0);
-            BOOL isDisappearingMessage = incomingMessage.shouldStartExpireTimer;
+            BOOL isDisappearingMessage = incomingMessage.isExpiringMessage;
 
             NSString *_Nullable nextIncomingSenderId = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {

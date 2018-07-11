@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSMessage *message = (TSMessage *)viewItem.interaction;
-    return message.shouldStartExpireTimer;
+    return message.isExpiringMessage;
 }
 
 - (void)configureLabelsWithConversationViewItem:(ConversationViewItem *)viewItem
