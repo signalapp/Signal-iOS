@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSBlockingManager;
 @class OWSContactsManager;
 @class OWSMessageSender;
+@class OWSUnreadIndicator;
 @class SignalAttachment;
 @class TSContactThread;
 @class TSInteraction;
@@ -15,15 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class YapDatabaseReadTransaction;
 
 @interface ThreadDynamicInteractions : NSObject
-
-// If there are unseen messages in the thread, this is the index
-// of the unseen indicator, counting from the _end_ of the conversation
-// history.
-//
-// This is used by MessageViewController to increase the
-// range size of the mappings (the load window of the conversation)
-// to include the unread indicator.
-@property (nonatomic, nullable, readonly) NSNumber *unreadIndicatorPosition;
 
 // Represents the "reverse index" of the focus message, if any.
 // The "reverse index" is the distance of this interaction from
@@ -34,18 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // determine the initial load window size.
 @property (nonatomic, nullable, readonly) NSNumber *focusMessagePosition;
 
-// If there are unseen messages in the thread, this is the timestamp
-// of the oldest unseen message.
-//
-// Once we enter messages view, we mark all messages read, so we need
-// a snapshot of what the first unread message was when we entered the
-// view so that we can call ensureDynamicInteractionsForThread:...
-// repeatedly. The unread indicator should continue to show up until
-// it has been cleared, at which point hideUnreadMessagesIndicator is
-// YES in ensureDynamicInteractionsForThread:...
-@property (nonatomic, nullable, readonly) NSNumber *firstUnseenInteractionTimestamp;
-
-@property (nonatomic, readonly) BOOL hasMoreUnseenMessages;
+@property (nonatomic, nullable, readonly) OWSUnreadIndicator *unreadIndicator;
 
 - (void)clearUnreadIndicatorState;
 
@@ -113,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   blockingManager:(OWSBlockingManager *)blockingManager
                                                      dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-                                  firstUnseenInteractionTimestamp:(nullable NSNumber *)firstUnseenInteractionTimestamp
+                                              lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
                                                      maxRangeSize:(int)maxRangeSize;
 

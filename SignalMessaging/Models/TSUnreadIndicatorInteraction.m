@@ -6,36 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TSUnreadIndicatorInteraction ()
-
-@property (atomic) BOOL hasMoreUnseenMessages;
-
-@end
-
-#pragma mark -
-
 @implementation TSUnreadIndicatorInteraction
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];
-}
-
-- (instancetype)initUnreadIndicatorWithTimestamp:(uint64_t)timestamp
-                                          thread:(TSThread *)thread
-                           hasMoreUnseenMessages:(BOOL)hasMoreUnseenMessages
-            missingUnseenSafetyNumberChangeCount:(NSUInteger)missingUnseenSafetyNumberChangeCount
-{
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
-
-    if (!self) {
-        return self;
-    }
-
-    _hasMoreUnseenMessages = hasMoreUnseenMessages;
-    _missingUnseenSafetyNumberChangeCount = missingUnseenSafetyNumberChangeCount;
-
-    return self;
 }
 
 - (BOOL)shouldUseReceiptDateForSorting

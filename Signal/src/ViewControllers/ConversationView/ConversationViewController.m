@@ -27,7 +27,6 @@
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
-#import "OWSUnreadIndicatorCell.h"
 #import "Signal-Swift.h"
 #import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
@@ -53,8 +52,8 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSNavigationController.h>
+#import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/OWSUserProfile.h>
-#import <SignalMessaging/TSUnreadIndicatorInteraction.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -641,8 +640,6 @@ typedef enum : NSUInteger {
 {
     [self.collectionView registerClass:[OWSSystemMessageCell class]
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSUnreadIndicatorCell class]
-            forCellWithReuseIdentifier:[OWSUnreadIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSContactOffersCell class]
             forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]
@@ -1641,7 +1638,7 @@ typedef enum : NSUInteger {
 
 - (void)loadAnotherPageOfMessages
 {
-    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.hasMoreUnseenMessages;
+    BOOL hasEarlierUnseenMessages = self.dynamicInteractions.unreadIndicator.hasMoreUnseenMessages;
 
     [self loadNMoreMessages:kYapDatabasePageSize];
 
@@ -1746,9 +1743,9 @@ typedef enum : NSUInteger {
             }
         }
 
-        if (self.dynamicInteractions.unreadIndicatorPosition) {
+        if (self.dynamicInteractions.unreadIndicator) {
             NSUInteger unreadIndicatorPosition
-                = (NSUInteger)[self.dynamicInteractions.unreadIndicatorPosition longValue];
+                = (NSUInteger)self.dynamicInteractions.unreadIndicator.unreadIndicatorPosition;
 
             // If there is an unread indicator, increase the initial load window
             // to include it.
@@ -2479,15 +2476,14 @@ typedef enum : NSUInteger {
     const int currentMaxRangeSize = (int)self.lastRangeLength;
     const int maxRangeSize = MAX(kConversationInitialMaxRangeSize, currentMaxRangeSize);
 
-    self.dynamicInteractions =
-        [ThreadUtil ensureDynamicInteractionsForThread:self.thread
-                                       contactsManager:self.contactsManager
-                                       blockingManager:self.blockingManager
-                                          dbConnection:self.editingDatabaseConnection
-                           hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
-                       firstUnseenInteractionTimestamp:self.dynamicInteractions.firstUnseenInteractionTimestamp
-                                        focusMessageId:self.focusMessageIdOnOpen
-                                          maxRangeSize:maxRangeSize];
+    self.dynamicInteractions = [ThreadUtil ensureDynamicInteractionsForThread:self.thread
+                                                              contactsManager:self.contactsManager
+                                                              blockingManager:self.blockingManager
+                                                                 dbConnection:self.editingDatabaseConnection
+                                                  hideUnreadMessagesIndicator:self.hasClearedUnreadMessagesIndicator
+                                                          lastUnreadIndicator:self.dynamicInteractions.unreadIndicator
+                                                               focusMessageId:self.focusMessageIdOnOpen
+                                                                 maxRangeSize:maxRangeSize];
 }
 
 - (void)clearUnreadMessagesIndicator
@@ -2504,7 +2500,7 @@ typedef enum : NSUInteger {
     // make sure we don't show it again.
     self.hasClearedUnreadMessagesIndicator = YES;
 
-    if (self.dynamicInteractions.unreadIndicatorPosition) {
+    if (self.dynamicInteractions.unreadIndicator) {
         // If we've just cleared the "unread messages" indicator,
         // update the dynamic interactions.
         [self ensureDynamicInteractions];
@@ -3793,16 +3789,8 @@ typedef enum : NSUInteger {
 
 - (void)cleanUpUnreadIndicatorIfNecessary
 {
-    BOOL hasUnreadIndicator = self.dynamicInteractions.unreadIndicatorPosition != nil;
+    BOOL hasUnreadIndicator = self.dynamicInteractions.unreadIndicator != nil;
     if (!hasUnreadIndicator) {
-        return;
-    }
-    __block BOOL hasUnseenInteractions = NO;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        hasUnseenInteractions =
-            [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId] > 0;
-    }];
-    if (hasUnseenInteractions) {
         return;
     }
     // If the last unread message was deleted (manually or due to disappearing messages)
@@ -3918,7 +3906,7 @@ typedef enum : NSUInteger {
 
     __block NSString *draft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        draft = [_thread currentDraftWithTransaction:transaction];
+        draft = [self.thread currentDraftWithTransaction:transaction];
     }];
     [self.inputToolbar setMessageText:draft animated:NO];
 }
@@ -4790,6 +4778,7 @@ typedef enum : NSUInteger {
     // Update the properties of the view items.
     //
     // NOTE: This logic uses shouldShowDate which is set in the previous pass.
+    OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
     for (NSUInteger i = 0; i < viewItems.count; i++) {
         ConversationViewItem *viewItem = viewItems[i];
         ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
@@ -4799,6 +4788,15 @@ typedef enum : NSUInteger {
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
         NSAttributedString *_Nullable senderName = nil;
+
+        // Place the unread indicator onto the first appropriate view item,
+        // if any.
+        if (unreadIndicator && viewItem.interaction.timestampForSorting >= unreadIndicator.timestamp) {
+            viewItem.unreadIndicator = unreadIndicator;
+            unreadIndicator = nil;
+        } else {
+            viewItem.unreadIndicator = nil;
+        }
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
