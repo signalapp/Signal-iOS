@@ -2002,15 +2002,23 @@ typedef enum : NSUInteger {
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
 {
-    DDLogDebug(@"%@ in %s TODO", self.logTag, __PRETTY_FUNCTION__);
+    NSArray<MessageAction *> *messageActions = [viewItem mediaActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
 {
-    DDLogDebug(@"%@ in %s TODO", self.logTag, __PRETTY_FUNCTION__);
+    NSArray<MessageAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     // TODO Interpolate from 0->0.3 depending on distance to make visible.
     NSTimeInterval animationDuration = 0.3;
@@ -2023,8 +2031,7 @@ typedef enum : NSUInteger {
         }
         completion:^(BOOL finished) {
             // TODO pass in real actions
-
-            NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+            
             MessageActionsViewController *messageActionsViewController =
                 [[MessageActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
 

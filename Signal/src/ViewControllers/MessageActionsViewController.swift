@@ -48,6 +48,24 @@ struct MessageActionBuilder {
                                 conversationViewItem.deleteAction()
         })
     }
+
+    static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+                             title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { (_) in
+                                conversationViewItem.copyMediaAction()
+        })
+    }
+
+    static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+                             title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { (_) in
+                                conversationViewItem.saveMediaAction()
+        })
+    }
 }
 
 extension ConversationViewItem {
@@ -69,6 +87,38 @@ extension ConversationViewItem {
 
         let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
         actions.append(showInfoAction)
+
+        return actions
+    }
+
+    @objc
+    func mediaActions(delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
+
+        let replyAction = MessageActionBuilder.reply(conversationViewItem: self, delegate: delegate)
+        actions.append(replyAction)
+
+        if self.hasMediaActionContent {
+            let copyMediaAction = MessageActionBuilder.copyMedia(conversationViewItem: self, delegate: delegate)
+            actions.append(copyMediaAction)
+            let saveMediaAction = MessageActionBuilder.saveMedia(conversationViewItem: self, delegate: delegate)
+            actions.append(saveMediaAction)
+        }
+
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
+        actions.append(deleteAction)
+
+        let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
+        actions.append(showInfoAction)
+
+        return actions
+    }
+
+    @objc
+    func quotedMessageActions(delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
+
+        owsFail("\(self.logTag) in \(#function) TODO")
 
         return actions
     }
