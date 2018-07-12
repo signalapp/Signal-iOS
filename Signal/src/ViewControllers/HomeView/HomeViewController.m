@@ -215,6 +215,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateReminderViews];
 }
 
+#pragma mark - Theme
+
 - (void)themeDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
@@ -222,8 +224,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self applyTheme];
     [self.tableView reloadData];
 }
-
-#pragma mark - Theme
 
 - (void)applyTheme
 {

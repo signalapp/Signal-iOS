@@ -137,39 +137,38 @@
                                                  [weakSelf showAdvanced];
                                              }]];
     } else {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            UILabel *accessoryLabel = [UILabel new];
-            accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            if (TSAccountManager.sharedInstance.isDeregistered) {
-                accessoryLabel.text = NSLocalizedString(
-                    @"NETWORK_STATUS_DEREGISTERED", @"Error indicating that this device is no longer registered.");
-                accessoryLabel.textColor = [UIColor ows_redColor];
-            } else {
-                switch ([TSSocketManager sharedManager].state) {
-                    case SocketManagerStateClosed:
-                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                        accessoryLabel.textColor = [UIColor ows_redColor];
-                        break;
-                    case SocketManagerStateConnecting:
-                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                        accessoryLabel.textColor = [UIColor ows_yellowColor];
-                        break;
-                    case SocketManagerStateOpen:
-                        accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                        accessoryLabel.textColor = [UIColor ows_greenColor];
-                        break;
-                }
-            }
-            [accessoryLabel sizeToFit];
-            cell.accessoryView = accessoryLabel;
-            return cell;
-        }
-                                                   actionBlock:nil]];
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 UITableViewCell *cell = [OWSTableItem newCell];
+                                 cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
+                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                                 UILabel *accessoryLabel = [UILabel new];
+                                 accessoryLabel.font = [UIFont ows_regularFontWithSize:18.f];
+                                 if (TSAccountManager.sharedInstance.isDeregistered) {
+                                     accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
+                                         @"Error indicating that this device is no longer registered.");
+                                     accessoryLabel.textColor = [UIColor ows_redColor];
+                                 } else {
+                                     switch ([TSSocketManager sharedManager].state) {
+                                         case SocketManagerStateClosed:
+                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
+                                             accessoryLabel.textColor = [UIColor ows_redColor];
+                                             break;
+                                         case SocketManagerStateConnecting:
+                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
+                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
+                                             break;
+                                         case SocketManagerStateOpen:
+                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
+                                             accessoryLabel.textColor = [UIColor ows_greenColor];
+                                             break;
+                                     }
+                                 }
+                                 [accessoryLabel sizeToFit];
+                                 cell.accessoryView = accessoryLabel;
+                                 return cell;
+                             }
+                                         actionBlock:nil]];
     }
 
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
@@ -251,7 +250,7 @@
 {
     return [OWSTableItem
         itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
+            UITableViewCell *cell = [OWSTableItem newCell];
             cell.preservesSuperviewLayoutMargins = YES;
             cell.contentView.preservesSuperviewLayoutMargins = YES;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -276,7 +275,7 @@
 
 - (UITableViewCell *)profileHeaderCell
 {
-    UITableViewCell *cell = [UITableViewCell new];
+    UITableViewCell *cell = [OWSTableItem newCell];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -316,7 +315,7 @@
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
-        titleLabel.textColor = [UIColor blackColor];
+        titleLabel.textColor = [UIColor ows_themeForegroundColor];
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
         titleLabel.text = NSLocalizedString(
@@ -331,7 +330,7 @@
 
     const CGFloat kSubtitlePointSize = 12.f;
     UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.textColor = [UIColor ows_darkGrayColor];
+    subtitleLabel.textColor = [UIColor ows_themeSecondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
     subtitleLabel.attributedText = [[NSAttributedString alloc]
         initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
