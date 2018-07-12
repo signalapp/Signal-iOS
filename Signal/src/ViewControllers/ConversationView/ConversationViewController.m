@@ -1206,6 +1206,8 @@ typedef enum : NSUInteger {
     [super viewWillDisappear:animated];
 
     self.isViewCompletelyAppeared = NO;
+
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -2557,9 +2559,6 @@ typedef enum : NSUInteger {
 
     [self dismissViewControllerAnimated:NO completion:nil];
 }
-
-// TODO override dismissViewController to dismiss any presented MessagesActionSheet?
-// e.g. if we have any remaining dismiss-and-present logic remaining?
 
 #pragma mark - CNContactViewControllerDelegate
 
