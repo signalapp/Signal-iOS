@@ -104,6 +104,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     cell.backgroundColor = [UIColor ows_themeBackgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
     cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
+
+    UIView *selectedBackgroundView = [UIView new];
+    selectedBackgroundView.backgroundColor =
+        [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
+    cell.selectedBackgroundView = selectedBackgroundView;
+
     return cell;
 }
 
