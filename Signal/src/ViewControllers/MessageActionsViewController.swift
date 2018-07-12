@@ -85,8 +85,8 @@ extension ConversationViewItem {
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
         actions.append(deleteAction)
 
-        let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
-        actions.append(showInfoAction)
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
+        actions.append(showDetailsAction)
 
         return actions
     }
@@ -108,19 +108,19 @@ extension ConversationViewItem {
         let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
         actions.append(deleteAction)
 
-        let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
-        actions.append(showInfoAction)
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
+        actions.append(showDetailsAction)
 
         return actions
     }
 
     @objc
     func quotedMessageActions(delegate: MessageActionsDelegate) -> [MessageAction] {
-        var actions: [MessageAction] = []
+        let replyAction = MessageActionBuilder.reply(conversationViewItem: self, delegate: delegate)
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
+        let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
 
-        owsFail("\(self.logTag) in \(#function) TODO")
-
-        return actions
+        return [replyAction, deleteAction, showDetailsAction]
     }
 }
 
