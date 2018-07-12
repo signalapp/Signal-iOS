@@ -500,6 +500,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self submitVerificationCode];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
