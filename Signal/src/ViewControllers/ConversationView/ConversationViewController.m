@@ -132,6 +132,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     MessageActionsDelegate,
+    MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
@@ -1981,13 +1982,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - MessageActionsDelegate
 
-- (void)messageActionsDidHide:(MessageActionsViewController *)messageActionsViewController
-{
-    [[OWSWindowManager sharedManager] hideMessageActionsWindow:messageActionsViewController];
-
-    [self updateShouldObserveDBModifications];
-}
-
 - (void)messageActionsShowDetailsForItem:(ConversationViewItem *)conversationViewItem
 {
     [self showDetailViewForViewItem:conversationViewItem];
@@ -1998,7 +1992,16 @@ typedef enum : NSUInteger {
     [self populateReplyForViewItem:conversationViewItem];
 }
 
-- (void)messageActions:(MessageActionsViewController *)messageActionsViewController
+#pragma mark - MenuActionsViewControllerDelegate
+
+- (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
+{
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
     isPresentingWithVerticalFocusChange:(CGFloat)verticalChange
 {
     UIEdgeInsets oldInset = self.collectionView.contentInset;
@@ -2026,7 +2029,7 @@ typedef enum : NSUInteger {
     self.collectionView.contentInset = newInset;
 }
 
-- (void)messageActions:(MessageActionsViewController *)messageActionsViewController
+- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
     isDismissingWithVerticalFocusChange:(CGFloat)verticalChange
 {
     UIEdgeInsets oldInset = self.collectionView.contentInset;
@@ -2058,36 +2061,36 @@ typedef enum : NSUInteger {
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
 {
-    NSArray<MessageAction *> *messageActions = [viewItem mediaActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions = [viewItem mediaActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
 {
-    NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions = [viewItem textActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
 {
-    NSArray<MessageAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem
 {
-    NSArray<MessageAction *> *messageActions = [viewItem infoMessageActionsWithDelegate:self];
+    NSArray<MenuAction *> *messageActions = [viewItem infoMessageActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
+- (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
-    MessageActionsViewController *messageActionsViewController =
-        [[MessageActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
+    MenuActionsViewController *menuActionsViewController =
+        [[MenuActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
 
-    messageActionsViewController.delegate = self;
+    menuActionsViewController.delegate = self;
 
-    [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
+    [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 
     [self updateShouldObserveDBModifications];
 }
@@ -4550,7 +4553,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if (OWSWindowManager.sharedManager.isPresentingMessageActions) {
+    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
         self.shouldObserveDBModifications = NO;
         return;
     }

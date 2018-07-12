@@ -29,10 +29,10 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 #pragma mark - Message Actions
 
-@property (nonatomic, readonly) BOOL isPresentingMessageActions;
+@property (nonatomic, readonly) BOOL isPresentingMenuActions;
 
-- (void)showMessageActionsWindow:(UIViewController *)messageActionsViewController;
-- (void)hideMessageActionsWindow:(UIViewController *)messageActionsViewController;
+- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController;
+- (void)hideMenuActionsWindow;
 
 #pragma mark - Calls
 
