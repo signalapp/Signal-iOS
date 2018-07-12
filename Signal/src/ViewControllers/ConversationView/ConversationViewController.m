@@ -4558,7 +4558,6 @@ typedef enum : NSUInteger {
     }
 
     self.shouldObserveDBModifications = YES;
-    return;
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications

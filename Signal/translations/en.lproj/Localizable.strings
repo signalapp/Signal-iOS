@@ -1171,7 +1171,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "This will delete it on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "More Info";
