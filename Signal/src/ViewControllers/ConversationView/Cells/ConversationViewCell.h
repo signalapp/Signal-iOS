@@ -29,10 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
 
-// MJK move these to MessageActionDelegate
-//- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem;
-//- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem;
-
 #pragma mark - System Cell
 
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;

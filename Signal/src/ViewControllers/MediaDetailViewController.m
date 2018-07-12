@@ -124,15 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self resetMediaFrame];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-
-    if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-    }
-}
-
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
