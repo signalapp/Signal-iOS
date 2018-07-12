@@ -11,6 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingConfigurationUpdateInfoMessage : TSInfoMessage
 
+@property (nonatomic, readonly) BOOL configurationIsEnabled;
+
 /**
  * @param remoteName is nil when created by the local user
  */

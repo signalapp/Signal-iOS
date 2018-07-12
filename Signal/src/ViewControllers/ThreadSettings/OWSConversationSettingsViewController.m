@@ -378,7 +378,10 @@ const CGFloat kIconViewLength = 24;
                                  [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
                                  [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
 
-                                 UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
+                                 NSString *iconName
+                                     = (strongSelf.disappearingMessagesConfiguration.isEnabled ? @"ic_timer"
+                                                                                               : @"ic_timer_disabled");
+                                 UIImageView *iconView = [strongSelf viewForIconWithName:iconName];
                                  [topView addSubview:iconView];
                                  [iconView autoVCenterInSuperview];
                                  [iconView autoPinLeadingToSuperviewMargin];

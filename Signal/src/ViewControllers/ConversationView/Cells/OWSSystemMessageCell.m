@@ -237,8 +237,20 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-            case TSInfoMessageTypeDisappearingMessagesUpdate:
                 return nil;
+            case TSInfoMessageTypeDisappearingMessagesUpdate: {
+                BOOL areDisappearingMessagesEnabled = YES;
+                if ([interaction isKindOfClass:[OWSDisappearingConfigurationUpdateInfoMessage class]]) {
+                    areDisappearingMessagesEnabled
+                        = ((OWSDisappearingConfigurationUpdateInfoMessage *)interaction).configurationIsEnabled;
+                } else {
+                    OWSFail(@"%@ unexpected interaction type: %@", self.logTag, interaction.class);
+                }
+                result = (areDisappearingMessagesEnabled
+                        ? [UIImage imageNamed:@"system_message_disappearing_messages"]
+                        : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
+                break;
+            }
             case TSInfoMessageVerificationStateChange:
                 OWSAssert([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
                 if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
