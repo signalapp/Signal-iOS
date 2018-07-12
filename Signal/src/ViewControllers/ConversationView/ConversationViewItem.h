@@ -118,6 +118,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (void)shareTextAction;
 - (void)saveMediaAction;
 - (void)copyMediaAction;
+- (void)deleteAction;
 
 // #pragma mark - UIMenuController
 //
@@ -128,7 +129,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 //- (BOOL)canPerformAction:(SEL)action;
 
 
-//- (void)deleteAction;
 //
 //- (SEL)replyActionSelector;
 //- (SEL)metadataActionSelector;
