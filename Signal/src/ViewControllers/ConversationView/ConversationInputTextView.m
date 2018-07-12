@@ -136,18 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (BOOL)becomeFirstResponder
-{
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    return [super becomeFirstResponder];
-}
-
-- (BOOL)resignFirstResponder
-{
-    DDLogDebug(@"%@ in %s", self.logTag, __PRETTY_FUNCTION__);
-    return [super resignFirstResponder];
-}
-
 - (BOOL)pasteboardHasPossibleAttachment
 {
     // We don't want to load/convert images more than once so we

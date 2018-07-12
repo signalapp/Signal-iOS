@@ -114,25 +114,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;
 @property (nonatomic, readonly) BOOL hasMediaActionContent;
 
+- (void)copyMediaAction;
 - (void)copyTextAction;
 - (void)shareMediaAction;
 - (void)shareTextAction;
 - (void)saveMediaAction;
-- (void)copyMediaAction;
 - (void)deleteAction;
-
-// #pragma mark - UIMenuController
-//
-//- (NSArray<UIMenuItem *> *)textMenuControllerItems;
-//- (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
-//- (NSArray<UIMenuItem *> *)defaultMenuControllerItems;
-//
-//- (BOOL)canPerformAction:(SEL)action;
-
-
-//
-//- (SEL)replyActionSelector;
-//- (SEL)metadataActionSelector;
 
 @end
 
