@@ -164,6 +164,11 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
                                                object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationWillResignActive:)
+                                                 name:OWSApplicationWillResignActiveNotification
+                                               object:nil];
+
     [self ensureWindowState];
 }
 
@@ -176,6 +181,11 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         self.logTag,
         NSStringFromCGRect(newFrame));
     self.returnToCallWindow.frame = newFrame;
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    [self hideMenuActionsWindow];
 }
 
 - (UIWindow *)createReturnToCallWindow:(UIWindow *)rootWindow
