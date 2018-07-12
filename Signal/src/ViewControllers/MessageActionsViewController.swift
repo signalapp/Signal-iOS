@@ -122,6 +122,13 @@ extension ConversationViewItem {
 
         return [replyAction, deleteAction, showDetailsAction]
     }
+
+    @objc
+    func infoMessageActions(delegate: MessageActionsDelegate) -> [MessageAction] {
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
+
+        return [deleteAction]
+    }
 }
 
 @objc

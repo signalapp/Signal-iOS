@@ -2006,15 +2006,21 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
 {
     NSArray<MessageAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem
 {
-    NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    NSArray<MessageAction *> *messageActions = [viewItem infoMessageActionsWithDelegate:self];
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
