@@ -55,8 +55,26 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     // Note: To cover the keyboard, this is higher than the ScreenBlocking level,
     // but this window is hidden when screen protection is shown.
-    return CGFLOAT_MAX - 100;
+    return CGFLOAT_MAX;
 }
+
+
+@interface MessageActionsWindow : UIWindow
+
+@end
+
+@implementation MessageActionsWindow
+
+- (UIWindowLevel)windowLevel
+{
+    // As of iOS11, setWindowLevel clamps the value below
+    // the height of the keyboard window.
+    // Because we want to display above the keyboard, we hardcode
+    // the `windowLevel` getter.
+    return UIWindowLevel_MessageActions();
+}
+
+@end
 
 @implementation OWSWindowRootViewController
 
@@ -184,14 +202,21 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIWindow *)createMessageActionsWindowWithRoowWindow:(UIWindow *)rootWindow
 {
-    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+    UIWindow *window;
+    if (@available(iOS 11, *)) {
+        // On iOS11, setting the windowLevel is insufficient, so we override
+        // the `windowLevel` getter.
+        window = [[MessageActionsWindow alloc] initWithFrame:rootWindow.bounds];
+    } else {
+        // On iOS9, 10 overriding the `windowLevel` getter does not cause the
+        // window to be displayed above the keyboard, but setting the window
+        // level works.
+        window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+        window.windowLevel = UIWindowLevel_MessageActions();
+    }
+
     window.hidden = YES;
-    window.windowLevel = UIWindowLevel_MessageActions();
-    //    window.opaque = YES;
     window.backgroundColor = UIColor.clearColor;
-
-
-    //    window.rootViewController = navigationController;
 
     return window;
 }
