@@ -445,6 +445,11 @@ class MessageActionSheetView: UIView, MessageActionViewDelegate {
         actionStackView.autoPinToSuperviewEdges()
 
         self.clipsToBounds = true
+
+        // Prevent panning from percolating to the superview, which would
+        // cause us to dismiss
+        let panGestureSink = UIPanGestureRecognizer(target: nil, action: nil)
+        self.addGestureRecognizer(panGestureSink)
     }
 
     required init?(coder aDecoder: NSCoder) {
