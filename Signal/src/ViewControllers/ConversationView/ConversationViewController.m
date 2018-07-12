@@ -1998,6 +1998,62 @@ typedef enum : NSUInteger {
     [self populateReplyForViewItem:conversationViewItem];
 }
 
+- (void)messageActions:(MessageActionsViewController *)messageActionsViewController
+    isPresentingWithVerticalFocusChange:(CGFloat)verticalChange
+{
+    UIEdgeInsets oldInset = self.collectionView.contentInset;
+    CGPoint oldOffset = self.collectionView.contentOffset;
+
+    UIEdgeInsets newInset = oldInset;
+    CGPoint newOffset = oldOffset;
+
+    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
+    // insets to be sure we can sufficiently scroll the contentOffset.
+    newInset.top += verticalChange;
+    newInset.bottom -= verticalChange;
+    newOffset.y -= verticalChange;
+
+    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+        self.logTag,
+        __PRETTY_FUNCTION__,
+        verticalChange,
+        NSStringFromUIEdgeInsets(oldInset),
+        NSStringFromUIEdgeInsets(newInset));
+
+    // Because we're in the context of the frame-changing animation, these adjustments should happen
+    // in lockstep with the messageActions frame change.
+    self.collectionView.contentOffset = newOffset;
+    self.collectionView.contentInset = newInset;
+}
+
+- (void)messageActions:(MessageActionsViewController *)messageActionsViewController
+    isDismissingWithVerticalFocusChange:(CGFloat)verticalChange
+{
+    UIEdgeInsets oldInset = self.collectionView.contentInset;
+    CGPoint oldOffset = self.collectionView.contentOffset;
+
+    UIEdgeInsets newInset = oldInset;
+    CGPoint newOffset = oldOffset;
+
+    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
+    // insets to be sure we can sufficiently scroll the contentOffset.
+    newInset.top -= verticalChange;
+    newInset.bottom += verticalChange;
+    newOffset.y += verticalChange;
+
+    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+        self.logTag,
+        __PRETTY_FUNCTION__,
+        verticalChange,
+        NSStringFromUIEdgeInsets(oldInset),
+        NSStringFromUIEdgeInsets(newInset));
+
+    // Because we're in the context of the frame-changing animation, these adjustments should happen
+    // in lockstep with the messageActions frame change.
+    self.collectionView.contentOffset = newOffset;
+    self.collectionView.contentInset = newInset;
+}
+
 #pragma mark - ConversationViewCellDelegate
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
@@ -2026,27 +2082,14 @@ typedef enum : NSUInteger {
 
 - (void)presentMessageActions:(NSArray<MessageAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
-    // TODO Interpolate from 0->0.3 depending on distance to make visible.
-    NSTimeInterval animationDuration = 0.3;
+    MessageActionsViewController *messageActionsViewController =
+        [[MessageActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
 
-    // Instead of animating manually we could use `scrollRectToVisible:animated:YES`, but then we'd need to juggle a
-    // completion handler into scrollDidEnd
-    [UIView animateWithDuration:animationDuration
-        animations:^{
-            [self.collectionView scrollRectToVisible:cell.frame animated:NO];
-        }
-        completion:^(BOOL finished) {
-            // TODO pass in real actions
-            
-            MessageActionsViewController *messageActionsViewController =
-                [[MessageActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
+    messageActionsViewController.delegate = self;
 
-            messageActionsViewController.delegate = self;
+    [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
 
-            [[OWSWindowManager sharedManager] showMessageActionsWindow:messageActionsViewController];
-
-            [self updateShouldObserveDBModifications];
-        }];
+    [self updateShouldObserveDBModifications];
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
