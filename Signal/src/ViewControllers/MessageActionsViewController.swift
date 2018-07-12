@@ -39,18 +39,18 @@ struct MessageActionBuilder {
                                 delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
     }
-}
 
-extension ConversationViewItem {
-
-    var deleteMessageAction: MessageAction {
+    static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
         return MessageAction(image: #imageLiteral(resourceName: "message_status_failed_large"),
                              title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                              subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
-                             block: { (action) in
-                                Logger.debug("\(self.logTag) in \(#function) action: \(action)")
+                             block: { (_) in
+                                conversationViewItem.deleteAction()
         })
     }
+}
+
+extension ConversationViewItem {
 
     @objc
     func textActions(delegate: MessageActionsDelegate) -> [MessageAction] {
@@ -64,32 +64,13 @@ extension ConversationViewItem {
             actions.append(copyTextAction)
         }
 
+        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: self, delegate: delegate)
+        actions.append(deleteAction)
+
         let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
         actions.append(showInfoAction)
 
         return actions
-//        switch self.messageCellType() {
-//        case .unknown:
-//            return actions
-//        case .textMessage:
-//            return [self.copyTextAction]
-//        case .oversizeTextMessage:
-//            return [self.copyTextAction]
-//        case .stillImage:
-//            return []
-//        case .animatedImage:
-//            return []
-//        case .audio:
-//            return []
-//        case .video:
-//            return []
-//        case .genericAttachment:
-//            return []
-//        case .downloadingAttachment:
-//            return []
-//        case .contactShare:
-//            return []
-//        }
     }
 }
 
