@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSString *createdByRemoteName;
 @property (nonatomic, readonly) BOOL createdInExistingGroup;
-@property (nonatomic, readonly) BOOL configurationIsEnabled;
 @property (nonatomic, readonly) uint32_t configurationDurationSeconds;
 
 @end

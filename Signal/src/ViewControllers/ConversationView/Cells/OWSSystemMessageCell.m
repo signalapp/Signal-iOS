@@ -237,8 +237,13 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-            case TSInfoMessageTypeDisappearingMessagesUpdate:
                 return nil;
+            case TSInfoMessageTypeDisappearingMessagesUpdate: {
+                //                OWSDisappearingConfigurationUpdateInfoMessage *configurationUpdate =
+                //                (OWSDisappearingConfigurationUpdateInfoMessage *)interaction; configurationIsEnabled
+                result = [UIImage imageNamed:@"system_message_disappearing_messages"];
+                break;
+            }
             case TSInfoMessageVerificationStateChange:
                 OWSAssert([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]);
                 if ([interaction isKindOfClass:[OWSVerificationStateChangeMessage class]]) {
