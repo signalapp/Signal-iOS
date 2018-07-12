@@ -600,146 +600,146 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark - UIMenuController
 
-- (NSArray<UIMenuItem *> *)textMenuControllerItems
-{
-    return @[
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
-                                              @"Short name for edit menu item to show message metadata.")
-                                   action:self.metadataActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
-                                              @"Short name for edit menu item to copy contents of media message.")
-                                   action:self.copyTextActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
-                                              @"Short name for edit menu item to reply to a message.")
-                                   action:self.replyActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-                                              @"Short name for edit menu item to delete contents of media message.")
-                                   action:self.deleteActionSelector]
-    ];
-}
+//- (NSArray<UIMenuItem *> *)textMenuControllerItems
+//{
+//    return @[
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+//                                              @"Short name for edit menu item to show message metadata.")
+//                                   action:self.metadataActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
+//                                              @"Short name for edit menu item to copy contents of media message.")
+//                                   action:self.copyTextActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+//                                              @"Short name for edit menu item to reply to a message.")
+//                                   action:self.replyActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+//                                              @"Short name for edit menu item to delete contents of media message.")
+//                                   action:self.deleteActionSelector]
+//    ];
+//}
 
-- (NSArray<UIMenuItem *> *)mediaMenuControllerItems
-{
-    return @[
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
-                                              @"Short name for edit menu item to show message metadata.")
-                                   action:self.metadataActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
-                                              @"Short name for edit menu item to copy contents of media message.")
-                                   action:self.copyMediaActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
-                                              @"Short name for edit menu item to reply to a message.")
-                                   action:self.replyActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-                                              @"Short name for edit menu item to delete contents of media message.")
-                                   action:self.deleteActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
-                                              @"Short name for edit menu item to save contents of media message.")
-                                   action:self.saveMediaActionSelector],
-    ];
-}
+//- (NSArray<UIMenuItem *> *)mediaMenuControllerItems
+//{
+//    return @[
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+//                                              @"Short name for edit menu item to show message metadata.")
+//                                   action:self.metadataActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_COPY_ACTION",
+//                                              @"Short name for edit menu item to copy contents of media message.")
+//                                   action:self.copyMediaActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+//                                              @"Short name for edit menu item to reply to a message.")
+//                                   action:self.replyActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+//                                              @"Short name for edit menu item to delete contents of media message.")
+//                                   action:self.deleteActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_SAVE_ACTION",
+//                                              @"Short name for edit menu item to save contents of media message.")
+//                                   action:self.saveMediaActionSelector],
+//    ];
+//}
+//
+//- (NSArray<UIMenuItem *> *)defaultMenuControllerItems
+//{
+//    return @[
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+//                                              @"Short name for edit menu item to show message metadata.")
+//                                   action:self.metadataActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
+//                                              @"Short name for edit menu item to reply to a message.")
+//                                   action:self.replyActionSelector],
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
+//                                              @"Short name for edit menu item to delete contents of media message.")
+//                                   action:self.deleteActionSelector],
+//    ];
+//}
 
-- (NSArray<UIMenuItem *> *)defaultMenuControllerItems
-{
-    return @[
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
-                                              @"Short name for edit menu item to show message metadata.")
-                                   action:self.metadataActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"REPLY_ITEM_ACTION",
-                                              @"Short name for edit menu item to reply to a message.")
-                                   action:self.replyActionSelector],
-        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_DELETE_ACTION",
-                                              @"Short name for edit menu item to delete contents of media message.")
-                                   action:self.deleteActionSelector],
-    ];
-}
-
-- (SEL)copyTextActionSelector
-{
-    return NSSelectorFromString(@"copyTextAction:");
-}
-
-- (SEL)copyMediaActionSelector
-{
-    return NSSelectorFromString(@"copyMediaAction:");
-}
-
-- (SEL)saveMediaActionSelector
-{
-    return NSSelectorFromString(@"saveMediaAction:");
-}
-
-- (SEL)shareTextActionSelector
-{
-    return NSSelectorFromString(@"shareTextAction:");
-}
-
-- (SEL)shareMediaActionSelector
-{
-    return NSSelectorFromString(@"shareMediaAction:");
-}
-
-- (SEL)deleteActionSelector
-{
-    return NSSelectorFromString(@"deleteAction:");
-}
-
-- (SEL)replyActionSelector
-{
-    return NSSelectorFromString(@"replyAction:");
-}
-
-- (SEL)metadataActionSelector
-{
-    return NSSelectorFromString(@"metadataAction:");
-}
+//- (SEL)copyTextActionSelector
+//{
+//    return NSSelectorFromString(@"copyTextAction:");
+//}
+//
+//- (SEL)copyMediaActionSelector
+//{
+//    return NSSelectorFromString(@"copyMediaAction:");
+//}
+//
+//- (SEL)saveMediaActionSelector
+//{
+//    return NSSelectorFromString(@"saveMediaAction:");
+//}
+//
+//- (SEL)shareTextActionSelector
+//{
+//    return NSSelectorFromString(@"shareTextAction:");
+//}
+//
+//- (SEL)shareMediaActionSelector
+//{
+//    return NSSelectorFromString(@"shareMediaAction:");
+//}
+//
+//- (SEL)deleteActionSelector
+//{
+//    return NSSelectorFromString(@"deleteAction:");
+//}
+//
+//- (SEL)replyActionSelector
+//{
+//    return NSSelectorFromString(@"replyAction:");
+//}
+//
+//- (SEL)metadataActionSelector
+//{
+//    return NSSelectorFromString(@"metadataAction:");
+//}
 
 // We only use custom actions in UIMenuController.
-- (BOOL)canPerformAction:(SEL)action
-{
-    if (action == self.copyTextActionSelector) {
-        return [self hasBodyTextActionContent];
-    } else if (action == self.copyMediaActionSelector) {
-        return [self hasMediaActionContent];
-    } else if (action == self.saveMediaActionSelector) {
-        return [self canSaveMedia];
-    } else if (action == self.shareTextActionSelector) {
-        return [self hasBodyTextActionContent];
-    } else if (action == self.shareMediaActionSelector) {
-        return [self hasMediaActionContent];
-    } else if (action == self.deleteActionSelector) {
-        return YES;
-    } else if (action == self.metadataActionSelector) {
-        return YES;
-    } else if (action == self.replyActionSelector) {
-        if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
-            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed
-                || outgoingMessage.messageState == TSOutgoingMessageStateSending) {
-                // Don't let users reply to messages which aren't yet delivered to the service.
-                return NO;
-            }
-        } else if ([self.interaction isKindOfClass:[TSIncomingMessage class]]) {
-            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            if (incomingMessage.hasAttachments) {
-                NSString *attachmentId = incomingMessage.attachmentIds.firstObject;
-                __block TSAttachment *_Nullable attachment = nil;
-                [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
-                    readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
-                    }];
-                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                    // Don't let users reply to attachments which aren't yet downloaded
-                    // (or otherwise missing on disk).
-                    return NO;
-                }
-            }
-        }
-        return YES;
-    } else {
-        return NO;
-    }
-}
+//- (BOOL)canPerformAction:(SEL)action
+//{
+//    if (action == self.copyTextActionSelector) {
+//        return [self hasBodyTextActionContent];
+//    } else if (action == self.copyMediaActionSelector) {
+//        return [self hasMediaActionContent];
+//    } else if (action == self.saveMediaActionSelector) {
+//        return [self canSaveMedia];
+//    } else if (action == self.shareTextActionSelector) {
+//        return [self hasBodyTextActionContent];
+//    } else if (action == self.shareMediaActionSelector) {
+//        return [self hasMediaActionContent];
+//    } else if (action == self.deleteActionSelector) {
+//        return YES;
+//    } else if (action == self.metadataActionSelector) {
+//        return YES;
+//    } else if (action == self.replyActionSelector) {
+//        if ([self.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+//            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.interaction;
+//            if (outgoingMessage.messageState == TSOutgoingMessageStateFailed
+//                || outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+//                // Don't let users reply to messages which aren't yet delivered to the service.
+//                return NO;
+//            }
+//        } else if ([self.interaction isKindOfClass:[TSIncomingMessage class]]) {
+//            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
+//            if (incomingMessage.hasAttachments) {
+//                NSString *attachmentId = incomingMessage.attachmentIds.firstObject;
+//                __block TSAttachment *_Nullable attachment = nil;
+//                [[OWSPrimaryStorage.sharedManager newDatabaseConnection]
+//                    readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+//                        attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+//                    }];
+//                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+//                    // Don't let users reply to attachments which aren't yet downloaded
+//                    // (or otherwise missing on disk).
+//                    return NO;
+//                }
+//            }
+//        }
+//        return YES;
+//    } else {
+//        return NO;
+//    }
+//}
 
 // TODO: Update for quoted text.
 - (void)copyTextAction
