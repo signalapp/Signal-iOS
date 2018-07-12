@@ -1995,6 +1995,7 @@ typedef enum : NSUInteger {
 
 - (void)messageActionsReplyToItem:(ConversationViewItem *)conversationViewItem
 {
+    [self populateReplyForViewItem:conversationViewItem];
 }
 
 #pragma mark - ConversationViewCellDelegate
@@ -2471,7 +2472,7 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem
+- (void)populateReplyForViewItem:(ConversationViewItem *)conversationItem
 {
     DDLogDebug(@"%@ user did tap reply", self.logTag);
 

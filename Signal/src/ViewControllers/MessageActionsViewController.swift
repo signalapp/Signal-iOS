@@ -56,9 +56,8 @@ extension ConversationViewItem {
     func textActions(delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
 
-//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
-//            @"Short name for edit menu item to show message metadata.")
-//            action:self.metadataActionSelector],
+        let replyAction = MessageActionBuilder.reply(conversationViewItem: self, delegate: delegate)
+        actions.append(replyAction)
 
         if self.hasBodyTextActionContent {
             let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: self, delegate: delegate)
