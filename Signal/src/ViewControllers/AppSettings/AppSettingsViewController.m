@@ -316,7 +316,7 @@
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
-        titleLabel.textColor = [UIColor ows_themeForegroundColor];
+        titleLabel.textColor = [UIColor ows_themePrimaryColor];
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
         titleLabel.text = NSLocalizedString(

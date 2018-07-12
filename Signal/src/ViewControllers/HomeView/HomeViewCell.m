@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIColor *textColor = [UIColor ows_themeSecondaryColor];
     if (hasUnreadMessages && overrideSnippet == nil) {
-        textColor = [UIColor ows_themeForegroundColor];
+        textColor = [UIColor ows_themePrimaryColor];
         self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
@@ -366,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           @"A label for conversations with blocked users.")
                                            attributes:@{
                                                NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                                               NSForegroundColorAttributeName : [UIColor ows_themeForegroundColor],
+                                               NSForegroundColorAttributeName : [UIColor ows_themePrimaryColor],
                                            }]];
     } else {
         if ([thread isMuted]) {
@@ -375,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         attributes:@{
                                                             NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [UIColor ows_themeForegroundColor]
+                                                                (hasUnreadMessages ? [UIColor ows_themePrimaryColor]
                                                                                    : [UIColor ows_themeSecondaryColor]),
                                                         }]];
         }
@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [UIColor ows_themeForegroundColor]
+                                                                (hasUnreadMessages ? [UIColor ows_themePrimaryColor]
                                                                                    : [UIColor ows_themeSecondaryColor]),
                                                         }]];
         }
@@ -491,7 +491,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     self.nameLabel.font = self.nameFont;
-    self.nameLabel.textColor = [UIColor ows_themeForegroundColor];
+    self.nameLabel.textColor = [UIColor ows_themePrimaryColor];
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {

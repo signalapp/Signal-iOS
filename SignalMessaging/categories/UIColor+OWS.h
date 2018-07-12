@@ -90,9 +90,10 @@ extern NSString *const NSNotificationNameThemeDidChange;
 + (void)setIsThemeEnabled:(BOOL)value;
 #endif
 
-+ (UIColor *)ows_themeBackgroundColor;
-+ (UIColor *)ows_themeForegroundColor;
-+ (UIColor *)ows_themeSecondaryColor;
+@property (class, readonly, nonatomic) UIColor *ows_themeBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *ows_themePrimaryColor;
+@property (class, readonly, nonatomic) UIColor *ows_themeSecondaryColor;
+@property (class, readonly, nonatomic) UIColor *ows_themeBoldColor;
 
 @end
 

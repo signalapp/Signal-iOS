@@ -384,7 +384,7 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
     return (UIColor.isThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
 }
 
-+ (UIColor *)ows_themeForegroundColor
++ (UIColor *)ows_themePrimaryColor
 {
     // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_light90Color);
@@ -394,6 +394,12 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 {
     // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
+}
+
++ (UIColor *)ows_themeBoldColor
+{
+    // TODO: Review with design.
+    return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.blackColor);
 }
 
 @end

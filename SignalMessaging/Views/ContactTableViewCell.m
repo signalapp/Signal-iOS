@@ -4,6 +4,8 @@
 
 #import "ContactTableViewCell.h"
 #import "ContactCellView.h"
+#import "OWSTableViewController.h"
+#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/SignalAccount.h>
@@ -44,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
+    [OWSTableItem configureCell:self];
 
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];

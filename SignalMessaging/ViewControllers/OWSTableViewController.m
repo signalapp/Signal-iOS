@@ -101,16 +101,20 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (UITableViewCell *)newCell
 {
     UITableViewCell *cell = [UITableViewCell new];
+    [self configureCell:cell];
+    return cell;
+}
+
++ (void)configureCell:(UITableViewCell *)cell
+{
     cell.backgroundColor = [UIColor ows_themeBackgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
+    cell.textLabel.textColor = [UIColor ows_themePrimaryColor];
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor =
         [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
     cell.selectedBackgroundView = selectedBackgroundView;
-
-    return cell;
 }
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock
@@ -210,10 +214,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                                        reuseIdentifier:@"UITableViewCellStyleValue1"];
-        cell.backgroundColor = [UIColor ows_themeBackgroundColor];
+        [OWSTableItem configureCell:cell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
         cell.detailTextLabel.text = detailText;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         return cell;

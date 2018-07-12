@@ -88,7 +88,7 @@ class ReminderView: UIView {
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
         container.addArrangedSubview(label)
-        label.textColor = UIColor.ows_themeForeground()
+        label.textColor = UIColor.ows_themePrimary
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
@@ -102,7 +102,7 @@ class ReminderView: UIView {
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
             iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = UIColor.ows_themeSecondary()
+            iconView.tintColor = UIColor.ows_themeSecondary
             iconView.autoSetDimension(.width, toSize: 13)
             container.addArrangedSubview(iconView)
         }

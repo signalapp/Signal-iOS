@@ -822,7 +822,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont ows_dynamicTypeBodyFont];
-    label.textColor = UIColor.ows_themeForegroundColor;
+    label.textColor = UIColor.ows_themePrimaryColor;
 
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -1449,7 +1449,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:[UIFont ows_regularFontWithSize:14.f]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:UIColor.ows_themeForegroundColor
+                            value:UIColor.ows_themePrimaryColor
                             range:NSMakeRange(0, firstLine.length)];
     // TODO: Theme, Review with design.
     [fullLabelString addAttribute:NSForegroundColorAttributeName

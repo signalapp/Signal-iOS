@@ -108,7 +108,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *countryCodeLabel = [UILabel new];
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    countryCodeLabel.textColor = [UIColor ows_themeForegroundColor];
+    countryCodeLabel.textColor = [UIColor ows_themePrimaryColor];
     countryCodeLabel.text
         = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field");
     return countryCodeLabel;
@@ -133,7 +133,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *phoneNumberLabel = [UILabel new];
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    phoneNumberLabel.textColor = [UIColor ows_themeForegroundColor];
+    phoneNumberLabel.textColor = [UIColor ows_themePrimaryColor];
     phoneNumberLabel.text
         = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield");
     return phoneNumberLabel;
