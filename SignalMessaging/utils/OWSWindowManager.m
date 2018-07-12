@@ -269,6 +269,8 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController
 {
+    OWSAssert(self.menuActionsViewController == nil);
+
     self.menuActionsViewController = menuActionsViewController;
     self.menuActionsWindow.rootViewController = menuActionsViewController;
 
