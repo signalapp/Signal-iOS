@@ -170,13 +170,42 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         self.view.addGestureRecognizer(tapGesture)
-    }
 
-    var snapshotView: UIView?
+        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeBackground))
+        swipeGesture.direction = .down
+        self.view.addGestureRecognizer(swipeGesture)
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
 
+        self.animatePresentation()
+    }
+
+    // MARK: Present / Dismiss animations
+
+    var presentationFocusOffset: CGFloat?
+    var snapshotView: UIView?
+
+    private func addSnapshotFocusedView() -> UIView? {
+        guard let snapshotView = self.focusedView.snapshotView(afterScreenUpdates: false) else {
+            owsFail("\(self.logTag) in \(#function) snapshotView was unexpectedly nil")
+            return nil
+        }
+        view.addSubview(snapshotView)
+
+        guard let focusedViewSuperview = focusedView.superview else {
+            owsFail("\(self.logTag) in \(#function) focusedViewSuperview was unexpectedly nil")
+            return nil
+        }
+
+        let convertedFrame = view.convert(focusedView.frame, from: focusedViewSuperview)
+        snapshotView.frame = convertedFrame
+
+        return snapshotView
+    }
+
+    private func animatePresentation() {
         // TODO first time only?
 
         guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
@@ -203,8 +232,7 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         }
 
-        // layout actionsheet and snapshot view with initial frame
-        self.view.layoutIfNeeded()
+        self.actionSheetView.superview?.layoutIfNeeded()
 
         let oldFocusFrame = self.view.convert(focusedView.frame, from: focusedViewSuperview)
         NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
@@ -232,32 +260,7 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
                        completion: nil)
     }
 
-    var presentationFocusOffset: CGFloat?
-
-    private func addSnapshotFocusedView() -> UIView? {
-        guard let snapshotView = self.focusedView.snapshotView(afterScreenUpdates: false) else {
-            owsFail("\(self.logTag) in \(#function) snapshotView was unexpectedly nil")
-            return nil
-        }
-        view.addSubview(snapshotView)
-
-        guard let focusedViewSuperview = focusedView.superview else {
-            owsFail("\(self.logTag) in \(#function) focusedViewSuperview was unexpectedly nil")
-            return nil
-        }
-
-        let convertedFrame = view.convert(focusedView.frame, from: focusedViewSuperview)
-        snapshotView.frame = convertedFrame
-
-        return snapshotView
-    }
-
-    @objc
-    func didTapBackground() {
-        animateDismiss(action: nil)
-    }
-
-    func animateDismiss(action: MessageAction?) {
+    private func animateDismiss(action: MessageAction?) {
         guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
             owsFail("\(self.logTag) in \(#function) actionSheetVerticalConstraint was unexpectedly nil")
             self.delegate?.messageActionsDidHide(self)
@@ -299,6 +302,18 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
                             action.block(action)
                         }
         })
+    }
+
+    // MARK: Actions
+
+    @objc
+    func didTapBackground() {
+        animateDismiss(action: nil)
+    }
+
+    @objc
+    func didSwipeBackground(gesture: UISwipeGestureRecognizer) {
+        animateDismiss(action: nil)
     }
 
     // MARK: MessageActionSheetDelegate
@@ -445,6 +460,7 @@ class MessageActionSheetView: UIView, MessageActionViewDelegate {
     }
 
     // MARK: 
+
     private func updateMask() {
         let cornerRadius: CGFloat = 16
         let path: UIBezierPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
