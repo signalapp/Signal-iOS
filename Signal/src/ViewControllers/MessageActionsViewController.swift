@@ -348,7 +348,7 @@ protocol MessageActionViewDelegate: class {
     func actionView(_ actionView: MessageActionView, didSelectAction action: MessageAction)
 }
 
-class MessageActionView: UIView {
+class MessageActionView: UIButton {
     public weak var delegate: MessageActionViewDelegate?
     private let action: MessageAction
 
@@ -363,20 +363,24 @@ class MessageActionView: UIView {
         let imageView = UIImageView(image: action.image)
         let imageWidth: CGFloat = 24
         imageView.autoSetDimensions(to: CGSize(width: imageWidth, height: imageWidth))
+        imageView.isUserInteractionEnabled = false
 
         let titleLabel = UILabel()
         titleLabel.font = UIFont.ows_dynamicTypeBody
         titleLabel.textColor = UIColor.ows_light90
         titleLabel.text = action.title
+        titleLabel.isUserInteractionEnabled = false
 
         let subtitleLabel = UILabel()
         subtitleLabel.font = UIFont.ows_dynamicTypeSubheadline
         subtitleLabel.textColor = UIColor.ows_light60
         subtitleLabel.text = action.subtitle
+        subtitleLabel.isUserInteractionEnabled = false
 
         let textColumn = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         textColumn.axis = .vertical
         textColumn.alignment = .leading
+        textColumn.isUserInteractionEnabled = false
 
         let contentRow  = UIStackView(arrangedSubviews: [imageView, textColumn])
         contentRow.axis = .horizontal
@@ -384,22 +388,23 @@ class MessageActionView: UIView {
         contentRow.spacing = 12
         contentRow.isLayoutMarginsRelativeArrangement = true
         contentRow.layoutMargins = UIEdgeInsets(top: 7, left: 16, bottom: 7, right: 16)
+        contentRow.isUserInteractionEnabled = false
 
         self.addSubview(contentRow)
         contentRow.autoPinToSuperviewMargins()
         contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
 
-        // TODO better mimic button
-        // - style with touch down
-        // - slide from one to the next
-        // - accessability hints
-        // - UIControl?
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPress))
-        self.addGestureRecognizer(tapGesture)
+        self.addTarget(self, action: #selector(didPress(sender:)), for: .touchUpInside)
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            self.backgroundColor = isHighlighted ? UIColor.ows_light10 : UIColor.white
+        }
     }
 
     @objc
-    func didPress(event: Any) {
+    func didPress(sender: Any) {
         Logger.debug("\(logTag) in \(#function)")
         self.delegate?.actionView(self, didSelectAction: action)
     }
