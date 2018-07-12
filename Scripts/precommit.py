@@ -171,6 +171,7 @@ def sort_include_block(text, filepath, filename, file_extension):
 def sort_class_statement_block(text, filepath, filename, file_extension):
     lines = text.split('\n')
     lines = [line.strip() for line in lines if line.strip()]
+    lines = list(set(lines))
     lines.sort()
     return '\n' + '\n'.join(lines) + '\n'
 
