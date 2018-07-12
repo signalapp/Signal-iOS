@@ -35,6 +35,12 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     private let focusedView: UIView
     private let actionSheetView: MenuActionSheetView
 
+    deinit {
+        Logger.verbose("\(logTag) in \(#function)")
+        assert(didInformDelegateOfDismissalAnimation)
+        assert(didInformDelegateThatDisappearenceCompleted)
+    }
+
     @objc
     required init(focusedView: UIView, actions: [MenuAction]) {
         self.focusedView = focusedView
@@ -48,6 +54,8 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: View LifeCycle
 
     var actionSheetViewVerticalConstraint: NSLayoutConstraint?
 
@@ -73,6 +81,17 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
         super.viewDidAppear(true)
 
         self.animatePresentation()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        Logger.debug("\(logTag) in \(#function)")
+        super.viewDidDisappear(animated)
+
+        // When the user has manually dismissed the menu, we do a nice animation
+        // but if the view otherwise disappears (e.g. due to resigning active),
+        // we still want to give the delegate the information it needs to restore it's UI.
+        ensureDelegateIsInformedOfDismissalAnimation()
+        ensureDelegateIsInformedThatDisappearenceCompleted()
     }
 
     // MARK: Present / Dismiss animations
@@ -184,15 +203,43 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
                         snapshotView.frame.origin.y -= presentationFocusOffset
                         // this helps when focused view is above navbars, etc.
                         snapshotView.alpha = 0
-                        self.delegate?.menuActions(self, isDismissingWithVerticalFocusChange: presentationFocusOffset)
+                        self.ensureDelegateIsInformedOfDismissalAnimation()
         },
                        completion: { _ in
                         self.view.isHidden = true
-                        self.delegate?.menuActionsDidHide(self)
+                        self.ensureDelegateIsInformedThatDisappearenceCompleted()
                         if let action = action {
                             action.block(action)
                         }
         })
+    }
+
+    var didInformDelegateThatDisappearenceCompleted = false
+    func ensureDelegateIsInformedThatDisappearenceCompleted() {
+        guard !didInformDelegateThatDisappearenceCompleted else {
+            Logger.debug("\(logTag) in \(#function) ignoring redundant 'disappeared' notification")
+            return
+        }
+        didInformDelegateThatDisappearenceCompleted = true
+
+        self.delegate?.menuActionsDidHide(self)
+    }
+
+    var didInformDelegateOfDismissalAnimation = false
+    func ensureDelegateIsInformedOfDismissalAnimation() {
+        guard !didInformDelegateOfDismissalAnimation else {
+            Logger.debug("\(logTag) in \(#function) ignoring redundant 'dismissal' notification")
+            return
+        }
+        didInformDelegateOfDismissalAnimation = true
+
+        guard let presentationFocusOffset = self.presentationFocusOffset else {
+            owsFail("\(self.logTag) in \(#function) presentationFocusOffset was unexpectedly nil")
+            self.delegate?.menuActionsDidHide(self)
+            return
+        }
+
+        self.delegate?.menuActions(self, isDismissingWithVerticalFocusChange: presentationFocusOffset)
     }
 
     // MARK: Actions
