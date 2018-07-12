@@ -9,6 +9,8 @@ protocol MessageActionsDelegate: class {
     func messageActionsDidHide(_ messageActionsViewController: MessageActionsViewController)
     func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
+    func messageActions(_ messageActionsViewController: MessageActionsViewController, isPresentingWithVerticalFocusChange: CGFloat)
+    func messageActions(_ messageActionsViewController: MessageActionsViewController, isDismissingWithVerticalFocusChange: CGFloat)
 }
 
 struct MessageActionBuilder {
@@ -159,8 +161,6 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
     override func loadView() {
         self.view = UIView()
 
-        highlightFocusedView()
-
         view.addSubview(actionSheetView)
 
         actionSheetView.autoPinWidthToSuperview()
@@ -172,6 +172,8 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
         self.view.addGestureRecognizer(tapGesture)
     }
 
+    var snapshotView: UIView?
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
 
@@ -182,39 +184,72 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
             return
         }
 
+        guard let focusedViewSuperview = focusedView.superview else {
+            owsFail("\(self.logTag) in \(#function) focusedViewSuperview was unexpectedly nil")
+            return
+        }
+
         // darken background
+        guard let snapshotView = addSnapshotFocusedView() else {
+            owsFail("\(self.logTag) in \(#function) snapshotView was unexpectedly nil")
+            return
+        }
+
+        self.snapshotView = snapshotView
+        snapshotView.superview?.layoutIfNeeded()
+
         let backgroundDuration: TimeInterval = 0.1
         UIView.animate(withDuration: backgroundDuration) {
             self.view.backgroundColor = UIColor.black.withAlphaComponent(0.4)
         }
 
-        // present action sheet
-        self.actionSheetView.superview?.layoutIfNeeded()
+        // layout actionsheet and snapshot view with initial frame
+        self.view.layoutIfNeeded()
+
+        let oldFocusFrame = self.view.convert(focusedView.frame, from: focusedViewSuperview)
         NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
         self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(toSuperviewEdge: .bottom)
         UIView.animate(withDuration: 0.3,
                        delay: backgroundDuration,
                        options: .curveEaseOut,
                        animations: {
-                         self.actionSheetView.superview?.layoutIfNeeded()
-                       },
+                        self.actionSheetView.superview?.layoutIfNeeded()
+                        let newSheetFrame = self.actionSheetView.frame
+
+                        var newFocusFrame = oldFocusFrame
+
+                        // Position focused item just over the action sheet.
+                        let padding: CGFloat = 10
+                        let overlap: CGFloat = (oldFocusFrame.maxY + padding) - newSheetFrame.minY
+                        newFocusFrame.origin.y = oldFocusFrame.origin.y - overlap
+
+                        snapshotView.frame = newFocusFrame
+
+                        let offset = -overlap
+                        self.presentationFocusOffset = offset
+                        self.delegate?.messageActions(self, isPresentingWithVerticalFocusChange: offset)
+        },
                        completion: nil)
     }
 
-    private func highlightFocusedView() {
+    var presentationFocusOffset: CGFloat?
+
+    private func addSnapshotFocusedView() -> UIView? {
         guard let snapshotView = self.focusedView.snapshotView(afterScreenUpdates: false) else {
             owsFail("\(self.logTag) in \(#function) snapshotView was unexpectedly nil")
-            return
+            return nil
         }
         view.addSubview(snapshotView)
 
         guard let focusedViewSuperview = focusedView.superview else {
             owsFail("\(self.logTag) in \(#function) focusedViewSuperview was unexpectedly nil")
-            return
+            return nil
         }
 
         let convertedFrame = view.convert(focusedView.frame, from: focusedViewSuperview)
         snapshotView.frame = convertedFrame
+
+        return snapshotView
     }
 
     @objc
@@ -223,13 +258,26 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
     }
 
     func animateDismiss(action: MessageAction?) {
-        self.actionSheetView.superview?.layoutIfNeeded()
-
-        if let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint {
-            NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
-        } else {
+        guard let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint else {
             owsFail("\(self.logTag) in \(#function) actionSheetVerticalConstraint was unexpectedly nil")
+            self.delegate?.messageActionsDidHide(self)
+            return
         }
+
+        guard let snapshotView = self.snapshotView else {
+            owsFail("\(self.logTag) in \(#function) snapshotView was unexpectedly nil")
+            self.delegate?.messageActionsDidHide(self)
+            return
+        }
+
+        guard let presentationFocusOffset = self.presentationFocusOffset else {
+            owsFail("\(self.logTag) in \(#function) presentationFocusOffset was unexpectedly nil")
+            self.delegate?.messageActionsDidHide(self)
+            return
+        }
+
+        self.actionSheetView.superview?.layoutIfNeeded()
+        NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
 
         let dismissDuration: TimeInterval = 0.2
         self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(.top, to: .bottom, of: self.view)
@@ -239,6 +287,10 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
                        animations: {
                         self.view.backgroundColor = UIColor.clear
                         self.actionSheetView.superview?.layoutIfNeeded()
+                        snapshotView.frame.origin.y -= presentationFocusOffset
+                        // this helps when focused view is above navbars, etc.
+                        snapshotView.alpha = 0
+                        self.delegate?.messageActions(self, isDismissingWithVerticalFocusChange: presentationFocusOffset)
         },
                        completion: { _ in
                         self.view.isHidden = true
