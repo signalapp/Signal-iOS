@@ -111,6 +111,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark - UIMenuController
 
+@property (nonatomic, readonly) BOOL hasBodyTextActionContent;
+
 - (NSArray<UIMenuItem *> *)textMenuControllerItems;
 - (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
 - (NSArray<UIMenuItem *> *)defaultMenuControllerItems;
