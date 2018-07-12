@@ -81,10 +81,10 @@ public class ConversationStyle: NSObject {
     public func updateProperties() {
         if thread.isGroupThread() {
             gutterLeading = 52
-            gutterTrailing = 20
+            gutterTrailing = 16
         } else {
             gutterLeading = 16
-            gutterTrailing = 20
+            gutterTrailing = 16
         }
         fullWidthGutterLeading = 16
         fullWidthGutterTrailing = 16
@@ -94,7 +94,7 @@ public class ConversationStyle: NSObject {
 
         fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
-        maxMessageWidth = floor(contentWidth - 48)
+        maxMessageWidth = floor(contentWidth - 32)
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 

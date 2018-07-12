@@ -81,21 +81,26 @@ class AttachmentPointerView: UIStackView {
     }
 
     private static var vSpacing: CGFloat = 5
-    private static var nameFont = UIFont.ows_dynamicTypeBody
-    private static var statusFont = UIFont.ows_dynamicTypeCaption1
+    private class func nameFont() -> UIFont { return UIFont.ows_dynamicTypeBody }
+    private class func statusFont() -> UIFont { return UIFont.ows_dynamicTypeCaption1 }
+    private static var progressWidth: CGFloat = 80
+    private static var progressHeight: CGFloat = 6
 
     func createSubviews() {
+        progressView.autoSetDimension(.width, toSize: AttachmentPointerView.progressWidth)
+        progressView.autoSetDimension(.height, toSize: AttachmentPointerView.progressHeight)
+
         // truncate middle to be sure we include file extension
         nameLabel.lineBreakMode = .byTruncatingMiddle
         nameLabel.textAlignment = .center
         nameLabel.textColor = self.textColor
-        nameLabel.font = AttachmentPointerView.nameFont
+        nameLabel.font = AttachmentPointerView.nameFont()
 
         statusLabel.textAlignment = .center
         statusLabel.adjustsFontSizeToFitWidth = true
         statusLabel.numberOfLines = 2
         statusLabel.textColor = self.textColor
-        statusLabel.font = AttachmentPointerView.statusFont
+        statusLabel.font = AttachmentPointerView.statusFont()
 
         self.axis = .vertical
         self.spacing = AttachmentPointerView.vSpacing
@@ -115,7 +120,7 @@ class AttachmentPointerView: UIStackView {
             case .downloading:
                 return NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS", comment: "Status label when an attachment is currently downloading")
             case .failed:
-                return self.attachmentPointer.mostRecentFailureLocalizedText ?? NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_FAILED", comment: "Status label when an attachment download has failed.")
+                return NSLocalizedString("ATTACHMENT_DOWNLOADING_STATUS_FAILED", comment: "Status label when an attachment download has failed.")
             }
         }()
 
@@ -134,9 +139,9 @@ class AttachmentPointerView: UIStackView {
 
     @objc
     public class func measureHeight() -> CGFloat {
-        return ceil(nameFont.lineHeight +
-            statusFont.lineHeight +
-            OWSProgressView.defaultSize().height +
+        return ceil(nameFont().lineHeight +
+            statusFont().lineHeight +
+            progressHeight +
             vSpacing * 2)
     }
 }

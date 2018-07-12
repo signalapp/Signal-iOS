@@ -161,12 +161,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)topLabelFont
 {
-    return [UIFont ows_dynamicTypeCaption1Font];
+    return [UIFont ows_dynamicTypeBodyFont];
 }
 
 + (UIFont *)bottomLabelFont
 {
-    return [UIFont ows_dynamicTypeCaption2Font];
+    return [UIFont ows_dynamicTypeCaption1Font];
 }
 
 + (CGFloat)labelVSpacing

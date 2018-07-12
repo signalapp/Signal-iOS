@@ -252,7 +252,7 @@ typedef void (^SystemMessageActionBlock)(void);
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        return nil;
+        result = [UIImage imageNamed:@"system_message_call"];
     } else {
         OWSFail(@"Unknown interaction type: %@", [interaction class]);
         return nil;

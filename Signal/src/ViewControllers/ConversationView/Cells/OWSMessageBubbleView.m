@@ -372,15 +372,15 @@ NS_ASSUME_NONNULL_BEGIN
                 // TODO: Consider only using a single shadow for perf.
                 shadowView1.fillColor = self.bubbleColor;
                 shadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
-                shadowView1.layer.shadowOpacity = 0.2f;
+                shadowView1.layer.shadowOpacity = 0.08f;
                 shadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
-                shadowView1.layer.shadowRadius = 20.f;
+                shadowView1.layer.shadowRadius = 12.f;
 
                 shadowView2.fillColor = self.bubbleColor;
                 shadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
-                shadowView2.layer.shadowOpacity = 0.08f;
+                shadowView2.layer.shadowOpacity = 0.12f;
                 shadowView2.layer.shadowOffset = CGSizeZero;
-                shadowView2.layer.shadowRadius = 4.f;
+                shadowView2.layer.shadowRadius = 1.f;
             } else {
                 OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
 
@@ -431,7 +431,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (shouldFooterOverlayMedia) {
         OWSAssert(bodyMediaView);
 
-        CGFloat maxGradientHeight = 48.f;
+        CGFloat maxGradientHeight = 40.f;
         CAGradientLayer *gradientLayer = [CAGradientLayer new];
         gradientLayer.colors = @[
             (id)[UIColor colorWithWhite:0.f alpha:0.f].CGColor,
@@ -1038,10 +1038,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *wrapper = [UIView new];
     [wrapper addSubview:downloadView];
-    [downloadView autoPinWidthToSuperview];
-    [downloadView autoVCenterInSuperview];
-    [downloadView autoPinEdgeToSuperviewMargin:ALEdgeTop relation:NSLayoutRelationGreaterThanOrEqual];
-    [downloadView autoPinEdgeToSuperviewMargin:ALEdgeBottom relation:NSLayoutRelationGreaterThanOrEqual];
+    [downloadView autoPinEdgesToSuperviewEdges];
 
     self.loadCellContentBlock = ^{
         // Do nothing.
@@ -1200,7 +1197,7 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case OWSMessageCellType_DownloadingAttachment:
-            result = CGSizeMake(200, [AttachmentPointerView measureHeight]);
+            result = CGSizeMake(MIN(200, maxMessageWidth), [AttachmentPointerView measureHeight]);
             break;
         case OWSMessageCellType_ContactShare:
             OWSAssert(self.viewItem.contactShare);
@@ -1208,6 +1205,9 @@ NS_ASSUME_NONNULL_BEGIN
             result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
     }
+
+    OWSAssert(result.width <= maxMessageWidth);
+    result.width = MIN(result.width, maxMessageWidth);
 
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }

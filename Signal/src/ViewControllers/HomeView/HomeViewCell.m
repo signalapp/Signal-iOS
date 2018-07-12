@@ -254,7 +254,7 @@ NS_ASSUME_NONNULL_BEGIN
         [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultHigh
                              forConstraints:^{
                                  // This is a bit arbitrary, but it should scale with the size of dynamic text
-                                 CGFloat minMargin = CeilEven(unreadBadgeHeight * .5);
+                                 CGFloat minMargin = CeilEven(unreadBadgeHeight * .5f);
 
                                  // Spec check. Should be 12pts (6pt on each side) when using default font size.
                                  OWSAssert(UIFont.ows_dynamicTypeBodyFont.pointSize != 17 || minMargin == 12);
@@ -273,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        UIColor *messageStatusViewTintColor = textColor;
+        UIColor *messageStatusViewTintColor = [UIColor ows_light35Color];
         BOOL shouldAnimateStatusIcon = NO;
         if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
