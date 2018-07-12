@@ -13,7 +13,7 @@ protocol MessageActionsDelegate: class {
 
 struct MessageActionBuilder {
     static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "table_ic_verify"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_reply"),
                              title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                              subtitle: nil,
                              block: { [weak delegate] (_) in
@@ -23,7 +23,7 @@ struct MessageActionBuilder {
     }
 
     static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_copy"),
                              title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                              subtitle: nil,
                              block: { (_) in
@@ -32,7 +32,7 @@ struct MessageActionBuilder {
     }
 
     static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "system_message_security"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_info"),
                              title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                              subtitle: nil,
                              block: { [weak delegate] (_) in
@@ -41,7 +41,7 @@ struct MessageActionBuilder {
     }
 
     static func deleteMessage(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "message_status_failed_large"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_trash"),
                              title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                              subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
                              block: { (_) in
@@ -50,7 +50,7 @@ struct MessageActionBuilder {
     }
 
     static func copyMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_copy"),
                              title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
                              subtitle: nil,
                              block: { (_) in
@@ -59,7 +59,7 @@ struct MessageActionBuilder {
     }
 
     static func saveMedia(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+        return MessageAction(image: #imageLiteral(resourceName: "ic_download"),
                              title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
                              subtitle: nil,
                              block: { (_) in
