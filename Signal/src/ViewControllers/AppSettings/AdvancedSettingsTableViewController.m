@@ -284,12 +284,14 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+#ifdef THEME_ENABLED
 - (void)didToggleThemeSwitch:(UISwitch *)sender
 {
     [UIColor setIsThemeEnabled:sender.isOn];
 
     // TODO: Notify and refresh.
 }
+#endif
 
 @end
 
