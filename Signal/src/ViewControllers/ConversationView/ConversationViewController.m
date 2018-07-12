@@ -1990,7 +1990,17 @@ typedef enum : NSUInteger {
 
 #pragma mark - ConversationViewCellDelegate
 
-- (void)conversationCellDidLongpressText:(ConversationViewCell *)cell viewItem:(ConversationViewItem *)viewItem
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
+{
+    DDLogDebug(@"%@ in %s TODO", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
+{
+    DDLogDebug(@"%@ in %s TODO", self.logTag, __PRETTY_FUNCTION__);
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
 {
     // TODO Interpolate from 0->0.3 depending on distance to make visible.
     NSTimeInterval animationDuration = 0.3;
@@ -2003,8 +2013,10 @@ typedef enum : NSUInteger {
         }
         completion:^(BOOL finished) {
             // TODO pass in real actions
+
+            NSArray<MessageAction *> *messageActions = [viewItem textActionsWithDelegate:self];
             MessageActionsViewController *messageActionsViewController =
-                [[MessageActionsViewController alloc] initWithFocusedView:cell actions:@[]];
+                [[MessageActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
 
             messageActionsViewController.delegate = self;
 
