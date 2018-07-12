@@ -15,11 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSErrorMessage;
 @class TSInteraction;
 @class TSInvalidIdentityKeyErrorMessage;
-@class TSInvalidIdentityKeyErrorMessage;
 @class TSMessage;
 @class TSOutgoingMessage;
 @class TSQuotedMessage;
-@class YapDatabaseReadTransaction;
 @class YapDatabaseReadTransaction;
 
 @protocol ConversationViewCellDelegate <NSObject>
