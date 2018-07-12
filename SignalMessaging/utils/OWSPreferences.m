@@ -31,7 +31,6 @@ NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHas
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
-NSString *const OWSPreferencesKeyEnableTheme = @"OWSPreferencesKeyEnableTheme";
 
 @implementation OWSPreferences
 
@@ -412,19 +411,6 @@ NSString *const OWSPreferencesKeyEnableTheme = @"OWSPreferencesKeyEnableTheme";
             DDLogWarn(@"Undefined NotificationType in Settings");
             return @"";
     }
-}
-
-- (BOOL)isThemeEnabled
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyEnableTheme];
-    return preference ? [preference boolValue] : NO;
-}
-
-- (void)setIsThemeEnabled:(BOOL)flag
-{
-    OWSAssert(CurrentAppContext().isMainApp);
-
-    [self setValueForKey:OWSPreferencesKeyEnableTheme toValue:@(flag)];
 }
 
 #pragma mark - Push Tokens

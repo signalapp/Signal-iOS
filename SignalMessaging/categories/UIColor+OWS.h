@@ -6,6 +6,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#ifdef DEBUG
+#define THEME_ENABLED
+#endif
+
 @interface UIColor (OWS)
 
 #pragma mark - Global App Colors
@@ -76,6 +80,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_deepOrange900Color;
 @property (class, readonly, nonatomic) UIColor *ows_grey600Color;
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
+
+#pragma mark - Theme
+
+#ifdef THEME_ENABLED
++ (BOOL)isThemeEnabled;
++ (void)setIsThemeEnabled:(BOOL)value;
+#endif
 
 @end
 

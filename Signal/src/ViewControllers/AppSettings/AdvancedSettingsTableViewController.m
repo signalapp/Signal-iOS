@@ -195,11 +195,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [contents addSection:censorshipSection];
 
-#ifdef DEBUG
+#ifdef THEME_ENABLED
     OWSTableSection *themeSection = [OWSTableSection new];
     themeSection.headerTitle = NSLocalizedString(@"THEME_SECTION", nil);
     [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_THEME", @"")
-                                                      isOn:[Environment.preferences isThemeEnabled]
+                                                      isOn:[UIColor isThemeEnabled]
                                                     target:weakSelf
                                                   selector:@selector(didToggleThemeSwitch:)]];
     [contents addSection:themeSection];
@@ -286,7 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didToggleThemeSwitch:(UISwitch *)sender
 {
-    [Environment.preferences setIsThemeEnabled:sender.isOn];
+    [UIColor setIsThemeEnabled:sender.isOn];
 
     // TODO: Notify and refresh.
 }
