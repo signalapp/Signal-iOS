@@ -2,11 +2,16 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIColor+OWS.h"
 #import "OWSMath.h"
+#import "UIColor+OWS.h"
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const UIColorCollection = @"UIColorCollection";
+NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 
 @implementation UIColor (OWS)
 
@@ -336,6 +341,26 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
 {
     return [self.ows_conversationColorMap allKeysForObject:color].firstObject;
+}
+
+#pragma mark - Theme
+
++ (BOOL)isThemeEnabled
+{
+    OWSAssertIsOnMainThread();
+
+    return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:UIColorKeyThemeEnabled
+                                                           inCollection:UIColorCollection
+                                                           defaultValue:NO];
+}
+
++ (void)setIsThemeEnabled:(BOOL)value
+{
+    OWSAssertIsOnMainThread();
+
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
+                                                            forKey:UIColorKeyThemeEnabled
+                                                      inCollection:UIColorCollection];
 }
 
 @end

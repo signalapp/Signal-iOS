@@ -58,7 +58,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     OWSAssert(key != nil);
 
     __block id result;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self tryGetValueForKey:key transaction:transaction];
     }];
     return result;
@@ -72,10 +72,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self setValueForKey:key toValue:value transaction:transaction];
-        }];
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self setValueForKey:key toValue:value transaction:transaction];
+    }];
 }
 
 - (void)setValueForKey:(NSString *)key

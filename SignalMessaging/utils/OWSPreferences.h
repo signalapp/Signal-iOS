@@ -61,8 +61,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)hasGeneratedThumbnails;
 - (void)setHasGeneratedThumbnails:(BOOL)value;
 
-#pragma mark - Calling
-
 #pragma mark Callkit
 
 - (BOOL)isSystemCallLogEnabled;
