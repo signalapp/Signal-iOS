@@ -392,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   @"A label that indicates the user has no Signal contacts.")
                                                       customRowHeight:UITableViewAutomaticDimension]];
             } else {
-                UITableViewCell *loadingCell = [UITableViewCell new];
+                UITableViewCell *loadingCell = [OWSTableItem newCell];
                 OWSAssert(loadingCell.contentView);
 
                 UIActivityIndicatorView *activityIndicatorView =

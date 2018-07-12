@@ -368,7 +368,7 @@ const CGFloat kIconViewLength = 24;
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
-                                 UITableViewCell *cell = [UITableViewCell new];
+                                 UITableViewCell *cell = [OWSTableItem newCell];
                                  OWSConversationSettingsViewController *strongSelf = weakSelf;
                                  OWSCAssert(strongSelf);
                                  cell.preservesSuperviewLayoutMargins = YES;
@@ -422,7 +422,7 @@ const CGFloat kIconViewLength = 24;
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            UITableViewCell *cell = [UITableViewCell new];
+                            UITableViewCell *cell = [OWSTableItem newCell];
                             OWSConversationSettingsViewController *strongSelf = weakSelf;
                             OWSCAssert(strongSelf);
                             cell.preservesSuperviewLayoutMargins = YES;
@@ -518,6 +518,7 @@ const CGFloat kIconViewLength = 24;
                         OWSCAssert(strongSelf);
                         cell.preservesSuperviewLayoutMargins = YES;
                         cell.contentView.preservesSuperviewLayoutMargins = YES;
+                        cell.backgroundColor = [UIColor ows_themeBackgroundColor];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
                         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
@@ -556,6 +557,7 @@ const CGFloat kIconViewLength = 24;
                         OWSCAssert(strongSelf);
                         cell.preservesSuperviewLayoutMargins = YES;
                         cell.contentView.preservesSuperviewLayoutMargins = YES;
+                        cell.backgroundColor = [UIColor ows_themeBackgroundColor];
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
                         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
@@ -680,7 +682,7 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssert(name.length > 0);
 
-    UITableViewCell *cell = [UITableViewCell new];
+    UITableViewCell *cell = [OWSTableItem newCell];
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
 

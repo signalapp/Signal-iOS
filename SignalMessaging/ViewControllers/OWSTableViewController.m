@@ -204,6 +204,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                                        reuseIdentifier:@"UITableViewCellStyleValue1"];
+        cell.backgroundColor = [UIColor ows_themeBackgroundColor];
         cell.textLabel.text = text;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
         cell.textLabel.textColor = [UIColor ows_themeForegroundColor];

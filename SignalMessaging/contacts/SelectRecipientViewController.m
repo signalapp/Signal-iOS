@@ -55,7 +55,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     [super loadView];
 
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor ows_themeBackgroundColor];
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
@@ -97,6 +97,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
+    _tableViewController.view.backgroundColor = [UIColor ows_themeBackgroundColor];
 
     [self updateTableContents];
 
@@ -107,7 +108,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *countryCodeLabel = [UILabel new];
     countryCodeLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    countryCodeLabel.textColor = [UIColor blackColor];
+    countryCodeLabel.textColor = [UIColor ows_themeForegroundColor];
     countryCodeLabel.text
         = NSLocalizedString(@"REGISTRATION_DEFAULT_COUNTRY_NAME", @"Label for the country code field");
     return countryCodeLabel;
@@ -132,7 +133,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     UILabel *phoneNumberLabel = [UILabel new];
     phoneNumberLabel.font = [UIFont ows_mediumFontWithSize:18.f];
-    phoneNumberLabel.textColor = [UIColor blackColor];
+    phoneNumberLabel.textColor = [UIColor ows_themeForegroundColor];
     phoneNumberLabel.text
         = NSLocalizedString(@"REGISTRATION_PHONENUMBER_BUTTON", @"Label for the phone number textfield");
     return phoneNumberLabel;
@@ -148,7 +149,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     if (!_examplePhoneNumberLabel) {
         _examplePhoneNumberLabel = [UILabel new];
         _examplePhoneNumberLabel.font = [self examplePhoneNumberFont];
-        _examplePhoneNumberLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
+        _examplePhoneNumberLabel.textColor = [UIColor ows_themeSecondaryColor];
     }
 
     return _examplePhoneNumberLabel;
@@ -391,8 +392,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
 {
     BOOL isEnabled = [self hasValidPhoneNumber];
     self.phoneNumberButton.enabled = isEnabled;
-    [self.phoneNumberButton
-        setBackgroundColorsWithUpColor:(isEnabled ? [UIColor ows_signalBrandBlueColor] : [UIColor lightGrayColor])];
+    [self.phoneNumberButton setBackgroundColorsWithUpColor:(isEnabled ? [UIColor ows_signalBrandBlueColor]
+                                                                      : [UIColor ows_themeSecondaryColor])];
 }
 
 #pragma mark - CountryCodeViewControllerDelegate
@@ -457,7 +458,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
         SelectRecipientViewController *strongSelf = weakSelf;
         OWSCAssert(strongSelf);
 
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.preservesSuperviewLayoutMargins = YES;
         cell.contentView.preservesSuperviewLayoutMargins = YES;
 

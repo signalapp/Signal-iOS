@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.title = NSLocalizedString(@"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE",
         @"Navigation title shown when user is re-registering after having enabled registration lock");
 
-    self.view.backgroundColor = UIColor.whiteColor;
+    self.view.backgroundColor = [UIColor ows_themeBackgroundColor];
 
     PinEntryView *entryView = [PinEntryView new];
     self.entryView = entryView;

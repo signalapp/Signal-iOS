@@ -33,14 +33,15 @@
         @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ]) {
         NotificationType notificationType = (NotificationType)option.intValue;
 
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
-            if (selectedNotifType == notificationType) {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-            return cell;
-        }
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 UITableViewCell *cell = [OWSTableItem newCell];
+                                 [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
+                                 if (selectedNotifType == notificationType) {
+                                     cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                                 }
+                                 return cell;
+                             }
                              actionBlock:^{
                                  [weakSelf setNotificationType:notificationType];
                              }]];
