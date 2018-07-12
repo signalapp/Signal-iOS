@@ -2489,6 +2489,9 @@ typedef enum : NSUInteger {
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
+// TODO override dismissViewController to dismiss any presented MessagesActionSheet?
+// e.g. if we have any remaining dismiss-and-present logic remaining?
+
 #pragma mark - CNContactViewControllerDelegate
 
 - (void)contactViewController:(CNContactViewController *)viewController
