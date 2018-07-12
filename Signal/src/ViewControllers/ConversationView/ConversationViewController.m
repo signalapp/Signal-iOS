@@ -594,8 +594,13 @@ typedef enum : NSUInteger {
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
-    [self.collectionView autoPinEdgesToSuperviewEdges];
+    [self.collectionView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.collectionView autoPinWidthToSuperview];
 
+    // We don't need a top inset, since we pin to the top layout guide.
+    // The bottom inset is controlled by handleKeyboardNotification.
+    self.automaticallyAdjustsScrollViewInsets = NO;
     [self.collectionView applyScrollViewInsetsFix];
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
