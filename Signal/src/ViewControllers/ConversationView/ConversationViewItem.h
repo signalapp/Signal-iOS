@@ -112,6 +112,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 #pragma mark - MessageActions
 
 @property (nonatomic, readonly) BOOL hasBodyTextActionContent;
+@property (nonatomic, readonly) BOOL hasMediaActionContent;
 
 - (void)copyTextAction;
 - (void)shareMediaAction;
