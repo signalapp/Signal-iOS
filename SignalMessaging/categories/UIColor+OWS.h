@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 #define THEME_ENABLED
 #endif
 
+extern NSString *const NSNotificationNameThemeDidChange;
+
 @interface UIColor (OWS)
 
 #pragma mark - Global App Colors
@@ -87,6 +89,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isThemeEnabled;
 + (void)setIsThemeEnabled:(BOOL)value;
 #endif
+
++ (UIColor *)ows_themeBackgroundColor;
++ (UIColor *)ows_themeForegroundColor;
++ (UIColor *)ows_themeSecondaryColor;
 
 @end
 

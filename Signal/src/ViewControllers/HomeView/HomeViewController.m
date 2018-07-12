@@ -172,6 +172,10 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                              selector:@selector(outageStateDidChange:)
                                                  name:OutageDetection.outageStateDidChange
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:NSNotificationNameThemeDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -211,13 +215,29 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self updateReminderViews];
 }
 
+- (void)themeDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyTheme];
+    [self.tableView reloadData];
+}
+
+#pragma mark - Theme
+
+- (void)applyTheme
+{
+    OWSAssertIsOnMainThread();
+
+    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.tableView.backgroundColor = UIColor.ows_themeBackgroundColor;
+}
+
 #pragma mark - View Life Cycle
 
 - (void)loadView
 {
     [super loadView];
-
-    self.view.backgroundColor = [UIColor whiteColor];
 
     // TODO: Remove this.
     if (self.homeViewMode == HomeViewMode_Inbox) {
@@ -308,6 +328,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
     
     [self updateReminderViews];
+
+    [self applyTheme];
 }
 
 - (void)updateReminderViews
@@ -359,7 +381,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
-    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.backgroundColor = UIColor.ows_themeBackgroundColor;
+    if (UIColor.isThemeEnabled) {
+        searchBar.barStyle = UIBarStyleBlack;
+    } else {
+        searchBar.barStyle = UIBarStyleDefault;
+    }
+
     searchBar.delegate = self;
     [searchBar sizeToFit];
 
@@ -808,7 +836,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [subview removeFromSuperview];
     }
 
-    cell.backgroundColor = [UIColor whiteColor];
+    cell.backgroundColor = UIColor.ows_themeBackgroundColor;
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssert(disclosureImage);
@@ -822,7 +850,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont ows_dynamicTypeBodyFont];
-    label.textColor = [UIColor blackColor];
+    label.textColor = UIColor.ows_themeForegroundColor;
 
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -1411,6 +1439,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)updateEmptyBoxText
 {
+    // TODO: Theme, review with design.
     _emptyBoxLabel.textColor = [UIColor grayColor];
     _emptyBoxLabel.font = [UIFont ows_regularFontWithSize:18.f];
     _emptyBoxLabel.textAlignment = NSTextAlignmentCenter;
@@ -1448,10 +1477,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:[UIFont ows_regularFontWithSize:14.f]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:[UIColor blackColor]
+                            value:UIColor.ows_themeForegroundColor
                             range:NSMakeRange(0, firstLine.length)];
+    // TODO: Theme, Review with design.
     [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:[UIColor ows_darkGrayColor]
+                            value:UIColor.ows_themeSecondaryColor
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
 }

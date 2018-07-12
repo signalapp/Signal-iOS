@@ -4,11 +4,15 @@
 
 #import "OWSMath.h"
 #import "UIColor+OWS.h"
+#import "UIUtil.h"
 #import <SignalServiceKit/Cryptography.h>
+#import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const NSNotificationNameThemeDidChange = @"NSNotificationNameThemeDidChange";
 
 NSString *const UIColorCollection = @"UIColorCollection";
 NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
@@ -19,17 +23,19 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 
 + (UIColor *)ows_navbarBackgroundColor
 {
-    return UIColor.ows_whiteColor;
+    return (UIColor.isThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
 }
 
 + (UIColor *)ows_navbarIconColor
 {
-    return UIColor.ows_light60Color;
+    // TODO: Review with design.
+    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 
 + (UIColor *)ows_navbarTitleColor
 {
-    return UIColor.ows_light90Color;
+    // TODO: Review with design.
+    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 
 #pragma mark -
@@ -361,6 +367,29 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
                                                             forKey:UIColorKeyThemeEnabled
                                                       inCollection:UIColorCollection];
+
+    [UIUtil setupSignalAppearence];
+
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameThemeDidChange
+                                                             object:nil
+                                                           userInfo:nil];
+}
+
++ (UIColor *)ows_themeBackgroundColor
+{
+    return (UIColor.isThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
+}
+
++ (UIColor *)ows_themeForegroundColor
+{
+    // TODO: Review with design.
+    return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_light90Color);
+}
+
++ (UIColor *)ows_themeSecondaryColor
+{
+    // TODO: Review with design.
+    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 
 @end

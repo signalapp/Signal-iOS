@@ -61,12 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(!self.avatarView);
 
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = UIColor.ows_themeBackgroundColor;
 
     _viewConstraints = [NSMutableArray new];
 
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = [[UIColor colorWithRGBHex:0x000000] colorWithAlphaComponent:0.08];
+    selectedBackgroundView.backgroundColor =
+        [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
 
     self.selectedBackgroundView = selectedBackgroundView;
 
@@ -225,9 +226,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.dateTimeLabel.text
         = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
 
-    UIColor *textColor = [UIColor ows_light60Color];
+    UIColor *textColor = [UIColor ows_themeSecondaryColor];
     if (hasUnreadMessages && overrideSnippet == nil) {
-        textColor = [UIColor ows_light90Color];
+        textColor = [UIColor ows_themeForegroundColor];
         self.dateTimeLabel.font = self.dateTimeFont.ows_mediumWeight;
     } else {
         self.dateTimeLabel.font = self.dateTimeFont;
@@ -273,7 +274,9 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        UIColor *messageStatusViewTintColor = [UIColor ows_light35Color];
+        // TODO: Review with design.
+        UIColor *messageStatusViewTintColor
+            = (UIColor.isThemeEnabled ? [UIColor ows_dark30Color] : [UIColor ows_light35Color]);
         BOOL shouldAnimateStatusIcon = NO;
         if ([self.thread.lastMessageForInbox isKindOfClass:[TSOutgoingMessage class]]) {
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.thread.lastMessageForInbox;
@@ -363,7 +366,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           @"A label for conversations with blocked users.")
                                            attributes:@{
                                                NSFontAttributeName : self.snippetFont.ows_mediumWeight,
-                                               NSForegroundColorAttributeName : [UIColor ows_light90Color],
+                                               NSForegroundColorAttributeName : [UIColor ows_themeForegroundColor],
                                            }]];
     } else {
         if ([thread isMuted]) {
@@ -371,9 +374,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                     initWithString:@"\ue067  "
                                                         attributes:@{
                                                             NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
-                                                            NSForegroundColorAttributeName : (hasUnreadMessages
-                                                                    ? [UIColor colorWithWhite:0.1f alpha:1.f]
-                                                                    : [UIColor ows_light60Color]),
+                                                            NSForegroundColorAttributeName :
+                                                                (hasUnreadMessages ? [UIColor ows_themeForegroundColor]
+                                                                                   : [UIColor ows_themeSecondaryColor]),
                                                         }]];
         }
         NSString *displayableText = thread.lastMessageText;
@@ -385,8 +388,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 (hasUnreadMessages ? self.snippetFont.ows_mediumWeight
                                                                                    : self.snippetFont),
                                                             NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? [UIColor ows_light90Color]
-                                                                                   : [UIColor ows_light60Color]),
+                                                                (hasUnreadMessages ? [UIColor ows_themeForegroundColor]
+                                                                                   : [UIColor ows_themeSecondaryColor]),
                                                         }]];
         }
     }
@@ -488,6 +491,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     self.nameLabel.font = self.nameFont;
+    self.nameLabel.textColor = [UIColor ows_themeForegroundColor];
 
     ThreadViewModel *thread = self.thread;
     if (thread == nil) {
