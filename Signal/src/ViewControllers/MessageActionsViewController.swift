@@ -7,8 +7,8 @@ import Foundation
 @objc
 protocol MessageActionsDelegate: class {
     func messageActionsDidHide(_ messageActionsViewController: MessageActionsViewController)
-    func messageActions(_ messageActionsViewController: MessageActionsViewController, showInfoForItem conversationViewItem: ConversationViewItem)
-    func messageActions(_ messageActionsViewController: MessageActionsViewController, replyToItem conversationViewItem: ConversationViewItem)
+    func messageActionsShowDetailsForItem(_ conversationViewItem: ConversationViewItem)
+    func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
 }
 
 struct MessageActionBuilder {
@@ -16,7 +16,8 @@ struct MessageActionBuilder {
         return MessageAction(image: #imageLiteral(resourceName: "table_ic_verify"),
                              title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                              subtitle: nil,
-                             block: { (_) in
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsReplyToItem(conversationViewItem)
 
         })
     }
@@ -27,6 +28,15 @@ struct MessageActionBuilder {
                              subtitle: nil,
                              block: { (_) in
                                 conversationViewItem.copyTextAction()
+        })
+    }
+
+    static func showDetails(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "system_message_security"),
+                             title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
     }
 }
@@ -42,21 +52,21 @@ extension ConversationViewItem {
         })
     }
 
-    var infoAction: MessageAction {
-        return MessageAction(image: #imageLiteral(resourceName: "system_message_security"),
-                             title: NSLocalizedString("MESSAGE_ACTION_TITLE_INFO", comment: "Action sheet button title"),
-                             subtitle: nil,
-                             block: { (action) in
-                                Logger.debug("\(self.logTag) in \(#function) action: \(action)")
-        })
-    }
-
     @objc
     func textActions(delegate: MessageActionsDelegate) -> [MessageAction] {
         var actions: [MessageAction] = []
-        if self.hasBodyText {
-            actions.append(MessageActionBuilder.copyText(conversationViewItem: self, delegate: delegate))
+
+//        [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"EDIT_ITEM_MESSAGE_METADATA_ACTION",
+//            @"Short name for edit menu item to show message metadata.")
+//            action:self.metadataActionSelector],
+
+        if self.hasBodyTextActionContent {
+            let copyTextAction = MessageActionBuilder.copyText(conversationViewItem: self, delegate: delegate)
+            actions.append(copyTextAction)
         }
+
+        let showInfoAction = MessageActionBuilder.showDetails(conversationViewItem: self, delegate: delegate)
+        actions.append(showInfoAction)
 
         return actions
 //        switch self.messageCellType() {
@@ -172,10 +182,10 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
 
     @objc
     func didTapBackground() {
-        animateDismiss()
+        animateDismiss(action: nil)
     }
 
-    func animateDismiss() {
+    func animateDismiss(action: MessageAction?) {
         self.actionSheetView.superview?.layoutIfNeeded()
 
         if let actionSheetViewVerticalConstraint = self.actionSheetViewVerticalConstraint {
@@ -184,8 +194,9 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
             owsFail("\(self.logTag) in \(#function) actionSheetVerticalConstraint was unexpectedly nil")
         }
 
+        let dismissDuration: TimeInterval = 0.2
         self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(.top, to: .bottom, of: self.view)
-        UIView.animate(withDuration: 0.2,
+        UIView.animate(withDuration: dismissDuration,
                        delay: 0,
                        options: .curveEaseOut,
                        animations: {
@@ -193,14 +204,18 @@ class MessageActionsViewController: UIViewController, MessageActionSheetDelegate
                         self.actionSheetView.superview?.layoutIfNeeded()
         },
                        completion: { _ in
+                        self.view.isHidden = true
                         self.delegate?.messageActionsDidHide(self)
+                        if let action = action {
+                            action.block(action)
+                        }
         })
     }
 
     // MARK: MessageActionSheetDelegate
 
-    func actionSheet(_ actionSheet: MessageActionSheetView, didCompleteAction action: MessageAction) {
-        animateDismiss()
+    func actionSheet(_ actionSheet: MessageActionSheetView, didSelectAction action: MessageAction) {
+        animateDismiss(action: action)
     }
 }
 
@@ -222,11 +237,11 @@ public class MessageAction: NSObject {
 }
 
 protocol MessageActionSheetDelegate: class {
-    func actionSheet(_ actionSheet: MessageActionSheetView, didCompleteAction action: MessageAction)
+    func actionSheet(_ actionSheet: MessageActionSheetView, didSelectAction action: MessageAction)
 }
 
 protocol MessageActionViewDelegate: class {
-    func actionView(_ actionView: MessageActionView, didCompleteAction action: MessageAction)
+    func actionView(_ actionView: MessageActionView, didSelectAction action: MessageAction)
 }
 
 class MessageActionView: UIView {
@@ -282,8 +297,7 @@ class MessageActionView: UIView {
     @objc
     func didPress(event: Any) {
         Logger.debug("\(logTag) in \(#function)")
-        self.action.block(action)
-        self.delegate?.actionView(self, didCompleteAction: action)
+        self.delegate?.actionView(self, didSelectAction: action)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -337,8 +351,8 @@ class MessageActionSheetView: UIView, MessageActionViewDelegate {
 
     // MARK: MessageActionViewDelegate
 
-    func actionView(_ actionView: MessageActionView, didCompleteAction action: MessageAction) {
-        self.delegate?.actionSheet(self, didCompleteAction: action)
+    func actionView(_ actionView: MessageActionView, didSelectAction action: MessageAction) {
+        self.delegate?.actionSheet(self, didSelectAction: action)
     }
 
     // MARK: 

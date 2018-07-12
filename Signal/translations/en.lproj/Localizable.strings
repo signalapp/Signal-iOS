@@ -1174,7 +1174,7 @@
 "MESSAGE_ACTION_REPLY" = "Reply to this message";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_TITLE_INFO" = "More info";
+"MESSAGE_ACTION_DETAILS" = "More info";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Message";

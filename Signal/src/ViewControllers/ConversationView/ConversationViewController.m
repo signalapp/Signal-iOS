@@ -1988,6 +1988,15 @@ typedef enum : NSUInteger {
     [self updateShouldObserveDBModifications];
 }
 
+- (void)messageActionsShowDetailsForItem:(ConversationViewItem *)conversationViewItem
+{
+    [self showDetailViewForViewItem:conversationViewItem];
+}
+
+- (void)messageActionsReplyToItem:(ConversationViewItem *)conversationViewItem
+{
+}
+
 #pragma mark - ConversationViewCellDelegate
 
 - (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
@@ -2447,7 +2456,7 @@ typedef enum : NSUInteger {
     return @(groupIndex);
 }
 
-- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
+- (void)showDetailViewForViewItem:(ConversationViewItem *)conversationItem
 {
     OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
@@ -5066,7 +5075,7 @@ typedef enum : NSUInteger {
                 OWSAssert(self.navigationController.delegate == nil);
                 self.navigationController.delegate = self;
 
-                [self showMetadataViewForViewItem:conversationItem];
+                [self showDetailViewForViewItem:conversationItem];
             } else {
                 OWSFail(@"%@ Can't show message metadata for message of type: %@", self.logTag, [interaction class]);
             }
