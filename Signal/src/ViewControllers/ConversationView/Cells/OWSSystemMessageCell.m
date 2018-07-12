@@ -239,9 +239,16 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageTypeGroupQuit:
                 return nil;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
-                //                OWSDisappearingConfigurationUpdateInfoMessage *configurationUpdate =
-                //                (OWSDisappearingConfigurationUpdateInfoMessage *)interaction; configurationIsEnabled
-                result = [UIImage imageNamed:@"system_message_disappearing_messages"];
+                BOOL areDisappearingMessagesEnabled = YES;
+                if ([interaction isKindOfClass:[OWSDisappearingConfigurationUpdateInfoMessage class]]) {
+                    areDisappearingMessagesEnabled
+                        = ((OWSDisappearingConfigurationUpdateInfoMessage *)interaction).configurationIsEnabled;
+                } else {
+                    OWSFail(@"%@ unexpected interaction type: %@", self.logTag, interaction.class);
+                }
+                result = (areDisappearingMessagesEnabled
+                        ? [UIImage imageNamed:@"system_message_disappearing_messages"]
+                        : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
