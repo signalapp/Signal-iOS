@@ -101,8 +101,8 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 @property (nonatomic) UINavigationController *callNavigationController;
 
 // UIWindowLevel_MessageActions
-@property (nonatomic) UIWindow *messageActionsWindow;
-@property (nonatomic, nullable) UIViewController *messageActionsViewController;
+@property (nonatomic) UIWindow *menuActionsWindow;
+@property (nonatomic, nullable) UIViewController *menuActionsViewController;
 
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
@@ -157,7 +157,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
     self.returnToCallWindow = [self createReturnToCallWindow:rootWindow];
     self.callViewWindow = [self createCallViewWindow:rootWindow];
-    self.messageActionsWindow = [self createMessageActionsWindowWithRoowWindow:rootWindow];
+    self.menuActionsWindow = [self createMenuActionsWindowWithRoowWindow:rootWindow];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didChangeStatusBarFrame:)
@@ -200,7 +200,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     return window;
 }
 
-- (UIWindow *)createMessageActionsWindowWithRoowWindow:(UIWindow *)rootWindow
+- (UIWindow *)createMenuActionsWindowWithRoowWindow:(UIWindow *)rootWindow
 {
     UIWindow *window;
     if (@available(iOS 11, *)) {
@@ -262,25 +262,23 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 #pragma mark - Message Actions
 
-- (BOOL)isPresentingMessageActions
+- (BOOL)isPresentingMenuActions
 {
-    return self.messageActionsViewController != nil;
+    return self.menuActionsViewController != nil;
 }
 
-- (void)showMessageActionsWindow:(UIViewController *)messageActionsViewController
+- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController
 {
-    self.messageActionsViewController = messageActionsViewController;
-    self.messageActionsWindow.rootViewController = messageActionsViewController;
+    self.menuActionsViewController = menuActionsViewController;
+    self.menuActionsWindow.rootViewController = menuActionsViewController;
 
     [self ensureWindowState];
 }
 
-- (void)hideMessageActionsWindow:(UIViewController *)messageActionsViewController
+- (void)hideMenuActionsWindow
 {
-    OWSAssert(self.messageActionsViewController == messageActionsViewController);
-
-    self.messageActionsWindow.rootViewController = nil;
-    self.messageActionsViewController = nil;
+    self.menuActionsWindow.rootViewController = nil;
+    self.menuActionsViewController = nil;
 
     [self ensureWindowState];
 }
@@ -404,7 +402,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         [self ensureCallViewWindowHidden];
         [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowHidden];
-    } else if (self.messageActionsViewController) {
+    } else if (self.menuActionsViewController) {
         // Show Message Actions
 
         [self ensureRootWindowShown];
@@ -503,23 +501,23 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     OWSAssertIsOnMainThread();
 
-    if (self.messageActionsWindow.hidden) {
+    if (self.menuActionsWindow.hidden) {
         DDLogInfo(@"%@ showing message actions window.", self.logTag);
     }
 
     // Do not make key, we want the keyboard to stay popped.
-    self.messageActionsWindow.hidden = NO;
+    self.menuActionsWindow.hidden = NO;
 }
 
 - (void)ensureMessageActionsWindowHidden
 {
     OWSAssertIsOnMainThread();
 
-    if (!self.messageActionsWindow.hidden) {
+    if (!self.menuActionsWindow.hidden) {
         DDLogInfo(@"%@ hiding message actions window.", self.logTag);
     }
 
-    self.messageActionsWindow.hidden = YES;
+    self.menuActionsWindow.hidden = YES;
 }
 
 - (void)ensureScreenBlockWindowShown
