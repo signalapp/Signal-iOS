@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.sendFailureBadgeView removeFromSuperview];
     self.sendFailureBadgeView = nil;
 
-    [self hideMenuControllerIfNecessary];
+    //    [self hideMenuControllerIfNecessary];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -395,9 +395,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self ensureMediaLoadState];
 
-    if (!isCellVisible) {
-        [self hideMenuControllerIfNecessary];
-    }
+    //    if (!isCellVisible) {
+    //        [self hideMenuControllerIfNecessary];
+    //    }
 }
 
 #pragma mark - Gesture recognizers
@@ -448,17 +448,18 @@ NS_ASSUME_NONNULL_BEGIN
     switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText: {
-            [self.delegate conversationCellDidLongpressText:self viewItem:self.viewItem];
+            [self.delegate conversationCell:self didLongpressTextViewItem:self.viewItem];
             break;
         }
         case OWSMessageGestureLocation_Media: {
             CGPoint location = [sender locationInView:self];
-            [self showMediaMenuController:location];
+            [self.delegate conversationCell:self didLongpressMediaViewItem:self.viewItem];
+
             break;
         }
         case OWSMessageGestureLocation_QuotedReply: {
             CGPoint location = [sender locationInView:self];
-            [self showDefaultMenuController:location];
+            [self.delegate conversationCell:self didLongpressQuoteViewItem:self.viewItem];
             break;
         }
     }
@@ -471,135 +472,135 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate didPanWithGestureRecognizer:panRecognizer viewItem:self.viewItem];
 }
 
-#pragma mark - UIMenuController
+//#pragma mark - UIMenuController
+//
+//- (void)showTextMenuController:(CGPoint)fromLocation
+//{
+//    [self showMenuController:fromLocation menuItems:self.viewItem.textMenuControllerItems];
+//}
+//
+//- (void)showMediaMenuController:(CGPoint)fromLocation
+//{
+//    [self showMenuController:fromLocation menuItems:self.viewItem.mediaMenuControllerItems];
+//}
+//
+//- (void)showDefaultMenuController:(CGPoint)fromLocation
+//{
+//    [self showMenuController:fromLocation menuItems:self.viewItem.defaultMenuControllerItems];
+//}
+//
+//- (void)showMenuController:(CGPoint)fromLocation menuItems:(NSArray *)menuItems
+//{
+//    if (menuItems.count < 1) {
+//        OWSFail(@"%@ No menu items to present.", self.logTag);
+//        return;
+//    }
+//
+//    // We don't want taps on messages to hide the keyboard,
+//    // so we only let messages become first responder
+//    // while they are trying to present the menu controller.
+//    self.isPresentingMenuController = YES;
+//
+//    [self becomeFirstResponder];
+//
+//    if ([UIMenuController sharedMenuController].isMenuVisible) {
+//        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+//    }
+//
+//    // We use custom action selectors so that we can control
+//    // the ordering of the actions in the menu.
+//    [UIMenuController sharedMenuController].menuItems = menuItems;
+//    CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
+//    [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];
+//    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+//}
+//
+//- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
+//{
+//    return [self.viewItem canPerformAction:action];
+//}
+//
+//- (void)copyTextAction:(nullable id)sender
+//{
+//    [self.viewItem copyTextAction];
+//}
+//
+//- (void)copyMediaAction:(nullable id)sender
+//{
+//    [self.viewItem copyMediaAction];
+//}
+//
+//- (void)shareTextAction:(nullable id)sender
+//{
+//    [self.viewItem shareTextAction];
+//}
+//
+//- (void)shareMediaAction:(nullable id)sender
+//{
+//    [self.viewItem shareMediaAction];
+//}
+//
+//- (void)saveMediaAction:(nullable id)sender
+//{
+//    [self.viewItem saveMediaAction];
+//}
+//
+//- (void)deleteAction:(nullable id)sender
+//{
+//    [self.viewItem deleteAction];
+//}
+//
+//- (void)metadataAction:(nullable id)sender
+//{
+//    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+//
+//    [self.delegate showMetadataViewForViewItem:self.viewItem];
+//}
+//
+//- (void)replyAction:(nullable id)sender
+//{
+//    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+//
+//    [self.delegate conversationCell:self didTapReplyForViewItem:self.viewItem];
+//}
 
-- (void)showTextMenuController:(CGPoint)fromLocation
-{
-    [self showMenuController:fromLocation menuItems:self.viewItem.textMenuControllerItems];
-}
-
-- (void)showMediaMenuController:(CGPoint)fromLocation
-{
-    [self showMenuController:fromLocation menuItems:self.viewItem.mediaMenuControllerItems];
-}
-
-- (void)showDefaultMenuController:(CGPoint)fromLocation
-{
-    [self showMenuController:fromLocation menuItems:self.viewItem.defaultMenuControllerItems];
-}
-
-- (void)showMenuController:(CGPoint)fromLocation menuItems:(NSArray *)menuItems
-{
-    if (menuItems.count < 1) {
-        OWSFail(@"%@ No menu items to present.", self.logTag);
-        return;
-    }
-
-    // We don't want taps on messages to hide the keyboard,
-    // so we only let messages become first responder
-    // while they are trying to present the menu controller.
-    self.isPresentingMenuController = YES;
-
-    [self becomeFirstResponder];
-
-    if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-    }
-
-    // We use custom action selectors so that we can control
-    // the ordering of the actions in the menu.
-    [UIMenuController sharedMenuController].menuItems = menuItems;
-    CGRect targetRect = CGRectMake(fromLocation.x, fromLocation.y, 1, 1);
-    [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self];
-    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
-{
-    return [self.viewItem canPerformAction:action];
-}
-
-- (void)copyTextAction:(nullable id)sender
-{
-    [self.viewItem copyTextAction];
-}
-
-- (void)copyMediaAction:(nullable id)sender
-{
-    [self.viewItem copyMediaAction];
-}
-
-- (void)shareTextAction:(nullable id)sender
-{
-    [self.viewItem shareTextAction];
-}
-
-- (void)shareMediaAction:(nullable id)sender
-{
-    [self.viewItem shareMediaAction];
-}
-
-- (void)saveMediaAction:(nullable id)sender
-{
-    [self.viewItem saveMediaAction];
-}
-
-- (void)deleteAction:(nullable id)sender
-{
-    [self.viewItem deleteAction];
-}
-
-- (void)metadataAction:(nullable id)sender
-{
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
-    [self.delegate showMetadataViewForViewItem:self.viewItem];
-}
-
-- (void)replyAction:(nullable id)sender
-{
-    OWSAssert([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-
-    [self.delegate conversationCell:self didTapReplyForViewItem:self.viewItem];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return self.isPresentingMenuController;
-}
-
-- (void)didHideMenuController:(NSNotification *)notification
-{
-    self.isPresentingMenuController = NO;
-}
-
-- (void)setIsPresentingMenuController:(BOOL)isPresentingMenuController
-{
-    if (_isPresentingMenuController == isPresentingMenuController) {
-        return;
-    }
-
-    _isPresentingMenuController = isPresentingMenuController;
-
-    if (isPresentingMenuController) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didHideMenuController:)
-                                                     name:UIMenuControllerDidHideMenuNotification
-                                                   object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:UIMenuControllerDidHideMenuNotification
-                                                      object:nil];
-    }
-}
-
-- (void)hideMenuControllerIfNecessary
-{
-    if (self.isPresentingMenuController) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-    }
-    self.isPresentingMenuController = NO;
-}
+//- (BOOL)canBecomeFirstResponder
+//{
+//    return self.isPresentingMenuController;
+//}
+//
+//- (void)didHideMenuController:(NSNotification *)notification
+//{
+//    self.isPresentingMenuController = NO;
+//}
+//
+//- (void)setIsPresentingMenuController:(BOOL)isPresentingMenuController
+//{
+//    if (_isPresentingMenuController == isPresentingMenuController) {
+//        return;
+//    }
+//
+//    _isPresentingMenuController = isPresentingMenuController;
+//
+//    if (isPresentingMenuController) {
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(didHideMenuController:)
+//                                                     name:UIMenuControllerDidHideMenuNotification
+//                                                   object:nil];
+//    } else {
+//        [[NSNotificationCenter defaultCenter] removeObserver:self
+//                                                        name:UIMenuControllerDidHideMenuNotification
+//                                                      object:nil];
+//    }
+//}
+//
+//- (void)hideMenuControllerIfNecessary
+//{
+//    if (self.isPresentingMenuController) {
+//        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+//    }
+//    self.isPresentingMenuController = NO;
+//}
 
 @end
 

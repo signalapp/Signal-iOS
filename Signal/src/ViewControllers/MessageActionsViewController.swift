@@ -7,10 +7,85 @@ import Foundation
 @objc
 protocol MessageActionsDelegate: class {
     func messageActionsDidHide(_ messageActionsViewController: MessageActionsViewController)
+    func messageActions(_ messageActionsViewController: MessageActionsViewController, showInfoForItem conversationViewItem: ConversationViewItem)
+    func messageActions(_ messageActionsViewController: MessageActionsViewController, replyToItem conversationViewItem: ConversationViewItem)
+}
+
+struct MessageActionBuilder {
+    static func reply(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "table_ic_verify"),
+                             title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { (_) in
+
+        })
+    }
+
+    static func copyText(conversationViewItem: ConversationViewItem, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "generic-attachment-small"),
+                             title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { (_) in
+                                conversationViewItem.copyTextAction()
+        })
+    }
+}
+
+extension ConversationViewItem {
+
+    var deleteMessageAction: MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "message_status_failed_large"),
+                             title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
+                             subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
+                             block: { (action) in
+                                Logger.debug("\(self.logTag) in \(#function) action: \(action)")
+        })
+    }
+
+    var infoAction: MessageAction {
+        return MessageAction(image: #imageLiteral(resourceName: "system_message_security"),
+                             title: NSLocalizedString("MESSAGE_ACTION_TITLE_INFO", comment: "Action sheet button title"),
+                             subtitle: nil,
+                             block: { (action) in
+                                Logger.debug("\(self.logTag) in \(#function) action: \(action)")
+        })
+    }
+
+    @objc
+    func textActions(delegate: MessageActionsDelegate) -> [MessageAction] {
+        var actions: [MessageAction] = []
+        if self.hasBodyText {
+            actions.append(MessageActionBuilder.copyText(conversationViewItem: self, delegate: delegate))
+        }
+
+        return actions
+//        switch self.messageCellType() {
+//        case .unknown:
+//            return actions
+//        case .textMessage:
+//            return [self.copyTextAction]
+//        case .oversizeTextMessage:
+//            return [self.copyTextAction]
+//        case .stillImage:
+//            return []
+//        case .animatedImage:
+//            return []
+//        case .audio:
+//            return []
+//        case .video:
+//            return []
+//        case .genericAttachment:
+//            return []
+//        case .downloadingAttachment:
+//            return []
+//        case .contactShare:
+//            return []
+//        }
+    }
 }
 
 @objc
-class MessageActionsViewController: UIViewController {
+class MessageActionsViewController: UIViewController, MessageActionSheetDelegate {
 
     @objc
     weak var delegate: MessageActionsDelegate?
@@ -18,49 +93,14 @@ class MessageActionsViewController: UIViewController {
     private let focusedView: UIView
     private let actionSheetView: MessageActionSheetView
 
-    static let replyAction = MessageAction(block: { (action) in
-        Logger.debug("\(logTag) in \(#function) action: \(action)")
-    },
-                                           image: #imageLiteral(resourceName: "table_ic_verify"),
-                                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
-                                           subtitle: nil)
-
-    static let copyTextAction = MessageAction(block: { (action) in
-        Logger.debug("\(logTag) in \(#function) action: \(action)")
-    },
-                                           image: #imageLiteral(resourceName: "generic-attachment-small"),
-                                           title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
-                                           subtitle: nil)
-
-    static let deleteMessageAction = MessageAction(block: { (action) in
-        Logger.debug("\(logTag) in \(#function) action: \(action)")
-    },
-                                              image: #imageLiteral(resourceName: "message_status_failed_large"),
-                                              title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
-                                              subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"))
-
-    static let infoAction = MessageAction(block: { (action) in
-        Logger.debug("\(logTag) in \(#function) action: \(action)")
-    },
-                                                   image: #imageLiteral(resourceName: "system_message_info"),
-                                                   title: NSLocalizedString("MESSAGE_ACTION_TITLE_INFO", comment: "Action sheet button title"),
-                                                   subtitle: nil)
-
-    static let testActions: [MessageAction] = [
-        replyAction,
-        copyTextAction,
-        deleteMessageAction,
-        infoAction
-    ]
-
     @objc
     required init(focusedView: UIView, actions: [MessageAction]) {
         self.focusedView = focusedView
 
-        // FIXME
-        self.actionSheetView = MessageActionSheetView(actions: MessageActionsViewController.testActions)
-
+        self.actionSheetView = MessageActionSheetView(actions: actions)
         super.init(nibName: nil, bundle: nil)
+
+        actionSheetView.delegate = self
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -156,33 +196,49 @@ class MessageActionsViewController: UIViewController {
                         self.delegate?.messageActionsDidHide(self)
         })
     }
+
+    // MARK: MessageActionSheetDelegate
+
+    func actionSheet(_ actionSheet: MessageActionSheetView, didCompleteAction action: MessageAction) {
+        animateDismiss()
+    }
 }
 
 // MARK: ActionView
 
 @objc
-class MessageAction: NSObject {
+public class MessageAction: NSObject {
     let block: (MessageAction) -> Void
     let image: UIImage
     let title: String
     let subtitle: String?
 
-    init(block: @escaping (MessageAction) -> Void, image: UIImage, title: String, subtitle: String?) {
-        self.block = block
+    public init(image: UIImage, title: String, subtitle: String?, block: @escaping (MessageAction) -> Void) {
         self.image = image
         self.title = title
         self.subtitle = subtitle
+        self.block = block
     }
 }
 
+protocol MessageActionSheetDelegate: class {
+    func actionSheet(_ actionSheet: MessageActionSheetView, didCompleteAction action: MessageAction)
+}
+
+protocol MessageActionViewDelegate: class {
+    func actionView(_ actionView: MessageActionView, didCompleteAction action: MessageAction)
+}
+
 class MessageActionView: UIView {
-    let action: MessageAction
+    public weak var delegate: MessageActionViewDelegate?
+    private let action: MessageAction
 
     required init(action: MessageAction) {
         self.action = action
 
         super.init(frame: CGRect.zero)
 
+        isUserInteractionEnabled = true
         backgroundColor = .white
 
         let imageView = UIImageView(image: action.image)
@@ -213,6 +269,21 @@ class MessageActionView: UIView {
         self.addSubview(contentRow)
         contentRow.autoPinToSuperviewMargins()
         contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
+
+        // TODO better mimic button
+        // - style with touch down
+        // - slide from one to the next
+        // - accessability hints
+        // - UIControl?
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didPress))
+        self.addGestureRecognizer(tapGesture)
+    }
+
+    @objc
+    func didPress(event: Any) {
+        Logger.debug("\(logTag) in \(#function)")
+        self.action.block(action)
+        self.delegate?.actionView(self, didCompleteAction: action)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -220,10 +291,11 @@ class MessageActionView: UIView {
     }
 }
 
-class MessageActionSheetView: UIView {
+class MessageActionSheetView: UIView, MessageActionViewDelegate {
 
     private let actionStackView: UIStackView
     private var actions: [MessageAction]
+    weak var delegate: MessageActionSheetDelegate?
 
     override var bounds: CGRect {
         didSet {
@@ -258,10 +330,18 @@ class MessageActionSheetView: UIView {
 
     public func addAction(_ action: MessageAction) {
         let actionView = MessageActionView(action: action)
+        actionView.delegate = self
         actions.append(action)
         self.actionStackView.addArrangedSubview(actionView)
     }
 
+    // MARK: MessageActionViewDelegate
+
+    func actionView(_ actionView: MessageActionView, didCompleteAction action: MessageAction) {
+        self.delegate?.actionSheet(self, didCompleteAction: action)
+    }
+
+    // MARK: 
     private func updateMask() {
         let cornerRadius: CGFloat = 16
         let path: UIBezierPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
