@@ -38,8 +38,32 @@ public class OWSNavigationBar: UINavigationBar {
         fatalError("init(coder:) has not been implemented")
     }
 
+    @objc
+    public static let backgroundBlurMutingFactor: CGFloat = 0.5
+
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        if !UIAccessibilityIsReduceTransparencyEnabled() {
+            // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
+            // to achieve transparency, we have to assign a transparent image.
+            let color = UIColor.ows_navbarBackground.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            let backgroundImage = UIImage(color: color)
+            self.setBackgroundImage(backgroundImage, for: .default)
+            let blurEffect = UIBlurEffect(style: .light)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            blurEffectView.isUserInteractionEnabled = false
+
+            // remove hairline below bar.
+            self.shadowImage = UIImage()
+
+            self.insertSubview(blurEffectView, at: 0)
+            // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
+            // so we have to set a zindex to avoid obscuring navbar title/buttons.
+            blurEffectView.layer.zPosition = -1
+
+            blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -100, left: 0, bottom: 0, right: 0))
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)

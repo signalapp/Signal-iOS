@@ -89,13 +89,10 @@ const CGFloat kMaxTextViewHeight = 98;
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
         self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
     } else {
-        UIBlurEffect *blurEffect;
-        // More muted blur effects look gray when overlayed on white.
-        blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
+        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:alpha];
 
-        // We can make our blur effect more muted by increasing this background alpha.
-        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:0.4f];
-
+        UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
         [self addSubview:blurEffectView];
         [blurEffectView autoPinEdgesToSuperviewEdges];
