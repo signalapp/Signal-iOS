@@ -22,29 +22,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// In order to use UIMenuController, the view from which it is
-// presented must have certain custom behaviors.
-@interface AttachmentMenuView : UIView
-
-@end
-
-#pragma mark -
-
-@implementation AttachmentMenuView
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
-// We only use custom actions in UIMenuController.
-- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
-{
-    return NO;
-}
-
-@end
-
 #pragma mark -
 
 @interface MediaDetailViewController () <UIScrollViewDelegate,
@@ -132,15 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.attachmentStream.isVideo;
 }
 
-- (void)loadView
-{
-    self.view = [AttachmentMenuView new];
-    self.view.backgroundColor = [UIColor clearColor];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.view.backgroundColor = [UIColor clearColor];
 
     [self createContents];
 }
@@ -333,11 +306,6 @@ NS_ASSUME_NONNULL_BEGIN
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didSingleTapImage:)];
     [singleTap requireGestureRecognizerToFail:doubleTap];
     [view addGestureRecognizer:singleTap];
-
-    UILongPressGestureRecognizer *longPress =
-        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressGesture:)];
-    longPress.delegate = self;
-    [view addGestureRecognizer:longPress];
 }
 
 #pragma mark - Gesture Recognizers
@@ -372,29 +340,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-//- (void)longPressGesture:(UIGestureRecognizer *)sender
-//{
-//    // We "eagerly" respond when the long press begins, not when it ends.
-//    if (sender.state == UIGestureRecognizerStateBegan) {
-//        if (!self.viewItem) {
-//            return;
-//        }
-//
-//        [self.view becomeFirstResponder];
-//
-//        if ([UIMenuController sharedMenuController].isMenuVisible) {
-//            [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-//        }
-//
-//        NSArray *menuItems = self.viewItem.mediaMenuControllerItems;
-//        [UIMenuController sharedMenuController].menuItems = menuItems;
-//        CGPoint location = [sender locationInView:self.view];
-//        CGRect targetRect = CGRectMake(location.x, location.y, 1, 1);
-//        [[UIMenuController sharedMenuController] setTargetRect:targetRect inView:self.view];
-//        [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
-//    }
-//}
-
 - (void)didPressShare:(id)sender
 {
     DDLogInfo(@"%@: didPressShare", self.logTag);
@@ -415,67 +360,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self.delegate mediaDetailViewController:self requestDeleteConversationViewItem:self.viewItem];
-}
-
-//- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
-//{
-//    if (self.viewItem == nil) {
-//        return NO;
-//    }
-//
-//    // Already in detail view, so no link to "info"
-//    if (action == self.viewItem.metadataActionSelector) {
-//        return NO;
-//    }
-//
-//    // Reply is not supported from MediaDetailView.
-//    // TODO implement a "scroll to message" action which would
-//    // let users scroll back to the media message in their message history.
-//    if (action == self.viewItem.replyActionSelector) {
-//        return NO;
-//    }
-//
-//    return [self.viewItem canPerformAction:action];
-//}
-
-- (void)copyMediaAction:(nullable id)sender
-{
-    if (!self.viewItem) {
-        OWSFail(@"copy should only be available when a viewItem is present");
-        return;
-    }
-
-    [self.viewItem copyMediaAction];
-}
-
-- (void)shareMediaAction:(nullable id)sender
-{
-    if (!self.viewItem) {
-        OWSFail(@"share should only be available when a viewItem is present");
-        return;
-    }
-
-    [self didPressShare:sender];
-}
-
-- (void)saveMediaAction:(nullable id)sender
-{
-    if (!self.viewItem) {
-        OWSFail(@"save should only be available when a viewItem is present");
-        return;
-    }
-
-    [self.viewItem saveMediaAction];
-}
-
-- (void)deleteAction:(nullable id)sender
-{
-    if (!self.viewItem) {
-        OWSFail(@"delete should only be available when a viewItem is present");
-        return;
-    }
-
-    [self didPressDelete:sender];
 }
 
 - (void)didPressPlayBarButton:(id)sender
