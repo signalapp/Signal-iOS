@@ -904,8 +904,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         } else if (!mayHaveLinkedDevices && hasDeviceMessages) {
             OWSFail(@"%@ sync message has device messages for unknown secondary devices.", self.logTag);
         }
-    } else {
-        OWSAssert(deviceMessages.count > 0);
     }
 
     if (deviceMessages.count == 0) {
@@ -914,6 +912,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // * The first (after upgrading?) time we send a sync message to our linked devices.
         // * After unlinking all linked devices.
         // * After trying and failing to link a device.
+        // * The first time we send a message to a user, if they don't have their
+        //   default device (device id = 0).  For example, if they have unregistered
+        //   their primary but still have a linked device. Or later, when they re-register.
         //
         // When we're not sure if we have linked devices, we need to try
         // to send self-sync messages even if they have no device messages
