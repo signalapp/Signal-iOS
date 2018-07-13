@@ -27,6 +27,13 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive;
 
+#pragma mark - Message Actions
+
+@property (nonatomic, readonly) BOOL isPresentingMenuActions;
+
+- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController;
+- (void)hideMenuActionsWindow;
+
 #pragma mark - Calls
 
 @property (nonatomic, readonly) BOOL shouldShowCallView;

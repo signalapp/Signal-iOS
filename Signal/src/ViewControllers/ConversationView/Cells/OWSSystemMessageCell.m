@@ -75,6 +75,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
+    self.contentView.backgroundColor = UIColor.whiteColor;
 
     self.iconView = [UIImageView new];
     [self.iconView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
@@ -380,48 +381,6 @@ typedef void (^SystemMessageActionBlock)(void);
     return result;
 }
 
-#pragma mark - UIMenuController
-
-- (void)showMenuController
-{
-    OWSAssertIsOnMainThread();
-
-    DDLogDebug(@"%@ long pressed system message cell: %@", self.logTag, self.viewItem.interaction.debugDescription);
-
-    [self becomeFirstResponder];
-
-    if ([UIMenuController sharedMenuController].isMenuVisible) {
-        [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
-    }
-
-    UIMenuController *menuController = [UIMenuController sharedMenuController];
-    menuController.menuItems = @[];
-    UIView *fromView = self.titleLabel;
-    CGRect targetRect = [fromView.superview convertRect:fromView.frame toView:self];
-    [menuController setTargetRect:targetRect inView:self];
-    [menuController setMenuVisible:YES animated:YES];
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(nullable id)sender
-{
-    return action == @selector(delete:);
-}
-
-- (void)delete:(nullable id)sender
-{
-    DDLogInfo(@"%@ chose delete", self.logTag);
-
-    TSInteraction *interaction = self.viewItem.interaction;
-    OWSAssert(interaction);
-
-    [interaction remove];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Actions
 
 - (nullable SystemMessageAction *)actionForInteraction:(TSInteraction *)interaction
@@ -575,7 +534,7 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssert(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
-        [self showMenuController];
+        [self.delegate conversationCell:self didLongpressSystemMessageViewItem:self.viewItem];
     }
 }
 

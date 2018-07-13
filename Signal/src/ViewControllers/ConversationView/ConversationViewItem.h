@@ -109,22 +109,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
 
-#pragma mark - UIMenuController
+#pragma mark - MessageActions
 
-- (NSArray<UIMenuItem *> *)textMenuControllerItems;
-- (NSArray<UIMenuItem *> *)mediaMenuControllerItems;
-- (NSArray<UIMenuItem *> *)defaultMenuControllerItems;
+@property (nonatomic, readonly) BOOL hasBodyTextActionContent;
+@property (nonatomic, readonly) BOOL hasMediaActionContent;
 
-- (BOOL)canPerformAction:(SEL)action;
 - (void)copyMediaAction;
 - (void)copyTextAction;
 - (void)shareMediaAction;
 - (void)shareTextAction;
 - (void)saveMediaAction;
 - (void)deleteAction;
-
-- (SEL)replyActionSelector;
-- (SEL)metadataActionSelector;
 
 @end
 

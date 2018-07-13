@@ -172,13 +172,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - UITextViewDelegate
 
-- (void)textViewDidBeginEditing:(UITextView *)textView
-{
-    // TODO: Is this necessary?
-
-    [textView becomeFirstResponder];
-}
-
 - (void)textViewDidChange:(UITextView *)textView
 {
     OWSAssert(self.textViewToolbarDelegate);
@@ -186,11 +179,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updatePlaceholderVisibility];
 
     [self.textViewToolbarDelegate textViewDidChange:self];
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView
-{
-    [textView resignFirstResponder];
 }
 
 #pragma mark - Key Commands

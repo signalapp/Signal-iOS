@@ -131,6 +131,8 @@ typedef enum : NSUInteger {
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
+    MessageActionsDelegate,
+    MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
@@ -1204,6 +1206,8 @@ typedef enum : NSUInteger {
     [super viewWillDisappear:animated];
 
     self.isViewCompletelyAppeared = NO;
+
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -1978,7 +1982,120 @@ typedef enum : NSUInteger {
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+#pragma mark - MessageActionsDelegate
+
+- (void)messageActionsShowDetailsForItem:(ConversationViewItem *)conversationViewItem
+{
+    [self showDetailViewForViewItem:conversationViewItem];
+}
+
+- (void)messageActionsReplyToItem:(ConversationViewItem *)conversationViewItem
+{
+    [self populateReplyForViewItem:conversationViewItem];
+}
+
+#pragma mark - MenuActionsViewControllerDelegate
+
+- (void)menuActionsDidHide:(MenuActionsViewController *)menuActionsViewController
+{
+    [[OWSWindowManager sharedManager] hideMenuActionsWindow];
+
+    [self updateShouldObserveDBModifications];
+}
+
+- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
+    isPresentingWithVerticalFocusChange:(CGFloat)verticalChange
+{
+    UIEdgeInsets oldInset = self.collectionView.contentInset;
+    CGPoint oldOffset = self.collectionView.contentOffset;
+
+    UIEdgeInsets newInset = oldInset;
+    CGPoint newOffset = oldOffset;
+
+    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
+    // insets to be sure we can sufficiently scroll the contentOffset.
+    newInset.top += verticalChange;
+    newInset.bottom -= verticalChange;
+    newOffset.y -= verticalChange;
+
+    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+        self.logTag,
+        __PRETTY_FUNCTION__,
+        verticalChange,
+        NSStringFromUIEdgeInsets(oldInset),
+        NSStringFromUIEdgeInsets(newInset));
+
+    // Because we're in the context of the frame-changing animation, these adjustments should happen
+    // in lockstep with the messageActions frame change.
+    self.collectionView.contentOffset = newOffset;
+    self.collectionView.contentInset = newInset;
+}
+
+- (void)menuActions:(MenuActionsViewController *)menuActionsViewController
+    isDismissingWithVerticalFocusChange:(CGFloat)verticalChange
+{
+    UIEdgeInsets oldInset = self.collectionView.contentInset;
+    CGPoint oldOffset = self.collectionView.contentOffset;
+
+    UIEdgeInsets newInset = oldInset;
+    CGPoint newOffset = oldOffset;
+
+    // In case the message is at the very top or bottom edge of the conversation we have to have these additional
+    // insets to be sure we can sufficiently scroll the contentOffset.
+    newInset.top -= verticalChange;
+    newInset.bottom += verticalChange;
+    newOffset.y += verticalChange;
+
+    DDLogDebug(@"%@ in %s verticalChange: %f, insets: %@ -> %@",
+        self.logTag,
+        __PRETTY_FUNCTION__,
+        verticalChange,
+        NSStringFromUIEdgeInsets(oldInset),
+        NSStringFromUIEdgeInsets(newInset));
+
+    // Because we're in the context of the frame-changing animation, these adjustments should happen
+    // in lockstep with the messageActions frame change.
+    self.collectionView.contentOffset = newOffset;
+    self.collectionView.contentInset = newInset;
+}
+
 #pragma mark - ConversationViewCellDelegate
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MenuAction *> *messageActions = [viewItem mediaActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MenuAction *> *messageActions = [viewItem textActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MenuAction *> *messageActions = [viewItem quotedMessageActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem
+{
+    NSArray<MenuAction *> *messageActions = [viewItem infoMessageActionsWithDelegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
+{
+    MenuActionsViewController *menuActionsViewController =
+        [[MenuActionsViewController alloc] initWithFocusedView:cell actions:messageActions];
+
+    menuActionsViewController.delegate = self;
+
+    [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
+
+    [self updateShouldObserveDBModifications];
+}
 
 - (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
@@ -2401,7 +2518,7 @@ typedef enum : NSUInteger {
     return @(groupIndex);
 }
 
-- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem
+- (void)showDetailViewForViewItem:(ConversationViewItem *)conversationItem
 {
     OWSAssertIsOnMainThread();
     OWSAssert(conversationItem);
@@ -2416,7 +2533,7 @@ typedef enum : NSUInteger {
     [self.navigationController pushViewController:view animated:YES];
 }
 
-- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem
+- (void)populateReplyForViewItem:(ConversationViewItem *)conversationItem
 {
     DDLogDebug(@"%@ user did tap reply", self.logTag);
 
@@ -4425,8 +4542,22 @@ typedef enum : NSUInteger {
 
 - (void)updateShouldObserveDBModifications
 {
-    BOOL isAppForegroundAndActive = CurrentAppContext().isAppForegroundAndActive;
-    self.shouldObserveDBModifications = self.isViewVisible && isAppForegroundAndActive;
+    if (!CurrentAppContext().isAppForegroundAndActive) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    if (!self.isViewVisible) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    if (OWSWindowManager.sharedManager.isPresentingMenuActions) {
+        self.shouldObserveDBModifications = NO;
+        return;
+    }
+
+    self.shouldObserveDBModifications = YES;
 }
 
 - (void)setShouldObserveDBModifications:(BOOL)shouldObserveDBModifications
@@ -5002,7 +5133,7 @@ typedef enum : NSUInteger {
                 OWSAssert(self.navigationController.delegate == nil);
                 self.navigationController.delegate = self;
 
-                [self showMetadataViewForViewItem:conversationItem];
+                [self showDetailViewForViewItem:conversationItem];
             } else {
                 OWSFail(@"%@ Can't show message metadata for message of type: %@", self.logTag, [interaction class]);
             }

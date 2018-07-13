@@ -22,11 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewCellDelegate <NSObject>
 
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(ConversationViewItem *)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(ConversationViewItem *)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(ConversationViewItem *)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell
+    didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem;
+
 - (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
                            viewItem:(ConversationViewItem *)conversationItem;
-
-- (void)showMetadataViewForViewItem:(ConversationViewItem *)conversationItem;
-- (void)conversationCell:(ConversationViewCell *)cell didTapReplyForViewItem:(ConversationViewItem *)conversationItem;
 
 #pragma mark - System Cell
 
