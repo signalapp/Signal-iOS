@@ -4,6 +4,7 @@
 
 #import "OWSTableViewController.h"
 #import "OWSNavigationController.h"
+#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 
@@ -97,6 +98,15 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 @implementation OWSTableItem
 
++ (UITableViewCell *)newCell
+{
+    UITableViewCell *cell = [UITableViewCell new];
+    cell.backgroundColor = [UIColor ows_themeBackgroundColor];
+    cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+    cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
+    return cell;
+}
+
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock
 {
     OWSAssert(title.length > 0);
@@ -163,10 +173,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
         cell.accessoryType = accessoryType;
         return cell;
     };
@@ -198,7 +206,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
                                                        reuseIdentifier:@"UITableViewCellStyleValue1"];
         cell.textLabel.text = text;
         cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
         cell.detailTextLabel.text = detailText;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         return cell;
@@ -223,10 +231,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
         }
     };
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         return cell;
     };
@@ -252,10 +258,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     item.actionBlock = actionBlock;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
         return cell;
     };
     return item;
@@ -267,13 +271,14 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
         // These cells look quite different.
         //
         // Smaller font.
         cell.textLabel.font = [UIFont ows_regularFontWithSize:15.f];
         // Soft color.
+        // TODO: Theme, review with design.
         cell.textLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
         // Centered.
         cell.textLabel.textAlignment = NSTextAlignmentCenter;
@@ -298,10 +303,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
         cell.userInteractionEnabled = NO;
         return cell;
     };
@@ -315,14 +318,12 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
     OWSTableItem *item = [OWSTableItem new];
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [UIColor lightGrayColor];
+        accessoryLabel.textColor = [UIColor ows_themeSecondaryColor];
         accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];
@@ -352,10 +353,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     OWSTableItem *item = [OWSTableItem new];
     __weak id weakTarget = target;
     item.customCellBlock = ^{
-        UITableViewCell *cell = [UITableViewCell new];
+        UITableViewCell *cell = [OWSTableItem newCell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor blackColor];
 
         UISwitch *cellSwitch = [UISwitch new];
         cell.accessoryView = cellSwitch;
@@ -460,6 +459,18 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView autoPinEdgesToSuperviewEdges];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
+
+    [self applyTheme];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:NSNotificationNameThemeDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -670,6 +681,24 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self.delegate tableViewWillBeginDragging];
+}
+
+#pragma mark - Theme
+
+- (void)themeDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyTheme];
+    [self.tableView reloadData];
+}
+
+- (void)applyTheme
+{
+    OWSAssertIsOnMainThread();
+
+    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.tableView.backgroundColor = UIColor.ows_themeBackgroundColor;
 }
 
 @end
