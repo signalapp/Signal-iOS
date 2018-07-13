@@ -56,7 +56,7 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 {
     self.imageView = [UIImageView new];
     [self addSubview:self.imageView];
-    [self.imageView autoPinToSuperviewEdges];
+    [self.imageView ows_autoPinToSuperviewEdges];
     [self.imageView autoSetDimension:ALDimensionWidth toSize:kDisappearingMessageIconSize];
     [self.imageView autoSetDimension:ALDimensionHeight toSize:kDisappearingMessageIconSize];
 }

@@ -190,7 +190,7 @@ NS_ASSUME_NONNULL_BEGIN
     hStackView.axis = UILayoutConstraintAxisHorizontal;
     hStackView.spacing = self.hSpacing;
     [innerBubbleView addSubview:hStackView];
-    [hStackView autoPinToSuperviewEdges];
+    [hStackView ows_autoPinToSuperviewEdges];
 
     UIView *stripeView = [UIView new];
     stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];

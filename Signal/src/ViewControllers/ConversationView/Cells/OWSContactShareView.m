@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     [hStackView addArrangedSubview:labelsView];
     [hStackView addArrangedSubview:disclosureImageView];
     [self addSubview:hStackView];
-    [hStackView autoPinToSuperviewEdges];
+    [hStackView ows_autoPinToSuperviewEdges];
 }
 
 @end
