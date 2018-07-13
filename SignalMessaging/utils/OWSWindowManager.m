@@ -55,7 +55,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     // Note: To cover the keyboard, this is higher than the ScreenBlocking level,
     // but this window is hidden when screen protection is shown.
-    return CGFLOAT_MAX;
+    return CGFLOAT_MAX - 100;
 }
 
 
