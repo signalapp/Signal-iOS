@@ -54,7 +54,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;
-@property (nonatomic, readonly) BOOL hasDateOrUnreadBreak;
+@property (nonatomic, readonly) BOOL hasCellHeader;
 
 @property (nonatomic, readonly) BOOL isExpiringMessage;
 

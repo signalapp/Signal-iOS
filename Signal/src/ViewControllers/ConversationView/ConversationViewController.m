@@ -4958,14 +4958,14 @@ typedef enum : NSUInteger {
                 // ...and always show the "disappearing messages" animation.
                 shouldHideFooter
                     = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
-                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed
-                        && !nextViewItem.hasDateOrUnreadBreak && !isDisappearingMessage);
+                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.hasCellHeader
+                        && !isDisappearingMessage);
             }
 
             // clustering
             if (previousViewItem == nil) {
                 isFirstInCluster = YES;
-            } else if (viewItem.hasDateOrUnreadBreak) {
+            } else if (viewItem.hasCellHeader) {
                 isFirstInCluster = YES;
             } else {
                 isFirstInCluster = previousViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
@@ -4973,7 +4973,7 @@ typedef enum : NSUInteger {
 
             if (nextViewItem == nil) {
                 isLastInCluster = YES;
-            } else if (nextViewItem.hasDateOrUnreadBreak) {
+            } else if (nextViewItem.hasCellHeader) {
                 isLastInCluster = YES;
             } else {
                 isLastInCluster = nextViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
@@ -4997,16 +4997,15 @@ typedef enum : NSUInteger {
                 // We can skip the "incoming message status" footer in a cluster if the next message
                 // has the same footer and no "date break" separates us.
                 // ...but always show the "disappearing messages" animation.
-                shouldHideFooter
-                    = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasDateOrUnreadBreak &&
-                        [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                        && !isDisappearingMessage);
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader &&
+                    [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                    && !isDisappearingMessage);
             }
 
             // clustering
             if (previousViewItem == nil) {
                 isFirstInCluster = YES;
-            } else if (viewItem.hasDateOrUnreadBreak) {
+            } else if (viewItem.hasCellHeader) {
                 isFirstInCluster = YES;
             } else if (previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isFirstInCluster = YES;
@@ -5019,7 +5018,7 @@ typedef enum : NSUInteger {
                 isLastInCluster = YES;
             } else if (nextViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isLastInCluster = YES;
-            } else if (nextViewItem.hasDateOrUnreadBreak) {
+            } else if (nextViewItem.hasCellHeader) {
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
@@ -5039,7 +5038,7 @@ typedef enum : NSUInteger {
 
                     shouldShowSenderName
                         = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.hasDateOrUnreadBreak);
+                            || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
@@ -5056,7 +5055,7 @@ typedef enum : NSUInteger {
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                     shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                        || nextViewItem.hasDateOrUnreadBreak);
+                        || nextViewItem.hasCellHeader);
                 }
             }
         }

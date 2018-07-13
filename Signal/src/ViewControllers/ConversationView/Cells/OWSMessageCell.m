@@ -143,7 +143,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageBubbleView configureViews];
     [self.messageBubbleView loadContent];
 
-    if (self.viewItem.hasDateOrUnreadBreak) {
+    if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
             [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
                 .height;
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(cellSize.width > 0 && cellSize.height > 0);
 
-    if (self.viewItem.hasDateOrUnreadBreak) {
+    if (self.viewItem.hasCellHeader) {
         cellSize.height +=
             [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
                 .height;
