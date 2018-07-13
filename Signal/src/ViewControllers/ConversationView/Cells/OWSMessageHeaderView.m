@@ -93,8 +93,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
         [self.strokeView autoSetDimension:ALDimensionHeight toSize:strokeThickness],
 
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:conversationStyle.fullWidthGutterLeading],
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:conversationStyle.fullWidthGutterTrailing],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
     ];
 }
 
