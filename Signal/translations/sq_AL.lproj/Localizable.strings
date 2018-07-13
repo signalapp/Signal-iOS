@@ -1161,6 +1161,27 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Këtë Muaj";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "More Info";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesazh";
 
@@ -1887,7 +1908,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Parashtroni Regjistër Diagnostikimesh";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
+"SETTINGS_ADVANCED_THEME" = "Temë";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Të mëtejshme";
@@ -2136,7 +2157,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiko Numër Sigurie";
 
 /* No comment provided by engineer. */
-"THEME_SECTION" = "Theme";
+"THEME_SECTION" = "Temë";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ ditë";

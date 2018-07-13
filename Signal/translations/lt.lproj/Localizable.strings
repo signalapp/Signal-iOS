@@ -1161,6 +1161,27 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Šis mėnuo";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "More Info";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Žinutė";
 
@@ -1434,7 +1455,7 @@
 "OUTGOING_INCOMPLETE_CALL" = "Išsiunčiamasis skambutis";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Neatsilieptas skambutis kitam asmeniui";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1887,7 +1908,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pateikti derinimo žurnalą";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
+"SETTINGS_ADVANCED_THEME" = "Tema";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Išplėstiniai";
@@ -2136,7 +2157,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Patvirtinti saugumo numerį";
 
 /* No comment provided by engineer. */
-"THEME_SECTION" = "Theme";
+"THEME_SECTION" = "Tema";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dienas(-ų)";

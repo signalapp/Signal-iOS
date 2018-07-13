@@ -552,7 +552,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Yeni Kişi Oluştur";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Değiştirmek için Dokunun";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Sessizden çıkart";
@@ -877,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Alıcının anahtarı geçersiz.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Alınan mesaj senkronize edilemedi.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Bu sürümle uyumsuz bir ileti alındı.";
@@ -895,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Bilinmeyen bir hata oluştu.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Güvenlik numarası değişti.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Kayıtlı Olmayan Kullanıcı: %@";
@@ -910,7 +910,7 @@
 "FAILED_VERIFICATION_TITLE" = "Güvenlik Numarası Doğrulanamadı!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Onaylı olarak işaretle";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Doğrulanmış olarak İşaretle";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Oturumu Sıfırla";
@@ -979,7 +979,7 @@
 "GROUP_MEMBERS_CALL" = "Ara";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Tüm Doğrulama hatalarını temizle";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Tüm Doğrulamaları Temizle";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Bu, son doğrulamadan bu yana güvenlik numaraları değişmiş olan tüm grup üyelerine ilişkin doğrulama uyarlarını temizler. ";
@@ -1060,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Bir aramayı reddettiniz";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "Gelen arama";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Güvenlik numaraları değiştiğinden çağrı karşılanmadı";
@@ -1160,6 +1160,27 @@
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bu Ay";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "More Info";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";
@@ -1431,10 +1452,10 @@
 "OUTGOING_CALL" = "Giden çağrı";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Giden arama ";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Cevapsız giden arama";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1887,7 +1908,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Kaydını gönder";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
+"SETTINGS_ADVANCED_THEME" = "Tema";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
@@ -2115,7 +2136,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal'de Paylaş";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Güvenlik Numarasını Göster";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Sohbeti Görüntüle";
@@ -2133,10 +2154,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Güvenlik Numarası Eşleşiyor!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Güvenlik Numarasını Doğrula";
 
 /* No comment provided by engineer. */
-"THEME_SECTION" = "Theme";
+"THEME_SECTION" = "Tema";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ gün";

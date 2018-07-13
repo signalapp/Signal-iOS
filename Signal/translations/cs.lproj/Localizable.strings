@@ -1161,6 +1161,27 @@
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tento měsíc";
 
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+
+/* Action sheet button subtitle */
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_DETAILS" = "More Info";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+
+/* Action sheet button title */
+"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Zpráva";
 
