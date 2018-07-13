@@ -28,13 +28,13 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 
 + (UIColor *)ows_navbarIconColor
 {
-    // TODO: Review with design.
+    // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 
 + (UIColor *)ows_navbarTitleColor
 {
-    // TODO: Review with design.
+    // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 
@@ -382,13 +382,13 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 
 + (UIColor *)ows_themeForegroundColor
 {
-    // TODO: Review with design.
+    // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_light90Color);
 }
 
 + (UIColor *)ows_themeSecondaryColor
 {
-    // TODO: Review with design.
+    // TODO: Theme, Review with design.
     return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
 }
 

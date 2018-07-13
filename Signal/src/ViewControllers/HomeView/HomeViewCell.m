@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
     } else {
         UIImage *_Nullable statusIndicatorImage = nil;
-        // TODO: Review with design.
+        // TODO: Theme, Review with design.
         UIColor *messageStatusViewTintColor
             = (UIColor.isThemeEnabled ? [UIColor ows_dark30Color] : [UIColor ows_light35Color]);
         BOOL shouldAnimateStatusIcon = NO;
