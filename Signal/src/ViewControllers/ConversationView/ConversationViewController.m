@@ -4286,13 +4286,27 @@ typedef enum : NSUInteger {
     // we use the collectionView bounds to determine where the "bottom" is.
     [self.view layoutIfNeeded];
 
-    CGFloat contentHeight = self.safeContentHeight;
+    const CGFloat topInset = ^{
+        if (@available(iOS 11, *)) {
+            return -self.collectionView.adjustedContentInset.top;
+        } else {
+            return -self.collectionView.contentInset.top;
+        }
+    }();
 
-    // bottomLayoutGuide accounts for extra offset needed on iPhoneX
+    const CGFloat bottomInset = ^{
+        if (@available(iOS 11, *)) {
+            return -self.collectionView.adjustedContentInset.bottom;
+        } else {
+            return -self.collectionView.contentInset.bottom;
+        }
+    }();
 
-    CGFloat dstY = MAX(0,
-        contentHeight + self.collectionView.contentInset.bottom + self.bottomLayoutGuide.length
-            - self.collectionView.bounds.size.height);
+    const CGFloat firstContentPageTop = topInset;
+    const CGFloat collectionViewUnobscuredHeight = self.collectionView.bounds.size.height + bottomInset;
+    const CGFloat lastContentPageTop = self.safeContentHeight - collectionViewUnobscuredHeight;
+
+    CGFloat dstY = MAX(firstContentPageTop, lastContentPageTop);
 
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:NO];
     [self didScrollToBottom];
