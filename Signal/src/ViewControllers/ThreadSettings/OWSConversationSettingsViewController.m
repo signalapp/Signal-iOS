@@ -383,7 +383,7 @@ const CGFloat kIconViewLength = 24;
                                  UILabel *rowLabel = [UILabel new];
                                  rowLabel.text = NSLocalizedString(
                                      @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
-                                 rowLabel.textColor = [UIColor ows_themePrimaryColor];
+                                 rowLabel.textColor = [Theme primaryColor];
                                  rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                                  rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -403,7 +403,7 @@ const CGFloat kIconViewLength = 24;
                                  UILabel *subtitleLabel = [UILabel new];
                                  subtitleLabel.text = NSLocalizedString(
                                      @"DISAPPEARING_MESSAGES_DESCRIPTION", @"subheading in conversation settings");
-                                 subtitleLabel.textColor = [UIColor ows_themePrimaryColor];
+                                 subtitleLabel.textColor = [Theme primaryColor];
                                  subtitleLabel.font = [UIFont ows_dynamicTypeCaption1Font];
                                  subtitleLabel.numberOfLines = 0;
                                  subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -433,7 +433,7 @@ const CGFloat kIconViewLength = 24;
 
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
-                            rowLabel.textColor = [UIColor ows_themePrimaryColor];
+                            rowLabel.textColor = [Theme primaryColor];
                             rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                             // don't truncate useful duration info which is in the tail
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -526,7 +526,7 @@ const CGFloat kIconViewLength = 24;
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                             @"Label for settings view that allows user to change the notification sound.");
-                        rowLabel.textColor = [UIColor ows_themePrimaryColor];
+                        rowLabel.textColor = [Theme primaryColor];
                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -565,7 +565,7 @@ const CGFloat kIconViewLength = 24;
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
                             @"label for 'mute thread' cell in conversation settings");
-                        rowLabel.textColor = [UIColor ows_themePrimaryColor];
+                        rowLabel.textColor = [Theme primaryColor];
                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -688,7 +688,7 @@ const CGFloat kIconViewLength = 24;
 
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
-    rowLabel.textColor = [UIColor ows_themePrimaryColor];
+    rowLabel.textColor = [Theme primaryColor];
     rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
@@ -744,7 +744,7 @@ const CGFloat kIconViewLength = 24;
 
     UILabel *threadTitleLabel = [UILabel new];
     threadTitleLabel.text = self.threadName;
-    threadTitleLabel.textColor = [UIColor ows_themePrimaryColor];
+    threadTitleLabel.textColor = [Theme primaryColor];
     threadTitleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     threadTitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     [threadNameView addSubview:threadTitleLabel];
@@ -757,7 +757,7 @@ const CGFloat kIconViewLength = 24;
         const CGFloat kSubtitlePointSize = 12.f;
         void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
             UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.textColor = [UIColor ows_themeSecondaryColor];
+            subtitleLabel.textColor = [Theme secondaryColor];
             subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
             subtitleLabel.attributedText = subtitle;
             subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -835,7 +835,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssert(icon);
     UIImageView *iconView = [UIImageView new];
     iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    iconView.tintColor = [UIColor ows_themeSecondaryColor];
+    iconView.tintColor = [Theme secondaryColor];
     iconView.contentMode = UIViewContentModeScaleAspectFit;
     iconView.layer.minificationFilter = kCAFilterTrilinear;
     iconView.layer.magnificationFilter = kCAFilterTrilinear;

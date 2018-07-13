@@ -107,13 +107,13 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = [UIColor ows_themeBackgroundColor];
+    cell.backgroundColor = [Theme backgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    cell.textLabel.textColor = [UIColor ows_themePrimaryColor];
+    cell.textLabel.textColor = [Theme primaryColor];
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor =
-        [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
+        [(Theme.isDarkThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
     cell.selectedBackgroundView = selectedBackgroundView;
 }
 
@@ -332,7 +332,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [UIColor ows_themeSecondaryColor];
+        accessoryLabel.textColor = [Theme secondaryColor];
         accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];
@@ -717,8 +717,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
-    self.tableView.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.backgroundColor = Theme.backgroundColor;
 }
 
 @end

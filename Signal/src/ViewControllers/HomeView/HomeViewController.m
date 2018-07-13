@@ -229,8 +229,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
-    self.tableView.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.backgroundColor = Theme.backgroundColor;
 }
 
 #pragma mark - View Life Cycle
@@ -383,8 +383,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
-    searchBar.backgroundColor = UIColor.ows_themeBackgroundColor;
-    if (UIColor.isThemeEnabled) {
+    searchBar.backgroundColor = Theme.backgroundColor;
+    if (Theme.isDarkThemeEnabled) {
         searchBar.barStyle = UIBarStyleBlack;
     } else {
         searchBar.barStyle = UIBarStyleDefault;
@@ -448,6 +448,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     //  Settings button.
+    //
+    // TODO: Theme
     UIImage *image = [UIImage imageNamed:@"button_settings_white"];
     UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(settingsButtonPressed:)];
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
@@ -808,7 +810,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
         [subview removeFromSuperview];
     }
 
-    cell.backgroundColor = UIColor.ows_themeBackgroundColor;
+    cell.backgroundColor = Theme.backgroundColor;
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssert(disclosureImage);
@@ -822,7 +824,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     label.text = NSLocalizedString(@"HOME_VIEW_ARCHIVED_CONVERSATIONS", @"Label for 'archived conversations' button.");
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont ows_dynamicTypeBodyFont];
-    label.textColor = UIColor.ows_themePrimaryColor;
+    label.textColor = Theme.primaryColor;
 
     UIStackView *stackView = [UIStackView new];
     stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -1449,11 +1451,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                             value:[UIFont ows_regularFontWithSize:14.f]
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:UIColor.ows_themePrimaryColor
+                            value:Theme.primaryColor
                             range:NSMakeRange(0, firstLine.length)];
     // TODO: Theme, Review with design.
     [fullLabelString addAttribute:NSForegroundColorAttributeName
-                            value:UIColor.ows_themeSecondaryColor
+                            value:Theme.secondaryColor
                             range:NSMakeRange(firstLine.length + 1, secondLine.length)];
     _emptyBoxLabel.attributedText = fullLabelString;
 }

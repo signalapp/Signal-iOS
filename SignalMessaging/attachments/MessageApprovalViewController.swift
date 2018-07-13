@@ -99,7 +99,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
 
     private func createRecipientRow() -> UIView {
         let recipientRow = UIView.container()
-        recipientRow.backgroundColor = UIColor.ows_toolbarBackground
+        recipientRow.backgroundColor = Theme.toolbarBackgroundColor
 
         // Hairline borders should be 1 pixel, not 1 point.
         let borderThickness = 1.0 / UIScreen.main.scale

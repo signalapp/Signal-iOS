@@ -64,13 +64,13 @@ public class ConversationHeaderView: UIStackView {
         avatarView.layer.borderWidth = 0
 
         titleLabel = UILabel()
-        titleLabel.textColor = .ows_navbarTitle
+        titleLabel.textColor = Theme.navbarTitleColor
         titleLabel.lineBreakMode = .byTruncatingTail
         titleLabel.font = titlePrimaryFont
         titleLabel.setContentHuggingHigh()
 
         subtitleLabel = UILabel()
-        subtitleLabel.textColor = .ows_navbarTitle
+        subtitleLabel.textColor = Theme.navbarTitleColor
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.font = subtitleFont
         subtitleLabel.setContentHuggingHigh()

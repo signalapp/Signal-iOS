@@ -67,7 +67,7 @@ class ReminderView: UIView {
             self.backgroundColor = UIColor.ows_reminderYellow
         case .explanation:
             // TODO: Theme, review with design.
-            self.backgroundColor = (UIColor.isThemeEnabled()
+            self.backgroundColor = (Theme.isDarkThemeEnabled()
                     ? UIColor(rgbHex: 0x202020)
                 : UIColor(rgbHex: 0xf5f5f5))
         }
@@ -88,7 +88,7 @@ class ReminderView: UIView {
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline
         container.addArrangedSubview(label)
-        label.textColor = UIColor.ows_themePrimary
+        label.textColor = Theme.primaryColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
 
@@ -102,7 +102,7 @@ class ReminderView: UIView {
             }
             let iconView = UIImageView(image: iconImage.withRenderingMode(.alwaysTemplate))
             iconView.contentMode = .scaleAspectFit
-            iconView.tintColor = UIColor.ows_themeSecondary
+            iconView.tintColor = Theme.secondaryColor
             iconView.autoSetDimension(.width, toSize: 13)
             container.addArrangedSubview(iconView)
         }

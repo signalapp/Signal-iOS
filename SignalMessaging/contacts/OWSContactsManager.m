@@ -762,9 +762,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
 
     NSDictionary<NSString *, id> *boldFontAttributes =
-        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [UIColor ows_themeBoldColor] };
+        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [Theme boldColor] };
     NSDictionary<NSString *, id> *normalFontAttributes =
-        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [UIColor ows_themePrimaryColor] };
+        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [Theme primaryColor] };
     NSDictionary<NSString *, id> *firstNameAttributes
         = (self.shouldSortByGivenName ? boldFontAttributes : normalFontAttributes);
     NSDictionary<NSString *, id> *lastNameAttributes

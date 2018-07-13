@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssert(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
-    backButton.tintColor = UIColor.ows_navbarIconColor;
+    backButton.tintColor = Theme.navbarIconColor;
 
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
 

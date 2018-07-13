@@ -316,7 +316,7 @@
     NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
-        titleLabel.textColor = [UIColor ows_themePrimaryColor];
+        titleLabel.textColor = [Theme primaryColor];
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
         titleLabel.text = NSLocalizedString(
@@ -331,7 +331,7 @@
 
     const CGFloat kSubtitlePointSize = 12.f;
     UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.textColor = [UIColor ows_themeSecondaryColor];
+    subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
     subtitleLabel.attributedText = [[NSAttributedString alloc]
         initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager

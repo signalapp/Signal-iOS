@@ -137,7 +137,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     firstSectionHeader.userInteractionEnabled = YES;
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
-    firstSectionHeader.backgroundColor = [UIColor ows_themeBackgroundColor];
+    firstSectionHeader.backgroundColor = [Theme backgroundColor];
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
@@ -155,7 +155,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     UITextField *groupNameTextField = [UITextField new];
     _groupNameTextField = groupNameTextField;
-    groupNameTextField.textColor = [UIColor ows_themePrimaryColor];
+    groupNameTextField.textColor = [Theme primaryColor];
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
         = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");

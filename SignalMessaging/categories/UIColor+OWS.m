@@ -4,39 +4,11 @@
 
 #import "UIColor+OWS.h"
 #import "OWSMath.h"
-#import "UIUtil.h"
 #import <SignalServiceKit/Cryptography.h>
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const NSNotificationNameThemeDidChange = @"NSNotificationNameThemeDidChange";
-
-NSString *const UIColorCollection = @"UIColorCollection";
-NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
-
 @implementation UIColor (OWS)
-
-#pragma mark - Global App Colors
-
-+ (UIColor *)ows_navbarBackgroundColor
-{
-    return (UIColor.isThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
-}
-
-+ (UIColor *)ows_navbarIconColor
-{
-    // TODO: Theme, Review with design.
-    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
-}
-
-+ (UIColor *)ows_navbarTitleColor
-{
-    // TODO: Theme, Review with design.
-    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
-}
 
 #pragma mark -
 
@@ -101,11 +73,6 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 + (UIColor *)ows_infoMessageBorderColor
 {
     return [UIColor colorWithRed:239.f / 255.f green:189.f / 255.f blue:88.f / 255.f alpha:1.0f];
-}
-
-+ (UIColor *)ows_toolbarBackgroundColor
-{
-    return self.ows_navbarBackgroundColor;
 }
 
 + (UIColor *)ows_lightBackgroundColor
@@ -347,59 +314,6 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 + (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
 {
     return [self.ows_conversationColorMap allKeysForObject:color].firstObject;
-}
-
-#pragma mark - Theme
-
-+ (BOOL)isThemeEnabled
-{
-    OWSAssertIsOnMainThread();
-
-#ifdef THEME_ENABLED
-    return NO;
-#else
-    return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:UIColorKeyThemeEnabled
-                                                           inCollection:UIColorCollection
-                                                           defaultValue:NO];
-#endif
-}
-
-+ (void)setIsThemeEnabled:(BOOL)value
-{
-    OWSAssertIsOnMainThread();
-
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
-                                                            forKey:UIColorKeyThemeEnabled
-                                                      inCollection:UIColorCollection];
-
-    [UIUtil setupSignalAppearence];
-
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameThemeDidChange
-                                                             object:nil
-                                                           userInfo:nil];
-}
-
-+ (UIColor *)ows_themeBackgroundColor
-{
-    return (UIColor.isThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_whiteColor);
-}
-
-+ (UIColor *)ows_themePrimaryColor
-{
-    // TODO: Theme, Review with design.
-    return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_light90Color);
-}
-
-+ (UIColor *)ows_themeSecondaryColor
-{
-    // TODO: Theme, Review with design.
-    return (UIColor.isThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
-}
-
-+ (UIColor *)ows_themeBoldColor
-{
-    // TODO: Review with design.
-    return (UIColor.isThemeEnabled ? UIColor.ows_whiteColor : UIColor.blackColor);
 }
 
 @end
