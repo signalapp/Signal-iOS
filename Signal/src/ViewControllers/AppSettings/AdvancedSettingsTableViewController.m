@@ -198,7 +198,8 @@ NS_ASSUME_NONNULL_BEGIN
 #ifdef THEME_ENABLED
     OWSTableSection *themeSection = [OWSTableSection new];
     themeSection.headerTitle = NSLocalizedString(@"THEME_SECTION", nil);
-    [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_THEME", @"")
+    [themeSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_DARK_THEME",
+                                                               @"Label for setting that enables dark theme.")
                                                       isOn:[Theme isDarkThemeEnabled]
                                                     target:weakSelf
                                                   selector:@selector(didToggleThemeSwitch:)]];
@@ -288,6 +289,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleThemeSwitch:(UISwitch *)sender
 {
     [Theme setIsDarkThemeEnabled:sender.isOn];
+
+    [self updateTableContents];
 
     // TODO: Notify and refresh.
 }

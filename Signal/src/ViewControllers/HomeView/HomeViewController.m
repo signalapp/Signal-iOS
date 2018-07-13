@@ -805,12 +805,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kArchivedConversationsReuseIdentifier];
     OWSAssert(cell);
+    [OWSTableItem configureCell:cell];
 
     for (UIView *subview in cell.contentView.subviews) {
         [subview removeFromSuperview];
     }
-
-    cell.backgroundColor = Theme.backgroundColor;
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssert(disclosureImage);
