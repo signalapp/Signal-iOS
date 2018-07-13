@@ -4851,6 +4851,7 @@ typedef enum : NSUInteger {
     BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
     OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
+    BOOL hasPlacedUnreadIndicator = NO;
     for (ConversationViewItem *viewItem in viewItems) {
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
@@ -4886,11 +4887,33 @@ typedef enum : NSUInteger {
 
         previousViewItemTimestamp = viewItemTimestamp;
 
+        // When a conversation without unread messages receives an incoming message,
+        // we call ensureDynamicInteractions to ensure that the unread indicator (etc.)
+        // state is updated accordingly.  However this is done in a separate transaction.
+        // We don't want to show the incoming message _without_ an unread indicator and
+        // then immediately re-render it _with_ an unread indicator.
+        //
+        // To avoid this, we use a temporary instance of OWSUnreadIndicator whenever
+        // we find an unread message that _should_ have an unread indicator, but no
+        // unread indicator exists yet on dynamicInteractions.
+        BOOL isItemUnread = ([viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]
+            && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
+        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator) {
+
+            unreadIndicator =
+                [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
+                                                       hasMoreUnseenMessages:NO
+                                        missingUnseenSafetyNumberChangeCount:0
+                                                     unreadIndicatorPosition:0
+                                             firstUnseenInteractionTimestamp:viewItem.interaction.timestamp];
+        }
+
         // Place the unread indicator onto the first appropriate view item,
         // if any.
         if (unreadIndicator && viewItem.interaction.timestampForSorting >= unreadIndicator.timestamp) {
             viewItem.unreadIndicator = unreadIndicator;
             unreadIndicator = nil;
+            hasPlacedUnreadIndicator = YES;
         } else {
             viewItem.unreadIndicator = nil;
         }
