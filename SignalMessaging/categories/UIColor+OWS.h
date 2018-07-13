@@ -85,8 +85,8 @@ extern NSString *const NSNotificationNameThemeDidChange;
 
 #pragma mark - Theme
 
-#ifdef THEME_ENABLED
 + (BOOL)isThemeEnabled;
+#ifdef THEME_ENABLED
 + (void)setIsThemeEnabled:(BOOL)value;
 #endif
 

@@ -355,9 +355,13 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 {
     OWSAssertIsOnMainThread();
 
+#ifdef THEME_ENABLED
+    return NO;
+#else
     return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:UIColorKeyThemeEnabled
                                                            inCollection:UIColorCollection
                                                            defaultValue:NO];
+#endif
 }
 
 + (void)setIsThemeEnabled:(BOOL)value
