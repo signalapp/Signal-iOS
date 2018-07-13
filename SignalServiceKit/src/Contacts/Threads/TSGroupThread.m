@@ -4,7 +4,6 @@
 
 #import "TSGroupThread.h"
 #import "NSData+Base64.h"
-#import "SignalRecipient.h"
 #import "TSAttachmentStream.h"
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>

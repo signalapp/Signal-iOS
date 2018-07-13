@@ -8,11 +8,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
-@class ContactsUpdater;
 @class OWSBlockingManager;
 @class OWSPrimaryStorage;
 @class OWSUploadingService;
-@class SignalRecipient;
 @class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
@@ -42,15 +40,13 @@ NS_SWIFT_NAME(MessageSender)
 
     // For subclassing in tests
     OWSUploadingService *_uploadingService;
-    ContactsUpdater *_contactsUpdater;
 }
 
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       contactsUpdater:(ContactsUpdater *)contactsUpdater;
+                       contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 
 - (void)setBlockingManager:(OWSBlockingManager *)blockingManager;
 

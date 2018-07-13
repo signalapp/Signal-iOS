@@ -101,16 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay
++ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId
 {
     OWSAssert(attachmentId > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/%llu", textSecureAttachmentsAPI, attachmentId];
-
-    // TODO: Should this be in the parameters?
-    if (relay.length > 0) {
-        path = [path stringByAppendingFormat:@"?relay=%@", relay];
-    }
 
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
@@ -211,7 +206,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
-                                           relay:(nullable NSString *)relay
                                        timeStamp:(uint64_t)timeStamp
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
@@ -219,14 +213,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(timeStamp > 0);
 
     NSString *path = [textSecureMessagesAPI stringByAppendingString:recipientId];
-    NSMutableDictionary *parameters = [@{
+    NSDictionary *parameters = @{
         @"messages" : messages,
         @"timestamp" : @(timeStamp),
-    } mutableCopy];
+    };
 
-    if (relay) {
-        parameters[@"relay"] = relay;
-    }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
 }
 

@@ -112,7 +112,6 @@ NS_ASSUME_NONNULL_BEGIN
         = ^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
               [SignalRecipient ensureRecipientExistsWithRecipientId:envelope.source
                                                            deviceId:envelope.sourceDevice
-                                                              relay:envelope.relay
                                                         transaction:transaction];
 
               successBlockParameter(plaintextData, transaction);

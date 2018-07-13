@@ -3729,7 +3729,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                            digest:nil
                                                         byteCount:filesize
                                                       contentType:@"audio/mp3"
-                                                            relay:@""
                                                    sourceFilename:@"test.mp3"
                                                    attachmentType:TSAttachmentTypeDefault];
                 pointer.state = TSAttachmentPointerStateFailed;
@@ -4596,7 +4595,6 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    digest:nil
                                                 byteCount:filesize
                                               contentType:fakeAssetLoader.mimeType
-                                                    relay:@""
                                            sourceFilename:fakeAssetLoader.filename
                                            attachmentType:TSAttachmentTypeDefault];
         attachmentPointer.state = TSAttachmentPointerStateFailed;

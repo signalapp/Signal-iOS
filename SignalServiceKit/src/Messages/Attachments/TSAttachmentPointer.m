@@ -30,7 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
-                           relay:(NSString *)relay
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType
 {
@@ -45,7 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _digest = digest;
     _state = TSAttachmentPointerStateEnqueued;
-    _relay = relay;
     self.attachmentType = attachmentType;
 
     return self;
@@ -53,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 + (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
-                                              relay:(NSString *_Nullable)relay
 {
     OWSAssert(attachmentProto.id != 0);
     OWSAssert(attachmentProto.key != nil);
@@ -75,7 +72,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size
                                                                      contentType:attachmentProto.contentType
-                                                                           relay:relay
                                                                   sourceFilename:attachmentProto.fileName
                                                                   attachmentType:attachmentType];
     return pointer;

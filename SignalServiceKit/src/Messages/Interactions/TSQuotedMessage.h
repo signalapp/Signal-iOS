@@ -92,7 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable instancetype)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                               thread:(TSThread *)thread
-                                               relay:(nullable NSString *)relay
                                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

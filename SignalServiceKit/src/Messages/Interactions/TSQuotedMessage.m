@@ -105,7 +105,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
                                                    thread:(TSThread *)thread
-                                                    relay:(nullable NSString *)relay
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
@@ -169,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             OWSSignalServiceProtosAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *thumbnailPointer =
-                [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto relay:relay];
+                [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto];
             [thumbnailPointer saveWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;

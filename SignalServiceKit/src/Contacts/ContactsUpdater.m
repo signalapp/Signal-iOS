@@ -38,38 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
-{
-    OWSAssert(error);
-
-    DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, identifier);
-
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-
-    __block SignalRecipient *recipient;
-
-    // Assigning to a pointer parameter within the block is not preventing the referenced error from being dealloc
-    // Instead, we avoid ambiguity in ownership by assigning to a local __block variable ensuring the error will be
-    // retained until our error parameter can take ownership.
-    __block NSError *retainedError;
-    [self lookupIdentifier:identifier
-        success:^(SignalRecipient *fetchedRecipient) {
-            recipient = fetchedRecipient;
-            dispatch_semaphore_signal(sema);
-        }
-        failure:^(NSError *lookupError) {
-            DDLogError(
-                @"%@ Could not find recipient for recipientId: %@, error: %@.", self.logTag, identifier, lookupError);
-
-            retainedError = lookupError;
-            dispatch_semaphore_signal(sema);
-        }];
-
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    *error = retainedError;
-    return recipient;
-}
-
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure
@@ -173,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
       TSRequest *request = [OWSRequestFactory contactsIntersectionRequestWithHashesArray:hashes];
       [[TSNetworkManager sharedManager] makeRequest:request
           success:^(NSURLSessionDataTask *tsTask, id responseDict) {
-              NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
+              NSMutableSet *identifiers = [NSMutableSet new];
               NSArray *contactsArray = [(NSDictionary *)responseDict objectForKey:@"contacts"];
 
               // Map attributes to phone numbers
@@ -182,34 +150,26 @@ NS_ASSUME_NONNULL_BEGIN
                       NSString *hash = [dict objectForKey:@"token"];
                       NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
 
-                      if (!identifier) {
+                      if (identifier.length < 1) {
                           DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.logTag);
-                          break;
+                          continue;
                       }
 
-                      [attributesForIdentifier setObject:dict forKey:identifier];
+                      [identifiers addObject:identifier];
                   }
               }
 
               // Insert or update contact attributes
+              //
+              // TODO: Do we need to _eagerly_ ensure a SignalRecipient instance exists?
               [OWSPrimaryStorage.dbReadWriteConnection
                   readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      for (NSString *identifier in attributesForIdentifier) {
-                          SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier
-                                                                                          withTransaction:transaction];
-                          if (!recipient) {
-                              recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil];
-                          }
-
-                          NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
-
-                          recipient.relay = attributes[@"relay"];
-
-                          [recipient saveWithTransaction:transaction];
+                      for (NSString *identifier in identifiers) {
+                          [SignalRecipient ensureRecipientExistsWithRecipientId:identifier transaction:transaction];
                       }
                   }];
 
-              success([NSSet setWithArray:attributesForIdentifier.allKeys]);
+              success([identifiers copy]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               if (!IsNSErrorNetworkFailure(error)) {

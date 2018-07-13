@@ -3,7 +3,6 @@
 //
 
 #import "SignalRecipient.h"
-#import "OWSIdentityManager.h"
 #import "TSAccountManager.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
@@ -15,24 +14,44 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation SignalRecipient
 
 + (NSString *)collection {
     return @"SignalRecipient";
 }
 
++ (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    SignalRecipient *_Nullable recipient =
+        [self recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
+    if (recipient) {
+        return recipient;
+    }
+
+    DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
+
+    recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
+    [recipient saveWithTransaction:transaction];
+    return recipient;
+}
+
 + (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                     deviceId:(UInt32)deviceId
-                                       relay:(NSString *)relay
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     SignalRecipient *_Nullable existingRecipient =
         [self recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
     if (!existingRecipient) {
-        DDLogDebug(
-            @"%@ in %s creating recipient with deviceId: %u", self.logTag, __PRETTY_FUNCTION__, (unsigned int)deviceId);
+        DDLogDebug(@"%@ in %s creating recipient: %@, with deviceId: %u",
+            self.logTag,
+            __PRETTY_FUNCTION__,
+            recipientId,
+            (unsigned int)deviceId);
 
-        SignalRecipient *newRecipient = [[self alloc] initWithTextSecureIdentifier:recipientId relay:relay];
+        SignalRecipient *newRecipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
         [newRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
         [newRecipient saveWithTransaction:transaction];
 
@@ -51,7 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                       relay:(nullable NSString *)relay
 {
     self = [super initWithUniqueId:textSecureIdentifier];
     if (!self) {
@@ -74,8 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
         // we send a message to this recipient.
         _devices = [NSOrderedSet orderedSetWithObject:@(1)];
     }
-
-    _relay = [relay isEqualToString:@""] ? nil : relay;
 
     return self;
 }
@@ -118,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSAccountManager localNumber]];
     if (!myself) {
-        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber] relay:nil];
+        myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber]];
     }
     return myself;
 }
@@ -142,16 +158,6 @@ NS_ASSUME_NONNULL_BEGIN
     [updatedDevices minusSet:set];
 
     self.devices = [updatedDevices copy];
-}
-
-- (BOOL)supportsVoice
-{
-    return YES;
-}
-
-- (BOOL)supportsWebRTC
-{
-    return YES;
 }
 
 - (NSString *)recipientId

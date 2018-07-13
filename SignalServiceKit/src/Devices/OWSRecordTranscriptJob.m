@@ -80,7 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:transcript.attachmentPointerProtos
-                                                            relay:transcript.relay
                                                    networkManager:self.networkManager
                                                       transaction:transaction];
 

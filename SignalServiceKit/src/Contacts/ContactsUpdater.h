@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalRecipient.h"
@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ContactsUpdater : NSObject
 
 + (instancetype)sharedUpdater;
-
-- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error;
 
 // This asynchronously tries to verify whether or not a contact id
 // corresponds to a service account.

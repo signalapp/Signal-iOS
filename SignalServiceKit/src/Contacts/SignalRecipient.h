@@ -6,31 +6,35 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This class serves two purposes:
+//
+// * We only _persist_ SignalRecipient instances when we know
+//   that it corresponds to an account on the Signal service.
+//   So SignalRecipient serves as a defacto cache of "known
+//   Signal users."
+// * We hang the "known device list" for signal accounts on
+//   this entity.
 @interface SignalRecipient : TSYapDatabaseObject
 
-- (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                       relay:(nullable NSString *)relay;
+@property (readonly) NSOrderedSet *devices;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)selfRecipient;
 
++ (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
+                                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 + (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                     deviceId:(UInt32)deviceId
-                                       relay:(NSString *)relay
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-@property (readonly) NSOrderedSet *devices;
 - (void)addDevices:(NSSet *)set;
 - (void)removeDevices:(NSSet *)set;
-
-@property (nonatomic, nullable) NSString *relay;
-
-- (BOOL)supportsVoice;
-// This property indicates support for both WebRTC audio and video calls.
-- (BOOL)supportsWebRTC;
 
 - (NSString *)recipientId;
 

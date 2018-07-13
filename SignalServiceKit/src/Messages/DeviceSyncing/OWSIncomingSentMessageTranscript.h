@@ -19,10 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSIncomingSentMessageTranscript : NSObject
 
 - (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto
-                        relay:(nullable NSString *)relay
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) NSString *relay;
 @property (nonatomic, readonly) OWSSignalServiceProtosDataMessage *dataMessage;
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) uint64_t timestamp;

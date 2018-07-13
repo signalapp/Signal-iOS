@@ -516,7 +516,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(groupThread);
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:@[ dataMessage.group.avatar ]
-                                                            relay:envelope.relay
                                                    networkManager:self.networkManager
                                                       transaction:transaction];
 
@@ -553,7 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAttachmentsProcessor *attachmentsProcessor =
         [[OWSAttachmentsProcessor alloc] initWithAttachmentProtos:dataMessage.attachments
-                                                            relay:envelope.relay
                                                    networkManager:self.networkManager
                                                       transaction:transaction];
     if (!attachmentsProcessor.hasSupportedAttachments) {
@@ -605,7 +603,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (syncMessage.hasSent) {
         OWSIncomingSentMessageTranscript *transcript =
             [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
-                                                              relay:envelope.relay
                                                         transaction:transaction];
 
         OWSRecordTranscriptJob *recordJob =
@@ -916,8 +913,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
     NSData *groupId = dataMessage.hasGroup ? dataMessage.group.id : nil;
-    OWSContact *_Nullable contact =
-        [OWSContacts contactForDataMessage:dataMessage relay:envelope.relay transaction:transaction];
+    OWSContact *_Nullable contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
     if (dataMessage.group.type == OWSSignalServiceProtosGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
@@ -1016,7 +1012,6 @@ NS_ASSUME_NONNULL_BEGIN
 
                 TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                                  thread:oldGroupThread
-                                                                                                  relay:envelope.relay
                                                                                             transaction:transaction];
 
                 DDLogDebug(@"%@ incoming message from: %@ for group: %@ with timestamp: %lu",
@@ -1060,13 +1055,11 @@ NS_ASSUME_NONNULL_BEGIN
             self.logTag,
             envelopeAddress(envelope),
             (unsigned long)timestamp);
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source
-                                                                      transaction:transaction
-                                                                            relay:envelope.relay];
+        TSContactThread *thread =
+            [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
         TSQuotedMessage *_Nullable quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
                                                                                          thread:thread
-                                                                                          relay:envelope.relay
                                                                                     transaction:transaction];
 
         TSIncomingMessage *incomingMessage =

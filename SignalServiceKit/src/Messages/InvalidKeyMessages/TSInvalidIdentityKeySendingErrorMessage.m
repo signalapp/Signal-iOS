@@ -8,7 +8,6 @@
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import "PreKeyBundle+jsonDict.h"
-#import "SignalRecipient.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
