@@ -6,21 +6,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// This class serves two purposes:
-//
-// * We only _persist_ SignalRecipient instances when we know
-//   that it corresponds to an account on the Signal service.
-//   So SignalRecipient serves as a defacto cache of "known
-//   Signal users."
-// * We hang the "known device list" for signal accounts on
-//   this entity.
+// We hang the "known device list" for signal accounts on this entity.
 @interface SignalRecipient : TSYapDatabaseObject
 
 @property (readonly) NSOrderedSet *devices;
 
+@property (nonatomic) BOOL mayBeUnregistered;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)selfRecipient;
+
++ (SignalRecipient *)ensureRecipientExistsWithRegisteredRecipientId:(NSString *)recipientId
+                                                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
@@ -29,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     deviceId:(UInt32)deviceId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+// TODO: Replace with cache of known signal account ids.
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
 + (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
                                            withTransaction:(YapDatabaseReadTransaction *)transaction;

@@ -712,7 +712,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
         }
 
-        [recipient removeWithTransaction:transaction];
+        if (recipient.mayBeUnregistered) {
+            return;
+        }
+        recipient.mayBeUnregistered = YES;
+        [recipient saveWithTransaction:transaction];
+
         [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
             saveWithTransaction:transaction];
     }];
@@ -1010,6 +1015,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [recipient saveWithTransaction:transaction];
             [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
+
+            if (recipient.mayBeUnregistered) {
+                recipient.mayBeUnregistered = NO;
+                [recipient saveWithTransaction:transaction];
+            }
         }];
 
         [self handleMessageSentLocally:message];
@@ -1075,6 +1085,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             DDLogWarn(@"%@ Unregistered recipient: %@", self.logTag, recipient.uniqueId);
 
             OWSAssert(thread);
+
             [self unregisteredRecipient:recipient message:message thread:thread];
             NSError *error = OWSErrorMakeNoSuchSignalRecipientError();
             // No need to retry if the recipient is not registered.

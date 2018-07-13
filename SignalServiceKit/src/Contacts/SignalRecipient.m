@@ -22,6 +22,25 @@ NS_ASSUME_NONNULL_BEGIN
     return @"SignalRecipient";
 }
 
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSFail(@"%@ We should no longer remove SignalRecipients.", self.logTag);
+
+    [super removeWithTransaction:transaction];
+}
+
++ (SignalRecipient *)ensureRecipientExistsWithRegisteredRecipientId:(NSString *)recipientId
+                                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    SignalRecipient *recipient =
+        [self ensureRecipientExistsWithRegisteredRecipientId:recipient transaction:transaction];
+    if (recipient.mayBeUnregistered) {
+        recipient.mayBeUnregistered = NO;
+        [recipient saveWithTransaction:transaction];
+    }
+    return recipient;
+}
+
 + (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {

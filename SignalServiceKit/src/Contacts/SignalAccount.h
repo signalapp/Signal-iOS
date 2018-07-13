@@ -41,11 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId;
 
-// In most cases this should be non-null. This should only
-// be null in the case where the SignalRecipient was
-// deleted before this property was accessed.
-- (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

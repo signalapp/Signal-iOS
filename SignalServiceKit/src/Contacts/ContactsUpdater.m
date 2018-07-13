@@ -38,6 +38,16 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (SignalRecipient *)signalRecipientForRegisteredRecipientId:(NSString *)recipientId
+{
+    __block SignalRecipient *recipient;
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        recipient =
+            [SignalRecipient ensureRecipientExistsWithRegisteredRecipientId:recipientId transaction:transaction];
+    }];
+    return recipient;
+}
+
 - (void)lookupIdentifier:(NSString *)identifier
                  success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure
@@ -52,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
                              success:^(NSSet<NSString *> *_Nonnull matchedIds) {
                                  if (matchedIds.count == 1) {
-                                     success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+                                     success([self signalRecipientForRegisteredRecipientId:identifier]);
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }
@@ -75,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  if (matchedIds.count > 0) {
                                      NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
                                      for (NSString *identifier in matchedIds) {
-                                         [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
+                                         [recipients
+                                             addObject:[self signalRecipientForRegisteredRecipientId:identifier]];
                                      }
                                      success([recipients copy]);
                                  } else {
@@ -109,18 +120,9 @@ NS_ASSUME_NONNULL_BEGIN
                              success:^(NSSet<NSString *> *matchedIds) {
                                  [recipientIds minusSet:matchedIds];
 
-                                 // Cleaning up unregistered identifiers
-                                 [OWSPrimaryStorage.dbReadWriteConnection
-                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                         for (NSString *identifier in recipientIds) {
-                                             SignalRecipient *recipient =
-                                                 [SignalRecipient fetchObjectWithUniqueID:identifier
-                                                                              transaction:transaction];
-
-                                             [recipient removeWithTransaction:transaction];
-                                         }
-                                     }];
-
+                                 // TODO:
+                                 //
+                                 // Update cache of registered identifiers.
                                  DDLogInfo(@"%@ successfully intersected contacts.", self.logTag);
                                  success();
                              }
@@ -165,7 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
               [OWSPrimaryStorage.dbReadWriteConnection
                   readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                       for (NSString *identifier in identifiers) {
-                          [SignalRecipient ensureRecipientExistsWithRecipientId:identifier transaction:transaction];
+                          [SignalRecipient ensureRecipientExistsWithRegisteredRecipientId:identifier
+                                                                              transaction:transaction];
                       }
                   }];
 
