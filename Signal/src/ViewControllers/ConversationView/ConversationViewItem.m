@@ -150,7 +150,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return message.isExpiringMessage;
 }
 
-- (BOOL)hasCellHeader
+- (BOOL)hasDateOrUnreadBreak
 {
     return self.shouldShowDate || self.unreadIndicator;
 }
@@ -277,7 +277,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssert(previousLayoutItem);
 
-    if (self.hasCellHeader) {
+    if (self.hasDateOrUnreadBreak) {
         return OWSMessageHeaderViewDateHeaderVMargin;
     }
 

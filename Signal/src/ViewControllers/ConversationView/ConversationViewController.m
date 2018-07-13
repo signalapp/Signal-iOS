@@ -4847,9 +4847,10 @@ typedef enum : NSUInteger {
         }
     }];
 
-    // Update the "shouldShowDate" property of the view items.
+    // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.
     BOOL shouldShowDateOnNextViewItem = YES;
     uint64_t previousViewItemTimestamp = 0;
+    OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
     for (ConversationViewItem *viewItem in viewItems) {
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
@@ -4884,21 +4885,6 @@ typedef enum : NSUInteger {
         viewItem.shouldShowDate = shouldShowDate;
 
         previousViewItemTimestamp = viewItemTimestamp;
-    }
-
-    // Update the properties of the view items.
-    //
-    // NOTE: This logic uses shouldShowDate which is set in the previous pass.
-    OWSUnreadIndicator *_Nullable unreadIndicator = self.dynamicInteractions.unreadIndicator;
-    for (NSUInteger i = 0; i < viewItems.count; i++) {
-        ConversationViewItem *viewItem = viewItems[i];
-        ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
-        ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
-        BOOL shouldShowSenderAvatar = NO;
-        BOOL shouldHideFooter = NO;
-        BOOL isFirstInCluster = YES;
-        BOOL isLastInCluster = YES;
-        NSAttributedString *_Nullable senderName = nil;
 
         // Place the unread indicator onto the first appropriate view item,
         // if any.
@@ -4908,6 +4894,25 @@ typedef enum : NSUInteger {
         } else {
             viewItem.unreadIndicator = nil;
         }
+    }
+    if (unreadIndicator) {
+        // This isn't necessarily a bug - all of the interactions after the
+        // unread indicator may have disappeared or been deleted.
+        DDLogWarn(@"%@ Couldn't find an interaction to hang the unread indicator on.", self.logTag);
+    }
+
+    // Update the properties of the view items.
+    //
+    // NOTE: This logic uses the break properties which are set in the previous pass.
+    for (NSUInteger i = 0; i < viewItems.count; i++) {
+        ConversationViewItem *viewItem = viewItems[i];
+        ConversationViewItem *_Nullable previousViewItem = (i > 0 ? viewItems[i - 1] : nil);
+        ConversationViewItem *_Nullable nextViewItem = (i + 1 < viewItems.count ? viewItems[i + 1] : nil);
+        BOOL shouldShowSenderAvatar = NO;
+        BOOL shouldHideFooter = NO;
+        BOOL isFirstInCluster = YES;
+        BOOL isLastInCluster = YES;
+        NSAttributedString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
@@ -4930,14 +4935,14 @@ typedef enum : NSUInteger {
                 // ...and always show the "disappearing messages" animation.
                 shouldHideFooter
                     = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
-                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.shouldShowDate
-                        && !isDisappearingMessage);
+                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed
+                        && !nextViewItem.hasDateOrUnreadBreak && !isDisappearingMessage);
             }
 
             // clustering
             if (previousViewItem == nil) {
                 isFirstInCluster = YES;
-            } else if (viewItem.shouldShowDate) {
+            } else if (viewItem.hasDateOrUnreadBreak) {
                 isFirstInCluster = YES;
             } else {
                 isFirstInCluster = previousViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
@@ -4945,7 +4950,7 @@ typedef enum : NSUInteger {
 
             if (nextViewItem == nil) {
                 isLastInCluster = YES;
-            } else if (nextViewItem.shouldShowDate) {
+            } else if (nextViewItem.hasDateOrUnreadBreak) {
                 isLastInCluster = YES;
             } else {
                 isLastInCluster = nextViewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage;
@@ -4969,15 +4974,16 @@ typedef enum : NSUInteger {
                 // We can skip the "incoming message status" footer in a cluster if the next message
                 // has the same footer and no "date break" separates us.
                 // ...but always show the "disappearing messages" animation.
-                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.shouldShowDate &&
-                    [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                    && !isDisappearingMessage);
+                shouldHideFooter
+                    = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasDateOrUnreadBreak &&
+                        [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                        && !isDisappearingMessage);
             }
 
             // clustering
             if (previousViewItem == nil) {
                 isFirstInCluster = YES;
-            } else if (viewItem.shouldShowDate) {
+            } else if (viewItem.hasDateOrUnreadBreak) {
                 isFirstInCluster = YES;
             } else if (previousViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isFirstInCluster = YES;
@@ -4990,7 +4996,7 @@ typedef enum : NSUInteger {
                 isLastInCluster = YES;
             } else if (nextViewItem.interaction.interactionType != OWSInteractionType_IncomingMessage) {
                 isLastInCluster = YES;
-            } else if (nextViewItem.shouldShowDate) {
+            } else if (nextViewItem.hasDateOrUnreadBreak) {
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
@@ -5010,7 +5016,7 @@ typedef enum : NSUInteger {
 
                     shouldShowSenderName
                         = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.shouldShowDate);
+                            || viewItem.hasDateOrUnreadBreak);
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
@@ -5027,7 +5033,7 @@ typedef enum : NSUInteger {
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                     shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                        || nextViewItem.shouldShowDate);
+                        || nextViewItem.hasDateOrUnreadBreak);
                 }
             }
         }
@@ -5037,11 +5043,6 @@ typedef enum : NSUInteger {
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
-    }
-    if (unreadIndicator) {
-        // This isn't necessarily a bug - all of the interactions after the
-        // unread indicator may have disappeared or been deleted.
-        DDLogWarn(@"%@ Couldn't find an interaction to hang the unread indicator on.", self.logTag);
     }
 
     self.viewItems = viewItems;
