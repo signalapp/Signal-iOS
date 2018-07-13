@@ -226,6 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     disappearingTimerConfigurationView.frame = CGRectMake(0, 0, 44, 44);
                                     disappearingTimerConfigurationView.tintColor =
                                         [UIColor colorWithWhite:0.5f alpha:1.f];
+                                    [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
                                     [cell ows_setAccessoryView:disappearingTimerConfigurationView];
                                 }
