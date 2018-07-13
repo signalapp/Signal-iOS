@@ -14,6 +14,7 @@
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSignalServiceProtos.pb.h"
+#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
@@ -89,11 +90,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Decryption
 
 - (void)decryptEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-           successBlock:(DecryptSuccessBlock)successBlock
+           successBlock:(DecryptSuccessBlock)successBlockParameter
            failureBlock:(DecryptFailureBlock)failureBlockParameter
 {
     OWSAssert(envelope);
-    OWSAssert(successBlock);
+    OWSAssert(successBlockParameter);
     OWSAssert(failureBlockParameter);
     OWSAssert([TSAccountManager isRegistered]);
 
@@ -106,6 +107,16 @@ NS_ASSUME_NONNULL_BEGIN
             failureBlockParameter();
         });
     };
+
+    DecryptSuccessBlock successBlock
+        = ^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
+              [SignalRecipient ensureRecipientExistsWithRecipientId:envelope.source
+                                                           deviceId:envelope.sourceDevice
+                                                              relay:envelope.relay
+                                                        transaction:transaction];
+
+              successBlockParameter(plaintextData, transaction);
+          };
 
     @try {
         DDLogInfo(@"%@ decrypting envelope: %@", self.logTag, [self descriptionForEnvelope:envelope]);
