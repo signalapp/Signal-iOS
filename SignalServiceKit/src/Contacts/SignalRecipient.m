@@ -32,8 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (SignalRecipient *)ensureRecipientExistsWithRegisteredRecipientId:(NSString *)recipientId
                                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    SignalRecipient *recipient =
-        [self ensureRecipientExistsWithRegisteredRecipientId:recipient transaction:transaction];
+    SignalRecipient *recipient = [self ensureRecipientExistsWithRecipientId:recipientId transaction:transaction];
     if (recipient.mayBeUnregistered) {
         recipient.mayBeUnregistered = NO;
         [recipient saveWithTransaction:transaction];
