@@ -285,7 +285,7 @@
 "BUTTON_SELECT" = "Seç";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Tekrar Ara";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal, arama yapmak ve sesli mesajlar kaydetmek için mikrofonunuza erişime ihtiyaç duyar. Bu izni Ayarlar uygulamasından verebilirsiniz.";
@@ -1887,6 +1887,9 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Hata Ayıklama Kaydını gönder";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADVANCED_THEME" = "Theme";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Gelişmiş";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
@@ -2131,6 +2134,9 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+
+/* No comment provided by engineer. */
+"THEME_SECTION" = "Theme";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ gün";

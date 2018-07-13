@@ -285,7 +285,7 @@
 "BUTTON_SELECT" = "Pasirinkti";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Skambinti vėl";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Tam, kad galėtų skambinti ir įrašinėti balso žinutes, Signal reikia prieigos prie jūsų mikrofono. Jūs galite suteikti šį leidimą Nustatymų (angl. Settings) programėlėje.";
@@ -552,7 +552,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Sukurti naują kontaktą";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Bakstelėkite, norėdami pakeisti";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Įjungti pranešimus";
@@ -877,7 +877,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Gavėjo raktas yra neteisingas.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Gauta žinutė buvo asinchroninė.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Gauta žinutė, kuri nesuderinama su šia versija.";
@@ -895,7 +895,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Įvyko nežinoma klaida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Pasikeitė saugumo numeris.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Neregistruotas naudotojas: %@";
@@ -1060,7 +1060,7 @@
 "INCOMING_DECLINED_CALL" = "Jūs atmetėte skambutį";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "Gaunamasis skambutis";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Praleistas skambutis dėl to, kad pasikeitė šio kontakto saugumo numeris.";
@@ -1431,7 +1431,7 @@
 "OUTGOING_CALL" = "Išsiunčiamasis skambutis";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Išsiunčiamasis skambutis";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
 "OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
@@ -1887,6 +1887,9 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Pateikti derinimo žurnalą";
 
 /* No comment provided by engineer. */
+"SETTINGS_ADVANCED_THEME" = "Theme";
+
+/* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Išplėstiniai";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
@@ -2112,7 +2115,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Bendrinti į Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Rodyti saugumo numerį";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Rodyti pokalbį";
@@ -2130,7 +2133,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Saugumo numeris sutampa!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Patvirtinti saugumo numerį";
+
+/* No comment provided by engineer. */
+"THEME_SECTION" = "Theme";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dienas(-ų)";
