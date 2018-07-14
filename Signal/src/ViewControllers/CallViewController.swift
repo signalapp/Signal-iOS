@@ -156,6 +156,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     @objc func didBecomeActive() {
         if (self.isViewLoaded) {
+            self.setNeedsStatusBarAppearanceUpdate()
             shouldRemoteVideoControlsBeHidden = false
         }
     }
