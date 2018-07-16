@@ -26,6 +26,30 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (!self) {
+        return self;
+    }
+
+    [self observeActivation];
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (!self) {
+        return self;
+    }
+
+    [self observeActivation];
+
+    return self;
+}
+
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view
 {
     OWSAssert(view);
@@ -58,6 +82,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.bottomLayoutView = view;
     self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
+}
+
+- (void)observeActivation
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(owsViewControllerApplicationDidBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
+- (void)owsViewControllerApplicationDidBecomeActive:(NSNotification *)notification
+{
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
