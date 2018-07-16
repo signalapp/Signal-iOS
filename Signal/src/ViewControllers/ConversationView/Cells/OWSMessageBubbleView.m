@@ -341,46 +341,15 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             if (self.hasBodyMediaWithThumbnail) {
-                // The "body media" view casts a shadow "downward" onto adjacent views,
-                // so we use a "proxy" view to take its place within the v-stack
-                // view and then insert the body media view above its proxy so that
-                // it floats above the other content of the bubble view.
+                [self.stackView addArrangedSubview:bodyMediaView];
 
-                UIView *proxyView = [UIView new];
-                [self.stackView addArrangedSubview:proxyView];
-
-                // TODO: We may only end up using a single shadow.
-                OWSBubbleShapeView *shadowView1 = [OWSBubbleShapeView bubbleShadowView];
-                OWSBubbleShapeView *shadowView2 = [OWSBubbleShapeView bubbleShadowView];
-                OWSBubbleShapeView *clipView = [OWSBubbleShapeView bubbleClipView];
-
-                [self addSubview:shadowView1];
-                [self addSubview:shadowView2];
-                [self addSubview:clipView];
-
-                [self.viewConstraints addObjectsFromArray:[shadowView1 autoPinToEdgesOfView:proxyView]];
-                [self.viewConstraints addObjectsFromArray:[shadowView2 autoPinToEdgesOfView:proxyView]];
-                [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
-
-                [clipView addSubview:bodyMediaView];
-                [self.viewConstraints addObjectsFromArray:[bodyMediaView ows_autoPinToSuperviewEdges]];
-
-                [self.bubbleView addPartnerView:shadowView1];
-                [self.bubbleView addPartnerView:shadowView2];
-                [self.bubbleView addPartnerView:clipView];
-
-                // TODO: Consider only using a single shadow for perf.
-                shadowView1.fillColor = self.bubbleColor;
-                shadowView1.layer.shadowColor = [UIColor blackColor].CGColor;
-                shadowView1.layer.shadowOpacity = 0.08f;
-                shadowView1.layer.shadowOffset = CGSizeMake(0.f, 4.f);
-                shadowView1.layer.shadowRadius = 12.f;
-
-                shadowView2.fillColor = self.bubbleColor;
-                shadowView2.layer.shadowColor = [UIColor blackColor].CGColor;
-                shadowView2.layer.shadowOpacity = 0.12f;
-                shadowView2.layer.shadowOffset = CGSizeZero;
-                shadowView2.layer.shadowRadius = 1.f;
+                OWSBubbleShapeView *strokeView = [OWSBubbleShapeView bubbleDrawView];
+                strokeView.strokeThickness = CGHairlineWidth();
+                strokeView.strokeColor = (UIColor.isThemeEnabled ? [UIColor colorWithWhite:1.f alpha:0.2f]
+                                                                 : [UIColor colorWithWhite:0.f alpha:0.2f]);
+                [bodyMediaView addSubview:strokeView];
+                [self.bubbleView addPartnerView:strokeView];
+                [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];
             } else {
                 OWSAssert(self.cellType == OWSMessageCellType_ContactShare);
 
