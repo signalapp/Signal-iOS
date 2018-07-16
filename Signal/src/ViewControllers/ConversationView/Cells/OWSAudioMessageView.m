@@ -108,12 +108,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIconToPlay
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_40"]];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_play_black_48"]];
 }
 
 - (void)setAudioIconToPause
 {
-    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_40"]];
+    [self setAudioIcon:[UIImage imageNamed:@"audio_pause_black_48"]];
 }
 
 - (void)updateAudioProgressView
@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)vMargin
 {
-    return 0.f;
+    return 5.f;
 }
 
 - (CGFloat)vMargin
@@ -164,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return 40.f;
+    return 48.f;
 }
 
 - (CGFloat)iconSize
@@ -182,6 +182,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = self.hSpacing;
+    self.layoutMarginsRelativeArrangement = YES;
+    self.layoutMargins = UIEdgeInsetsMake(self.vMargin, 0, self.vMargin, 0);
 
     _audioPlayPauseButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.audioPlayPauseButton.enabled = NO;
