@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalRecipient
 
-+ (instancetype)getOrCreatedUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                               transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
+                                             transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
@@ -125,9 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSMutableOrderedSet *updatedDevices = (self.devices
-                                           ? [self.devices mutableCopy]
-                                           : [NSMutableOrderedSet new]);
+    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
 }
@@ -135,10 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeDevices:(NSSet *)devices
 {
     OWSAssert(devices.count > 0);
-    
-    NSMutableOrderedSet *updatedDevices = (self.devices
-                                           ? [self.devices mutableCopy]
-                                           : [NSMutableOrderedSet new]);
+
+    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
     [updatedDevices minusSet:devices];
     self.devices = [updatedDevices copy];
 }
@@ -152,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
     [latest addDevices:devices];
-    [latest saveWithTransaction:transaction];
+    [latest saveWithTransaction_internal:transaction];
 }
 
 - (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -164,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
     [latest removeDevices:devices];
-    [latest saveWithTransaction:transaction];
+    [latest saveWithTransaction_internal:transaction];
 }
 
 - (NSString *)recipientId
@@ -178,6 +174,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSProdLogAndFail(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
+
+    [self saveWithTransaction_internal:transaction];
+}
+
+- (void)saveWithTransaction_internal:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super saveWithTransaction:transaction];
 
@@ -201,7 +204,7 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
 
         instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
-        [instance saveWithTransaction:transaction];
+        [instance saveWithTransaction_internal:transaction];
     }
     return instance;
 }
@@ -221,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
                    (unsigned int)deviceId);
         
         [recipient addDevices:[NSSet setWithObject:@(deviceId)]];
-        [recipient saveWithTransaction:transaction];
+        [recipient saveWithTransaction_internal:transaction];
     }
 }
 

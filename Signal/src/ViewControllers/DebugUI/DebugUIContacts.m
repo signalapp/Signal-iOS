@@ -1323,7 +1323,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (NSString *)invalidRecipientId
++ (NSString *)unregisteredRecipientId
 {
     // We ensure that the phone number is invalid by appending too many digits.
     NSMutableString *recipientId = [@"+1" mutableCopy];
@@ -1335,19 +1335,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)createInvalidContactThread
 {
-    NSString *recipientId = [self invalidRecipientId];
+    NSString *recipientId = [self unregisteredRecipientId];
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 + (void)createInvalidGroupThread
 {
-    NSString *invalidRecipientId = [self invalidRecipientId];
+    NSString *unregisteredRecipientId = [self unregisteredRecipientId];
     NSString *validRecipientId = @"+19174054216";
 
     NSString *groupName = @"Partially invalid group";
     NSMutableArray<NSString *> *recipientIds = [@[
-        invalidRecipientId,
+        unregisteredRecipientId,
         validRecipientId,
         [TSAccountManager localNumber],
     ] mutableCopy];

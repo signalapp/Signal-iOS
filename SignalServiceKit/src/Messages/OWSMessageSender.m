@@ -454,8 +454,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *recipientId in recipientIds) {
-            SignalRecipient *recipient = [SignalRecipient getOrCreatedUnsavedRecipientForRecipientId:recipientId
-                                                                                          transaction:transaction];
+            SignalRecipient *recipient =
+                [SignalRecipient getOrBuildUnsavedRecipientForRecipientId:recipientId transaction:transaction];
             [recipients addObject:recipient];
         }
     }];
@@ -895,7 +895,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 // This emulates the completion logic of an actual successful save (see below).
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [message updateWithSkippedRecipient:localNumber transaction:transaction];
-                    [recipient saveWithTransaction:transaction];
                 }];
                 successHandler();
             });
@@ -1013,7 +1012,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     dispatch_async([OWSDispatch sendingQueue], ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [recipient saveWithTransaction:transaction];
             [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
 
             // If we've just delivered a message to a user, we know they
