@@ -283,6 +283,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak NewContactThreadViewController *weakSelf = self;
 
+    // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
+    // to re-render this.
     if (self.contactsViewHelper.contactsManager.isSystemContactsDenied) {
         OWSTableItem *contactReminderItem = [OWSTableItem
             itemWithCustomCellBlock:^{

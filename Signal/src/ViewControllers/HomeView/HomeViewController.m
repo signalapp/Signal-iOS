@@ -335,6 +335,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 - (void)updateReminderViews
 {
     self.archiveReminderView.hidden = self.homeViewMode != HomeViewMode_Archive;
+    // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
+    // to re-render this.
     self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
