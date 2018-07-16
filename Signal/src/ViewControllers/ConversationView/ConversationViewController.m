@@ -2605,6 +2605,16 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    NSIndexPath *_Nullable indexPathOfUnreadIndicator = [self indexPathOfUnreadMessagesIndicator];
+    if (indexPathOfUnreadIndicator) {
+        ConversationViewItem *oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
+        OWSAssert(oldIndicatorItem);
+
+        oldIndicatorItem.unreadIndicator = nil;
+
+        [self.collectionView reloadItemsAtIndexPaths:@[ indexPathOfUnreadIndicator ]];
+    }
+
     if (self.hasClearedUnreadMessagesIndicator) {
         // ensureDynamicInteractionsForThread is somewhat expensive
         // so we don't want to call it unnecessarily.
