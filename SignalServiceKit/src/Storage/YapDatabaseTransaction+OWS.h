@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)restoreSnapshotOfCollection:(NSString *)collection snapshotFilePath:(NSString *)snapshotFilePath;
 #endif
 
+- (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
+
 @end
 
 NS_ASSUME_NONNULL_END

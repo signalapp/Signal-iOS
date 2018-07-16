@@ -45,6 +45,16 @@ const NSTimeInterval kYearInterval = 365 * kDayInterval;
     return [self compare:otherDate] == NSOrderedAscending;
 }
 
+- (BOOL)isAfterNow
+{
+    return [self isAfterDate:[NSDate new]];
+}
+
+- (BOOL)isBeforeNow
+{
+    return [self isBeforeDate:[NSDate new]];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

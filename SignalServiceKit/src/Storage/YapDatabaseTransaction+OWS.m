@@ -149,6 +149,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 #endif
 
+- (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection
+{
+    [self setObject:@(value.timeIntervalSince1970) forKey:key inCollection:collection];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

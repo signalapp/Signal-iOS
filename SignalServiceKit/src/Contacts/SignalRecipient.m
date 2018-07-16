@@ -3,7 +3,9 @@
 //
 
 #import "SignalRecipient.h"
+#import "PhoneNumber.h"
 #import "TSAccountManager.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

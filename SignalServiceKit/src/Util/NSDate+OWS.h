@@ -34,6 +34,9 @@ extern const NSTimeInterval kYearInterval;
 - (BOOL)isAfterDate:(NSDate *)otherDate;
 - (BOOL)isBeforeDate:(NSDate *)otherDate;
 
+- (BOOL)isAfterNow;
+- (BOOL)isBeforeNow;
+
 @end
 
 NS_ASSUME_NONNULL_END
