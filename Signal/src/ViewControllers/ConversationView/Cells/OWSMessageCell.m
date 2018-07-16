@@ -151,8 +151,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self.contentView addSubview:self.headerView];
         [self.viewConstraints addObjectsFromArray:@[
             [self.headerView autoSetDimension:ALDimensionHeight toSize:headerHeight],
-            [self.headerView autoPinLeadingToSuperviewMarginWithInset:self.conversationStyle.headerGutterLeading],
-            [self.headerView autoPinTrailingToSuperviewMarginWithInset:self.conversationStyle.headerGutterTrailing],
+            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
+            [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
             [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
         ]];
