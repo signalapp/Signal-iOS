@@ -31,29 +31,16 @@ NS_ASSUME_NONNULL_BEGIN
     [super removeWithTransaction:transaction];
 }
 
-+ (SignalRecipient *)ensureRecipientExistsWithRegisteredRecipientId:(NSString *)recipientId
-                                                        transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (instancetype)getOrCreatedUnsavedRecipientForRecipientId:(NSString *)recipientId
+                                               transaction:(YapDatabaseReadTransaction *)transaction
 {
-    SignalRecipient *recipient = [self ensureRecipientExistsWithRecipientId:recipientId transaction:transaction];
-    if (recipient.mayBeUnregistered) {
-        recipient.mayBeUnregistered = NO;
-        [recipient saveWithTransaction:transaction];
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+    
+    SignalRecipient *_Nullable recipient = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
+    if (!recipient) {
+        recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
     }
-    return recipient;
-}
-
-+ (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    SignalRecipient *_Nullable recipient = [self recipientForRecipientId:recipientId transaction:transaction];
-    if (recipient) {
-        return recipient;
-    }
-
-    DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
-
-    recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
-    [recipient saveWithTransaction:transaction];
     return recipient;
 }
 

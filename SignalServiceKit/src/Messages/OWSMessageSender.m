@@ -454,8 +454,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *recipientId in recipientIds) {
-            SignalRecipient *recipient =
-                [SignalRecipient ensureRecipientExistsWithRecipientId:recipientId transaction:transaction];
+            SignalRecipient *recipient = [SignalRecipient getOrCreatedUnsavedRecipientForRecipientId:recipientId
+                                                                                          transaction:transaction];
             [recipients addObject:recipient];
         }
     }];
@@ -555,11 +555,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return;
             }
 
-            __block SignalRecipient *recipient;
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                recipient =
-                    [SignalRecipient ensureRecipientExistsWithRecipientId:recipientContactId transaction:transaction];
-            }];
+            NSArray<SignalRecipient *> *recipients =
+            [self signalRecipientsForRecipientIds:@[recipientContactId] message:message];
+            OWSAssert(recipients.count == 1);
+            SignalRecipient *recipient = recipients.firstObject;
 
             if (!recipient) {
                 NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();

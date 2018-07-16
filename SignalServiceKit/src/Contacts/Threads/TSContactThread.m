@@ -39,9 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
         [thread saveWithTransaction:transaction];
     }
 
-    // TODO: Do we need to _eagerly_ ensure a SignalRecipient instance exists?
-    [SignalRecipient ensureRecipientExistsWithRecipientId:contactId transaction:transaction];
-
     return thread;
 }
 

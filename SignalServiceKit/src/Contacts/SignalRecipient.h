@@ -15,13 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)selfRecipient;
 
-+ (SignalRecipient *)ensureRecipientExistsWithRegisteredRecipientId:(NSString *)recipientId
-                                                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-+ (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
+                                               transaction:(YapDatabaseReadTransaction *)transaction;
++ (instancetype)getOrCreatedUnsavedRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)addDevices:(NSSet *)set;
