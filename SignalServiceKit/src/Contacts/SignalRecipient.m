@@ -10,7 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalRecipient ()
 
-@property NSOrderedSet *devices;
+@property (nonatomic) BOOL mayBeUnregistered;
+
+@property (nonatomic) NSOrderedSet *devices;
 
 @end
 
@@ -43,8 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    SignalRecipient *_Nullable recipient =
-        [self recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
+    SignalRecipient *_Nullable recipient = [self recipientForRecipientId:recipientId transaction:transaction];
     if (recipient) {
         return recipient;
     }
@@ -60,8 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     deviceId:(UInt32)deviceId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    SignalRecipient *_Nullable existingRecipient =
-        [self recipientWithTextSecureIdentifier:recipientId withTransaction:transaction];
+    SignalRecipient *_Nullable existingRecipient = [self recipientForRecipientId:recipientId transaction:transaction];
     if (!existingRecipient) {
         DDLogDebug(@"%@ in %s creating recipient: %@, with deviceId: %u",
             self.logTag,
@@ -132,17 +132,37 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                           withTransaction:(YapDatabaseReadTransaction *)transaction
+
++ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
+                                               transaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [self fetchObjectWithUniqueID:textSecureIdentifier transaction:transaction];
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+
+    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    if (instance && !instance.mayBeUnregistered) {
+        return instance;
+    } else {
+        return nil;
+    }
 }
 
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
++ (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
+                                     transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+
+    return [self fetchObjectWithUniqueID:recipientId transaction:transaction];
+}
+
++ (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
+{
+    OWSAssert(recipientId.length > 0);
+
     __block SignalRecipient *recipient;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        recipient = [self recipientWithTextSecureIdentifier:textSecureIdentifier withTransaction:transaction];
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        recipient = [self recipientForRecipientId:recipientId transaction:transaction];
     }];
     return recipient;
 }
@@ -150,7 +170,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO This method should probably live on the TSAccountManager rather than grabbing a global singleton.
 + (instancetype)selfRecipient
 {
-    SignalRecipient *myself = [self recipientWithTextSecureIdentifier:[TSAccountManager localNumber]];
+    SignalRecipient *myself = [self recipientForRecipientId:[TSAccountManager localNumber]];
     if (!myself) {
         myself = [[self alloc] initWithTextSecureIdentifier:[TSAccountManager localNumber]];
     }
@@ -193,6 +213,67 @@ NS_ASSUME_NONNULL_BEGIN
     [super saveWithTransaction:transaction];
 
     DDLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
+}
+
++ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId
+{
+    __block BOOL result;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        result = [self isRegisteredSignalAccount:recipientId transaction:transaction];
+    }];
+    return result;
+}
+
++ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
+{
+    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    return (instance && !instance.mayBeUnregistered);
+}
+
++ (void)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+
+    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+
+    if (!instance) {
+        DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
+
+        instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
+        [instance saveWithTransaction:transaction];
+        return;
+    }
+    if (!instance.mayBeUnregistered) {
+        return;
+    }
+    instance.mayBeUnregistered = NO;
+    [instance saveWithTransaction:transaction];
+}
+
++ (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+
+    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    if (!instance) {
+        return;
+    }
+    if (instance.mayBeUnregistered) {
+        return;
+    }
+    instance.mayBeUnregistered = YES;
+    [instance saveWithTransaction:transaction];
+}
+
+- (void)markAccountAsNotRegisteredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+
+    self.mayBeUnregistered = YES;
+
+    [SignalRecipient markAccountAsNotRegistered:self.recipientId transaction:transaction];
 }
 
 @end

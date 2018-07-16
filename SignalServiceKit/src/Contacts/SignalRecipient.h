@@ -9,9 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 // We hang the "known device list" for signal accounts on this entity.
 @interface SignalRecipient : TSYapDatabaseObject
 
-@property (readonly) NSOrderedSet *devices;
-
-@property (nonatomic) BOOL mayBeUnregistered;
+@property (nonatomic, readonly) NSOrderedSet *devices;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -28,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // TODO: Replace with cache of known signal account ids.
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                           withTransaction:(YapDatabaseReadTransaction *)transaction;
+// TODO: Remove?
++ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
+                                               transaction:(YapDatabaseReadTransaction *)transaction;
 
 - (void)addDevices:(NSSet *)set;
 - (void)removeDevices:(NSSet *)set;
@@ -38,6 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)recipientId;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
+
+// TODO: Replace with cache of known signal account ids.
++ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
+
++ (void)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)markAccountAsNotRegisteredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

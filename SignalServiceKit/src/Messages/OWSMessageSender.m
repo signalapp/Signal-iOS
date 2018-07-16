@@ -712,11 +712,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [message updateWithSkippedRecipient:recipient.recipientId transaction:transaction];
         }
 
-        if (recipient.mayBeUnregistered) {
+        if (![SignalRecipient isRegisteredSignalAccount:recipient.recipientId transaction:transaction]) {
             return;
         }
-        recipient.mayBeUnregistered = YES;
-        [recipient saveWithTransaction:transaction];
+
+        [recipient markAccountAsNotRegisteredWithTransaction:transaction];
 
         [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.recipientId]
             saveWithTransaction:transaction];
@@ -1016,10 +1016,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [recipient saveWithTransaction:transaction];
             [message updateWithSentRecipient:recipient.uniqueId transaction:transaction];
 
-            if (recipient.mayBeUnregistered) {
-                recipient.mayBeUnregistered = NO;
-                [recipient saveWithTransaction:transaction];
-            }
+            // If we've just delivered a message to a user, we know they
+            // have a valid Signal account.
+            [SignalRecipient markAccountAsRegistered:recipient.recipientId transaction:transaction];
         }];
 
         [self handleMessageSentLocally:message];
