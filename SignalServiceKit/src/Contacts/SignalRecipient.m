@@ -18,17 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalRecipient
 
-+ (NSString *)collection {
-    return @"SignalRecipient";
-}
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSFail(@"%@ We should no longer remove SignalRecipients.", self.logTag);
-
-    [super removeWithTransaction:transaction];
-}
-
 + (instancetype)getOrCreatedUnsavedRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction
 {
