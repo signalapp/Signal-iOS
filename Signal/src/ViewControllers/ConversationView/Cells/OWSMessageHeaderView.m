@@ -170,7 +170,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     CGFloat strokeThickness = [self strokeThicknessWithViewItem:viewItem];
     result.height += strokeThickness;
 
-    CGFloat maxTextWidth = conversationStyle.fullWidthContentWidth;
+    CGFloat maxTextWidth = conversationStyle.headerViewContentWidth;
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
     result.height += titleSize.height + self.stackView.spacing;
 

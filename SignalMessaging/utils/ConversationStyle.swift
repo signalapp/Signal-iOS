@@ -34,11 +34,17 @@ public class ConversationStyle: NSObject {
 
     @objc public var errorGutterTrailing: CGFloat = 0
 
-    // viewWidth - (gutterLeading + gutterTrailing)
-    @objc public var contentWidth: CGFloat = 0
+    @objc public var contentWidth: CGFloat {
+        return viewWidth - (gutterLeading + gutterTrailing)
+    }
 
-    // viewWidth - (gutterfullWidthGutterLeadingLeading + fullWidthGutterTrailing)
-    @objc public var fullWidthContentWidth: CGFloat = 0
+    @objc public var fullWidthContentWidth: CGFloat {
+       return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
+    }
+
+    @objc public var headerViewContentWidth: CGFloat {
+        return viewWidth - (headerGutterLeading + headerGutterTrailing)
+    }
 
     @objc public var maxMessageWidth: CGFloat = 0
 
@@ -96,10 +102,6 @@ public class ConversationStyle: NSObject {
         headerGutterLeading = 28
         headerGutterTrailing = 28
         errorGutterTrailing = 16
-
-        contentWidth = viewWidth - (gutterLeading + gutterTrailing)
-
-        fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
         maxMessageWidth = floor(contentWidth - 32)
 
