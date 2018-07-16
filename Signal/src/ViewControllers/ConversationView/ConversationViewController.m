@@ -2610,9 +2610,12 @@ typedef enum : NSUInteger {
         ConversationViewItem *oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
         OWSAssert(oldIndicatorItem);
 
-        oldIndicatorItem.unreadIndicator = nil;
-
-        [self.collectionView reloadItemsAtIndexPaths:@[ indexPathOfUnreadIndicator ]];
+        // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
+        // to be cleared.
+        [self.editingDatabaseConnection
+            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [oldIndicatorItem.interaction touchWithTransaction:transaction];
+            }];
     }
 
     if (self.hasClearedUnreadMessagesIndicator) {
