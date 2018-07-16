@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
             const CGFloat bubbleBottom = layerFrame.size.height;
 
             const CGFloat sharpCornerRadius = 4;
-            const CGFloat wideCornerRadius = 10;
+            const CGFloat wideCornerRadius = 12;
 
             UIBezierPath *bezierPath = [OWSBubbleView roundedBezierRectWithBubbleTop:bubbleTop
                                                                           bubbleLeft:bubbleLeft
