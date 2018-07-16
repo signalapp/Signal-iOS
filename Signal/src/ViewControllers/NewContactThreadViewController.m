@@ -54,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
-@property (nonatomic, readonly) NSLayoutConstraint *hideContactsPermissionReminderViewConstraint;
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
@@ -81,18 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
     _conversationSearcher = [ConversationSearcher shared];
     _nonContactAccountSet = [NSMutableSet set];
     _collation = [UILocalizedIndexedCollation currentCollation];
-
-    ReminderView *contactsPermissionReminderView =
-        [ReminderView nagWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
-                                      @"Multi-line label explaining why compose-screen contact picker is empty.")
-                        tapAction:^{
-                            [[UIApplication sharedApplication] openSystemSettings];
-                        }];
-    [self.view addSubview:contactsPermissionReminderView];
-    [contactsPermissionReminderView autoPinWidthToSuperview];
-    [contactsPermissionReminderView autoPinEdgeToSuperviewMargin:ALEdgeTop];
-    _hideContactsPermissionReminderViewConstraint =
-        [contactsPermissionReminderView autoSetDimension:ALDimensionHeight toSize:0];
 
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
@@ -121,13 +108,19 @@ NS_ASSUME_NONNULL_BEGIN
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
-    [self.view addSubview:self.tableViewController.view];
+
+    // To automatically adjust our content inset appropriately on iOS9/10
+    // 1. the tableViewController must be a childView
+    // 2. the scrollable view (tableView in this case) must be at index 0.
+    [self addChildViewController:self.tableViewController];
+    [self.view insertSubview:self.tableViewController.view atIndex:0];
+
     [_tableViewController.view autoPinWidthToSuperview];
+    [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeTop];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
-    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:contactsPermissionReminderView];
     [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view];
     _tableViewController.tableView.tableHeaderView = searchBar;
 
@@ -159,11 +152,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [refreshControl endRefreshing];
         }];
-}
-
-- (void)showContactsPermissionReminder:(BOOL)isVisible
-{
-    _hideContactsPermissionReminderViewConstraint.active = !isVisible;
 }
 
 - (void)showSearchBar:(BOOL)isVisible
@@ -294,6 +282,32 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak NewContactThreadViewController *weakSelf = self;
+
+    // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
+    // to re-render this.
+    if (self.contactsViewHelper.contactsManager.isSystemContactsDenied) {
+        OWSTableItem *contactReminderItem = [OWSTableItem
+            itemWithCustomCellBlock:^{
+                UITableViewCell *newCell = [OWSTableItem newCell];
+
+                ReminderView *reminderView = [ReminderView
+                    nagWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                                    @"Multi-line label explaining why compose-screen contact picker is empty.")
+                      tapAction:^{
+                          [[UIApplication sharedApplication] openSystemSettings];
+                      }];
+                [newCell.contentView addSubview:reminderView];
+                [reminderView autoPinEdgesToSuperviewEdges];
+
+                return newCell;
+            }
+                    customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:nil];
+
+        OWSTableSection *reminderSection = [OWSTableSection new];
+        [reminderSection addItem:contactReminderItem];
+        [contents addSection:reminderSection];
+    }
 
     OWSTableSection *staticSection = [OWSTableSection new];
 
@@ -672,12 +686,10 @@ NS_ASSUME_NONNULL_BEGIN
             self.isNoContactsModeActive = NO;
         }
 
-        [self showContactsPermissionReminder:NO];
         [self showSearchBar:YES];
     } else {
         // don't show "no signal contacts", show "no contact access"
         self.isNoContactsModeActive = NO;
-        [self showContactsPermissionReminder:YES];
         [self showSearchBar:NO];
     }
 }
