@@ -4922,7 +4922,7 @@ typedef enum : NSUInteger {
         // unread indicator exists yet on dynamicInteractions.
         BOOL isItemUnread = ([viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]
             && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
-        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator) {
+        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
 
             unreadIndicator =
                 [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
