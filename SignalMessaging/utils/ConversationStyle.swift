@@ -23,17 +23,28 @@ public class ConversationStyle: NSObject {
 
     @objc public var gutterLeading: CGFloat = 0
     @objc public var gutterTrailing: CGFloat = 0
+
+    @objc public var headerGutterLeading: CGFloat = 28
+    @objc public var headerGutterTrailing: CGFloat = 28
+
     // These are the gutters used by "full width" views
-    // like "date headers" and "unread indicator".
+    // like "contact offer" and "info message".
     @objc public var fullWidthGutterLeading: CGFloat = 0
     @objc public var fullWidthGutterTrailing: CGFloat = 0
+
     @objc public var errorGutterTrailing: CGFloat = 0
 
-    // viewWidth - (gutterLeading + gutterTrailing)
-    @objc public var contentWidth: CGFloat = 0
+    @objc public var contentWidth: CGFloat {
+        return viewWidth - (gutterLeading + gutterTrailing)
+    }
 
-    // viewWidth - (gutterfullWidthGutterLeadingLeading + fullWidthGutterTrailing)
-    @objc public var fullWidthContentWidth: CGFloat = 0
+    @objc public var fullWidthContentWidth: CGFloat {
+       return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
+    }
+
+    @objc public var headerViewContentWidth: CGFloat {
+        return viewWidth - (headerGutterLeading + headerGutterTrailing)
+    }
 
     @objc public var maxMessageWidth: CGFloat = 0
 
@@ -88,11 +99,9 @@ public class ConversationStyle: NSObject {
         }
         fullWidthGutterLeading = 16
         fullWidthGutterTrailing = 16
+        headerGutterLeading = 28
+        headerGutterTrailing = 28
         errorGutterTrailing = 16
-
-        contentWidth = viewWidth - (gutterLeading + gutterTrailing)
-
-        fullWidthContentWidth = viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
 
         maxMessageWidth = floor(contentWidth - 32)
 

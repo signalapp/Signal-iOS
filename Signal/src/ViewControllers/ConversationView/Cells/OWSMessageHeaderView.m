@@ -93,8 +93,8 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
         [self.strokeView autoSetDimension:ALDimensionHeight toSize:strokeThickness],
 
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:conversationStyle.fullWidthGutterLeading],
-        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:conversationStyle.fullWidthGutterTrailing],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:conversationStyle.headerGutterLeading],
+        [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:conversationStyle.headerGutterTrailing]
     ];
 }
 
@@ -170,7 +170,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     CGFloat strokeThickness = [self strokeThicknessWithViewItem:viewItem];
     result.height += strokeThickness;
 
-    CGFloat maxTextWidth = conversationStyle.fullWidthContentWidth;
+    CGFloat maxTextWidth = conversationStyle.headerViewContentWidth;
     CGSize titleSize = [self.titleLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)];
     result.height += titleSize.height + self.stackView.spacing;
 
