@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.textColor = UIColor.ows_materialBlueColor;
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
-    [label autoPinToSuperviewEdges];
+    [label ows_autoPinToSuperviewEdges];
     [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareButtonsView.buttonHeight];
 
     self.userInteractionEnabled = YES;

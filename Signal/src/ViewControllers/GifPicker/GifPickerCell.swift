@@ -206,7 +206,7 @@ class GifPickerCell: UICollectionViewCell {
             let imageView = YYAnimatedImageView()
             self.imageView = imageView
             self.contentView.addSubview(imageView)
-            imageView.autoPinToSuperviewEdges()
+            imageView.ows_autoPinToSuperviewEdges()
         }
         guard let imageView = imageView else {
             owsFail("\(TAG) missing imageview.")

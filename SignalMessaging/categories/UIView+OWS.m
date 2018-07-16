@@ -79,7 +79,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return result;
 }
 
-- (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewEdges
+- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewEdges
 {
     NSArray<NSLayoutConstraint *> *result = @[
         [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
@@ -90,7 +90,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return result;
 }
 
-- (NSArray<NSLayoutConstraint *> *)autoPinToSuperviewMargins
+- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewMargins
 {
     NSArray<NSLayoutConstraint *> *result = @[
         [self autoPinTopToSuperviewMargin],

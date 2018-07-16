@@ -41,7 +41,7 @@ public class OWSFlatButton: UIView {
     private func createContent() {
         self.addSubview(button)
         button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        button.autoPinToSuperviewEdges()
+        button.ows_autoPinToSuperviewEdges()
     }
 
     @objc

@@ -248,7 +248,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UIView *wrapper = [UIView containerView];
     wrapper.layoutMargins = UIEdgeInsetsMake(self.quotedMessageTopMargin, 0, 0, 0);
     [wrapper addSubview:quotedMessagePreview];
-    [quotedMessagePreview autoPinToSuperviewMargins];
+    [quotedMessagePreview ows_autoPinToSuperviewMargins];
 
     [self.contentRows insertArrangedSubview:wrapper atIndex:0];
 
@@ -386,7 +386,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.voiceMemoContentView = [UIView new];
     [self.voiceMemoUI addSubview:self.voiceMemoContentView];
-    [self.voiceMemoContentView autoPinToSuperviewEdges];
+    [self.voiceMemoContentView ows_autoPinToSuperviewEdges];
 
     self.recordingLabel = [UILabel new];
     self.recordingLabel.textColor = [UIColor ows_destructiveRedColor];

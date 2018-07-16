@@ -363,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
 
                 [clipView addSubview:bodyMediaView];
-                [self.viewConstraints addObjectsFromArray:[bodyMediaView autoPinToSuperviewEdges]];
+                [self.viewConstraints addObjectsFromArray:[bodyMediaView ows_autoPinToSuperviewEdges]];
 
                 [self.bubbleView addPartnerView:shadowView1];
                 [self.bubbleView addPartnerView:shadowView2];
@@ -447,7 +447,7 @@ NS_ASSUME_NONNULL_BEGIN
                                  }];
         [gradientView.layer addSublayer:gradientLayer];
         [bodyMediaView addSubview:gradientView];
-        [self.viewConstraints addObjectsFromArray:[gradientView autoPinToSuperviewEdges]];
+        [self.viewConstraints addObjectsFromArray:[gradientView ows_autoPinToSuperviewEdges]];
 
         [self.footerView configureWithConversationViewItem:self.viewItem
                                          isOverlayingMedia:YES
@@ -528,7 +528,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
 
     [clipView addSubview:buttonsView];
-    [self.viewConstraints addObjectsFromArray:[buttonsView autoPinToSuperviewEdges]];
+    [self.viewConstraints addObjectsFromArray:[buttonsView ows_autoPinToSuperviewEdges]];
 
     [self.bubbleView addPartnerView:shadowView];
     [self.bubbleView addPartnerView:clipView];
@@ -1091,7 +1091,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[AttachmentUploadView alloc] initWithAttachment:self.attachmentStream
                                          attachmentStateCallback:attachmentStateCallback];
             [self.bubbleView addSubview:attachmentUploadView];
-            [attachmentUploadView autoPinToSuperviewEdges];
+            [attachmentUploadView ows_autoPinToSuperviewEdges];
         }
     }
 }

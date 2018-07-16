@@ -293,7 +293,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
         backgroundColor = UIColor.ows_light10
         addSubview(actionStackView)
-        actionStackView.autoPinToSuperviewEdges()
+        actionStackView.ows_autoPinToSuperviewEdges()
 
         self.clipsToBounds = true
 
@@ -378,7 +378,7 @@ class MenuActionView: UIButton {
         contentRow.isUserInteractionEnabled = false
 
         self.addSubview(contentRow)
-        contentRow.autoPinToSuperviewMargins()
+        contentRow.ows_autoPinToSuperviewMargins()
         contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
 
         self.addTarget(self, action: #selector(didPress(sender:)), for: .touchUpInside)

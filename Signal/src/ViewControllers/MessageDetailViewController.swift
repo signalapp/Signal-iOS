@@ -261,7 +261,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)
                     wrapper.addSubview(cellView)
-                    cellView.autoPinToSuperviewMargins()
+                    cellView.autoPinEdgesToSuperviewMargins()
                     groupRows.append(wrapper)
                 }
 
