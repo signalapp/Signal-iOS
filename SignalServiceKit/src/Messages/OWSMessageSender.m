@@ -77,7 +77,7 @@ void AssertIsOnSendingQueue()
                   messageSender:(OWSMessageSender *)messageSender
                    dbConnection:(YapDatabaseConnection *)dbConnection
                         success:(void (^)(void))aSuccessHandler
-                        failure:(void (^)(NSError *_Nonnull error))aFailureHandler NS_DESIGNATED_INITIALIZER;
+                        failure:(void (^)(NSError * error))aFailureHandler NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -99,7 +99,7 @@ void AssertIsOnSendingQueue()
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) void (^successHandler)(void);
-@property (nonatomic, readonly) void (^failureHandler)(NSError *_Nonnull error);
+@property (nonatomic, readonly) void (^failureHandler)(NSError * error);
 
 @end
 
@@ -111,7 +111,7 @@ void AssertIsOnSendingQueue()
                   messageSender:(OWSMessageSender *)messageSender
                    dbConnection:(YapDatabaseConnection *)dbConnection
                         success:(void (^)(void))successHandler
-                        failure:(void (^)(NSError *_Nonnull error))failureHandler
+                        failure:(void (^)(NSError * error))failureHandler
 {
     self = [super init];
     if (!self) {
@@ -151,7 +151,7 @@ void AssertIsOnSendingQueue()
 
     // Sanity check preconditions
     if (self.message.hasAttachments) {
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction * transaction) {
             TSAttachmentStream *attachmentStream
                 = (TSAttachmentStream *)[self.message attachmentWithTransaction:transaction];
             OWSAssert(attachmentStream);
@@ -1157,7 +1157,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     [self.dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
             if (extraDevices.count < 1 && missingDevices.count < 1) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
@@ -1170,15 +1170,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                  protocolContext:transaction];
                 }
 
-                [recipient removeDevices:[NSSet setWithArray:extraDevices]];
+                [recipient removeDevicesFromRegisteredRecipient:[NSSet setWithArray:extraDevices]
+                             transaction:transaction];
             }
 
             if (missingDevices && missingDevices.count > 0) {
                 DDLogInfo(@"%@ Adding missing devices: %@", self.logTag, missingDevices);
-                [recipient addDevices:[NSSet setWithArray:missingDevices]];
+                [recipient addDevicesToRegisteredRecipient:[NSSet setWithArray:missingDevices]
+                                              transaction:transaction];
             }
-
-            [recipient saveWithTransaction:transaction];
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completionHandler();
@@ -1271,7 +1271,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
-                [recipient removeDevices:[NSSet setWithObject:deviceNumber]];
+                [self.dbConnection
+                 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
+                     [recipient removeDevicesFromRegisteredRecipient:[NSSet setWithObject:deviceNumber]
+                                  transaction:transaction];
+                 }];
             } else {
                 @throw exception;
             }

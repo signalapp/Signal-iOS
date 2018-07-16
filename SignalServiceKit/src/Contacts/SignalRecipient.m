@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SignalRecipient ()
 
-@property (nonatomic) BOOL mayBeUnregistered;
-
 @property (nonatomic) NSOrderedSet *devices;
 
 @end
@@ -96,12 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
 
-    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
-    if (instance && !instance.mayBeUnregistered) {
-        return instance;
-    } else {
-        return nil;
-    }
+    return [self recipientForRecipientId:recipientId transaction:transaction];
 }
 
 + (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
@@ -134,9 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
     return myself;
 }
 
-- (void)addDevices:(NSSet *)set
+- (void)addDevices:(NSSet *)devices
 {
-    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [set containsObject:@(1)]) {
+    OWSAssert(devices.count > 0);
+    
+    if ([self.uniqueId isEqual:[TSAccountManager localNumber]] && [devices containsObject:@(1)]) {
         OWSFail(@"%@ in %s adding self as recipient device", self.logTag, __PRETTY_FUNCTION__);
         return;
     }
@@ -144,17 +139,43 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableOrderedSet *updatedDevices = (self.devices
                                            ? [self.devices mutableCopy]
                                            : [NSMutableOrderedSet new]);
-    [updatedDevices unionSet:set];
+    [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
 }
 
-- (void)removeDevices:(NSSet *)set
+- (void)removeDevices:(NSSet *)devices
 {
+    OWSAssert(devices.count > 0);
+    
     NSMutableOrderedSet *updatedDevices = (self.devices
                                            ? [self.devices mutableCopy]
                                            : [NSMutableOrderedSet new]);
-    [updatedDevices minusSet:set];
+    [updatedDevices minusSet:devices];
     self.devices = [updatedDevices copy];
+}
+
+- (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(devices.count > 0);
+    
+    [self addDevices:devices];
+
+    SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
+    [latest addDevices:devices];
+    [latest saveWithTransaction:transaction];
+}
+
+- (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(devices.count > 0);
+
+    [self removeDevices:devices];
+
+    SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
+    [latest removeDevices:devices];
+    [latest saveWithTransaction:transaction];
 }
 
 - (NSString *)recipientId
@@ -174,19 +195,10 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
 }
 
-+ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId
-{
-    __block BOOL result;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self isRegisteredSignalAccount:recipientId transaction:transaction];
-    }];
-    return result;
-}
-
 + (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
 {
     SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
-    return (instance && !instance.mayBeUnregistered);
+    return instance != nil;
 }
 
 + (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -200,9 +212,6 @@ NS_ASSUME_NONNULL_BEGIN
         DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
 
         instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
-        [instance saveWithTransaction:transaction];
-    } else if (instance.mayBeUnregistered) {
-        instance.mayBeUnregistered = NO;
         [instance saveWithTransaction:transaction];
     }
     return instance;
@@ -236,11 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!instance) {
         return;
     }
-    if (instance.mayBeUnregistered) {
-        return;
-    }
-    instance.mayBeUnregistered = YES;
-    [instance saveWithTransaction:transaction];
+    [instance removeWithTransaction:transaction];
 }
 
 @end

@@ -6,7 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// We hang the "known device list" for signal accounts on this entity.
+// SignalRecipient serves two purposes:
+//
+// a) It serves as a cache of "known" Signal accounts.  When the service indicates
+//    that an account exists, we make sure that an instance of SignalRecipient exists
+//    for that recipient id (using mark as registered).
+//    When the service indicates that an account does not exist, we remove any
+//    SignalRecipient.
+// b) We hang the "known device list" for known signal accounts on this entity.
 @interface SignalRecipient : TSYapDatabaseObject
 
 @property (nonatomic, readonly) NSOrderedSet *devices;
@@ -20,14 +27,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)getOrCreatedUnsavedRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction;
 
-- (void)addDevices:(NSSet *)set;
-- (void)removeDevices:(NSSet *)set;
+- (void)addDevicesToRegisteredRecipient:(NSSet *)devices
+                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices
+                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (NSString *)recipientId;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
-// TODO: Replace with cache of known signal account ids.
 + (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
 
 + (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
