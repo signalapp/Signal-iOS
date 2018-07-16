@@ -27,7 +27,7 @@ fi
 
 done
 
-JSQ_STRINGS_PATH="../JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
+JSQ_STRINGS_PATH="${REPO_ROOT}/Pods/JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
 if [ ! -f $JSQ_STRINGS_PATH ]; then
   echo "[!] Error. Expected to find strings for JSQMessagesViewController at ${JSQ_STRINGS_PATH}"
   exit 1
