@@ -738,15 +738,6 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopyala";
 
-/* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Sil";
-
-/* Short name for edit menu item to show message metadata. */
-"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Bilgi";
-
-/* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Kaydet";
-
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Düzenle";
 
@@ -874,7 +865,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Tekrarlanan bir ileti alındı.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Alıcının anahtarı geçersiz.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Alıcının anahtarı geçerli değil.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Alınan mesaj senkronize edilemedi.";
@@ -901,10 +892,10 @@
 "ERROR_UNREGISTERED_USER_FORMAT" = "Kayıtlı Olmayan Kullanıcı: %@";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu irtibatta çok fazla arıza var. Lütfen kısa bir süre sonra tekrar deneyin.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Bu kullanıcıya çok fazla hatalı deneme yaptınız. Lütfen kısa bir süre sonra tekrar deneyin.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%@ ile güvenlik numarası yakın zamanda değişti. Tekrar göndermeden önce doğrulamak isteyebilirsiniz.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "%@ ile olan güvenlik numaranız yakın zamanda değişti. Tekrar göndermeden önce doğrulamak isteyebilirsiniz.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Güvenlik Numarası Doğrulanamadı!";
@@ -931,7 +922,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Ek";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "İstenen GIF getirilemedi. Lütfen çevrimiçi olduğunuzu doğrulayın.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "İstenen GIF alınamadı. Lütfen çevrimiçi olduğunuzu doğrulayın.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Bilinmeyen bir hata oluştu.";
@@ -961,7 +952,7 @@
 "GROUP_CREATED" = "Grup oluşturuldu";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Tüm üyeler gruba eklenemedi. Tekrar denemek için dokun";
+"GROUP_CREATION_FAILED" = "Üyelerin bazıları gruba eklenemedi. Tekrar denemek için dokunun.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Grup Yönetimi";
@@ -982,7 +973,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Tüm Doğrulamaları Temizle";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Bu, son doğrulamadan bu yana güvenlik numaraları değişmiş olan tüm grup üyelerine ilişkin doğrulama uyarlarını temizler. ";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Bu seçenek son doğrulanmasından bu yana güvenlik numarası değişmiş olan grup üyelerinin doğrulanmasını kaldırır.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Üyeler";
@@ -997,7 +988,7 @@
 "GROUP_MEMBERS_VIEW_CONTACT_INFO" = "Kişi Bilgileri";
 
 /* No comment provided by engineer. */
-"GROUP_REMOVING" = "%@ grubu terk ediliyor";
+"GROUP_REMOVING" = "%@ grubundan ayrılıyorsunuz";
 
 /* Title of alert indicating that group deletion failed. */
 "GROUP_REMOVING_FAILED" = "Gruptan ayrılınamadı";
@@ -1114,7 +1105,7 @@
 "LINK_DEVICE_RESTART" = "Yeniden dene";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Bağlanmak istediğin cihazda görüntülenen QR kodunu tara.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Bağlamak için cihazda görüntülenen karekodu tarat.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Karekod taratın";
@@ -1162,25 +1153,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Bu Ay";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Medyayı Kopyala";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Mesaj Metnini kopyala";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Bu Mesajı Sil";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Yalnızca bu cihazdan silinecektir";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Daha Fazla Bilgi";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+"MESSAGE_ACTION_REPLY" = "Bu Mesajı Yanıtla";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Medyayı Kaydet";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mesaj";
@@ -1309,7 +1300,7 @@
 "MISSED_CALL" = "Cevapsız arama";
 
 /* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "%@ kullanıcısının güvenlik numarası değiştiğinden çağrı karşılanmadı";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Güvenlik numarası değiştiğinden %@ tarafından gelen cevapsız arama.";
 
 /* notification title */
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Arayanın güvenlik numarası değiştiğinden çağrı karşılanmadı";
@@ -1413,7 +1404,7 @@
 "NOTIFICATION_SEND_FAILED" = "Mesajınız %@ kişisine gönderilemedi.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Apple'ın bildirim altyapısındaki bilinen hatalardan dolayı, mesaj önizlemeleri yalnızca mesaj gönderildikten 30 saniye içinde alınırsa gösterilir. Bunun sonucunda uygulama işaretleri hatalı olabilir.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Apple'ın bildirim altyapısındaki bilinen hatalardan dolayı, mesaj önizlemeleri yalnızca mesaj gönderildikten sonraki 30 saniye içinde alınırsa gösterilir. Bunun sonucunda uygulama rozeti düzgün olmayabilir.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "İsim veya İçerik Yok";
@@ -1524,7 +1515,7 @@
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Bu numara %@ ile olan güvenlik numaranıza benzemiyor. Doğru kişi olduğundan emin misiniz?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı bu konuşma için doğru güvenlik numarasına benzemiyor.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Panonuzdaki sayı bu konuşmanın doğru güvenlik numarasına benzemiyor.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal, panonuzda herhangi bir güvenlik numarası bulamadı. Doğru şekilde kopyaladınız mı?";
@@ -1548,7 +1539,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Güvenlik Numarasını Doğrula";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Doğrulanmış olarak işaretle";
+"PRIVACY_VERIFY_BUTTON" = "Doğrulanmış olarak İşaretle";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Devam et";
@@ -1665,10 +1656,10 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Yeniden Dene";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Çok sık denediniz. Lütfen biraz bekleyip tekrar deneyiniz.";
+"REGISTER_RATE_LIMITING_BODY" = "Çok sık denediniz. Lütfen tekrar denemeden önce biraz bekleyin.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Anlık bildirimler için yeniden kayıt başarısız.";
+"REGISTRATION_BODY" = "Anlık bildirimler için yeniden kayıt edilemedi.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Ülke Kodu";
@@ -1719,7 +1710,7 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Doğrulama Başarısız Oldu";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Gönderdiğiniz sayılar gönderdiğimizle eşleşmiyor. Çifte kontrol etmek ister misiniz?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Girdiğiniz sayılar gönderdiklerimizle eşleşmiyor. Tekrar kontrol etmek ister misiniz?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
 "REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hatalı Kayıt Kilidi PIN'i.";
@@ -1728,13 +1719,13 @@
 "REGISTRATION_VERIFY_DEVICE" = "Kaydet";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Kayıt için geçerli bir telefon numarası giriniz";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Kaydolmak için lütfen geçerli bir telefon numarası girin.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Geçersiz Telefon Numarası";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Kayıt edilecek bir telefon numarası giriniz";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Kaydolunacak telefon numarasını girin.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Telefon Numarası Yok";
@@ -1743,16 +1734,16 @@
 "REJECT_CALL_BUTTON_TITLE" = "Reddet";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Kayıt etmeye çalıştığın telefon numarası zaten başka bir sunucuda kayıtlı, lütfen oradan kayıdını kaldır ve tekrar dene. ";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Kaydetmeye çalıştığınız telefon numarası zaten başka bir sunucuda kayıtlı, lütfen kaydını kaldırın ve tekrar deneyin.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Telefon numaranız için Kayıt Kilidi etkinleştirildi. Kayıt Kilitleme PIN'inizi ezberlemenize yardımcı olmak için Signal onu periyodik olarak onaylamanızı ister.";
+"REMINDER_2FA_BODY" = "Telefon numaranız için Kayıt Kilidi etkinleştirildi. Kayıt Kilidi PIN'inizi ezberlemenize yardımcı olmak için, Signal zaman zaman soracaktır.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Hatırlatıcı:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kayıt Kilidi, telefon numaranızın yetkisiz kayıt girişimlerinden korunmasına yardımcı olur. Bu özellik, Signal gizlilik ayarlarınızda herhangi bir zamanda devre dışı bırakılabilir.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Kayıt Kilidi telefon numaranızın yetkisiz kayıt girişimlerinden korunmasına yardımcı olur. Bu özellik istenildiği zaman Signal gizlilik ayarlarınızdan devre dışı bırakılabilir";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_NAV_TITLE" = "Kayıt Kilidi PIN'inizi Girin";
@@ -1763,9 +1754,6 @@
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Bu doğru PIN değil.";
 
-/* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "Yanıtla";
-
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Anlık bildirimler için yeniden kaydol";
 
@@ -1773,7 +1761,7 @@
 "RETRY_BUTTON_TEXT" = "Tekrar dene";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yine de gruba ekle";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Yine de Gruba Ekle";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
 "SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Yine de Ara";
@@ -1788,7 +1776,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "%@ ile olan güvenlik numaranız değişti. Doğrulamak isteyebilirsiniz.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Temas edeceğiniz kişinin cihazındaki QR kodu tarayın.";
+"SCAN_CODE_INSTRUCTIONS" = "Kişinizin cihazındaki karekodu tarayın.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Karekodu Tara";
@@ -1797,13 +1785,13 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Derhal";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Kimlik doğrulaması yapılamadı.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Kimlik doğrulamasına erişilemedi.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Kimlik doğrulama başarısız oldu.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Çok fazla başarısız kimlik doğrulama girişimi. Lütfen daha sonra tekrar deneyiniz.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Çok fazla başarısız kimlik doğrulama girişimi yapıldı. Lütfen daha sonra tekrar deneyiniz.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Ekran Kilidini kullanmak için iOS ayarlarınızdan bir şifre belirlemelisiniz.";
@@ -1887,16 +1875,16 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Konum: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Etkinleştirildiğinde, Signal sansür önlemini sağlamaya çalışacaktır Signal'in engellendiği bir konumda olmadığınız sürece bu özelliği etkinleştirmeyin.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Etkinleştirildiğinde, Signal sansürü atlatmaya çalışacaktır. Signal'in sansürlendiği bir konumda olmadığınız sürece bu özelliği etkinleştirmeyin.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Sansür önleme, hesabınızın telefon numarasına bağlı olarak aktifleştirildi.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Sansür atlatma hesabınızın telefon numarasına bağlı olarak etkinleştirildi.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sansür önleme, sadece Internet'e bağlıyken aktifleştirilebilir.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Sansür atlatma sadece İnternet'e bağlıyken etkinleştirilebilir.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Sansür önleme gerekli değil; zaten Signal hizmetine  bağlısınız.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Sansür atlatma gerekli değil; zaten Signal hizmetine bağlandınız.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Sansür Atlatma";
@@ -1917,13 +1905,13 @@
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (varsayılan)";
 
 /* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Yedekleme";
+"SETTINGS_BACKUP" = "Yedek";
 
 /* Label for 'backup now' button in the backup settings view. */
 "SETTINGS_BACKUP_BACKUP_NOW" = "Şimdi Yedekle";
 
 /* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Yedeklemeyi Kapat";
+"SETTINGS_BACKUP_CANCEL_BACKUP" = "Yedeklemeyi İptal Et";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Yedekleme Etkinleştirildi";
@@ -1938,37 +1926,34 @@
 "SETTINGS_BACKUP_STATUS" = "Durum";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Yedekleme Başarısız";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Yedekleme Başarısız Oldu";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Bekliyor";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Yedekleme";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Yedekleniyor";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Başarıyla Yedeklendi";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Yedekleme Başarılı Oldu";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Ekle...";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal'de hiç kişiniz yok.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal'de kişiniz yok.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Arama sonucu yok";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Engellendi";
-
-/* Accessibility hint for the settings button */
-"SETTINGS_BUTTON_ACCESSIBILITY" = "Ayarlar";
+"SETTINGS_BLOCK_LIST_TITLE" = "Engellenen";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Daima Aktarma Çağrılar";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Çağrıları Daima Aktar";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "IP adresinizi kişinize göstermekten kaçınmak için tüm aramaları Signal sunucusundan aktarın. Etkinleştirme, çağrı kalitesini düşürecektir.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "IP adresinizi kişinize göstermekten kaçınmak için tüm aramaları Signal sunucusundan aktarın. Etkinleştirildiğinde arama kalitesi düşecektir.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Sohbet Geçmişini Temizle";
@@ -1998,7 +1983,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Bilgi";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı davet edin";
+"SETTINGS_INVITE_TITLE" = "Arkadaşlarınızı Davet Edin";
 
 /* content of tweet when inviting via twitter */
 "SETTINGS_INVITE_TWITTER_TEXT" = "@signalapp kullanarak bana ulaşabilirsiniz. Hemen edinin: https://signal.org/download/";
@@ -2007,7 +1992,7 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Mesaj Sesi";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Şartlar ve Gizlilik Politikası";
+"SETTINGS_LEGAL_TERMS_CELL" = "Şartlar ve Gizlilik İlkesi";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Ayarlar";
@@ -2031,13 +2016,13 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Son Aramalarda Göster";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS arama entegrasyonu";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Arama Entegrasyonu";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Gizlilik";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Okundu İletileri ";
+"SETTINGS_READ_RECEIPT" = "Okundu Bilgisi";
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "İletiler okunduğunda görün ve paylaşın. Bu ayar isteğe bağlıdır ve tüm sohbetler için geçerlidir.";
@@ -2238,10 +2223,10 @@
 "UNNAMED_DEVICE" = "İsimsiz Cihaz";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Signal'den kaydınızı kaldırmada hata oluştu";
+"UNREGISTER_SIGNAL_FAIL" = "Signal'den kayıt kaldırılamadı.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Desteklenmeyen eklenti tipi alındı";
+"UNSUPPORTED_ATTACHMENT" = "Desteklenmeyen eklenti türü alındı.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Cihazınız bu özelliği desteklemiyor.";
@@ -2280,7 +2265,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Yakın Çekime Hazır Mısınız?";
 
 /* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Artık mesajlar okunduğunda görme ve paylaşma seçeneğine sahipsiniz.";
+"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Artık mesajların okunduğunu görme ve paylaşma seçeneğine sahipsiniz.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Gizlilik ayarlarınızdan okundu iletilerini etkinleştirin.";

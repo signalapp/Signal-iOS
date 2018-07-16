@@ -285,7 +285,7 @@
 "BUTTON_SELECT" = "Vali";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Helista uuesti";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal vajab kõnede ja häälsõnumite tegemiseks ligipääsu sinu mikrofonile. Seda õigust on võimalik anda rakenduses Settings.";
@@ -552,7 +552,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Loo uus kontakt";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Klõpsa muutmiseks";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Eemalda vaigistus";
@@ -738,15 +738,6 @@
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Kopeeri";
 
-/* Short name for edit menu item to delete contents of media message. */
-"EDIT_ITEM_DELETE_ACTION" = "Kustuta";
-
-/* Short name for edit menu item to show message metadata. */
-"EDIT_ITEM_MESSAGE_METADATA_ACTION" = "Teave";
-
-/* Short name for edit menu item to save contents of media message. */
-"EDIT_ITEM_SAVE_ACTION" = "Salvesta";
-
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Muuda";
 
@@ -877,7 +868,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Saaja võti ei ole kehtiv.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Saabunud sõnum polnud sünkroonis.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Saabunud sõnum ei ole Signali selle versiooniga ühilduv.";
@@ -895,7 +886,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ilmnes tundmatu tõrge.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumber on muutunud.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Registreerimata kasutaja: %@";
@@ -1060,7 +1051,7 @@
 "INCOMING_DECLINED_CALL" = "Sa keeldusid kõnest";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "Sissetulev kõne";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Vastamata kõne, sest turvanumber on muutunud.";
@@ -1162,25 +1153,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "See kuu";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Kopeeri meedia";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Kopeeri sõnumi tekst";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Kustuta see sõnum";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "See kustutatakse ainult sellest seadmest";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Rohkem infot";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+"MESSAGE_ACTION_REPLY" = "Vasta sellele sõnumile";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Salvesta meedia";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Sõnum";
@@ -1452,10 +1443,10 @@
 "OUTGOING_CALL" = "Väljuv kõne";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "Väljaminev kõne";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Vastamata väljuv kõne";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
@@ -1763,9 +1754,6 @@
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "See ei ole õige PIN-kood.";
 
-/* Short name for edit menu item to reply to a message. */
-"REPLY_ITEM_ACTION" = "Vasta";
-
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Registreeru uuesti teavituste saamiseks";
 
@@ -1908,7 +1896,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Postita silumislogi";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
+"SETTINGS_ADVANCED_THEME" = "Teema";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Täpsemad sätted";
@@ -1960,9 +1948,6 @@
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Blokeeritud";
-
-/* Accessibility hint for the settings button */
-"SETTINGS_BUTTON_ACCESSIBILITY" = "Sätted";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Alati edastada kõned";
@@ -2136,7 +2121,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Jaga Signalis";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Näita turvanumbrit";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Näita vestlust";
@@ -2154,10 +2139,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Turvanumber on sobiv!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Kontrolli turvanumbrit";
 
 /* No comment provided by engineer. */
-"THEME_SECTION" = "Theme";
+"THEME_SECTION" = "Teema";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ päeva";
