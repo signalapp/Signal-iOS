@@ -21,12 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (SignalRecipient *)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
-                                    deviceId:(UInt32)deviceId
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-// TODO: Replace with cache of known signal account ids.
-// TODO: Remove?
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
                                                transaction:(YapDatabaseReadTransaction *)transaction;
 
@@ -40,10 +34,11 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Replace with cache of known signal account ids.
 + (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
 
-+ (void)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)markAccountAsRegistered:(NSString *)recipientId
+                       deviceId:(UInt32)deviceId
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 + (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (void)markAccountAsNotRegisteredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

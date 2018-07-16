@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DecryptSuccessBlock successBlock
         = ^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
-              [SignalRecipient ensureRecipientExistsWithRecipientId:envelope.source
+              [SignalRecipient markAccountAsRegistered:envelope.source
                                                            deviceId:envelope.sourceDevice
                                                         transaction:transaction];
 

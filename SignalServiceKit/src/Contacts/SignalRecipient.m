@@ -57,36 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
     return recipient;
 }
 
-+ (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
-                                    deviceId:(UInt32)deviceId
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    SignalRecipient *_Nullable existingRecipient = [self recipientForRecipientId:recipientId transaction:transaction];
-    if (!existingRecipient) {
-        DDLogDebug(@"%@ in %s creating recipient: %@, with deviceId: %u",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            recipientId,
-            (unsigned int)deviceId);
-
-        SignalRecipient *newRecipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
-        [newRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
-        [newRecipient saveWithTransaction:transaction];
-
-        return;
-    }
-
-    if (![existingRecipient.devices containsObject:@(deviceId)]) {
-        DDLogDebug(@"%@ in %s adding device %u to existing recipient.",
-            self.logTag,
-            __PRETTY_FUNCTION__,
-            (unsigned int)deviceId);
-
-        [existingRecipient addDevices:[NSSet setWithObject:@(deviceId)]];
-        [existingRecipient saveWithTransaction:transaction];
-    }
-}
-
 - (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
 {
     self = [super initWithUniqueId:textSecureIdentifier];
@@ -184,17 +154,19 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet *updatedDevices = (self.devices
+                                           ? [self.devices mutableCopy]
+                                           : [NSMutableOrderedSet new]);
     [updatedDevices unionSet:set];
-
     self.devices = [updatedDevices copy];
 }
 
 - (void)removeDevices:(NSSet *)set
 {
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet *updatedDevices = (self.devices
+                                           ? [self.devices mutableCopy]
+                                           : [NSMutableOrderedSet new]);
     [updatedDevices minusSet:set];
-
     self.devices = [updatedDevices copy];
 }
 
@@ -230,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
     return (instance && !instance.mayBeUnregistered);
 }
 
-+ (void)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
@@ -242,13 +214,30 @@ NS_ASSUME_NONNULL_BEGIN
 
         instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
         [instance saveWithTransaction:transaction];
-        return;
+    } else if (instance.mayBeUnregistered) {
+        instance.mayBeUnregistered = NO;
+        [instance saveWithTransaction:transaction];
     }
-    if (!instance.mayBeUnregistered) {
-        return;
+    return instance;
+}
+
++ (void)markAccountAsRegistered:(NSString *)recipientId
+                       deviceId:(UInt32)deviceId
+                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssert(transaction);
+    OWSAssert(recipientId.length > 0);
+
+    SignalRecipient *recipient = [self markAccountAsRegistered:recipientId transaction:transaction];
+    if (![recipient.devices containsObject:@(deviceId)]) {
+        DDLogDebug(@"%@ in %s adding device %u to existing recipient.",
+                   self.logTag,
+                   __PRETTY_FUNCTION__,
+                   (unsigned int)deviceId);
+        
+        [recipient addDevices:[NSSet setWithObject:@(deviceId)]];
+        [recipient saveWithTransaction:transaction];
     }
-    instance.mayBeUnregistered = NO;
-    [instance saveWithTransaction:transaction];
 }
 
 + (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -265,15 +254,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     instance.mayBeUnregistered = YES;
     [instance saveWithTransaction:transaction];
-}
-
-- (void)markAccountAsNotRegisteredWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssert(transaction);
-
-    self.mayBeUnregistered = YES;
-
-    [SignalRecipient markAccountAsNotRegistered:self.recipientId transaction:transaction];
 }
 
 @end
