@@ -231,6 +231,9 @@ const CGFloat kIconViewLength = 24;
 {
     [super viewDidLoad];
 
+    self.tableView.estimatedRowHeight = 45;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+
     _disappearingMessagesDurationLabel = [UILabel new];
 
     self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
@@ -372,19 +375,10 @@ const CGFloat kIconViewLength = 24;
                                  cell.contentView.preservesSuperviewLayoutMargins = YES;
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                                 UIView *topView = [UIView containerView];
-                                 [cell.contentView addSubview:topView];
-                                 [topView autoPinLeadingAndTrailingToSuperviewMargin];
-                                 [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-                                 [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
-
                                  NSString *iconName
                                      = (strongSelf.disappearingMessagesConfiguration.isEnabled ? @"ic_timer"
                                                                                                : @"ic_timer_disabled");
                                  UIImageView *iconView = [strongSelf viewForIconWithName:iconName];
-                                 [topView addSubview:iconView];
-                                 [iconView autoVCenterInSuperview];
-                                 [iconView autoPinLeadingToSuperviewMargin];
 
                                  UILabel *rowLabel = [UILabel new];
                                  rowLabel.text = NSLocalizedString(
@@ -392,19 +386,19 @@ const CGFloat kIconViewLength = 24;
                                  rowLabel.textColor = [UIColor blackColor];
                                  rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                                  rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                                 [topView addSubview:rowLabel];
-                                 [rowLabel autoVCenterInSuperview];
-                                 [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
                                  UISwitch *switchView = [UISwitch new];
                                  switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
                                  [switchView addTarget:strongSelf
                                                 action:@selector(disappearingMessagesSwitchValueDidChange:)
                                       forControlEvents:UIControlEventValueChanged];
-                                 [topView addSubview:switchView];
-                                 [switchView autoVCenterInSuperview];
-                                 [switchView autoPinLeadingToTrailingEdgeOfView:rowLabel offset:weakSelf.iconSpacing];
-                                 [switchView autoPinTrailingToSuperviewMargin];
+
+                                 UIStackView *topRow =
+                                     [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel, switchView ]];
+                                 topRow.spacing = self.iconSpacing;
+                                 topRow.alignment = UIStackViewAlignmentCenter;
+                                 [cell.contentView addSubview:topRow];
+                                 [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                                  UILabel *subtitleLabel = [UILabel new];
                                  subtitleLabel.text = NSLocalizedString(
@@ -414,7 +408,7 @@ const CGFloat kIconViewLength = 24;
                                  subtitleLabel.numberOfLines = 0;
                                  subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
                                  [cell.contentView addSubview:subtitleLabel];
-                                 [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
+                                 [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:8];
                                  [subtitleLabel autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                                  [subtitleLabel autoPinTrailingToSuperviewMargin];
                                  [subtitleLabel autoPinBottomToSuperviewMargin];
@@ -435,25 +429,21 @@ const CGFloat kIconViewLength = 24;
                             cell.contentView.preservesSuperviewLayoutMargins = YES;
                             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                            UIView *topView = [UIView containerView];
-                            [cell.contentView addSubview:topView];
-                            [topView autoPinLeadingAndTrailingToSuperviewMargin];
-                            [topView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-                            [topView autoSetDimension:ALDimensionHeight toSize:kOWSTable_DefaultCellHeight];
-
                             UIImageView *iconView = [strongSelf viewForIconWithName:@"ic_timer"];
-                            [topView addSubview:iconView];
-                            [iconView autoVCenterInSuperview];
-                            [iconView autoPinLeadingToSuperviewMargin];
 
                             UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                             [strongSelf updateDisappearingMessagesDurationLabel];
                             rowLabel.textColor = [UIColor blackColor];
                             rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
-                            rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                            [topView addSubview:rowLabel];
-                            [rowLabel autoVCenterInSuperview];
-                            [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
+                            // don't truncate useful duration info which is in the tail
+                            rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+
+                            UIStackView *topRow =
+                                [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                            topRow.spacing = self.iconSpacing;
+                            topRow.alignment = UIStackViewAlignmentCenter;
+                            [cell.contentView addSubview:topRow];
+                            [topRow autoPinEdgesToSuperviewMarginsExcludingEdge:ALEdgeBottom];
 
                             UISlider *slider = [UISlider new];
                             slider.maximumValue = (float)(strongSelf.disappearingMessagesDurations.count - 1);
@@ -464,7 +454,7 @@ const CGFloat kIconViewLength = 24;
                                           action:@selector(durationSliderDidChange:)
                                 forControlEvents:UIControlEventValueChanged];
                             [cell.contentView addSubview:slider];
-                            [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topView];
+                            [slider autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:topRow withOffset:6];
                             [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                             [slider autoPinTrailingToSuperviewMargin];
                             [slider autoPinBottomToSuperviewMargin];
@@ -531,9 +521,6 @@ const CGFloat kIconViewLength = 24;
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
                         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_notification_sound"];
-                        [cell.contentView addSubview:iconView];
-                        [iconView autoVCenterInSuperview];
-                        [iconView autoPinLeadingToSuperviewMargin];
 
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
@@ -541,9 +528,13 @@ const CGFloat kIconViewLength = 24;
                         rowLabel.textColor = [UIColor blackColor];
                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                        [cell.contentView addSubview:rowLabel];
-                        [rowLabel autoVCenterInSuperview];
-                        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
+
+                        UIStackView *contentRow =
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                        contentRow.spacing = self.iconSpacing;
+                        contentRow.alignment = UIStackViewAlignmentCenter;
+                        [cell.contentView addSubview:contentRow];
+                        [contentRow autoPinEdgesToSuperviewMargins];
 
                         OWSSound sound = [OWSSounds notificationSoundForThread:self.thread];
                         cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
@@ -568,9 +559,6 @@ const CGFloat kIconViewLength = 24;
                         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
                         UIImageView *iconView = [strongSelf viewForIconWithName:@"table_ic_mute_thread"];
-                        [cell.contentView addSubview:iconView];
-                        [iconView autoVCenterInSuperview];
-                        [iconView autoPinLeadingToSuperviewMargin];
 
                         UILabel *rowLabel = [UILabel new];
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
@@ -578,9 +566,6 @@ const CGFloat kIconViewLength = 24;
                         rowLabel.textColor = [UIColor blackColor];
                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-                        [cell.contentView addSubview:rowLabel];
-                        [rowLabel autoVCenterInSuperview];
-                        [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:weakSelf.iconSpacing];
 
                         NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
                             @"Indicates that the current thread is not muted.");
@@ -610,6 +595,13 @@ const CGFloat kIconViewLength = 24;
                                                      @"Embeds {{The date or time which the thread is muted until}}."),
                                 [dateFormatter stringFromDate:mutedUntilDate]];
                         }
+
+                        UIStackView *contentRow =
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+                        contentRow.spacing = self.iconSpacing;
+                        contentRow.alignment = UIStackViewAlignmentCenter;
+                        [cell.contentView addSubview:contentRow];
+                        [contentRow autoPinEdgesToSuperviewMargins];
 
                         cell.detailTextLabel.text = muteStatus;
                         return cell;
@@ -692,19 +684,17 @@ const CGFloat kIconViewLength = 24;
     cell.preservesSuperviewLayoutMargins = YES;
     cell.contentView.preservesSuperviewLayoutMargins = YES;
 
-    [cell.contentView addSubview:iconView];
-    [iconView autoVCenterInSuperview];
-    [iconView autoPinLeadingToSuperviewMargin];
-
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
     rowLabel.textColor = [UIColor blackColor];
     rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [cell.contentView addSubview:rowLabel];
-    [rowLabel autoVCenterInSuperview];
-    [rowLabel autoPinLeadingToTrailingEdgeOfView:iconView offset:self.iconSpacing];
-    [rowLabel autoPinTrailingToSuperviewMargin];
+
+    UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
+    contentRow.spacing = self.iconSpacing;
+
+    [cell.contentView addSubview:contentRow];
+    [contentRow autoPinEdgesToSuperviewMargins];
 
     return cell;
 }

@@ -102,6 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = _thread.groupModel.groupName;
 
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 45;
+
     [self updateTableContents];
 }
 
