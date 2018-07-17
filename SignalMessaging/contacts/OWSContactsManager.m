@@ -119,7 +119,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self requestSystemContactsOnceWithCompletion:nil];
 }
 
-- (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *error))completion
+- (void)requestSystemContactsOnceWithCompletion:(void (^_Nullable)(NSError *_Nullable error))completion
 {
     [self.systemContactsFetcher requestOnceWithCompletion:completion];
 }
@@ -129,7 +129,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     [self.systemContactsFetcher fetchOnceIfAlreadyAuthorized];
 }
 
-- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *error))completionHandler
+- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler
 {
     [self.systemContactsFetcher userRequestedRefreshWithCompletion:completionHandler];
 }
@@ -164,7 +164,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    CNContact *cnContact;
+    CNContact *_Nullable cnContact;
     @synchronized(self.cnContactCache) {
         cnContact = [self.cnContactCache objectForKey:contactId];
         if (!cnContact) {
@@ -181,7 +181,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable NSData *)avatarDataForCNContactId:(nullable NSString *)contactId
 {
     // Don't bother to cache avatar data.
-    CNContact *cnContact = [self cnContactWithId:contactId];
+    CNContact *_Nullable cnContact = [self cnContactWithId:contactId];
     return [Contact avatarDataForCNContact:cnContact];
 }
 
@@ -193,11 +193,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return nil;
     }
 
-    UIImage *avatarImage;
+    UIImage *_Nullable avatarImage;
     @synchronized(self.cnContactAvatarCache) {
         avatarImage = [self.cnContactAvatarCache objectForKey:contactId];
         if (!avatarImage) {
-            NSData *avatarData = [self avatarDataForCNContactId:contactId];
+            NSData *_Nullable avatarData = [self avatarDataForCNContactId:contactId];
             if (avatarData) {
                 avatarImage = [UIImage imageWithData:avatarData];
             }
@@ -489,7 +489,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         NSMutableArray *accountsToSave = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            SignalAccount *oldSignalAccount = oldSignalAccounts[signalAccount.uniqueId];
+            SignalAccount *_Nullable oldSignalAccount = oldSignalAccounts[signalAccount.uniqueId];
 
             // keep track of which accounts are still relevant, so we can clean up orphans
             [oldSignalAccounts removeObjectForKey:signalAccount.uniqueId];
@@ -585,11 +585,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
         DDLogDebug(@"%@ no signal account", self.logTag);
-        Contact *nonSignalContact = self.allContactsMap[recipientId];
+        Contact *_Nullable nonSignalContact = self.allContactsMap[recipientId];
         if (!nonSignalContact) {
             return nil;
         }
@@ -613,7 +613,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     return signalAccount.contact.firstName.filterStringForDisplay;
 }
 
@@ -621,7 +621,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssert(recipientId.length > 0);
 
-    SignalAccount *signalAccount = [self signalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self signalAccountForRecipientId:recipientId];
     return signalAccount.contact.lastName.filterStringForDisplay;
 }
 
@@ -699,7 +699,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
 {
-    NSString *profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length == 0) {
         return nil;
     }
@@ -726,7 +726,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return self.unknownContactName;
     }
 
-    NSString *displayName = [self nameFromSystemContactsForRecipientId:recipientId];
+    NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId];
 
     // Fall back to just using their recipientId
     if (displayName.length < 1) {
@@ -778,8 +778,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        NSString *cnContactId = self.allContactsMap[recipientId].cnContactId;
-        CNContact *cnContact = [self cnContactWithId:cnContactId];
+        NSString *_Nullable cnContactId = self.allContactsMap[recipientId].cnContactId;
+        CNContact *_Nullable cnContact = [self cnContactWithId:cnContactId];
         if (!cnContact) {
             // If we don't have a CNContact for this recipient id, make one.
             // Presumably [CNContactFormatter nameOrderForContact:] tries
@@ -791,7 +791,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             cnContact = formatContact;
         }
         CNContactDisplayNameOrder nameOrder = [CNContactFormatter nameOrderForContact:cnContact];
-        NSAttributedString *leftName, *rightName;
+        NSAttributedString *_Nullable leftName, *_Nullable rightName;
         if (nameOrder == CNContactDisplayNameOrderGivenNameFirst) {
             leftName = firstName;
             rightName = lastName;
@@ -837,12 +837,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
 {
     // Prefer a saved name from system contacts, if available
-    NSString *savedContactName = [self cachedContactNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
 
-    NSString *profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
@@ -887,12 +887,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssert(secondaryAttributes.count > 0);
 
     // Prefer a saved name from system contacts, if available
-    NSString *savedContactName = [self cachedContactNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
     }
 
-    NSString *profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length > 0) {
         NSAttributedString *result =
             [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
@@ -911,14 +911,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
 {
     // Prefer a saved name from system contacts, if available
-    NSString *savedContactName = [self cachedContactNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
 
     NSString *formattedPhoneNumber =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
-    NSString *profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
@@ -999,7 +999,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
     
     // Prefer the contact image from the local address book if available
-    UIImage *image = [self systemContactImageForPhoneIdentifier:identifier];
+    UIImage *_Nullable image = [self systemContactImageForPhoneIdentifier:identifier];
 
     // Else try to use the image from their profile
     if (image == nil) {
@@ -1036,7 +1036,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
 {
-    NSString *name;
+    NSString *_Nullable name;
     if (signalAccount.contact) {
         if (self.shouldSortByGivenName) {
             name = signalAccount.contact.comparableNameFirstLast;
