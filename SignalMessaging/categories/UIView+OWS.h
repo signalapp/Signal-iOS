@@ -134,7 +134,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @interface UIScrollView (OWS)
 
-- (void)applyScrollViewInsetsFix;
+// Returns YES if contentInsetAdjustmentBehavior is disabled.
+- (BOOL)applyScrollViewInsetsFix;
 
 @end
 
