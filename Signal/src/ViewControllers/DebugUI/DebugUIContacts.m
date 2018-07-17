@@ -55,13 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                            actionBlock:^{
                                                                [DebugUIContacts clearSignalRecipientCache];
                                                            }],
-                                           [OWSTableItem itemWithTitle:@"New Invalid Contact Thread"
+                                           [OWSTableItem itemWithTitle:@"New Unregistered Contact Thread"
                                                            actionBlock:^{
-                                                               [DebugUIContacts createInvalidContactThread];
+                                                               [DebugUIContacts createUnregisteredContactThread];
                                                            }],
-                                           [OWSTableItem itemWithTitle:@"New Invalid Group Thread"
+                                           [OWSTableItem itemWithTitle:@"New Unregistered Group Thread"
                                                            actionBlock:^{
-                                                               [DebugUIContacts createInvalidGroupThread];
+                                                               [DebugUIContacts createUnregisteredGroupThread];
                                                            }],
                                        ]];
 }
@@ -1333,14 +1333,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [recipientId copy];
 }
 
-+ (void)createInvalidContactThread
++ (void)createUnregisteredContactThread
 {
     NSString *recipientId = [self unregisteredRecipientId];
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
     [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
-+ (void)createInvalidGroupThread
++ (void)createUnregisteredGroupThread
 {
     NSString *unregisteredRecipientId = [self unregisteredRecipientId];
     NSString *validRecipientId = @"+19174054216";
