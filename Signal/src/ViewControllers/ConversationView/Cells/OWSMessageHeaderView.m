@@ -134,7 +134,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
         NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
         if (viewItem.shouldShowDate) {
-            title = [[dateString rtlSafeAppend:@" • "] rtlSafeAppend:title];
+            title = [[dateString rtlSafeAppend:@" \u00B7 "] rtlSafeAppend:title];
         }
         self.titleLabel.text = title.localizedUppercaseString;
 
