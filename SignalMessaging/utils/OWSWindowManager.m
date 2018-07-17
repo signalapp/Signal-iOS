@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
 
-const CGFloat OWSWindowManagerCallScreenHeight(void)
+const CGFloat OWSWindowManagerCallBannerHeight(void)
 {
     if ([UIDevice currentDevice].isIPhoneX) {
         // On an iPhoneX, the system return-to-call banner has been replaced by a much subtler green
@@ -175,7 +175,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 - (void)didChangeStatusBarFrame:(NSNotification *)notification
 {
     CGRect newFrame = self.returnToCallWindow.frame;
-    newFrame.size.height = OWSWindowManagerCallScreenHeight();
+    newFrame.size.height = OWSWindowManagerCallBannerHeight();
 
     DDLogDebug(@"%@ StatusBar changed frames - updating returnToCallWindowFrame: %@",
         self.logTag,
@@ -195,7 +195,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
     // "Return to call" should remain at the top of the screen.
     CGRect windowFrame = UIScreen.mainScreen.bounds;
-    windowFrame.size.height = OWSWindowManagerCallScreenHeight();
+    windowFrame.size.height = OWSWindowManagerCallBannerHeight();
     UIWindow *window = [[UIWindow alloc] initWithFrame:windowFrame];
     window.hidden = YES;
     window.windowLevel = UIWindowLevel_ReturnToCall();

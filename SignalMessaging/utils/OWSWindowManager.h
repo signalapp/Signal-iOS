@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 extern NSString *const OWSWindowManagerCallDidChangeNotification;
-const CGFloat OWSWindowManagerCallScreenHeight(void);
+const CGFloat OWSWindowManagerCallBannerHeight(void);
 
 extern const UIWindowLevel UIWindowLevel_Background;
 

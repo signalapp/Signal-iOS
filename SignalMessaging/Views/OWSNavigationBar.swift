@@ -21,7 +21,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var callBannerHeight: CGFloat {
-        return OWSWindowManagerCallScreenHeight()
+        return OWSWindowManagerCallBannerHeight()
     }
 
     @objc
@@ -62,7 +62,9 @@ public class OWSNavigationBar: UINavigationBar {
             // so we have to set a zindex to avoid obscuring navbar title/buttons.
             blurEffectView.layer.zPosition = -1
 
-            blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -100, left: 0, bottom: 0, right: 0))
+            // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
+            // the navbar bounds to have the blur extend up and behind the status bar.
+            blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -statusBarHeight, left: 0, bottom: 0, right: 0))
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
