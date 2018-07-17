@@ -223,7 +223,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
-            if ([SignalRecipient isRegisteredSignalAccount:number.toE164 transaction:transaction]) {
+            if ([SignalRecipient isRegisteredRecipient:number.toE164 transaction:transaction]) {
                 [identifiers addObject:number.toE164];
             }
         }

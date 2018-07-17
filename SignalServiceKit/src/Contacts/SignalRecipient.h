@@ -36,13 +36,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
-+ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
++ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
 
-+ (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (void)markAccountAsRegistered:(NSString *)recipientId
-                       deviceId:(UInt32)deviceId
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)markRecipientAsRegistered:(NSString *)recipientId
+                         deviceId:(UInt32)deviceId
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)removeUnregisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

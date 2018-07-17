@@ -146,7 +146,14 @@ NS_ASSUME_NONNULL_BEGIN
     
     [self addDevices:devices];
 
-    SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
+    SignalRecipient *latest =
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId transaction:transaction];
+
+    if ([devices isSubsetOfSet:latest.devices.set]) {
+        return;
+    }
+    DDLogDebug(@"%@ adding devices: %@, to recipient: %@", self.logTag, devices, latest.recipientId);
+
     [latest addDevices:devices];
     [latest saveWithTransaction_internal:transaction];
 }
@@ -158,7 +165,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self removeDevices:devices];
 
-    SignalRecipient *latest = [SignalRecipient markAccountAsRegistered:self.recipientId transaction:transaction];
+    SignalRecipient *latest =
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId transaction:transaction];
+
+    if (![devices isSubsetOfSet:latest.devices.set]) {
+        return;
+    }
+    DDLogDebug(@"%@ removing devices: %@, from recipient: %@", self.logTag, devices, latest.recipientId);
+
     [latest removeDevices:devices];
     [latest saveWithTransaction_internal:transaction];
 }
@@ -187,13 +201,14 @@ NS_ASSUME_NONNULL_BEGIN
     DDLogVerbose(@"%@ saved signal recipient: %@", self.logTag, self.recipientId);
 }
 
-+ (BOOL)isRegisteredSignalAccount:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
++ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
 {
     SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
     return instance != nil;
 }
 
-+ (SignalRecipient *)markAccountAsRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
@@ -209,14 +224,14 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
-+ (void)markAccountAsRegistered:(NSString *)recipientId
-                       deviceId:(UInt32)deviceId
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)markRecipientAsRegistered:(NSString *)recipientId
+                         deviceId:(UInt32)deviceId
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
 
-    SignalRecipient *recipient = [self markAccountAsRegistered:recipientId transaction:transaction];
+    SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
         DDLogDebug(@"%@ in %s adding device %u to existing recipient.",
                    self.logTag,
@@ -228,7 +243,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)markAccountAsNotRegistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)removeUnregisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
@@ -237,6 +252,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!instance) {
         return;
     }
+    DDLogDebug(@"%@ removing recipient: %@", self.logTag, recipientId);
     [instance removeWithTransaction:transaction];
 }
 
