@@ -2605,6 +2605,19 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    NSIndexPath *_Nullable indexPathOfUnreadIndicator = [self indexPathOfUnreadMessagesIndicator];
+    if (indexPathOfUnreadIndicator) {
+        ConversationViewItem *oldIndicatorItem = [self viewItemForIndex:indexPathOfUnreadIndicator.row];
+        OWSAssert(oldIndicatorItem);
+
+        // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
+        // to be cleared.
+        [self.editingDatabaseConnection
+            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [oldIndicatorItem.interaction touchWithTransaction:transaction];
+            }];
+    }
+
     if (self.hasClearedUnreadMessagesIndicator) {
         // ensureDynamicInteractionsForThread is somewhat expensive
         // so we don't want to call it unnecessarily.
@@ -4912,7 +4925,7 @@ typedef enum : NSUInteger {
         // unread indicator exists yet on dynamicInteractions.
         BOOL isItemUnread = ([viewItem.interaction conformsToProtocol:@protocol(OWSReadTracking)]
             && !((id<OWSReadTracking>)viewItem.interaction).wasRead);
-        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator) {
+        if (isItemUnread && !unreadIndicator && !hasPlacedUnreadIndicator && !self.hasClearedUnreadMessagesIndicator) {
 
             unreadIndicator =
                 [[OWSUnreadIndicator alloc] initUnreadIndicatorWithTimestamp:viewItem.interaction.timestamp
