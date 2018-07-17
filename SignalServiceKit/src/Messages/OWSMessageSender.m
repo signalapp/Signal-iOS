@@ -924,7 +924,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // * After unlinking all linked devices.
         // * After trying and failing to link a device.
         // * The first time we send a message to a user, if they don't have their
-        //   default device (device id = 0).  For example, if they have unregistered
+        //   default device.  For example, if they have unregistered
         //   their primary but still have a linked device. Or later, when they re-register.
         //
         // When we're not sure if we have linked devices, we need to try
