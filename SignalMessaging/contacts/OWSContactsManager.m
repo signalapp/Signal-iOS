@@ -281,6 +281,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             recipientIdsForIntersection = allContactRecipientIds;
 
             if (!isFullIntersection) {
+                // Do a "delta" intersection instead of a "full" intersection:
+                // only intersect new contacts which were not in the last successful
+                // "full" intersection.
                 NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
                     [transaction objectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                                  inCollection:OWSContactsManagerCollection];
