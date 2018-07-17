@@ -21,7 +21,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public var callBannerHeight: CGFloat {
-        return OWSWindowManagerCallScreenHeight()
+        return OWSWindowManagerCallBannerHeight()
     }
 
     @objc
