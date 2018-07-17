@@ -4,6 +4,7 @@
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
+#import "OWSMessageHeaderView.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
@@ -44,12 +45,12 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @interface OWSSystemMessageCell ()
 
-@property (nonatomic, nullable) TSInteraction *interaction;
-
 @property (nonatomic) UIImageView *iconView;
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
 @property (nonatomic) UIStackView *vStackView;
+@property (nonatomic) OWSMessageHeaderView *headerView;
+@property (nonatomic) NSLayoutConstraint *headerViewHeightConstraint;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic, nullable) SystemMessageAction *action;
 
@@ -76,6 +77,9 @@ typedef void (^SystemMessageActionBlock)(void);
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
     self.contentView.backgroundColor = UIColor.whiteColor;
+
+    self.headerView = [OWSMessageHeaderView new];
+    self.headerViewHeightConstraint = [self.headerView autoSetDimension:ALDimensionHeight toSize:0];
 
     self.iconView = [UIImageView new];
     [self.iconView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
@@ -110,7 +114,12 @@ typedef void (^SystemMessageActionBlock)(void);
     self.vStackView.axis = UILayoutConstraintAxisVertical;
     self.vStackView.spacing = self.buttonVSpacing;
     self.vStackView.alignment = UIStackViewAlignmentCenter;
-    [self.contentView addSubview:self.vStackView];
+    self.vStackView.layoutMarginsRelativeArrangement = YES;
+
+    UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
+    cellStackView.axis = UILayoutConstraintAxisVertical;
+    [self.contentView addSubview:cellStackView];
+    [cellStackView autoPinEdgesToSuperviewEdges];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
@@ -182,17 +191,28 @@ typedef void (^SystemMessageActionBlock)(void);
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+
+    if (self.viewItem.hasCellHeader) {
+        self.headerView.hidden = NO;
+
+        CGFloat headerHeight =
+            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
+                .height;
+
+        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
+        self.headerViewHeightConstraint.constant = headerHeight;
+    } else {
+        self.headerView.hidden = YES;
+    }
+
+    self.vStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
+        self.conversationStyle.fullWidthGutterLeading,
+        self.bottomVMargin,
+        self.conversationStyle.fullWidthGutterLeading);
+
     self.layoutConstraints = @[
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
-
-        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f],
-
-        [self.vStackView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:self.topVMargin],
-        [self.vStackView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:self.bottomVMargin],
-        [self.vStackView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                          withInset:self.conversationStyle.fullWidthGutterLeading],
-        [self.vStackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                          withInset:self.conversationStyle.fullWidthGutterTrailing],
+        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f]
     ];
 }
 
@@ -361,6 +381,12 @@ typedef void (^SystemMessageActionBlock)(void);
     TSInteraction *interaction = self.viewItem.interaction;
 
     CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
+
+    if (self.viewItem.hasCellHeader) {
+        result.height +=
+            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
+                .height;
+    }
 
     UIImage *_Nullable icon = [self iconForInteraction:interaction];
     if (icon) {
