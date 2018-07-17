@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UILabel *snippetLabel;
 @property (nonatomic) UILabel *dateTimeLabel;
-@property (nonatomic) UIImageView *messageStatusView;
+@property (nonatomic) MessageStatusView *messageStatusView;
 
 @property (nonatomic) UIView *unreadBadge;
 @property (nonatomic) UILabel *unreadLabel;
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.dateTimeLabel setContentHuggingHorizontalHigh];
     [self.dateTimeLabel setCompressionResistanceHorizontalHigh];
 
-    self.messageStatusView = [UIImageView new];
+    self.messageStatusView = [MessageStatusView new];
     [self.messageStatusView setContentHuggingHorizontalHigh];
     [self.messageStatusView setCompressionResistanceHorizontalHigh];
 
