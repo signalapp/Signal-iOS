@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)vMargin
 {
-    return 0.f;
+    return 5.f;
 }
 
 - (CGSize)measureSizeWithMaxMessageWidth:(CGFloat)maxMessageWidth
@@ -92,6 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.axis = UILayoutConstraintAxisHorizontal;
     self.alignment = UIStackViewAlignmentCenter;
     self.spacing = self.hSpacing;
+    self.layoutMarginsRelativeArrangement = YES;
+    self.layoutMargins = UIEdgeInsetsMake(self.vMargin, 0, self.vMargin, 0);
 
     // attachment_file
     UIImage *image = [UIImage imageNamed:@"generic-attachment"];
