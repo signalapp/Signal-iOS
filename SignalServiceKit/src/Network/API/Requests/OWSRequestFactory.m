@@ -11,6 +11,7 @@
 #import "TSRequest.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/SignedPreKeyRecord.h>
+#import <Curve25519Kit/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -272,6 +273,20 @@ NS_ASSUME_NONNULL_BEGIN
         @"publicKey" : [[preKey.keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
         @"signature" : [preKey.signature base64EncodedStringWithOptions:0]
     };
+}
+
++ (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
+                              enclaveId:(NSString *)enclaveId
+{
+    OWSAssert(keyPair);
+    OWSAssert(enclaveId.length > 0);
+    
+    NSString *path = [NSString stringWithFormat:@"/v1/attestation/%@", enclaveId];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                              method:@"PUT"
+                          parameters:@{
+                                       @"clientPublic" : [[keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
+                                       }];
 }
 
 @end

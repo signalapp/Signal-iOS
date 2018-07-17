@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
 @class TSRequest;
+@class ECKeyPair;
 
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
 
@@ -68,6 +69,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey
                                     preKeyLastResort:(PreKeyRecord *)preKeyLastResort;
+
++ (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
+                              enclaveId:(NSString *)enclaveId;
 
 @end
 
