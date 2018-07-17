@@ -519,7 +519,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 @implementation UIScrollView (OWS)
 
-- (void)applyScrollViewInsetsFix
+- (BOOL)applyScrollViewInsetsFix
 {
     // Fix a bug that only affects iOS 11.0.x and 11.1.x.
     // The symptom is a fix weird animation that happens when using the interactive pop gesture.
@@ -528,7 +528,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 #pragma clang diagnostic ignored "-Wpartial-availability"
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
 #pragma clang diagnostic pop
+        return YES;
     }
+    return NO;
 }
 
 @end

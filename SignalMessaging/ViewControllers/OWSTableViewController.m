@@ -453,10 +453,21 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
-    [self.tableView applyScrollViewInsetsFix];
-
     [self.view addSubview:self.tableView];
-    [self.tableView autoPinEdgesToSuperviewEdges];
+
+    if ([self.tableView applyScrollViewInsetsFix]) {
+        // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
+        // we need to pin to the top and bottom layout guides since UIKit
+        // won't adjust our content insets.
+        [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+        [self.tableView autoPinWidthToSuperview];
+
+        // We don't need a top or bottom insets, since we pin to the top and bottom layout guides.
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    } else {
+        [self.tableView autoPinEdgesToSuperviewEdges];
+    }
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kOWSTableCellIdentifier];
 
