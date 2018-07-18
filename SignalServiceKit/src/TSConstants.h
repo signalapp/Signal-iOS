@@ -48,8 +48,8 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#endif
 
 // Testing
-#define textSecureWebSocketAPI @"wss://api.contact-discovery.acton-signal.org/v1/websocket/"
-#define textSecureServerURL @"https://api.contact-discovery.acton-signal.org/"
+#define textSecureWebSocketAPI @"wss://messaging.acton-signal.org/v1/websocket/"
+#define textSecureServerURL @"https://messaging.acton-signal.org/"
 #define textSecureCDNServerURL @"https://cdn-staging.signal.org"
 #define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
 #define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";

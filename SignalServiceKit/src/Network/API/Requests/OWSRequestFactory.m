@@ -3,6 +3,7 @@
 //
 
 #import "OWSRequestFactory.h"
+#import "CDSAttestationRequest.h"
 #import "NSData+Base64.h"
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
@@ -277,16 +278,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId
+                              authToken:(NSString *)authToken
 {
     OWSAssert(keyPair);
     OWSAssert(enclaveId.length > 0);
-    
-    NSString *path = [NSString stringWithFormat:@"/v1/attestation/%@", enclaveId];
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path]
-                              method:@"PUT"
-                          parameters:@{
-                                       @"clientPublic" : [[keyPair.publicKey prependKeyType] base64EncodedStringWithOptions:0],
-                                       }];
+    OWSAssert(authToken.length > 0);
+
+    NSString *path =
+        [NSString stringWithFormat:@"https://api.contact-discovery.acton-signal.org/v1/attestation/%@", enclaveId];
+    return [[CDSAttestationRequest alloc] initWithURL:[NSURL URLWithString:path]
+                                               method:@"PUT"
+                                           parameters:@{
+                                               // We DO NOT prepend the "key type" byte.
+                                               @"clientPublic" : [keyPair.publicKey base64EncodedStringWithOptions:0],
+                                           }
+                                            authToken:authToken];
+}
+
++ (TSRequest *)remoteAttestationAuthRequest
+{
+    NSString *path = @"/v1/directory/auth";
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
 @end

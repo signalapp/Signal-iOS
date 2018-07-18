@@ -4,11 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
 @class TSRequest;
-@class ECKeyPair;
 
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
 
@@ -71,7 +71,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                     preKeyLastResort:(PreKeyRecord *)preKeyLastResort;
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
-                              enclaveId:(NSString *)enclaveId;
+                              enclaveId:(NSString *)enclaveId
+                              authToken:(NSString *)authToken;
+
++ (TSRequest *)remoteAttestationAuthRequest;
 
 @end
 
