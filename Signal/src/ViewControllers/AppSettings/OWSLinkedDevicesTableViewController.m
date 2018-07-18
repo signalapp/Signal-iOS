@@ -75,9 +75,13 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     [super viewWillAppear:animated];
     [self refreshDevices];
-    // HACK to unselect rows when swiping back
-    // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
-    [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:animated];
+
+    NSIndexPath *_Nullable selectedPath = [self.tableView indexPathForSelectedRow];
+    if (selectedPath) {
+        // HACK to unselect rows when swiping back
+        // http://stackoverflow.com/questions/19379510/uitableviewcell-doesnt-get-deselected-when-swiping-back-quickly
+        [self.tableView deselectRowAtIndexPath:selectedPath animated:animated];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated

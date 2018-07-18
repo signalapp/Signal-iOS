@@ -43,6 +43,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssert(!self.titleLabel);
 
     self.layoutMargins = UIEdgeInsetsZero;
+    self.layoutConstraints = @[];
 
     // Intercept touches.
     // Date breaks and unread indicators are not interactive.
