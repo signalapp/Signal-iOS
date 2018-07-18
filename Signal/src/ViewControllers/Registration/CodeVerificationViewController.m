@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
     [alert addAction:[UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *action) {
-                                                [_challengeTextField becomeFirstResponder];
+                                                [self.challengeTextField becomeFirstResponder];
                                             }]];
 
     [self presentViewController:alert animated:YES completion:nil];

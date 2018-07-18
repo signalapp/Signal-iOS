@@ -331,7 +331,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.quotedTextLabel);
 
     UIColor *textColor = self.quotedTextColor;
+    SUPPRESS_DEADSTORE_WARNING(textColor);
     UIFont *font = self.quotedTextFont;
+    SUPPRESS_DEADSTORE_WARNING(font);
     NSString *text = @"";
 
     NSString *_Nullable fileTypeForSnippet = [self fileTypeForSnippet];

@@ -354,7 +354,7 @@ typedef void (^CustomLayoutBlock)(void);
             // Show a "checkmark" if this user is verified.
             [labelText
                 appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:@"\uf00c "
+                                           initWithString:LocalizationNotNeeded(@"\uf00c ")
                                                attributes:@{
                                                    NSFontAttributeName : [UIFont
                                                        ows_fontAwesomeFont:self.verificationStateLabel.font.pointSize],
@@ -383,7 +383,7 @@ typedef void (^CustomLayoutBlock)(void);
         // Show a "checkmark" if this user is not verified.
         [buttonText
             appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:@"\uf00c  "
+                                       initWithString:LocalizationNotNeeded(@"\uf00c  ")
                                            attributes:@{
                                                NSFontAttributeName : [UIFont
                                                    ows_fontAwesomeFont:self.verifyUnverifyButtonLabel.font.pointSize],

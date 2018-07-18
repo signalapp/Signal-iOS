@@ -371,7 +371,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         if ([thread isMuted]) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
-                                                    initWithString:@"\ue067  "
+                                                    initWithString:LocalizationNotNeeded(@"\ue067  ")
                                                         attributes:@{
                                                             NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
                                                             NSForegroundColorAttributeName :

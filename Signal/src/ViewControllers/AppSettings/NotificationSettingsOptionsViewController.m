@@ -11,6 +11,8 @@
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+    
     [self updateTableContents];
 }
 

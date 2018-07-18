@@ -312,7 +312,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
         return cell;
     } else {
         DDLogError(@"Unknown section: %@", indexPath);
-        return nil;
+        return [UITableViewCell new];
     }
 }
 

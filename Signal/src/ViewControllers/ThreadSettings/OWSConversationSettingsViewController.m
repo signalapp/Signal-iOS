@@ -786,7 +786,7 @@ const CGFloat kIconViewLength = 24;
             NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
             // "checkmark"
             [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:@"\uf00c "
+                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
                                                      attributes:@{
                                                          NSFontAttributeName :
                                                              [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
