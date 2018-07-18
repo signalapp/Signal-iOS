@@ -30,7 +30,6 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                                   relay:(nullable NSString *)relay
                           networkManager:(TSNetworkManager *)networkManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 

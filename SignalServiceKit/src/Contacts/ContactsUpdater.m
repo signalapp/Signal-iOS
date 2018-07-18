@@ -38,53 +38,27 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SignalRecipient *)synchronousLookup:(NSString *)identifier error:(NSError **)error
-{
-    OWSAssert(error);
-
-    DDLogInfo(@"%@ %s %@", self.logTag, __PRETTY_FUNCTION__, identifier);
-
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-
-    __block SignalRecipient *recipient;
-
-    // Assigning to a pointer parameter within the block is not preventing the referenced error from being dealloc
-    // Instead, we avoid ambiguity in ownership by assigning to a local __block variable ensuring the error will be
-    // retained until our error parameter can take ownership.
-    __block NSError *retainedError;
-    [self lookupIdentifier:identifier
-        success:^(SignalRecipient *fetchedRecipient) {
-            recipient = fetchedRecipient;
-            dispatch_semaphore_signal(sema);
-        }
-        failure:^(NSError *lookupError) {
-            DDLogError(
-                @"%@ Could not find recipient for recipientId: %@, error: %@.", self.logTag, identifier, lookupError);
-
-            retainedError = lookupError;
-            dispatch_semaphore_signal(sema);
-        }];
-
-    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-    *error = retainedError;
-    return recipient;
-}
-
-- (void)lookupIdentifier:(NSString *)identifier
+- (void)lookupIdentifier:(NSString *)recipientId
                  success:(void (^)(SignalRecipient *recipient))success
                  failure:(void (^)(NSError *error))failure
 {
+    OWSAssert(recipientId.length > 0);
+    
     // This should never happen according to nullability annotations... but IIRC it does. =/
-    if (!identifier) {
+    if (!recipientId) {
         OWSFail(@"%@ Cannot lookup nil identifier", self.logTag);
         failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
         return;
     }
     
-    [self contactIntersectionWithSet:[NSSet setWithObject:identifier]
-                             success:^(NSSet<NSString *> *_Nonnull matchedIds) {
-                                 if (matchedIds.count == 1) {
-                                     success([SignalRecipient recipientWithTextSecureIdentifier:identifier]);
+    NSSet *recipiendIds = [NSSet setWithObject:recipientId];
+    [self contactIntersectionWithSet:recipiendIds
+                             success:^(NSSet<SignalRecipient *> *recipients) {
+                                 if (recipients.count > 0) {
+                                     OWSAssert(recipients.count == 1);
+                                     
+                                     SignalRecipient *recipient = recipients.allObjects.firstObject;
+                                     success(recipient);
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
                                  }
@@ -103,12 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
-                             success:^(NSSet<NSString *> *_Nonnull matchedIds) {
-                                 if (matchedIds.count > 0) {
-                                     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
-                                     for (NSString *identifier in matchedIds) {
-                                         [recipients addObject:[SignalRecipient recipientWithTextSecureIdentifier:identifier]];
-                                     }
+                             success:^(NSSet<SignalRecipient *> *recipients) {
+                                 if (recipients.count > 0) {
                                      success([recipients copy]);
                                  } else {
                                      failure(OWSErrorMakeNoSuchSignalRecipientError());
@@ -117,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
                              failure:failure];
 }
 
+// TODO: Modify this to support delta lookups.
 - (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
                                               success:(void (^)(void))success
                                               failure:(void (^)(NSError *error))failure
@@ -130,7 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableSet *recipientIds = [NSMutableSet set];
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction * transaction) {
+        // TODO: Don't do this.
         NSArray *allRecipientKeys = [transaction allKeysInCollection:[SignalRecipient collection]];
         [recipientIds addObjectsFromArray:allRecipientKeys];
     }];
@@ -138,78 +110,70 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *allContacts = [[abPhoneNumbers setByAddingObjectsFromSet:recipientIds] mutableCopy];
 
     [self contactIntersectionWithSet:allContacts
-                             success:^(NSSet<NSString *> *matchedIds) {
-                                 [recipientIds minusSet:matchedIds];
-
-                                 // Cleaning up unregistered identifiers
-                                 [OWSPrimaryStorage.dbReadWriteConnection
-                                     readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                         for (NSString *identifier in recipientIds) {
-                                             SignalRecipient *recipient =
-                                                 [SignalRecipient fetchObjectWithUniqueID:identifier
-                                                                              transaction:transaction];
-
-                                             [recipient removeWithTransaction:transaction];
-                                         }
-                                     }];
-
+                             success:^(NSSet<SignalRecipient *> *recipients) {
                                  DDLogInfo(@"%@ successfully intersected contacts.", self.logTag);
                                  success();
                              }
                              failure:failure];
 }
 
-- (void)contactIntersectionWithSet:(NSSet<NSString *> *)idSet
-                           success:(void (^)(NSSet<NSString *> *matchedIds))success
+- (void)contactIntersectionWithSet:(NSSet<NSString *> *)recipientIdsToLookup
+                           success:(void (^)(NSSet<SignalRecipient *> *recipients))success
                            failure:(void (^)(NSError *error))failure {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSMutableDictionary *phoneNumbersByHashes = [NSMutableDictionary dictionary];
-      for (NSString *identifier in idSet) {
-          [phoneNumbersByHashes setObject:identifier
-                                   forKey:[Cryptography truncatedSHA1Base64EncodedWithoutPadding:identifier]];
+      NSMutableDictionary<NSString *, NSString *> *phoneNumbersByHashes = [NSMutableDictionary new];
+      for (NSString *recipientId in recipientIdsToLookup) {
+          NSString *hash = [Cryptography truncatedSHA1Base64EncodedWithoutPadding:recipientId];
+           phoneNumbersByHashes[hash] = recipientId;
       }
-      NSArray *hashes = [phoneNumbersByHashes allKeys];
-
+      NSArray<NSString *> *hashes = [phoneNumbersByHashes allKeys];
+        
       TSRequest *request = [OWSRequestFactory contactsIntersectionRequestWithHashesArray:hashes];
       [[TSNetworkManager sharedManager] makeRequest:request
-          success:^(NSURLSessionDataTask *tsTask, id responseDict) {
-              NSMutableDictionary *attributesForIdentifier = [NSMutableDictionary dictionary];
-              NSArray *contactsArray = [(NSDictionary *)responseDict objectForKey:@"contacts"];
-
-              // Map attributes to phone numbers
-              if (contactsArray) {
-                  for (NSDictionary *dict in contactsArray) {
-                      NSString *hash = [dict objectForKey:@"token"];
-                      NSString *identifier = [phoneNumbersByHashes objectForKey:hash];
-
-                      if (!identifier) {
-                          DDLogWarn(@"%@ An interesecting hash wasn't found in the mapping.", self.logTag);
-                          break;
+          success:^(NSURLSessionDataTask *task, id responseDict) {
+              NSMutableSet<NSString *> *registeredRecipientIds = [NSMutableSet new];
+              
+              if ([responseDict isKindOfClass:[NSDictionary class]]) {
+                  NSArray<NSDictionary *> *_Nullable contactsArray = responseDict[@"contacts"];
+                  if ([contactsArray isKindOfClass:[NSArray class]]) {
+                      for (NSDictionary *contactDict in contactsArray) {
+                          if (![contactDict isKindOfClass:[NSDictionary class]]) {
+                              OWSProdLogAndFail(@"%@ invalid contact dictionary.", self.logTag);
+                              continue;
+                          }
+                          NSString *_Nullable hash = contactDict[@"token"];
+                          if (hash.length < 1) {
+                              OWSProdLogAndFail(@"%@ contact missing hash.", self.logTag);
+                              continue;
+                          }
+                          NSString *_Nullable recipientId = phoneNumbersByHashes[hash];
+                          if (recipientId.length < 1) {
+                              OWSProdLogAndFail(@"%@ An intersecting hash wasn't found in the mapping.", self.logTag);
+                              continue;
+                          }
+                          if (![recipientIdsToLookup containsObject:recipientId]) {
+                              OWSProdLogAndFail(@"%@ Intersection response included unexpected recipient.", self.logTag);
+                              continue;
+                          }
+                          [registeredRecipientIds addObject:recipientId];
                       }
-
-                      [attributesForIdentifier setObject:dict forKey:identifier];
                   }
               }
-
-              // Insert or update contact attributes
-              [OWSPrimaryStorage.dbReadWriteConnection
-                  readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                      for (NSString *identifier in attributesForIdentifier) {
-                          SignalRecipient *recipient = [SignalRecipient recipientWithTextSecureIdentifier:identifier
-                                                                                          withTransaction:transaction];
-                          if (!recipient) {
-                              recipient = [[SignalRecipient alloc] initWithTextSecureIdentifier:identifier relay:nil];
-                          }
-
-                          NSDictionary *attributes = [attributesForIdentifier objectForKey:identifier];
-
-                          recipient.relay = attributes[@"relay"];
-
-                          [recipient saveWithTransaction:transaction];
+              
+              NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
+              [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                  for (NSString *recipientId in recipientIdsToLookup) {
+                      if ([registeredRecipientIds containsObject:recipientId]) {
+                          SignalRecipient *recipient =
+                              [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+                          [recipients addObject:recipient];
+                      } else {
+                          [SignalRecipient removeUnregisteredRecipient:recipientId transaction:transaction];
                       }
-                  }];
+                  }
+              }];
 
-              success([NSSet setWithArray:attributesForIdentifier.allKeys]);
+              success([recipients copy]);
           }
           failure:^(NSURLSessionDataTask *task, NSError *error) {
               if (!IsNSErrorNetworkFailure(error)) {

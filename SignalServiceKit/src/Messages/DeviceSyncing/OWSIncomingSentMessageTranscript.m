@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSIncomingSentMessageTranscript
 
 - (instancetype)initWithProto:(OWSSignalServiceProtosSyncMessageSent *)sentProto
-                        relay:(nullable NSString *)relay
                   transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self = [super init];
@@ -27,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _relay = relay;
     _dataMessage = sentProto.message;
     _recipientId = sentProto.destination;
     _timestamp = sentProto.timestamp;
@@ -45,9 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
         _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
     }
 
-    _quotedMessage =
-        [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread relay:relay transaction:transaction];
-    _contact = [OWSContacts contactForDataMessage:_dataMessage relay:relay transaction:transaction];
+    _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+    _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
     return self;
 }

@@ -5,6 +5,7 @@
 #import "DebugUIContacts.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
+#import "SignalApp.h"
 #import <Contacts/Contacts.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
                                            [OWSTableItem itemWithTitle:@"Clear SignalAccount Cache"
                                                            actionBlock:^{
                                                                [DebugUIContacts clearSignalAccountCache];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"Clear SignalRecipient Cache"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts clearSignalRecipientCache];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"New Unregistered Contact Thread"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts createUnregisteredContactThread];
+                                                           }],
+                                           [OWSTableItem itemWithTitle:@"New Unregistered Group Thread"
+                                                           actionBlock:^{
+                                                               [DebugUIContacts createUnregisteredGroupThread];
                                                            }],
                                        ]];
 }
@@ -1290,6 +1303,12 @@ NS_ASSUME_NONNULL_BEGIN
     [SignalAccount removeAllObjectsInCollection];
 }
 
++ (void)clearSignalRecipientCache
+{
+    DDLogWarn(@"%@ Deleting all signal recipients.", self.logTag);
+    [SignalRecipient removeAllObjectsInCollection];
+}
+
 + (void)deleteAllContacts
 {
     [self deleteContactsWithFilter:^(CNContact *contact) {
@@ -1302,6 +1321,41 @@ NS_ASSUME_NONNULL_BEGIN
     [self deleteContactsWithFilter:^(CNContact *contact) {
         return [contact.familyName hasPrefix:@"Rando-"];
     }];
+}
+
++ (NSString *)unregisteredRecipientId
+{
+    // We ensure that the phone number is invalid by appending too many digits.
+    NSMutableString *recipientId = [@"+1" mutableCopy];
+    for (int i = 0; i < 11; i++) {
+        [recipientId appendFormat:@"%d", (int)(arc4random() % 10)];
+    }
+    return [recipientId copy];
+}
+
++ (void)createUnregisteredContactThread
+{
+    NSString *recipientId = [self unregisteredRecipientId];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    [SignalApp.sharedApp presentConversationForThread:thread];
+}
+
++ (void)createUnregisteredGroupThread
+{
+    NSString *unregisteredRecipientId = [self unregisteredRecipientId];
+    NSString *validRecipientId = @"+19174054216";
+
+    NSString *groupName = @"Partially invalid group";
+    NSMutableArray<NSString *> *recipientIds = [@[
+        unregisteredRecipientId,
+        validRecipientId,
+        [TSAccountManager localNumber],
+    ] mutableCopy];
+    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+    TSGroupModel *model =
+        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+    TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
+    [SignalApp.sharedApp presentConversationForThread:thread];
 }
 
 @end

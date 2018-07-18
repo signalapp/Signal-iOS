@@ -127,10 +127,6 @@ public class MessageFetcherJob: NSObject {
         }
         builder.setType(type)
 
-        if let relay = messageDict["relay"] as? String {
-            builder.setRelay(relay)
-        }
-
         guard let timestamp = messageDict["timestamp"] as? UInt64 else {
             Logger.error("\(self.logTag) message body didn't have timestamp")
             return nil

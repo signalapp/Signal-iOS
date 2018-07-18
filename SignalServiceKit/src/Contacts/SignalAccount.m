@@ -36,15 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertIsOnMainThread();
-    OWSAssert(transaction);
-
-    OWSAssert(self.recipientId.length > 0);
-    return [SignalRecipient recipientWithTextSecureIdentifier:self.recipientId withTransaction:transaction];
-}
-
 - (nullable NSString *)uniqueId
 {
     return _recipientId;

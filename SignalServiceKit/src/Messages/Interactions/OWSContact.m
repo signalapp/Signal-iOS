@@ -893,7 +893,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 }
 
 + (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                         relay:(nullable NSString *)relay
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(dataMessage);
@@ -968,8 +967,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         if (avatarInfo.hasAvatar) {
             OWSSignalServiceProtosAttachmentPointer *avatarAttachment = avatarInfo.avatar;
 
-            TSAttachmentPointer *attachmentPointer =
-                [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment relay:relay];
+            TSAttachmentPointer *attachmentPointer = [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment];
             [attachmentPointer saveWithTransaction:transaction];
 
             contact.avatarAttachmentId = attachmentPointer.uniqueId;

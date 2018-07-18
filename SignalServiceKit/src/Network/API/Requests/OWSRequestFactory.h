@@ -37,7 +37,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)allocAttachmentRequest;
 
-+ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId relay:(nullable NSString *)relay;
++ (TSRequest *)attachmentRequestWithAttachmentId:(UInt64)attachmentId;
 
 + (TSRequest *)availablePreKeysCountRequest;
 
@@ -60,7 +60,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
                                         messages:(NSArray *)messages
-                                           relay:(nullable NSString *)relay
                                        timeStamp:(uint64_t)timeStamp;
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;

@@ -28,35 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
-                                         relay:(nullable NSString *)relay
-{
-    OWSAssert(contactId.length > 0);
-
-    SignalRecipient *recipient =
-        [SignalRecipient recipientWithTextSecureIdentifier:contactId withTransaction:transaction];
-
-    if (!recipient) {
-        // If no recipient record exists for that contactId, create an empty record
-        // for immediate use, then ask ContactsUpdater to try to update it async.
-        recipient =
-            [[SignalRecipient alloc] initWithTextSecureIdentifier:contactId
-                                                            relay:relay];
-        [recipient saveWithTransaction:transaction];
-
-        // Update recipient with Server record async.
-        [[ContactsUpdater sharedUpdater] lookupIdentifier:contactId
-            success:^(SignalRecipient *recipient) {
-            }
-            failure:^(NSError *error) {
-                DDLogWarn(@"Failed to lookup contact with error:%@", error);
-            }];
-    }
-
-    return [self getOrCreateThreadWithContactId:contactId transaction:transaction];
-}
-
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssert(contactId.length > 0);
 

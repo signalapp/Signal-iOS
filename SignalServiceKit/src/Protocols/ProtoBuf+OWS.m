@@ -1,13 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "Cryptography.h"
 #import "ProfileManagerProtocol.h"
 #import "ProtoBuf+OWS.h"
-#import "SignalRecipient.h"
 #import "TSThread.h"
 #import "TextSecureKitEnv.h"
-#import "Cryptography.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

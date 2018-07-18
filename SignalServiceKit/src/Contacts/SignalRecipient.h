@@ -6,35 +6,44 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// SignalRecipient serves two purposes:
+//
+// a) It serves as a cache of "known" Signal accounts.  When the service indicates
+//    that an account exists, we make sure that an instance of SignalRecipient exists
+//    for that recipient id (using mark as registered).
+//    When the service indicates that an account does not exist, we remove any
+//    SignalRecipient.
+// b) We hang the "known device list" for known signal accounts on this entity.
 @interface SignalRecipient : TSYapDatabaseObject
 
-- (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                       relay:(nullable NSString *)relay;
+@property (nonatomic, readonly) NSOrderedSet *devices;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)selfRecipient;
 
-+ (void)ensureRecipientExistsWithRecipientId:(NSString *)recipientId
-                                    deviceId:(UInt32)deviceId
-                                       relay:(NSString *)relay
++ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
+                                               transaction:(YapDatabaseReadTransaction *)transaction;
++ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
+                                             transaction:(YapDatabaseReadTransaction *)transaction;
+
+- (void)addDevicesToRegisteredRecipient:(NSSet *)devices
+                            transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier;
-+ (nullable instancetype)recipientWithTextSecureIdentifier:(NSString *)textSecureIdentifier
-                                           withTransaction:(YapDatabaseReadTransaction *)transaction;
-
-@property (readonly) NSOrderedSet *devices;
-- (void)addDevices:(NSSet *)set;
-- (void)removeDevices:(NSSet *)set;
-
-@property (nonatomic, nullable) NSString *relay;
-
-- (BOOL)supportsVoice;
-// This property indicates support for both WebRTC audio and video calls.
-- (BOOL)supportsWebRTC;
 
 - (NSString *)recipientId;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
+
++ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
+
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
+                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)markRecipientAsRegistered:(NSString *)recipientId
+                         deviceId:(UInt32)deviceId
+                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)removeUnregisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

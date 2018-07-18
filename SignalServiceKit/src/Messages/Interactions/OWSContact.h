@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContact;
 @class OWSAttachmentInfo;
 @class OWSSignalServiceProtosDataMessage;
-@class OWSSignalServiceProtosDataMessage;
 @class OWSSignalServiceProtosDataMessageContact;
 @class TSAttachment;
 @class TSAttachmentStream;
@@ -177,7 +176,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 + (nullable OWSSignalServiceProtosDataMessageContact *)protoForContact:(OWSContact *)contact;
 
 + (nullable OWSContact *)contactForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
-                                         relay:(nullable NSString *)relay
                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

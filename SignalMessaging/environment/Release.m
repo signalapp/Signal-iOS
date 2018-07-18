@@ -24,8 +24,7 @@
         ContactsUpdater *contactsUpdater = [ContactsUpdater sharedUpdater];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithNetworkManager:networkManager
                                                                             primaryStorage:primaryStorage
-                                                                           contactsManager:contactsManager
-                                                                           contactsUpdater:contactsUpdater];
+                                                                           contactsManager:contactsManager];
 
         instance = [[Environment alloc] initWithContactsManager:contactsManager
                                                 contactsUpdater:contactsUpdater

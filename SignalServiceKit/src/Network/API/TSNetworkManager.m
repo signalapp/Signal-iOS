@@ -222,6 +222,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 417: {
+              // TODO: Is this response code obsolete?
               DDLogWarn(@"The number is already registered on a relay. Please unregister there first: %@", request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode

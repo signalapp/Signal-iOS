@@ -25,14 +25,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
-                           relay:(NSString *)relay
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
-+ (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
-                                              relay:(NSString *_Nullable)relay;
++ (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto;
 
-@property (nonatomic, readonly) NSString *relay;
 @property (atomic) TSAttachmentPointerState state;
 @property (nullable, atomic) NSString *mostRecentFailureLocalizedText;
 

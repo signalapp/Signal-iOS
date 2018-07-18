@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 // * Contacts with multiple signal accounts will correspond to
 //   multiple instances of SignalAccount.
 // * For non-contacts, the contact property will be nil.
-//
 @interface SignalAccount : TSYapDatabaseObject
 
 // An E164 value identifying the signal account.
@@ -41,11 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
 
 - (instancetype)initWithRecipientId:(NSString *)recipientId;
-
-// In most cases this should be non-null. This should only
-// be null in the case where the SignalRecipient was
-// deleted before this property was accessed.
-- (nullable SignalRecipient *)signalRecipientWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 

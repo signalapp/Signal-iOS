@@ -57,7 +57,6 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 }
 
 - (instancetype)initWithAttachmentProtos:(NSArray<OWSSignalServiceProtosAttachmentPointer *> *)attachmentProtos
-                                   relay:(nullable NSString *)relay
                           networkManager:(TSNetworkManager *)networkManager
                              transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -72,7 +71,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
     for (OWSSignalServiceProtosAttachmentPointer *attachmentProto in attachmentProtos) {
-        TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto relay:relay];
+        TSAttachmentPointer *pointer = [TSAttachmentPointer attachmentPointerFromProto:attachmentProto];
 
         [attachmentIds addObject:pointer.uniqueId];
         [pointer saveWithTransaction:transaction];
@@ -152,8 +151,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     if (attachment.serverId < 100) {
         DDLogError(@"%@ Suspicious attachment id: %llu", self.logTag, (unsigned long long)attachment.serverId);
     }
-    TSRequest *request =
-        [OWSRequestFactory attachmentRequestWithAttachmentId:attachment.serverId relay:attachment.relay];
+    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachment.serverId];
 
     [self.networkManager makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseObject) {
