@@ -1413,13 +1413,12 @@ typedef enum : NSUInteger {
     UIColor *subtitleColor = [UIColor.ows_navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
-        [subtitleText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:@"\ue067  "
-                                           attributes:@{
-                                               NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
-                                               NSForegroundColorAttributeName : subtitleColor
-                                           }]];
+        [subtitleText appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:LocalizationNotNeeded(@"\ue067  ")
+                                                     attributes:@{
+                                                         NSFontAttributeName : [UIFont ows_elegantIconsFont:7.f],
+                                                         NSForegroundColorAttributeName : subtitleColor
+                                                     }]];
     }
 
     BOOL isVerified = YES;
@@ -1432,13 +1431,12 @@ typedef enum : NSUInteger {
     }
     if (isVerified) {
         // Show a "checkmark" icon before the navigation bar subtitle if this thread is verified.
-        [subtitleText
-            appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:@"\uf00c "
-                                           attributes:@{
-                                               NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
-                                               NSForegroundColorAttributeName : subtitleColor,
-                                           }]];
+        [subtitleText appendAttributedString:[[NSAttributedString alloc]
+                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
+                                                     attributes:@{
+                                                         NSFontAttributeName : [UIFont ows_fontAwesomeFont:10.f],
+                                                         NSForegroundColorAttributeName : subtitleColor,
+                                                     }]];
     }
 
     if (self.userLeftGroup) {
@@ -1862,20 +1860,24 @@ typedef enum : NSUInteger {
     [self presentViewController:actionSheetController animated:YES completion:nil];
 }
 
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId
+- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalIdParam
 {
-    if (signalId == nil) {
+    if (signalIdParam == nil) {
         if (self.thread.isGroupThread) {
             // Before 2.13 we didn't track the recipient id in the identity change error.
             DDLogWarn(@"%@ Ignoring tap on legacy nonblocking identity change since it has no signal id", self.logTag);
+            return;
+            
         } else {
             DDLogInfo(
                 @"%@ Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
                 self.logTag,
                 self.thread.contactIdentifier);
-            signalId = self.thread.contactIdentifier;
+            signalIdParam = self.thread.contactIdentifier;
         }
     }
+    
+    NSString *signalId = signalIdParam;
 
     [self showFingerprintWithRecipientId:signalId];
 }

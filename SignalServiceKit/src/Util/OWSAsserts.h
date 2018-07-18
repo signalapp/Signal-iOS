@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "AppContext.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 #ifndef OWSAssert
@@ -89,12 +91,10 @@ NS_ASSUME_NONNULL_BEGIN
 // 1. Use OWSSingletonAssertFlag() outside the class definition.
 // 2. Use OWSSingletonAssertInit() in each initializer.
 
-#ifndef SSK_BUILDING_FOR_TESTS
 #ifdef DEBUG
 
 #define ENFORCE_SINGLETONS
 
-#endif
 #endif
 
 #ifdef ENFORCE_SINGLETONS
@@ -104,8 +104,10 @@ NS_ASSUME_NONNULL_BEGIN
 #define OWSSingletonAssertInit()                                                                                       \
     @synchronized([self class])                                                                                        \
     {                                                                                                                  \
-        OWSAssert(!_isSingletonCreated);                                                                               \
-        _isSingletonCreated = YES;                                                                                     \
+        if (!CurrentAppContext().isRunningTests) {                                                                     \
+            OWSAssert(!_isSingletonCreated);                                                                           \
+            _isSingletonCreated = YES;                                                                                 \
+        }                                                                                                              \
     }
 
 #define OWSSingletonAssert() OWSSingletonAssertFlag() OWSSingletonAssertInit()
@@ -134,6 +136,19 @@ NS_ASSUME_NONNULL_BEGIN
         [DDLog flushLog];                                                                                              \
         OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
     }
+
+
+// Avoids Clang analyzer warning:
+//   Value stored to 'x' during it's initialization is never read
+#define SUPPRESS_DEADSTORE_WARNING(x)                                                                                  \
+    do {                                                                                                               \
+        (void)x;                                                                                                       \
+    } while (0)
+
+__attribute__((annotate("returns_localized_nsstring"))) static inline NSString *LocalizationNotNeeded(NSString *s)
+{
+    return s;
+}
 
 // This function is intended for use in Swift.
 void SwiftAssertIsOnMainThread(NSString *functionName);

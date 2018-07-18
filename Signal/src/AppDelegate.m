@@ -278,6 +278,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    SUPPRESS_DEADSTORE_WARNING(backgroundTask);
 
     if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
         DDLogInfo(@"%@ Legacy Database file size: %@",
@@ -925,7 +926,7 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     handleActionWithIdentifier:(NSString *)identifier
           forLocalNotification:(UILocalNotification *)notification
-  completionHandler:(void (^)(void))completionHandler
+             completionHandler:(void (^)())completionHandler
 {
     OWSAssertIsOnMainThread();
 
