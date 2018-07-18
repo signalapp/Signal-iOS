@@ -112,13 +112,14 @@ class ConversationSearcherTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        FullTextSearchFinder.syncRegisterDatabaseExtension(storage: OWSPrimaryStorage.shared())
+        FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
         TSContactThread.removeAllObjectsInCollection()
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
         originalEnvironment = TextSecureKitEnv.shared()
+        assert(originalEnvironment != nil)
 
         let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()

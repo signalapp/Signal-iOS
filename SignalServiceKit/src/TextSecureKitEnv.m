@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TextSecureKitEnv.h"
@@ -59,7 +59,7 @@ static TextSecureKitEnv *sharedTextSecureKitEnv;
 + (void)setSharedEnv:(TextSecureKitEnv *)env
 {
     OWSAssert(env);
-    OWSAssert(!sharedTextSecureKitEnv || !CurrentAppContext().isMainApp);
+    OWSAssert(!sharedTextSecureKitEnv || CurrentAppContext().isRunningTests);
 
     sharedTextSecureKitEnv = env;
 }
