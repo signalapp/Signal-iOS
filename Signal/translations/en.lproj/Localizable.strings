@@ -1322,11 +1322,11 @@
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
 
-/* No comment provided by engineer. */
+/* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "You can not pair any more devices.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently pair with your account. Please remove a device or try again to pair it later.";
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
@@ -2347,20 +2347,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "Load Earlier Messages";
-
-"send" = "Send";
-
-"new_message" = "New Message";
-
-"text_message_accessibility_label" = "%@: %@";
-
-"media_message_accessibility_label" = "%@: media message";
-
-"accessory_button_accessibility_label" = "Share media";
-
-"new_message_received_accessibility_announcement" = "New message received";
