@@ -13,6 +13,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 @interface OWSOperation ()
 
+@property (nullable) NSError *failingError;
 @property (atomic) OWSOperationState operationState;
 @property (nonatomic) OWSBackgroundTask *backgroundTask;
 

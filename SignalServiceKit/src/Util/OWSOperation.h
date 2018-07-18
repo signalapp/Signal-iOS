@@ -24,22 +24,26 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 // any of the errors were fatal. Fatal errors trump retryable errors.
 @interface OWSOperation : NSOperation
 
-@property (nullable) NSError *failingError;
+@property (readonly, nullable) NSError *failingError;
+
+// Defaults to 0, set to greater than 0 in init if you'd like the operation to be retryable.
 @property NSUInteger remainingRetries;
 
-#pragma mark - Subclass Overrides
-
-// Called one time only
-- (nullable NSError *)checkForPreconditionError;
+#pragma mark - Mandatory Subclass Overrides
 
 // Called every retry, this is where the bulk of the operation's work should go.
 - (void)run;
+
+#pragma mark - Optional Subclass Overrides
+
+// Called one time only
+- (nullable NSError *)checkForPreconditionError;
 
 // Called at most one time.
 - (void)didSucceed;
 
 // Called at most one time, once retry is no longer possible.
-- (void)didFailWithError:(NSError *)error;
+- (void)didFailWithError:(NSError *)error NS_SWIFT_NAME(didFail(error:));
 
 #pragma mark - Success/Error - Do Not Override
 
