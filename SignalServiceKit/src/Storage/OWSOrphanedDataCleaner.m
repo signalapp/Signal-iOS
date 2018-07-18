@@ -15,14 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef SSK_BUILDING_FOR_TESTS
-#define CleanupLogDebug NSLog
-#define CleanupLogInfo NSLog
-#else
-#define CleanupLogDebug DDLogDebug
-#define CleanupLogInfo DDLogInfo
-#endif
-
 @implementation OWSOrphanedDataCleaner
 
 + (void)auditAsync
@@ -83,20 +75,18 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ fileCount: %lu", self.logTag, (unsigned long)fileCount);
-    CleanupLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize);
-    CleanupLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
-    CleanupLogDebug(
-        @"%@ attachmentStreams with file paths: %lu", self.logTag, (unsigned long)attachmentFilePaths.count);
+    DDLogDebug(@"%@ fileCount: %lu", self.logTag, (unsigned long)fileCount);
+    DDLogDebug(@"%@ totalFileSize: %lld", self.logTag, totalFileSize);
+    DDLogDebug(@"%@ attachmentStreams: %d", self.logTag, attachmentStreamCount);
+    DDLogDebug(@"%@ attachmentStreams with file paths: %lu", self.logTag, (unsigned long)attachmentFilePaths.count);
 
     NSMutableSet<NSString *> *orphanDiskFilePaths = [diskFilePaths mutableCopy];
     [orphanDiskFilePaths minusSet:attachmentFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [attachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:diskFilePaths];
 
-    CleanupLogDebug(@"%@ orphan disk file paths: %lu", self.logTag, (unsigned long)orphanDiskFilePaths.count);
-    CleanupLogDebug(
-        @"%@ missing attachment file paths: %lu", self.logTag, (unsigned long)missingAttachmentFilePaths.count);
+    DDLogDebug(@"%@ orphan disk file paths: %lu", self.logTag, (unsigned long)orphanDiskFilePaths.count);
+    DDLogDebug(@"%@ missing attachment file paths: %lu", self.logTag, (unsigned long)missingAttachmentFilePaths.count);
 
     [self printPaths:orphanDiskFilePaths.allObjects label:@"orphan disk file paths"];
     [self printPaths:missingAttachmentFilePaths.allObjects label:@"missing attachment file paths"];
@@ -142,12 +132,12 @@ NS_ASSUME_NONNULL_BEGIN
                                               }];
     }];
 
-    CleanupLogDebug(@"%@ attachmentIds: %lu", self.logTag, (unsigned long)attachmentIds.count);
-    CleanupLogDebug(@"%@ messageAttachmentIds: %lu", self.logTag, (unsigned long)messageAttachmentIds.count);
-    CleanupLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %lu",
+    DDLogDebug(@"%@ attachmentIds: %lu", self.logTag, (unsigned long)attachmentIds.count);
+    DDLogDebug(@"%@ messageAttachmentIds: %lu", self.logTag, (unsigned long)messageAttachmentIds.count);
+    DDLogDebug(@"%@ quotedReplyThumbnailAttachmentIds: %lu",
         self.logTag,
         (unsigned long)quotedReplyThumbnailAttachmentIds.count);
-    CleanupLogDebug(
+    DDLogDebug(
         @"%@ contactShareAvatarAttachmentIds: %lu", self.logTag, (unsigned long)contactShareAvatarAttachmentIds.count);
 
     NSMutableSet<NSString *> *orphanAttachmentIds = [attachmentIds mutableCopy];
@@ -157,17 +147,14 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<NSString *> *missingAttachmentIds = [messageAttachmentIds mutableCopy];
     [missingAttachmentIds minusSet:attachmentIds];
 
-    CleanupLogDebug(@"%@ orphan attachmentIds: %lu", self.logTag, (unsigned long)orphanAttachmentIds.count);
-    CleanupLogDebug(@"%@ missing attachmentIds: %lu", self.logTag, (unsigned long)missingAttachmentIds.count);
-    CleanupLogDebug(@"%@ orphan interactions: %lu", self.logTag, (unsigned long)orphanInteractionIds.count);
+    DDLogDebug(@"%@ orphan attachmentIds: %lu", self.logTag, (unsigned long)orphanAttachmentIds.count);
+    DDLogDebug(@"%@ missing attachmentIds: %lu", self.logTag, (unsigned long)missingAttachmentIds.count);
+    DDLogDebug(@"%@ orphan interactions: %lu", self.logTag, (unsigned long)orphanInteractionIds.count);
 
     // We need to avoid cleaning up new attachments and files that are still in the process of
     // being created/written, so we don't clean up anything recent.
-#ifdef SSK_BUILDING_FOR_TESTS
-    const NSTimeInterval kMinimumOrphanAge = 0.f;
-#else
-    const NSTimeInterval kMinimumOrphanAge = 15 * kMinuteInterval;
-#endif
+
+    const NSTimeInterval kMinimumOrphanAge = CurrentAppContext().isRunningTests ? 0.f : 15 * kMinuteInterval;
 
     if (!shouldCleanup) {
         return;
@@ -181,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFail(@"%@ Could not load interaction: %@", self.logTag, interactionId);
                 continue;
             }
-            CleanupLogInfo(@"%@ Removing orphan message: %@", self.logTag, interaction.uniqueId);
+            DDLogInfo(@"%@ Removing orphan message: %@", self.logTag, interaction.uniqueId);
             [interaction removeWithTransaction:transaction];
         }
         for (NSString *attachmentId in orphanAttachmentIds) {
@@ -198,11 +185,12 @@ NS_ASSUME_NONNULL_BEGIN
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
             // Don't delete attachments which were created in the last N minutes.
             if (fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]) < kMinimumOrphanAge) {
-                CleanupLogInfo(@"%@ Skipping orphan attachment due to age: %f", self.logTag,
+                DDLogInfo(@"%@ Skipping orphan attachment due to age: %f",
+                    self.logTag,
                     fabs([attachmentStream.creationTimestamp timeIntervalSinceNow]));
                 continue;
             }
-            CleanupLogInfo(@"%@ Removing orphan attachmentStream from DB: %@", self.logTag, attachmentStream.uniqueId);
+            DDLogInfo(@"%@ Removing orphan attachmentStream from DB: %@", self.logTag, attachmentStream.uniqueId);
             [attachmentStream removeWithTransaction:transaction];
         }
     }];
@@ -216,12 +204,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
         // Don't delete files which were created in the last N minutes.
         if (fabs([attributes.fileModificationDate timeIntervalSinceNow]) < kMinimumOrphanAge) {
-            CleanupLogInfo(@"%@ Skipping orphan attachment file due to age: %f", self.logTag,
+            DDLogInfo(@"%@ Skipping orphan attachment file due to age: %f",
+                self.logTag,
                 fabs([attributes.fileModificationDate timeIntervalSinceNow]));
             continue;
         }
 
-        CleanupLogInfo(@"%@ Deleting orphan attachment file: %@", self.logTag, filePath);
+        DDLogInfo(@"%@ Deleting orphan attachment file: %@", self.logTag, filePath);
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
         if (error) {
             OWSFail(@"%@ Could not remove orphan file at: %@", self.logTag, filePath);
@@ -238,14 +227,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)printPaths:(NSArray<NSString *> *)paths label:(NSString *)label
 {
     for (NSString *path in [paths sortedArrayUsingSelector:@selector(compare:)]) {
-        CleanupLogDebug(@"%@ %@: %@", self.logTag, label, path);
+        DDLogDebug(@"%@ %@: %@", self.logTag, label, path);
     }
 }
 
 + (NSSet<NSString *> *)filePathsInAttachmentsFolder
 {
     NSString *attachmentsFolder = [TSAttachmentStream attachmentsFolder];
-    CleanupLogDebug(@"%@ attachmentsFolder: %@", self.logTag, attachmentsFolder);
+    DDLogDebug(@"%@ attachmentsFolder: %@", self.logTag, attachmentsFolder);
 
     return [self filePathsInDirectory:attachmentsFolder];
 }
