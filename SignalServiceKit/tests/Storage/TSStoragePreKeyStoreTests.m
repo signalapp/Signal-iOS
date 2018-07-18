@@ -1,12 +1,8 @@
 //
-//  TSStoragePreKeyStoreTests.m
-//  TextSecureKit
-//
-//  Created by Frederic Jacobs on 07/11/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSStorageManager+PreKeyStore.h"
+#import "OWSPrimaryStorage+PreKeyStore.h"
 #import <XCTest/XCTest.h>
 
 @interface TSStoragePreKeyStoreTests : XCTestCase
@@ -26,38 +22,38 @@
 }
 
 - (void)testGeneratingAndStoringPreKeys {
-    NSArray *generatedKeys = [[TSStorageManager sharedManager] generatePreKeyRecords];
-    
-    
+    NSArray *generatedKeys = [[OWSPrimaryStorage sharedManager] generatePreKeyRecords];
+
+
     XCTAssert([generatedKeys count] == 100, @"Not hundred keys generated");
-    
-    [[TSStorageManager sharedManager] storePreKeyRecords:generatedKeys];
-    
+
+    [[OWSPrimaryStorage sharedManager] storePreKeyRecords:generatedKeys];
+
     PreKeyRecord *lastPreKeyRecord  = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
-    
-    XCTAssert([[[TSStorageManager sharedManager] loadPreKey:lastPreKeyRecord.Id].keyPair.publicKey isEqualToData:lastPreKeyRecord.keyPair.publicKey]);
-    
-    XCTAssert([[[TSStorageManager sharedManager] loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey isEqualToData:firstPreKeyRecord.keyPair.publicKey]);
-    
+
+    XCTAssert([[[OWSPrimaryStorage sharedManager] loadPreKey:lastPreKeyRecord.Id].keyPair.publicKey
+        isEqualToData:lastPreKeyRecord.keyPair.publicKey]);
+
+    XCTAssert([[[OWSPrimaryStorage sharedManager] loadPreKey:firstPreKeyRecord.Id].keyPair.publicKey
+        isEqualToData:firstPreKeyRecord.keyPair.publicKey]);
 }
 
 
 - (void)testRemovingPreKeys {
-    NSArray *generatedKeys = [[TSStorageManager sharedManager] generatePreKeyRecords];
-    
+    NSArray *generatedKeys = [[OWSPrimaryStorage sharedManager] generatePreKeyRecords];
+
     XCTAssert([generatedKeys count] == 100, @"Not hundred keys generated");
-    
-    [[TSStorageManager sharedManager] storePreKeyRecords:generatedKeys];
-    
+
+    [[OWSPrimaryStorage sharedManager] storePreKeyRecords:generatedKeys];
+
     PreKeyRecord *lastPreKeyRecord  = [generatedKeys lastObject];
     PreKeyRecord *firstPreKeyRecord = [generatedKeys firstObject];
-    
-    [[TSStorageManager sharedManager] removePreKey:lastPreKeyRecord.Id];
-    
-    XCTAssertThrows([[TSStorageManager sharedManager] loadPreKey:lastPreKeyRecord.Id]);
-    XCTAssertNoThrow([[TSStorageManager sharedManager] loadPreKey:firstPreKeyRecord.Id]);
-    
+
+    [[OWSPrimaryStorage sharedManager] removePreKey:lastPreKeyRecord.Id];
+
+    XCTAssertThrows([[OWSPrimaryStorage sharedManager] loadPreKey:lastPreKeyRecord.Id]);
+    XCTAssertNoThrow([[OWSPrimaryStorage sharedManager] loadPreKey:firstPreKeyRecord.Id]);
 }
 
 @end

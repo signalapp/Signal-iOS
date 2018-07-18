@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
+#import "OWSPrimaryStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager.h"
 #import <XCTest/XCTest.h>
 
 @interface TSThreadTest : XCTestCase
@@ -21,7 +21,8 @@
     [super setUp];
 
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
+    [[OWSPrimaryStorage sharedManager] setupDatabaseWithSafeBlockingMigrations:^{
+    }];
 }
 
 - (void)tearDown

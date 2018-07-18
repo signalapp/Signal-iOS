@@ -1,8 +1,11 @@
-//  Created by Russ Shanahan on 11/25/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "Contact.h"
 #import <XCTest/XCTest.h>
+
+@import Contacts;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -85,17 +88,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<Contact *> *)contactArrayForNames:(NSArray<NSArray<NSString *>*>*)namePairs
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    ABRecordID fakeRecordId = 0;
-#pragma clang diagnostic pop
     NSMutableArray<Contact *>*contacts = [[NSMutableArray alloc] initWithCapacity:namePairs.count];
     for (NSArray<NSString *>*namePair in namePairs) {
-        Contact *c = [[Contact alloc] initWithContactWithFirstName:namePair[0]
-                                                       andLastName:namePair[1]
-                                           andUserTextPhoneNumbers:@[]
-                                                          andImage:nil
-                                                      andContactID:fakeRecordId++];
+
+        CNMutableContact *cnContact = [CNMutableContact new];
+        cnContact.givenName = namePair[0];
+        cnContact.familyName = namePair[1];
+
+        Contact *c = [[Contact alloc] initWithSystemContact:cnContact];
+
         [contacts addObject:c];
     }
     

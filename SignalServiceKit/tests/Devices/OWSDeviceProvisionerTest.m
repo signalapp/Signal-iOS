@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioner.h"
@@ -7,7 +7,6 @@
 #import "OWSDeviceProvisioningService.h"
 #import "OWSFakeNetworkManager.h"
 #import "TSNetworkManager.h"
-
 #import <XCTest/XCTest.h>
 
 @interface OWSFakeDeviceProvisioningService : OWSDeviceProvisioningService
@@ -69,6 +68,7 @@
     NSString *theirEphemeralDeviceId;
 
     OWSFakeNetworkManager *networkManager = [OWSFakeNetworkManager new];
+
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc]
             initWithMyPublicKey:myPublicKey
                    myPrivateKey:myPrivateKey
@@ -76,6 +76,7 @@
          theirEphemeralDeviceId:theirEphemeralDeviceId
               accountIdentifier:accountIdentifier
                      profileKey:profileKey
+            readReceiptsEnabled:YES
         provisioningCodeService:[[OWSFakeDeviceProvisioningCodeService alloc] initWithNetworkManager:networkManager]
             provisioningService:[[OWSFakeDeviceProvisioningService alloc] initWithNetworkManager:networkManager]];
 

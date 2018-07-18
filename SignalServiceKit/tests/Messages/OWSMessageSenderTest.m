@@ -1,23 +1,22 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageSender.h"
 #import "Cryptography.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeContactsManager.h"
 #import "OWSFakeContactsUpdater.h"
 #import "OWSFakeNetworkManager.h"
-#import "OWSMessageSender.h"
-#import "OWSUploadingService.h"
+#import "OWSPrimaryStorage.h"
+#import "OWSUploadOperation.h"
 #import "TSAccountManager.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import "TSMessagesManager.h"
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
-#import "TSStorageManager.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/SessionBuilder.h>
 #import <XCTest/XCTest.h>
@@ -26,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageSender (Testing)
 
-@property (nonatomic) OWSUploadingService *uploadingService;
+@property (nonatomic) OWSUploadingOperation *uploadingService;
 @property (nonatomic) ContactsUpdater *contactsUpdater;
 
 // Private Methods to test
@@ -66,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface OWSFakeUploadingService : OWSUploadingService
+@interface OWSFakeUploadingService : OWSUploadingOperation
 
 @property (nonatomic, readonly) BOOL shouldSucceed;
 
@@ -88,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
-                       success:(void (^)())successHandler
+                       success:(void (^)(void))successHandler
                        failure:(void (^)(NSError *error))failureHandler
 {
     if (self.shouldSucceed) {
@@ -217,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        expiresInSeconds:30];
     [self.expiringMessage save];
 
-    TSStorageManager *storageManager = [TSStorageManager sharedManager];
+    OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
     OWSFakeContactsUpdater *contactsUpdater = [OWSFakeContactsUpdater new];
 
