@@ -11,7 +11,7 @@ def shared_pods
   pod 'YapDatabase/SQLCipher', :git => 'https://github.com/signalapp/YapDatabase.git', branch: 'signal-release'
   pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git'
   # pod 'AxolotlKit', path: '../SignalProtocolKit'
-  pod 'SignalServiceKit', path: '.'
+  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
   pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git'
   # pod 'HKDFKit', path: '../HKDFKit'
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit'
