@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)availablePreKeysCountRequest;
 
-+ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray *)hashes;
++ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes;
 
 + (TSRequest *)currentSignedPreKeyRequest;
 

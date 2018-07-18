@@ -132,21 +132,9 @@ void AssertIsOnSendingQueue()
 
 - (nullable NSError *)checkForPreconditionError
 {
-    for (NSOperation *dependency in self.dependencies) {
-        if (![dependency isKindOfClass:[OWSOperation class]]) {
-            NSString *errorDescription =
-                [NSString stringWithFormat:@"%@ unknown dependency: %@", self.logTag, dependency.class];
-            NSError *assertionError = OWSErrorMakeAssertionError(errorDescription);
-            return assertionError;
-        }
-
-        OWSOperation *upload = (OWSOperation *)dependency;
-
-        // Cannot proceed if dependency failed - surface the dependency's error.
-        NSError *_Nullable dependencyError = upload.failingError;
-        if (dependencyError) {
-            return dependencyError;
-        }
+    NSError *_Nullable error = [super checkForPreconditionError];
+    if (error) {
+        return error;
     }
 
     // Sanity check preconditions

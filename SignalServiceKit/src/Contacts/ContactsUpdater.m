@@ -9,9 +9,17 @@
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
 #import "TSNetworkManager.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface ContactsUpdater ()
+
+@property (nonatomic, readonly) NSOperationQueue *contactIntersectionQueue;
+
+@end
+
 
 @implementation ContactsUpdater
 
@@ -31,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    _contactIntersectionQueue = [NSOperationQueue new];
 
     OWSSingletonAssert();
 
@@ -88,75 +98,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)contactIntersectionWithSet:(NSSet<NSString *> *)recipientIdsToLookup
                            success:(void (^)(NSSet<SignalRecipient *> *recipients))success
-                           failure:(void (^)(NSError *error))failure {
+                           failure:(void (^)(NSError *error))failure
+{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-      NSMutableDictionary<NSString *, NSString *> *phoneNumbersByHashes = [NSMutableDictionary new];
-      for (NSString *recipientId in recipientIdsToLookup) {
-          NSString *hash = [Cryptography truncatedSHA1Base64EncodedWithoutPadding:recipientId];
-           phoneNumbersByHashes[hash] = recipientId;
-      }
-      NSArray<NSString *> *hashes = [phoneNumbersByHashes allKeys];
-        
-      TSRequest *request = [OWSRequestFactory contactsIntersectionRequestWithHashesArray:hashes];
-      [[TSNetworkManager sharedManager] makeRequest:request
-          success:^(NSURLSessionDataTask *task, id responseDict) {
-              NSMutableSet<NSString *> *registeredRecipientIds = [NSMutableSet new];
-              
-              if ([responseDict isKindOfClass:[NSDictionary class]]) {
-                  NSArray<NSDictionary *> *_Nullable contactsArray = responseDict[@"contacts"];
-                  if ([contactsArray isKindOfClass:[NSArray class]]) {
-                      for (NSDictionary *contactDict in contactsArray) {
-                          if (![contactDict isKindOfClass:[NSDictionary class]]) {
-                              OWSProdLogAndFail(@"%@ invalid contact dictionary.", self.logTag);
-                              continue;
-                          }
-                          NSString *_Nullable hash = contactDict[@"token"];
-                          if (hash.length < 1) {
-                              OWSProdLogAndFail(@"%@ contact missing hash.", self.logTag);
-                              continue;
-                          }
-                          NSString *_Nullable recipientId = phoneNumbersByHashes[hash];
-                          if (recipientId.length < 1) {
-                              OWSProdLogAndFail(@"%@ An intersecting hash wasn't found in the mapping.", self.logTag);
-                              continue;
-                          }
-                          if (![recipientIdsToLookup containsObject:recipientId]) {
-                              OWSProdLogAndFail(@"%@ Intersection response included unexpected recipient.", self.logTag);
-                              continue;
-                          }
-                          [registeredRecipientIds addObject:recipientId];
-                      }
-                  }
-              }
-              
-              NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
-              [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                  for (NSString *recipientId in recipientIdsToLookup) {
-                      if ([registeredRecipientIds containsObject:recipientId]) {
-                          SignalRecipient *recipient =
-                              [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
-                          [recipients addObject:recipient];
-                      } else {
-                          [SignalRecipient removeUnregisteredRecipient:recipientId transaction:transaction];
-                      }
-                  }
-              }];
+        OWSContactDiscoveryOperation *operation =
+            [[OWSContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
 
-              success([recipients copy]);
-          }
-          failure:^(NSURLSessionDataTask *task, NSError *error) {
-              if (!IsNSErrorNetworkFailure(error)) {
-                  OWSProdError([OWSAnalyticsEvents contactsErrorContactsIntersectionFailed]);
-              }
+        NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
+        [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
 
-              NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-              if (response.statusCode == 413) {
-                  failure(OWSErrorWithCodeDescription(
-                      OWSErrorCodeContactsUpdaterRateLimit, @"Contacts Intersection Rate Limit"));
-              } else {
-                  failure(error);
-              }
-          }];
+        if (operation.failingError != nil) {
+            failure(operation.failingError);
+            return;
+        }
+
+        NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
+
+        NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (NSString *recipientId in recipientIdsToLookup) {
+                if ([registeredRecipientIds containsObject:recipientId]) {
+                    SignalRecipient *recipient =
+                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+                    [recipients addObject:recipient];
+                } else {
+                    [SignalRecipient removeUnregisteredRecipient:recipientId transaction:transaction];
+                }
+            }
+        }];
+
+        success([recipients copy]);
     });
 }
 

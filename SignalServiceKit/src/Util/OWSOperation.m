@@ -5,6 +5,7 @@
 #import "OWSOperation.h"
 #import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
+#import "OWSError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,8 +48,23 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Called one time only
 - (nullable NSError *)checkForPreconditionError
 {
-    // no-op
-    // Override in subclass if necessary
+    for (NSOperation *dependency in self.dependencies) {
+        if (![dependency isKindOfClass:[OWSOperation class]]) {
+            NSString *errorDescription =
+                [NSString stringWithFormat:@"%@ unknown dependency: %@", self.logTag, dependency.class];
+
+            return OWSErrorMakeAssertionError(errorDescription);
+        }
+
+        OWSOperation *dependentOperation = (OWSOperation *)dependency;
+
+        // Don't proceed if dependency failed - surface the dependency's error.
+        NSError *_Nullable dependencyError = dependentOperation.failingError;
+        if (dependencyError != nil) {
+            return dependencyError;
+        }
+    }
+
     return nil;
 }
 

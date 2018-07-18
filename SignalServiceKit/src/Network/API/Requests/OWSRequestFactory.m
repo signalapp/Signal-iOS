@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray *)hashes
++ (TSRequest *)contactsIntersectionRequestWithHashesArray:(NSArray<NSString *> *)hashes
 {
     OWSAssert(hashes.count > 0);
 
