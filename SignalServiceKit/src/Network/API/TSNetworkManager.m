@@ -205,9 +205,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               DDLogInfo(@"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
-                                       description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", nil)
+                                       description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", @"alert title: cannot link - reached max linked devices")
                                      failureReason:networkError.localizedFailureReason
-                                recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY", nil)
+                                recoverySuggestion:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_RECOVERY", @"alert body: cannot link - reached max linked devices")
                                      fallbackError:networkError]);
               break;
           }
