@@ -30,7 +30,7 @@ static inline CGFloat CGFloatInverseLerp(CGFloat value, CGFloat minValue, CGFloa
 // Ceil to an even number
 static inline CGFloat CeilEven(CGFloat value)
 {
-    return 2.f * ceil(value * 0.5f);
+    return 2.f * (CGFloat)ceil(value * 0.5f);
 }
 
 void SetRandFunctionSeed(void);

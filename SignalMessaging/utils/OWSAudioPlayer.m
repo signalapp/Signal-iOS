@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
+    [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime] duration:(CGFloat)[self.audioPlayer duration]];
 
     [OWSAudioSession.shared endAudioActivity:self.audioActivity];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.audioPlayer);
     OWSAssert(self.audioPlayerPoller);
 
-    [self.delegate setAudioProgress:[self.audioPlayer currentTime] duration:[self.audioPlayer duration]];
+    [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime] duration:(CGFloat)[self.audioPlayer duration]];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag

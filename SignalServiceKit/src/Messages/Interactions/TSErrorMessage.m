@@ -48,14 +48,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
-{
-    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
-}
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
+                         inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
                       recipientId:(nullable NSString *)recipientId
 {
@@ -81,6 +74,13 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     }
 
     return self;
+}
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(nullable TSThread *)thread
+                failedMessageType:(TSErrorMessageType)errorMessageType
+{
+    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
 }
 
 - (instancetype)initWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope

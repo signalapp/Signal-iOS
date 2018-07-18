@@ -4,13 +4,19 @@
 
 #import "ConversationViewItem.h"
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 @interface ConversationViewItemTest : XCTestCase
+
+@property TSThread *thread;
+@property ConversationStyle *conversationStyle;
 
 @end
 
@@ -19,6 +25,8 @@
 - (void)setUp
 {
     [super setUp];
+    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"+15555555"];
+    self.conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
 }
 
 - (void)tearDown
@@ -26,8 +34,6 @@
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
-
-// Test canPerformAction
 
 - (NSString *)fakeTextMessageText
 {
@@ -37,11 +43,14 @@
 - (ConversationViewItem *)textViewItem
 {
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:nil messageBody:self.fakeTextMessageText attachmentId:nil];
+        [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:self.fakeTextMessageText attachmentId:nil];
     [message save];
     __block ConversationViewItem *viewItem = nil;
     [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO transaction:transaction];
+        viewItem = [[ConversationViewItem alloc] initWithInteraction:message
+                                                       isGroupThread:NO
+                                                         transaction:transaction
+                                                   conversationStyle:self.conversationStyle];
     }];
     return viewItem;
 }
@@ -63,12 +72,15 @@
     OWSAssert(success);
     [attachment save];
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:nil messageBody:nil attachmentId:attachment.uniqueId];
+        [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];
     [message save];
 
     __block ConversationViewItem *viewItem = nil;
     [TSYapDatabaseObject.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        viewItem = [[ConversationViewItem alloc] initWithInteraction:message isGroupThread:NO transaction:transaction];
+        viewItem = [[ConversationViewItem alloc] initWithInteraction:message
+                                                       isGroupThread:NO
+                                                         transaction:transaction
+                                                   conversationStyle:self.conversationStyle];
     }];
 
     return viewItem;

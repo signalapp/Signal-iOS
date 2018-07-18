@@ -257,9 +257,9 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogInfo(@"%@ Missing message for delivery receipt: %llu", self.logTag, timestamp);
         } else {
             if (messages.count > 1) {
-                DDLogInfo(@"%@ More than one message (%zd) for delivery receipt: %llu",
+                DDLogInfo(@"%@ More than one message (%lu) for delivery receipt: %llu",
                     self.logTag,
-                    messages.count,
+                    (unsigned long)messages.count,
                     timestamp);
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {

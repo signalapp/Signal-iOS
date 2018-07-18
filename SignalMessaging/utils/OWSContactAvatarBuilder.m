@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
         [initials appendString:@"#"];
     }
 
-    CGFloat fontSize = (CGFloat)self.diameter / 2.8;
+    CGFloat fontSize = (CGFloat)self.diameter / 2.8f;
     
     UIImage *image = [[JSQMessagesAvatarImageFactory avatarImageWithUserInitials:initials
                                                                  backgroundColor:self.color

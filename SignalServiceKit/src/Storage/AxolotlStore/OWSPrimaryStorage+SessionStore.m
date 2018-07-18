@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSFileSystem.h"
 #import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSFileSystem.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
@@ -66,6 +66,8 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
     return record;
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray *)subDevicesSessions:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
     OWSAssert(contactIdentifier.length > 0);
@@ -82,6 +84,7 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
     return dictionary ? dictionary.allKeys : @[];
 }
+#pragma clang diagnostic pop
 
 - (void)storeSession:(NSString *)contactIdentifier
             deviceId:(int)deviceId

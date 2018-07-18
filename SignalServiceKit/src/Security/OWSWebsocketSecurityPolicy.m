@@ -1,9 +1,10 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSWebsocketSecurityPolicy.h"
-
-#import <SocketRocket/SRSecurityPolicy.h>
 #import "OWSHTTPSecurityPolicy.h"
+#import <SocketRocket/SRSecurityPolicy.h>
 
 @implementation OWSWebsocketSecurityPolicy
 
@@ -11,7 +12,11 @@
     static OWSWebsocketSecurityPolicy *websocketSecurityPolicy = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        // We use our own CA
         websocketSecurityPolicy = [[self alloc] initWithCertificateChainValidationEnabled:NO];
+#pragma clang diagnostic pop
     });
     return websocketSecurityPolicy;
 }

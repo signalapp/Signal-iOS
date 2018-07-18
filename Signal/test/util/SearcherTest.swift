@@ -43,6 +43,7 @@ class StubbableEnvironment: TextSecureKitEnv {
 
 @objc
 class FakeContactsManager: NSObject, ContactsManagerProtocol {
+
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
         if phoneNumber == aliceRecipientId {
             return "Alice"
@@ -69,6 +70,18 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
         owsFail("if this method ends up being used by the tests, we should provide a better implementation.")
 
         return .orderedAscending
+    }
+
+    func cnContact(withId contactId: String?) -> CNContact? {
+        return nil
+    }
+
+    func avatarData(forCNContactId contactId: String?) -> Data? {
+        return nil
+    }
+
+    func avatarImage(forCNContactId contactId: String?) -> UIImage? {
+        return nil
     }
 }
 
@@ -99,13 +112,14 @@ class ConversationSearcherTest: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        FullTextSearchFinder.syncRegisterDatabaseExtension(storage: OWSPrimaryStorage.shared())
+        FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
         TSContactThread.removeAllObjectsInCollection()
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
         originalEnvironment = TextSecureKitEnv.shared()
+        assert(originalEnvironment != nil)
 
         let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
         testEnvironment.stubbedContactsManager = FakeContactsManager()

@@ -264,7 +264,11 @@ public class FullTextSearchFinder: NSObject {
     }
 
     // Only for testing.
-    public class func syncRegisterDatabaseExtension(storage: OWSStorage) {
+    public class func ensureDatabaseExtensionRegistered(storage: OWSStorage) {
+        guard storage.registeredExtension(dbExtensionName) == nil else {
+            return
+        }
+
         storage.register(dbExtensionConfig, withName: dbExtensionName)
     }
 

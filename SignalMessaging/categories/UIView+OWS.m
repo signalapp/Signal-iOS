@@ -19,7 +19,7 @@ static const CGFloat kIPhone7PlusScreenWidth = 414.f;
 CGFloat ScaleFromIPhone5To7Plus(CGFloat iPhone5Value, CGFloat iPhone7PlusValue)
 {
     CGFloat screenShortDimension = ScreenShortDimension();
-    return round(CGFloatLerp(iPhone5Value,
+    return (CGFloat)round(CGFloatLerp(iPhone5Value,
         iPhone7PlusValue,
         CGFloatInverseLerp(screenShortDimension, kIPhone5ScreenWidth, kIPhone7PlusScreenWidth)));
 }
@@ -27,7 +27,7 @@ CGFloat ScaleFromIPhone5To7Plus(CGFloat iPhone5Value, CGFloat iPhone7PlusValue)
 CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     CGFloat screenShortDimension = ScreenShortDimension();
-    return round(iPhone5Value * screenShortDimension / kIPhone5ScreenWidth);
+    return (CGFloat)round(iPhone5Value * screenShortDimension / kIPhone5ScreenWidth);
 }
 
 #pragma mark -
@@ -135,7 +135,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio
 {
     // Clamp to ensure view has reasonable aspect ratio.
-    CGFloat clampedRatio = CGFloatClamp(ratio, 0.05, 95.0);
+    CGFloat clampedRatio = CGFloatClamp(ratio, 0.05f, 95.0f);
     if (clampedRatio != ratio) {
         OWSFail(@"Invalid aspect ratio: %f for view: %@", ratio, self);
     }
@@ -254,10 +254,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 {
     OWSAssert(self.superview);
 
-    self.frame = CGRectMake(round((self.superview.width - self.width) * 0.5f),
-        round((self.superview.height - self.height) * 0.5f),
-        self.width,
-        self.height);
+    CGFloat x = (CGFloat)round((self.superview.width - self.width) * 0.5f);
+    CGFloat y = (CGFloat)round((self.superview.height - self.height) * 0.5f);
+    self.frame = CGRectMake(x, y, self.width, self.height);
 }
 
 #pragma mark - RTL

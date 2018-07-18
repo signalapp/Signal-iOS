@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMath.h"
 #import "UIColor+OWS.h"
+#import "OWSMath.h"
 #import "UIUtil.h"
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
@@ -42,7 +42,7 @@ NSString *const UIColorKeyThemeEnabled = @"UIColorKeyThemeEnabled";
 
 + (UIColor *)ows_signalBrandBlueColor
 {
-    return [UIColor colorWithRed:0.1135657504 green:0.4787300229 blue:0.89595204589999999 alpha:1.];
+    return [UIColor colorWithRed:0.1135657504f green:0.4787300229f blue:0.89595204589999999f alpha:1.];
 }
 
 + (UIColor *)ows_materialBlueColor
