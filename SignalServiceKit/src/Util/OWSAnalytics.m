@@ -266,10 +266,10 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         NSOperatingSystemVersion operatingSystemVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-        result = [NSString stringWithFormat:@"%zd.%zd.%zd",
-                           (NSUInteger)operatingSystemVersion.majorVersion,
-                           (NSUInteger)operatingSystemVersion.minorVersion,
-                           (NSUInteger)operatingSystemVersion.patchVersion];
+        result = [NSString stringWithFormat:@"%lu.%lu.%lu",
+                           (unsigned long)operatingSystemVersion.majorVersion,
+                           (unsigned long)operatingSystemVersion.minorVersion,
+                           (unsigned long)operatingSystemVersion.patchVersion];
     });
     return result;
 }

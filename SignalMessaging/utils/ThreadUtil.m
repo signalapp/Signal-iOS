@@ -731,7 +731,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't load uniqueIds for collection: %@.", self.logTag, collection);
         return;
     }
-    DDLogInfo(@"%@ Deleting %zd objects from: %@", self.logTag, uniqueIds.count, collection);
+    DDLogInfo(@"%@ Deleting %lu objects from: %@", self.logTag, (unsigned long)uniqueIds.count, collection);
     NSUInteger count = 0;
     for (NSString *uniqueId in uniqueIds) {
         // We need to fetch each object, since [TSYapDatabaseObject removeWithTransaction:] sometimes does important
@@ -744,7 +744,7 @@ NS_ASSUME_NONNULL_BEGIN
         [object removeWithTransaction:transaction];
         count++;
     };
-    DDLogInfo(@"%@ Deleted %zd/%zd objects from: %@", self.logTag, count, uniqueIds.count, collection);
+    DDLogInfo(@"%@ Deleted %lu/%lu objects from: %@", self.logTag, (unsigned long)count, (unsigned long)uniqueIds.count, collection);
 }
 
 #pragma mark - Find Content

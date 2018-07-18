@@ -53,7 +53,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 
     const CGSize screenSize = UIScreen.mainScreen.bounds.size;
     const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
-    const CGFloat imageSize = round(shortScreenDimension / 3.f);
+    const CGFloat imageSize = (CGFloat)round(shortScreenDimension / 3.f);
     [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
     [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
 

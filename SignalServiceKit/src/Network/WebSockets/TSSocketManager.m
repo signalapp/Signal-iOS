@@ -584,8 +584,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     if (message.hasBody) {
         responseData = message.body;
     }
-    NSArray<NSString *> *_Nullable responseHeaders = message.headers;
-
+    
     BOOL hasValidResponse = YES;
     id responseObject = responseData;
     if (responseData) {

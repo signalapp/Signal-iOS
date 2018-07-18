@@ -202,7 +202,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           case 411: {
-              DDLogInfo(@"Multi-device pairing: %zd, %@, %@", statusCode, networkError.debugDescription, request);
+              DDLogInfo(@"Multi-device pairing: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
               failureBlock(task,
                            [self errorWithHTTPCode:statusCode
                                        description:NSLocalizedString(@"MULTIDEVICE_PAIRING_MAX_DESC", nil)
@@ -239,7 +239,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               break;
           }
           default: {
-              DDLogWarn(@"Unknown error: %zd, %@, %@", statusCode, networkError.debugDescription, request);
+              DDLogWarn(@"Unknown error: %ld, %@, %@", (long)statusCode, networkError.debugDescription, request);
               failureBlock(task, error);
               break;
           }

@@ -98,12 +98,12 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)reportError:(NSError *)error
 {
-    DDLogDebug(@"%@ reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %zd",
+    DDLogDebug(@"%@ reportError: %@, fatal?: %d, retryable?: %d, remainingRetries: %lu",
         self.logTag,
         error,
         error.isFatal,
         error.isRetryable,
-        self.remainingRetries);
+        (unsigned long)self.remainingRetries);
 
     if (error.isFatal) {
         [self failOperationWithError:error];

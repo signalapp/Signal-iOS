@@ -138,8 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *attachmentID = [userinfo objectForKey:kAttachmentUploadAttachmentIDKey];
     if ([self.attachment.uniqueId isEqual:attachmentID]) {
         if (!isnan(progress)) {
-            [self.progressView setProgress:progress];
-            self.lastProgress = progress;
+            [self.progressView setProgress:(CGFloat)progress];
+            self.lastProgress = (CGFloat)progress;
             self.isAttachmentReady = self.attachment.isUploaded;
         } else {
             OWSFail(@"%@ Invalid attachment progress.", self.logTag);

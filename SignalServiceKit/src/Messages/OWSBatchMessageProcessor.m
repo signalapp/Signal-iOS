@@ -356,11 +356,11 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
     backgroundTask = nil;
 
-    DDLogVerbose(@"%@ completed %lu/%lu jobs. %zd jobs left.",
+    DDLogVerbose(@"%@ completed %lu/%lu jobs. %lu jobs left.",
         self.logTag,
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,
-        [OWSMessageContentJob numberOfKeysInCollection]);
+        (unsigned long)[OWSMessageContentJob numberOfKeysInCollection]);
 
     // Wait a bit in hopes of increasing the batch size.
     // This delay won't affect the first message to arrive when this queue is idle,

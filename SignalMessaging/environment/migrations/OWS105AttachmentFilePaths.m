@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS105AttachmentFilePaths.h"
@@ -32,7 +32,7 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
                                               [attachmentStreams addObject:attachmentStream];
                                           }];
 
-    DDLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
+    DDLogInfo(@"Saving %lu attachment streams.", (unsigned long)attachmentStreams.count);
 
     // Persist the new localRelativeFilePath property of TSAttachmentStream.
     // For performance, we want to upgrade all existing attachment streams in

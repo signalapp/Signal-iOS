@@ -531,14 +531,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)logProfileWhitelist
 {
     [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        DDLogError(@"kOWSProfileManager_UserWhitelistCollection: %zd",
-            [transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+        DDLogError(@"kOWSProfileManager_UserWhitelistCollection: %lu",
+                   (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
         [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
                                     usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
                                         DDLogError(@"\t profile whitelist user: %@", key);
                                     }];
-        DDLogError(@"kOWSProfileManager_GroupWhitelistCollection: %zd",
-            [transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
+        DDLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
+                   (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
         [transaction enumerateKeysInCollection:kOWSProfileManager_GroupWhitelistCollection
                                     usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
                                         DDLogError(@"\t profile whitelist group: %@", key);

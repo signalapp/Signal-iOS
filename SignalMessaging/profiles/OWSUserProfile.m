@@ -330,11 +330,11 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {
-    return [NSString stringWithFormat:@"%@ %p %@ %zd %@ %@ %@",
+    return [NSString stringWithFormat:@"%@ %p %@ %lu %@ %@ %@",
                      self.logTag,
                      self,
                      self.recipientId,
-                     self.profileKey.keyData.length,
+                     (unsigned long)self.profileKey.keyData.length,
                      self.profileName,
                      self.avatarUrlPath,
                      self.avatarFileName];

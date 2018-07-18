@@ -67,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor =
-        [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08];
+        [(UIColor.isThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08f];
 
     self.selectedBackgroundView = selectedBackgroundView;
 
