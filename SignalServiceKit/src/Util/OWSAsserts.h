@@ -137,6 +137,19 @@ NS_ASSUME_NONNULL_BEGIN
         OWSCFail(_messageFormat, ##__VA_ARGS__);                                                                       \
     }
 
+
+// Avoids Clang analyzer warning:
+//   Value stored to 'x' during it's initialization is never read
+#define SUPPRESS_DEADSTORE_WARNING(x)                                                                                  \
+    do {                                                                                                               \
+        (void)x;                                                                                                       \
+    } while (0)
+
+__attribute__((annotate("returns_localized_nsstring"))) static inline NSString *LocalizationNotNeeded(NSString *s)
+{
+    return s;
+}
+
 // This function is intended for use in Swift.
 void SwiftAssertIsOnMainThread(NSString *functionName);
 

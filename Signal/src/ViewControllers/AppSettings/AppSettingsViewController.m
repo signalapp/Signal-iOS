@@ -204,6 +204,7 @@
     // TODO: Always show backup when we go to production.
     BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
     BOOL showBackup = isBackupEnabled;
+    SUPPRESS_DEADSTORE_WARNING(showBackup);
 #ifdef DEBUG
     showBackup = YES;
 #endif
