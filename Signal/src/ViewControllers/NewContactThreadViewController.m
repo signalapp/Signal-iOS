@@ -907,7 +907,7 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (NSString *)callingCodeForPossiblePhoneNumber:(NSString *)phoneNumber
+- (nullable NSString *)callingCodeForPossiblePhoneNumber:(NSString *)phoneNumber
 {
     OWSAssert([phoneNumber hasPrefix:@"+"]);
 
@@ -924,7 +924,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *searchText = self.searchBar.text;
 
     if (searchText.length < 8) {
-        return nil;
+        return @[];
     }
 
     NSMutableSet<NSString *> *parsedPhoneNumbers = [NSMutableSet new];
@@ -935,7 +935,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *phoneNumberString = phoneNumber.toE164;
 
         // Ignore phone numbers with an unrecognized calling code.
-        NSString *callingCode = [self callingCodeForPossiblePhoneNumber:phoneNumberString];
+        NSString *_Nullable callingCode = [self callingCodeForPossiblePhoneNumber:phoneNumberString];
         if (!callingCode) {
             continue;
         }
