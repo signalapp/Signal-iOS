@@ -83,15 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
 
-    return [self recipientForRecipientId:recipientId transaction:transaction];
-}
-
-+ (nullable instancetype)recipientForRecipientId:(NSString *)recipientId
-                                     transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssert(transaction);
-    OWSAssert(recipientId.length > 0);
-
     return [self fetchObjectWithUniqueID:recipientId transaction:transaction];
 }
 
@@ -101,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block SignalRecipient *recipient;
     [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        recipient = [self recipientForRecipientId:recipientId transaction:transaction];
+        recipient = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
     }];
     return recipient;
 }
@@ -189,6 +180,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    // We only want to mutate the persisted SignalRecipients in the database
+    // using other methods of this class, e.g. markRecipientAsRegistered...
+    // to create, addDevices and removeDevices to mutate.  We're trying to
+    // be strict about using persisted SignalRecipients as a cache to
+    // reflect "last known registration status".  Forcing our codebase to
+    // use those methods helps ensure that we update the cache deliberately.
     OWSProdLogAndFail(@"%@ Don't call saveWithTransaction from outside this class.", self.logTag);
 
     [self saveWithTransaction_internal:transaction];
@@ -203,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
 {
-    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
     return instance != nil;
 }
 
@@ -213,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
 
-    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
 
     if (!instance) {
         DDLogDebug(@"%@ creating recipient: %@", self.logTag, recipientId);
@@ -248,7 +245,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(transaction);
     OWSAssert(recipientId.length > 0);
 
-    SignalRecipient *_Nullable instance = [self recipientForRecipientId:recipientId transaction:transaction];
+    SignalRecipient *_Nullable instance = [self registeredRecipientForRecipientId:recipientId transaction:transaction];
     if (!instance) {
         return;
     }
