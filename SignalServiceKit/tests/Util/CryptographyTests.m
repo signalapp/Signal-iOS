@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
 #import "Cryptography.h"
 #import "NSData+Base64.h"
+#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,9 +57,42 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *cipherText =
         [Cryptography encryptAttachmentData:plainTextData outKey:&generatedKey outDigest:&generatedDigest];
 
-    NSData *decryptedData = [Cryptography decryptAttachment:cipherText withKey:generatedKey digest:generatedDigest];
+
+    NSError *error;
+    NSData *decryptedData = [Cryptography decryptAttachment:cipherText
+                                                    withKey:generatedKey
+                                                     digest:generatedDigest
+                                               unpaddedSize:(UInt32)cipherText.length
+                                                      error:&error];
+    XCTAssertNil(error);
 
     XCTAssertEqualObjects(plainTextData, decryptedData);
+}
+
+- (void)testEncryptAttachmentDataWithBadUnpaddedSize
+{
+
+    NSString *plainText = @"SGF3YWlpIGlzIEF3ZXNvbWUh";
+    NSData *plainTextData = [NSData dataFromBase64String:plainText];
+
+    // Sanity
+    XCTAssertNotNil(plainTextData);
+
+    NSData *generatedKey;
+    NSData *generatedDigest;
+
+    NSData *cipherText =
+        [Cryptography encryptAttachmentData:plainTextData outKey:&generatedKey outDigest:&generatedDigest];
+
+
+    NSError *error;
+    NSData *decryptedData = [Cryptography decryptAttachment:cipherText
+                                                    withKey:generatedKey
+                                                     digest:generatedDigest
+                                               unpaddedSize:(UInt32)cipherText.length + 1
+                                                      error:&error];
+    XCTAssertNotNil(error);
+    XCTAssertNil(decryptedData);
 }
 
 - (void)testDecryptAttachmentWithBadKey
@@ -78,7 +111,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *badKey = [Cryptography generateRandomBytes:64];
 
-    NSData *decryptedData = [Cryptography decryptAttachment:cipherText withKey:badKey digest:generatedDigest];
+    NSError *error;
+    NSData *decryptedData = [Cryptography decryptAttachment:cipherText
+                                                    withKey:badKey
+                                                     digest:generatedDigest
+                                               unpaddedSize:(UInt32)cipherText.length + 1
+                                                      error:&error];
 
     XCTAssertNil(decryptedData);
 }
@@ -99,7 +137,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *badDigest = [Cryptography generateRandomBytes:32];
 
-    NSData *decryptedData = [Cryptography decryptAttachment:cipherText withKey:generatedKey digest:badDigest];
+    NSError *error;
+    NSData *decryptedData = [Cryptography decryptAttachment:cipherText
+                                                    withKey:generatedKey
+                                                     digest:badDigest
+                                               unpaddedSize:(UInt32)cipherText.length + 1
+                                                      error:&error];
 
     XCTAssertNil(decryptedData);
 }

@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "OWSOrphanedDataCleaner.h"
+#import "OWSDevice.h"
+#import "OWSPrimaryStorage.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
-#import "TSStorageManager.h"
 #import <XCTest/XCTest.h>
 
 @interface OWSOrphanedDataCleanerTest : XCTestCase
@@ -22,7 +22,8 @@
 {
     [super setUp];
     // Register views, etc.
-    [[TSStorageManager sharedManager] setupDatabaseWithSafeBlockingMigrations:^{}];
+    [OWSPrimaryStorage registerExtensionsWithMigrationBlock:^{
+    }];
 
     // Set up initial conditions & Sanity check
     [TSAttachmentStream deleteAttachments];
@@ -45,6 +46,38 @@
     return [OWSOrphanedDataCleaner filePathsInAttachmentsFolder].count;
 }
 
+- (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
+                                         attachmentIds:(NSArray<NSString *> *)attachmentIds
+{
+    TSIncomingMessage *incomingMessage =
+        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
+                                                           inThread:thread
+                                                           authorId:@"fake-author-id"
+                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                        messageBody:@"footch"
+                                                      attachmentIds:attachmentIds
+                                                   expiresInSeconds:0
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
+    [incomingMessage save];
+
+    return incomingMessage;
+}
+
+- (TSAttachmentStream *)createAttachmentStream
+{
+    NSError *error;
+    TSAttachmentStream *attachmentStream =
+        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:12 sourceFilename:nil];
+    [attachmentStream writeData:[NSData new] error:&error];
+
+    XCTAssertNil(error);
+
+    [attachmentStream save];
+
+    return attachmentStream;
+}
+
 - (void)testInteractionsWithoutThreadAreDeleted
 {
     // This thread is intentionally not saved. It's meant to recreate a situation we've seen where interactions exist
@@ -52,12 +85,9 @@
     // properly deleting it's interactions.
     TSContactThread *unsavedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-does-not-exist"];
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
-                                                                             inThread:unsavedThread
-                                                                             authorId:@"fake-author-id"
-                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                                          messageBody:@"footch"];
-    [incomingMessage save];
+    __unused TSIncomingMessage *incomingMessage =
+        [self createIncomingMessageWithThread:unsavedThread attachmentIds:@[]];
+
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
@@ -79,12 +109,8 @@
     TSContactThread *savedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-exists"];
     [savedThread save];
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
-                                                                             inThread:savedThread
-                                                                             authorId:@"fake-author-id"
-                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                                          messageBody:@"footch"];
-    [incomingMessage save];
+    __unused TSIncomingMessage *incomingMessage = [self createIncomingMessageWithThread:savedThread attachmentIds:@[]];
+
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
@@ -106,10 +132,8 @@
     // sanity check
     XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
 
-    NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
-    [attachmentStream writeData:[NSData new] error:&error];
-    [attachmentStream save];
+    TSAttachmentStream *attachmentStream = [self createAttachmentStream];
+
     NSString *orphanedFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:orphanedFilePath];
     XCTAssert(fileExists);
@@ -139,19 +163,10 @@
     TSContactThread *savedThread = [[TSContactThread alloc] initWithUniqueId:@"this-thread-exists"];
     [savedThread save];
 
-    NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
-    [attachmentStream writeData:[NSData new] error:&error];
-    [attachmentStream save];
+    TSAttachmentStream *attachmentStream = [self createAttachmentStream];
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initWithTimestamp:1
-                                                                             inThread:savedThread
-                                                                             authorId:@"fake-author-id"
-                                                                       sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                                          messageBody:@"footch"
-                                                                        attachmentIds:@[ attachmentStream.uniqueId ]
-                                                                     expiresInSeconds:0];
-    [incomingMessage save];
+    __unused TSIncomingMessage *incomingMessage =
+        [self createIncomingMessageWithThread:savedThread attachmentIds:@[ attachmentStream.uniqueId ]];
 
     NSString *attachmentFilePath = [attachmentStream filePath];
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:attachmentFilePath];
@@ -177,7 +192,8 @@
 - (void)testFilesWithoutAttachmentStreamsAreDeleted
 {
     NSError *error;
-    TSAttachmentStream *attachmentStream = [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" sourceFilename:nil];
+    TSAttachmentStream *attachmentStream =
+        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 

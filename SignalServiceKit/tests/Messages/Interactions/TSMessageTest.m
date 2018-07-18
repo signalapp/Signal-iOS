@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSDate+millisecondTimeStamp.h"
+#import "TSMessage.h"
+#import "NSDate+OWS.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TSMessage.h"
-
 #import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN

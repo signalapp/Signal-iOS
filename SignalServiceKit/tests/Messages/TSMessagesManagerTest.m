@@ -1,8 +1,6 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-
-#import <XCTest/XCTest.h>
 
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
@@ -12,14 +10,14 @@
 #import "OWSFakeContactsUpdater.h"
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
-#import "OWSMessageSender.h"
-#import "OWSSignalServiceProtos.pb.h"
-#import "TSGroupThread.h"
-#import "TSMessagesManager.h"
-#import "TSNetworkManager.h"
 #import "OWSIdentityManager.h"
-#import "TSStorageManager.h"
+#import "OWSMessageSender.h"
+#import "OWSPrimaryStorage.h"
+#import "OWSSignalServiceProtos.pb.h"
 #import "OWSUnitTestEnvironment.h"
+#import "TSGroupThread.h"
+#import "TSNetworkManager.h"
+#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Private init for stubbing dependencies
 
 - (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(TSStorageManager *)storageManager
+                        storageManager:(OWSPrimaryStorage *)storageManager
                     callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager
                        contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -53,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSMessagesManager *)messagesManagerWithSender:(OWSMessageSender *)messageSender
 {
     return [[TSMessagesManager alloc] initWithNetworkManager:[OWSFakeNetworkManager new]
-                                              storageManager:[TSStorageManager sharedManager]
+                                              storageManager:[OWSPrimaryStorage sharedManager]
                                           callMessageHandler:[OWSFakeCallMessageHandler new]
                                              contactsManager:[OWSFakeContactsManager new]
                                              contactsUpdater:[OWSFakeContactsUpdater new]

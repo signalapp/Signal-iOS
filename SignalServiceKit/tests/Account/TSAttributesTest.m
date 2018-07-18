@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
-
-#import <XCTest/XCTest.h>
 
 #import "TSAttributes.h"
 #import "TSAccountManager.h"
+#import <XCTest/XCTest.h>
 
 @interface TSAttributesTest : XCTestCase
 
@@ -24,19 +23,21 @@
 }
 
 - (void)testAttributesWithSignalingKey {
-
+    
     NSString *registrationId = [NSString stringWithFormat:@"%i", [TSAccountManager getOrGenerateRegistrationId]];
     NSDictionary *expected = @{
-        @"AuthKey" : @"fake-server-auth-token",
-        @"registrationId" : registrationId,
-        @"signalingKey" : @"fake-signaling-key",
-        @"video" : @1,
-        @"voice" : @1
-    };
-
+                               @"AuthKey" : @"fake-server-auth-token",
+                               @"registrationId" : registrationId,
+                               @"signalingKey" : @"fake-signaling-key",
+                               @"video" : @1,
+                               @"voice" : @1
+                               };
+    
     NSDictionary *actual = [TSAttributes attributesWithSignalingKey:@"fake-signaling-key"
-                                                    serverAuthToken:@"fake-server-auth-token"];
-
+                                                    serverAuthToken:@"fake-server-auth-token"
+                                              manualMessageFetching:NO
+                                                                pin:nil];
+    
     XCTAssertEqualObjects(expected, actual);
 }
 
