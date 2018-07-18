@@ -3,11 +3,33 @@
 //
 
 #import "ContactDiscoveryService.h"
+#import "CDSQuote.h"
+#import "Cryptography.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <HKDFKit/HKDFKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface NSData (CDS)
+
+@end
+
+#pragma mark -
+
+@implementation NSData (CDS)
+
+- (NSData *)dataByAppendingData:(NSData *)data
+{
+    NSMutableData *result = [self mutableCopy];
+    [result appendData:data];
+    return [result copy];
+}
+
+@end
+
+#pragma mark -
 
 @interface RemoteAttestationKeys : NSObject
 
@@ -15,11 +37,124 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSData *serverEphemeralPublic;
 @property (nonatomic) NSData *serverStaticPublic;
 
+@property (nonatomic) NSData *clientKey;
+@property (nonatomic) NSData *serverKey;
+
 @end
 
 #pragma mark -
 
 @implementation RemoteAttestationKeys
+
++ (nullable RemoteAttestationKeys *)keysForKeyPair:(ECKeyPair *)keyPair
+                             serverEphemeralPublic:(NSData *)serverEphemeralPublic
+                                serverStaticPublic:(NSData *)serverStaticPublic
+{
+    RemoteAttestationKeys *keys = [RemoteAttestationKeys new];
+    keys.keyPair = keyPair;
+    keys.serverEphemeralPublic = serverEphemeralPublic;
+    keys.serverStaticPublic = serverStaticPublic;
+    if (![keys deriveKeys]) {
+        return nil;
+    }
+    return keys;
+}
+
+// Returns YES on success.
+- (BOOL)deriveKeys
+{
+    // private final byte[] clientKey = new byte[32];
+    // private final byte[] serverKey = new byte[32];
+    //
+    // public RemoteAttestationKeys(Curve25519KeyPair keyPair, byte[] serverPublicEphemeral, byte[] serverPublicStatic)
+    // {
+    //
+    //    + (NSData*)generateSharedSecretFromPublicKey:(NSData*)theirPublicKey andKeyPair:(ECKeyPair*)keyPair;
+    //
+    //    byte[] ephemeralToEphemeral =
+    //    Curve25519.getInstance(Curve25519.BEST).calculateAgreement(serverPublicEphemeral, keyPair.getPrivateKey());
+    NSData *ephemeralToEphemeral =
+        [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
+    //    byte[] ephemeralToStatic    = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(serverPublicStatic,
+    //    keyPair.getPrivateKey());
+    NSData *ephemeralToStatic =
+        [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
+
+    //    byte[] masterSecret = ByteUtils.combine(ephemeralToEphemeral, ephemeralToStatic                          );
+    NSData *masterSecret = [ephemeralToEphemeral dataByAppendingData:ephemeralToStatic];
+    //    byte[] publicKeys   = ByteUtils.combine(keyPair.getPublicKey(), serverPublicEphemeral, serverPublicStatic);
+    NSData *publicKeys = [[self.keyPair.publicKey dataByAppendingData:self.serverEphemeralPublic]
+        dataByAppendingData:self.serverStaticPublic];
+
+    NSData *_Nullable derivedMaterial;
+    @try {
+        derivedMaterial = [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:ECCKeyLength * 2];
+    } @catch (NSException *exception) {
+        DDLogError(@"%@ could not derive service key: %@", self.logTag, exception);
+        return NO;
+    }
+
+    if (!derivedMaterial) {
+        OWSProdLogAndFail(@"%@ missing derived service key.", self.logTag);
+        return NO;
+    }
+    if (derivedMaterial.length != ECCKeyLength * 2) {
+        OWSProdLogAndFail(@"%@ derived service key has unexpected length.", self.logTag);
+        return NO;
+    }
+    NSData *_Nullable clientKey = [derivedMaterial subdataWithRange:NSMakeRange(ECCKeyLength * 0, ECCKeyLength)];
+    NSData *_Nullable serverKey = [derivedMaterial subdataWithRange:NSMakeRange(ECCKeyLength * 1, ECCKeyLength)];
+    if (clientKey.length != ECCKeyLength) {
+        OWSProdLogAndFail(@"%@ clientKey has unexpected length.", self.logTag);
+        return NO;
+    }
+    if (serverKey.length != ECCKeyLength) {
+        OWSProdLogAndFail(@"%@ serverKey has unexpected length.", self.logTag);
+        return NO;
+    }
+
+    self.clientKey = clientKey;
+    self.serverKey = serverKey;
+
+    return YES;
+
+    //    HKDFBytesGenerator generator = new HKDFBytesGenerator(new SHA256Digest());
+    //    generator.init(new HKDFParameters(masterSecret, publicKeys, null));
+    //    generator.generateBytes(clientKey, 0, clientKey.length);
+    //    generator.generateBytes(serverKey, 0, serverKey.length);
+}
+
+//+ (DHEResult*)DHEKeyAgreement:(id<AxolotlParameters>)parameters{
+//    NSMutableData *masterKey = [NSMutableData data];
+//
+//    [masterKey appendData:[self discontinuityBytes]];
+//
+//    if ([parameters isKindOfClass:[AliceAxolotlParameters class]]) {
+//        AliceAxolotlParameters *params = (AliceAxolotlParameters*)parameters;
+//
+//        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
+//        andKeyPair:params.ourIdentityKeyPair]]; [masterKey appendData:[Curve25519
+//        generateSharedSecretFromPublicKey:params.theirIdentityKey andKeyPair:params.ourBaseKey]]; [masterKey
+//        appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
+//        andKeyPair:params.ourBaseKey]]; if (params.theirOneTimePrekey) {
+//            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirOneTimePrekey
+//            andKeyPair:params.ourBaseKey]];
+//        }
+//    } else if ([parameters isKindOfClass:[BobAxolotlParameters class]]){
+//        BobAxolotlParameters *params = (BobAxolotlParameters*)parameters;
+//
+//        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirIdentityKey
+//        andKeyPair:params.ourSignedPrekey]]; [masterKey appendData:[Curve25519
+//        generateSharedSecretFromPublicKey:params.theirBaseKey andKeyPair:params.ourIdentityKeyPair]]; [masterKey
+//        appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
+//        andKeyPair:params.ourSignedPrekey]]; if (params.ourOneTimePrekey) {
+//            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
+//            andKeyPair:params.ourOneTimePrekey]];
+//        }
+//    }
+//
+//    return [[DHEResult alloc] initWithMasterKey:masterKey];
+//}
 
 @end
 
@@ -245,9 +380,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't parse encryptedRequestTag.", self.logTag);
         return nil;
     }
-    NSData *_Nullable quote = [responseDict base64DataForKey:@"quote"];
-    if (!quote) {
-        OWSProdLogAndFail(@"%@ couldn't parse quote.", self.logTag);
+    NSData *_Nullable quoteData = [responseDict base64DataForKey:@"quote"];
+    if (!quoteData) {
+        OWSProdLogAndFail(@"%@ couldn't parse quote data.", self.logTag);
         return nil;
     }
     id _Nullable signatureBody = responseDict[@"signatureBody"];
@@ -271,10 +406,27 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    RemoteAttestationKeys *keys = [RemoteAttestationKeys new];
-    keys.keyPair = keyPair;
-    keys.serverEphemeralPublic = serverEphemeralPublic;
-    keys.serverStaticPublic = serverStaticPublic;
+    RemoteAttestationKeys *_Nullable keys = [RemoteAttestationKeys keysForKeyPair:keyPair
+                                                            serverEphemeralPublic:serverEphemeralPublic
+                                                               serverStaticPublic:serverStaticPublic];
+    if (!keys) {
+        OWSProdLogAndFail(@"%@ couldn't derive keys.", self.logTag);
+        return nil;
+    }
+
+    CDSQuote *_Nullable quote = [CDSQuote parseQuoteFromData:quoteData];
+    if (!quote) {
+        OWSProdLogAndFail(@"%@ couldn't parse quote.", self.logTag);
+        return nil;
+    }
+    NSData *_Nullable requestId = [self decryptRequestId:encryptedRequestId
+                                      encryptedRequestIv:encryptedRequestIv
+                                     encryptedRequestTag:encryptedRequestTag
+                                                    keys:keys];
+    if (!requestId) {
+        OWSProdLogAndFail(@"%@ couldn't decrypt request id.", self.logTag);
+        return nil;
+    }
 
     //    RemoteAttestationKeys keys      = new RemoteAttestationKeys(keyPair, response.getServerEphemeralPublic(),
     //    response.getServerStaticPublic()); Quote                 quote     = new Quote(response.getQuote()); byte[]
@@ -289,6 +441,32 @@ NS_ASSUME_NONNULL_BEGIN
     //    throw new UnauthenticatedResponseException(e);
     //}
     return nil;
+}
+
+- (nullable NSData *)decryptRequestId:(NSData *)encryptedRequestId
+                   encryptedRequestIv:(NSData *)encryptedRequestIv
+                  encryptedRequestTag:(NSData *)encryptedRequestTag
+                                 keys:(RemoteAttestationKeys *)keys
+{
+    OWSAssert(encryptedRequestId.length > 0);
+    OWSAssert(encryptedRequestIv.length > 0);
+    OWSAssert(encryptedRequestTag.length > 0);
+    OWSAssert(keys);
+
+    OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:keys.serverKey];
+    if (!key) {
+        OWSProdLogAndFail(@"%@ invalid server key.", self.logTag);
+        return nil;
+    }
+    NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithInitializationVector:encryptedRequestIv
+                                                                               ciphertext:encryptedRequestId
+                                                                                  authTag:encryptedRequestTag
+                                                                                      key:key];
+    if (!decryptedData) {
+        OWSProdLogAndFail(@"%@ couldn't decrypt request id.", self.logTag);
+        return nil;
+    }
+    return decryptedData;
 }
 
 // A successful (HTTP 200) response json object consists of:

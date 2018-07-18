@@ -560,6 +560,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
                                                    authTag:(NSData *)authTagFromEncrypt
                                                        key:(OWSAES256Key *)key
 {
+    OWSAssert(initializationVector.length == kAESGCM256_IVLength);
+    OWSAssert(ciphertext.length > 0);
+    OWSAssert(authTagFromEncrypt.length == kAESGCM256_TagLength);
+    OWSAssert(key);
+
     NSMutableData *plaintext = [NSMutableData dataWithLength:ciphertext.length];
 
     // Create and initialise the context

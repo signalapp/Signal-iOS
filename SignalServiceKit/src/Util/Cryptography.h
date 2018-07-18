@@ -72,6 +72,11 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (nullable NSData *)encryptAESGCMWithData:(NSData *)plaintextData key:(OWSAES256Key *)key;
 + (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES256Key *)key;
 
++ (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
+                                                ciphertext:(NSData *)ciphertext
+                                                   authTag:(NSData *)authTagFromEncrypt
+                                                       key:(OWSAES256Key *)key;
+
 @end
 
 NS_ASSUME_NONNULL_END
