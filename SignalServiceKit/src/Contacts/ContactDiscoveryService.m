@@ -234,7 +234,6 @@ NS_ASSUME_NONNULL_BEGIN
     TSRequest *request = [OWSRequestFactory remoteAttestationAuthRequest];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseDict) {
-            DDLogVerbose(@"%@ remote attestation auth success: %@", self.logTag, responseDict);
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 RemoteAttestationAuth *_Nullable auth = [self parseAuthToken:responseDict];
@@ -258,23 +257,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSDictionary *responseDict = response;
-    NSString *_Nullable token = responseDict[@"token"];
-    if (![token isKindOfClass:[NSString class]]) {
-        OWSProdLogAndFail(@"%@ missing or invalid token.", self.logTag);
-        return nil;
-    }
+    NSString *_Nullable token = [responseDict stringForKey:@"token"];
     if (token.length < 1) {
-        OWSProdLogAndFail(@"%@ empty token.", self.logTag);
+        OWSProdLogAndFail(@"%@ missing or empty token.", self.logTag);
         return nil;
     }
 
-    NSString *_Nullable username = responseDict[@"username"];
-    if (![username isKindOfClass:[NSString class]]) {
-        OWSProdLogAndFail(@"%@ missing or invalid username.", self.logTag);
-        return nil;
-    }
+    NSString *_Nullable username = [responseDict stringForKey:@"username"];
     if (username.length < 1) {
-        OWSProdLogAndFail(@"%@ empty username.", self.logTag);
+        OWSProdLogAndFail(@"%@ missing or empty username.", self.logTag);
         return nil;
     }
 
@@ -297,8 +288,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                            authToken:auth.authToken];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
-            DDLogVerbose(@"%@ remote attestation success.", self.logTag);
-
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // TODO: Handle result.
                 [self parseAttestationResponseJson:responseJson
@@ -329,8 +318,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSDictionary *responseHeaders = ((NSHTTPURLResponse *)response).allHeaderFields;
 
-    NSString *_Nullable cookie = responseHeaders[@"Set-Cookie"];
-    if (![cookie isKindOfClass:[NSString class]]) {
+    NSString *_Nullable cookie = [responseHeaders stringForKey:@"Set-Cookie"];
+    if (cookie.length < 1) {
         OWSProdLogAndFail(@"%@ couldn't parse cookie.", self.logTag);
         return nil;
     }
@@ -378,7 +367,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't parse quote data.", self.logTag);
         return nil;
     }
-    NSString *_Nullable signatureBody = responseDict[@"signatureBody"];
+    NSString *_Nullable signatureBody = [responseDict stringForKey:@"signatureBody"];
     if (![signatureBody isKindOfClass:[NSString class]]) {
         OWSProdLogAndFail(@"%@ couldn't parse signatureBody.", self.logTag);
         return nil;
@@ -388,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't parse signature.", self.logTag);
         return nil;
     }
-    NSString *_Nullable encodedCertificates = responseDict[@"certificates"];
+    NSString *_Nullable encodedCertificates = [responseDict stringForKey:@"certificates"];
     if (![encodedCertificates isKindOfClass:[NSString class]]) {
         OWSProdLogAndFail(@"%@ couldn't parse encodedCertificates.", self.logTag);
         return nil;
@@ -434,6 +423,13 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    RemoteAttestation *result = [RemoteAttestation new];
+    result.cookie = cookie;
+    result.keys = keys;
+    result.requestId = requestId;
+
+    DDLogVerbose(@"%@ remote attestation complete.", self.logTag);
+
     //+      RemoteAttestation remoteAttestation = new RemoteAttestation(requestId, keys);
     //+      List<String>      addressBook       = new LinkedList<>();
     //+
@@ -457,18 +453,12 @@ NS_ASSUME_NONNULL_BEGIN
     //+
     //+      return results;
 
-    RemoteAttestation *result = [RemoteAttestation new];
-    result.cookie = cookie;
-    result.keys = keys;
-    result.requestId = requestId;
-
     return result;
 }
 
 - (BOOL)verifyIasSignatureWithCertificates:(NSString *)certificates
                              signatureBody:(NSString *)signatureBody
                                  signature:(NSData *)signature
-                                 //                                     quote:(CDSQuote *)quote
                                  quoteData:(NSData *)quoteData
 {
     OWSAssert(certificates.length > 0);
