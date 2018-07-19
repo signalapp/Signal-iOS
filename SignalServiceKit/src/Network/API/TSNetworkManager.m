@@ -116,30 +116,16 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     } else {
         if ([request isKindOfClass:[CDSAttestationRequest class]]) {
             CDSAttestationRequest *attestationRequest = (CDSAttestationRequest *)request;
-            //            [sessionManager.requestSerializer
-            //             setAuthorizationHeaderFieldWithUsername:attestationRequest.username
-            //             password:attestationRequest.password];
-            DDLogVerbose(@"%@ auth %@", self.logTag, attestationRequest.authToken);
-
             NSData *basicAuthCredentials = [attestationRequest.authToken dataUsingEncoding:NSUTF8StringEncoding];
             NSString *base64AuthCredentials =
                 [basicAuthCredentials base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0];
             [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Basic %@", base64AuthCredentials]
                                     forHTTPHeaderField:@"Authorization"];
-            //            [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Basic %@",
-            //            attestationRequest.authToken] forHTTPHeaderField:@"Authorization"];
-            DDLogVerbose(@"%@ attestationRequest.authToken %@", self.logTag, attestationRequest.authToken);
         } else if (request.shouldHaveAuthorizationHeaders) {
             [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
                                                password:[TSAccountManager serverAuthToken]];
-            DDLogVerbose(
-                @"%@ auth %@, %@", self.logTag, [TSAccountManager localNumber], [TSAccountManager serverAuthToken]);
         }
-
-        DDLogVerbose(@"%@ request.URL %@ %@", self.logTag, request.HTTPMethod, request.URL);
-        DDLogVerbose(@"%@ request.parameters %@", self.logTag, request.parameters);
-        [DDLog flushLog];
 
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
             [sessionManager GET:request.URL.absoluteString

@@ -385,11 +385,10 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (![self verifyIasSignature:nil
-                     certificates:certificates
-                    signatureBody:signatureBody
-                        signature:signature
-                            quote:quote]) {
+    if (![self verifyIasSignatureWithCertificates:certificates
+                                    signatureBody:signatureBody
+                                        signature:signature
+                                            quote:quote]) {
         OWSProdLogAndFail(@"%@ couldn't verify ias signature.", self.logTag);
         return nil;
     }
@@ -425,13 +424,11 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
-- (BOOL)verifyIasSignature:(nullable id)trustStore
-              certificates:(NSString *)certificates
-             signatureBody:(NSString *)signatureBody
-                 signature:(NSData *)signature
-                     quote:(CDSQuote *)quote
+- (BOOL)verifyIasSignatureWithCertificates:(NSString *)certificates
+                             signatureBody:(NSString *)signatureBody
+                                 signature:(NSData *)signature
+                                     quote:(CDSQuote *)quote
 {
-    //    OWSAssert(trustStore);
     OWSAssert(certificates.length > 0);
     OWSAssert(signatureBody.length > 0);
     OWSAssert(signature.length > 0);

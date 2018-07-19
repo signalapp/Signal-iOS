@@ -136,7 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // TODO:
+    // `kSecTrustResultUnspecified` is confusingly named.  It indicates success.
+    // See the comments in the header where it is defined.
     BOOL isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
     if (!isValid) {
         DDLogError(@"%@ Certificate evaluation failed.", self.logTag);

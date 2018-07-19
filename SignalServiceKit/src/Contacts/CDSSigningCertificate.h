@@ -8,8 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CDSSigningCertificate *)parseCertificateFromPem:(NSString *)certificatePem;
 
-//- (BOOL)isDebugQuote;
-
 - (BOOL)verifySignatureOfBody:(NSString *)body signature:(NSData *)theirSignature;
 
 @end
