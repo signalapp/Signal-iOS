@@ -5,6 +5,7 @@
 #import "CDSSigningCertificate.h"
 #import "NSData+Base64.h"
 #import "NSData+OWS.h"
+#import <CommonCrypto/CommonCrypto.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -95,14 +96,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // TODO:
     status = SecTrustSetNetworkFetchAllowed(trust, NO);
     if (status != errSecSuccess) {
         DDLogError(@"%@ trust fetch could not be configured.", self.logTag);
         return nil;
     }
 
-    // TODO:
     status = SecTrustSetAnchorCertificatesOnly(trust, YES);
     if (status != errSecSuccess) {
         DDLogError(@"%@ trust anchor certs could not be configured.", self.logTag);
@@ -229,54 +228,29 @@ NS_ASSUME_NONNULL_BEGIN
     return certificateData;
 }
 
-- (BOOL)verifySignatureOfBody:(NSString *)body signature:(NSData *)theirSignature
+- (BOOL)verifySignatureOfBody:(NSString *)body signature:(NSData *)signature
 {
-    BOOL result = NO;
-
-    // TODO: Which algorithm should we be using?
-    DDLogVerbose(@"%@ kSecKeyAlgorithmRSASignatureDigestPSSSHA256.", self.logTag);
-    result = result ||
-        [self verifySignatureOfBody:body
-                          signature:theirSignature
-                          algorithm:kSecKeyAlgorithmRSASignatureDigestPSSSHA256];
-    DDLogVerbose(@"%@ kSecKeyAlgorithmRSASignatureMessagePSSSHA256.", self.logTag);
-    result = result ||
-        [self verifySignatureOfBody:body
-                          signature:theirSignature
-                          algorithm:kSecKeyAlgorithmRSASignatureMessagePSSSHA256];
-    return result;
-}
-
-// TODO: This method requires iOS 10.
-- (BOOL)verifySignatureOfBody:(NSString *)body signature:(NSData *)signature algorithm:(SecKeyAlgorithm)algorithm
-{
-    OWSAssert(body.length > 0);
-    OWSAssert(signature.length > 0);
     OWSAssert(self.publicKey);
 
     NSData *bodyData = [body dataUsingEncoding:NSUTF8StringEncoding];
 
-    BOOL canSign = SecKeyIsAlgorithmSupported(self.publicKey, kSecKeyOperationTypeVerify, algorithm);
-    if (!canSign) {
-        OWSProdLogAndFail(@"%@ signature algorithm is not supported.", self.logTag);
+    size_t signedHashBytesSize = SecKeyGetBlockSize(self.publicKey);
+    const void *signedHashBytes = [signature bytes];
+    size_t hashBytesSize = CC_SHA256_DIGEST_LENGTH;
+    uint8_t hashBytes[hashBytesSize];
+    if (!CC_SHA256([bodyData bytes], (CC_LONG)[bodyData length], hashBytes)) {
+        OWSProdLogAndFail(@"%@ could not SHA256 for signature verification.", self.logTag);
         return NO;
     }
 
-    CFErrorRef error = NULL;
-    BOOL isValid = SecKeyVerifySignature(
-        self.publicKey, algorithm, (__bridge CFDataRef)bodyData, (__bridge CFDataRef)signature, &error);
-    if (error) {
-        NSError *nsError = CFBridgingRelease(error);
-        // TODO:
-        DDLogError(@"%@ signature verification failed: %@.", self.logTag, nsError);
-        //        OWSProdLogAndFail(@"%@ signature verification failed: %@.", self.logTag, nsError);
-        return NO;
-    }
+    OSStatus status = SecKeyRawVerify(
+        self.publicKey, kSecPaddingPKCS1SHA256, hashBytes, hashBytesSize, signedHashBytes, signedHashBytesSize);
+
+    BOOL isValid = status == errSecSuccess;
     if (!isValid) {
         OWSProdLogAndFail(@"%@ signatures do not match.", self.logTag);
         return NO;
     }
-    DDLogVerbose(@"%@ signature verification succeeded.", self.logTag);
     return YES;
 }
 

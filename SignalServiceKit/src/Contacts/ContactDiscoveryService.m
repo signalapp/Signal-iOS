@@ -297,7 +297,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            authToken:auth.authToken];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
-            DDLogVerbose(@"%@ remote attestation success: %@", self.logTag, responseJson);
+            DDLogVerbose(@"%@ remote attestation success.", self.logTag);
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 // TODO: Handle result.
@@ -482,10 +482,8 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (![certificate verifySignatureOfBody:signatureBody signature:signature]) {
-        // TODO:
-        DDLogError(@"%@ could not verify signature.", self.logTag);
-        //        OWSProdLogAndFail(@"%@ could not verify signature.", self.logTag);
-        //        return NO;
+        OWSProdLogAndFail(@"%@ could not verify signature.", self.logTag);
+        return NO;
     }
 
     SignatureBodyEntity *_Nullable signatureBodyEntity = [self parseSignatureBodyEntity:signatureBody];
