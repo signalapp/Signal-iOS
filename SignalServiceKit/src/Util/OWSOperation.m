@@ -81,6 +81,13 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
     // Override in subclass if necessary
 }
 
+// Called at most one time.
+- (void)didCancel
+{
+    // no-op
+    // Override in subclass if necessary
+}
+
 // Called at most one time, once retry is no longer possible.
 - (void)didFailWithError:(NSError *)error
 {
@@ -110,6 +117,14 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 {
     DDLogDebug(@"%@ succeeded.", self.logTag);
     [self didSucceed];
+    [self markAsComplete];
+}
+
+// These methods are not intended to be subclassed
+- (void)reportCancelled
+{
+    DDLogDebug(@"%@ cancelled.", self.logTag);
+    [self didCancel];
     [self markAsComplete];
 }
 

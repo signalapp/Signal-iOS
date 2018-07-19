@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSContactDiscoveryOperation)
-class ContactDiscoveryOperation: OWSOperation {
+class ContactDiscoveryOperation: OWSOperation, LegacyContactDiscoveryBatchOperationDelegate {
 
     let batchSize = 2048
     let recipientIdsToLookup: [String]
@@ -23,6 +23,7 @@ class ContactDiscoveryOperation: OWSOperation {
         Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
         for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
             let batchOperation = LegacyContactDiscoveryBatchOperation(recipientIdsToLookup: batchIds)
+            batchOperation.delegate = self
             self.addDependency(batchOperation)
         }
     }
@@ -44,11 +45,24 @@ class ContactDiscoveryOperation: OWSOperation {
 
         self.reportSuccess()
     }
+
+    // MARK: LegacyContactDiscoveryBatchOperationDelegate
+    func contactDiscoverBatchOperation(_ contactDiscoverBatchOperation: LegacyContactDiscoveryBatchOperation, didFailWithError error: Error) {
+        Logger.debug("\(logTag) in \(#function) canceling self and all dependencies.")
+
+        self.dependencies.forEach { $0.cancel() }
+        self.cancel()
+    }
+}
+
+protocol LegacyContactDiscoveryBatchOperationDelegate: class {
+    func contactDiscoverBatchOperation(_ contactDiscoverBatchOperation: LegacyContactDiscoveryBatchOperation, didFailWithError error: Error)
 }
 
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     var registeredRecipientIds: Set<String>
+    weak var delegate: LegacyContactDiscoveryBatchOperationDelegate?
 
     private let recipientIdsToLookup: [String]
     private var networkManager: TSNetworkManager {
@@ -72,10 +86,17 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     override func run() {
         Logger.debug("\(logTag) in \(#function)")
 
+        guard !isCancelled else {
+            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            self.reportCancelled()
+            return
+        }
+
         var phoneNumbersByHashes: [String: String] = [:]
 
         for recipientId in recipientIdsToLookup {
             let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(recipientId)
+            assert(phoneNumbersByHashes[hash] == nil)
             phoneNumbersByHashes[hash] = recipientId
         }
 
@@ -119,6 +140,11 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
         cdsFeedbackOperation.addDependency(newCDSBatchOperation)
 
         CDSFeedbackOperation.operationQueue.addOperations([newCDSBatchOperation, cdsFeedbackOperation], waitUntilFinished: false)
+    }
+
+    // Called at most one time.
+    override func didFail(error: Error) {
+        self.delegate?.contactDiscoverBatchOperation(self, didFailWithError: error)
     }
 
     // MARK: Private Helpers
