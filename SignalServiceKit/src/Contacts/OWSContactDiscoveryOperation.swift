@@ -4,20 +4,11 @@
 
 import Foundation
 
-extension Array {
-    func chunked(by chunkSize: Int) -> [[Element]] {
-        return stride(from: 0, to: self.count, by: chunkSize).map {
-            Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
-        }
-    }
-}
-
-@objc
-class OWSContactDiscoveryOperation: OWSOperation {
+@objc(OWSContactDiscoveryOperation)
+class ContactDiscoveryOperation: OWSOperation {
 
     // TODO verify proper batch size
-//    let batchSize = 2048
-    let batchSize = 10
+    let batchSize = 2048
     let recipientIdsToLookup: [String]
 
     @objc
@@ -32,18 +23,19 @@ class OWSContactDiscoveryOperation: OWSOperation {
 
         Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
         for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
-            let batchOperation = OWSContactDiscoveryBatchOperation(recipientIdsToLookup: batchIds)
+            let batchOperation = LegacyContactDiscoveryBatchOperation(recipientIdsToLookup: batchIds)
             self.addDependency(batchOperation)
         }
     }
 
     // MARK: Mandatory overrides
+
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
         Logger.debug("\(logTag) in \(#function)")
 
         for dependency in self.dependencies {
-            guard let batchOperation = dependency as? OWSContactDiscoveryBatchOperation else {
+            guard let batchOperation = dependency as? LegacyContactDiscoveryBatchOperation else {
                 owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
                 continue
             }
@@ -53,26 +45,9 @@ class OWSContactDiscoveryOperation: OWSOperation {
 
         self.reportSuccess()
     }
-
-    // MARK: Optional Overrides
-
-    // Called one time only
-    override func checkForPreconditionError() -> Error? {
-        return super.checkForPreconditionError()
-    }
-
-    // Called at most one time.
-    override func didSucceed() {
-        super.didSucceed()
-    }
-
-    // Called at most one time, once retry is no longer possible.
-    override func didFail(error: Error) {
-        super.didFail(error: error)
-    }
 }
 
-class OWSContactDiscoveryBatchOperation: OWSOperation {
+class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     private let recipientIdsToLookup: [String]
     var registeredRecipientIds: Set<String>
@@ -131,6 +106,7 @@ class OWSContactDiscoveryBatchOperation: OWSOperation {
     }
 
     // MARK: Mandatory overrides
+
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
         Logger.debug("\(logTag) in \(#function)")
@@ -156,11 +132,6 @@ class OWSContactDiscoveryBatchOperation: OWSOperation {
                                             }
         },
                                         failure: { (task, error) in
-                                            if (!IsNSErrorNetworkFailure(error)) {
-                                                // FIXME not accessible in swift for some reason.
-//                                                OWSProdError(OWSAnalyticsEvents.contactsErrorContactsIntersectionFailed)
-                                            }
-
                                             guard let response = task.response as? HTTPURLResponse else {
                                                 let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
                                                 responseError.isRetryable = true
@@ -179,18 +150,94 @@ class OWSContactDiscoveryBatchOperation: OWSOperation {
 
     // MARK: Optional Overrides
 
-    // Called one time only
-    override func checkForPreconditionError() -> Error? {
-        return super.checkForPreconditionError()
-    }
-
     // Called at most one time.
     override func didSucceed() {
-        super.didSucceed()
+        // Compare against new CDS service
+        let newCDSBatchOperation = CDSBatchOperation(recipientIdsToLookup: self.recipientIdsToLookup)
+        let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
+        cdsFeedbackOperation.addDependency(newCDSBatchOperation)
+
+        CDSFeedbackOperation.operationQueue.addOperations([newCDSBatchOperation, cdsFeedbackOperation], waitUntilFinished: false)
     }
 
-    // Called at most one time, once retry is no longer possible.
+}
+
+class CDSFeedbackOperation: OWSOperation {
+
+    static let operationQueue = OperationQueue()
+
+    let legacyRegisteredRecipientIds: Set<String>
+
+    required init(legacyRegisteredRecipientIds: Set<String>) {
+        self.legacyRegisteredRecipientIds = legacyRegisteredRecipientIds
+
+        super.init()
+
+        Logger.debug("\(logTag) in \(#function)")
+    }
+
+    // MARK: Mandatory overrides
+
+    // Called every retry, this is where the bulk of the operation's work should go.
+    override func run() {
+        guard let cdsOperation = dependencies.first as? CDSBatchOperation else {
+            let error = OWSErrorMakeAssertionError("\(self.logTag) in \(#function) cdsOperation was unexpectedly nil")
+            self.reportError(error)
+            return
+        }
+
+        let cdsRegisteredRecipientIds = cdsOperation.registeredRecipientIds
+
+        if cdsRegisteredRecipientIds == legacyRegisteredRecipientIds {
+            Logger.debug("\(logTag) in \(#function) TODO: PUT /v1/directory/feedback/ok")
+        } else {
+            Logger.debug("\(logTag) in \(#function) TODO: PUT /v1/directory/feedback/mismatch")
+        }
+
+        self.reportSuccess()
+    }
+
     override func didFail(error: Error) {
-        super.didFail(error: error)
+        // dependency failed.
+        // Depending on error, PUT one of:
+        // /v1/directory/feedback/server-error:
+        // /v1/directory/feedback/client-error:
+        // /v1/directory/feedback/attestation-error:
+        // /v1/directory/feedback/unexpected-error:
+        Logger.debug("\(logTag) in \(#function) TODO: PUT /v1/directory/feedback/*-error")
+    }
+}
+
+class CDSBatchOperation: OWSOperation {
+
+    private let recipientIdsToLookup: [String]
+    var registeredRecipientIds: Set<String>
+
+    required init(recipientIdsToLookup: [String]) {
+        self.recipientIdsToLookup = recipientIdsToLookup
+        self.registeredRecipientIds = Set()
+
+        super.init()
+
+        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+    }
+
+    // MARK: Mandatory overrides
+
+    // Called every retry, this is where the bulk of the operation's work should go.
+    override func run() {
+        Logger.debug("\(logTag) in \(#function)")
+
+        Logger.debug("\(logTag) in \(#function) FAKING intersection (TODO)")
+        self.registeredRecipientIds = Set(self.recipientIdsToLookup)
+        self.reportSuccess()
+    }
+}
+
+extension Array {
+    func chunked(by chunkSize: Int) -> [[Element]] {
+        return stride(from: 0, to: self.count, by: chunkSize).map {
+            Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
+        }
     }
 }
