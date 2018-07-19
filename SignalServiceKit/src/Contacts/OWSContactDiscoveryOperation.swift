@@ -100,10 +100,12 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
                                                 return
                                             }
 
-                                            if (response.statusCode == 413) {
+                                            guard response.statusCode != 413 else {
                                                 let rateLimitError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit")
                                                 self.reportError(rateLimitError)
+                                                return
                                             }
+
                                             self.reportError(error)
 
         })
