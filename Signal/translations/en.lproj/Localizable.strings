@@ -162,7 +162,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try zipping it before sending.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Signal can't handle that file as is. Try compressing it before sending.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
@@ -444,7 +444,7 @@
 "CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Post Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "Region";
@@ -811,7 +811,7 @@
 "ENABLE_2FA_VIEW_TITLE" = "Registration Lock";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Busy.";
+"END_CALL_RESPONDER_IS_BUSY" = "Busy";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Call Failed.";
@@ -1322,11 +1322,11 @@
 /* notification title. Embeds {{caller's name or phone number}} */
 "MSGVIEW_MISSED_CALL_WITH_NAME" = "Missed call from %@.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You can not pair any more devices.";
+/* alert title: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
 
-/* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently pair with your account. Please remove a device or try again to pair it later.";
+/* alert body: cannot link - reached max linked devices */
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device or try again to link it later.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "You will not receive notifications for muted conversations.";
@@ -1985,7 +1985,7 @@
 /* Settings table view cell label */
 "SETTINGS_INVITE_TITLE" = "Invite Your Friends";
 
-/* content of tweet when inviting via twitter */
+/* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
@@ -2347,20 +2347,3 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
-
-// Strings Copied in from JSQMessagesViewController
-
-
-"load_earlier_messages" = "Load Earlier Messages";
-
-"send" = "Send";
-
-"new_message" = "New Message";
-
-"text_message_accessibility_label" = "%@: %@";
-
-"media_message_accessibility_label" = "%@: media message";
-
-"accessory_button_accessibility_label" = "Share media";
-
-"new_message_received_accessibility_announcement" = "New message received";
