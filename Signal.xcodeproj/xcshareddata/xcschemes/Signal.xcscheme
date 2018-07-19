@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B57ACF2237BE640621E2E2CF12637CFE"
+               BlueprintIdentifier = "13CED0CFD8586E9C6BAC02E581D06068"
                BuildableName = "SignalServiceKit.framework"
                BlueprintName = "SignalServiceKit"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -83,6 +83,7 @@
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      stopOnEveryUBSanitizerIssue = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
       showNonLocalizedStrings = "YES">
@@ -100,6 +101,11 @@
          <EnvironmentVariable
             key = "OS_ACTIVITY_MODE"
             value = "disable"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "UBSAN_OPTIONS"
+            value = "suppressions=SignalUBSan.supp"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable

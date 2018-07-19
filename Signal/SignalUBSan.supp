@@ -1,0 +1,32 @@
+# See https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html#runtime-suppressions
+# for details.
+
+# protobuf lib
+shift-base:CodedInputStream.m
+# generated protos
+bool:WebSocketResources.pb.m
+bool:OWSSignalServiceProtos.pb.m
+bool:WhisperTextProtocol.pb.m
+bool:OWSWebRTCDataProtos.pb.m
+bool:OWSSignaliOSProtos.pb.m
+bool:OWSProvisioningProtos.pb.m
+bool:OWSFingerprintProtos.pb.m
+
+# YapDatabase
+bool:YapDatabaseAutoViewTransaction.m
+
+# SocketRocket
+bool:SRWebSocket.m
+
+# Curve25519 expected
+shift-base:curve25519-donna.c
+shift-base:ge_scalarmult_base.c
+shift-base:fe_mul.c
+shift-exponent:fe_sq.c
+shift-base:fe_sq.c
+shift-base:fe_sq2.c
+shift-exponent:fe_sq2.c
+shift-base:fe_tobytes.c
+shift-exponent:fe_tobytes.c
+shift-base:sc_reduce.c
+shift-exponent:sc_reduce.c

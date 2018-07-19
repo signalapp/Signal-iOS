@@ -77,6 +77,7 @@ typedef void (^SystemMessageActionBlock)(void);
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
     self.contentView.backgroundColor = UIColor.whiteColor;
+    self.layoutConstraints = @[];
 
     self.headerView = [OWSMessageHeaderView new];
     self.headerViewHeightConstraint = [self.headerView autoSetDimension:ALDimensionHeight toSize:0];
