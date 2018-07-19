@@ -7,6 +7,7 @@
 #import "CDSSigningCertificate.h"
 #import "Cryptography.h"
 #import "NSData+OWS.h"
+#import "NSDate+OWS.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
@@ -124,6 +125,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface SignatureBodyEntity : NSObject
+
+@property (nonatomic) NSData *isvEnclaveQuoteBody;
+@property (nonatomic) NSString *isvEnclaveQuoteStatus;
+@property (nonatomic) NSString *timestamp;
+
+@end
+
+#pragma mark -
+
+@implementation SignatureBodyEntity
+
+@end
+
+#pragma mark -
+
 @interface NSDictionary (CDS)
 
 @end
@@ -131,6 +148,16 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation NSDictionary (CDS)
+
+- (nullable NSString *)stringForKey:(NSString *)key
+{
+    NSString *_Nullable valueString = self[key];
+    if (![valueString isKindOfClass:[NSString class]]) {
+        OWSProdLogAndFail(@"%@ couldn't parse string for key: %@", self.logTag, key);
+        return nil;
+    }
+    return valueString;
+}
 
 - (nullable NSData *)base64DataForKey:(NSString *)key
 {
@@ -307,7 +334,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't parse cookie.", self.logTag);
         return nil;
     }
-    DDLogVerbose(@"%@ cookie: %@", self.logTag, cookie);
 
     // The cookie header will have this form:
     // Set-Cookie: __NSCFString, c2131364675-413235ic=c1656171-249545-958227; Path=/; Secure
@@ -315,18 +341,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSRange cookieRange = [cookie rangeOfString:@";"];
     if (cookieRange.length != NSNotFound) {
         cookie = [cookie substringToIndex:cookieRange.location];
-        DDLogVerbose(@"%@ trimmed cookie: %@", self.logTag, cookie);
     }
 
     if (![responseJson isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     NSDictionary *responseDict = responseJson;
-    DDLogVerbose(@"%@ parseAttestationResponse: %@", self.logTag, responseDict);
-    for (NSString *key in responseDict) {
-        id value = responseDict[key];
-        DDLogVerbose(@"%@ \t %@: %@, %@", self.logTag, key, [value class], value);
-    }
     NSData *_Nullable serverEphemeralPublic =
         [responseDict base64DataForKey:@"serverEphemeralPublic" expectedLength:32];
     if (!serverEphemeralPublic) {
@@ -409,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![self verifyIasSignatureWithCertificates:certificates
                                     signatureBody:signatureBody
                                         signature:signature
-                                            quote:quote]) {
+                                        quoteData:quoteData]) {
         OWSProdLogAndFail(@"%@ couldn't verify ias signature.", self.logTag);
         return nil;
     }
@@ -448,12 +468,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)verifyIasSignatureWithCertificates:(NSString *)certificates
                              signatureBody:(NSString *)signatureBody
                                  signature:(NSData *)signature
-                                     quote:(CDSQuote *)quote
+                                 //                                     quote:(CDSQuote *)quote
+                                 quoteData:(NSData *)quoteData
 {
     OWSAssert(certificates.length > 0);
     OWSAssert(signatureBody.length > 0);
     OWSAssert(signature.length > 0);
-    OWSAssert(quote);
+    OWSAssert(quoteData);
 
     CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:certificates];
     if (!certificate) {
@@ -461,45 +482,105 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     if (![certificate verifySignatureOfBody:signatureBody signature:signature]) {
-        OWSProdLogAndFail(@"%@ could not verify signature.", self.logTag);
+        // TODO:
+        DDLogError(@"%@ could not verify signature.", self.logTag);
+        //        OWSProdLogAndFail(@"%@ could not verify signature.", self.logTag);
+        //        return NO;
+    }
+
+    SignatureBodyEntity *_Nullable signatureBodyEntity = [self parseSignatureBodyEntity:signatureBody];
+    if (!signatureBodyEntity) {
+        OWSProdLogAndFail(@"%@ could not parse signature body.", self.logTag);
         return NO;
     }
-    ////public void verifyIasSignature(KeyStore trustStore, String certificates, String signatureBody, String signature,
-    ///Quote quote) /throws SignatureException
-    ////{
-    ////    try {
-    //        SigningCertificate signingCertificate = new SigningCertificate(certificates, trustStore);
-    //        signingCertificate.verifySignature(signatureBody, signature);
-    //
-    //        SignatureBodyEntity signatureBodyEntity = JsonUtil.fromJson(signatureBody, SignatureBodyEntity.class);
-    //
-    //        if (!MessageDigest.isEqual(ByteUtil.trim(signatureBodyEntity.getIsvEnclaveQuoteBody(), 432),
-    //        ByteUtil.trim(quote.getQuoteBytes(), 432))) {
-    //            throw new SignatureException("Signed quote is not the same as RA quote: " +
-    //            Hex.toStringCondensed(signatureBodyEntity.getIsvEnclaveQuoteBody()) + " vs " +
-    //            Hex.toStringCondensed(quote.getQuoteBytes()));
-    //        }
-    //
-    //        if (!"OK".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus()) &&
-    //        !"GROUP_OUT_OF_DATE".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus())) {
-    //            //      if (!"OK".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus())) {
-    //            throw new SignatureException("Quote status is: " + signatureBodyEntity.getIsvEnclaveQuoteStatus());
-    //        }
-    //
-    //        if
-    //        (Instant.from(ZonedDateTime.of(LocalDateTime.from(DateTimeFormatter.ofPattern("yyy-MM-dd'T'HH:mm:ss.SSSSSS").parse(signatureBodyEntity.getTimestamp())),
-    //        ZoneId.of("UTC")))
-    //            .plus(Period.ofDays(1))
-    //            .isBefore(Instant.now()))
-    //        {
-    //            throw new SignatureException("Signature is expired");
-    //        }
-    //
-    //    } catch (CertificateException | CertPathValidatorException | IOException e) {
-    //        throw new SignatureException(e);
-    //    }
+
+    // Compare the first N bytes of the quote data with the signed quote body.
+    const NSUInteger kQuoteBodyComparisonLength = 432;
+    if (signatureBodyEntity.isvEnclaveQuoteBody.length < kQuoteBodyComparisonLength) {
+        OWSProdLogAndFail(@"%@ isvEnclaveQuoteBody has unexpected length.", self.logTag);
+        return NO;
+    }
+    if (quoteData.length < kQuoteBodyComparisonLength) {
+        OWSProdLogAndFail(@"%@ quoteData has unexpected length.", self.logTag);
+        return NO;
+    }
+    NSData *isvEnclaveQuoteBodyForComparison =
+        [signatureBodyEntity.isvEnclaveQuoteBody subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
+    NSData *quoteDataForComparison = [quoteData subdataWithRange:NSMakeRange(0, kQuoteBodyComparisonLength)];
+    if (![isvEnclaveQuoteBodyForComparison ows_constantTimeIsEqualToData:quoteDataForComparison]) {
+        OWSProdLogAndFail(@"%@ isvEnclaveQuoteBody and quoteData do not match.", self.logTag);
+        return NO;
+    }
+
+    // TODO: Before going to production, remove GROUP_OUT_OF_DATE.
+    if (![@"OK" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]
+        && ![@"GROUP_OUT_OF_DATE" isEqualToString:signatureBodyEntity.isvEnclaveQuoteStatus]) {
+        OWSProdLogAndFail(
+            @"%@ invalid isvEnclaveQuoteStatus: %@.", self.logTag, signatureBodyEntity.isvEnclaveQuoteStatus);
+        return NO;
+    }
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+    [dateFormatter setTimeZone:timeZone];
+    [dateFormatter setDateFormat:@"yyy-MM-dd'T'HH:mm:ss.SSSSSS"];
+    NSDate *timestampDate = [dateFormatter dateFromString:signatureBodyEntity.timestamp];
+    if (!timestampDate) {
+        OWSProdLogAndFail(@"%@ could not parse signature body timestamp.", self.logTag);
+        return NO;
+    }
+
+    // Only accept signatures from the last 24 hours.
+    NSDateComponents *dayComponent = [[NSDateComponents alloc] init];
+    dayComponent.day = 1;
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDate *timestampDatePlus1Day = [calendar dateByAddingComponents:dayComponent toDate:timestampDate options:0];
+
+    NSDate *now = [NSDate new];
+    BOOL isExpired = [now isAfterDate:timestampDatePlus1Day];
+
+    if (isExpired) {
+        OWSProdLogAndFail(@"%@ Signature is expired.", self.logTag);
+        return NO;
+    }
 
     return YES;
+}
+
+- (nullable SignatureBodyEntity *)parseSignatureBodyEntity:(NSString *)signatureBody
+{
+    OWSAssert(signatureBody.length > 0);
+
+    NSError *error = nil;
+    NSDictionary *_Nullable jsonDict =
+        [NSJSONSerialization JSONObjectWithData:[signatureBody dataUsingEncoding:NSUTF8StringEncoding]
+                                        options:0
+                                          error:&error];
+    if (error || ![jsonDict isKindOfClass:[NSDictionary class]]) {
+        OWSProdLogAndFail(@"%@ could not parse signature body JSON: %@.", self.logTag, error);
+        return nil;
+    }
+    NSString *_Nullable timestamp = [jsonDict stringForKey:@"timestamp"];
+    if (timestamp.length < 1) {
+        OWSProdLogAndFail(@"%@ could not parse signature timestamp.", self.logTag);
+        return nil;
+    }
+    NSData *_Nullable isvEnclaveQuoteBody = [jsonDict base64DataForKey:@"isvEnclaveQuoteBody"];
+    if (isvEnclaveQuoteBody.length < 1) {
+        OWSProdLogAndFail(@"%@ could not parse signature isvEnclaveQuoteBody.", self.logTag);
+        return nil;
+    }
+    NSString *_Nullable isvEnclaveQuoteStatus = [jsonDict stringForKey:@"isvEnclaveQuoteStatus"];
+    if (isvEnclaveQuoteStatus.length < 1) {
+        OWSProdLogAndFail(@"%@ could not parse signature isvEnclaveQuoteStatus.", self.logTag);
+        return nil;
+    }
+
+    SignatureBodyEntity *result = [SignatureBodyEntity new];
+    result.isvEnclaveQuoteBody = isvEnclaveQuoteBody;
+    result.isvEnclaveQuoteStatus = isvEnclaveQuoteStatus;
+    result.timestamp = timestamp;
+    return result;
 }
 
 - (BOOL)verifyServerQuote:(CDSQuote *)quote keys:(RemoteAttestationKeys *)keys enclaveId:(NSString *)enclaveId
