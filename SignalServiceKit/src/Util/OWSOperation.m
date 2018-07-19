@@ -5,6 +5,7 @@
 #import "OWSOperation.h"
 #import "NSError+MessageSending.h"
 #import "OWSBackgroundTask.h"
+#import "OWSError.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,6 +14,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 @interface OWSOperation ()
 
+@property (nullable) NSError *failingError;
 @property (atomic) OWSOperationState operationState;
 @property (nonatomic) OWSBackgroundTask *backgroundTask;
 
@@ -46,8 +48,23 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // Called one time only
 - (nullable NSError *)checkForPreconditionError
 {
-    // no-op
-    // Override in subclass if necessary
+    for (NSOperation *dependency in self.dependencies) {
+        if (![dependency isKindOfClass:[OWSOperation class]]) {
+            NSString *errorDescription =
+                [NSString stringWithFormat:@"%@ unknown dependency: %@", self.logTag, dependency.class];
+
+            return OWSErrorMakeAssertionError(errorDescription);
+        }
+
+        OWSOperation *dependentOperation = (OWSOperation *)dependency;
+
+        // Don't proceed if dependency failed - surface the dependency's error.
+        NSError *_Nullable dependencyError = dependentOperation.failingError;
+        if (dependencyError != nil) {
+            return dependencyError;
+        }
+    }
+
     return nil;
 }
 
@@ -59,6 +76,13 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 // Called at most one time.
 - (void)didSucceed
+{
+    // no-op
+    // Override in subclass if necessary
+}
+
+// Called at most one time.
+- (void)didCancel
 {
     // no-op
     // Override in subclass if necessary
@@ -93,6 +117,14 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 {
     DDLogDebug(@"%@ succeeded.", self.logTag);
     [self didSucceed];
+    [self markAsComplete];
+}
+
+// These methods are not intended to be subclassed
+- (void)reportCancelled
+{
+    DDLogDebug(@"%@ cancelled.", self.logTag);
+    [self didCancel];
     [self markAsComplete];
 }
 

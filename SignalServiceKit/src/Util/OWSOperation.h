@@ -24,31 +24,45 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 // any of the errors were fatal. Fatal errors trump retryable errors.
 @interface OWSOperation : NSOperation
 
-@property (nullable) NSError *failingError;
+@property (readonly, nullable) NSError *failingError;
+
+// Defaults to 0, set to greater than 0 in init if you'd like the operation to be retryable.
 @property NSUInteger remainingRetries;
 
-#pragma mark - Subclass Overrides
-
-// Called one time only
-- (nullable NSError *)checkForPreconditionError;
+#pragma mark - Mandatory Subclass Overrides
 
 // Called every retry, this is where the bulk of the operation's work should go.
 - (void)run;
 
+#pragma mark - Optional Subclass Overrides
+
+// Called one time only
+- (nullable NSError *)checkForPreconditionError;
+
 // Called at most one time.
 - (void)didSucceed;
 
+// Called at most one time.
+- (void)didCancel;
+
 // Called at most one time, once retry is no longer possible.
-- (void)didFailWithError:(NSError *)error;
+- (void)didFailWithError:(NSError *)error NS_SWIFT_NAME(didFail(error:));
 
 #pragma mark - Success/Error - Do Not Override
 
-// Complete the operation successfully.
-// Should be called at most once per operation instance.
-// You must ensure that `run` cannot fail after calling `reportSuccess`.
+// Report that the operation completed successfully.
+//
+// Each invocation of `run` must make exactly one call to one of: `reportSuccess`, `reportCancelled`, or `reportError:`
 - (void)reportSuccess;
 
-// Should be called at most once per `run`.
+// Call this when you abort before completion due to being cancelled.
+//
+// Each invocation of `run` must make exactly one call to one of: `reportSuccess`, `reportCancelled`, or `reportError:`
+- (void)reportCancelled;
+
+// Report that the operation failed to complete due to an error.
+//
+// Each invocation of `run` must make exactly one call to one of: `reportSuccess`, `reportCancelled`, or `reportError:`
 // You must ensure that `run` cannot succeed after calling `reportError`, e.g. generally you'll write something like
 // this:
 //
