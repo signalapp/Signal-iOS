@@ -195,7 +195,12 @@ class CDSBatchOperation: OWSOperation {
 
 class CDSFeedbackOperation: OWSOperation {
 
-    static let operationQueue = OperationQueue()
+    static let operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 1
+
+        return queue
+    }()
 
     private let legacyRegisteredRecipientIds: Set<String>
 

@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _contactIntersectionQueue = [NSOperationQueue new];
+    _contactIntersectionQueue.maxConcurrentOperationCount = 1;
 
     OWSSingletonAssert();
 
