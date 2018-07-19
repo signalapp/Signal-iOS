@@ -6,7 +6,7 @@
 #import "NSString+OWS.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/Cryptography.h>
-#import <SignalServiceKit/NSData+hexString.h>
+#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>

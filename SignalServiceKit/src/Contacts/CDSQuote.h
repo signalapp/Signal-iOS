@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable CDSQuote *)parseQuoteFromData:(NSData *)quoteData;
 
+- (BOOL)isDebugQuote;
+
 @end
 
 NS_ASSUME_NONNULL_END

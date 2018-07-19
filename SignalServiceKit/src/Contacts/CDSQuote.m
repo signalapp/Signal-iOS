@@ -320,6 +320,11 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
     return quote;
 }
 
+- (BOOL)isDebugQuote
+{
+    return (self.flags & SGX_FLAGS_DEBUG) != 0;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

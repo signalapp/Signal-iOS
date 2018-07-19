@@ -5,7 +5,7 @@
 #import "TSAccountManager.h"
 #import "AppContext.h"
 #import "NSData+Base64.h"
-#import "NSData+hexString.h"
+#import "NSData+OWS.h"
 #import "NSNotificationCenter+OWS.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSError.h"

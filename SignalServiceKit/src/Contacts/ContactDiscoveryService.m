@@ -4,32 +4,15 @@
 
 #import "ContactDiscoveryService.h"
 #import "CDSQuote.h"
+#import "CDSSigningCertificate.h"
 #import "Cryptography.h"
+#import "NSData+OWS.h"
 #import "OWSRequestFactory.h"
 #import "TSNetworkManager.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-@interface NSData (CDS)
-
-@end
-
-#pragma mark -
-
-@implementation NSData (CDS)
-
-- (NSData *)dataByAppendingData:(NSData *)data
-{
-    NSMutableData *result = [self mutableCopy];
-    [result appendData:data];
-    return [result copy];
-}
-
-@end
-
-#pragma mark -
 
 @interface RemoteAttestationKeys : NSObject
 
@@ -63,26 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES on success.
 - (BOOL)deriveKeys
 {
-    // private final byte[] clientKey = new byte[32];
-    // private final byte[] serverKey = new byte[32];
-    //
-    // public RemoteAttestationKeys(Curve25519KeyPair keyPair, byte[] serverPublicEphemeral, byte[] serverPublicStatic)
-    // {
-    //
-    //    + (NSData*)generateSharedSecretFromPublicKey:(NSData*)theirPublicKey andKeyPair:(ECKeyPair*)keyPair;
-    //
-    //    byte[] ephemeralToEphemeral =
-    //    Curve25519.getInstance(Curve25519.BEST).calculateAgreement(serverPublicEphemeral, keyPair.getPrivateKey());
     NSData *ephemeralToEphemeral =
         [Curve25519 generateSharedSecretFromPublicKey:self.serverEphemeralPublic andKeyPair:self.keyPair];
-    //    byte[] ephemeralToStatic    = Curve25519.getInstance(Curve25519.BEST).calculateAgreement(serverPublicStatic,
-    //    keyPair.getPrivateKey());
     NSData *ephemeralToStatic =
         [Curve25519 generateSharedSecretFromPublicKey:self.serverStaticPublic andKeyPair:self.keyPair];
 
-    //    byte[] masterSecret = ByteUtils.combine(ephemeralToEphemeral, ephemeralToStatic                          );
     NSData *masterSecret = [ephemeralToEphemeral dataByAppendingData:ephemeralToStatic];
-    //    byte[] publicKeys   = ByteUtils.combine(keyPair.getPublicKey(), serverPublicEphemeral, serverPublicStatic);
     NSData *publicKeys = [[self.keyPair.publicKey dataByAppendingData:self.serverEphemeralPublic]
         dataByAppendingData:self.serverStaticPublic];
 
@@ -117,56 +86,36 @@ NS_ASSUME_NONNULL_BEGIN
     self.serverKey = serverKey;
 
     return YES;
-
-    //    HKDFBytesGenerator generator = new HKDFBytesGenerator(new SHA256Digest());
-    //    generator.init(new HKDFParameters(masterSecret, publicKeys, null));
-    //    generator.generateBytes(clientKey, 0, clientKey.length);
-    //    generator.generateBytes(serverKey, 0, serverKey.length);
 }
 
-//+ (DHEResult*)DHEKeyAgreement:(id<AxolotlParameters>)parameters{
-//    NSMutableData *masterKey = [NSMutableData data];
-//
-//    [masterKey appendData:[self discontinuityBytes]];
-//
-//    if ([parameters isKindOfClass:[AliceAxolotlParameters class]]) {
-//        AliceAxolotlParameters *params = (AliceAxolotlParameters*)parameters;
-//
-//        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
-//        andKeyPair:params.ourIdentityKeyPair]]; [masterKey appendData:[Curve25519
-//        generateSharedSecretFromPublicKey:params.theirIdentityKey andKeyPair:params.ourBaseKey]]; [masterKey
-//        appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirSignedPreKey
-//        andKeyPair:params.ourBaseKey]]; if (params.theirOneTimePrekey) {
-//            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirOneTimePrekey
-//            andKeyPair:params.ourBaseKey]];
-//        }
-//    } else if ([parameters isKindOfClass:[BobAxolotlParameters class]]){
-//        BobAxolotlParameters *params = (BobAxolotlParameters*)parameters;
-//
-//        [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirIdentityKey
-//        andKeyPair:params.ourSignedPrekey]]; [masterKey appendData:[Curve25519
-//        generateSharedSecretFromPublicKey:params.theirBaseKey andKeyPair:params.ourIdentityKeyPair]]; [masterKey
-//        appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
-//        andKeyPair:params.ourSignedPrekey]]; if (params.ourOneTimePrekey) {
-//            [masterKey appendData:[Curve25519 generateSharedSecretFromPublicKey:params.theirBaseKey
-//            andKeyPair:params.ourOneTimePrekey]];
-//        }
-//    }
-//
-//    return [[DHEResult alloc] initWithMasterKey:masterKey];
-//}
+@end
+
+#pragma mark -
+
+@interface RemoteAttestation : NSObject
+
+@property (nonatomic) RemoteAttestationKeys *keys;
+// TODO: Do we need to support multiple cookies?
+@property (nonatomic) NSString *cookie;
+@property (nonatomic) NSData *requestId;
 
 @end
 
 #pragma mark -
 
-@interface NSDictionary (OWS)
+@implementation RemoteAttestation
 
 @end
 
 #pragma mark -
 
-@implementation NSDictionary (OWS)
+@interface NSDictionary (CDS)
+
+@end
+
+#pragma mark -
+
+@implementation NSDictionary (CDS)
 
 - (nullable NSData *)base64DataForKey:(NSString *)key
 {
@@ -245,22 +194,19 @@ NS_ASSUME_NONNULL_BEGIN
         success:^(NSURLSessionDataTask *task, id responseDict) {
             DDLogVerbose(@"%@ remote attestation auth success: %@", self.logTag, responseDict);
 
-            NSString *_Nullable authToken = [self parseAuthToken:responseDict];
-            if (!authToken) {
-                DDLogError(@"%@ remote attestation auth missing token: %@", self.logTag, responseDict);
-                return;
-            }
-            [self performRemoteAttestationWithToken:authToken];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSString *_Nullable authToken = [self parseAuthToken:responseDict];
+                if (!authToken) {
+                    DDLogError(@"%@ remote attestation auth missing token: %@", self.logTag, responseDict);
+                    return;
+                }
+                [self performRemoteAttestationWithToken:authToken];
+            });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
             DDLogVerbose(@"%@ remote attestation auth failure: %zd", self.logTag, response.statusCode);
         }];
-
-
-    //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-    //        [self performRemoteAttestation];
-    //    });
 }
 
 - (nullable NSString *)parseAuthToken:(id)response
@@ -268,29 +214,29 @@ NS_ASSUME_NONNULL_BEGIN
     if (![response isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
+
     NSDictionary *responseDict = response;
-    NSString *_Nullable tokenString = responseDict[@"token"];
-    if (![tokenString isKindOfClass:[NSString class]]) {
+    NSString *_Nullable token = responseDict[@"token"];
+    if (![token isKindOfClass:[NSString class]]) {
         return nil;
     }
-    if (tokenString.length < 1) {
+    if (token.length < 1) {
         return nil;
     }
-    NSRange range = [tokenString rangeOfString:@":"];
-    if (range.location == NSNotFound) {
+
+    NSString *_Nullable username = responseDict[@"username"];
+    if (![username isKindOfClass:[NSString class]]) {
         return nil;
     }
-    DDLogVerbose(@"%@ attestation raw token: %@", self.logTag, tokenString);
-    NSString *username = [tokenString substringToIndex:range.location];
-    NSString *password = [tokenString substringFromIndex:range.location + range.length];
-    if (username.length < 1 || password.length < 1) {
+    if (username.length < 1) {
         return nil;
     }
+
     // To work around an idiosyncracy of the service implementation,
     // we need to repeat the username twice in the token.
-    NSString *token = [username stringByAppendingFormat:@":%@", tokenString];
-    DDLogVerbose(@"%@ attestation modified token: %@", self.logTag, token);
-    return token;
+    NSString *modifiedToken = [username stringByAppendingFormat:@":%@", token];
+    DDLogVerbose(@"%@ attestation modified token: %@", self.logTag, modifiedToken);
+    return modifiedToken;
 }
 
 - (void)performRemoteAttestationWithToken:(NSString *)authToken
@@ -304,7 +250,14 @@ NS_ASSUME_NONNULL_BEGIN
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
             DDLogVerbose(@"%@ remote attestation success: %@", self.logTag, responseJson);
-            [self parseAttestationResponseJson:responseJson response:task.response keyPair:keyPair];
+
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // TODO: Handle result.
+                [self parseAttestationResponseJson:responseJson
+                                          response:task.response
+                                           keyPair:keyPair
+                                         enclaveId:enclaveId];
+            });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
@@ -312,24 +265,21 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (nullable NSString *)parseAttestationResponseJson:(id)responseJson
-                                           response:(NSURLResponse *)response
-                                            keyPair:(ECKeyPair *)keyPair
+- (nullable RemoteAttestation *)parseAttestationResponseJson:(id)responseJson
+                                                    response:(NSURLResponse *)response
+                                                     keyPair:(ECKeyPair *)keyPair
+                                                   enclaveId:(NSString *)enclaveId
 {
     OWSAssert(responseJson);
     OWSAssert(response);
     OWSAssert(keyPair);
+    OWSAssert(enclaveId.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
         OWSProdLogAndFail(@"%@ unexpected response type.", self.logTag);
         return nil;
     }
     NSDictionary *responseHeaders = ((NSHTTPURLResponse *)response).allHeaderFields;
-    //    DDLogVerbose(@"%@ responseHeaders: %@", self.logTag, responseHeaders);
-    //    for (NSString *key in responseHeaders) {
-    //        id value = responseHeaders[key];
-    //        DDLogVerbose(@"%@ \t %@: %@, %@", self.logTag, key, [value class], value);
-    //    }
 
     NSString *_Nullable cookie = responseHeaders[@"Set-Cookie"];
     if (![cookie isKindOfClass:[NSString class]]) {
@@ -337,12 +287,15 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
     DDLogVerbose(@"%@ cookie: %@", self.logTag, cookie);
+
+    // The cookie header will have this form:
+    // Set-Cookie: __NSCFString, c2131364675-413235ic=c1656171-249545-958227; Path=/; Secure
+    // We want to strip everything after the semicolon (;).
     NSRange cookieRange = [cookie rangeOfString:@";"];
     if (cookieRange.length != NSNotFound) {
         cookie = [cookie substringToIndex:cookieRange.location];
         DDLogVerbose(@"%@ trimmed cookie: %@", self.logTag, cookie);
     }
-    //    Set-Cookie: __NSCFString, c2131364675-413235ic=c1656171-249545-958227; Path=/; Secure
 
     if (![responseJson isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -353,7 +306,6 @@ NS_ASSUME_NONNULL_BEGIN
         id value = responseDict[key];
         DDLogVerbose(@"%@ \t %@: %@, %@", self.logTag, key, [value class], value);
     }
-    //    NSString *_Nullable serverEphemeralPublic = responseDict[@"serverEphemeralPublic"];
     NSData *_Nullable serverEphemeralPublic =
         [responseDict base64DataForKey:@"serverEphemeralPublic" expectedLength:32];
     if (!serverEphemeralPublic) {
@@ -385,8 +337,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ couldn't parse quote data.", self.logTag);
         return nil;
     }
-    id _Nullable signatureBody = responseDict[@"signatureBody"];
-    if (!signatureBody) {
+    NSString *_Nullable signatureBody = responseDict[@"signatureBody"];
+    if (![signatureBody isKindOfClass:[NSString class]]) {
         OWSProdLogAndFail(@"%@ couldn't parse signatureBody.", self.logTag);
         return nil;
     }
@@ -428,19 +380,149 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    //    RemoteAttestationKeys keys      = new RemoteAttestationKeys(keyPair, response.getServerEphemeralPublic(),
-    //    response.getServerStaticPublic()); Quote                 quote     = new Quote(response.getQuote()); byte[]
-    //    requestId = getPlaintext(keys.getServerKey(), response.getIv(), response.getCiphertext(), response.getTag());
+    if (![self verifyServerQuote:quote keys:keys enclaveId:enclaveId]) {
+        OWSProdLogAndFail(@"%@ couldn't verify quote.", self.logTag);
+        return nil;
+    }
+
+    if (![self verifyIasSignature:nil
+                     certificates:certificates
+                    signatureBody:signatureBody
+                        signature:signature
+                            quote:quote]) {
+        OWSProdLogAndFail(@"%@ couldn't verify ias signature.", self.logTag);
+        return nil;
+    }
+
+    //+      RemoteAttestation remoteAttestation = new RemoteAttestation(requestId, keys);
+    //+      List<String>      addressBook       = new LinkedList<>();
+    //+
+    //+      for (String e164number : e164numbers) {
+    //+        addressBook.add(e164number.substring(1));
+    //+      }
+    //+
+    //+      DiscoveryRequest  request  = cipher.createDiscoveryRequest(addressBook, remoteAttestation);
+    //+      DiscoveryResponse response = this.pushServiceSocket.getContactDiscoveryRegisteredUsers(authorization,
+    //request, attestationResponse.second(), mrenclave);
+    //+      byte[]            data     = cipher.getDiscoveryResponseData(response, remoteAttestation);
+    //+
+    //+      Iterator<String> addressBookIterator = addressBook.iterator();
+    //+      List<String>     results             = new LinkedList<>();
+    //+
+    //+      for (byte aData : data) {
+    //+        String candidate = addressBookIterator.next();
+    //+
+    //+        if (aData != 0) results.add('+' + candidate);
+    //+      }
+    //+
+    //+      return results;
+
+    RemoteAttestation *result = [RemoteAttestation new];
+    result.cookie = cookie;
+    result.keys = keys;
+    result.requestId = requestId;
+
+    return result;
+}
+
+- (BOOL)verifyIasSignature:(nullable id)trustStore
+              certificates:(NSString *)certificates
+             signatureBody:(NSString *)signatureBody
+                 signature:(NSData *)signature
+                     quote:(CDSQuote *)quote
+{
+    //    OWSAssert(trustStore);
+    OWSAssert(certificates.length > 0);
+    OWSAssert(signatureBody.length > 0);
+    OWSAssert(signature.length > 0);
+    OWSAssert(quote);
+
+    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:certificates];
+    if (!certificate) {
+        OWSProdLogAndFail(@"%@ could not parse signing certificate.", self.logTag);
+        return NO;
+    }
+    if (![certificate verifySignatureOfBody:signatureBody signature:signature]) {
+        OWSProdLogAndFail(@"%@ could not verify signature.", self.logTag);
+        return NO;
+    }
+    ////public void verifyIasSignature(KeyStore trustStore, String certificates, String signatureBody, String signature,
+    ///Quote quote) /throws SignatureException
+    ////{
+    ////    try {
+    //        SigningCertificate signingCertificate = new SigningCertificate(certificates, trustStore);
+    //        signingCertificate.verifySignature(signatureBody, signature);
     //
-    //    verifyServerQuote(quote, response.getServerStaticPublic(), mrenclave);
-    //    verifyIasSignature(keyStore, response.getCertificates(), response.getSignatureBody(), response.getSignature(),
-    //    quote);
+    //        SignatureBodyEntity signatureBodyEntity = JsonUtil.fromJson(signatureBody, SignatureBodyEntity.class);
     //
-    //    return new RemoteAttestation(requestId, keys, cookies);
-    //} catch (BadPaddingException e) {
-    //    throw new UnauthenticatedResponseException(e);
-    //}
-    return nil;
+    //        if (!MessageDigest.isEqual(ByteUtil.trim(signatureBodyEntity.getIsvEnclaveQuoteBody(), 432),
+    //        ByteUtil.trim(quote.getQuoteBytes(), 432))) {
+    //            throw new SignatureException("Signed quote is not the same as RA quote: " +
+    //            Hex.toStringCondensed(signatureBodyEntity.getIsvEnclaveQuoteBody()) + " vs " +
+    //            Hex.toStringCondensed(quote.getQuoteBytes()));
+    //        }
+    //
+    //        if (!"OK".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus()) &&
+    //        !"GROUP_OUT_OF_DATE".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus())) {
+    //            //      if (!"OK".equals(signatureBodyEntity.getIsvEnclaveQuoteStatus())) {
+    //            throw new SignatureException("Quote status is: " + signatureBodyEntity.getIsvEnclaveQuoteStatus());
+    //        }
+    //
+    //        if
+    //        (Instant.from(ZonedDateTime.of(LocalDateTime.from(DateTimeFormatter.ofPattern("yyy-MM-dd'T'HH:mm:ss.SSSSSS").parse(signatureBodyEntity.getTimestamp())),
+    //        ZoneId.of("UTC")))
+    //            .plus(Period.ofDays(1))
+    //            .isBefore(Instant.now()))
+    //        {
+    //            throw new SignatureException("Signature is expired");
+    //        }
+    //
+    //    } catch (CertificateException | CertPathValidatorException | IOException e) {
+    //        throw new SignatureException(e);
+    //    }
+
+    return YES;
+}
+
+- (BOOL)verifyServerQuote:(CDSQuote *)quote keys:(RemoteAttestationKeys *)keys enclaveId:(NSString *)enclaveId
+{
+    OWSAssert(quote);
+    OWSAssert(keys);
+    OWSAssert(enclaveId.length > 0);
+
+    if (quote.reportData.length < keys.serverStaticPublic.length) {
+        OWSProdLogAndFail(@"%@ reportData has unexpected length: %zd != %zd.",
+            self.logTag,
+            quote.reportData.length,
+            keys.serverStaticPublic.length);
+        return NO;
+    }
+
+    NSData *_Nullable theirServerPublicStatic =
+        [quote.reportData subdataWithRange:NSMakeRange(0, keys.serverStaticPublic.length)];
+    if (theirServerPublicStatic.length != keys.serverStaticPublic.length) {
+        OWSProdLogAndFail(@"%@ could not extract server public static.", self.logTag);
+        return NO;
+    }
+    if (![keys.serverStaticPublic ows_constantTimeIsEqualToData:theirServerPublicStatic]) {
+        OWSProdLogAndFail(@"%@ server public statics do not match.", self.logTag);
+        return NO;
+    }
+    // It's easier to compare as hex data than parsing hexadecimal.
+    NSData *_Nullable ourEnclaveIdHexData = [enclaveId dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *_Nullable theirEnclaveIdHexData =
+        [quote.mrenclave.hexadecimalString dataUsingEncoding:NSUTF8StringEncoding];
+    if (!ourEnclaveIdHexData || !theirEnclaveIdHexData
+        || ![ourEnclaveIdHexData ows_constantTimeIsEqualToData:theirEnclaveIdHexData]) {
+        OWSProdLogAndFail(@"%@ enclave ids do not match.", self.logTag);
+        return NO;
+    }
+    // TODO: Reverse this condition in production.
+    if (!quote.isDebugQuote) {
+        OWSProdLogAndFail(@"%@ quote has invalid isDebugQuote value.", self.logTag);
+        return NO;
+    }
+    return YES;
 }
 
 - (nullable NSData *)decryptRequestId:(NSData *)encryptedRequestId
