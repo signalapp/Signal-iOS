@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *latest =
         [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId transaction:transaction];
 
-    if (![devices isSubsetOfSet:latest.devices.set]) {
+    if (![devices intersectsSet:latest.devices.set]) {
         return;
     }
     DDLogDebug(@"%@ removing devices: %@, from recipient: %@", self.logTag, devices, latest.recipientId);

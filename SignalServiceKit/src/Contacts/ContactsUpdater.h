@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class Contact;
-
 @interface ContactsUpdater : NSObject
 
 + (instancetype)sharedUpdater;
@@ -30,10 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)lookupIdentifiers:(NSArray<NSString *> *)identifiers
                   success:(void (^)(NSArray<SignalRecipient *> *recipients))success
                   failure:(void (^)(NSError *error))failure;
-
-- (void)updateSignalContactIntersectionWithABContacts:(NSArray<Contact *> *)abContacts
-                                              success:(void (^)(void))success
-                                              failure:(void (^)(NSError *error))failure;
 
 @end
 
