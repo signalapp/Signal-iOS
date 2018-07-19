@@ -7,7 +7,6 @@ import Foundation
 @objc(OWSContactDiscoveryOperation)
 class ContactDiscoveryOperation: OWSOperation {
 
-    // TODO verify proper batch size
     let batchSize = 2048
     let recipientIdsToLookup: [String]
 
@@ -49,8 +48,14 @@ class ContactDiscoveryOperation: OWSOperation {
 
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
-    private let recipientIdsToLookup: [String]
     var registeredRecipientIds: Set<String>
+
+    private let recipientIdsToLookup: [String]
+    private var networkManager: TSNetworkManager {
+        return TSNetworkManager.shared()
+    }
+
+    // MARK: Initializers
 
     required init(recipientIdsToLookup: [String]) {
         self.recipientIdsToLookup = recipientIdsToLookup
@@ -61,51 +66,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
         Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
     }
 
-    private var networkManager: TSNetworkManager {
-        return TSNetworkManager.shared()
-    }
-
-    private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
-
-        guard let responseDict = response as? [String: AnyObject] else {
-            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-            responseError.isRetryable = true
-
-            throw responseError
-        }
-
-        guard let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
-            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
-            responseError.isRetryable = true
-
-            throw responseError
-        }
-
-        var registeredRecipientIds: Set<String> = Set()
-
-        for contactDict in contactDicts {
-            guard let hash = contactDict["token"] as? String, hash.count > 0 else {
-                owsFail("\(self.logTag) in \(#function) hash was unexpectedly nil")
-                continue
-            }
-
-            guard let recipientId = phoneNumbersByHashes[hash], recipientId.count > 0 else {
-                owsFail("\(self.logTag) in \(#function) recipientId was unexpectedly nil")
-                continue
-            }
-
-            guard recipientIdsToLookup.contains(recipientId) else {
-                owsFail("\(self.logTag) in \(#function) unexpected recipientId")
-                continue
-            }
-
-            registeredRecipientIds.insert(recipientId)
-        }
-
-        return registeredRecipientIds
-    }
-
-    // MARK: Mandatory overrides
+    // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
@@ -148,8 +109,6 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
         })
     }
 
-    // MARK: Optional Overrides
-
     // Called at most one time.
     override func didSucceed() {
         // Compare against new CDS service
@@ -160,13 +119,85 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
         CDSFeedbackOperation.operationQueue.addOperations([newCDSBatchOperation, cdsFeedbackOperation], waitUntilFinished: false)
     }
 
+    // MARK: Private Helpers
+
+    private func parse(response: Any?, phoneNumbersByHashes: [String: String]) throws -> Set<String> {
+
+        guard let responseDict = response as? [String: AnyObject] else {
+            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
+            responseError.isRetryable = true
+
+            throw responseError
+        }
+
+        guard let contactDicts = responseDict["contacts"] as? [[String: AnyObject]] else {
+            let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
+            responseError.isRetryable = true
+
+            throw responseError
+        }
+
+        var registeredRecipientIds: Set<String> = Set()
+
+        for contactDict in contactDicts {
+            guard let hash = contactDict["token"] as? String, hash.count > 0 else {
+                owsFail("\(self.logTag) in \(#function) hash was unexpectedly nil")
+                continue
+            }
+
+            guard let recipientId = phoneNumbersByHashes[hash], recipientId.count > 0 else {
+                owsFail("\(self.logTag) in \(#function) recipientId was unexpectedly nil")
+                continue
+            }
+
+            guard recipientIdsToLookup.contains(recipientId) else {
+                owsFail("\(self.logTag) in \(#function) unexpected recipientId")
+                continue
+            }
+
+            registeredRecipientIds.insert(recipientId)
+        }
+
+        return registeredRecipientIds
+    }
+
+}
+
+class CDSBatchOperation: OWSOperation {
+
+    private let recipientIdsToLookup: [String]
+    var registeredRecipientIds: Set<String>
+
+    // MARK: Initializers
+
+    required init(recipientIdsToLookup: [String]) {
+        self.recipientIdsToLookup = recipientIdsToLookup
+        self.registeredRecipientIds = Set()
+
+        super.init()
+
+        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+    }
+
+    // MARK: OWSOperationOverrides
+
+    // Called every retry, this is where the bulk of the operation's work should go.
+    override func run() {
+        Logger.debug("\(logTag) in \(#function)")
+
+        Logger.debug("\(logTag) in \(#function) FAKING intersection (TODO)")
+        self.registeredRecipientIds = Set(self.recipientIdsToLookup)
+        self.reportSuccess()
+    }
 }
 
 class CDSFeedbackOperation: OWSOperation {
 
     static let operationQueue = OperationQueue()
 
-    let legacyRegisteredRecipientIds: Set<String>
+    private let legacyRegisteredRecipientIds: Set<String>
+
+    // MARK: Initializers
 
     required init(legacyRegisteredRecipientIds: Set<String>) {
         self.legacyRegisteredRecipientIds = legacyRegisteredRecipientIds
@@ -176,7 +207,7 @@ class CDSFeedbackOperation: OWSOperation {
         Logger.debug("\(logTag) in \(#function)")
     }
 
-    // MARK: Mandatory overrides
+    // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override func run() {
@@ -205,32 +236,6 @@ class CDSFeedbackOperation: OWSOperation {
         // /v1/directory/feedback/attestation-error:
         // /v1/directory/feedback/unexpected-error:
         Logger.debug("\(logTag) in \(#function) TODO: PUT /v1/directory/feedback/*-error")
-    }
-}
-
-class CDSBatchOperation: OWSOperation {
-
-    private let recipientIdsToLookup: [String]
-    var registeredRecipientIds: Set<String>
-
-    required init(recipientIdsToLookup: [String]) {
-        self.recipientIdsToLookup = recipientIdsToLookup
-        self.registeredRecipientIds = Set()
-
-        super.init()
-
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
-    }
-
-    // MARK: Mandatory overrides
-
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
-        Logger.debug("\(logTag) in \(#function)")
-
-        Logger.debug("\(logTag) in \(#function) FAKING intersection (TODO)")
-        self.registeredRecipientIds = Set(self.recipientIdsToLookup)
-        self.reportSuccess()
     }
 }
 
