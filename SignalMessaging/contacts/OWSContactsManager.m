@@ -308,10 +308,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             });
             return;
         } else if (isFullIntersection) {
-            DDLogInfo(@"%@ Doing full intersection with %zd contacts.", self.logTag, recipientIdsForIntersection.count);
+            DDLogInfo(@"%@ Doing full intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
         } else {
             DDLogInfo(
-                @"%@ Doing delta intersection with %zd contacts.", self.logTag, recipientIdsForIntersection.count);
+                @"%@ Doing delta intersection with %zu contacts.", self.logTag, recipientIdsForIntersection.count);
         }
 
         [self intersectContacts:recipientIdsForIntersection
@@ -340,9 +340,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
             if (isFullIntersection) {
                 // Don't do a full intersection more often than once every 6 hours.
-                const NSTimeInterval kFullIntersectionRate = 6 * kHourInterval;
-                NSDate *nextFullIntersectionDate =
-                    [NSDate dateWithTimeIntervalSince1970:[NSDate new].timeIntervalSince1970 + kFullIntersectionRate];
+                const NSTimeInterval kMinFullIntersectionInterval = 6 * kHourInterval;
+                NSDate *nextFullIntersectionDate = [NSDate
+                    dateWithTimeIntervalSince1970:[NSDate new].timeIntervalSince1970 + kMinFullIntersectionInterval];
                 [transaction setDate:nextFullIntersectionDate
                               forKey:OWSContactsManagerKeyNextFullIntersectionDate
                         inCollection:OWSContactsManagerCollection];
