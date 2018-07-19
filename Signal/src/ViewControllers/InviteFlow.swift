@@ -71,7 +71,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             return nil
         }
 
-        let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment: "content of tweet when inviting via twitter")
+        let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment: "content of tweet when inviting via twitter - please do not translate URL")
         twitterViewController.setInitialText(tweetString)
 
         let tweetUrl = URL(string: installUrl)

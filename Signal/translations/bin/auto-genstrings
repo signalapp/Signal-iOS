@@ -27,12 +27,6 @@ fi
 
 done
 
-JSQ_STRINGS_PATH="../JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle/Base.lproj/JSQMessages.strings"
-if [ ! -f $JSQ_STRINGS_PATH ]; then
-  echo "[!] Error. Expected to find strings for JSQMessagesViewController at ${JSQ_STRINGS_PATH}"
-  exit 1
-fi
-
 # Now that we've check all our pre-conditions, proceed with the work.
 
 # Search directories for .m & .h files and collect string definitions with genstrings
@@ -57,15 +51,4 @@ echo "$OLDUTF8" | grep -Eo '^".*"' | \
 		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
 		if($2 ~ /"$/){$2 = $2";"}; \
 		print}' - <(echo "$NEWUTF8") > $STRINGFILE
-
-# Copy in strings from JSQMessagesViewController
-#
-# We have a wider array of translators than JSQ, and it's easier for our
-# translators to translate for us directly rather than to direct them to the
-# now defunct JSQMessagesView project.
-
-echo "Copying strings from JSQMessagesViewController"
-echo "
-// Strings Copied in from JSQMessagesViewController" >> $STRINGFILE
-cat $JSQ_STRINGS_PATH  | grep -v "^//" >> $STRINGFILE
 
