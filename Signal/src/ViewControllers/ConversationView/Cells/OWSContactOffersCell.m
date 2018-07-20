@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
+    self.layoutConstraints = @[];
 
     self.titleLabel = [UILabel new];
     self.titleLabel.textColor = [UIColor ows_light60Color];

@@ -38,7 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutMargins = UIEdgeInsetsZero;
 
     self.axis = UILayoutConstraintAxisHorizontal;
-    self.spacing = self.hSpacing;
     self.alignment = UIStackViewAlignmentCenter;
     self.distribution = UIStackViewDistributionEqualSpacing;
 
@@ -47,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     leftStackView.spacing = self.hSpacing;
     leftStackView.alignment = UIStackViewAlignmentCenter;
     [self addArrangedSubview:leftStackView];
+    [leftStackView setContentHuggingHigh];
 
     self.timestampLabel = [UILabel new];
     [leftStackView addArrangedSubview:self.timestampLabel];
@@ -56,7 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
     [leftStackView addArrangedSubview:self.messageTimerView];
 
     self.statusIndicatorImageView = [UIImageView new];
-    [self.statusIndicatorImageView setContentHuggingHigh];
     [self addArrangedSubview:self.statusIndicatorImageView];
 
     self.userInteractionEnabled = NO;
@@ -143,19 +142,34 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (statusIndicatorImage) {
-            OWSAssert(statusIndicatorImage.size.width <= self.maxImageWidth);
-            self.statusIndicatorImageView.image =
-                [statusIndicatorImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.statusIndicatorImageView.tintColor = textColor;
-            self.statusIndicatorImageView.hidden = NO;
+            [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
         } else {
-            self.statusIndicatorImageView.image = nil;
-            self.statusIndicatorImageView.hidden = YES;
+            [self hideStatusIndicator];
         }
     } else {
-        self.statusIndicatorImageView.image = nil;
-        self.statusIndicatorImageView.hidden = YES;
+        [self hideStatusIndicator];
     }
+}
+
+- (void)showStatusIndicatorWithIcon:(UIImage *)icon textColor:(UIColor *)textColor
+{
+    OWSAssert(icon.size.width <= self.maxImageWidth);
+    self.statusIndicatorImageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.statusIndicatorImageView.tintColor = textColor;
+    [self.statusIndicatorImageView setContentHuggingHigh];
+    self.spacing = self.hSpacing;
+}
+
+- (void)hideStatusIndicator
+{
+    // If there's no status indicator, we want the other
+    // footer contents to "cling to the leading edge".
+    // Instead of hiding the status indicator view,
+    // we clear its contents and let it stretch to fill
+    // the available space.
+    self.statusIndicatorImageView.image = nil;
+    [self.statusIndicatorImageView setContentHuggingLow];
+    self.spacing = 0;
 }
 
 - (void)animateSpinningIcon
