@@ -10,15 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedUpdater;
 
-// This asynchronously tries to verify whether or not a contact id
-// corresponds to a service account.
-//
-// The failure callback is invoked if the lookup fails _or_ if the
-// contact id doesn't correspond to an account.
-- (void)lookupIdentifier:(NSString *)identifier
-                 success:(void (^)(SignalRecipient *recipient))success
-                 failure:(void (^)(NSError *error))failure;
-
 // This asynchronously tries to verify whether or not a group of possible
 // contact ids correspond to service accounts.
 //

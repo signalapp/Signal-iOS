@@ -30,3 +30,5 @@ shift-base:fe_tobytes.c
 shift-exponent:fe_tobytes.c
 shift-base:sc_reduce.c
 shift-exponent:sc_reduce.c
+shift-base:sc_muladd.c
+shift-exponent:sc_muladd.c

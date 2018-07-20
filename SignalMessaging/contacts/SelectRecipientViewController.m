@@ -319,9 +319,19 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                           [[ContactsUpdater sharedUpdater] lookupIdentifiers:possiblePhoneNumbers
                               success:^(NSArray<SignalRecipient *> *recipients) {
                                   OWSAssertIsOnMainThread();
-                                  OWSAssert(recipients.count > 0);
-
                                   if (modalActivityIndicator.wasCancelled) {
+                                      return;
+                                  }
+
+                                  if (recipients.count == 0) {
+                                      [modalActivityIndicator
+                                          dismissViewControllerAnimated:NO
+                                                             completion:^{
+                                                                 NSError *error
+                                                                     = OWSErrorMakeNoSuchSignalRecipientError();
+                                                                 [OWSAlerts showErrorAlertWithMessage:
+                                                                                error.localizedDescription];
+                                                             }];
                                       return;
                                   }
 
