@@ -348,6 +348,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Update With... Methods
 
+- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                           changeBlock:(void (^)(id))changeBlock
+{
+    OWSAssert(transaction);
+
+    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
+    [self touchThreadWithTransaction:transaction];
+}
+
 - (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(expireStartedAt > 0);
