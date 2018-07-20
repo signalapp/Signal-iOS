@@ -72,6 +72,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId
+                               username:(NSString *)username
                               authToken:(NSString *)authToken;
 
 + (TSRequest *)remoteAttestationAuthRequest;

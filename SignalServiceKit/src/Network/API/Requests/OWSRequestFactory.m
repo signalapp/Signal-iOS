@@ -278,10 +278,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId
+                               username:(NSString *)username
                               authToken:(NSString *)authToken
 {
     OWSAssert(keyPair);
     OWSAssert(enclaveId.length > 0);
+    OWSAssert(username.length > 0);
     OWSAssert(authToken.length > 0);
 
     NSString *path =
@@ -292,6 +294,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                // We DO NOT prepend the "key type" byte.
                                                @"clientPublic" : [keyPair.publicKey base64EncodedStringWithOptions:0],
                                            }
+                                             username:username
                                             authToken:authToken];
 }
 

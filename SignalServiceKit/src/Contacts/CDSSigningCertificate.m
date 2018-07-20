@@ -200,13 +200,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable NSArray<NSData *> *)anchorCertificates
 {
-    // We need to use an Intel certificate as the anchor for IAS verification.
-    NSData *_Nullable anchorCertificate = [self certificateDataForService:@"ias-root"];
-    if (!anchorCertificate) {
-        OWSProdLogAndFail(@"%@ could not load anchor certificate.", self.logTag);
-        return nil;
-    }
-    return @[ anchorCertificate ];
+    static NSArray<NSData *> *anchorCertificates = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // We need to use an Intel certificate as the anchor for IAS verification.
+        NSData *_Nullable anchorCertificate = [self certificateDataForService:@"ias-root"];
+        if (!anchorCertificate) {
+            OWSProdLogAndFail(@"%@ could not load anchor certificate.", self.logTag);
+            OWSRaiseException(@"OWSSignalService_CouldNotLoadCertificate", @"%s", __PRETTY_FUNCTION__);
+        } else {
+            anchorCertificates = @[ anchorCertificate ];
+        }
+    });
+    return anchorCertificates;
 }
 
 + (nullable NSData *)certificateDataForService:(NSString *)service

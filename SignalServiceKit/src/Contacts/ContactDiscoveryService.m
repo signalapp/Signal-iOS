@@ -14,6 +14,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface RemoteAttestationAuth : NSObject
+
+@property (nonatomic) NSString *username;
+@property (nonatomic) NSString *authToken;
+
+@end
+
+#pragma mark -
+
+@implementation RemoteAttestationAuth
+
+@end
+
+#pragma mark -
+
 @interface RemoteAttestationKeys : NSObject
 
 @property (nonatomic) ECKeyPair *keyPair;
@@ -195,12 +210,12 @@ NS_ASSUME_NONNULL_BEGIN
             DDLogVerbose(@"%@ remote attestation auth success: %@", self.logTag, responseDict);
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSString *_Nullable authToken = [self parseAuthToken:responseDict];
-                if (!authToken) {
-                    DDLogError(@"%@ remote attestation auth missing token: %@", self.logTag, responseDict);
+                RemoteAttestationAuth *_Nullable auth = [self parseAuthToken:responseDict];
+                if (!auth) {
+                    DDLogError(@"%@ remote attestation auth could not be parsed: %@", self.logTag, responseDict);
                     return;
                 }
-                [self performRemoteAttestationWithToken:authToken];
+                [self performRemoteAttestationWithAuth:auth];
             });
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -209,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (nullable NSString *)parseAuthToken:(id)response
+- (nullable RemoteAttestationAuth *)parseAuthToken:(id)response
 {
     if (![response isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -218,35 +233,41 @@ NS_ASSUME_NONNULL_BEGIN
     NSDictionary *responseDict = response;
     NSString *_Nullable token = responseDict[@"token"];
     if (![token isKindOfClass:[NSString class]]) {
+        OWSProdLogAndFail(@"%@ missing or invalid token.", self.logTag);
         return nil;
     }
     if (token.length < 1) {
+        OWSProdLogAndFail(@"%@ empty token.", self.logTag);
         return nil;
     }
 
     NSString *_Nullable username = responseDict[@"username"];
     if (![username isKindOfClass:[NSString class]]) {
+        OWSProdLogAndFail(@"%@ missing or invalid username.", self.logTag);
         return nil;
     }
     if (username.length < 1) {
+        OWSProdLogAndFail(@"%@ empty username.", self.logTag);
         return nil;
     }
 
-    // To work around an idiosyncracy of the service implementation,
-    // we need to repeat the username twice in the token.
-    NSString *modifiedToken = [username stringByAppendingFormat:@":%@", token];
-    DDLogVerbose(@"%@ attestation modified token: %@", self.logTag, modifiedToken);
-    return modifiedToken;
+    RemoteAttestationAuth *result = [RemoteAttestationAuth new];
+    result.username = username;
+    result.authToken = token;
+    return result;
 }
 
-- (void)performRemoteAttestationWithToken:(NSString *)authToken
+- (void)performRemoteAttestationWithAuth:(RemoteAttestationAuth *)auth
 {
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
     // TODO:
     NSString *enclaveId = @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9";
 
-    TSRequest *request = [OWSRequestFactory remoteAttestationRequest:keyPair enclaveId:enclaveId authToken:authToken];
+    TSRequest *request = [OWSRequestFactory remoteAttestationRequest:keyPair
+                                                           enclaveId:enclaveId
+                                                            username:auth.username
+                                                           authToken:auth.authToken];
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
             DDLogVerbose(@"%@ remote attestation success: %@", self.logTag, responseJson);

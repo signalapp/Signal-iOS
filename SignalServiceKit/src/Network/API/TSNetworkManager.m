@@ -116,11 +116,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
     } else {
         if ([request isKindOfClass:[CDSAttestationRequest class]]) {
             CDSAttestationRequest *attestationRequest = (CDSAttestationRequest *)request;
-            NSData *basicAuthCredentials = [attestationRequest.authToken dataUsingEncoding:NSUTF8StringEncoding];
-            NSString *base64AuthCredentials =
-                [basicAuthCredentials base64EncodedStringWithOptions:(NSDataBase64EncodingOptions)0];
-            [sessionManager.requestSerializer setValue:[NSString stringWithFormat:@"Basic %@", base64AuthCredentials]
-                                    forHTTPHeaderField:@"Authorization"];
+            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:attestationRequest.username
+                                                                             password:attestationRequest.authToken];
         } else if (request.shouldHaveAuthorizationHeaders) {
             [sessionManager.requestSerializer
                 setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
