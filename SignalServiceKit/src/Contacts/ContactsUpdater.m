@@ -88,11 +88,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
                              success:^(NSSet<SignalRecipient *> *recipients) {
-                                 if (recipients.count > 0) {
-                                     success(recipients.allObjects);
-                                 } else {
-                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
+                                 if (recipients.count == 0) {
+                                     DDLogDebug(
+                                         @"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
                                  }
+                                 success(recipients.allObjects);
                              }
                              failure:failure];
 }
