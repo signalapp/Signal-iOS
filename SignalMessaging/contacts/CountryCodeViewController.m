@@ -71,21 +71,22 @@
         OWSAssert([PhoneNumberUtil callingCodeFromCountryCode:countryCode].length > 0);
         OWSAssert(![[PhoneNumberUtil callingCodeFromCountryCode:countryCode] isEqualToString:@"+0"]);
 
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 UITableViewCell *cell = [OWSTableItem newCell];
+                                 cell.textLabel.text = [PhoneNumberUtil countryNameFromCountryCode:countryCode];
+                                 cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+                                 cell.textLabel.textColor = [UIColor blackColor];
 
-            UILabel *countryCodeLabel = [UILabel new];
-            countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
-            countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
-            countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
-            [countryCodeLabel sizeToFit];
-            cell.accessoryView = countryCodeLabel;
+                                 UILabel *countryCodeLabel = [UILabel new];
+                                 countryCodeLabel.text = [PhoneNumberUtil callingCodeFromCountryCode:countryCode];
+                                 countryCodeLabel.font = [UIFont ows_regularFontWithSize:16.f];
+                                 countryCodeLabel.textColor = [UIColor ows_darkGrayColor];
+                                 [countryCodeLabel sizeToFit];
+                                 cell.accessoryView = countryCodeLabel;
 
-            return cell;
-        }
+                                 return cell;
+                             }
                              actionBlock:^{
                                  [weakSelf countryCodeWasSelected:countryCode];
                              }]];

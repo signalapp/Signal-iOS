@@ -58,18 +58,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.nameLabel.textColor = [UIColor blackColor];
 
     self.profileNameLabel = [UILabel new];
     self.profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.profileNameLabel.textColor = [UIColor grayColor];
 
     self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.textColor = [UIColor ows_darkGrayColor];
 
     self.accessoryLabel = [[UILabel alloc] init];
     self.accessoryLabel.textAlignment = NSTextAlignmentRight;
-    self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 
     self.accessoryViewContainer = [UIView containerView];
 
@@ -91,15 +87,20 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self addArrangedSubview:self.nameContainerView];
     [self addArrangedSubview:self.accessoryViewContainer];
 
-    [self configureFonts];
+    [self configureFontsAndColors];
 }
 
-- (void)configureFonts
+- (void)configureFontsAndColors
 {
     self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
+
+    self.nameLabel.textColor = [Theme primaryColor];
+    self.profileNameLabel.textColor = [Theme secondaryColor];
+    self.subtitleLabel.textColor = [Theme secondaryColor];
+    self.accessoryLabel.textColor = [UIColor colorWithWhite:0.5f alpha:1.f];
 }
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
@@ -113,7 +114,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     OWSAssert(contactsManager);
 
     // Update fonts to reflect changes to dynamic type.
-    [self configureFonts];
+    [self configureFontsAndColors];
 
     self.recipientId = recipientId;
     self.contactsManager = contactsManager;
@@ -143,7 +144,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.thread = thread;
     
     // Update fonts to reflect changes to dynamic type.
-    [self configureFonts];
+    [self configureFontsAndColors];
 
     self.contactsManager = contactsManager;
 
@@ -155,7 +156,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     NSAttributedString *attributedText =
         [[NSAttributedString alloc] initWithString:threadName
                                         attributes:@{
-                                            NSForegroundColorAttributeName : [UIColor blackColor],
+                                            NSForegroundColorAttributeName : [Theme primaryColor],
                                         }];
     self.nameLabel.attributedText = attributedText;
 

@@ -26,12 +26,12 @@
 
 + (void)setupSignalAppearence
 {
-    UINavigationBar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
-    UINavigationBar.appearance.tintColor = UIColor.ows_navbarIconColor;
-    UIToolbar.appearance.barTintColor = UIColor.ows_navbarBackgroundColor;
-    UIToolbar.appearance.tintColor = UIColor.ows_navbarIconColor;
+    UINavigationBar.appearance.barTintColor = Theme.navbarBackgroundColor;
+    UINavigationBar.appearance.tintColor = Theme.navbarIconColor;
+    UIToolbar.appearance.barTintColor = Theme.navbarBackgroundColor;
+    UIToolbar.appearance.tintColor = Theme.navbarIconColor;
 
-    UIBarButtonItem.appearance.tintColor = UIColor.ows_navbarIconColor;
+    UIBarButtonItem.appearance.tintColor = Theme.navbarIconColor;
 
     //    [[UIBarButtonItem appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor
     //    ows_materialBlueColor]];
@@ -40,7 +40,7 @@
     [[UIToolbar appearance] setTintColor:[UIColor ows_materialBlueColor]];
     
     // If we set NSShadowAttributeName, the NSForegroundColorAttributeName value is ignored.
-    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : UIColor.ows_navbarTitleColor };
+    UINavigationBar.appearance.titleTextAttributes = @{ NSForegroundColorAttributeName : Theme.navbarTitleColor };
 }
 
 @end

@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createLabelWithText:(nullable NSString *)text
 {
     UILabel *label = [UILabel new];
-    label.textColor = [UIColor blackColor];
+    label.textColor = [Theme primaryColor];
     label.text = text;
     label.font = self.labelFont;
     label.numberOfLines = 0;
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.pinTextfield = [UITextField new];
     }
 
-    self.pinTextfield.textColor = [UIColor blackColor];
+    self.pinTextfield.textColor = [Theme primaryColor];
     self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;

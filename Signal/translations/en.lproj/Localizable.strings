@@ -1889,14 +1889,14 @@
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
 
+/* Label for setting that enables dark theme. */
+"SETTINGS_ADVANCED_DARK_THEME" = "Dark Theme";
+
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Enable Debug Log";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Submit Debug Log";
-
-/* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Advanced";

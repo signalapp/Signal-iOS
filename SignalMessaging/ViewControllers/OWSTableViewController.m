@@ -101,10 +101,19 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (UITableViewCell *)newCell
 {
     UITableViewCell *cell = [UITableViewCell new];
-    cell.backgroundColor = [UIColor ows_themeBackgroundColor];
-    cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-    cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
+    [self configureCell:cell];
     return cell;
+}
+
++ (void)configureCell:(UITableViewCell *)cell
+{
+    cell.backgroundColor = [Theme backgroundColor];
+    cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+    cell.textLabel.textColor = [Theme primaryColor];
+
+    UIView *selectedBackgroundView = [UIView new];
+    selectedBackgroundView.backgroundColor = [Theme.cellSelectedColor colorWithAlphaComponent:0.08];
+    cell.selectedBackgroundView = selectedBackgroundView;
 }
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock
@@ -204,9 +213,8 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     item.customCellBlock = ^{
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1
                                                        reuseIdentifier:@"UITableViewCellStyleValue1"];
+        [OWSTableItem configureCell:cell];
         cell.textLabel.text = text;
-        cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-        cell.textLabel.textColor = [UIColor ows_themeForegroundColor];
         cell.detailTextLabel.text = detailText;
         [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         return cell;
@@ -323,7 +331,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
         UILabel *accessoryLabel = [UILabel new];
         accessoryLabel.text = accessoryText;
-        accessoryLabel.textColor = [UIColor ows_themeSecondaryColor];
+        accessoryLabel.textColor = [Theme secondaryColor];
         accessoryLabel.font = [UIFont ows_regularFontWithSize:16.0f];
         accessoryLabel.textAlignment = NSTextAlignmentRight;
         [accessoryLabel sizeToFit];
@@ -708,8 +716,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
-    self.tableView.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.backgroundColor = Theme.backgroundColor;
 }
 
 @end

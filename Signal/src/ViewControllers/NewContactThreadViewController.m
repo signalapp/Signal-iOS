@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = UIColor.whiteColor;
+    self.view.backgroundColor = Theme.backgroundColor;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _conversationSearcher = [ConversationSearcher shared];
     _nonContactAccountSet = [NSMutableSet set];
@@ -102,7 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.delegate = self;
     searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
-    searchBar.backgroundColor = [UIColor whiteColor];
+    searchBar.backgroundColor = [Theme backgroundColor];
+    searchBar.barStyle = Theme.barStyle;
     [searchBar sizeToFit];
 
     _tableViewController = [OWSTableViewController new];
@@ -139,6 +140,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.tableViewController.tableView insertSubview:pullToRefreshView atIndex:0];
 
     [self updateTableContents];
+
+    [self applyTheme];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:NSNotificationNameThemeDidChange
+                                               object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
@@ -166,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView *)createNoSignalContactsView
 {
     UIView *view = [UIView new];
-    view.backgroundColor = [UIColor whiteColor];
+    view.backgroundColor = [Theme backgroundColor];
 
     UIView *contents = [UIView new];
     [view addSubview:contents];
@@ -188,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE1", "Full width label displayed when attempting to compose message");
-    titleLabel.textColor = [UIColor blackColor];
+    titleLabel.textColor = [Theme primaryColor];
     titleLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
     titleLabel.textAlignment = NSTextAlignmentCenter;
     titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -201,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     UILabel *subtitleLabel = [UILabel new];
     subtitleLabel.text = NSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE2", "Full width label displayed when attempting to compose message");
-    subtitleLabel.textColor = [UIColor colorWithWhite:0.32f alpha:1.f];
+    subtitleLabel.textColor = [Theme secondaryColor];
     subtitleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(12.f, 14.f)];
     subtitleLabel.textAlignment = NSTextAlignmentCenter;
     subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -392,7 +405,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   @"A label that indicates the user has no Signal contacts.")
                                                       customRowHeight:UITableViewAutomaticDimension]];
             } else {
-                UITableViewCell *loadingCell = [UITableViewCell new];
+                UITableViewCell *loadingCell = [OWSTableItem newCell];
                 OWSAssert(loadingCell.contentView);
 
                 UIActivityIndicatorView *activityIndicatorView =
@@ -991,6 +1004,22 @@ NS_ASSUME_NONNULL_BEGIN
     if (didUpdate) {
         [self updateTableContents];
     }
+}
+
+#pragma mark - Theme
+
+- (void)themeDidChange:(id)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyTheme];
+}
+
+- (void)applyTheme
+{
+    OWSAssertIsOnMainThread();
+
+    self.view.backgroundColor = Theme.backgroundColor;
 }
 
 @end

@@ -87,10 +87,10 @@ const CGFloat kMaxTextViewHeight = 98;
     self.layoutMargins = UIEdgeInsetsZero;
 
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
-        self.backgroundColor = [UIColor ows_toolbarBackgroundColor];
+        self.backgroundColor = Theme.toolbarBackgroundColor;
     } else {
         CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
-        self.backgroundColor = [[UIColor ows_toolbarBackgroundColor] colorWithAlphaComponent:alpha];
+        self.backgroundColor = [Theme.toolbarBackgroundColor colorWithAlphaComponent:alpha];
 
         UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
@@ -119,7 +119,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UIImage *attachmentImage = [UIImage imageNamed:@"ic_circled_plus"];
     [self.attachmentButton setImage:[attachmentImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                            forState:UIControlStateNormal];
-    self.attachmentButton.tintColor = UIColor.ows_navbarIconColor;
+    self.attachmentButton.tintColor = Theme.navbarIconColor;
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -138,7 +138,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.voiceMemoButton setImage:[voiceMemoIcon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
                           forState:UIControlStateNormal];
-    self.voiceMemoButton.imageView.tintColor = UIColor.ows_navbarIconColor;
+    self.voiceMemoButton.imageView.tintColor = Theme.navbarIconColor;
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
 
     // We want to be permissive about the voice message gesture, so we hang

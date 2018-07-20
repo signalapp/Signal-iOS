@@ -53,6 +53,7 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 @property (nonatomic, weak) UIViewController *tableViewController;
 
 + (UITableViewCell *)newCell;
++ (void)configureCell:(UITableViewCell *)cell;
 
 + (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock;
 

@@ -571,7 +571,7 @@ typedef enum : NSUInteger {
     [super loadView];
 
     // make sure toolbar extends below iPhoneX home button.
-    self.view.backgroundColor = [UIColor ows_toolbarBackgroundColor];
+    self.view.backgroundColor = Theme.toolbarBackgroundColor;
 }
 
 - (void)createContents
@@ -1355,11 +1355,11 @@ typedef enum : NSUInteger {
         if (OWSWindowManager.sharedManager.hasCall) {
             callButton.enabled = NO;
             callButton.userInteractionEnabled = NO;
-            callButton.tintColor = [UIColor.ows_navbarIconColor colorWithAlphaComponent:0.7];
+            callButton.tintColor = [Theme.navbarIconColor colorWithAlphaComponent:0.7];
         } else {
             callButton.enabled = YES;
             callButton.userInteractionEnabled = YES;
-            callButton.tintColor = UIColor.ows_navbarIconColor;
+            callButton.tintColor = Theme.navbarIconColor;
         }
 
         UIEdgeInsets imageEdgeInsets = UIEdgeInsetsZero;
@@ -1387,7 +1387,7 @@ typedef enum : NSUInteger {
         DisappearingTimerConfigurationView *timerView = [[DisappearingTimerConfigurationView alloc]
             initWithDurationSeconds:self.disappearingMessagesConfiguration.durationSeconds];
         timerView.delegate = self;
-        timerView.tintColor = UIColor.ows_navbarIconColor;
+        timerView.tintColor = Theme.navbarIconColor;
 
         // As of iOS11, we can size barButton item custom views with autoLayout.
         // Before that, though we can still use autoLayout *within* the customView,
@@ -1409,7 +1409,7 @@ typedef enum : NSUInteger {
 {
     NSMutableAttributedString *subtitleText = [NSMutableAttributedString new];
 
-    UIColor *subtitleColor = [UIColor.ows_navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
+    UIColor *subtitleColor = [Theme.navbarTitleColor colorWithAlphaComponent:(CGFloat)0.9];
     if (self.thread.isMuted) {
         // Show a "mute" icon before the navigation bar subtitle if this thread is muted.
         [subtitleText appendAttributedString:[[NSAttributedString alloc]

@@ -345,8 +345,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                 OWSBubbleShapeView *strokeView = [OWSBubbleShapeView bubbleDrawView];
                 strokeView.strokeThickness = CGHairlineWidth();
-                strokeView.strokeColor = (UIColor.isThemeEnabled ? [UIColor colorWithWhite:1.f alpha:0.2f]
-                                                                 : [UIColor colorWithWhite:0.f alpha:0.2f]);
+                strokeView.strokeColor = (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:1.f alpha:0.2f]
+                                                                   : [UIColor colorWithWhite:0.f alpha:0.2f]);
                 [bodyMediaView addSubview:strokeView];
                 [self.bubbleView addPartnerView:strokeView];
                 [self.viewConstraints addObjectsFromArray:[strokeView ows_autoPinToSuperviewEdges]];

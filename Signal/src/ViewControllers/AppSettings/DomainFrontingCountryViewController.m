@@ -60,18 +60,19 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER", @"Section title for the 'domain fronting country' view.");
     for (OWSCountryMetadata *countryMetadata in [OWSCountryMetadata allCountryMetadatas]) {
-        [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
-            UITableViewCell *cell = [UITableViewCell new];
-            cell.textLabel.text = countryMetadata.localizedCountryName;
-            cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
-            cell.textLabel.textColor = [UIColor blackColor];
+        [section addItem:[OWSTableItem
+                             itemWithCustomCellBlock:^{
+                                 UITableViewCell *cell = [OWSTableItem newCell];
+                                 cell.textLabel.text = countryMetadata.localizedCountryName;
+                                 cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
+                                 cell.textLabel.textColor = [UIColor blackColor];
 
-            if ([countryMetadata.countryCode isEqualToString:currentCountryCode]) {
-                cell.accessoryType = UITableViewCellAccessoryCheckmark;
-            }
+                                 if ([countryMetadata.countryCode isEqualToString:currentCountryCode]) {
+                                     cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                                 }
 
-            return cell;
-        }
+                                 return cell;
+                             }
                              actionBlock:^{
                                  [weakSelf selectCountry:countryMetadata];
                              }]];

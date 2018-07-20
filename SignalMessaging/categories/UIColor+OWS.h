@@ -2,23 +2,12 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "Theme.h"
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
-#define THEME_ENABLED
-#endif
-
-extern NSString *const NSNotificationNameThemeDidChange;
-
 @interface UIColor (OWS)
-
-#pragma mark - Global App Colors
-
-@property (class, readonly, nonatomic) UIColor *ows_navbarBackgroundColor;
-@property (class, readonly, nonatomic) UIColor *ows_navbarIconColor;
-@property (class, readonly, nonatomic) UIColor *ows_navbarTitleColor;
 
 #pragma mark -
 
@@ -35,7 +24,6 @@ extern NSString *const NSNotificationNameThemeDidChange;
 @property (class, readonly, nonatomic) UIColor *ows_darkIconColor;
 @property (class, readonly, nonatomic) UIColor *ows_errorMessageBorderColor;
 @property (class, readonly, nonatomic) UIColor *ows_infoMessageBorderColor;
-@property (class, readonly, nonatomic) UIColor *ows_toolbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *ows_messageBubbleLightGrayColor;
 
 + (UIColor *)colorWithRGBHex:(unsigned long)value;
@@ -82,17 +70,6 @@ extern NSString *const NSNotificationNameThemeDidChange;
 @property (class, readonly, nonatomic) UIColor *ows_deepOrange900Color;
 @property (class, readonly, nonatomic) UIColor *ows_grey600Color;
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
-
-#pragma mark - Theme
-
-+ (BOOL)isThemeEnabled;
-#ifdef THEME_ENABLED
-+ (void)setIsThemeEnabled:(BOOL)value;
-#endif
-
-+ (UIColor *)ows_themeBackgroundColor;
-+ (UIColor *)ows_themeForegroundColor;
-+ (UIColor *)ows_themeSecondaryColor;
 
 @end
 
