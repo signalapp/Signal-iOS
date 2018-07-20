@@ -617,7 +617,7 @@ extension URLSessionTask {
             request.httpShouldUsePipelining = true
             let rangeHeaderValue = "bytes=\(assetSegment.segmentStart)-\(assetSegment.segmentStart + assetSegment.segmentLength - 1)"
             request.addValue(rangeHeaderValue, forHTTPHeaderField: "Range")
-            let task = giphyDownloadSession.dataTask(with: request)
+            let task: URLSessionDataTask = giphyDownloadSession.dataTask(with: request)
             task.assetRequest = assetRequest
             task.assetSegment = assetSegment
             assetSegment.task = task

@@ -36,6 +36,17 @@ PODS:
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
+  - PromiseKit (4.5.2):
+    - PromiseKit/Foundation (= 4.5.2)
+    - PromiseKit/QuartzCore (= 4.5.2)
+    - PromiseKit/UIKit (= 4.5.2)
+  - PromiseKit/CorePromise (4.5.2)
+  - PromiseKit/Foundation (4.5.2):
+    - PromiseKit/CorePromise
+  - PromiseKit/QuartzCore (4.5.2):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (4.5.2):
+    - PromiseKit/CorePromise
   - ProtocolBuffers (1.9.11)
   - PureLayout (3.0.2)
   - Reachability (3.2)
@@ -48,10 +59,10 @@ PODS:
     - GRKOpenSSLFramework
     - libPhoneNumber-iOS
     - Mantle
+    - PromiseKit (~> 4.0)
     - Reachability
     - SAMKeychain
     - SocketRocket
-    - TwistedOakCollapsingFutures
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
   - SQLCipher (3.4.2):
@@ -60,9 +71,6 @@ PODS:
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
   - SSZipArchive (2.1.2)
-  - TwistedOakCollapsingFutures (1.0.0):
-    - UnionFind (~> 1.0)
-  - UnionFind (1.0.1)
   - YapDatabase/SQLCipher (3.0.2):
     - YapDatabase/SQLCipher/Core (= 3.0.2)
     - YapDatabase/SQLCipher/Extensions (= 3.0.2)
@@ -152,13 +160,12 @@ SPEC REPOS:
     - JSQSystemSoundPlayer
     - libPhoneNumber-iOS
     - Mantle
+    - PromiseKit
     - ProtocolBuffers
     - PureLayout
     - Reachability
     - SAMKeychain
     - SSZipArchive
-    - TwistedOakCollapsingFutures
-    - UnionFind
     - YYImage
 
 EXTERNAL SOURCES:
@@ -224,16 +231,15 @@ SPEC CHECKSUMS:
   JSQSystemSoundPlayer: c5850e77a4363ffd374cd851154b9af93264ed8d
   libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
+  PromiseKit: 743e497a5f505a470d3bbbf4ce0663c1268af0a4
   ProtocolBuffers: d509225eb2ea43d9582a59e94348fcf86e2abd65
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalServiceKit: 3a65a39b6671c290e6258db78002527e085842ad
+  SignalServiceKit: eaaf6404e61fc05c71f91246327e2d487e0e1833
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
-  TwistedOakCollapsingFutures: f359b90f203e9ab13dfb92c9ff41842a7fe1cd0c
-  UnionFind: c33be5adb12983981d6e827ea94fc7f9e370f52d
   YapDatabase: 299a32de9d350d37a9ac5b0532609d87d5d2a5de
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
