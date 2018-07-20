@@ -108,7 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }];
 
-        success([recipients copy]);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            success([recipients copy]);
+        });
     });
 }
 
