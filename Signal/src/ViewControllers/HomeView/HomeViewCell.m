@@ -66,8 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = [(
-        Theme.isDarkThemeEnabled ? [UIColor ows_whiteColor] : [UIColor ows_blackColor]) colorWithAlphaComponent:0.08f];
+    selectedBackgroundView.backgroundColor = [Theme.cellSelectedColor colorWithAlphaComponent:0.08f];
 
     self.selectedBackgroundView = selectedBackgroundView;
 

@@ -93,6 +93,21 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return self.navbarBackgroundColor;
 }
 
++ (UIColor *)cellSelectedColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor);
+}
+
+#pragma mark -
+
++ (UIBarStyle)barStyle
+{
+    if (Theme.isDarkThemeEnabled) {
+        return UIBarStyleBlack;
+    } else {
+        return UIBarStyleDefault;
+    }
+}
 @end
 
 NS_ASSUME_NONNULL_END

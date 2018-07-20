@@ -34,6 +34,12 @@ extern NSString *const NSNotificationNameThemeDidChange;
 
 @property (class, readonly, nonatomic) UIColor *toolbarBackgroundColor;
 
++ (UIColor *)cellSelectedColor;
+
+#pragma mark -
+
++ (UIBarStyle)barStyle;
+
 @end
 
 NS_ASSUME_NONNULL_END

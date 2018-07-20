@@ -384,11 +384,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     searchBar.backgroundColor = Theme.backgroundColor;
-    if (Theme.isDarkThemeEnabled) {
-        searchBar.barStyle = UIBarStyleBlack;
-    } else {
-        searchBar.barStyle = UIBarStyleDefault;
-    }
+    searchBar.barStyle = Theme.barStyle;
 
     searchBar.delegate = self;
     [searchBar sizeToFit];
