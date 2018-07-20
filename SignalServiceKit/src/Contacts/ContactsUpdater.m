@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-
 @implementation ContactsUpdater
 
 + (instancetype)sharedUpdater {
@@ -48,34 +47,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)lookupIdentifier:(NSString *)recipientId
-                 success:(void (^)(SignalRecipient *recipient))success
-                 failure:(void (^)(NSError *error))failure
-{
-    OWSAssert(recipientId.length > 0);
-    
-    // This should never happen according to nullability annotations... but IIRC it does. =/
-    if (!recipientId) {
-        OWSFail(@"%@ Cannot lookup nil identifier", self.logTag);
-        failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup nil identifier"));
-        return;
-    }
-    
-    NSSet *recipiendIds = [NSSet setWithObject:recipientId];
-    [self contactIntersectionWithSet:recipiendIds
-                             success:^(NSSet<SignalRecipient *> *recipients) {
-                                 if (recipients.count > 0) {
-                                     OWSAssert(recipients.count == 1);
-                                     
-                                     SignalRecipient *recipient = recipients.allObjects.firstObject;
-                                     success(recipient);
-                                 } else {
-                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
-                                 }
-                             }
-                             failure:failure];
-}
-
 - (void)lookupIdentifiers:(NSArray<NSString *> *)identifiers
                  success:(void (^)(NSArray<SignalRecipient *> *recipients))success
                  failure:(void (^)(NSError *error))failure
@@ -88,11 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
                              success:^(NSSet<SignalRecipient *> *recipients) {
-                                 if (recipients.count > 0) {
-                                     success(recipients.allObjects);
-                                 } else {
-                                     failure(OWSErrorMakeNoSuchSignalRecipientError());
+                                 if (recipients.count == 0) {
+                                     DDLogInfo(
+                                         @"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
                                  }
+                                 success(recipients.allObjects);
                              }
                              failure:failure];
 }
