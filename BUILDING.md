@@ -1,8 +1,19 @@
 # Building
 
+We typically develop against the latest stable version of XCode.
+
+As of this writing, that's XCode 9.4
+
 ## 1. Clone
 
 Clone the repo to a working directory
+
+```
+git clone https:github.com/signalapp/Signal-iOS
+```
+
+Since we make use of submodules, you must use `git clone`, rather than
+downloading a prepared zip file from Github.
 
 ## 2. Dependencies
 
