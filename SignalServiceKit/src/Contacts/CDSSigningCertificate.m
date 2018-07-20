@@ -3,6 +3,7 @@
 //
 
 #import "CDSSigningCertificate.h"
+#import "Cryptography.h"
 #import "NSData+Base64.h"
 #import "NSData+OWS.h"
 #import <CommonCrypto/CommonCrypto.h>
@@ -236,12 +237,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     size_t signedHashBytesSize = SecKeyGetBlockSize(self.publicKey);
     const void *signedHashBytes = [signature bytes];
-    size_t hashBytesSize = CC_SHA256_DIGEST_LENGTH;
-    uint8_t hashBytes[hashBytesSize];
-    if (!CC_SHA256([bodyData bytes], (CC_LONG)[bodyData length], hashBytes)) {
+
+    NSData *_Nullable hashData = [Cryptography computeSHA256Digest:bodyData];
+    if (hashData.length != CC_SHA256_DIGEST_LENGTH) {
         OWSProdLogAndFail(@"%@ could not SHA256 for signature verification.", self.logTag);
         return NO;
     }
+    size_t hashBytesSize = CC_SHA256_DIGEST_LENGTH;
+    const void *hashBytes = [hashData bytes];
 
     OSStatus status = SecKeyRawVerify(
         self.publicKey, kSecPaddingPKCS1SHA256, hashBytes, hashBytesSize, signedHashBytes, signedHashBytesSize);
