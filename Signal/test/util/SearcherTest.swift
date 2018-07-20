@@ -7,41 +7,6 @@ import XCTest
 @testable import SignalMessaging
 
 @objc
-class StubbableEnvironment: TextSecureKitEnv {
-    let proxy: TextSecureKitEnv
-
-    init(proxy: TextSecureKitEnv) {
-        self.proxy = proxy
-        super.init(callMessageHandler: proxy.callMessageHandler, contactsManager: proxy.contactsManager, messageSender: proxy.messageSender, notificationsManager: proxy.notificationsManager, profileManager: proxy.profileManager)
-    }
-
-    var stubbedCallMessageHandler: OWSCallMessageHandler?
-    override var callMessageHandler: OWSCallMessageHandler {
-        return stubbedCallMessageHandler ?? proxy.callMessageHandler
-    }
-
-    var stubbedContactsManager: ContactsManagerProtocol?
-    override var contactsManager: ContactsManagerProtocol {
-        return stubbedContactsManager ?? proxy.contactsManager
-    }
-
-    var stubbedMessageSender: MessageSender?
-    override var messageSender: MessageSender {
-        return stubbedMessageSender ?? proxy.messageSender
-    }
-
-    var stubbedNotificationsManager: NotificationsProtocol?
-    override var notificationsManager: NotificationsProtocol {
-        return stubbedNotificationsManager ?? proxy.notificationsManager
-    }
-
-    var stubbedProfileManager: ProfileManagerProtocol?
-    override var profileManager: ProfileManagerProtocol {
-        return stubbedProfileManager ?? proxy.profileManager
-    }
-}
-
-@objc
 class FakeContactsManager: NSObject, ContactsManagerProtocol {
 
     func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
@@ -88,7 +53,7 @@ class FakeContactsManager: NSObject, ContactsManagerProtocol {
 let bobRecipientId = "+49030183000"
 let aliceRecipientId = "+12345678900"
 
-class ConversationSearcherTest: XCTestCase {
+class ConversationSearcherTest: SignalBaseTest {
 
     // MARK: - Dependencies
     var searcher: ConversationSearcher {
@@ -101,12 +66,12 @@ class ConversationSearcherTest: XCTestCase {
 
     // MARK: - Test Life Cycle
 
-    var originalEnvironment: TextSecureKitEnv?
+    var originalEnvironment: SSKEnvironment?
 
     override func tearDown() {
         super.tearDown()
 
-        TextSecureKitEnv.setShared(originalEnvironment!)
+        SSKEnvironment.setShared(originalEnvironment!)
     }
 
     override func setUp() {
@@ -118,12 +83,8 @@ class ConversationSearcherTest: XCTestCase {
         TSGroupThread.removeAllObjectsInCollection()
         TSMessage.removeAllObjectsInCollection()
 
-        originalEnvironment = TextSecureKitEnv.shared()
+        originalEnvironment = SSKEnvironment.shared
         assert(originalEnvironment != nil)
-
-        let testEnvironment: StubbableEnvironment = StubbableEnvironment(proxy: originalEnvironment!)
-        testEnvironment.stubbedContactsManager = FakeContactsManager()
-        TextSecureKitEnv.setShared(testEnvironment)
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(16))
@@ -375,13 +336,13 @@ class ConversationSearcherTest: XCTestCase {
     private func getResultSet(searchText: String) -> SearchResultSet {
         var results: SearchResultSet!
         self.dbConnection.read { transaction in
-            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: TextSecureKitEnv.shared().contactsManager)
+            results = self.searcher.results(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
         }
         return results
     }
 }
 
-class SearcherTest: XCTestCase {
+class SearcherTest: SignalBaseTest {
 
     struct TestCharacter {
         let name: String

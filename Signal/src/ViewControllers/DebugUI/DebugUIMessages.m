@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
                   OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
                       [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread
                                                                   groupId:[Randomness generateRandomBytes:16]];
-                  [[Environment current].messageSender enqueueMessage:syncGroupsRequestMessage
+                  [SSKEnvironment.shared.messageSender enqueueMessage:syncGroupsRequestMessage
                       success:^{
                           OWSLogWarn(@"Successfully sent Request Group Info message.");
                       }
@@ -315,7 +315,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     TSOutgoingMessage *message =
         [ThreadUtil sendMessageWithText:text inThread:thread quotedReplyModel:nil messageSender:messageSender];
     OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
@@ -353,7 +353,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(filePath);
     OWSAssert(thread);
 
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
     DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
@@ -1732,7 +1732,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
 
     SignalAttachment *attachment = [self signalAttachmentForFilePath:filePath];
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     [ThreadUtil sendMessageWithAttachment:attachment
                                  inThread:thread
                          quotedReplyModel:nil
@@ -3139,7 +3139,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
             ActionFailureBlock failure) {
             OWSContact *contact = contactBlock(transaction);
             OWSLogVerbose(@"sending contact: %@", contact.debugDescription);
-            OWSMessageSender *messageSender = [Environment current].messageSender;
+            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
             [ThreadUtil sendMessageWithContactShare:contact inThread:thread messageSender:messageSender completion:nil];
 
             success();
@@ -3331,7 +3331,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
 + (void)sendOversizeTextMessage:(TSThread *)thread
 {
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     NSString *message = [self randomOversizeText];
     DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
@@ -3363,7 +3363,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     DataSource *_Nullable dataSource =
         [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment =
@@ -3846,10 +3846,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSAssert(thread);
 
     TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMessageNew expiresInSeconds:0];
+        [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageNew expiresInSeconds:0];
     [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];
 
-    OWSMessageSender *messageSender = [Environment current].messageSender;
+    OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
     void (^completion)(void) = ^{
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [ThreadUtil sendMessageWithText:[@(counter) description]
@@ -4182,7 +4182,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                             expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
                                                                       : 0)expireStartedAt:0
                               isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMessageUnspecified
+                            groupMetaMessage:TSGroupMetaMessageUnspecified
                                quotedMessage:nil
                                 contactShare:nil];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
@@ -4262,7 +4262,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                                expiresInSeconds:0
                                                                 expireStartedAt:0
                                                                  isVoiceMessage:NO
-                                                               groupMetaMessage:TSGroupMessageUnspecified
+                                                               groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                   quotedMessage:nil
                                                                    contactShare:nil];
                 [message saveWithTransaction:transaction];
@@ -4390,7 +4390,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
         NSString *filename = filenames.lastObject;
         [filenames removeLastObject];
-        OWSMessageSender *messageSender = [Environment current].messageSender;
+        OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
         NSString *utiType = (NSString *)kUTTypeData;
         const NSUInteger kDataLength = 32;
         DataSource *_Nullable dataSource =
@@ -4521,7 +4521,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                    expiresInSeconds:0
                                                     expireStartedAt:0
                                                      isVoiceMessage:isVoiceMessage
-                                                   groupMetaMessage:TSGroupMessageUnspecified
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare];
 

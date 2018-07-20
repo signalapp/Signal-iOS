@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
         _contactShare = contactShare;
         _isIncoming = isIncoming;
         _conversationStyle = conversationStyle;
-        _contactsManager = [Environment current].contactsManager;
+        _contactsManager = Environment.shared.contactsManager;
     }
 
     return self;

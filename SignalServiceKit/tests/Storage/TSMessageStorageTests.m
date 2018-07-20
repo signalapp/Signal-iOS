@@ -4,15 +4,16 @@
 
 #import "Cryptography.h"
 #import "OWSPrimaryStorage.h"
+#import "SSKBaseTest.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <XCTest/XCTest.h>
+#import "YapDatabaseConnection+OWS.h"
 
-@interface TSMessageStorageTests : XCTestCase
+@interface TSMessageStorageTests : SSKBaseTest
 
 @property TSContactThread *thread;
 
@@ -32,7 +33,7 @@
         }];
 
     OWSPrimaryStorage *manager = [OWSPrimaryStorage sharedManager];
-    [manager purgeCollection:[TSMessage collection]];
+    [manager.dbReadWriteConnection purgeCollection:[TSMessage collection]];
 }
 
 - (void)tearDown
@@ -51,7 +52,7 @@
         
         for (uint64_t i = 0; i<50; i++) {
             TSOutgoingMessage *newMessage =
-                [[TSOutgoingMessage alloc] initWithTimestamp:i inThread:self.thread messageBody:body];
+                [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:body attachmentId:nil];
             [newMessage saveWithTransaction:transaction];
             if (i == 0) {
                 messageId = newMessage.uniqueId;
@@ -74,14 +75,15 @@
                 [TSOutgoingMessage fetchObjectWithUniqueID:[@(messageInt + 49) stringValue]];
             [deletedmessage removeWithTransaction:transaction];
 
-            uint64_t uniqueNewTimestamp = 985439854983;
             TSOutgoingMessage *newMessage =
-                [[TSOutgoingMessage alloc] initWithTimestamp:uniqueNewTimestamp inThread:self.thread messageBody:body];
+                [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:body attachmentId:nil];
             [newMessage saveWithTransaction:transaction];
 
-            TSOutgoingMessage *retrieved =
-                [TSOutgoingMessage fetchObjectWithUniqueID:[@(messageInt + 50) stringValue] transaction:transaction];
-            XCTAssertEqual(uniqueNewTimestamp, retrieved.timestamp);
+            NSString *expectedUniqueId = [@(messageInt + 50) stringValue];
+            TSOutgoingMessage *_Nullable retrieved =
+                [TSOutgoingMessage fetchObjectWithUniqueID:expectedUniqueId transaction:transaction];
+            XCTAssertNotNil(retrieved);
+            XCTAssertEqual(newMessage.timestamp, retrieved.timestamp);
         }];
 }
 
@@ -92,11 +94,17 @@
     
     NSString *body = @"A child born today will grow up with no conception of privacy at all. They’ll never know what it means to have a private moment to themselves an unrecorded, unanalyzed thought. And that’s a problem because privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
-    TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:timestamp
-                                                                        inThread:self.thread
-                                                                        authorId:[self.thread contactIdentifier]
-                                                                  sourceDeviceId:1
-                                                                     messageBody:body];
+    TSIncomingMessage *newMessage =
+        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
+                                                           inThread:self.thread
+                                                           authorId:[self.thread contactIdentifier]
+                                                     sourceDeviceId:1
+                                                        messageBody:body
+                                                      attachmentIds:@[]
+                                                   expiresInSeconds:0
+                                                      quotedMessage:nil
+                                                       contactShare:nil];
+
     [[OWSPrimaryStorage sharedManager].newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [newMessage saveWithTransaction:transaction];
@@ -118,11 +126,17 @@
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
     for (int i = 0; i < 10; i++) {
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
-                                                                            inThread:self.thread
-                                                                            authorId:[self.thread contactIdentifier]
-                                                                      sourceDeviceId:1
-                                                                         messageBody:body];
+        TSIncomingMessage *newMessage =
+            [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
+                                                               inThread:self.thread
+                                                               authorId:[self.thread contactIdentifier]
+                                                         sourceDeviceId:1
+                                                            messageBody:body
+                                                          attachmentIds:@[]
+                                                       expiresInSeconds:0
+                                                          quotedMessage:nil
+                                                           contactShare:nil];
+
         [messages addObject:newMessage];
         [newMessage save];
     }
@@ -164,15 +178,19 @@
     }];
 
     OWSPrimaryStorage *manager = [OWSPrimaryStorage sharedManager];
-    [manager purgeCollection:[TSMessage collection]];
+    [manager.dbReadWriteConnection purgeCollection:[TSMessage collection]];
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
     for (uint64_t i = 0; i < 10; i++) {
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initWithTimestamp:i
-                                                                            inThread:thread
-                                                                            authorId:@"Ed"
-                                                                      sourceDeviceId:1
-                                                                         messageBody:body];
+        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
+                                                                                           inThread:thread
+                                                                                           authorId:@"Ed"
+                                                                                     sourceDeviceId:1
+                                                                                        messageBody:body
+                                                                                      attachmentIds:@[]
+                                                                                   expiresInSeconds:0
+                                                                                      quotedMessage:nil
+                                                                                       contactShare:nil];
         [newMessage save];
         [messages addObject:newMessage];
     }

@@ -35,7 +35,7 @@
 
     __weak NotificationSettingsViewController *weakSelf = self;
 
-    OWSPreferences *prefs = [Environment preferences];
+    OWSPreferences *prefs = Environment.shared.preferences;
 
     // Sounds section.
 
@@ -83,7 +83,7 @@
 
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender
 {
-    [Environment.preferences setSoundInForeground:sender.on];
+    [Environment.shared.preferences setSoundInForeground:sender.on];
 }
 
 @end

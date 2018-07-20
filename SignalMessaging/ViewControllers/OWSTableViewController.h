@@ -55,7 +55,8 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 + (UITableViewCell *)newCell;
 + (void)configureCell:(UITableViewCell *)cell;
 
-+ (OWSTableItem *)itemWithTitle:(NSString *)title actionBlock:(nullable OWSTableActionBlock)actionBlock;
++ (OWSTableItem *)itemWithTitle:(NSString *)title
+                    actionBlock:(nullable OWSTableActionBlock)actionBlock NS_SWIFT_NAME(init(title:actionBlock:));
 
 + (OWSTableItem *)itemWithCustomCell:(UITableViewCell *)customCell
                      customRowHeight:(CGFloat)customRowHeight

@@ -11,7 +11,7 @@ class DebugUIProfile: DebugUIPage {
     // MARK: Dependencies
 
     var messageSender: MessageSender {
-        return Environment.current().messageSender
+        return SSKEnvironment.shared.messageSender
     }
     var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()

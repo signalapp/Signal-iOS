@@ -6,7 +6,7 @@ import XCTest
 import Contacts
 @testable import Signal
 
-final class ContactsPickerTest: XCTestCase {
+final class ContactsPickerTest: SignalBaseTest {
     private var prevLang: Any?
 
     override func setUp() {

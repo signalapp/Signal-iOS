@@ -34,6 +34,7 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSGroupAvatarBuilder.h>
 #import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/OWSNavigationController.h>
+#import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSearchBar.h>
@@ -44,7 +45,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/OWSWindowManager.h>
-#import <SignalMessaging/Release.h>
 #import <SignalMessaging/ScreenLockViewController.h>
 #import <SignalMessaging/SelectRecipientViewController.h>
 #import <SignalMessaging/SharingThreadPickerViewController.h>

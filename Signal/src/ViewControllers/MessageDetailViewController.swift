@@ -52,7 +52,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
 
     @objc
     required init(viewItem: ConversationViewItem, message: TSMessage, thread: TSThread, mode: MessageMetadataViewMode) {
-        self.contactsManager = Environment.current().contactsManager
+        self.contactsManager = Environment.shared.contactsManager
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
@@ -191,7 +191,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         }
 
         var rows = [UIView]()
-        let contactsManager = Environment.current().contactsManager!
+        let contactsManager = Environment.shared.contactsManager!
 
         // Content
         rows += contentRows()

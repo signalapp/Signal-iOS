@@ -2,6 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+import SignalMessaging
+
 @objc class DebugUIFileBrowser: OWSTableViewController {
 
     // MARK: Dependencies
@@ -102,9 +104,10 @@
                 let attributes: [FileAttributeKey: Any] = try fileManager.attributesOfItem(atPath: fileURL.path)
                 return attributes.map { (fileAttribute: FileAttributeKey, value: Any) in
                     let title = fileAttribute.rawValue.replacingOccurrences(of: "NSFile", with: "")
-                    return OWSTableItem(title: "\(title): \(value)") {
+                    let itemTitle = "\(title): \(value)"
+                    return OWSTableItem(title: itemTitle, actionBlock: {
                         OWSAlerts.showAlert(title: title, message: "\(value)")
-                    }
+                    })
                 }
             } catch {
                 owsFailDebug("failed getting attributes for file at path: \(fileURL)")

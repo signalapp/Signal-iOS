@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SignalMessaging
 
 @objc
 public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegate {

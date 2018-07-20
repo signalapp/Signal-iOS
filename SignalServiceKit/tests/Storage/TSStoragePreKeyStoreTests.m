@@ -3,9 +3,9 @@
 //
 
 #import "OWSPrimaryStorage+PreKeyStore.h"
-#import <XCTest/XCTest.h>
+#import "SSKBaseTest.h"
 
-@interface TSStoragePreKeyStoreTests : XCTestCase
+@interface TSStoragePreKeyStoreTests : SSKBaseTest
 
 @end
 

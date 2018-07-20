@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import SignalMessaging
 
 @objc
 public class SafetyNumberConfirmationAlert: NSObject {

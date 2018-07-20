@@ -2,21 +2,30 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSOrphanedDataCleaner.h"
-#import "OWSDevice.h"
-#import "OWSPrimaryStorage.h"
-#import "TSAttachmentStream.h"
-#import "TSContactThread.h"
-#import "TSIncomingMessage.h"
-#import <XCTest/XCTest.h>
+#import "OWSOrphanDataCleaner.h"
+#import "SignalBaseTest.h"
+#import <SignalServiceKit/OWSDevice.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
 
-@interface OWSOrphanedDataCleanerTest : XCTestCase
+@interface OWSOrphanDataCleaner (Test)
+
++ (nullable NSSet<NSString *> *)filePathsInDirectorySafe:(NSString *)dirPath;
 
 @end
 
 #pragma mark -
 
-@implementation OWSOrphanedDataCleanerTest
+
+@interface OWSOrphanDataCleanerTest : SignalBaseTest
+
+@end
+
+#pragma mark -
+
+@implementation OWSOrphanDataCleanerTest
 
 - (void)setUp
 {
@@ -41,9 +50,25 @@
     [super tearDown];
 }
 
-- (NSUInteger)numberOfItemsInAttachmentsFolder
+- (int)numberOfItemsInAttachmentsFolder
 {
-    return [OWSOrphanedDataCleaner filePathsInAttachmentsFolder].count;
+    NSString *legacyAttachmentsDirPath = TSAttachmentStream.legacyAttachmentsDirPath;
+    NSSet<NSString *> *_Nullable legacyAttachmentFilePaths =
+        [OWSOrphanDataCleaner filePathsInDirectorySafe:legacyAttachmentsDirPath];
+
+    NSString *sharedDataAttachmentsDirPath = TSAttachmentStream.sharedDataAttachmentsDirPath;
+    NSSet<NSString *> *_Nullable sharedDataAttachmentFilePaths =
+        [OWSOrphanDataCleaner filePathsInDirectorySafe:sharedDataAttachmentsDirPath];
+
+    NSMutableSet<NSString *> *attachmentFilePaths = [NSMutableSet new];
+    if (legacyAttachmentFilePaths) {
+        [attachmentFilePaths unionSet:legacyAttachmentFilePaths];
+    }
+    if (sharedDataAttachmentFilePaths) {
+        [attachmentFilePaths unionSet:sharedDataAttachmentFilePaths];
+    }
+
+    return (int)attachmentFilePaths.count;
 }
 
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
@@ -91,9 +116,10 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    [OWSOrphanDataCleaner auditAndCleanup:YES
+                               completion:^{
+                                   [expectation fulfill];
+                               }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -114,9 +140,10 @@
     XCTAssertEqual(1, [TSIncomingMessage numberOfKeysInCollection]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    [OWSOrphanDataCleaner auditAndCleanup:YES
+                               completion:^{
+                                   [expectation fulfill];
+                               }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -142,9 +169,10 @@
     // Do multiple cleanup passes.
     for (int i = 0; i < 2; i++) {
         XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-        [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
-            [expectation fulfill];
-        }];
+        [OWSOrphanDataCleaner auditAndCleanup:YES
+                                   completion:^{
+                                       [expectation fulfill];
+                                   }];
         [self waitForExpectationsWithTimeout:5.0
                                      handler:^(NSError *error) {
                                          if (error) {
@@ -174,9 +202,10 @@
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    [OWSOrphanDataCleaner auditAndCleanup:YES
+                               completion:^{
+                                   [expectation fulfill];
+                               }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {
@@ -203,9 +232,10 @@
     XCTAssertEqual(1, [self numberOfItemsInAttachmentsFolder]);
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"Cleanup"];
-    [OWSOrphanedDataCleaner auditAndCleanupAsync:^{
-        [expectation fulfill];
-    }];
+    [OWSOrphanDataCleaner auditAndCleanup:YES
+                               completion:^{
+                                   [expectation fulfill];
+                               }];
     [self waitForExpectationsWithTimeout:5.0
                                  handler:^(NSError *error) {
                                      if (error) {

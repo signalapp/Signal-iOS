@@ -102,17 +102,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)appDocumentDirectoryPath
 {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSURL *documentDirectoryURL =
-        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-    return [documentDirectoryURL path];
+    return CurrentAppContext().appDocumentDirectoryPath;
 }
 
 + (NSString *)appSharedDataDirectoryPath
 {
-    NSURL *groupContainerDirectoryURL =
-        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
-    return [groupContainerDirectoryURL path];
+    return CurrentAppContext().appSharedDataDirectoryPath;
 }
 
 + (NSString *)cachesDirectoryPath

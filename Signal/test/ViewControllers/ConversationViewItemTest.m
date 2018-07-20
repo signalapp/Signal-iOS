@@ -3,16 +3,16 @@
 //
 
 #import "ConversationViewItem.h"
+#import "SignalBaseTest.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <XCTest/XCTest.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
-@interface ConversationViewItemTest : XCTestCase
+@interface ConversationViewItemTest : SignalBaseTest
 
 @property TSThread *thread;
 @property ConversationStyle *conversationStyle;

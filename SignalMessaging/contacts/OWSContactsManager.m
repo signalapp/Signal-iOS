@@ -53,7 +53,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @implementation OWSContactsManager
 
-- (id)init
+- (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
     self = [super init];
     if (!self) {
@@ -63,8 +63,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
 
-    _dbReadConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
-    _dbWriteConnection = [OWSPrimaryStorage sharedManager].newDatabaseConnection;
+    _dbReadConnection = primaryStorage.newDatabaseConnection;
+    _dbWriteConnection = primaryStorage.newDatabaseConnection;
 
     _allContacts = @[];
     _allContactsMap = @{};

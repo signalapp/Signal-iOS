@@ -226,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [MultiDeviceProfileKeyUpdateJob runWithProfileKey:profileKey
                                       identityManager:OWSIdentityManager.sharedManager
-                                        messageSender:Environment.current.messageSender
+                                        messageSender:SSKEnvironment.shared.messageSender
                                        profileManager:OWSProfileManager.sharedManager];
 }
 
@@ -281,6 +281,26 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(backgroundTask);
     backgroundTask = nil;
+}
+
+- (id<KeychainStorage>)keychainStorage
+{
+    return [SSKKeychainStorage sharedInstance];
+}
+
+- (NSString *)appDocumentDirectoryPath
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSURL *documentDirectoryURL =
+        [[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    return [documentDirectoryURL path];
+}
+
+- (NSString *)appSharedDataDirectoryPath
+{
+    NSURL *groupContainerDirectoryURL =
+        [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:SignalApplicationGroup];
+    return [groupContainerDirectoryURL path];
 }
 
 @end

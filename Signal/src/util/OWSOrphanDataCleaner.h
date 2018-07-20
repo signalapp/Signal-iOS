@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This is exposed for the debug UI.
 + (void)auditAndCleanup:(BOOL)shouldCleanup;
+// This is exposed for the tests.
++ (void)auditAndCleanup:(BOOL)shouldCleanup completion:(dispatch_block_t)completion;
 
 + (void)auditOnLaunchIfNecessary;
 

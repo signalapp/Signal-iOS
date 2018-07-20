@@ -88,13 +88,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         }.retainUntilComplete()
 
         // We shouldn't set up our environment until after we've consulted isReadyForAppExtensions.
-        AppSetup.setupEnvironment(callMessageHandlerBlock: {
-            return NoopCallMessageHandler()
-        },
-                                  notificationsProtocolBlock: {
-            return NoopNotificationsManager()
-        },
-                                  migrationCompletion: { [weak self] in
+        AppSetup.setupEnvironment(migrationCompletion: { [weak self] in
                                     AssertIsOnMainThread()
 
                                     guard let strongSelf = self else { return }
@@ -103,6 +97,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                     // upgrade process may depend on Environment.
                                     strongSelf.versionMigrationsDidComplete()
         })
+        SSKEnvironment.shared.callMessageHandler = NoopCallMessageHandler()
+        SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -201,7 +197,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
                 // We don't need to use the TSSocketManager in the SAE.
 
-                Environment.current().contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
+                Environment.shared.contactsManager.fetchSystemContactsOnceIfAlreadyAuthorized()
 
                 // We don't need to fetch messages in the SAE.
 
@@ -267,8 +263,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         AppVersion.sharedInstance().saeLaunchDidComplete()
 
-        Environment.current().contactsManager.loadSignalAccountsFromCache()
-        Environment.current().contactsManager.startObserving()
+        Environment.shared.contactsManager.loadSignalAccountsFromCache()
+        Environment.shared.contactsManager.startObserving()
 
         ensureRootViewController()
 

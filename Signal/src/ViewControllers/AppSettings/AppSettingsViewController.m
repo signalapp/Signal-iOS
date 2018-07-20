@@ -51,7 +51,7 @@
         return self;
     }
 
-    _contactsManager = [Environment current].contactsManager;
+    _contactsManager = Environment.shared.contactsManager;
 
     return self;
 }
@@ -63,7 +63,7 @@
         return self;
     }
 
-    _contactsManager = [Environment current].contactsManager;
+    _contactsManager = Environment.shared.contactsManager;
 
     return self;
 }

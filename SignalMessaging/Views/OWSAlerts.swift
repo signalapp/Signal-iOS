@@ -100,7 +100,7 @@ import Foundation
             return
         }
 
-        if let iOSUpgradeNagDate = Environment.preferences().iOSUpgradeNagDate() {
+        if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
             // Nag no more than once every three days.
             let kNagFrequencySeconds = 3 * kDayInterval
             guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
@@ -108,7 +108,7 @@ import Foundation
             }
         }
 
-        Environment.preferences().setIOSUpgradeNagDate(Date())
+        Environment.shared.preferences.setIOSUpgradeNagDate(Date())
 
         OWSAlerts.showAlert(title: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
                                                         comment: "Title for the alert indicating that user should upgrade iOS."),

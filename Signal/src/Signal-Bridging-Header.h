@@ -59,7 +59,6 @@
 #import <SignalMessaging/OWSQuotedReplyModel.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/OWSViewController.h>
-#import <SignalMessaging/Release.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>

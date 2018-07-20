@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeContactsManager.h"
@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeContactsManager
 
-- (NSString * _Nonnull)displayNameForPhoneIdentifier:(NSString * _Nullable)phoneNumber
+- (NSString *_Nonnull)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber
 {
     return @"Fake name";
 }
@@ -25,12 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
-+ (BOOL)name:(NSString * _Nonnull)nameString matchesQuery:(NSString * _Nonnull)queryString
++ (BOOL)name:(NSString *_Nonnull)nameString matchesQuery:(NSString *_Nonnull)queryString
 {
     return YES;
 }
 
-- (UIImage * _Nullable)imageForPhoneIdentifier:(NSString * _Nullable)phoneNumber
+- (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)phoneNumber
 {
     return nil;
 }

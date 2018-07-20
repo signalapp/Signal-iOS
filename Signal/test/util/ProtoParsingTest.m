@@ -2,6 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "SignalBaseTest.h"
 #import <Curve25519Kit/Randomness.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/NSData+OWS.h>
@@ -9,7 +10,6 @@
 #import <SignalServiceKit/OWSGroupsOutputStream.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <XCTest/XCTest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface ProtoParsingTest : XCTestCase
+@interface ProtoParsingTest : SignalBaseTest
 
 @end
 
@@ -128,8 +128,10 @@ NS_ASSUME_NONNULL_BEGIN
     XCTAssertNotNil(streamData);
 
     XCTAssertEqualObjects(streamData.hexadecimalString,
-        @"1b0a0c2b31333231333231343332311209416c69636520426f6240001b0a0c2b31333231333231343332321209416c69636520426f624"
-        @"0001b0a0c2b31333231333231343332331209416c69636520426f624000");
+        @"2c0a0c2b31333231333231343332311209416c69636520426f62220f66616b6520636f6c6f72206e616d"
+        @"6540002c0a0c2b31333231333231343332321209416c69636520426f62220f66616b6520636f6c6f"
+        @"72206e616d6540002c0a0c2b31333231333231343332331209416c69636520426f62220f66616b65"
+        @"20636f6c6f72206e616d654000");
 }
 
 - (nullable NSData *)dataForSyncingContacts:(NSArray<SignalAccount *> *)signalAccounts

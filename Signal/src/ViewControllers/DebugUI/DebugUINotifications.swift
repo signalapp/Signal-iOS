@@ -17,10 +17,10 @@ class DebugUINotifications: DebugUIPage {
         return SignalApp.shared().callService.notificationsAdapter
     }
     var messageSender: MessageSender {
-        return Environment.current().messageSender
+        return SSKEnvironment.shared.messageSender
     }
     var contactsManager: OWSContactsManager {
-        return Environment.current().contactsManager
+        return Environment.shared.contactsManager
     }
 
     // MARK: Overrides
@@ -98,7 +98,8 @@ class DebugUINotifications: DebugUIPage {
             ]
         }
 
-        return OWSTableSection(title: "Notifications have delay: \(kNotificationDelay)s", items: sectionItems)
+        let sectionTitle = "Notifications have delay: \(kNotificationDelay)s"
+        return OWSTableSection(title: sectionTitle, items: sectionItems)
     }
 
     // MARK: Helpers

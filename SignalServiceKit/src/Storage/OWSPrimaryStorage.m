@@ -15,6 +15,7 @@
 #import "OWSMediaGalleryFinder.h"
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
+#import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -64,16 +65,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 + (instancetype)sharedManager
 {
-    static OWSPrimaryStorage *sharedManager = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        sharedManager = [[self alloc] initStorage];
+    OWSAssert(SSKEnvironment.shared.primaryStorage);
 
-#if TARGET_OS_IPHONE
-        [OWSPrimaryStorage protectFiles];
-#endif
-    });
-    return sharedManager;
+    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (instancetype)initStorage

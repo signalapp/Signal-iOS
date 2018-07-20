@@ -86,7 +86,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
 - (void)commonInit
 {
-    _messageSender = [Environment current].messageSender;
+    _messageSender = SSKEnvironment.shared.messageSender;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
@@ -478,7 +478,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
-                                                                             groupMetaMessage:TSGroupMessageNew
+                                                                             groupMetaMessage:TSGroupMetaMessageNew
                                                                              expiresInSeconds:0];
 
                       [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)];

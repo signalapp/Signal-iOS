@@ -493,7 +493,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
                 @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
         }
     } else {
-        OWSContactsManager *contactsManager = Environment.current.contactsManager;
+        OWSContactsManager *contactsManager = Environment.shared.contactsManager;
         NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
         quotedAuthorText = [NSString
             stringWithFormat:

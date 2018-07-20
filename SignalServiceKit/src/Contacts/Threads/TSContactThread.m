@@ -7,7 +7,7 @@
 #import "ContactsUpdater.h"
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
-#import "TextSecureKitEnv.h"
+#import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO deprecate this? seems weird to access the displayName in the DB model
 - (NSString *)name
 {
-    return [[TextSecureKitEnv sharedEnv].contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
+    return [[SSKEnvironment shared].contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
 }
 
 

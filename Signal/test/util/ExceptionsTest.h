@@ -1,5 +1,9 @@
-#import <XCTest/XCTest.h>
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
-@interface ExceptionsTest : XCTestCase
+#import "SignalBaseTest.h"
+
+@interface ExceptionsTest : SignalBaseTest
 
 @end
