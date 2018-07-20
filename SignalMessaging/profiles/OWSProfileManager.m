@@ -994,7 +994,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return nil;
     }
 
-    return [Cryptography encryptAESGCMWithData:encryptedData key:profileKey];
+    return [Cryptography encryptAESGCMWithProfileData:encryptedData key:profileKey];
 }
 
 - (nullable NSData *)decryptProfileData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey
@@ -1005,7 +1005,7 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         return nil;
     }
 
-    return [Cryptography decryptAESGCMWithData:encryptedData key:profileKey];
+    return [Cryptography decryptAESGCMWithProfileData:encryptedData key:profileKey];
 }
 
 - (nullable NSString *)decryptProfileNameData:(nullable NSData *)encryptedData profileKey:(OWSAES256Key *)profileKey

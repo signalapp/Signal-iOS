@@ -128,7 +128,6 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
                                             }
 
                                             self.reportError(error)
-
         })
     }
 
@@ -191,15 +190,29 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
 }
 
+public
 class CDSBatchOperation: OWSOperation {
+
+    enum CDSBatchOperationError: Error {
+        case parseError(description: String)
+        case assertionError(description: String)
+    }
 
     private let recipientIdsToLookup: [String]
     var registeredRecipientIds: Set<String>
 
+    private var networkManager: TSNetworkManager {
+        return TSNetworkManager.shared()
+    }
+
+    private var contactDiscoveryService: ContactDiscoveryService {
+        return ContactDiscoveryService.shared()
+    }
+
     // MARK: Initializers
 
-    required init(recipientIdsToLookup: [String]) {
-        self.recipientIdsToLookup = recipientIdsToLookup
+    public required init(recipientIdsToLookup: [String]) {
+        self.recipientIdsToLookup = Set(recipientIdsToLookup).map { $0 }
         self.registeredRecipientIds = Set()
 
         super.init()
@@ -210,12 +223,162 @@ class CDSBatchOperation: OWSOperation {
     // MARK: OWSOperationOverrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
+    override public func run() {
         Logger.debug("\(logTag) in \(#function)")
 
-        Logger.debug("\(logTag) in \(#function) FAKING intersection (TODO)")
-        self.registeredRecipientIds = Set(self.recipientIdsToLookup)
-        self.reportSuccess()
+        guard !isCancelled else {
+            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            self.reportCancelled()
+            return
+        }
+
+        contactDiscoveryService.performRemoteAttestation(success: { (remoteAttestation: RemoteAttestation) in
+            self.makeContactDiscoveryRequest(remoteAttestation: remoteAttestation)
+        },
+                                     failure: self.reportError)
+    }
+
+    private func makeContactDiscoveryRequest(remoteAttestation: RemoteAttestation) {
+
+        guard !isCancelled else {
+            Logger.info("\(logTag) in \(#function) no work to do, since we were canceled")
+            self.reportCancelled()
+            return
+        }
+
+        let encryptionResult: AES25GCMEncryptionResult
+        do {
+            encryptionResult = try encryptAddresses(recipientIds: recipientIdsToLookup, remoteAttestation: remoteAttestation)
+        } catch {
+            reportError(error)
+            return
+        }
+
+        let request = OWSRequestFactory.enclaveContactDiscoveryRequest(withId: remoteAttestation.requestId,
+                                                                       addressCount: UInt(recipientIdsToLookup.count),
+                                                                       encryptedAddressData: encryptionResult.ciphertext,
+                                                                       cryptIv: encryptionResult.initializationVector,
+                                                                       cryptMac: encryptionResult.authTag,
+                                                                       enclaveId: remoteAttestation.enclaveId,
+                                                                       authUsername: remoteAttestation.authUsername,
+                                                                       authPassword: remoteAttestation.authToken,
+                                                                       cookies: remoteAttestation.cookies)
+
+        self.networkManager.makeRequest(request,
+                                        success: { (task, responseDict) in
+                                            do {
+                                                self.registeredRecipientIds = try self.handle(response: responseDict, remoteAttestation: remoteAttestation)
+                                                self.reportSuccess()
+                                            } catch {
+                                                self.reportError(error)
+                                            }
+        },
+                                        failure: { (task, error) in
+                                            guard let response = task.response as? HTTPURLResponse else {
+                                                let responseError: NSError = OWSErrorMakeUnableToProcessServerResponseError() as NSError
+                                                responseError.isRetryable = true
+                                                self.reportError(responseError)
+                                                return
+                                            }
+
+                                            guard response.statusCode != 413 else {
+                                                let rateLimitError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit")
+                                                self.reportError(rateLimitError)
+                                                return
+                                            }
+
+                                            self.reportError(error)
+        })
+    }
+
+    func encryptAddresses(recipientIds: [String], remoteAttestation: RemoteAttestation) throws -> AES25GCMEncryptionResult {
+
+        let addressPlainTextData = try type(of: self).encodePhoneNumbers(recipientIds: recipientIds)
+
+        guard let encryptionResult = Cryptography.encryptAESGCM(plainTextData: addressPlainTextData,
+                                                                additionalAuthenticatedData: remoteAttestation.requestId,
+                                                                key: remoteAttestation.keys.clientKey) else {
+
+            throw CDSBatchOperationError.assertionError(description: "Encryption failure")
+        }
+
+        return encryptionResult
+    }
+
+    class func encodePhoneNumbers(recipientIds: [String]) throws -> Data {
+        var output = Data()
+
+        for recipientId in recipientIds {
+            guard recipientId.prefix(1) == "+" else {
+                throw CDSBatchOperationError.assertionError(description: "unexpected id format")
+            }
+
+            let numericPortionIndex = recipientId.index(after: recipientId.startIndex)
+            let numericPortion = recipientId.suffix(from: numericPortionIndex)
+
+            guard let numericIdentifier = UInt64(numericPortion), numericIdentifier > 99 else {
+                throw CDSBatchOperationError.assertionError(description: "unexpectedly short identifier")
+            }
+
+            var bigEndian: UInt64 = CFSwapInt64HostToBig(numericIdentifier)
+            let buffer = UnsafeBufferPointer(start: &bigEndian, count: 1)
+            output.append(buffer)
+        }
+
+        return output
+    }
+
+    func handle(response: Any?, remoteAttestation: RemoteAttestation) throws -> Set<String> {
+        let isIncludedData: Data = try parseAndDecrypt(response: response, remoteAttestation: remoteAttestation)
+        guard let isIncluded: [Bool] = type(of: self).boolArray(data: isIncludedData) else {
+            throw CDSBatchOperationError.assertionError(description: "isIncluded was unexpectedly nil")
+        }
+
+        return try match(recipientIds: self.recipientIdsToLookup, isIncluded: isIncluded)
+    }
+
+    class func boolArray(data: Data) -> [Bool]? {
+        var bools: [Bool]? = nil
+        data.withUnsafeBytes { (bytes: UnsafePointer<Bool>) -> Void in
+            let buffer = UnsafeBufferPointer(start: bytes, count: data.count)
+            bools = Array(buffer)
+        }
+
+        return bools
+    }
+
+    func match(recipientIds: [String], isIncluded: [Bool]) throws -> Set<String> {
+        guard recipientIds.count == isIncluded.count else {
+            throw CDSBatchOperationError.assertionError(description: "length mismatch for isIncluded/recipientIds")
+        }
+
+        let includedRecipientIds: [String] = (0..<recipientIds.count).compactMap { index in
+            isIncluded[index] ? recipientIds[index] : nil
+        }
+
+        return Set(includedRecipientIds)
+    }
+
+    func parseAndDecrypt(response: Any?, remoteAttestation: RemoteAttestation) throws -> Data {
+
+        guard let responseDict = response as? [String: AnyObject] else {
+            throw CDSBatchOperationError.parseError(description: "missing response dict")
+        }
+
+        let cipherText = try responseDict.expectBase64EncodedData(key: "data")
+        let initializationVector = try responseDict.expectBase64EncodedData(key: "iv")
+        let authTag = try responseDict.expectBase64EncodedData(key: "mac")
+
+        guard let plainText = Cryptography.decryptAESGCM(withInitializationVector: initializationVector,
+                                                          ciphertext: cipherText,
+                                                          additionalAuthenticatedData: nil,
+                                                          authTag: authTag,
+                                                          key: remoteAttestation.keys.serverKey) else {
+
+                                                            throw CDSBatchOperationError.parseError(description: "decryption failed")
+        }
+
+        return plainText
     }
 }
 
@@ -277,5 +440,25 @@ extension Array {
         return stride(from: 0, to: self.count, by: chunkSize).map {
             Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
         }
+    }
+}
+
+extension Dictionary where Key: Hashable {
+
+    enum DictionaryError: Error {
+        case missingField(Key)
+        case invalidFormat(Key)
+    }
+
+    public func expectBase64EncodedData(key: Key) throws -> Data {
+        guard let encodedData = self[key] as? String else {
+            throw DictionaryError.missingField(key)
+        }
+
+        guard let data = Data(base64Encoded: encodedData) else {
+            throw DictionaryError.invalidFormat(key)
+        }
+
+        return data
     }
 }

@@ -31,14 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface RemoteAttestationKeys : NSObject
+@interface RemoteAttestationKeys ()
 
 @property (nonatomic) ECKeyPair *keyPair;
 @property (nonatomic) NSData *serverEphemeralPublic;
 @property (nonatomic) NSData *serverStaticPublic;
 
-@property (nonatomic) NSData *clientKey;
-@property (nonatomic) NSData *serverKey;
+@property (nonatomic) OWSAES256Key *clientKey;
+@property (nonatomic) OWSAES256Key *serverKey;
 
 @end
 
@@ -74,7 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable derivedMaterial;
     @try {
-        derivedMaterial = [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:ECCKeyLength * 2];
+        derivedMaterial =
+            [HKDFKit deriveKey:masterSecret info:nil salt:publicKeys outputSize:(int)kAES256_KeyByteLength * 2];
     } @catch (NSException *exception) {
         DDLogError(@"%@ could not derive service key: %@", self.logTag, exception);
         return NO;
@@ -84,17 +85,23 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ missing derived service key.", self.logTag);
         return NO;
     }
-    if (derivedMaterial.length != ECCKeyLength * 2) {
+    if (derivedMaterial.length != kAES256_KeyByteLength * 2) {
         OWSProdLogAndFail(@"%@ derived service key has unexpected length.", self.logTag);
         return NO;
     }
-    NSData *_Nullable clientKey = [derivedMaterial subdataWithRange:NSMakeRange(ECCKeyLength * 0, ECCKeyLength)];
-    NSData *_Nullable serverKey = [derivedMaterial subdataWithRange:NSMakeRange(ECCKeyLength * 1, ECCKeyLength)];
-    if (clientKey.length != ECCKeyLength) {
+
+    NSData *_Nullable clientKeyData =
+        [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 0, kAES256_KeyByteLength)];
+    OWSAES256Key *_Nullable clientKey = [OWSAES256Key keyWithData:clientKeyData];
+    if (!clientKey) {
         OWSProdLogAndFail(@"%@ clientKey has unexpected length.", self.logTag);
         return NO;
     }
-    if (serverKey.length != ECCKeyLength) {
+
+    NSData *_Nullable serverKeyData =
+        [derivedMaterial subdataWithRange:NSMakeRange(kAES256_KeyByteLength * 1, kAES256_KeyByteLength)];
+    OWSAES256Key *_Nullable serverKey = [OWSAES256Key keyWithData:serverKeyData];
+    if (!serverKey) {
         OWSProdLogAndFail(@"%@ serverKey has unexpected length.", self.logTag);
         return NO;
     }
@@ -109,18 +116,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface RemoteAttestation : NSObject
+@interface RemoteAttestation ()
 
 @property (nonatomic) RemoteAttestationKeys *keys;
-// TODO: Do we need to support multiple cookies?
-@property (nonatomic) NSString *cookie;
+@property (nonatomic) NSArray<NSHTTPCookie *> *cookies;
 @property (nonatomic) NSData *requestId;
+@property (nonatomic) NSString *enclaveId;
+@property (nonatomic) RemoteAttestationAuth *auth;
 
 @end
 
 #pragma mark -
 
 @implementation RemoteAttestation
+
+- (NSString *)authUsername
+{
+    return self.auth.username;
+}
+
+- (NSString *)authToken
+{
+    return self.auth.authToken;
+}
 
 @end
 
@@ -301,16 +319,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSRequest *request = [OWSRequestFactory remoteAttestationRequest:keyPair
                                                            enclaveId:enclaveId
-                                                            username:auth.username
-                                                           authToken:auth.authToken];
+                                                        authUsername:auth.username
+                                                        authPassword:auth.authToken];
+
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // TODO: Handle result.
                 RemoteAttestation *_Nullable attestation = [self parseAttestationResponseJson:responseJson
                                                                                      response:task.response
                                                                                       keyPair:keyPair
-                                                                                    enclaveId:enclaveId];
+                                                                                    enclaveId:enclaveId
+                                                                                         auth:auth];
 
                 if (!attestation) {
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
@@ -332,6 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     response:(NSURLResponse *)response
                                                      keyPair:(ECKeyPair *)keyPair
                                                    enclaveId:(NSString *)enclaveId
+                                                        auth:(RemoteAttestationAuth *)auth
 {
     OWSAssert(responseJson);
     OWSAssert(response);
@@ -342,20 +362,12 @@ NS_ASSUME_NONNULL_BEGIN
         OWSProdLogAndFail(@"%@ unexpected response type.", self.logTag);
         return nil;
     }
-    NSDictionary *responseHeaders = ((NSHTTPURLResponse *)response).allHeaderFields;
-
-    NSString *_Nullable cookie = [responseHeaders stringForKey:@"Set-Cookie"];
-    if (cookie.length < 1) {
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSArray<NSHTTPCookie *> *cookies =
+        [NSHTTPCookie cookiesWithResponseHeaderFields:httpResponse.allHeaderFields forURL:[NSURL new]];
+    if (cookies.count < 1) {
         OWSProdLogAndFail(@"%@ couldn't parse cookie.", self.logTag);
         return nil;
-    }
-
-    // The cookie header will have this form:
-    // Set-Cookie: __NSCFString, c2131364675-413235ic=c1656171-249545-958227; Path=/; Secure
-    // We want to strip everything after the semicolon (;).
-    NSRange cookieRange = [cookie rangeOfString:@";"];
-    if (cookieRange.length != NSNotFound) {
-        cookie = [cookie substringToIndex:cookieRange.location];
     }
 
     if (![responseJson isKindOfClass:[NSDictionary class]]) {
@@ -450,9 +462,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     RemoteAttestation *result = [RemoteAttestation new];
-    result.cookie = cookie;
+    result.cookies = cookies;
     result.keys = keys;
     result.requestId = requestId;
+    result.enclaveId = enclaveId;
+    result.auth = auth;
 
     DDLogVerbose(@"%@ remote attestation complete.", self.logTag);
 
@@ -648,13 +662,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(encryptedRequestTag.length > 0);
     OWSAssert(keys);
 
-    OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:keys.serverKey];
+    OWSAES256Key *_Nullable key = keys.serverKey;
     if (!key) {
         OWSProdLogAndFail(@"%@ invalid server key.", self.logTag);
         return nil;
     }
     NSData *_Nullable decryptedData = [Cryptography decryptAESGCMWithInitializationVector:encryptedRequestIv
                                                                                ciphertext:encryptedRequestId
+                                                              additionalAuthenticatedData:nil
                                                                                   authTag:encryptedRequestTag
                                                                                       key:key];
     if (!decryptedData) {

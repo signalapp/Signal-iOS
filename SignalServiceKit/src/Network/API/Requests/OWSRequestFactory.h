@@ -72,8 +72,18 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
                               enclaveId:(NSString *)enclaveId
-                               username:(NSString *)username
-                              authToken:(NSString *)authToken;
+                           authUsername:(NSString *)authUsername
+                           authPassword:(NSString *)authPassword;
+
++ (TSRequest *)enclaveContactDiscoveryRequestWithId:(NSData *)requestId
+                                       addressCount:(NSUInteger)addressCount
+                               encryptedAddressData:(NSData *)encryptedAddressData
+                                            cryptIv:(NSData *)cryptIv
+                                           cryptMac:(NSData *)cryptMac
+                                          enclaveId:(NSString *)enclaveId
+                                       authUsername:(NSString *)authUsername
+                                       authPassword:(NSString *)authPassword
+                                            cookies:(NSArray<NSHTTPCookie *> *)cookies;
 
 + (TSRequest *)remoteAttestationAuthRequest;
 
