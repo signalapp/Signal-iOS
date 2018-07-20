@@ -524,6 +524,15 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 #pragma mark - Update With... Methods
 
+- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                           changeBlock:(void (^)(id))changeBlock
+{
+    OWSAssert(transaction);
+
+    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
+    [self touchThreadWithTransaction:transaction];
+}
+
 - (void)updateWithSendingError:(NSError *)error
 {
     OWSAssert(error);
