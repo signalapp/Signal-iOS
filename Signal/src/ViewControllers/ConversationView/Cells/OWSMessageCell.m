@@ -405,6 +405,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if ([self isGestureInCellHeader:sender]) {
+        return;
+    }
+
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
@@ -424,6 +428,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    if ([self isGestureInCellHeader:sender]) {
         return;
     }
 
@@ -460,7 +468,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssert(self.delegate);
 
+    if ([self isGestureInCellHeader:panRecognizer]) {
+        return;
+    }
+
     [self.delegate didPanWithGestureRecognizer:panRecognizer viewItem:self.viewItem];
+}
+
+- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
+{
+    OWSAssert(self.viewItem);
+
+    if (!self.viewItem.hasCellHeader) {
+        return NO;
+    }
+
+    CGPoint location = [sender locationInView:self];
+    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
+    return location.y <= headerBottom.y;
 }
 
 @end
