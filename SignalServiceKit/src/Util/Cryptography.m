@@ -4,7 +4,7 @@
 
 #import "Cryptography.h"
 #import "NSData+Base64.h"
-#import "NSData+OWSConstantTimeCompare.h"
+#import "NSData+OWS.h"
 #import "OWSError.h"
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonHMAC.h>
@@ -560,6 +560,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
                                                    authTag:(NSData *)authTagFromEncrypt
                                                        key:(OWSAES256Key *)key
 {
+    OWSAssert(initializationVector.length == kAESGCM256_IVLength);
+    OWSAssert(ciphertext.length > 0);
+    OWSAssert(authTagFromEncrypt.length == kAESGCM256_TagLength);
+    OWSAssert(key);
+
     NSMutableData *plaintext = [NSMutableData dataWithLength:ciphertext.length];
 
     // Create and initialise the context

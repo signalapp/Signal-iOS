@@ -11,7 +11,7 @@
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/NSData+hexString.h>
+#import <SignalServiceKit/NSData+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>

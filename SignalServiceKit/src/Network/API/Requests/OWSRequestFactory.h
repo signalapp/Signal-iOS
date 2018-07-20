@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class ECKeyPair;
 @class OWSDevice;
 @class PreKeyRecord;
 @class SignedPreKeyRecord;
@@ -68,6 +69,13 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey
                                     preKeyLastResort:(PreKeyRecord *)preKeyLastResort;
+
++ (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
+                              enclaveId:(NSString *)enclaveId
+                               username:(NSString *)username
+                              authToken:(NSString *)authToken;
+
++ (TSRequest *)remoteAttestationAuthRequest;
 
 @end
 
