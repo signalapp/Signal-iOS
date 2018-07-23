@@ -465,7 +465,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSAssert(message.recipientIds.count == 1);
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
-                    [message updateWithSentRecipient:recipientId transaction:transaction];
+                    [message updateWithReadRecipientId:recipientId
+                                         readTimestamp:message.timestampForSorting
+                                           transaction:transaction];
                 }
             }];
 
