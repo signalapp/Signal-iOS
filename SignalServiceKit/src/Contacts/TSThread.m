@@ -100,7 +100,10 @@ NS_ASSUME_NONNULL_BEGIN
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                                         if (![key isKindOfClass:[NSString class]] || key.length < 1) {
-                                            OWSProdLogAndFail(@"%@ invalid key in thread interactions.", self.logTag);
+                                            OWSProdLogAndFail(@"%@ invalid key in thread interactions: %@, %@.",
+                                                self.logTag,
+                                                key,
+                                                [key class]);
                                             return;
                                         }
                                         [interactionIds addObject:key];
