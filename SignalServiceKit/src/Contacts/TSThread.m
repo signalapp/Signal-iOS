@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(interactionsByThread);
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
-                                        if (key.length < 1) {
+                                        if (![key isKindOfClass:[NSString class]] || key.length < 1) {
                                             OWSProdLogAndFail(@"%@ invalid key in thread interactions.", self.logTag);
                                             return;
                                         }
