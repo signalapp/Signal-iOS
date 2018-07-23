@@ -136,7 +136,8 @@ const CGFloat kIconViewLength = 24;
 - (NSString *)threadName
 {
     NSString *threadName = self.thread.name;
-    if ([threadName isEqualToString:self.thread.contactIdentifier]) {
+    if (self.thread.contactIdentifier &&
+        [threadName isEqualToString:self.thread.contactIdentifier]) {
         threadName =
             [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
     } else if (threadName.length == 0 && [self isGroupThread]) {

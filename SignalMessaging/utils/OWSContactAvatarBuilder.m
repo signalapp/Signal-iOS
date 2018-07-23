@@ -10,10 +10,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-
-// SHARINGEXTENSION FIXME
-// intern or reimplement this so that SignalMessaging doesn't depend on JSQ
-#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
+#import "JSQMessagesAvatarImageFactory.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -22,9 +22,6 @@ def shared_pods
 
   # third party pods
   pod 'AFNetworking', inhibit_warnings: true
-  pod 'JSQMessagesViewController',  git: 'https://github.com/signalapp/JSQMessagesViewController.git', branch: 'mkirk/share-compatible', :inhibit_warnings => true
-  #pod 'JSQMessagesViewController',  git: 'https://github.com/signalapp/JSQMessagesViewController.git', branch: 'signal-master', :inhibit_warnings => true
-  #pod 'JSQMessagesViewController',   path: '../JSQMessagesViewController'
   pod 'Mantle', :inhibit_warnings => true
   # pod 'YapDatabase/SQLCipher', :inhibit_warnings => true
   pod 'PureLayout', :inhibit_warnings => true
