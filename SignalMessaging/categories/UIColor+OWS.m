@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "UIColor+OWS.h"
 #import "OWSMath.h"
+#import "UIColor+OWS.h"
 #import <SignalServiceKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -278,19 +278,19 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         colorMap = @{
-                     @"red" : self.ows_red700Color,
-                     @"pink": self.ows_pink600Color,
-                     @"purple": self.ows_purple600Color,
-                     @"indigo": self.ows_indigo600Color,
-                     @"blue": self.ows_blue700Color,
-                     @"cyan": self.ows_cyan800Color,
-                     @"teal": self.ows_teal700Color,
-                     @"green": self.ows_green800Color,
-                     @"deep_orange": self.ows_deepOrange900Color,
-                     @"grey": self.ows_grey600Color
-                     };
+            @"red" : self.ows_red700Color,
+            @"pink" : self.ows_pink600Color,
+            @"purple" : self.ows_purple600Color,
+            @"indigo" : self.ows_indigo600Color,
+            @"blue" : self.ows_blue700Color,
+            @"cyan" : self.ows_cyan800Color,
+            @"teal" : self.ows_teal700Color,
+            @"green" : self.ows_green800Color,
+            @"deep_orange" : self.ows_deepOrange900Color,
+            @"grey" : self.ows_grey600Color
+        };
     });
-    
+
     return colorMap;
 }
 
@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
 {
     OWSAssert(colorName.length > 0);
-    
+
     return [self.ows_conversationColorMap objectForKey:colorName];
 }
 

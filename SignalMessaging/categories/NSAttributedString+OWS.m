@@ -10,8 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NSAttributedString (OWS)
 
-- (NSAttributedString *)rtlSafeAppend:(NSString *)text
-                           attributes:(NSDictionary *)attributes
+- (NSAttributedString *)rtlSafeAppend:(NSString *)text attributes:(NSDictionary *)attributes
 {
     OWSAssert(text);
     OWSAssert(attributes);

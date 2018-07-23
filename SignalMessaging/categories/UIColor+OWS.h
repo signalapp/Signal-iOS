@@ -30,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - ConversationColor
 
-+ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName NS_SWIFT_NAME(ows_conversationColor(colorName:));
++ (nullable UIColor *)ows_conversationColorForColorName:(NSString *)colorName
+    NS_SWIFT_NAME(ows_conversationColor(colorName:));
 + (nullable NSString *)ows_conversationColorNameForColor:(UIColor *)color
     NS_SWIFT_NAME(ows_conversationColorName(color:));
 

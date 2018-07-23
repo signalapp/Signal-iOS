@@ -73,7 +73,8 @@ NS_ASSUME_NONNULL_BEGIN
     // in a UIBarButtonItem.
     [backButton addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssert(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
     backButton.tintColor = Theme.navbarIconColor;
