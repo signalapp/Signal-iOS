@@ -97,12 +97,24 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     OWSAssert(interactionsByThread);
-    [interactionsByThread
-        enumerateKeysInGroup:self.uniqueId
-                  usingBlock:^(
-                      NSString *_Nonnull collection, NSString *_Nonnull key, NSUInteger index, BOOL *_Nonnull stop) {
-                      [interactionIds addObject:key];
-                  }];
+    __block BOOL didDetectCorruption = NO;
+    [interactionsByThread enumerateKeysInGroup:self.uniqueId
+                                    usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
+                                        if (![key isKindOfClass:[NSString class]] || key.length < 1) {
+                                            OWSProdLogAndFail(@"%@ invalid key in thread interactions: %@, %@.",
+                                                self.logTag,
+                                                key,
+                                                [key class]);
+                                            didDetectCorruption = YES;
+                                            return;
+                                        }
+                                        [interactionIds addObject:key];
+                                    }];
+
+    if (didDetectCorruption) {
+        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+    }
 
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
@@ -157,13 +169,8 @@ NS_ASSUME_NONNULL_BEGIN
                                   usingBlock:(void (^)(TSInteraction *interaction,
                                                  YapDatabaseReadTransaction *transaction))block
 {
-    void (^interactionBlock)(NSString *, NSString *, id, id, NSUInteger, BOOL *) = ^void(NSString *_Nonnull collection,
-        NSString *_Nonnull key,
-        id _Nonnull object,
-        id _Nonnull metadata,
-        NSUInteger index,
-        BOOL *_Nonnull stop) {
-
+    void (^interactionBlock)(NSString *, NSString *, id, id, NSUInteger, BOOL *) = ^void(
+        NSString *collection, NSString *key, id _Nonnull object, id _Nonnull metadata, NSUInteger index, BOOL *stop) {
         TSInteraction *interaction = object;
         block(interaction, transaction);
     };
@@ -194,7 +201,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<TSInteraction *> *)allInteractions
 {
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    [self enumerateInteractionsUsingBlock:^(TSInteraction *_Nonnull interaction) {
+    [self enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
         [interactions addObject:interaction];
     }];
 
@@ -219,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)numberOfInteractions
 {
     __block NSUInteger count;
-    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
         count = [interactionsByThread numberOfItemsInGroup:self.uniqueId];
     }];
