@@ -200,11 +200,13 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 403: {
               DDLogError(
                   @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
+              error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
           case 404: {
               DDLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
+              error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }
