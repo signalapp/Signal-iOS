@@ -34,7 +34,9 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *toolbarBackgroundColor;
 
-+ (UIColor *)cellSelectedColor;
+@property (class, readonly, nonatomic) UIColor *conversationButtonBackgroundColor;
+
+@property (class, readonly, nonatomic) UIColor *cellSelectedColor;
 
 #pragma mark -
 

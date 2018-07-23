@@ -96,6 +96,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor);
 }
 
++ (UIColor *)conversationButtonBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark05Color : UIColor.ows_light02Color);
+}
+
 #pragma mark -
 
 + (UIBarStyle)barStyle
@@ -106,6 +111,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
         return UIBarStyleDefault;
     }
 }
+
 @end
 
 NS_ASSUME_NONNULL_END

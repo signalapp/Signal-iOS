@@ -234,6 +234,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic, nullable) NSDate *lastReloadDate;
+@property (nonatomic) BOOL didChangeTheme;
 
 @end
 
@@ -351,6 +352,10 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(themeDidChange:)
+                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 
@@ -560,14 +565,7 @@ typedef enum : NSUInteger {
 
     [self addNotificationListeners];
     [self loadDraftInCompose];
-}
-
-- (void)loadView
-{
-    [super loadView];
-
-    // make sure toolbar extends below iPhoneX home button.
-    self.view.backgroundColor = Theme.toolbarBackgroundColor;
+    [self applyTheme];
 }
 
 - (void)createContents
@@ -589,7 +587,6 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-    self.collectionView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinEdgesToSuperviewEdges];
 
@@ -1187,6 +1184,13 @@ typedef enum : NSUInteger {
             DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
             [self becomeFirstResponder];
         }
+    }
+
+    if (self.didChangeTheme) {
+        self.didChangeTheme = NO;
+
+        [self applyTheme];
+        [self.collectionView reloadData];
     }
 }
 
@@ -4241,6 +4245,26 @@ typedef enum : NSUInteger {
         // view appears.
         [UIView performWithoutAnimation:adjustInsets];
     }
+}
+
+- (void)themeDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self applyTheme];
+    [self.collectionView reloadData];
+    self.didChangeTheme = YES;
+}
+
+- (void)applyTheme
+{
+    OWSAssertIsOnMainThread();
+
+    // make sure toolbar extends below iPhoneX home button.
+    self.view.backgroundColor = Theme.toolbarBackgroundColor;
+    self.collectionView.backgroundColor = Theme.backgroundColor;
+
+    [self updateNavigationBarSubtitleLabel];
 }
 
 - (void)attachmentApproval:(AttachmentApprovalViewController *)attachmentApproval didApproveAttachment:(SignalAttachment * _Nonnull)attachment

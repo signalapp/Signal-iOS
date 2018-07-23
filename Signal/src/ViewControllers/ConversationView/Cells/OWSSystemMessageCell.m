@@ -76,7 +76,6 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.contentView.backgroundColor = UIColor.whiteColor;
     self.layoutConstraints = @[];
 
     self.headerView = [OWSMessageHeaderView new];
@@ -103,7 +102,6 @@ typedef void (^SystemMessageActionBlock)(void);
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.button setBackgroundColor:[UIColor ows_light02Color]];
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
@@ -164,6 +162,8 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssert(self.viewItem);
     OWSAssert(transaction);
 
+    [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+
     TSInteraction *interaction = self.viewItem.interaction;
 
     self.action = [self actionForInteraction:interaction];
@@ -219,14 +219,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 - (UIColor *)textColor
 {
-    return [UIColor ows_light60Color];
+    return Theme.secondaryColor;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return [UIColor ows_light60Color];
+    return Theme.secondaryColor;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction
