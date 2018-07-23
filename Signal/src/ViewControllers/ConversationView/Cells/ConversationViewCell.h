@@ -28,9 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)conversationCell:(ConversationViewCell *)cell
     didLongpressSystemMessageViewItem:(ConversationViewItem *)viewItem;
 
-- (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
-                           viewItem:(ConversationViewItem *)conversationItem;
-
 #pragma mark - System Cell
 
 - (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;

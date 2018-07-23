@@ -70,12 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
-
-    PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
-        initWithDirection:(CurrentAppContext().isRTL ? PanDirectionLeft : PanDirectionRight)
-                   target:self
-                   action:@selector(handlePanGesture:)];
-    [self addGestureRecognizer:panGesture];
 }
 
 - (void)dealloc
@@ -405,6 +399,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    if ([self isGestureInCellHeader:sender]) {
+        return;
+    }
+
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
@@ -424,6 +422,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.delegate);
 
     if (sender.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    if ([self isGestureInCellHeader:sender]) {
         return;
     }
 
@@ -456,11 +458,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer
+- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
 {
-    OWSAssert(self.delegate);
+    OWSAssert(self.viewItem);
 
-    [self.delegate didPanWithGestureRecognizer:panRecognizer viewItem:self.viewItem];
+    if (!self.viewItem.hasCellHeader) {
+        return NO;
+    }
+
+    CGPoint location = [sender locationInView:self];
+    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
+    return location.y <= headerBottom.y;
 }
 
 @end

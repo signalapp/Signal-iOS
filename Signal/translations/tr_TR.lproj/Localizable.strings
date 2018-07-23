@@ -1054,13 +1054,13 @@
 "INCOMING_INCOMPLETE_CALL" = "Gelen arama";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Güvenlik numaraları değiştiğinden çağrı karşılanmadı";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Güvenlik numaraları değiştiğinden arama karşılanmadı.";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Geçersiz ses dosyası.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Kişilerinizi davet etmek için, Ayarlar uygulamasından Signal'in kişilerinize erişimine izin vermelisiniz";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Kişilerinizi davet etmek için, Ayarlar uygulamasından Signal'in kişilerinize erişimine izin vermelisiniz.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Kişi Erişimine İzin Ver";
@@ -1096,7 +1096,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Cihaz Bağlanması Başarısız Oldu";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz, gruplarınızı ve kişilerinizi görebilir, tüm iletilerinizi okuyabilir ve adınıza mesaj gönderebilir.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Bu cihaz, gruplarınızı ve kişilerinizi görebilecek, tüm iletilerinizi okuyabilecek ve adınıza mesaj gönderebilecektir.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Bu cihazı bağla?";
@@ -1258,13 +1258,13 @@
 "MESSAGE_STATUS_UPLOADING" = "Yükleniyor…";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Bu Kullanıcıyı Engellediniz";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ artık doğrulanmış olarak işaretlenmiyor. Seçenekler için dokunun. ";
 
 /* Action sheet title after tapping on failed download. */
 "MESSAGES_VIEW_FAILED_DOWNLOAD_ACTIONSHEET_TITLE" = "İndirme Başarısız Oldu.";
@@ -1303,7 +1303,7 @@
 "MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Güvenlik numarası değiştiğinden %@ tarafından gelen cevapsız arama.";
 
 /* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Arayanın güvenlik numarası değiştiğinden çağrı karşılanmadı";
+"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Arayanın güvenlik numarası değiştiğinden arama karşılanmadı.";
 
 /* Alert body
    Alert body when camera is not authorized */
@@ -1326,7 +1326,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Daha fazla cihaz eşleştiremezsiniz.";
 
 /* No comment provided by engineer. */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Hesabınla şu anda eşleştirebileceğin azami cihaz sayısına ulaştın. Lütfen bir cihazı kaldır veya daha sonra tekrar dene.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Hesabınızla şu anda eşleştirebileceğiniz azami cihaz sayısına ulaştınız. Lütfen bir cihazı kaldırın veya eşleştirmek için daha sonra tekrar deneyin.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Sessize alınmış görüşmeler için bildirim almayacaksınız.";
@@ -1494,7 +1494,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ kullanıcısını doğrulanmış olarak işaretlemediniz.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "%@ doğrulanmış olarak işaretlenmedi.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Doğrulandı";
@@ -1524,16 +1524,16 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal kullanıcılarının her çifti ayrı bir güvenlik numarası paylaşıyor. %@ *sizin* emniyet numaranızı gösterdiğini tekrar kontrol edin.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Eski bir Signal sürümünü çalıştırıyorsunuz. Doğrulamadan önce güncellemeniz gerekiyor.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Signal'in eski bir sürümünü kullanıyorsunuz. Doğrulamadan önce güncellemeniz gerekiyor.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Karşıdaki kişi Signal'in eski bir sürümünü çalıştırıyor. Doğrulamadan önce güncelleme yapılmalıdır.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Karşıdaki kişi Signal'in eski bir sürümünü kullanıyor. Doğrulamadan önce güncelleme yapmaları gerekiyor.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Taranan kod bir güvenlik numarası kodu gibi görünmüyor. İkiniz de Signal'in güncel bir sürümünü mü kullanıyorsunuz?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Uçtan uca şifrelemenin güvenliğini %@ ile doğrulamak isterseniz, yukarıdaki numaraları kendi cihazlarındaki numaralarla karşılaştırın.\n\nAlternatif olarak, kodunu telefonlarında tarayabilir veya kodunu taramanızı rica edebilirsiniz.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@ ile olan uçtan uca şifrelemenizin güvenliğini doğrulamak isterseniz, yukarıdaki numaraları cihazlarındaki numaralarla karşılaştırın.\n\nAlternatif olarak, telefonlarından kodu taratabilir, ya da kodunuzu taratmalarını rica edebilirsiniz.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Güvenlik Numarasını Doğrula";
@@ -1626,7 +1626,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* No comment provided by engineer. */
-"RATING_MSG" = "Özel görüşmeler yapmak için Signal'ı kullanmaktan hoşlanıyorsan, projemize oy vererek destekte bulunabilirsin. Bu işlem bir dakikadan uzun sürmez ve başka insanların biraz mahremiyet bulmasına yardımcı olur.";
+"RATING_MSG" = "Özel görüşmeler yapmak için Signal'ı kullanmaktan hoşlanıyorsan, oy vererek projemize destekte bulunabilirsin. Bu işlem bir dakikadan uzun sürmez ve başkalarının mahremiyet bulmasına yardımcı olur.";
 
 /* No comment provided by engineer. */
 "RATING_RATE" = "Signal'i Oyla";
@@ -1641,7 +1641,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Bu telefon numarasının kaydı, numaranın en son Signal üzerinde aktif olmasının üzerinden 7 gün geçtikten sonra Kayıt Kilidi PIN'iniz olmadan mümkün olabilecektir.";
 
 /* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Bu telefon numarası Kayıt Kilidi etkin. Lütfen Kayıt Kilidi PIN kodunu giriniz.\n\nKayıt Kilidi PIN'iniz, son adımda telefonunuza gönderilen otomatik doğrulama kodundan ayrıdır.";
+"REGISTER_2FA_INSTRUCTIONS" = "Bu telefon numarası Kayıt Kilidi'ni etkinleştirmiş. Lütfen Kayıt Kilidi PIN'ini girin.\n\nKayıt Kilidi PIN'iniz son aşamada otomatik olarak gönderilen doğrulama kodundan farklıdır.";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
 "REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Kaydolma İşlemi Başarısız Oldu";
@@ -1944,7 +1944,7 @@
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Signal'de kişiniz yok.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Arama sonucu yok";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Arama Sonucu Yok";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Engellenen";
@@ -2007,7 +2007,7 @@
 "SETTINGS_NOTIFICATIONS" = "Bildirimler";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Arayan adı ve numarasını göster";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Arayanın Adını ve Numarasını Göster";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS Telefon uygulamasında \"Son Aramalar\" listesinde aramaları göster.";
@@ -2109,13 +2109,13 @@
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Hazır Değil";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Ek Dosyayı Gönderme Başarısız Oldu";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Eklenti Gönderilemedi";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Yükleniyor...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Ek Dosyayı Hazırlama Başarısız Oldu";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Eklenti Hazırlanamadı";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signal'de Paylaş";

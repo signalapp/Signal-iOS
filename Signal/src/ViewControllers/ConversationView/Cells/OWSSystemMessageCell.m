@@ -557,12 +557,29 @@ typedef void (^SystemMessageActionBlock)(void);
 {
     OWSAssert(self.delegate);
 
+    if ([self isGestureInCellHeader:longPress]) {
+        return;
+    }
+
     TSInteraction *interaction = self.viewItem.interaction;
     OWSAssert(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
         [self.delegate conversationCell:self didLongpressSystemMessageViewItem:self.viewItem];
     }
+}
+
+- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
+{
+    OWSAssert(self.viewItem);
+
+    if (!self.viewItem.hasCellHeader) {
+        return NO;
+    }
+
+    CGPoint location = [sender locationInView:self];
+    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
+    return location.y <= headerBottom.y;
 }
 
 - (void)buttonWasPressed:(id)sender

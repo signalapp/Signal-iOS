@@ -144,10 +144,6 @@ typedef enum : NSUInteger {
     ConversationInputToolbarDelegate,
     GifPickerViewControllerDelegate>
 
-// Show message info animation
-@property (nullable, nonatomic) UIPercentDrivenInteractiveTransition *showMessageDetailsTransition;
-@property (nullable, nonatomic) UIPanGestureRecognizer *currentShowMessageDetailsPanGesture;
-
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 @property (nonatomic, readonly) AudioActivity *voiceNoteAudioActivity;
@@ -5160,110 +5156,6 @@ typedef enum : NSUInteger {
     }];
 
     return cell;
-}
-
-#pragma mark - swipe to show message details
-
-- (void)didPanWithGestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer
-                           viewItem:(ConversationViewItem *)conversationItem
-{
-    self.currentShowMessageDetailsPanGesture = gestureRecognizer;
-
-    const CGFloat swipeTranslation
-        = ([gestureRecognizer translationInView:self.view].x * (CurrentAppContext().isRTL ? +1.f : -1.f));
-    const CGFloat ratioComplete = CGFloatClamp(swipeTranslation / self.view.frame.size.width, 0, 1);
-
-    switch (gestureRecognizer.state) {
-        case UIGestureRecognizerStateBegan: {
-            TSInteraction *interaction = conversationItem.interaction;
-            if ([interaction isKindOfClass:[TSIncomingMessage class]] ||
-                [interaction isKindOfClass:[TSOutgoingMessage class]]) {
-
-                // Canary check in case we later have another reason to set navigationController.delegate - we don't
-                // want to inadvertently clobber it here.
-                OWSAssert(self.navigationController.delegate == nil);
-                self.navigationController.delegate = self;
-
-                [self showDetailViewForViewItem:conversationItem];
-            } else {
-                OWSFail(@"%@ Can't show message metadata for message of type: %@", self.logTag, [interaction class]);
-            }
-            break;
-        }
-        case UIGestureRecognizerStateChanged: {
-            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
-            if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
-                return;
-            }
-            [transition updateInteractiveTransition:ratioComplete];
-            break;
-        }
-        case UIGestureRecognizerStateEnded: {
-            const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
-
-            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
-            if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
-                return;
-            }
-
-            // Complete the transition if moved sufficiently far or fast
-            // Note this is trickier for incoming, since you are already on the left, and have less space.
-            if (ratioComplete > 0.3 || velocity < -800) {
-                [transition finishInteractiveTransition];
-            } else {
-                [transition cancelInteractiveTransition];
-            }
-            break;
-        }
-        case UIGestureRecognizerStateCancelled:
-        case UIGestureRecognizerStateFailed: {
-            UIPercentDrivenInteractiveTransition *transition = self.showMessageDetailsTransition;
-            if (!transition) {
-                DDLogVerbose(@"%@ transition not set up yet", self.logTag);
-                return;
-            }
-
-            [transition cancelInteractiveTransition];
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-- (nullable id<UIViewControllerAnimatedTransitioning>)navigationController:
-                                                          (UINavigationController *)navigationController
-                                           animationControllerForOperation:(UINavigationControllerOperation)operation
-                                                        fromViewController:(UIViewController *)fromVC
-                                                          toViewController:(UIViewController *)toVC
-{
-    return [SlideOffAnimatedTransition new];
-}
-
-- (nullable id<UIViewControllerInteractiveTransitioning>)
-                       navigationController:(UINavigationController *)navigationController
-interactionControllerForAnimationController:(id<UIViewControllerAnimatedTransitioning>)animationController
-{
-    // We needed to be the navigation controller delegate to specify the interactive "slide left for message details"
-    // animation But we may not want to be the navigation controller delegate permanently.
-    self.navigationController.delegate = nil;
-
-    UIPanGestureRecognizer *recognizer = self.currentShowMessageDetailsPanGesture;
-    if (recognizer == nil) {
-        // Not in the middle of the `currentShowMessageDetailsPanGesture`, abort.
-        return nil;
-    }
-
-    if (recognizer.state == UIGestureRecognizerStateBegan) {
-        self.showMessageDetailsTransition = [UIPercentDrivenInteractiveTransition new];
-        self.showMessageDetailsTransition.completionCurve = UIViewAnimationCurveEaseOut;
-    } else {
-        self.showMessageDetailsTransition = nil;
-    }
-
-    return self.showMessageDetailsTransition;
 }
 
 #pragma mark - UICollectionViewDelegate

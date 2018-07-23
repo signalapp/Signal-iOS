@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *senderNameLabel;
 
+@property (nonatomic) UIView *senderNameContainer;
+
 @property (nonatomic) OWSMessageTextView *bodyTextView;
 
 @property (nonatomic, nullable) UIView *quotedMessageView;
@@ -84,6 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.stackView.axis = UILayoutConstraintAxisVertical;
 
     self.senderNameLabel = [UILabel new];
+    self.senderNameContainer = [UIView new];
+    self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
+    [self.senderNameContainer addSubview:self.senderNameLabel];
+    [self.senderNameLabel ows_autoPinToSuperviewMargins];
 
     self.bodyTextView = [self newTextView];
     // Setting dataDetectorTypes is expensive.  Do it just once.
@@ -253,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.shouldShowSenderName) {
         [self configureSenderNameLabel];
-        [textViews addObject:self.senderNameLabel];
+        [textViews addObject:self.senderNameContainer];
     }
 
     if (self.isQuotedReply) {
@@ -523,6 +529,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)contactShareVSpacing
 {
     return 12.f;
+}
+
+- (CGFloat)senderNameBottomSpacing
+{
+    return 2.f;
 }
 
 - (OWSDirectionalRectCorner)sharpCorners
@@ -1219,6 +1230,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self configureSenderNameLabel];
     CGSize result = CGSizeCeil([self.senderNameLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
     result.width = MIN(result.width, maxTextWidth);
+    result.height += self.senderNameBottomSpacing;
     return [NSValue valueWithCGSize:result];
 }
 
