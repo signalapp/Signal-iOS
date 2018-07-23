@@ -53,19 +53,27 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (identifiers.count < 1) {
         OWSFail(@"%@ Cannot lookup zero identifiers", self.logTag);
-        failure(OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
+        dispatch_async(dispatch_get_main_queue(), ^{
+            failure(
+                OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
+        });
         return;
     }
 
     [self contactIntersectionWithSet:[NSSet setWithArray:identifiers]
-                             success:^(NSSet<SignalRecipient *> *recipients) {
-                                 if (recipients.count == 0) {
-                                     DDLogInfo(
-                                         @"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
-                                 }
-                                 success(recipients.allObjects);
-                             }
-                             failure:failure];
+        success:^(NSSet<SignalRecipient *> *recipients) {
+            if (recipients.count == 0) {
+                DDLogInfo(@"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(recipients.allObjects);
+            });
+        }
+        failure:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(error);
+            });
+        }];
 }
 
 - (void)contactIntersectionWithSet:(NSSet<NSString *> *)recipientIdsToLookup
