@@ -482,7 +482,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
-            OWSProdLogAndFail(@"%@ can't deserializing null object: %@", self.logTag, collection);
+            OWSProdLogAndFail(@"%@ can't deserialize null object: %@", self.logTag, collection);
             return [OWSUnknownDBObject new];
         }
 
