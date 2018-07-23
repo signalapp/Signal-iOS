@@ -3,10 +3,10 @@
 //
 
 #import "OWSSignalServiceProtos.pb.h"
-#import <XCTest/XCTest.h>
 #import <SignalServiceKit/CDSSigningCertificate.h>
 #import <SignalServiceKit/NSData+Base64.h>
 #import <SignalServiceKit/NSData+OWS.h>
+#import <XCTest/XCTest.h>
 
 @interface CDSSigningCertificateTest : XCTestCase
 
@@ -26,13 +26,8 @@
 - (void)testParsing_bad
 {
     NSString *pem = [self certificatesPem_bad];
-    
-    @try {
-        [CDSSigningCertificate parseCertificateFromPem:pem];
-        XCTFail(@"%@ certificate parsing should have failed.", self.logTag);
-    } @catch (NSException *exception) {
-        // Do nothing.
-    }
+
+    XCTAssertThrows([CDSSigningCertificate parseCertificateFromPem:pem]);
 }
 
 - (void)testVerification_good
@@ -56,13 +51,8 @@
     
     CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem];
     XCTAssertNotNil(certificate);
-    
-    @try {
-        [certificate verifySignatureOfBody:bodyString signature:signature];
-        XCTFail(@"%@ signature verification should have failed.", self.logTag);
-    } @catch (NSException *exception) {
-        // Do nothing.
-    }
+
+    XCTAssertThrows([certificate verifySignatureOfBody:bodyString signature:signature]);
 }
 
 - (void)testVerification_badSignature
@@ -73,13 +63,8 @@
     
     CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem];
     XCTAssertNotNil(certificate);
-    
-    @try {
-        [certificate verifySignatureOfBody:bodyString signature:signature];
-        XCTFail(@"%@ signature verification should have failed.", self.logTag);
-    } @catch (NSException *exception) {
-        // Do nothing.
-    }
+
+    XCTAssertThrows([certificate verifySignatureOfBody:bodyString signature:signature]);
 }
 
 - (NSString *)certificatesPem_good {
