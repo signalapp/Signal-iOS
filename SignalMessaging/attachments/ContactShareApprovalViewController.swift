@@ -324,7 +324,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         self.navigationItem.title = NSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
                                                       comment: "Title for the 'Approve contact share' view.")
 
-        self.view.backgroundColor = UIColor.white
+        self.view.backgroundColor = Theme.backgroundColor
 
         updateContent()
 
@@ -416,7 +416,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         self.nameLabel = nameLabel
         nameLabel.text = contactShare.name.displayName
         nameLabel.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
-        nameLabel.textColor = UIColor.black
+        nameLabel.textColor = Theme.primaryColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 

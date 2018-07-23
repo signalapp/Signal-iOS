@@ -74,6 +74,9 @@ class ContactCell: UITableViewCell {
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
+        self.titleLabel.textColor = Theme.primaryColor
+        self.subtitleLabel.textColor = Theme.secondaryColor
+
         let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
         titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)
