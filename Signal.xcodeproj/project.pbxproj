@@ -53,6 +53,7 @@
 		3421981621061A0700C57195 /* JSQMVC-README.md in Resources */ = {isa = PBXBuildFile; fileRef = 3421980C21061A0700C57195 /* JSQMVC-README.md */; };
 		3421981721061A0700C57195 /* JSQMVC-SIGNAL.md in Resources */ = {isa = PBXBuildFile; fileRef = 3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */; };
 		3421981821061A0700C57195 /* JSQMessageAvatarImageDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */; };
+		3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421981B21061D2E00C57195 /* ByteParserTest.swift */; };
 		34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
@@ -669,6 +670,7 @@
 		3421980C21061A0700C57195 /* JSQMVC-README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "JSQMVC-README.md"; sourceTree = "<group>"; };
 		3421980D21061A0700C57195 /* JSQMVC-SIGNAL.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = "JSQMVC-SIGNAL.md"; sourceTree = "<group>"; };
 		3421980E21061A0700C57195 /* JSQMessageAvatarImageDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSQMessageAvatarImageDataSource.h; sourceTree = "<group>"; };
+		3421981B21061D2E00C57195 /* ByteParserTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ByteParserTest.swift; sourceTree = "<group>"; };
 		34277A5C20751BDC006049F2 /* OWSQuotedMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQuotedMessageView.m; sourceTree = "<group>"; };
 		34277A5D20751BDC006049F2 /* OWSQuotedMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQuotedMessageView.h; sourceTree = "<group>"; };
 		3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTimerView.h; sourceTree = "<group>"; };
@@ -2334,6 +2336,7 @@
 			isa = PBXGroup;
 			children = (
 				3491D9A021022DB7001EF5A1 /* CDSSigningCertificateTest.m */,
+				3421981B21061D2E00C57195 /* ByteParserTest.swift */,
 				45E7A6A61E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift */,
 				B660F6AA1C29868000687D6E /* ExceptionsTest.h */,
 				B660F6AB1C29868000687D6E /* ExceptionsTest.m */,
@@ -3435,6 +3438,7 @@
 				3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */,
 				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,
+				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
 				45360B901F9527DA00FA666C /* SearcherTest.swift in Sources */,
 				B660F7561C29988E00687D6E /* PushManager.m in Sources */,
 				34DB0BED2011548B007B313F /* OWSDatabaseConverterTest.m in Sources */,
