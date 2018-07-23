@@ -69,4 +69,19 @@
     return [[TSRequest alloc] initWithURL:url method:method parameters:parameters];
 }
 
+#pragma mark - Authorization
+
+- (NSString *)authUsername
+{
+    OWSAssert(self.shouldHaveAuthorizationHeaders);
+    return (_authUsername ?: [TSAccountManager localNumber]);
+}
+
+- (NSString *)authPassword
+{
+    OWSAssert(self.shouldHaveAuthorizationHeaders);
+    return (_authPassword ?: [TSAccountManager serverAuthToken]);
+}
+
+
 @end

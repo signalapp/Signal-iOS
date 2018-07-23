@@ -5,6 +5,8 @@
 @interface TSRequest : NSMutableURLRequest
 
 @property (nonatomic) BOOL shouldHaveAuthorizationHeaders;
+@property (atomic, nullable) NSString *authUsername;
+@property (atomic, nullable) NSString *authPassword;
 
 @property (nonatomic, readonly) NSDictionary *parameters;
 

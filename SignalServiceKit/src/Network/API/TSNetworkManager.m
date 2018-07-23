@@ -4,7 +4,7 @@
 
 #import "TSNetworkManager.h"
 #import "AppContext.h"
-#import "CDSAttestationRequest.h"
+#import "NSError+messageSending.h"
 #import "NSURLSessionDataTask+StatusCode.h"
 #import "OWSSignalService.h"
 #import "TSAccountManager.h"
@@ -114,14 +114,9 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
         [parameters removeObjectForKey:@"AuthKey"];
         [sessionManager PUT:request.URL.absoluteString parameters:parameters success:success failure:failure];
     } else {
-        if ([request isKindOfClass:[CDSAttestationRequest class]]) {
-            CDSAttestationRequest *attestationRequest = (CDSAttestationRequest *)request;
-            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:attestationRequest.username
-                                                                             password:attestationRequest.authToken];
-        } else if (request.shouldHaveAuthorizationHeaders) {
-            [sessionManager.requestSerializer
-                setAuthorizationHeaderFieldWithUsername:[TSAccountManager localNumber]
-                                               password:[TSAccountManager serverAuthToken]];
+        if (request.shouldHaveAuthorizationHeaders) {
+            [sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
+                                                                             password:request.authPassword];
         }
 
         if ([request.HTTPMethod isEqualToString:@"GET"]) {
@@ -170,6 +165,8 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
 
       switch (statusCode) {
           case 0: {
+              error.isRetryable = YES;
+
               DDLogWarn(@"The network request failed because of a connectivity error: %@", request);
               failureBlock(task,
                   [self errorWithHTTPCode:statusCode
@@ -183,6 +180,10 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
           case 400: {
               DDLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
 
+              error.isRetryable = NO;
+
+              // TODO distinguish CDS requests. we don't want a bad CDS request to trigger "Signal deauth" logic.
+              // also, shouldn't this be under 403, not 400?
               [TSAccountManager.sharedInstance setIsDeregistered:YES];
 
               failureBlock(task, error);
@@ -192,6 +193,7 @@ typedef void (^failureBlock)(NSURLSessionDataTask *task, NSError *error);
               DDLogError(@"The server returned an error about the authorization header: %@, %@",
                   networkError.debugDescription,
                   request);
+              error.isRetryable = NO;
               failureBlock(task, error);
               break;
           }

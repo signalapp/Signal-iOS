@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const NSUInteger kAES256_KeyByteLength;
 
-/// Key appropriate for use in AES128 crypto
+/// Key appropriate for use in AES256-GCM
 @interface OWSAES256Key : NSObject <NSSecureCoding>
 
 /// Generates new secure random key
@@ -16,13 +16,26 @@ extern const NSUInteger kAES256_KeyByteLength;
 /**
  * @param data  representing the raw key bytes
  *
- * @returns a new instance if key is of appropriate length for AES128 crypto
+ * @returns a new instance if key is of appropriate length for AES256-GCM
  *          else returns nil.
  */
 + (nullable instancetype)keyWithData:(NSData *)data;
 
 /// The raw key material
 @property (nonatomic, readonly) NSData *keyData;
+
+@end
+
+@interface AES25GCMEncryptionResult : NSObject
+
+@property (nonatomic, readonly) NSData *ciphertext;
+@property (nonatomic, readonly) NSData *initializationVector;
+@property (nonatomic, readonly) NSData *authTag;
+
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCipherText:(NSData *)cipherText
+                       initializationVector:(NSData *)initializationVector
+                                    authTag:(NSData *)authTag NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -69,13 +82,19 @@ typedef NS_ENUM(NSInteger, TSMACType) {
                            outKey:(NSData *_Nonnull *_Nullable)outKey
                         outDigest:(NSData *_Nonnull *_Nullable)outDigest;
 
-+ (nullable NSData *)encryptAESGCMWithData:(NSData *)plaintextData key:(OWSAES256Key *)key;
-+ (nullable NSData *)decryptAESGCMWithData:(NSData *)encryptedData key:(OWSAES256Key *)key;
++ (nullable AES25GCMEncryptionResult *)encryptAESGCMWithData:(NSData *)plaintext
+                                 additionalAuthenticatedData:(nullable NSData *)additionalAuthenticatedData
+                                                         key:(OWSAES256Key *)key
+  NS_SWIFT_NAME(encryptAESGCM(plainTextData:additionalAuthenticatedData:key:));
 
 + (nullable NSData *)decryptAESGCMWithInitializationVector:(NSData *)initializationVector
                                                 ciphertext:(NSData *)ciphertext
+                               additionalAuthenticatedData:(nullable NSData *)additionalAuthenticatedData
                                                    authTag:(NSData *)authTagFromEncrypt
                                                        key:(OWSAES256Key *)key;
+
++ (nullable NSData *)encryptAESGCMWithProfileData:(NSData *)plaintextData key:(OWSAES256Key *)key;
++ (nullable NSData *)decryptAESGCMWithProfileData:(NSData *)encryptedData key:(OWSAES256Key *)key;
 
 @end
 
