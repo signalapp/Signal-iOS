@@ -285,7 +285,7 @@
 "BUTTON_SELECT" = "Seleccionar";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Chamar novamente";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "O Signal necessita de acesso ao seu microfone para poder realizar chamadas e gravar mensagens de voz. Pode dar acesso nas Definições.";
@@ -516,7 +516,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info. Contacto";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Cor";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupo";
@@ -552,7 +552,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Criar Novo Contacto";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tocar para Alterar";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Remover do Silêncio";
@@ -609,13 +609,13 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "A Optimizar a Base de Dados";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = " Há %@H";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Há %@min";
 
 /* The present; the current time. */
-"DATE_NOW" = "Now";
+"DATE_NOW" = "Agora";
 
 /* The current day. */
 "DATE_TODAY" = "Hoje";
@@ -868,7 +868,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "A chave do destinatário não é valida.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Mensagem recebida fora de ordem.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Recebeu uma mensagem não compatível com esta versão.";
@@ -886,7 +886,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Ocorreu um erro desconhecido.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Safety number changed.";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "O número de segurança mudou.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Desregistar Utilizador: %@";
@@ -1051,7 +1051,7 @@
 "INCOMING_DECLINED_CALL" = "Rejeitou uma chamada";
 
 /* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Incoming call";
+"INCOMING_INCOMPLETE_CALL" = "A Receber Chamada";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Chamada não atendida visto que o número de segurança mudou.";
@@ -1153,25 +1153,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Este mês";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Copiar Media";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Copiar Mensagem";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete this Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Apagar esta Mensagem";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will be deleted on this device only";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Será apenas apagada neste dispositivo";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Mais Info";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to this Message";
+"MESSAGE_ACTION_REPLY" = "Responder";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Guardar Media";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Mensagem";
@@ -1234,7 +1234,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Entregue";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Falha no envio.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Falhou";
@@ -1246,7 +1246,7 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Ignorado";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Send Failed";
+"MESSAGE_STATUS_SEND_FAILED" = "Envio Falhado";
 
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "A enviar...";
@@ -1288,13 +1288,13 @@
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Toque para ver definições";
 
 /* Indicator that separates read from unread messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR" = "New Messages";
+"MESSAGES_VIEW_UNREAD_INDICATOR" = "Mensagens Novas ";
 
 /* Messages that indicates that there are more unseen messages. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "There are more unread messages.";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES" = "Há mais mensagens não lidas.";
 
 /* Messages that indicates that there are more unseen messages including safety number changes. */
-"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "There are more unread messages (including safety number changes).";
+"MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Há mais mensagens não lidas (incluindo mudanças no número de segurança).";
 
 /* notification title */
 "MISSED_CALL" = "Chamada não atendida";
@@ -1443,10 +1443,10 @@
 "OUTGOING_CALL" = "Chamada efectuada";
 
 /* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Outgoing call";
+"OUTGOING_INCOMPLETE_CALL" = "A efectuar chamada";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
+"OUTGOING_MISSED_CALL" = "Chamada não atendida";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
@@ -1896,7 +1896,7 @@
 "SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Enviar Relatório de Erros";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_THEME" = "Theme";
+"SETTINGS_ADVANCED_THEME" = "Tema";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Avançado";
@@ -2121,7 +2121,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Partilhar pelo Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Mostrar Número de Segurança ";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Mostrar Conversa";
@@ -2139,10 +2139,10 @@
 "SUCCESSFUL_VERIFICATION_TITLE" = "Número de segurança é valido!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify Safety Number";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verificar Número de Segurança";
 
 /* No comment provided by engineer. */
-"THEME_SECTION" = "Theme";
+"THEME_SECTION" = "Tema";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dias";

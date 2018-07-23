@@ -609,10 +609,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Datenbankoptimierung";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "Vor %@ Std.";
+"DATE_HOURS_AGO_FORMAT" = "Vor %@ h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "Vor %@ Min.";
+"DATE_MINUTES_AGO_FORMAT" = "Vor %@ min";
 
 /* The present; the current time. */
 "DATE_NOW" = "Jetzt";
@@ -1153,25 +1153,25 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Diesen Monat";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Multimedia Datei kopieren";
+"MESSAGE_ACTION_COPY_MEDIA" = "Medieninhalte kopieren";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Kopiere diese Nachricht";
+"MESSAGE_ACTION_COPY_TEXT" = "Nachrichtentext kopieren";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Diese Nachricht löschen";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Nur auf diesem Gerät löschen";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Wird nur auf diesem Gerät gelöscht";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "Mehr Infos";
+"MESSAGE_ACTION_DETAILS" = "Mehr Details";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Auf diese Nachricht antworten";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SAVE_MEDIA" = "Multimedia Datei speichern";
+"MESSAGE_ACTION_SAVE_MEDIA" = "Medieninhalte speichern";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Nachricht";

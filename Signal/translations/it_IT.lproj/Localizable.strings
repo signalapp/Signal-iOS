@@ -27,10 +27,10 @@
 "ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Aggiungi contatto";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Aggiungi da Numero";
+"ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Aggiungi da numero";
 
 /* Title for the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_TITLE" = "Aggiungi Membro";
+"ADD_GROUP_MEMBER_VIEW_TITLE" = "Aggiungi membro";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vuoi condividere il tuo profilo con questo gruppo?";
@@ -45,7 +45,7 @@
 "ALERT_DISCARD_BUTTON" = "Elimina";
 
 /* The label for the 'don't save' button in action sheets. */
-"ALERT_DONT_SAVE" = "Non Salvare";
+"ALERT_DONT_SAVE" = "Non salvare";
 
 /* No comment provided by engineer. */
 "ALERT_ERROR_TITLE" = "Errore";
@@ -57,7 +57,7 @@
 "ANSWER_CALL_BUTTON_TITLE" = "Rispondi";
 
 /* No comment provided by engineer. */
-"APN_Message" = "Nuovo Messaggio!";
+"APN_Message" = "Nuovo messaggio!";
 
 /* No comment provided by engineer. */
 "APN_MESSAGE_FROM" = "Messaggio da";
@@ -78,7 +78,7 @@
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Inserisci il tuo nome";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number.}}. */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La versione %@ è ora disponibile nell' App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "La versione %@ è ora disponibile nell'App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "È disponibile una nuova versione di Signal";
@@ -402,7 +402,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Vuoi davvero lasciare?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associa Nuovo Dispositivo";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Associa nuovo dispositivo";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ potrebbe aver reinstallato o cambiato dispositivo. Verifica il codice di sicurezza con lui per garantire la privacy.";
@@ -513,13 +513,13 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blocca questo utente";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info Contatto";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info contatto";
 
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Colore";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info Gruppo";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info gruppo";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenzioso";
@@ -715,7 +715,7 @@
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Contatti";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Modifica Gruppo";
+"EDIT_GROUP_DEFAULT_TITLE" = "Modifica gruppo";
 
 /* Label for the cell that lets you add a new member to a group. */
 "EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Aggiungi...";
@@ -757,7 +757,7 @@
 "EMPTY_ARCHIVE_TEXT" = "Puoi archiviare conversazioni inattive dalla lista Chat per consultarle successivamente.";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_TITLE" = "Pulisci le tue Conversazioni";
+"EMPTY_ARCHIVE_TITLE" = "Pulisci le tue conversazioni";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Nessuno dei tuoi contatti ha Signal.";
@@ -814,7 +814,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Occupato.";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Chiamata Fallita.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Chiamata fallita.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Impossibile accedere ai contatti.";
@@ -1033,7 +1033,7 @@
 "IN_CALL_SECURING" = "Risposta. Verifica sicurezza...";
 
 /* Call setup status label */
-"IN_CALL_TERMINATED" = "Chiamata Terminata.";
+"IN_CALL_TERMINATED" = "Chiamata terminata.";
 
 /* Label reminding the user that they are in archive mode. */
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Queste conversazioni sono archiviate. Compariranno nella inbox se verranno ricevuti nuovi messaggi.";
@@ -1105,10 +1105,10 @@
 "LINK_DEVICE_RESTART" = "Riprova";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Per associare scannerizza il codice QR visualizzato sul dispositivo. ";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Per associare scansiona il codice QR visualizzato sul dispositivo. ";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scannerizza il codice QR";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scansione il codice QR";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Associa Nuovo Dispositivo";
@@ -1141,10 +1141,10 @@
 "MEDIA_FROM_LIBRARY_BUTTON" = "Libreria foto e video";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Elimina %d Messaggi";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Elimina %d messaggi";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Elimina Messaggio";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Elimina messaggio";
 
 /* Short sender label for media sent by you */
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Tu";
@@ -1165,7 +1165,7 @@
 "MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Verrà eliminato solo in questo dispositivo";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "Altre Informazioni";
+"MESSAGE_ACTION_DETAILS" = "Altre informazioni";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Rispondi a questo messaggio";
@@ -1350,7 +1350,7 @@
 "NETWORK_STATUS_DEREGISTERED" = "Non più registrato";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Stato della Rete";
+"NETWORK_STATUS_HEADER" = "Stato della rete";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Offline";
@@ -1362,13 +1362,13 @@
 "NEW_GROUP_ADD_NON_CONTACT" = "Aggiungi per numero";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Setta foto del gruppo";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Imposta foto del gruppo";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Crea";
 
 /* Used in place of the group name when a group has not yet been named. */
-"NEW_GROUP_DEFAULT_TITLE" = "Nuovo Gruppo";
+"NEW_GROUP_DEFAULT_TITLE" = "Nuovo gruppo";
 
 /* An indicator that a user is a member of the new group. */
 "NEW_GROUP_MEMBER_LABEL" = "Membro";
@@ -1596,7 +1596,7 @@
 "PUSH_REGISTER_SUCCESS" = "Ri-registrazione delle notifiche push avvenuta con successo.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Notifiche Push";
+"PUSH_REGISTER_TITLE" = "Notifiche push";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -1869,25 +1869,25 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blocca";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Raggiro Censura";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Raggiro censura";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Posizione: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Se attivo, Signal cercerà di raggirare la censura. Non attivare questa funzione a meno che vi troviate in un luogo dove Signal è soggetto a censura.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Se attivo, Signal cercerà di raggirare la censura. Non attivare questa funzione a meno che ti trovi in un luogo dove Signal è soggetto a censura.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Il raggiro della censura è stato attivato sulla base del vostro numero telefonico.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Il raggiro della censura è stato attivato sulla base del tuo numero telefonico.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Il raggiro della censura può essere attivato solo se connessi ad Internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Il raggiro della censura non è necessario; siete già connessi al servizio Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Il raggiro della censura non è necessario; sei già connesso al servizio Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Raggiro Censura";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Raggiro censura";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Abilita il log di debug";
@@ -1962,16 +1962,16 @@
 "SETTINGS_COPYRIGHT" = "Copyright Open Whisper Systems\nLicenza secondo direttive GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Cancella Account";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Cancella account";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Cancella tutti i dati";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sei sicuro di voler cancellare tutte le tue storie (messaggi, allegati, chiamate ...) ? L'operazione non potrà essere annullata.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sei sicuro di voler cancellare tutta la tua cronologia (messaggi, allegati, chiamate, ecc...)? L'operazione non potrà essere annullata.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Elimina Tutto";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Elimina tutto";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Aiuto";
@@ -2001,7 +2001,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Notifiche di chiamate e messaggi possono apparire con il \"Blocco Schermo\". Potresti voler limitare cosa mostrare in queste notifiche.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenuto Notifica";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenuto notifica";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notifiche";
@@ -2013,7 +2013,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Mostra le chiamate nella lista dei \"Recenti\" dell'app Telefono iOS.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Mostra Chiamate nei Recenti";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Mostra chiamate nei recenti";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrazione chiamate iOS";
@@ -2250,7 +2250,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Ora puoi scegliere i suoni di notifica predefiniti e per conversazione, le chiamate rispetteranno la suoneria di sistema scelta per ogni contatto. ";
 
 /* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Reimposta Preferenze Notificazioni";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Reimposta preferenze delle notifiche";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Nuovi Suoni Chiamate e Messaggi";
@@ -2277,7 +2277,7 @@
 "UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ora supporta le chiamate video sicure. Inizia la chiamata come di consueto, tocca il pulsante della telecamere e fai ciao.";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Chiamate Video Sicure!";
+"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Videochiamate sicure!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal richiede iOS 9 o successivo. Per aggiornare: App Impostazioni >> Generali >> Aggiornamento Software. ";

@@ -84,7 +84,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "มี Signal รุ่นใหม่แล้ว";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัปเดต";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "อัพเดต";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -679,7 +679,7 @@
 "DEVICE_LINKED_AT_LABEL" = "เชื่อมโยง: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "อัปเดตรายการอุปกรณ์ไม่สำเร็จ";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "อัพเดตรายการอุปกรณ์ไม่สำเร็จ";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
@@ -727,7 +727,7 @@
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "เพิ่มแล้ว";
 
 /* The title for the 'update group' button. */
-"EDIT_GROUP_UPDATE_BUTTON" = "อัปเดต";
+"EDIT_GROUP_UPDATE_BUTTON" = "อัพเดต";
 
 /* The alert message if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "คุณได้เปลี่ยนแปลงกลุ่มนี้ คุณต้องการบันทึกการเปลี่ยนแปลงนี้หรือไม่";
@@ -859,7 +859,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "ผู้ติดต่อนี้ไม่ได้เป็นผู้ใช้ Signal";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "ล้มเหลว: ขอผู้ส่งให้อัปเดต Signal และส่งใหม่อีกครั้ง";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "ล้มเหลว: ขอผู้ส่งให้อัพเดต Signal และส่งใหม่อีกครั้ง";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "ได้รับข้อความที่ซ้ำกัน";
@@ -997,7 +997,7 @@
 "GROUP_TITLE_CHANGED" = "หัวข้อตอนนี้คือ '%@'";
 
 /* No comment provided by engineer. */
-"GROUP_UPDATED" = "อัปเดตกลุ่มแล้ว";
+"GROUP_UPDATED" = "อัพเดตกลุ่มแล้ว";
 
 /* No comment provided by engineer. */
 "GROUP_YOU_LEFT" = "คุณได้ออกจากกลุ่ม";
@@ -1039,7 +1039,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "เพื่อดูชื่อในรายชื่อผู้ติดต่อของคุณ อัปเดตการตั้งค่าระบบของคุณให้อนุญาตการเข้าถึงผู้ติดต่อ";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "เพื่อดูชื่อในรายชื่อผู้ติดต่อของคุณ อัพเดตการตั้งค่าระบบของคุณให้อนุญาตการเข้าถึงผู้ติดต่อ";
 
 /* notification body */
 "INCOMING_CALL" = "สายโทรเข้า";
@@ -1431,10 +1431,10 @@
 "OPEN_SETTINGS_BUTTON" = "การตั้งค่า";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ปิดใช้ข้อความลบตัวเอง";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ปิดใช้งานข้อความที่ลบตัวเองได้";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ตั้งเวลาข้อความลบตัวเองไว้ที่ %@";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ได้ตั้งเวลาข้อความที่ลบตัวเองได้ไว้ที่ %@";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
@@ -1524,10 +1524,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ผู้ใช้ Signal ทุกคู่จะแบ่งปันรหัสความปลอดภัยจำเพาะร่วมกัน ตรวจสอบอีกครั้งว่า %@ กำลังแสดงรหัสความปลอดภัย *ของคุณ*";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "คุณกำลังใช้ Signal เวอร์ชันเก่า คุณจำเป็นต้องอัปเดตก่อนที่คุณจะสามารถตรวจยืนยัน";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "คุณกำลังใช้ Signal เวอร์ชันเก่า คุณจำเป็นต้องอัพเดตก่อนที่คุณจะสามารถตรวจยืนยัน";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "คู่สนทนาของคุณกำลังใช้ Signal เวอร์ชันเก่า เขาจำเป็นต้องอัปเดตก่อนที่คุณจะสามารถตรวจยืนยัน";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "คู่สนทนาของคุณกำลังใช้ Signal เวอร์ชันเก่า เขาจำเป็นต้องอัพเดตก่อนที่คุณจะสามารถตรวจยืนยัน";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "รหัสที่สแกนดูไม่เหมือนกับรหัสความปลอดภัย คุณทั้งสองกำลังใช้ Signal เวอร์ชันล่าสุดอยู่หรือไม่";
@@ -1560,7 +1560,7 @@
 "PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "ชื่อโปรไฟล์ของคุณยาวเกินไป";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "อัปเดตโปรไฟล์ไม่สำเร็จ";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "อัพเดตโปรไฟล์ไม่สำเร็จ";
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "ป้อนชื่อของคุณ";
@@ -2103,7 +2103,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "ยังไม่ได้ลงทะเบียน";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "เปิด Signal แอปเพื่ออัปเดตหรือลงทะเบียน";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "เปิด Signal แอปเพื่ออัพเดตหรือลงทะเบียน";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "ไม่พร้อม";
@@ -2226,7 +2226,7 @@
 "UNREGISTER_SIGNAL_FAIL" = "ยกเลิกการลงทะเบียนจาก Signal ไม่สำเร็จ";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "ได้รับไฟล์แนบชนิดที่ไม่รองรับ";
+"UNSUPPORTED_ATTACHMENT" = "ได้รับประเภทไฟล์แนบที่ไม่รองรับ";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "อุปกรณ์ของคุณไม่รองรับคุณลักษณะนี้";
@@ -2253,7 +2253,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "ตรวจสอบการตั้งค่าการแจ้งเตือน";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "อัปเดตเสียงเรียกการโทรและข้อความแล้ว";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "อัพเดตเสียงเรียกการโทรและข้อความแล้ว";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "สร้างโปรไฟล์ของคุณ";
@@ -2280,13 +2280,13 @@
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "การโทรด้วยวิดีโออย่างปลอดภัย!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ต้องการ iOS 9 หรือใหม่กว่า โปรดอัปเกรด iOS ได้ใน การตั้งค่า >> ทั่วไป >> รายการอัปเดตซอฟต์แวร์ ";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ต้องการ iOS 9 หรือใหม่กว่า โปรดอัพเกรด iOS ได้ใน การตั้งค่า >> ทั่วไป >> รายการอัพเดตซอฟต์แวร์ ";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "อัปเกรด iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "อัพเกรด iOS";
 
 /* No comment provided by engineer. */
-"Upgrading Signal ..." = "กำลังอัปเกรด Signal ...";
+"Upgrading Signal ..." = "กำลังอัพเกรด Signal ...";
 
 /* button text for back button on verification view */
 "VERIFICATION_BACK_BUTTON" = "ย้อนกลับ";
@@ -2343,10 +2343,10 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "ตั้งค่าให้เสร็จสมบูรณ์บน Signal Desktop";
 
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ปิดใช้ข้อความลบตัวเอง";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ปิดใช้งานข้อความที่ลบตัวเองได้";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ตั้งเวลาข้อความลบตัวเองไว้ที่ %@";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "คุณได้ตั้งเวลาข้อความที่ลบตัวเองได้ไว้ที่ %@";
 
 // Strings Copied in from JSQMessagesViewController
 

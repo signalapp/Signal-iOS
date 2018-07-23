@@ -1153,7 +1153,7 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denne måneden";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
+"MESSAGE_ACTION_COPY_MEDIA" = "Kopier media";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
