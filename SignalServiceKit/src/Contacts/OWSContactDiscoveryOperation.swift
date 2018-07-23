@@ -416,8 +416,6 @@ class CDSFeedbackOperation: OWSOperation {
     enum FeedbackResult: String {
         case ok
         case mismatch
-        case serverError = "server-error"
-        case clientError = "client-error"
         case attestationError = "attestation-error"
         case unexpectedError = "unexpected-error"
     }
@@ -464,10 +462,9 @@ class CDSFeedbackOperation: OWSOperation {
 
         if let error = cdsOperation.failingError {
             switch error {
-            case ContactDiscoveryError.serverError:
-                self.makeRequest(result: .serverError)
-            case ContactDiscoveryError.clientError:
-                self.makeRequest(result: .clientError)
+            case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
+                // Server already has this information, no need to report.
+                self.reportSuccess()
             case ContactDiscoveryError.attestationError:
                 self.makeRequest(result: .attestationError)
             default:
