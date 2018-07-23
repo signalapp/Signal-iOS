@@ -8,10 +8,7 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
-
-// SHARINGEXTENSION FIXME
-// intern or reimplement this so that SignalMessaging doesn't depend on JSQ
-#import <JSQMessagesViewController/JSQMessagesAvatarImageFactory.h>
+#import "JSQMessagesAvatarImageFactory.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
