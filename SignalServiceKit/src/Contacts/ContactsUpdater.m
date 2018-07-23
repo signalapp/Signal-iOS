@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (identifiers.count < 1) {
         OWSFail(@"%@ Cannot lookup zero identifiers", self.logTag);
-        dispatch_async(dispatch_get_main_queue(), ^{
+        DispatchMainThreadSafe(^{
             failure(
                 OWSErrorWithCodeDescription(OWSErrorCodeInvalidMethodParameters, @"Cannot lookup zero identifiers"));
         });
@@ -65,12 +65,12 @@ NS_ASSUME_NONNULL_BEGIN
             if (recipients.count == 0) {
                 DDLogInfo(@"%@ in %s no contacts are Signal users", self.logTag, __PRETTY_FUNCTION__);
             }
-            dispatch_async(dispatch_get_main_queue(), ^{
+            DispatchMainThreadSafe(^{
                 success(recipients.allObjects);
             });
         }
         failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+            DispatchMainThreadSafe(^{
                 failure(error);
             });
         }];
