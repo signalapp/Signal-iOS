@@ -97,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
     YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
     OWSAssert(interactionsByThread);
+    __block BOOL didDetectCorruption = NO;
     [interactionsByThread enumerateKeysInGroup:self.uniqueId
                                     usingBlock:^(NSString *collection, NSString *key, NSUInteger index, BOOL *stop) {
                                         if (![key isKindOfClass:[NSString class]] || key.length < 1) {
@@ -104,10 +105,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                 self.logTag,
                                                 key,
                                                 [key class]);
+                                            didDetectCorruption = YES;
                                             return;
                                         }
                                         [interactionIds addObject:key];
                                     }];
+
+    if (didDetectCorruption) {
+        DDLogWarn(@"%@ incrementing version of: %@", self.logTag, TSMessageDatabaseViewExtensionName);
+        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+    }
 
     for (NSString *interactionId in interactionIds) {
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
