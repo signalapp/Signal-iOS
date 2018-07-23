@@ -102,7 +102,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
 
     self.title = [MessageStrings newGroupDefaultTitle];
 
-    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
         initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")

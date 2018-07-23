@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.thread.groupModel);
     OWSAssert(self.thread.groupModel.groupMemberIds);
 
-    self.view.backgroundColor = UIColor.ows_themeBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
 
     [self.memberRecipientIds addObjectsFromArray:self.thread.groupModel.groupMemberIds];
     self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
