@@ -67,11 +67,11 @@ public class AttachmentApprovalViewController: OWSViewController, CaptioningTool
         let vc = AttachmentApprovalViewController(attachment: attachment, delegate: delegate)
         let navController = OWSNavigationController(rootViewController: vc)
 
-        // Make navigationBar clear
-        navController.navigationBar.backgroundColor = .clear
-        navController.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        navController.navigationBar.shadowImage = UIImage()
-        navController.navigationBar.clipsToBounds = true
+        guard let navigationBar = navController.navigationBar as? OWSNavigationBar else {
+            owsFail("\(self.logTag) in \(#function) navigationBar was nil or unexpected class")
+            return navController
+        }
+        navigationBar.makeClear()
 
         return navController
     }

@@ -40,6 +40,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public static let backgroundBlurMutingFactor: CGFloat = 0.5
+    var blurEffectView: UIView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,6 +54,7 @@ public class OWSNavigationBar: UINavigationBar {
             let blurEffect = UIBlurEffect(style: .light)
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             blurEffectView.isUserInteractionEnabled = false
+            self.blurEffectView = blurEffectView
 
             // remove hairline below bar.
             self.shadowImage = UIImage()
@@ -70,6 +72,8 @@ public class OWSNavigationBar: UINavigationBar {
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
     }
+
+    // MARK: Layout
 
     @objc
     public func callDidChange() {
@@ -124,5 +128,16 @@ public class OWSNavigationBar: UINavigationBar {
                 subview.frame = self.bounds
             }
         }
+    }
+
+    // MARK: 
+
+    @objc
+    public func makeClear() {
+        self.backgroundColor = .clear
+        self.setBackgroundImage(UIImage(), for: .default)
+        self.shadowImage = UIImage()
+        self.clipsToBounds = true
+        self.blurEffectView?.isHidden = true
     }
 }
