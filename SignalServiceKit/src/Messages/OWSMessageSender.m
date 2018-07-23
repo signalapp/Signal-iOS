@@ -606,6 +606,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 attempts:OWSMessageSenderRetryAttempts
                 useWebsocketIfAvailable:YES
                 success:^{
+                    // The value doesn't matter, we just need any non-NSError value.
                     resolve(@(1));
                 }
                 failure:^(NSError *error) {
