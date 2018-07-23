@@ -70,12 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
-
-    PanDirectionGestureRecognizer *panGesture = [[PanDirectionGestureRecognizer alloc]
-        initWithDirection:(CurrentAppContext().isRTL ? PanDirectionLeft : PanDirectionRight)
-                   target:self
-                   action:@selector(handlePanGesture:)];
-    [self addGestureRecognizer:panGesture];
 }
 
 - (void)dealloc
@@ -462,17 +456,6 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
     }
-}
-
-- (void)handlePanGesture:(UIPanGestureRecognizer *)panRecognizer
-{
-    OWSAssert(self.delegate);
-
-    if ([self isGestureInCellHeader:panRecognizer]) {
-        return;
-    }
-
-    [self.delegate didPanWithGestureRecognizer:panRecognizer viewItem:self.viewItem];
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
