@@ -9,10 +9,6 @@ class ByteParserTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
-//         self.imageCache = ImageCache()
-//        imageCache.setImage(firstVariation, forKey:cacheKey1, diameter:100)
-//        imageCache.setImage(secondVariation, forKey:cacheKey1, diameter:200)
-//        imageCache.setImage(otherImage, forKey:cacheKey2, diameter:100)
     }
 
     override func tearDown() {
@@ -29,7 +25,7 @@ class ByteParserTest: XCTestCase {
         XCTAssertTrue(parser.hasError)
     }
 
-    func testGetShort() {
+    func testGetShort_littleEndian() {
         let data = Data(bytes: [0x01, 0x00, 0x00, 0x01, 0x01, 0x01 ])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
@@ -48,6 +44,25 @@ class ByteParserTest: XCTestCase {
         XCTAssertTrue(parser.hasError)
     }
 
+    func testGetShort_bigEndian() {
+        let data = Data(bytes: [0x01, 0x00, 0x00, 0x01, 0x01, 0x01 ])
+        let parser = ByteParser(data: data, littleEndian: false)
+        XCTAssertNotNil(parser)
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(256, parser.nextShort())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(1, parser.nextShort())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(257, parser.nextShort())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(0, parser.nextShort())
+        XCTAssertTrue(parser.hasError)
+    }
+
     func testGetInt_Empty() {
         let parser = ByteParser(data: Data(), littleEndian: true)
         XCTAssertNotNil(parser)
@@ -57,9 +72,28 @@ class ByteParserTest: XCTestCase {
         XCTAssertTrue(parser.hasError)
     }
 
-    func testGetInt() {
+    func testGetInt_littleEndian() {
         let data = Data(bytes: [0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00 ])
         let parser = ByteParser(data: data, littleEndian: true)
+        XCTAssertNotNil(parser)
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(1, parser.nextInt())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(256, parser.nextInt())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(257, parser.nextInt())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(0, parser.nextInt())
+        XCTAssertTrue(parser.hasError)
+    }
+
+    func testGetInt_bigEndian() {
+        let data = Data(bytes: [0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01 ])
+        let parser = ByteParser(data: data, littleEndian: false)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
@@ -85,9 +119,28 @@ class ByteParserTest: XCTestCase {
         XCTAssertTrue(parser.hasError)
     }
 
-    func testGetLong() {
+    func testGetLong_littleEndian() {
         let data = Data(bytes: [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ])
         let parser = ByteParser(data: data, littleEndian: true)
+        XCTAssertNotNil(parser)
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(1, parser.nextLong())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(256, parser.nextLong())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(257, parser.nextLong())
+        XCTAssertFalse(parser.hasError)
+
+        XCTAssertEqual(0, parser.nextLong())
+        XCTAssertTrue(parser.hasError)
+    }
+
+    func testGetLong_bigEndian() {
+        let data = Data(bytes: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01 ])
+        let parser = ByteParser(data: data, littleEndian: false)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
