@@ -192,7 +192,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
-@interface OWSUnknownDBObject : NSObject <NSCoding>
+@interface OWSUnknownDBObject : TSYapDatabaseObject <NSCoding>
 
 @end
 
@@ -205,17 +205,42 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
  */
 @implementation OWSUnknownDBObject
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
+- (void)encodeWithCoder:(NSCoder *)aCoder
 {
-    // We return self instead of, e.g. nil, to avoid a crash when YapDB enumerates
-    // all old objects when building a DB extension.
+    OWSProdLogAndFail(@"%@ Tried to save object from unknown collection", self.logTag);
+
+    return [super encodeWithCoder:aCoder];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)aCoder
+- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    OWSRaiseException(
-        @"OWSStorageExceptionName_SaveToUnknownCollection", @"Tried to save object from unknown collection");
+    OWSProdLogAndFail(@"%@ Tried to save unknown object", self.logTag);
+
+    // No-op.
+}
+
+- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSProdLogAndFail(@"%@ Tried to touch unknown object", self.logTag);
+
+    // No-op.
+}
+
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSProdLogAndFail(@"%@ Tried to remove unknown object", self.logTag);
+
+    // No-op.
 }
 
 @end
@@ -457,7 +482,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     return ^id(NSString __unused *collection, NSString __unused *key, NSData *data) {
         if (!data || data.length <= 0) {
-            return nil;
+            OWSProdLogAndFail(@"%@ can't deserializing null object: %@", self.logTag, collection);
+            return [OWSUnknownDBObject new];
         }
 
         @try {
