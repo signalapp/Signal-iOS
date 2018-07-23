@@ -86,6 +86,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                             cookies:(NSArray<NSHTTPCookie *> *)cookies;
 
 + (TSRequest *)remoteAttestationAuthRequest;
++ (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result NS_SWIFT_NAME(cdsFeedbackRequest(result:));
 
 @end
 
