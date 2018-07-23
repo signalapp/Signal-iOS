@@ -340,6 +340,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
++ (TSRequest *)cdsFeedbackRequestWithResult:(NSString *)result
+{
+    NSString *path = [NSString stringWithFormat:@"/v1/directory/feedback/%@", result];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
