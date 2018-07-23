@@ -111,7 +111,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
     _initializationVector = [initializationVector copy];
     _authTag = [authTag copy];
 
-    if (_ciphertext == nil || _initializationVector == nil || _authTag == nil) {
+    if (_ciphertext == nil || _initializationVector.length != kAESGCM256_IVLength
+        || _authTag.length != kAESGCM256_TagLength) {
         return nil;
     }
 

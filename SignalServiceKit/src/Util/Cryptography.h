@@ -32,6 +32,7 @@ extern const NSUInteger kAES256_KeyByteLength;
 @property (nonatomic, readonly) NSData *initializationVector;
 @property (nonatomic, readonly) NSData *authTag;
 
+- (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCipherText:(NSData *)cipherText
                        initializationVector:(NSData *)initializationVector
                                     authTag:(NSData *)authTag NS_DESIGNATED_INITIALIZER;
