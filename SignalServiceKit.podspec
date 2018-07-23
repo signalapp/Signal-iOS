@@ -48,6 +48,12 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'GRKOpenSSLFramework'
   s.dependency 'SAMKeychain'
-  s.dependency 'TwistedOakCollapsingFutures'
   s.dependency 'Reachability'
+
+	# Avoid PromiseKit 5/6 for now.
+	# From the maintainer:
+	# > PromiseKit 5 has been released, but is not yet fully documented, 
+	# > so we advise sticking with version 4 for the time being.
+  s.dependency 'PromiseKit', "~> 4.0"
+
 end

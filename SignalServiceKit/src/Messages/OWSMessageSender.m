@@ -46,7 +46,8 @@
 #import <AxolotlKit/PreKeyBundle.h>
 #import <AxolotlKit/SessionBuilder.h>
 #import <AxolotlKit/SessionCipher.h>
-#import <TwistedOakCollapsingFutures/CollapsingFutures.h>
+#import <PromiseKit/AnyPromise.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -576,28 +577,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-// For group sends, we're using chained futures to make the code more readable.
-- (TOCFuture *)sendMessageFuture:(TSOutgoingMessage *)message
-                       recipient:(SignalRecipient *)recipient
-                          thread:(TSThread *)thread
-{
-    TOCFutureSource *futureSource = [[TOCFutureSource alloc] init];
-
-    [self sendMessageToService:message
-        recipient:recipient
-        thread:thread
-        attempts:OWSMessageSenderRetryAttempts
-        useWebsocketIfAvailable:YES
-        success:^{
-            [futureSource trySetResult:@1];
-        }
-        failure:^(NSError *error) {
-            [futureSource trySetFailure:error];
-        }];
-
-    return futureSource.future;
-}
-
 - (void)groupSend:(NSArray<SignalRecipient *> *)recipients
           message:(TSOutgoingMessage *)message
            thread:(TSThread *)thread
@@ -606,7 +585,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     [self saveGroupMessage:message inThread:thread];
 
-    NSMutableArray<TOCFuture *> *futures = [NSMutableArray array];
+    NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
+    NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
 
     for (SignalRecipient *recipient in recipients) {
         NSString *recipientId = recipient.recipientId;
@@ -617,52 +597,67 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         // ...otherwise we send.
-        [futures addObject:[self sendMessageFuture:message recipient:recipient thread:thread]];
+
+        // For group sends, we're using chained promises to make the code more readable.
+        AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self sendMessageToService:message
+                recipient:recipient
+                thread:thread
+                attempts:OWSMessageSenderRetryAttempts
+                useWebsocketIfAvailable:YES
+                success:^{
+                    // The value doesn't matter, we just need any non-NSError value.
+                    resolve(@(1));
+                }
+                failure:^(NSError *error) {
+                    @synchronized(sendErrors) {
+                        [sendErrors addObject:error];
+                    }
+                    resolve(error);
+                }];
+        }];
+        [sendPromises addObject:sendPromise];
     }
 
-    TOCFuture *completionFuture = futures.toc_thenAll;
-
-    [completionFuture thenDo:^(id value) {
+    // We use PMKJoin(), not PMKWhen(), because we don't want the
+    // completion promise to execute until _all_ send promises
+    // have either succeeded or failed. PMKWhen() executes as
+    // soon as any of its input promises fail.
+    AnyPromise *sendCompletionPromise = PMKJoin(sendPromises);
+    sendCompletionPromise.then(^(id value) {
         successHandler();
-    }];
-
-    [completionFuture catchDo:^(id failure) {
-        // failure from toc_thenAll yields an array of failed Futures, rather than the future's failure.
+    });
+    sendCompletionPromise.catch(^(id failure) {
         NSError *firstRetryableError = nil;
         NSError *firstNonRetryableError = nil;
 
-        if ([failure isKindOfClass:[NSArray class]]) {
-            NSArray *groupSendFutures = (NSArray *)failure;
-            for (TOCFuture *groupSendFuture in groupSendFutures) {
-                if (groupSendFuture.hasFailed) {
-                    id failureResult = groupSendFuture.forceGetFailure;
-                    if ([failureResult isKindOfClass:[NSError class]]) {
-                        NSError *error = failureResult;
+        NSArray<NSError *> *sendErrorsCopy;
+        @synchronized(sendErrors) {
+            sendErrorsCopy = [sendErrors copy];
+        }
 
-                        // Some errors should be ignored when sending messages
-                        // to groups.  See discussion on
-                        // NSError (OWSMessageSender) category.
-                        if ([error shouldBeIgnoredForGroups]) {
-                            continue;
-                        }
+        for (NSError *error in sendErrorsCopy) {
+            // Some errors should be ignored when sending messages
+            // to groups.  See discussion on
+            // NSError (OWSMessageSender) category.
+            if ([error shouldBeIgnoredForGroups]) {
+                continue;
+            }
 
-                        // Some errors should never be retried, in order to avoid
-                        // hitting rate limits, for example.  Unfortunately, since
-                        // group send retry is all-or-nothing, we need to fail
-                        // immediately even if some of the other recipients had
-                        // retryable errors.
-                        if ([error isFatal]) {
-                            failureHandler(error);
-                            return;
-                        }
+            // Some errors should never be retried, in order to avoid
+            // hitting rate limits, for example.  Unfortunately, since
+            // group send retry is all-or-nothing, we need to fail
+            // immediately even if some of the other recipients had
+            // retryable errors.
+            if ([error isFatal]) {
+                failureHandler(error);
+                return;
+            }
 
-                        if ([error isRetryable] && !firstRetryableError) {
-                            firstRetryableError = error;
-                        } else if (![error isRetryable] && !firstNonRetryableError) {
-                            firstNonRetryableError = error;
-                        }
-                    }
-                }
+            if ([error isRetryable] && !firstRetryableError) {
+                firstRetryableError = error;
+            } else if (![error isRetryable] && !firstNonRetryableError) {
+                firstNonRetryableError = error;
             }
         }
 
@@ -686,7 +681,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 successHandler();
             }
         }
-    }];
+    });
+    [sendCompletionPromise retainUntilComplete];
 }
 
 - (void)unregisteredRecipient:(SignalRecipient *)recipient

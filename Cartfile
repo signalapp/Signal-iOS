@@ -1,7 +1,2 @@
-# Avoid PromiseKit 5 for now.
-# From the maintainer:
-# > PromiseKit 5 has been released, but is not yet fully documented, 
-# > so we advise sticking with version 4 for the time being.
-github "mxcl/PromiseKit" ~> 4.0
 github "TheLevelUp/ZXingObjC"
 

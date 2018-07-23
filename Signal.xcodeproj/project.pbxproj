@@ -113,7 +113,6 @@
 		346129C71FD2072E00532771 /* NSString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C01FD2072C00532771 /* NSString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129C81FD2072E00532771 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C11FD2072D00532771 /* NSAttributedString+OWS.m */; };
 		346129C91FD2072E00532771 /* NSString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129C21FD2072D00532771 /* NSString+OWS.m */; };
-		346129CB1FD2072E00532771 /* Promise+retainUntilComplete.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */; };
 		346129CC1FD2072E00532771 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129C51FD2072D00532771 /* NSAttributedString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129D01FD207F300532771 /* OWSAlerts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129CF1FD207F200532771 /* OWSAlerts.swift */; };
 		346129D21FD2085A00532771 /* CommonStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346129D11FD2085A00532771 /* CommonStrings.swift */; };
@@ -735,7 +734,6 @@
 		346129C01FD2072C00532771 /* NSString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+OWS.h"; sourceTree = "<group>"; };
 		346129C11FD2072D00532771 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+OWS.m"; sourceTree = "<group>"; };
 		346129C21FD2072D00532771 /* NSString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+OWS.m"; sourceTree = "<group>"; };
-		346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+retainUntilComplete.swift"; sourceTree = "<group>"; };
 		346129C51FD2072D00532771 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+OWS.h"; sourceTree = "<group>"; };
 		346129CF1FD207F200532771 /* OWSAlerts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSAlerts.swift; sourceTree = "<group>"; };
 		346129D11FD2085A00532771 /* CommonStrings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommonStrings.swift; sourceTree = "<group>"; };
@@ -1507,7 +1505,6 @@
 				346129C11FD2072D00532771 /* NSAttributedString+OWS.m */,
 				346129C01FD2072C00532771 /* NSString+OWS.h */,
 				346129C21FD2072D00532771 /* NSString+OWS.m */,
-				346129C41FD2072D00532771 /* Promise+retainUntilComplete.swift */,
 				452D1AF220810B6F00A67F7F /* String+OWS.swift */,
 				34C82E4F20F8E1F000E9688D /* Theme.h */,
 				34C82E5020F8E1F100E9688D /* Theme.m */,
@@ -2892,7 +2889,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
 			);
@@ -2909,7 +2905,6 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/PromiseKit.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/WebRTC.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ZXingObjC.framework",
 			);
@@ -2951,6 +2946,7 @@
 				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/ProtocolBuffers/ProtocolBuffers.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -2959,8 +2955,6 @@
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
-				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
-				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
@@ -2977,6 +2971,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtocolBuffers.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -2985,8 +2980,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
@@ -3030,6 +3023,7 @@
 				"${BUILT_PRODUCTS_DIR}/JSQMessagesViewController/JSQMessagesViewController.framework",
 				"${BUILT_PRODUCTS_DIR}/JSQSystemSoundPlayer/JSQSystemSoundPlayer.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/ProtocolBuffers/ProtocolBuffers.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
@@ -3037,8 +3031,6 @@
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
-				"${BUILT_PRODUCTS_DIR}/TwistedOakCollapsingFutures/TwistedOakCollapsingFutures.framework",
-				"${BUILT_PRODUCTS_DIR}/UnionFind/UnionFind.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
 				"${BUILT_PRODUCTS_DIR}/YapDatabase/YapDatabase.framework",
 				"${BUILT_PRODUCTS_DIR}/libPhoneNumber-iOS/libPhoneNumber_iOS.framework",
@@ -3054,6 +3046,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQMessagesViewController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JSQSystemSoundPlayer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ProtocolBuffers.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
@@ -3061,8 +3054,6 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TwistedOakCollapsingFutures.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UnionFind.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YapDatabase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libPhoneNumber_iOS.framework",
@@ -3175,7 +3166,6 @@
 				346129D51FD20ADC00532771 /* UIViewController+OWS.m in Sources */,
 				451F8A431FD714FE005CB9DA /* AvatarImageView.swift in Sources */,
 				346129C91FD2072E00532771 /* NSString+OWS.m in Sources */,
-				346129CB1FD2072E00532771 /* Promise+retainUntilComplete.swift in Sources */,
 				347850691FD9B78A007B8332 /* AppSetup.m in Sources */,
 				346129FF1FD5F31400532771 /* OWS103EnableVideoCalling.m in Sources */,
 				346129E31FD5C0BE00532771 /* VersionMigrations.m in Sources */,
