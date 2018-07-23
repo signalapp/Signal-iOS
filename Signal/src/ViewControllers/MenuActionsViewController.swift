@@ -147,7 +147,7 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
         let oldFocusFrame = self.view.convert(focusedView.frame, from: focusedViewSuperview)
         NSLayoutConstraint.deactivate([actionSheetViewVerticalConstraint])
         self.actionSheetViewVerticalConstraint = self.actionSheetView.autoPinEdge(toSuperviewEdge: .bottom)
-        UIView.animate(withDuration: 0.3,
+        UIView.animate(withDuration: 0.2,
                        delay: backgroundDuration,
                        options: .curveEaseOut,
                        animations: {
