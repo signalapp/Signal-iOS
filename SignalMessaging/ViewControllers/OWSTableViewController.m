@@ -483,7 +483,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
-                                                 name:NSNotificationNameThemeDidChange
+                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 

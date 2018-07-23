@@ -75,7 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = Theme.backgroundColor;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _conversationSearcher = [ConversationSearcher shared];
     _nonContactAccountSet = [NSMutableSet set];
@@ -145,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
-                                                 name:NSNotificationNameThemeDidChange
+                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 

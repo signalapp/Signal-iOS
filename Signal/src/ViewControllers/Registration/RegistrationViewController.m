@@ -47,6 +47,8 @@ NSString *const kKeychainKey_LastRegisteredPhoneNumber = @"kKeychainKey_LastRegi
 {
     [super loadView];
 
+    self.shouldUseTheme = NO;
+
     [self createViews];
 
     // Do any additional setup after loading the view.

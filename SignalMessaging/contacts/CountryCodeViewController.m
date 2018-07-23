@@ -25,6 +25,8 @@
 {
     [super loadView];
 
+    self.shouldUseTheme = NO;
+
     self.view.backgroundColor = [UIColor whiteColor];
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 

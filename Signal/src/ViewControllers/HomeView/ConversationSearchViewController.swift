@@ -48,6 +48,8 @@ class ConversationSearchViewController: UITableViewController {
 
     var blockedPhoneNumberSet = Set<String>()
 
+    private var hasThemeChanged = false
+
     // MARK: View Lifecycle
 
     override func viewDidLoad() {
@@ -67,12 +69,50 @@ class ConversationSearchViewController: UITableViewController {
                                                selector: #selector(yapDatabaseModified),
                                                name: NSNotification.Name.YapDatabaseModified,
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(themeDidChange),
+                                               name: NSNotification.Name.ThemeDidChange,
+                                               object: nil)
+
+        applyTheme()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        guard hasThemeChanged else {
+            return
+        }
+        hasThemeChanged = false
+
+        applyTheme()
+        self.tableView.reloadData()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @objc internal func yapDatabaseModified(notification: NSNotification) {
         SwiftAssertIsOnMainThread(#function)
 
         refreshSearchResults()
+    }
+
+    @objc internal func themeDidChange(notification: NSNotification) {
+        SwiftAssertIsOnMainThread(#function)
+
+        applyTheme()
+        self.tableView.reloadData()
+
+        hasThemeChanged = true
+    }
+
+    private func applyTheme() {
+        SwiftAssertIsOnMainThread(#function)
+
+        self.view.backgroundColor = Theme.backgroundColor
+        self.tableView.backgroundColor = Theme.backgroundColor
     }
 
     // MARK: UITableViewDelegate
@@ -159,6 +199,8 @@ class ConversationSearchViewController: UITableViewController {
                 return UITableViewCell()
             }
 
+            OWSTableItem.configureCell(cell)
+
             let searchText = self.searchResultSet.searchText
             cell.configure(searchText: searchText)
             return cell
@@ -172,6 +214,7 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
+            OWSTableItem.configureCell(cell)
             cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
             return cell
         case .contacts:
@@ -184,6 +227,7 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
+            OWSTableItem.configureCell(cell)
             cell.configure(with: searchResult.signalAccount, contactsManager: contactsManager)
             return cell
         case .messages:
@@ -196,6 +240,8 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
+
+            OWSTableItem.configureCell(cell)
 
             var overrideSnippet = NSAttributedString()
             var overrideDate: Date?

@@ -84,6 +84,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) TSThread *lastThread;
 
 @property (nonatomic) BOOL hasArchivedThreadsRow;
+@property (nonatomic) BOOL hasThemeChanged;
 
 @end
 
@@ -174,7 +175,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
-                                                 name:NSNotificationNameThemeDidChange
+                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 
@@ -223,14 +224,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [self applyTheme];
     [self.tableView reloadData];
+
+    self.hasThemeChanged = YES;
 }
 
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
+    OWSAssert(self.tableView);
+    OWSAssert(self.searchBar);
 
     self.view.backgroundColor = Theme.backgroundColor;
     self.tableView.backgroundColor = Theme.backgroundColor;
+    self.searchBar.backgroundColor = Theme.backgroundColor;
+    self.searchBar.barStyle = Theme.barStyle;
 }
 
 #pragma mark - View Life Cycle
@@ -328,8 +335,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView insertSubview:pullToRefreshView atIndex:0];
     
     [self updateReminderViews];
-
-    [self applyTheme];
 }
 
 - (void)updateReminderViews
@@ -383,9 +388,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchBar.searchBarStyle = UISearchBarStyleMinimal;
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
-    searchBar.backgroundColor = Theme.backgroundColor;
-    searchBar.barStyle = Theme.barStyle;
-
     searchBar.delegate = self;
     [searchBar sizeToFit];
 
@@ -404,6 +406,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     searchResultsController.view.hidden = YES;
 
     [self updateBarButtonItems];
+
+    [self applyTheme];
 }
 
 - (void)applyDefaultBackButton
@@ -435,6 +439,20 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
     [self displayAnyUnseenUpgradeExperience];
     [self applyDefaultBackButton];
+
+    if (self.hasThemeChanged) {
+        [self.tableView reloadData];
+        self.hasThemeChanged = NO;
+    }
+
+    [self.searchResultsController viewDidAppear:animated];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+
+    [self.searchResultsController viewDidDisappear:animated];
 }
 
 - (void)updateBarButtonItems
@@ -567,6 +585,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     if ([self updateHasArchivedThreadsRow]) {
         [self.tableView reloadData];
     }
+
+    [self.searchResultsController viewWillAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -574,6 +594,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [super viewWillDisappear:animated];
 
     self.isViewVisible = NO;
+
+    [self.searchResultsController viewWillDisappear:animated];
 }
 
 - (void)setIsViewVisible:(BOOL)isViewVisible
@@ -784,6 +806,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
+    [OWSTableItem configureCell:cell];
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
     [cell configureWithThread:thread

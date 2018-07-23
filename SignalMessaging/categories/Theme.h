@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define THEME_ENABLED
 #endif
 
-extern NSString *const NSNotificationNameThemeDidChange;
+extern NSString *const ThemeDidChangeNotification;
 
 @interface Theme : NSObject
 
