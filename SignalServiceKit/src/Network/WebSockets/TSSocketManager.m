@@ -800,6 +800,15 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
     }
 }
 
+- (void)cycleSocket
+{
+    OWSAssertIsOnMainThread();
+
+    [self closeWebSocket];
+
+    [self applyDesiredSocketState];
+}
+
 - (void)handleSocketFailure
 {
     OWSAssertIsOnMainThread();
