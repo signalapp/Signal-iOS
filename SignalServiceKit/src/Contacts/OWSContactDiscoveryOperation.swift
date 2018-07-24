@@ -249,7 +249,9 @@ class CDSBatchOperation: OWSOperation {
     }
 
     private func attestationFailure(error: Error) {
-        self.reportError(ContactDiscoveryError.attestationError(underlyingError: error))
+        let attestationError: NSError = ContactDiscoveryError.attestationError(underlyingError: error) as NSError
+        attestationError.isRetryable = false
+        self.reportError(attestationError)
     }
 
     private func makeContactDiscoveryRequest(remoteAttestation: RemoteAttestation) {
@@ -295,9 +297,11 @@ class CDSBatchOperation: OWSOperation {
                                                 return
                                             }
 
-                                            // TODO CDS ratelimiting
                                             guard response.statusCode != 413 else {
-                                                let rateLimitError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit")
+                                                let rateLimitError: NSError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit") as NSError
+
+                                                // TODO CDS ratelimiting, handle Retry-After header if available
+                                                rateLimitError.isRetryable = false
                                                 self.reportError(rateLimitError)
                                                 return
                                             }
@@ -312,6 +316,8 @@ class CDSBatchOperation: OWSOperation {
                                             guard response.statusCode / 100 != 5 else {
                                                 let serverError = ContactDiscoveryError.serverError(underlyingError: error) as NSError
                                                 serverError.isRetryable = (error as NSError).isRetryable
+
+                                                // TODO CDS ratelimiting, handle Retry-After header if available
                                                 self.reportError(serverError)
                                                 return
                                             }
@@ -399,10 +405,10 @@ class CDSBatchOperation: OWSOperation {
         let authTag = try responseDict.expectBase64EncodedData(key: "mac")
 
         guard let plainText = Cryptography.decryptAESGCM(withInitializationVector: initializationVector,
-                                                          ciphertext: cipherText,
-                                                          additionalAuthenticatedData: nil,
-                                                          authTag: authTag,
-                                                          key: remoteAttestation.keys.serverKey) else {
+                                                         ciphertext: cipherText,
+                                                         additionalAuthenticatedData: nil,
+                                                         authTag: authTag,
+                                                         key: remoteAttestation.keys.serverKey) else {
 
                                                             throw ContactDiscoveryError.parseError(description: "decryption failed")
         }
