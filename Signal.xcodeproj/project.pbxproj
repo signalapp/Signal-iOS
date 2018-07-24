@@ -431,6 +431,7 @@
 		4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */; };
 		4C20B2B720CA0034001BAC90 /* ThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4542DF51208B82E9007B4E76 /* ThreadViewModel.swift */; };
 		4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */; };
+		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		4C3EF802210918740007EBF7 /* SSKEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKEnvelopeTest.swift */; };
 		4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */; };
 		4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
@@ -1111,6 +1112,7 @@
 		4C11AA4F20FD59C700351FBD /* MessageStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStatusView.swift; sourceTree = "<group>"; };
 		4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerViewController.swift; sourceTree = "<group>"; };
 		4C20B2B820CA10DE001BAC90 /* ConversationSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSearchViewController.swift; sourceTree = "<group>"; };
+		4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParamParserTest.swift; sourceTree = "<group>"; };
 		4C3EF801210918740007EBF7 /* SSKEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKEnvelopeTest.swift; sourceTree = "<group>"; };
 		4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableTextField.swift; sourceTree = "<group>"; };
 		4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactDiscoveryOperationTest.swift; path = contact/ContactDiscoveryOperationTest.swift; sourceTree = "<group>"; };
@@ -2114,6 +2116,7 @@
 		4C3EF8002109184A0007EBF7 /* SSKTests */ = {
 			isa = PBXGroup;
 			children = (
+				4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */,
 				4C3EF801210918740007EBF7 /* SSKEnvelopeTest.swift */,
 			);
 			path = SSKTests;
@@ -3463,6 +3466,7 @@
 				45666F581D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m in Sources */,
 				B660F6E01C29868000687D6E /* UtilTest.m in Sources */,
 				B660F6DA1C29868000687D6E /* ExceptionsTest.m in Sources */,
+				4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */,
 				B660F6DB1C29868000687D6E /* FunctionalUtilTest.m in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				4C3EF802210918740007EBF7 /* SSKEnvelopeTest.swift in Sources */,

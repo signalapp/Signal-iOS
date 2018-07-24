@@ -400,9 +400,11 @@ class CDSBatchOperation: OWSOperation {
             throw ContactDiscoveryError.parseError(description: "missing response dict")
         }
 
-        let cipherText = try responseDict.expectBase64EncodedData(key: "data")
-        let initializationVector = try responseDict.expectBase64EncodedData(key: "iv")
-        let authTag = try responseDict.expectBase64EncodedData(key: "mac")
+        let params = ParamParser(dictionary: responseDict)
+
+        let cipherText = try params.requiredBase64EncodedData(key: "data")
+        let initializationVector = try params.requiredBase64EncodedData(key: "iv")
+        let authTag = try params.requiredBase64EncodedData(key: "mac")
 
         guard let plainText = Cryptography.decryptAESGCM(withInitializationVector: initializationVector,
                                                          ciphertext: cipherText,
@@ -502,25 +504,5 @@ extension Array {
         return stride(from: 0, to: self.count, by: chunkSize).map {
             Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
         }
-    }
-}
-
-extension Dictionary where Key: Hashable {
-
-    enum DictionaryError: Error {
-        case missingField(Key)
-        case invalidFormat(Key)
-    }
-
-    public func expectBase64EncodedData(key: Key) throws -> Data {
-        guard let encodedData = self[key] as? String else {
-            throw DictionaryError.missingField(key)
-        }
-
-        guard let data = Data(base64Encoded: encodedData) else {
-            throw DictionaryError.invalidFormat(key)
-        }
-
-        return data
     }
 }
