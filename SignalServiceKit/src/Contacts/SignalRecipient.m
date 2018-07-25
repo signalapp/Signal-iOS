@@ -149,20 +149,23 @@ NS_ASSUME_NONNULL_BEGIN
     [latest saveWithTransaction_internal:transaction];
 }
 
-- (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(transaction);
     OWSAssert(devices.count > 0);
 
     [self removeDevices:devices];
 
-    SignalRecipient *latest =
-        [SignalRecipient markRecipientAsRegisteredAndGet:self.recipientId transaction:transaction];
+    SignalRecipient *_Nullable latest =
+        [SignalRecipient registeredRecipientForRecipientId:self.recipientId transaction:transaction];
 
+    if (!latest) {
+        return;
+    }
     if (![devices intersectsSet:latest.devices.set]) {
         return;
     }
-    DDLogDebug(@"%@ removing devices: %@, from recipient: %@", self.logTag, devices, latest.recipientId);
+    DDLogDebug(@"%@ removing devices: %@, from registered recipient: %@", self.logTag, devices, latest.recipientId);
 
     [latest removeDevices:devices];
     [latest saveWithTransaction_internal:transaction];

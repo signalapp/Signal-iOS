@@ -29,8 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addDevicesToRegisteredRecipient:(NSSet *)devices
                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)removeDevicesFromRegisteredRecipient:(NSSet *)devices
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (NSString *)recipientId;
 

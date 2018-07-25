@@ -1166,7 +1166,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     [self.dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             if (extraDevices.count < 1 && missingDevices.count < 1) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
@@ -1179,8 +1179,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                  protocolContext:transaction];
                 }
 
-                [recipient removeDevicesFromRegisteredRecipient:[NSSet setWithArray:extraDevices]
-                             transaction:transaction];
+                [recipient removeDevicesFromRecipient:[NSSet setWithArray:extraDevices] transaction:transaction];
             }
 
             if (missingDevices && missingDevices.count > 0) {
@@ -1279,11 +1278,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
-                [self.dbConnection
-                 asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction * transaction) {
-                     [recipient removeDevicesFromRegisteredRecipient:[NSSet setWithObject:deviceNumber]
-                                  transaction:transaction];
-                 }];
+                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceNumber] transaction:transaction];
+                }];
             } else {
                 @throw exception;
             }
@@ -1332,8 +1329,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 if (response.statusCode == 404) {
-                    [recipient removeDevicesFromRegisteredRecipient:[NSSet setWithObject:deviceNumber]
-                                                        transaction:transaction];
+                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceNumber] transaction:transaction];
 
                     // Can't throw exception from within callback as it's probabably a different thread.
                     exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException

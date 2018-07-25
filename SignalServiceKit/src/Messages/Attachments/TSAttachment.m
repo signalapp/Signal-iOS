@@ -71,7 +71,6 @@ NSUInteger const TSAttachmentSchemaVersion = 4;
         contentType = OWSMimeTypeApplicationOctetStream;
     }
     OWSAssert(contentType.length > 0);
-    OWSAssert(byteCount > 0);
 
     self = [super init];
     if (!self) {
