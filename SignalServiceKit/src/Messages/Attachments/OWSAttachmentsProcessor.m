@@ -170,13 +170,13 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             dispatch_async([OWSDispatch attachmentsQueue], ^{
                 [self downloadFromLocation:location
                     pointer:attachment
-                    success:^(NSData *_Nonnull encryptedData) {
+                    success:^(NSData *encryptedData) {
                         [self decryptAttachmentData:encryptedData
                                             pointer:attachment
                                             success:markAndHandleSuccess
                                             failure:markAndHandleFailure];
                     }
-                    failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+                    failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
                         if (attachment.serverId < 100) {
                             // This looks like the symptom of the "frequent 404
                             // downloading attachments with low server ids".
@@ -255,7 +255,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
 - (void)downloadFromLocation:(NSString *)location
                      pointer:(TSAttachmentPointer *)pointer
                      success:(void (^)(NSData *encryptedData))successHandler
-                     failure:(void (^)(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error))failureHandler
+                     failure:(void (^)(NSURLSessionDataTask *_Nullable task, NSError *error))failureHandler
 {
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.requestSerializer     = [AFHTTPRequestSerializer serializer];
@@ -270,7 +270,7 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
     __block BOOL hasCheckedContentLength = NO;
     task = [manager GET:location
         parameters:nil
-        progress:^(NSProgress *_Nonnull progress) {
+        progress:^(NSProgress *progress) {
             OWSAssert(progress != nil);
             
             // Don't do anything until we've received at least one byte of data.
@@ -344,17 +344,25 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
             // than our max download size.  Proceed with the download.
             hasCheckedContentLength = YES;
         }
-        success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+        success:^(NSURLSessionDataTask *task, id _Nullable responseObject) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if (![responseObject isKindOfClass:[NSData class]]) {
                     DDLogError(@"%@ Failed retrieval of attachment. Response had unexpected format.", self.logTag);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
                     return failureHandler(task, error);
                 }
-                successHandler((NSData *)responseObject);
+                NSData *responseData = (NSData *)responseObject;
+                if (responseData.length > kMaxDownloadSize) {
+                    DDLogError(@"%@ Attachment download content length exceeds max download size.", self.logTag);
+                    NSError *error = OWSErrorWithCodeDescription(
+                        OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                    failureHandler(task, error);
+                } else {
+                    successHandler(responseData);
+                }
             });
         }
-        failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+        failure:^(NSURLSessionDataTask *_Nullable task, NSError *error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 DDLogError(@"Failed to retrieve attachment with error: %@", error.description);
                 return failureHandler(task, error);
