@@ -18,7 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-
 // Returned by many OpenSSL functions - indicating success
 const int kOpenSSLSuccess = 1;
 
@@ -96,6 +95,8 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 @end
 
+#pragma mark -
+
 @implementation AES25GCMEncryptionResult
 
 - (nullable instancetype)initWithCipherText:(NSData *)cipherText
@@ -121,9 +122,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
 @end
 
+#pragma mark -
+
 @implementation Cryptography
 
-#pragma mark random bytes methods
+#pragma mark - random bytes methods
 
 + (NSData *)generateRandomBytes:(NSUInteger)numberBytes
 {
@@ -148,93 +151,119 @@ const NSUInteger kAES256_KeyByteLength = 32;
     return result;
 }
 
-#pragma mark SHA1
+#pragma mark - SHA1
 
-+ (NSString *)truncatedSHA1Base64EncodedWithoutPadding:(NSString *)string {
-    /* used by TSContactManager to send hashed/truncated contact list to server */
+// Used by TSContactManager to send hashed/truncated contact list to server.
++ (nullable NSString *)truncatedSHA1Base64EncodedWithoutPadding:(NSString *)string
+{
+    NSData *_Nullable stringData = [string dataUsingEncoding:NSUTF8StringEncoding];
+    if (!stringData) {
+        OWSFail(@"%@ could not convert string to utf-8.", self.logTag);
+        return nil;
+    }
+    if (stringData.length >= UINT32_MAX) {
+        OWSFail(@"%@ string data is too long.", self.logTag);
+        return nil;
+    }
+    uint32_t dataLength = (uint32_t)stringData.length;
+
     NSMutableData *hashData = [NSMutableData dataWithLength:20];
-
-    CC_SHA1([string dataUsingEncoding:NSUTF8StringEncoding].bytes,
-            (unsigned int)[string dataUsingEncoding:NSUTF8StringEncoding].length,
-            hashData.mutableBytes);
+    CC_SHA1(stringData.bytes, dataLength, hashData.mutableBytes);
 
     NSData *truncatedData = [hashData subdataWithRange:NSMakeRange(0, 10)];
-
     return [[truncatedData base64EncodedString] stringByReplacingOccurrencesOfString:@"=" withString:@""];
 }
 
-+ (NSString *)computeSHA1DigestForString:(NSString *)input {
-    // Here we are taking in our string hash, placing that inside of a C Char Array, then parsing it through the SHA1
-    // encryption method.
-    const char *cstr = [input cStringUsingEncoding:NSUTF8StringEncoding];
-    NSData *data     = [NSData dataWithBytes:cstr length:input.length];
-    uint8_t digest[CC_SHA1_DIGEST_LENGTH];
+#pragma mark - SHA256 Digest
 
-    CC_SHA1(data.bytes, (unsigned int)data.length, digest);
++ (nullable NSData *)computeSHA256Digest:(NSData *)data
+{
+    return [self computeSHA256Digest:data truncatedToBytes:CC_SHA256_DIGEST_LENGTH];
+}
 
-    NSMutableString *output = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
-
-    for (int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
-        [output appendFormat:@"%02x", digest[i]];
++ (nullable NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes
+{
+    if (data.length >= UINT32_MAX) {
+        OWSFail(@"%@ data is too long.", self.logTag);
+        return nil;
     }
+    uint32_t dataLength = (uint32_t)data.length;
 
-    return output;
-}
-
-#pragma mark SHA256 Digest
-+ (NSData *)computeSHA256Digest:(NSData *)data
-{
-    return [self computeSHA256Digest:(NSData *)data truncatedToBytes:CC_SHA256_DIGEST_LENGTH];
-}
-
-+ (NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes
-{
     uint8_t digest[CC_SHA256_DIGEST_LENGTH];
-    CC_SHA256(data.bytes, (unsigned int)data.length, digest);
+    CC_SHA256(data.bytes, dataLength, digest);
     return
         [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] subdataWithRange:NSMakeRange(0, truncatedBytes)];
 }
 
+#pragma mark - HMAC/SHA256
 
-#pragma mark HMAC/SHA256
-+ (NSData *)computeSHA256HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey {
++ (nullable NSData *)computeSHA256HMAC:(NSData *)data withHMACKey:(NSData *)HMACKey
+{
+    if (data.length >= SIZE_MAX) {
+        OWSFail(@"%@ data is too long.", self.logTag);
+        return nil;
+    }
+    size_t dataLength = (size_t)data.length;
+    if (HMACKey.length >= SIZE_MAX) {
+        OWSFail(@"%@ HMAC key is too long.", self.logTag);
+        return nil;
+    }
+    size_t hmacKeyLength = (size_t)HMACKey.length;
+
     uint8_t ourHmac[CC_SHA256_DIGEST_LENGTH] = {0};
-    CCHmac(kCCHmacAlgSHA256, [HMACKey bytes], [HMACKey length], [dataToHMAC bytes], [dataToHMAC length], ourHmac);
+    CCHmac(kCCHmacAlgSHA256, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmac);
     return [NSData dataWithBytes:ourHmac length:CC_SHA256_DIGEST_LENGTH];
 }
 
-+ (NSData *)computeSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey {
++ (nullable NSData *)computeSHA1HMAC:(NSData *)data withHMACKey:(NSData *)HMACKey
+{
+    if (data.length >= SIZE_MAX) {
+        OWSFail(@"%@ data is too long.", self.logTag);
+        return nil;
+    }
+    size_t dataLength = (size_t)data.length;
+    if (HMACKey.length >= SIZE_MAX) {
+        OWSFail(@"%@ HMAC key is too long.", self.logTag);
+        return nil;
+    }
+    size_t hmacKeyLength = (size_t)HMACKey.length;
+
     uint8_t ourHmac[CC_SHA256_DIGEST_LENGTH] = {0};
-    CCHmac(kCCHmacAlgSHA1, [HMACKey bytes], [HMACKey length], [dataToHMAC bytes], [dataToHMAC length], ourHmac);
+    CCHmac(kCCHmacAlgSHA1, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmac);
     return [NSData dataWithBytes:ourHmac length:CC_SHA256_DIGEST_LENGTH];
 }
 
-
-+ (NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes {
++ (nullable NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes
+{
     return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
 }
 
-+ (NSData *)truncatedSHA256HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes {
++ (nullable NSData *)truncatedSHA256HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes
+{
     return [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
 }
 
-
-#pragma mark AES CBC Mode
+#pragma mark - AES CBC Mode
 
 /**
  * AES256 CBC encrypt then mac. Used to decrypt both signal messages and attachment blobs
  *
  * @return decrypted data or nil if hmac invalid/decryption fails
  */
-+ (NSData *)decryptCBCMode:(NSData *)dataToDecrypt
-                       key:(NSData *)key
-                        IV:(NSData *)iv
-                   version:(nullable NSData *)version
-                   HMACKey:(NSData *)hmacKey
-                  HMACType:(TSMACType)hmacType
-              matchingHMAC:(NSData *)hmac
-                    digest:(nullable NSData *)digest
++ (nullable NSData *)decryptCBCMode:(NSData *)dataToDecrypt
+                                key:(NSData *)key
+                                 IV:(NSData *)iv
+                            version:(nullable NSData *)version
+                            HMACKey:(NSData *)hmacKey
+                           HMACType:(TSMACType)hmacType
+                       matchingHMAC:(NSData *)hmac
+                             digest:(nullable NSData *)digest
 {
+    if (dataToDecrypt.length >= (SIZE_MAX - kCCBlockSizeAES128)) {
+        OWSFail(@"%@ data is too long.", self.logTag);
+        return nil;
+    }
+
     // Verify hmac of: version? || iv || encrypted data
     NSMutableData *dataToAuth = [NSMutableData data];
     if (version != nil) {
@@ -244,7 +273,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     [dataToAuth appendData:iv];
     [dataToAuth appendData:dataToDecrypt];
 
-    NSData *ourHmacData;
+    NSData *_Nullable ourHmacData;
 
     if (hmacType == TSHMACSHA1Truncated10Bytes) {
         ourHmacData = [Cryptography truncatedSHA1HMAC:dataToAuth withHMACKey:hmacKey truncation:10];
@@ -270,7 +299,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     if (digest) {
         DDLogDebug(@"%@ verifying their digest", self.logTag);
         [dataToAuth appendData:ourHmacData];
-        NSData *ourDigest = [Cryptography computeSHA256Digest:dataToAuth];
+        NSData *_Nullable ourDigest = [Cryptography computeSHA256Digest:dataToAuth];
         if (!ourDigest || ![ourDigest ows_constantTimeIsEqualToData:digest]) {
             DDLogWarn(@"%@ Bad digest on decrypting payload", self.logTag);
             // Don't log digest in prod
@@ -313,8 +342,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
     return nil;
 }
 
-#pragma mark methods which use AES CBC
-+ (NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString {
+#pragma mark - methods which use AES CBC
+
++ (nullable NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString
+{
     OWSAssert(payload);
     OWSAssert(signalingKeyString);
 
@@ -342,11 +373,11 @@ const NSUInteger kAES256_KeyByteLength = 32;
                               digest:nil];
 }
 
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt
-                      withKey:(NSData *)key
-                       digest:(nullable NSData *)digest
-                 unpaddedSize:(UInt32)unpaddedSize
-                        error:(NSError **)error
++ (nullable NSData *)decryptAttachment:(NSData *)dataToDecrypt
+                               withKey:(NSData *)key
+                                digest:(nullable NSData *)digest
+                          unpaddedSize:(UInt32)unpaddedSize
+                                 error:(NSError **)error
 {
     if (digest.length <= 0) {
         // This *could* happen with sufficiently outdated clients.
@@ -377,15 +408,20 @@ const NSUInteger kAES256_KeyByteLength = 32;
     NSData *hmac = [dataToDecrypt
         subdataWithRange:NSMakeRange([dataToDecrypt length] - HMAC256_OUTPUT_LENGTH, HMAC256_OUTPUT_LENGTH)];
 
-    NSData *paddedPlainText = [Cryptography decryptCBCMode:encryptedAttachment
-                                                       key:encryptionKey
-                                                        IV:iv
-                                                   version:nil
-                                                   HMACKey:hmacKey
-                                                  HMACType:TSHMACSHA256AttachementType
-                                              matchingHMAC:hmac
-                                                    digest:digest];
-    if (unpaddedSize == 0) {
+    NSData *_Nullable paddedPlainText = [Cryptography decryptCBCMode:encryptedAttachment
+                                                                 key:encryptionKey
+                                                                  IV:iv
+                                                             version:nil
+                                                             HMACKey:hmacKey
+                                                            HMACType:TSHMACSHA256AttachementType
+                                                        matchingHMAC:hmac
+                                                              digest:digest];
+    if (!paddedPlainText) {
+        OWSFail(@"%@ couldn't decrypt attachment.", self.logTag);
+        *error = OWSErrorWithCodeDescription(
+            OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+        return nil;
+    } else if (unpaddedSize == 0) {
         // Work around for legacy iOS client's which weren't setting padding size.
         // Since we know those clients pre-date attachment padding we return the entire data.
         DDLogWarn(@"%@ Decrypted attachment with unspecified size.", self.logTag);
@@ -424,10 +460,16 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 }
 
-+ (NSData *)encryptAttachmentData:(NSData *)attachmentData
-                           outKey:(NSData *_Nonnull *_Nullable)outKey
-                        outDigest:(NSData *_Nonnull *_Nullable)outDigest
++ (nullable NSData *)encryptAttachmentData:(NSData *)attachmentData
+                                    outKey:(NSData *_Nonnull *_Nullable)outKey
+                                 outDigest:(NSData *_Nonnull *_Nullable)outDigest
 {
+    // Due to paddedSize, we need to divide by two.
+    if (attachmentData.length >= SIZE_MAX / 2) {
+        DDLogError(@"%@ data is too long.", self.logTag);
+        return nil;
+    }
+
     NSData *iv            = [Cryptography generateRandomBytes:AES_CBC_IV_LENGTH];
     NSData *encryptionKey = [Cryptography generateRandomBytes:AES_KEY_SIZE];
     NSData *hmacKey       = [Cryptography generateRandomBytes:HMAC256_KEY_LENGTH];
@@ -478,13 +520,22 @@ const NSUInteger kAES256_KeyByteLength = 32;
     [encryptedPaddedData appendData:cipherText];
 
     // compute hmac of: iv || encrypted data
-    NSData *hmac =
+    NSData *_Nullable hmac =
         [Cryptography truncatedSHA256HMAC:encryptedPaddedData withHMACKey:hmacKey truncation:HMAC256_OUTPUT_LENGTH];
+    if (!hmac) {
+        OWSFail(@"%@ could not compute SHA 256 HMAC.", self.logTag);
+        return nil;
+    }
 
     [encryptedPaddedData appendData:hmac];
 
     // compute digest of: iv || encrypted data || hmac
-    *outDigest = [self computeSHA256Digest:encryptedPaddedData];
+    NSData *_Nullable digest = [self computeSHA256Digest:encryptedPaddedData];
+    if (!digest) {
+        OWSFail(@"%@ data is too long.", self.logTag);
+        return nil;
+    }
+    *outDigest = digest;
 
     return [encryptedPaddedData copy];
 }
@@ -526,7 +577,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
     // Provide any AAD data. This can be called zero or more times as
     // required
     if (additionalAuthenticatedData != nil) {
-        if (additionalAuthenticatedData.length >= INT32_MAX) {
+        if (additionalAuthenticatedData.length >= INT_MAX) {
             OWSFail(@"%@ additionalAuthenticatedData too large", self.logTag);
             return nil;
         }
@@ -538,7 +589,7 @@ const NSUInteger kAES256_KeyByteLength = 32;
         }
     }
 
-    if (plaintext.length >= UINT32_MAX) {
+    if (plaintext.length >= INT_MAX) {
         OWSFail(@"%@ plaintext too large", self.logTag);
         return nil;
     }
@@ -631,12 +682,15 @@ const NSUInteger kAES256_KeyByteLength = 32;
     // Provide any AAD data. This can be called zero or more times as
     // required
     if (additionalAuthenticatedData) {
-        if (additionalAuthenticatedData.length >= INT32_MAX) {
+        if (additionalAuthenticatedData.length >= INT_MAX) {
             OWSFail(@"%@ additionalAuthenticatedData too large", self.logTag);
             return nil;
         }
-        if (!EVP_DecryptUpdate(
-                ctx, NULL, &decryptedBytes, additionalAuthenticatedData.bytes, additionalAuthenticatedData.length)) {
+        if (!EVP_DecryptUpdate(ctx,
+                NULL,
+                &decryptedBytes,
+                additionalAuthenticatedData.bytes,
+                (int)additionalAuthenticatedData.length)) {
             OWSFail(@"%@ failed during additionalAuthenticatedData", self.logTag);
             return nil;
         }
@@ -647,6 +701,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
     // If we wanted to save memory, we could decrypt piece-wise from an iostream -
     // feeding each chunk to EVP_DecryptUpdate, which can be called multiple times.
     // For simplicity, we currently decrypt the entire ciphertext in one shot.
+    if (ciphertext.length >= INT_MAX) {
+        OWSFail(@"%@ ciphertext too large", self.logTag);
+        return nil;
+    }
     if (EVP_DecryptUpdate(ctx, plaintext.mutableBytes, &decryptedBytes, ciphertext.bytes, (int)ciphertext.length)
         != kOpenSSLSuccess) {
         OWSFail(@"%@ decryptUpdate failed", self.logTag);
@@ -659,6 +717,10 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
 
     // Set expected tag value. Works in OpenSSL 1.0.1d and later
+    if (authTagFromEncrypt.length >= INT_MAX) {
+        OWSFail(@"%@ authTagFromEncrypt too large", self.logTag);
+        return nil;
+    }
     if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)authTagFromEncrypt.length, (void *)authTagFromEncrypt.bytes)
         != kOpenSSLSuccess) {
         OWSFail(@"%@ Failed to set auth tag in decrypt.", self.logTag);

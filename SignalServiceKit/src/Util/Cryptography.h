@@ -26,6 +26,8 @@ extern const NSUInteger kAES256_KeyByteLength;
 
 @end
 
+#pragma mark -
+
 @interface AES25GCMEncryptionResult : NSObject
 
 @property (nonatomic, readonly) NSData *ciphertext;
@@ -38,6 +40,8 @@ extern const NSUInteger kAES256_KeyByteLength;
                                     authTag:(NSData *)authTag NS_DESIGNATED_INITIALIZER;
 
 @end
+
+#pragma mark -
 
 @interface Cryptography : NSObject
 
@@ -52,35 +56,30 @@ typedef NS_ENUM(NSInteger, TSMACType) {
 + (uint32_t)randomUInt32;
 + (uint64_t)randomUInt64;
 
-#pragma mark SHA and HMAC methods
+#pragma mark - SHA and HMAC methods
 
 // Full length SHA256 digest for `data`
-+ (NSData *)computeSHA256Digest:(NSData *)data;
++ (nullable NSData *)computeSHA256Digest:(NSData *)data;
 
 // Truncated SHA256 digest for `data`
-+ (NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes;
++ (nullable NSData *)computeSHA256Digest:(NSData *)data truncatedToBytes:(NSUInteger)truncatedBytes;
 
-+ (NSString *)truncatedSHA1Base64EncodedWithoutPadding:(NSString *)string;
-+ (NSString *)computeSHA1DigestForString:(NSString *)input;
++ (nullable NSString *)truncatedSHA1Base64EncodedWithoutPadding:(NSString *)string;
 
-+ (NSData *)computeSHA256HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey;
-+ (NSData *)computeSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey;
-+ (NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes;
-
-+ (NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString;
++ (nullable NSData *)decryptAppleMessagePayload:(NSData *)payload withSignalingKey:(NSString *)signalingKeyString;
 
 #pragma mark encrypt and decrypt attachment data
 
 // Though digest can and will be nil for legacy clients, we now reject attachments lacking a digest.
-+ (NSData *)decryptAttachment:(NSData *)dataToDecrypt
-                      withKey:(NSData *)key
-                       digest:(nullable NSData *)digest
-                 unpaddedSize:(UInt32)unpaddedSize
-                        error:(NSError **)error;
++ (nullable NSData *)decryptAttachment:(NSData *)dataToDecrypt
+                               withKey:(NSData *)key
+                                digest:(nullable NSData *)digest
+                          unpaddedSize:(UInt32)unpaddedSize
+                                 error:(NSError **)error;
 
-+ (NSData *)encryptAttachmentData:(NSData *)attachmentData
-                           outKey:(NSData *_Nonnull *_Nullable)outKey
-                        outDigest:(NSData *_Nonnull *_Nullable)outDigest;
++ (nullable NSData *)encryptAttachmentData:(NSData *)attachmentData
+                                    outKey:(NSData *_Nonnull *_Nullable)outKey
+                                 outDigest:(NSData *_Nonnull *_Nullable)outDigest;
 
 + (nullable AES25GCMEncryptionResult *)encryptAESGCMWithData:(NSData *)plaintext
                                  additionalAuthenticatedData:(nullable NSData *)additionalAuthenticatedData
