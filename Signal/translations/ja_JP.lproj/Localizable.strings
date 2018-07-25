@@ -69,7 +69,7 @@
 "APN_MESSAGE_IN_GROUP_DETAILED" = "%@のグループ%@：%@";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "起動できません。デバッグログを提出して問題解決に協力してください。";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signalは起動できません。デバッグログを提出して問題解決に協力してください。";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "エラー";
@@ -117,7 +117,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "ダウンロード中";
 
 /* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "準備中";
+"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "待ち行列中";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "添付ファイルの送信でエラー";

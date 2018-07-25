@@ -378,7 +378,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "เปรียบเทียบกับคลิปบอร์ด";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "รายชื่อผู้ติดต่อ";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "ผู้ติดต่อ";
 
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "กลุ่ม";
@@ -573,7 +573,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "แบ่งปันโปรไฟล์ของคุณ";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "เพิ่มไปที่รายชื่อผู้ติดต่อ";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "เพิ่มไปที่ผู้ติดต่อ";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "แบ่งปันโปรไฟล์ของคุณให้กับผู้ใช้คนนี้";
@@ -712,7 +712,7 @@
 "EDIT_GROUP_ACTION" = "แก้ไขกลุ่ม";
 
 /* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "รายชื่อผู้ติดต่อ";
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "ผู้ติดต่อ";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "แก้ไขกลุ่ม";
@@ -742,7 +742,7 @@
 "EDIT_TXT" = "แก้ไข";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "สวัสดี\n\nเมื่อไม่นานนี้ ฉันได้ใช้ Signal เพื่อรักษาการสนทนาบนไอโฟนของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งเหมือนกัน เพื่อให้เรามั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงคุยของเรา\n\nSignal ใช้งานได้บนไอโฟนและแอนดรอยด์ โหลดเลยที่นี่: %@\n\nSignal ทำงานเหมือนแอปแชตที่คุณมีอยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชตกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครคนอื่นเห็นสิ่งเหล่านี้ แม้แต่ผู้คนที่สร้าง Signal ก็จะไม่เห็น!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้สร้าง Signal ได้ที่นี่: %@";
+"EMAIL_INVITE_BODY" = "สวัสดี\n\nเมื่อไม่นานนี้ ฉันได้ใช้ Signal เพื่อรักษาการสนทนาบนไอโฟนของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งเหมือนกัน เพื่อให้เรามั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงคุยของเรา\n\nSignal ใช้งานได้บนไอโฟนและแอนดรอยด์ โหลดเลยที่นี่: %@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณมีอยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชตกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครคนอื่นเห็นสิ่งเหล่านี้ แม้แต่ผู้คนที่สร้าง Signal ก็จะไม่เห็น!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้สร้าง Signal ได้ที่นี่: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
@@ -760,7 +760,7 @@
 "EMPTY_ARCHIVE_TITLE" = "ล้างการสนทนาของคุณ";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในรายชื่อผู้ติดต่อของคุณที่ใช้ Signal";
+"EMPTY_CONTACTS_LABEL_LINE1" = "ไม่มีใครในผู้ติดต่อของคุณที่ใช้ Signal";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "ทำไมคุณไม่เชิญใครสักคนล่ะ";
@@ -1039,7 +1039,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived. They will appear in the inbox if new messages are received.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "เพื่อดูชื่อในรายชื่อผู้ติดต่อของคุณ อัพเดตการตั้งค่าระบบของคุณให้อนุญาตการเข้าถึงผู้ติดต่อ";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "เพื่อดูชื่อในผู้ติดต่อของคุณ อัพเดตการตั้งค่าระบบของคุณให้อนุญาตการเข้าถึงผู้ติดต่อ";
 
 /* notification body */
 "INCOMING_CALL" = "สายโทรเข้า";
@@ -1060,7 +1060,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ไฟล์เสียงไม่ถูกต้อง";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "ในการจะเชิญผู้ติดต่อของคุณ คุณจำเป็นต้องอนุญาตให้ Signal เข้าถึงรายชื่อผู้ติดต่อของคุณในแอปการตั้งค่า";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "ในการจะเชิญผู้ติดต่อของคุณ คุณจำเป็นต้องอนุญาตให้ Signal เข้าถึงผู้ติดต่อของคุณในแอปการตั้งค่า";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "อนุญาตให้เข้าถึงผู้ติดต่อ";
@@ -1096,7 +1096,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "การเชื่อมโยงอุปกรณ์ไม่สำเร็จ";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์นี้จะสามารถดูกลุ่มและรายชื่อผู้ติดต่อของคุณ อ่านข้อความทั้งหมดของคุณ และส่งข้อความด้วยชื่อของคุณ";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "อุปกรณ์นี้จะสามารถดูกลุ่มและผู้ติดต่อของคุณ อ่านข้อความทั้งหมดของคุณ และส่งข้อความด้วยชื่อของคุณ";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "เชื่อมโยงอุปกรณ์นี้ใช่หรือไม่";
@@ -1395,7 +1395,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาผู้ใช้";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหารายชื่อผู้ติดต่อด้วยหมายเลขโทรศัพท์";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหาผู้ติดต่อด้วยหมายเลขโทรศัพท์";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
@@ -1569,7 +1569,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "อวตาร";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "บุคคลในรายชื่อผู้ติดต่อของคุณจะสามารถเห็นโปรไฟล์ Signal ของคุณ เมื่อคุณเริ่มการสนทนาใหม่ และเมื่อคุณแบ่งปันโปรไฟล์กับผู้ใช้อื่นหรือกลุ่มอื่น";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "บุคคลในผู้ติดต่อของคุณจะสามารถเห็นโปรไฟล์ Signal ของคุณ เมื่อคุณเริ่มการสนทนาใหม่ และเมื่อคุณแบ่งปันโปรไฟล์กับผู้ใช้อื่นหรือกลุ่มอื่น";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "แตะเพื่อเรียนรู้เพิ่มเติม";
@@ -2199,7 +2199,7 @@
 "UNKNOWN_ATTACHMENT_LABEL" = "ไฟล์แนบที่ไม่รู้จัก";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในรายชื่อผู้ติดต่อของคุณ คุณต้องการบล็อกผู้ใช้นี้หรือไม่";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "ผู้ใช้ไม่อยู่ในผู้ติดต่อของคุณ คุณต้องการบล็อกผู้ใช้นี้หรือไม่";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "ผู้ติดต่อที่ไม่รู้จัก";
