@@ -1108,10 +1108,6 @@ static NSTimeInterval launchStartedAt;
     // Resume lazy restore.
     [OWSBackupLazyRestoreJob runAsync];
 #endif
-
-    if ([TSAccountManager isRegistered]) {
-        [[ContactDiscoveryService sharedService] testService];
-    }
 }
 
 - (void)registrationStateDidChange
