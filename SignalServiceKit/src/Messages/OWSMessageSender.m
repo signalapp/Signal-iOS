@@ -1329,8 +1329,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 DDLogError(@"Server replied to PreKeyBundle request with error: %@", error);
                 NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
                 if (response.statusCode == 404) {
-                    [recipient removeDevicesFromRecipient:[NSSet setWithObject:deviceNumber] transaction:transaction];
-
                     // Can't throw exception from within callback as it's probabably a different thread.
                     exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
                                                         reason:@"Device not registered"
