@@ -33,6 +33,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize envelopeData = _envelopeData;
 
++ (nullable instancetype)untrustedKeyWithEnvelope:(SSKEnvelope *)envelope
+                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    TSContactThread *contactThread =
+    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
+    [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
+                                                inThread:contactThread
+                                        incomingEnvelope:envelope];
+    return errorMessage;
+}
+
+- (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
+                                              inThread:(TSThread *)thread
+                                      incomingEnvelope:(SSKEnvelope *)envelope
+{
+    self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
+    if (!self) {
+        return self;
+    }
+    
+    NSError *error;
+    _envelopeData = [envelope serializedDataAndReturnError:&error];
+    if (!_envelopeData || error != nil) {
+        OWSFail(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
+        return nil;
+    }
+    
+    _authorId = envelope.source;
+    
+    return self;
+}
+
 - (nullable SSKEnvelope *)envelope
 {
     if (!_envelope) {
