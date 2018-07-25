@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSProdLogAndFail(@"%@ Could not load DER.", self.logTag);
             return nil;
         }
-        if (![self verifyDistinguishedName:certificate certificateData:certificateData]) {
+        if (![self verifyDistinguishedNameOfCertificate:certificateData]) {
             OWSProdLogAndFail(@"%@ Certificate has invalid name.", self.logTag);
             return nil;
         }
@@ -258,7 +258,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (BOOL)verifyDistinguishedName:(SecCertificateRef)certificate certificateData:(NSData *)certificateData
++ (BOOL)verifyDistinguishedNameOfCertificate:(NSData *)certificateData
 {
     OWSAssert(certificate);
     OWSAssert(certificateData);
