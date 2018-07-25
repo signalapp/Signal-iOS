@@ -8,7 +8,8 @@
 // the legacy proto format.
 syntax = "proto2";
 
-package signalios;
+// iOS - package name determines class prefix
+package IOSProtos;
 
 message BackupSnapshot
 {

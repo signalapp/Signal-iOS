@@ -2,7 +2,8 @@
 // the legacy proto format.
 syntax = "proto2";
 
-package textsecure;
+// iOS - package name determines class prefix
+package FingerprintProtos;
 
 option java_package = "org.whispersystems.libsignal.fingerprint";
 option java_outer_classname = "FingerprintProtos";

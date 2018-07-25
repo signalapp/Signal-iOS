@@ -8,7 +8,7 @@
 // the legacy proto format.
 syntax = "proto2";
 
-package signalservice;
+package ProvisioningProto;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "ProvisioningProtos";

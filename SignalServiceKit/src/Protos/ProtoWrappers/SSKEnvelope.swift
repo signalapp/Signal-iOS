@@ -54,7 +54,7 @@ public class SSKEnvelope: NSObject {
 
     @objc
     public init(serializedData: Data) throws {
-        let proto: SignalService_Envelope = try SignalService_Envelope(serializedData: serializedData)
+        let proto: SignalServiceProtos_Envelope = try SignalServiceProtos_Envelope(serializedData: serializedData)
 
         guard proto.hasSource else {
             throw EnvelopeError.invalidProtobuf(description: "missing required field: source")
@@ -113,8 +113,8 @@ public class SSKEnvelope: NSObject {
         return try self.asProtobuf.serializedData()
     }
 
-    private var asProtobuf: SignalService_Envelope {
-        var proto = SignalService_Envelope()
+    private var asProtobuf: SignalServiceProtos_Envelope {
+        var proto = SignalServiceProtos_Envelope()
 
         proto.source = self.source
 

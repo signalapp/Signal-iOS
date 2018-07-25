@@ -8,7 +8,8 @@
 // the legacy proto format.
 syntax = "proto2";
 
-package SignalService;
+// iOS - package name determines class prefix
+package SignalServiceProtos;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "SignalServiceProtos";
