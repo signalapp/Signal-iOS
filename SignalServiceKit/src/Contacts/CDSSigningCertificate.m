@@ -7,6 +7,7 @@
 #import "NSData+Base64.h"
 #import "NSData+OWS.h"
 #import <CommonCrypto/CommonCrypto.h>
+#import <openssl/x509.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -116,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSProdLogAndFail(@"%@ Could not load DER.", self.logTag);
             return nil;
         }
-        if (![self verifyDistinguishedName:certificate]) {
+        if (![self verifyDistinguishedName:certificate certificateData:certificateData]) {
             OWSProdLogAndFail(@"%@ Certificate has invalid name.", self.logTag);
             return nil;
         }
@@ -257,16 +258,95 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (BOOL)verifyDistinguishedName:(SecCertificateRef)certificate
++ (BOOL)verifyDistinguishedName:(SecCertificateRef)certificate certificateData:(NSData *)certificateData
 {
     OWSAssert(certificate);
+    OWSAssert(certificateData);
 
-    NSString *expectedDistinguishedName
-        = @"CN=Intel SGX Attestation Report Signing,O=Intel Corporation,L=Santa Clara,ST=CA,C=US";
-
-    // The Security framework doesn't offer access to certificate details like the name.
-    // TODO: Use OpenSSL to extract the name.
+    // The Security framework doesn't offer access to certificate properties
+    // with API available on iOS 9. We use OpenSSL to extract the name.
+    NSDictionary<NSString *, NSString *> *_Nullable properties = [self propertiesForCertificate:certificateData];
+    if (!properties) {
+        OWSFail(@"%@ Could not retrieve certificate properties.", self.logTag);
+        return NO;
+    }
+    //    NSString *expectedDistinguishedName
+    //    = @"CN=Intel SGX Attestation Report Signing,O=Intel Corporation,L=Santa Clara,ST=CA,C=US";
+    // NOTE: "Intel SGX Attestation Report Signing CA" is not the same as:
+    //       "Intel SGX Attestation Report Signing"
+    NSDictionary<NSString *, NSString *> *expectedProperties = @{
+        @"CN" : @"Intel SGX Attestation Report Signing CA",
+        @"O" : @"Intel Corporation",
+        @"L" : @"Santa Clara",
+        @"ST" : @"CA",
+        @"C" : @"US",
+    };
+    if (![properties isEqualToDictionary:expectedProperties]) {
+        OWSFail(@"%@ Unexpected certificate properties. %@ != %@", self.logTag, expectedProperties, properties);
+        return NO;
+    }
     return YES;
+}
+
++ (nullable NSDictionary<NSString *, NSString *> *)propertiesForCertificate:(NSData *)certificateData
+{
+    OWSAssert(certificateData);
+
+    if (certificateData.length >= UINT32_MAX) {
+        OWSFail(@"%@ certificate data is too long.", self.logTag);
+        return nil;
+    }
+    const unsigned char *certificateDataBytes = (const unsigned char *)[certificateData bytes];
+    X509 *_Nullable certificateX509 = d2i_X509(NULL, &certificateDataBytes, [certificateData length]);
+    if (!certificateX509) {
+        OWSFail(@"%@ could not parse certificate.", self.logTag);
+        return nil;
+    }
+
+    X509_NAME *_Nullable subjectName = X509_get_issuer_name(certificateX509);
+    if (!subjectName) {
+        OWSFail(@"%@ could not extract subject name.", self.logTag);
+        return nil;
+    }
+
+    NSMutableDictionary<NSString *, NSString *> *certificateProperties = [NSMutableDictionary new];
+    for (NSString *oid in @[
+             @(SN_commonName), // "CN"
+             @(SN_organizationName), // "O"
+             @(SN_localityName), // "L"
+             @(SN_stateOrProvinceName), // "ST"
+             @(SN_countryName), // "C"
+         ]) {
+        int nid = OBJ_txt2nid(oid.UTF8String);
+        int index = X509_NAME_get_index_by_NID(subjectName, nid, -1);
+
+        X509_NAME_ENTRY *_Nullable entry = X509_NAME_get_entry(subjectName, index);
+        if (!entry) {
+            OWSFail(@"%@ could not extract entry.", self.logTag);
+            return nil;
+        }
+
+        ASN1_STRING *_Nullable entryData = X509_NAME_ENTRY_get_data(entry);
+        if (!entryData) {
+            OWSFail(@"%@ could not extract entry data.", self.logTag);
+            return nil;
+        }
+
+        unsigned char *entryName = ASN1_STRING_data(entryData);
+        if (entryName == NULL) {
+            OWSFail(@"%@ could not extract entry string.", self.logTag);
+            return nil;
+        }
+        NSString *_Nullable entryString = [NSString stringWithUTF8String:(char *)entryName];
+        if (!entryString) {
+            OWSFail(@"%@ could not parse entry name data.", self.logTag);
+            return nil;
+        }
+        DDLogVerbose(@"%@ certificate[%@]: %@", self.logTag, oid, entryString);
+        [DDLog flushLog];
+        certificateProperties[oid] = entryString;
+    }
+    return certificateProperties;
 }
 
 @end
