@@ -110,7 +110,7 @@ public class MessageFetcherJob: NSObject {
             }
         }()
 
-        let envelopes = messageDicts.map { buildEnvelope(messageDict: $0) }.filter { $0 != nil }.map { $0! }
+        let envelopes: [SSKEnvelope] = messageDicts.compactMap { buildEnvelope(messageDict: $0) }
 
         return (
             envelopes: envelopes,
@@ -119,53 +119,26 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func buildEnvelope(messageDict: [String: Any]) -> SSKEnvelope? {
+        do {
+            let params = ParamParser(dictionary: messageDict)
 
-        guard let typeInt = messageDict["type"] as? Int32 else {
-            Logger.error("\(self.logTag) message body didn't have type")
-            return nil
-        }
-
-        guard let type: SSKEnvelope.SSKEnvelopeType = SSKEnvelope.SSKEnvelopeType(rawValue: typeInt) else {
-            Logger.error("\(self.logTag) message body type was invalid")
-            return nil
-        }
-
-        guard let timestamp = messageDict["timestamp"] as? UInt64 else {
-            Logger.error("\(self.logTag) message body didn't have timestamp")
-            return nil
-        }
-
-        guard let source = messageDict["source"] as? String else {
-            Logger.error("\(self.logTag) message body didn't have source")
-            return nil
-        }
-
-        guard let sourceDevice = messageDict["sourceDevice"] as? UInt32 else {
-            Logger.error("\(self.logTag) message body didn't have sourceDevice")
-            return nil
-        }
-
-        let legacyMessage: Data? = {
-            if let encodedLegacyMessage = messageDict["message"] as? String {
-                Logger.debug("\(self.logTag) message body had legacyMessage")
-                if let legacyMessage = Data(base64Encoded: encodedLegacyMessage) {
-                    return legacyMessage
-                }
+            let typeInt: Int32 = try params.required(key: "type")
+            guard let type: SSKEnvelope.SSKEnvelopeType = SSKEnvelope.SSKEnvelopeType(rawValue: typeInt) else {
+                Logger.error("\(self.logTag) `typeInt` was invalid: \(typeInt)")
+                throw ParamParser.ParseError.invalidFormat("type")
             }
-            return nil
-        }()
 
-        let content: Data? = {
-            if let encodedContent = messageDict["content"] as? String {
-                Logger.debug("\(self.logTag) message body had content")
-                if let content = Data(base64Encoded: encodedContent) {
-                    return content
-                }
-            }
-            return nil
-        }()
+            let timestamp: UInt64 = try params.required(key: "timestamp")
+            let source: String = try params.required(key: "source")
+            let sourceDevice: UInt32 = try params.required(key: "sourceDevice")
+            let legacyMessage = try params.optionalBase64EncodedData(key: "message")
+            let content: Data? = try params.optionalBase64EncodedData(key: "content")
 
-        return SSKEnvelope(timestamp: timestamp, source: source, sourceDevice: sourceDevice, type: type, content: content, legacyMessage: legacyMessage)
+            return SSKEnvelope(timestamp: UInt64(timestamp), source: source, sourceDevice: sourceDevice, type: type, content: content, legacyMessage: legacyMessage)
+        } catch {
+            owsFail("\(self.logTag) in \(#function) error building envelope: \(error)")
+            return nil
+        }
     }
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKEnvelope], more: Bool)> {
