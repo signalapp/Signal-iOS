@@ -1,19 +1,19 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosContent;
 @class OWSSignalServiceProtosDataMessage;
-@class OWSSignalServiceProtosEnvelope;
+@class SSKEnvelope;
 
-NSString *envelopeAddress(OWSSignalServiceProtosEnvelope *envelope);
+NSString *envelopeAddress(SSKEnvelope *envelope);
 
 @interface OWSMessageHandler : NSObject
 
-- (NSString *)descriptionForEnvelopeType:(OWSSignalServiceProtosEnvelope *)envelope;
-- (NSString *)descriptionForEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
+- (NSString *)descriptionForEnvelopeType:(SSKEnvelope *)envelope;
+- (NSString *)descriptionForEnvelope:(SSKEnvelope *)envelope;
 - (NSString *)descriptionForContent:(OWSSignalServiceProtosContent *)content;
 - (NSString *)descriptionForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
 

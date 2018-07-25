@@ -8,7 +8,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosDataMessage;
-@class OWSSignalServiceProtosEnvelope;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;

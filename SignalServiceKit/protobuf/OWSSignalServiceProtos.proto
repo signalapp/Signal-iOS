@@ -4,14 +4,14 @@
  * Licensed according to the LICENSE file in this repository.
  */
 
-package signalservice;
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+package SignalService;
 
 option java_package = "org.whispersystems.signalservice.internal.push";
 option java_outer_classname = "SignalServiceProtos";
-
-// Signal-iOS
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignalServiceProtos";
 
 message Envelope {
   enum Type {

@@ -60,6 +60,7 @@ PODS:
     - Reachability
     - SAMKeychain
     - SocketRocket
+    - SwiftProtobuf
     - YapDatabase/SQLCipher
   - SocketRocket (0.5.1)
   - SQLCipher (3.4.2):
@@ -68,6 +69,7 @@ PODS:
   - SQLCipher/standard (3.4.2):
     - SQLCipher/common
   - SSZipArchive (2.1.2)
+  - SwiftProtobuf (1.0.3)
   - YapDatabase/SQLCipher (3.0.2):
     - YapDatabase/SQLCipher/Core (= 3.0.2)
     - YapDatabase/SQLCipher/Extensions (= 3.0.2)
@@ -161,6 +163,7 @@ SPEC REPOS:
     - Reachability
     - SAMKeychain
     - SSZipArchive
+    - SwiftProtobuf
     - YYImage
 
 EXTERNAL SOURCES:
@@ -223,10 +226,11 @@ SPEC CHECKSUMS:
   PureLayout: 4d550abe49a94f24c2808b9b95db9131685fe4cd
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalServiceKit: eaaf6404e61fc05c71f91246327e2d487e0e1833
+  SignalServiceKit: a16410721705f896905c65ad718424fa20728e7d
   SocketRocket: dbb1554b8fc288ef8ef370d6285aeca7361be31e
   SQLCipher: f9fcf29b2e59ced7defc2a2bdd0ebe79b40d4990
   SSZipArchive: d4009d2ce5520a421f231fd97028cc0e2667eed8
+  SwiftProtobuf: 5ccc0e4054e37c75800e5744acb2aa80bb72b39c
   YapDatabase: 299a32de9d350d37a9ac5b0532609d87d5d2a5de
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
