@@ -18,7 +18,7 @@
 "ACTION_SHARE_CONTACT" = "Condivi contatto";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Video chiamata";
+"ACTION_VIDEO_CALL" = "Videochiamata";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Aggiungi";
@@ -324,7 +324,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Termina chiamata";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Mute";
+"CALL_VIEW_MUTE_LABEL" = "Muto";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Puoi rispondere alla chiamate direttamente dalla schermata di blocco e visualizzare il nome e numero del chiamante cambiando le impostazioni.\n\nVisualizza le impostazioni sulla privacy per maggiori dettagli.";
@@ -333,13 +333,13 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Puoi vedere il nome e il numero del chiamante cambiando le impostazioni nella configurazione.\n\nVisualizza le impostazioni sulla privacy per maggiori dettagli.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Non Ora";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Non ora";
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Mostra impostazioni privacy";
 
 /* Accessibility label to toggle front vs. rear facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Cambia orientamento camera";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Cambia orientamento fotocamera";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Passa a chiamata audio";
@@ -420,7 +420,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Bloccato";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Non Verificato";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Non verificato";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Utente non registrato";
@@ -555,7 +555,7 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tocca per cambiare";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Non Silenzioso";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Non silenzioso";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Questo gruppo può vedere il tuo profilo.";
@@ -573,7 +573,7 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Condividi il tuo profilo";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Aggiungi nei Contatti";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Aggiungi nei contatti";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Condividi il tuo profilo con questo utente";
@@ -600,16 +600,16 @@
 "CREATE_NEW_GROUP" = "Crea nuovo gruppo";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Sposta e Ridimensiona";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Sposta e ridimensiona";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Può richiedere alcuni minuti.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Ottimizzando il Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Ottimizzazione del database";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ ora fa";
+"DATE_HOURS_AGO_FORMAT" = "%@ ore fa";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
 "DATE_MINUTES_AGO_FORMAT" = "%@ min fa";
@@ -642,10 +642,10 @@
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Apri una segnalazione di anomalia";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copia Link";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Copia link";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Supporto Email";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Supporto email";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Invia all'ultima conversazione";
@@ -664,7 +664,7 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Il link gist è stato copiato negli appunti. Ora verrai ridiretto nella lista delle segnalazioni in GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ridirezione su GitHub";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Reindirizzamente su GitHub";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Registra nuovamente questo numero di telefono";
@@ -676,7 +676,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Ultima attività: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Associato: %@";
+"DEVICE_LINKED_AT_LABEL" = "Associato il: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Impossibile aggiornare la lista dei dispositivi.";
@@ -730,7 +730,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Aggiorna";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Hai cambiato questo gruppo. Vuoi salvare i cambiamenti ?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Hai cambiato questo gruppo. Vuoi salvare le modifiche?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Modifiche non salvate";
@@ -766,7 +766,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Perché non inviti qualcuno?";
 
 /* No comment provided by engineer. */
-"EMPTY_INBOX_FIRST_TEXT" = "Suggerimento: aggiungi una conversazione come Promemoria";
+"EMPTY_INBOX_FIRST_TEXT" = "Suggerimento: aggiungi una conversazione come promemoria!";
 
 /* No comment provided by engineer. */
 "EMPTY_INBOX_FIRST_TITLE" = "Fatto. Fatto. Fatto.";
@@ -808,7 +808,7 @@
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "È attivo il Blocco Registrazione. Dovrai inserire il tuo PIN quando registrerai nuovamente il tuo numero di telefono con Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Blocco Registrazione";
+"ENABLE_2FA_VIEW_TITLE" = "Blocco registrazione";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Occupato.";
@@ -904,7 +904,7 @@
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Segna come verificato";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset Sessione";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reset sessione";
 
 /* Accessibility label for finishing new group */
 "FINISH_GROUP_CREATION_LABEL" = "Terminazione creazione gruppo";
@@ -937,7 +937,7 @@
 "GIF_PICKER_VIEW_TITLE" = "Ricerca GIF";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Errore. Fare tap per riprovare.";
+"GIF_VIEW_SEARCH_ERROR" = "Errore. Tocca per riprovare.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Nessun risultato.";
@@ -964,7 +964,7 @@
 "GROUP_MEMBER_LEFT" = "%@ ha lasciato il gruppo.";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Aggiungi Contatto";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Aggiungi contatto";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Chiama";
@@ -1063,7 +1063,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Per invitare i tuoi contatti, devi abilitare l'accesso dei tuoi contatti a Signal nelle impostazioni di sistema.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Abilita Accesso Contatti";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Abilita accesso contatti";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invita i tuoi amici su Signal";
@@ -1093,7 +1093,7 @@
 "LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice a barre non è valido, assicurarati che stai effettuando la scansione del codice QR visualizzato sul dispositivo che si desidera collegare.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Collegamento Device Fallito";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Collegamento con dispositivo fallito";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Questo dispositivo sarà in grado di accedere a gruppi, contatti, messaggi e ad inviare messaggi a tuo nome. ";
@@ -1108,16 +1108,16 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Per associare scansiona il codice QR visualizzato sul dispositivo. ";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Scansione il codice QR";
+"LINK_NEW_DEVICE_SUBTITLE" = "Scansiona il codice QR";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Associa Nuovo Dispositivo";
+"LINK_NEW_DEVICE_TITLE" = "Associa nuovo dispositivo";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Dispositivi associati";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Associazione Dispositivo Fallita";
+"LINKING_DEVICE_FAILED_TITLE" = "Associazione dispositivo fallita";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Membri del gruppo";
@@ -1156,7 +1156,7 @@
 "MESSAGE_ACTION_COPY_MEDIA" = "Copia media";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copia Testo Messaggio";
+"MESSAGE_ACTION_COPY_TEXT" = "Copia testo del messaggio";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Elimina questo messaggio";
@@ -1338,7 +1338,7 @@
 "NETWORK_ERROR_RECOVERY" = "Verifica di essere online e riprova.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
-"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Raggiro Censura: Attivo";
+"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Raggiro censura: attivo";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_CONNECTED" = "Connesso";
@@ -1377,7 +1377,7 @@
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nome chat di gruppo";
 
 /* a title for the non-contacts section of the 'new group' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Altri Utenti";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Altri utenti";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vuoi abbandonare questi cambiamenti?";
@@ -1392,10 +1392,10 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Cerca";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Cerca Utente";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Cerca utente";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trova Contatti tramite Numero di Telefono";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Trova contatti tramite numero di telefono";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Puoi aver ricevuto messaggi mentre il tuo %@ si riavviava.";
@@ -1407,7 +1407,7 @@
 "NOTIFICATIONS_FOOTER_WARNING" = "A causa di un problema nel sistema di notifiche push di Apple, l'anteprima dei messaggi verrà visualizzata solo se la ricezione del messaggio avverrà entro 30 secondi dall'invio. Il Badge App potrà quindi risultare inaccurato.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Nessun Nome o Contenuto";
+"NOTIFICATIONS_NONE" = "Nessun nome o contenuto";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
 "NOTIFICATIONS_SECTION_INAPP" = "Riproduci mentre l'app è aperta";
@@ -1416,10 +1416,10 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Suoni";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nome e Contenuto";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Nome e contenuto";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Solo Nome";
+"NOTIFICATIONS_SENDER_ONLY" = "Solo nome";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Mostra";
@@ -1461,7 +1461,7 @@
 "PHONE_NUMBER_TYPE_HOME" = "Casa";
 
 /* Label for 'HomeFAX' phone numbers. */
-"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax Casa";
+"PHONE_NUMBER_TYPE_HOME_FAX" = "Fax casa";
 
 /* Label for 'iPhone' phone numbers. */
 "PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
@@ -1488,10 +1488,10 @@
 "PHONE_NUMBER_TYPE_WORK" = "Ufficio";
 
 /* Label for 'Work FAX' phone numbers. */
-"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax Ufficio";
+"PHONE_NUMBER_TYPE_WORK_FAX" = "Fax ufficio";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Riproduci media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Non hai segnato %@ come verificato.";
@@ -1503,10 +1503,10 @@
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ è verificato.";
 
 /* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Maggiori Informazioni";
+"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Maggiori informazioni";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Tocca per acquisire";
+"PRIVACY_TAP_TO_SCAN" = "Tocca per scansionare";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Rimuovi verifica";
@@ -1644,7 +1644,7 @@
 "REGISTER_2FA_INSTRUCTIONS" = "Questo numero ha il Blocco Registrazione attivo. Inserire il PIN di Blocco Registrazione.\n\nIl tuo PIN di Blocco Registrazione è separato dal codice di verifica automatico che è stato inviato al tuo telefono durante la fase precedente.\n";
 
 /* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrazione Fallita";
+"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Registrazione fallita";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Invia";
@@ -1665,7 +1665,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Codice del Paese";
 
 /* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Blocco Registrazione";
+"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Blocco registrazione";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Inserisci numero";
@@ -1728,7 +1728,7 @@
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono per la registrazione";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nessun Numero";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nessun numero";
 
 /* No comment provided by engineer. */
 "REJECT_CALL_BUTTON_TITLE" = "Rifiuta";
@@ -1830,7 +1830,7 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Altri Contatti";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Altri contatti";
 
 /* Table section header for recently active conversations */
 "SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Chat recenti";
@@ -1860,10 +1860,10 @@
 "SETTINGS_ABOUT" = "Dettagli";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Blocca Contatto";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Blocca contatto";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Blocca Numero Telefonico";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Blocca numero telefonico";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Blocca";
@@ -1977,7 +1977,7 @@
 "SETTINGS_HELP_HEADER" = "Aiuto";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Svuota Conversazione";
+"SETTINGS_HISTORYLOG_TITLE" = "Svuota conversazione";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Informazioni";
@@ -2067,16 +2067,16 @@
 "SETTINGS_SUPPORT" = "Supporto";
 
 /* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Non Attivo";
+"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Non attivo";
 
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Attivo";
 
 /* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Blocco Registrazione";
+"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Blocco registrazione";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocco Registrazione";
+"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocco registrazione";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versione";
@@ -2253,7 +2253,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Reimposta preferenze delle notifiche";
 
 /* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Nuovi Suoni Chiamate e Messaggi";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Nuovi suoni per chiamate e messaggi";
 
 /* button label shown one time, after user upgrades app */
 "UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Imposta il tuo profilo";
@@ -2298,7 +2298,7 @@
 "VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Chiamami";
 
 /* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Rinvia Codice SMS ";
+"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Rinvia codice SMS ";
 
 /* button text during registration to submit your SMS verification code. */
 "VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Conferma";
@@ -2331,13 +2331,13 @@
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Scorri per cancellare";
 
 /* Filename for voice messages. */
-"VOICE_MESSAGE_FILE_NAME" = "Messaggio Vocale";
+"VOICE_MESSAGE_FILE_NAME" = "Messaggio vocale";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tieni premuto per registrare un messaggio vocale.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Messaggio Vocale";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Messaggio vocale";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configurazione su Signal Desktop.";
