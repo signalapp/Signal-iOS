@@ -322,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self handleIncomingEnvelope:envelope withDataMessage:dataMessage transaction:transaction];
     } else {
-        DDLogWarn(@"%@ Ignoring envelope with neither Content nor LegacyMessage", self.logTag);
+        OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorEnvelopeNoActionablePayload], envelope);
     }
 }
 
