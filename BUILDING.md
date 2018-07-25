@@ -1,19 +1,31 @@
 # Building
 
-We typically develop against the latest stable version of XCode.
+We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's XCode 9.4
+As of this writing, that's Xcode 9.4.
 
 ## 1. Clone
 
-Clone the repo to a working directory
+Clone the repo to a working directory:
 
 ```
-git clone https:github.com/signalapp/Signal-iOS
+git clone --recurse-submodules https:github.com/signalapp/Signal-iOS
 ```
 
 Since we make use of submodules, you must use `git clone`, rather than
 downloading a prepared zip file from Github.
+
+We recommend you fork the repo on GitHub, then clone your fork:
+
+```
+git clone --recurse-submodules https://github.com/<USERNAME>/Signal-iOS.git
+```
+
+You can then add the Signal repo to sync with upstream changes:
+
+```
+git remote add upstream https:github.com/signalapp/Signal-iOS
+```
 
 ## 2. Dependencies
 
@@ -73,7 +85,7 @@ A prebuilt version of WebRTC.framework resides in our Carthage submodule
 and should be installed by the above steps.  However, if you'd like to
 build it from source, see: https://github.com/signalapp/signal-webrtc-ios
 
-## 3. XCode
+## 3. Xcode
 
 Open the `Signal.xcworkspace` in Xcode.
 
