@@ -747,10 +747,7 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
                     return;
                 }
 
-                OWSSignalServiceProtosEnvelope *envelope =
-                    [OWSSignalServiceProtosEnvelope parseFromData:decryptedPayload];
-
-                [self.messageReceiver handleReceivedEnvelope:envelope];
+                [self.messageReceiver handleReceivedEnvelopeData:decryptedPayload];
             } @catch (NSException *exception) {
                 OWSProdLogAndFail(@"%@ Received an invalid envelope: %@", self.logTag, exception.debugDescription);
                 // TODO: Add analytics.

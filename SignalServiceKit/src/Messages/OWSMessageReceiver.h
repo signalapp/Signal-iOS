@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosEnvelope;
 @class OWSStorage;
 
 // This class is used to write incoming (encrypted, unprocessed)
@@ -18,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage;
 
-- (void)handleReceivedEnvelope:(OWSSignalServiceProtosEnvelope *)envelope;
+- (void)handleReceivedEnvelopeData:(NSData *)envelopeData;
 - (void)handleAnyUnprocessedEnvelopesAsync;
 
 @end

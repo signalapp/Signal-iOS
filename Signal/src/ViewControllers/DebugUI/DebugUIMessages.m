@@ -3372,23 +3372,32 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                completion:nil];
 }
 
-+ (OWSSignalServiceProtosEnvelope *)createEnvelopeForThread:(TSThread *)thread
++ (SSKEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
 
-    OWSSignalServiceProtosEnvelopeBuilder *builder = [OWSSignalServiceProtosEnvelopeBuilder new];
+    uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
+    NSString *source = ^{
+        if ([thread isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *gThread = (TSGroupThread *)thread;
+            return gThread.groupModel.groupMemberIds[0];
+        } else if ([thread isKindOfClass:[TSContactThread class]]) {
+            TSContactThread *contactThread = (TSContactThread *)thread;
+            return contactThread.contactIdentifier;
+        } else {
+            OWSFail(@"%@ failure: unknown thread type", self.logTag);
+            return @"unknown-source-id";
+        }
+    }();
 
-    [builder setTimestamp:[NSDate ows_millisecondTimeStamp]];
+    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
+                                                            source:source
+                                                      sourceDevice:1
+                                                              type:SSKEnvelopeTypeCiphertext
+                                                           content:nil
+                                                     legacyMessage:nil];
 
-    if ([thread isKindOfClass:[TSGroupThread class]]) {
-        TSGroupThread *gThread = (TSGroupThread *)thread;
-        [builder setSource:gThread.groupModel.groupMemberIds[0]];
-    } else if ([thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)thread;
-        [builder setSource:contactThread.contactIdentifier];
-    }
-
-    return [builder build];
+    return envelope;
 }
 
 + (NSArray<TSInteraction *> *)unsavedSystemMessagesInThread:(TSThread *)thread
@@ -3542,12 +3551,15 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                                           withTransaction:transaction]];
         [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
                                                      withTransaction:transaction]];
-        [result addObject:[TSInvalidIdentityKeyReceivingErrorMessage
-                              untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
-                                       withTransaction:transaction]];
         [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
                                                        withTransaction:transaction]];
-
+        
+        
+        TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
+            [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                                withTransaction:transaction];
+        OWSAssert(blockingSNChangeMessage);
+        [result addObject:blockingSNChangeMessage];
         [result addObject:[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
                                                   failedMessageType:TSErrorMessageNonBlockingIdentityChange
@@ -3871,15 +3883,22 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         recipientId = @"+12345678901";
     }
 
-    OWSSignalServiceProtosEnvelopeBuilder *envelopeBuilder = [OWSSignalServiceProtosEnvelopeBuilder new];
-    [envelopeBuilder setType:OWSSignalServiceProtosEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:recipientId];
-    [envelopeBuilder setSourceDevice:1];
-    [envelopeBuilder setTimestamp:[NSDate ows_millisecondTimeStamp]];
-    [envelopeBuilder setContent:plaintextData];
+    uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
+    NSString *source = recipientId;
+    uint32_t sourceDevice = 1;
+    SSKEnvelopeType envelopeType = SSKEnvelopeTypeCiphertext;
+    NSData *content = plaintextData;
 
-    NSData *envelopeData = [envelopeBuilder build].data;
-    OWSAssert(envelopeData);
+    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
+                                                            source:source
+                                                      sourceDevice:sourceDevice
+                                                              type:envelopeType
+                                                           content:content
+                                                     legacyMessage:nil];
+
+    NSError *error;
+    NSData *_Nullable envelopeData = [envelope serializedDataAndReturnError:&error];
+    OWSAssert(!error && envelopeData);
 
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [[OWSBatchMessageProcessor sharedInstance] enqueueEnvelopeData:envelopeData

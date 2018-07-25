@@ -1,19 +1,19 @@
 //
-//  TSInvalidIdentityKeyErrorMessage.h
-//  Signal
-//
-//  Created by Frederic Jacobs on 31/12/14.
-//  Copyright (c) 2014 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SSKEnvelope;
+
+// DEPRECATED - we no longer create new instances of this class (as of  mid-2017); However, existing instances may
+// exist, so we should keep this class around to honor their old behavior.
 @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
-+ (instancetype)untrustedKeyWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
-                         withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (nullable instancetype)untrustedKeyWithEnvelope:(SSKEnvelope *)envelope
+                                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

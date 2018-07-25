@@ -38,10 +38,15 @@ public class MessageFetcherJob: NSObject {
 
         Logger.info("\(self.logTag) fetching messages via REST.")
 
-        let promise = self.fetchUndeliveredMessages().then { (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool) -> Promise<Void> in
+        let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("\(self.logTag) received envelope.")
-                self.messageReceiver.handleReceivedEnvelope(envelope)
+                do {
+                    let envelopeData = try envelope.serializedData()
+                    self.messageReceiver.handleReceivedEnvelopeData(envelopeData)
+                } catch {
+                    owsFail("\(self.logTag) in \(#function) failed to serialize envelope")
+                }
                 self.acknowledgeDelivery(envelope: envelope)
             }
 
@@ -80,7 +85,7 @@ public class MessageFetcherJob: NSObject {
         timer = nil
     }
 
-    private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [OWSSignalServiceProtosEnvelope], more: Bool)? {
+    private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKEnvelope], more: Bool)? {
         guard let responseObject = responseObject else {
             Logger.error("\(self.logTag) response object was surpringly nil")
             return nil
@@ -113,56 +118,57 @@ public class MessageFetcherJob: NSObject {
         )
     }
 
-    private func buildEnvelope(messageDict: [String: Any]) -> OWSSignalServiceProtosEnvelope? {
-        let builder = OWSSignalServiceProtosEnvelopeBuilder()
+    private func buildEnvelope(messageDict: [String: Any]) -> SSKEnvelope? {
 
         guard let typeInt = messageDict["type"] as? Int32 else {
             Logger.error("\(self.logTag) message body didn't have type")
             return nil
         }
 
-        guard let type = OWSSignalServiceProtosEnvelopeType(rawValue: typeInt) else {
+        guard let type: SSKEnvelope.SSKEnvelopeType = SSKEnvelope.SSKEnvelopeType(rawValue: typeInt) else {
             Logger.error("\(self.logTag) message body type was invalid")
             return nil
         }
-        builder.setType(type)
 
         guard let timestamp = messageDict["timestamp"] as? UInt64 else {
             Logger.error("\(self.logTag) message body didn't have timestamp")
             return nil
         }
-        builder.setTimestamp(timestamp)
 
         guard let source = messageDict["source"] as? String else {
             Logger.error("\(self.logTag) message body didn't have source")
             return nil
         }
-        builder.setSource(source)
 
         guard let sourceDevice = messageDict["sourceDevice"] as? UInt32 else {
             Logger.error("\(self.logTag) message body didn't have sourceDevice")
             return nil
         }
-        builder.setSourceDevice(sourceDevice)
 
-        if let encodedLegacyMessage = messageDict["message"] as? String {
-            Logger.debug("\(self.logTag) message body had legacyMessage")
-            if let legacyMessage = Data(base64Encoded: encodedLegacyMessage) {
-                builder.setLegacyMessage(legacyMessage)
+        let legacyMessage: Data? = {
+            if let encodedLegacyMessage = messageDict["message"] as? String {
+                Logger.debug("\(self.logTag) message body had legacyMessage")
+                if let legacyMessage = Data(base64Encoded: encodedLegacyMessage) {
+                    return legacyMessage
+                }
             }
-        }
+            return nil
+        }()
 
-        if let encodedContent = messageDict["content"] as? String {
-            Logger.debug("\(self.logTag) message body had content")
-            if let content = Data(base64Encoded: encodedContent) {
-                builder.setContent(content)
+        let content: Data? = {
+            if let encodedContent = messageDict["content"] as? String {
+                Logger.debug("\(self.logTag) message body had content")
+                if let content = Data(base64Encoded: encodedContent) {
+                    return content
+                }
             }
-        }
+            return nil
+        }()
 
-        return builder.build()
+        return SSKEnvelope(timestamp: timestamp, source: source, sourceDevice: sourceDevice, type: type, content: content, legacyMessage: legacyMessage)
     }
 
-    private func fetchUndeliveredMessages() -> Promise<(envelopes: [OWSSignalServiceProtosEnvelope], more: Bool)> {
+    private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKEnvelope], more: Bool)> {
         return Promise { fulfill, reject in
             let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
@@ -186,7 +192,7 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private func acknowledgeDelivery(envelope: OWSSignalServiceProtosEnvelope) {
+    private func acknowledgeDelivery(envelope: SSKEnvelope) {
         let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: envelope.source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in

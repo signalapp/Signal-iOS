@@ -4,14 +4,15 @@
  * Licensed according to the LICENSE file in this repository.
  */
 
-package signalservice;
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package WebSocketProtos;
 
 option java_package = "org.whispersystems.signalservice.internal.websocket";
 option java_outer_classname = "WebSocketProtos";
-
-// Signal-iOS
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "WebSocketResources";
 
 message WebSocketRequestMessage
 {

@@ -4,11 +4,12 @@
  * Licensed according to the LICENSE file in this repository.
  */
 
-package signalios;
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
 
-// Signal-iOS
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "OWSSignaliOSProtos";
+// iOS - package name determines class prefix
+package IOSProtos;
 
 message BackupSnapshot
 {

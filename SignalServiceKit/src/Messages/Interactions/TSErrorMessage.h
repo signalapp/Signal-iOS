@@ -3,10 +3,11 @@
 //
 
 #import "OWSReadTracking.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SSKEnvelope;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -54,18 +55,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                          inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType;
 
-+ (instancetype)corruptedMessageWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SSKEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)corruptedMessageInUnknownThread;
 
-+ (instancetype)invalidVersionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SSKEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SSKEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)missingSessionWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SSKEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;

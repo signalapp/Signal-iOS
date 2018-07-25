@@ -4,8 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosEnvelope;
 @class OWSStorage;
+@class SSKEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
 // This class is used to write incoming (decrypted, unprocessed)

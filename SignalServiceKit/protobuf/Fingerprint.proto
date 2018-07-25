@@ -1,10 +1,12 @@
-package textsecure;
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package FingerprintProtos;
 
 option java_package = "org.whispersystems.libsignal.fingerprint";
 option java_outer_classname = "FingerprintProtos";
-
-import "objectivec-descriptor.proto";
-option (google.protobuf.objectivec_file_options).class_prefix = "OWSFingerprintProtos";
 
 message LogicalFingerprint {
   optional bytes identityData = 1;

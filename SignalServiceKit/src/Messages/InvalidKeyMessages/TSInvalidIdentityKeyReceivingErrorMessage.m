@@ -14,6 +14,7 @@
 #import "TSErrorMessage_privateConstructor.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,46 +28,53 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
     // Not using a property declaration in order to exclude from DB serialization
-    OWSSignalServiceProtosEnvelope *_envelope;
+    SSKEnvelope *_Nullable _envelope;
 }
 
 @synthesize envelopeData = _envelopeData;
 
-+ (instancetype)untrustedKeyWithEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
++ (nullable instancetype)untrustedKeyWithEnvelope:(SSKEnvelope *)envelope
                          withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
-        [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
-                                                    inThread:contactThread
-                                            incomingEnvelope:envelope];
+    [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
+                                                inThread:contactThread
+                                        incomingEnvelope:envelope];
     return errorMessage;
 }
 
-- (instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
+- (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                               inThread:(TSThread *)thread
-                                      incomingEnvelope:(OWSSignalServiceProtosEnvelope *)envelope
+                                      incomingEnvelope:(SSKEnvelope *)envelope
 {
     self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
     if (!self) {
         return self;
     }
-
-    _envelopeData = envelope.data;
+    
+    NSError *error;
+    _envelopeData = [envelope serializedDataAndReturnError:&error];
+    if (!_envelopeData || error != nil) {
+        OWSFail(@"%@ failure: envelope data failed with error: %@", self.logTag, error);
+        return nil;
+    }
+    
     _authorId = envelope.source;
-
+    
     return self;
 }
 
-- (OWSSignalServiceProtosEnvelope *)envelope
+- (nullable SSKEnvelope *)envelope
 {
     if (!_envelope) {
-        @try {
-            _envelope = [OWSSignalServiceProtosEnvelope parseFromData:self.envelopeData];
-        } @catch (NSException *exception) {
-            OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, exception.debugDescription);
-            // TODO: Add analytics.
+        NSError *error;
+        SSKEnvelope *_Nullable envelope = [[SSKEnvelope alloc] initWithSerializedData:self.envelopeData error:&error];
+        if (error || envelope == nil) {
+            OWSProdLogAndFail(@"%@ Could not parse proto: %@", self.logTag, error);
+        } else {
+            _envelope = envelope;
         }
     }
     return _envelope;
@@ -94,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.thread receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
-        [[OWSMessageReceiver sharedInstance] handleReceivedEnvelope:errorMessage.envelope];
+        [[OWSMessageReceiver sharedInstance] handleReceivedEnvelopeData:errorMessage.envelopeData];
 
         // Here we remove the existing error message because handleReceivedEnvelope will either
         //  1.) succeed and create a new successful message in the thread or...
@@ -110,13 +118,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (self.envelope.type != OWSSignalServiceProtosEnvelopeTypePrekeyBundle) {
+    if (self.envelope.type != SSKEnvelopeTypePrekeyBundle) {
         DDLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }
 
-    // DEPRECATED - Remove after all clients have been upgraded.
-    NSData *pkwmData = self.envelope.hasContent ? self.envelope.content : self.envelope.legacyMessage;
+    NSData *pkwmData = self.envelope.content;
     if (!pkwmData) {
         DDLogError(@"Ignoring acceptNewIdentityKey for empty message");
         return nil;
