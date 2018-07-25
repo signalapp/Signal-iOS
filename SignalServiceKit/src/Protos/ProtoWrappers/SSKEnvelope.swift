@@ -7,7 +7,7 @@ import Foundation
 @objc
 public class SSKEnvelope: NSObject {
 
-    enum EnvelopeError: Error {
+    public enum EnvelopeError: Error {
         case invalidProtobuf(description: String)
     }
 
