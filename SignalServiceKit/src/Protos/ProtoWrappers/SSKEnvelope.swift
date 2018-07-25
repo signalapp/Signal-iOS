@@ -114,34 +114,34 @@ public class SSKEnvelope: NSObject {
     }
 
     private var asProtobuf: SignalServiceProtos_Envelope {
-        var proto = SignalServiceProtos_Envelope()
+        let proto = SignalServiceProtos_Envelope.with { (builder) in
+            builder.source = self.source
 
-        proto.source = self.source
+            builder.type = {
+                switch self.type {
+                case .unknown:
+                    return .unknown
+                case .ciphertext:
+                    return .ciphertext
+                case .keyExchange:
+                    return .keyExchange
+                case .prekeyBundle:
+                    return .prekeyBundle
+                case .receipt:
+                    return .receipt
+                }
+            }()
 
-        proto.type = {
-            switch self.type {
-            case .unknown:
-                return .unknown
-            case .ciphertext:
-                return .ciphertext
-            case .keyExchange:
-                return .keyExchange
-            case .prekeyBundle:
-                return .prekeyBundle
-            case .receipt:
-                return .receipt
+            builder.timestamp = self.timestamp
+            builder.sourceDevice = self.sourceDevice
+
+            if let relay = self.relay {
+                builder.relay = relay
             }
-        }()
 
-        proto.timestamp = self.timestamp
-        proto.sourceDevice = self.sourceDevice
-
-        if let relay = self.relay {
-            proto.relay = relay
-        }
-
-        if let content = self.content {
-            proto.content = content
+            if let content = self.content {
+                builder.content = content
+            }
         }
 
         return proto
