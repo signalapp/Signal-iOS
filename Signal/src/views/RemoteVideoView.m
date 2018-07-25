@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *videoRenderer;
 
 // Used for legacy EAGLVideoView
-@property (nullable, nonatomic) NSMutableArray<NSLayoutConstraint *> *remoteVideoConstraints;
+@property (nullable, nonatomic) NSArray<NSLayoutConstraint *> *remoteVideoConstraints;
 
 @end
 
@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
+
+    _remoteVideoConstraints = @[];
 
 // Currently RTC only supports metal on 64bit machines
 #if defined(RTC_SUPPORTS_METAL)
@@ -142,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
         [constraints addObjectsFromArray:[videoView autoPinEdgesToSuperviewEdges]];
     }
 
-    self.remoteVideoConstraints = constraints;
+    self.remoteVideoConstraints = [constraints copy];
     // We need to force relayout to occur immediately (and not
     // wait for a UIKit layout/render pass) or the remoteVideoView
     // (which presumably is updating its CALayer directly) will
