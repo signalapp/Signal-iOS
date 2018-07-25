@@ -455,12 +455,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *contactData = [colorSeed dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSUInteger hashingLength = sizeof(unsigned long long);
-    unsigned long long choose;
-    NSData *hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
-    [hashData getBytes:&choose length:hashingLength];
-    
-    NSUInteger index = (choose % [self.conversationColorNames count]);
+    unsigned long long hash = 0;
+    NSUInteger hashingLength = sizeof(hash);
+    NSData *_Nullable hashData = [Cryptography computeSHA256Digest:contactData truncatedToBytes:hashingLength];
+    if (hashData) {
+        [hashData getBytes:&hash length:hashingLength];
+    } else {
+        OWSProdLogAndFail(@"%@ could not compute hash for color seed.", self.logTag);
+    }
+
+    NSUInteger index = (hash % [self.conversationColorNames count]);
     return [self.conversationColorNames objectAtIndex:index];
 }
 

@@ -107,8 +107,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSData *_Nullable avatarData = [Contact avatarDataForCNContact:cnContact];
     if (avatarData) {
         NSUInteger hashValue = 0;
-        NSData *hashData = [Cryptography computeSHA256Digest:avatarData truncatedToBytes:sizeof(hashValue)];
-        [hashData getBytes:&hashValue length:sizeof(hashValue)];
+        NSData *_Nullable hashData = [Cryptography computeSHA256Digest:avatarData truncatedToBytes:sizeof(hashValue)];
+        if (hashData) {
+            [hashData getBytes:&hashValue length:sizeof(hashValue)];
+        } else {
+            OWSProdLogAndFail(@"%@ could not compute hash for avatar.", self.logTag);
+        }
         _imageHash = hashValue;
     } else {
         _imageHash = 0;

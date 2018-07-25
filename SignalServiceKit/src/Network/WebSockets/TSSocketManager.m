@@ -738,8 +738,9 @@ NSString *const kNSNotification_SocketManagerStateDidChange = @"kNSNotification_
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             @try {
-                NSData *decryptedPayload = [Cryptography decryptAppleMessagePayload:message.body
-                                                                   withSignalingKey:TSAccountManager.signalingKey];
+                NSData *_Nullable decryptedPayload =
+                    [Cryptography decryptAppleMessagePayload:message.body
+                                            withSignalingKey:TSAccountManager.signalingKey];
 
                 if (!decryptedPayload) {
                     DDLogWarn(@"%@ Failed to decrypt incoming payload or bad HMAC", self.logTag);
