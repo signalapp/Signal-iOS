@@ -71,7 +71,9 @@ class ParamParserTest: XCTestCase {
         }())
     }
 
-    func testBase64Data() {
+    // MARK: Base64EncodedData
+
+    func testBase64Data_Valid() {
         let originalString = "asdf"
         let utf8Data: Data = originalString.data(using: .utf8)!
         let base64EncodedString = utf8Data.base64EncodedString()
@@ -85,5 +87,32 @@ class ParamParserTest: XCTestCase {
         let data: Data = try! parser.requiredBase64EncodedData(key: "some_data")
         let roundTripString = String(data: data, encoding: .utf8)
         XCTAssertEqual(originalString, roundTripString)
+    }
+
+    func testBase64Data_EmptyString() {
+        let dict: [String: Any] = ["some_data": ""]
+        let parser = ParamParser(dictionary: dict)
+
+        XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
+        XCTAssertEqual(nil, try parser.optionalBase64EncodedData(key: "some_data"))
+    }
+
+    func testBase64Data_NSNull() {
+        let dict: [String: Any] = ["some_data": NSNull()]
+        let parser = ParamParser(dictionary: dict)
+
+        XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
+        XCTAssertEqual(nil, try parser.optionalBase64EncodedData(key: "some_data"))
+    }
+
+    func testBase64Data_Invalid() {
+        // invalid base64 data
+        let base64EncodedString = "YXNkZg"
+
+        let dict: [String: Any] = ["some_data": base64EncodedString]
+        let parser = ParamParser(dictionary: dict)
+
+        XCTAssertThrowsError(try parser.requiredBase64EncodedData(key: "some_data"))
+        XCTAssertThrowsError(try parser.optionalBase64EncodedData(key: "some_data"))
     }
 }

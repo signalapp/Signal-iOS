@@ -64,6 +64,10 @@ public class ParamParser {
             return nil
         }
 
+        guard !(someValue is NSNull) else {
+            return nil
+        }
+
         guard let typedValue = someValue as? T else {
             throw invalid(key: key)
         }
@@ -85,7 +89,7 @@ public class ParamParser {
     }
 
     public func optional<T>(key: Key) throws -> T? where T: FixedWidthInteger {
-        guard let someValue = dictionary[key] else {
+        guard let someValue: Any = try optional(key: key) else {
             return nil
         }
 
@@ -119,6 +123,10 @@ public class ParamParser {
 
         guard let data = Data(base64Encoded: encodedData) else {
             throw ParseError.invalidFormat(key)
+        }
+
+        guard data.count > 0 else {
+            return nil
         }
 
         return data
