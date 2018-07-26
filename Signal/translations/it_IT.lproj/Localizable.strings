@@ -12,7 +12,7 @@
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Manda messaggio";
+"ACTION_SEND_MESSAGE" = "Invia messaggio";
 
 /* Label for 'share contact' button. */
 "ACTION_SHARE_CONTACT" = "Condivi contatto";
@@ -168,7 +168,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Documento non supportato";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Messaggio Vocale";
+"ATTACHMENT_TYPE_VOICE_MESSAGE" = "Messaggio vocale";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Vivavoce";
@@ -742,7 +742,7 @@
 "EDIT_TXT" = "Modifica";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ehi,\n\nUltimamente sto usando Signal per mantenere private le conversazioni sul mio iPhone. Vorrei che anche te la installassi, così potremo essere sicuri che saremo gli unici a poter leggere i nostri messaggi e ad ascoltare le nostre chiamate.\n\nSignal è disponibile per gli iPhone e per Android. Scaricalo qui: %@\n\nSignal funziona come la tua solita app di messaggistica. Possiamo mandarci immagini, video, fare chiamate e creare chat di gruppo. Ma la ciliegina sulla torta è che nessuno potrà vedere né sentire nulla di tutto ciò, nemmeno chi sta dietro a Signal!\n\nPuoi scoprire di più su Open Whisper Systems, i creatori di Signal, qui: %@";
+"EMAIL_INVITE_BODY" = "Ehi,\n\nUltimamente sto usando Signal per mantenere private le conversazioni sul mio iPhone. Vorrei che anche tu la installassi, così potremo essere sicuri di essere gli unici a poter leggere i nostri messaggi e ad ascoltare le nostre chiamate.\n\nSignal è disponibile per iPhone e Android. Scaricalo qui: %@\n\nSignal funziona come la tua solita app di messaggistica. Possiamo mandarci immagini, video, fare chiamate e creare chat di gruppo. Ma la ciliegina sulla torta è che nessuno potrà vedere né sentire nulla di tutto ciò, nemmeno chi produce Signal!\n\nPuoi scoprire di più su Open Whisper Systems, i creatori di Signal, qui: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passiamo a Signal";
@@ -754,7 +754,7 @@
 "EMPTY_ARCHIVE_FIRST_TITLE" = "Inizia la tua prima conversazione su Signal!";
 
 /* No comment provided by engineer. */
-"EMPTY_ARCHIVE_TEXT" = "Puoi archiviare conversazioni inattive dalla lista Chat per consultarle successivamente.";
+"EMPTY_ARCHIVE_TEXT" = "Puoi archiviare conversazioni inattive dalla lista chat per consultarle successivamente.";
 
 /* No comment provided by engineer. */
 "EMPTY_ARCHIVE_TITLE" = "Pulisci le tue conversazioni";
@@ -781,10 +781,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Conferma il tuo PIN";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Impossibile disattivare il Blocco Registrazione.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Impossibile disattivare il blocco registrazione.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Impossibile abilitare il Blocco Registrazione.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Impossibile abilitare il blocco registrazione.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Disabilita";
@@ -799,13 +799,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Il PIN non corrisponde. ";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Inserisci un PIN per il Blocco Registrazione. Questo PIN ti verrà richiesto la prossima volta che verrà effettuata una registrazione con questo numero di telefono.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Inserisci un PIN per il blocco registrazione. Questo PIN ti verrà richiesto la prossima volta che verrà effettuata una registrazione con questo numero di telefono.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per aumentare la sicurezza, attiva il PIN di Blocco Registrazione che diventerà necessario per registrare nuovamente questo numero di telefono con Signal.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per aumentare la sicurezza, attiva il PIN di blocco registrazione che diventerà necessario per registrare nuovamente questo numero di telefono con Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "È attivo il Blocco Registrazione. Dovrai inserire il tuo PIN quando registrerai nuovamente il tuo numero di telefono con Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "È attivo il blocco registrazione. Dovrai inserire il tuo PIN quando registrerai nuovamente il tuo numero di telefono con Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Blocco registrazione";
@@ -931,7 +931,7 @@
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Impossibile recuperare la GIF selezionata";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Inserite la vostra la ricerca.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Inserisci la tua ricerca.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Ricerca GIF";
@@ -1353,7 +1353,7 @@
 "NETWORK_STATUS_HEADER" = "Stato della rete";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_OFFLINE" = "Offline";
+"NETWORK_STATUS_OFFLINE" = "Sconnesso";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Cerca per numero";
@@ -2202,7 +2202,7 @@
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Utente non presente nei contatti. Vuoi bloccare questo utente?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Contatto Sconosciuto";
+"UNKNOWN_CONTACT_NAME" = "Contatto sconosciuto";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Sconosciuto";
@@ -2214,13 +2214,13 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "Dissociando questo dispositivo, non sarà più possibile inviare o ricevere messaggi.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Dissocia \"%@\" ?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Dissociare \"%@\"?";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal non è riuscito a dissociare il tuo dispositivo.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Dispositivo Senza Nome";
+"UNNAMED_DEVICE" = "Dispositivo senza nome";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Cancellazione da Signal fallita.";
@@ -2274,7 +2274,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introduzione delle ricevute di lettura";
 
 /* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ora supporta le chiamate video sicure. Inizia la chiamata come di consueto, tocca il pulsante della telecamere e fai ciao.";
+"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal ora supporta le videochiamate sicure. Inizia la chiamata come di consueto, tocca il pulsante della fotocamera e fai ciao.";
 
 /* Header for upgrade experience */
 "UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Videochiamate sicure!";
