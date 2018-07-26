@@ -29,12 +29,12 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#ifndef DEBUG
 
 // Production
-#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
-#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
-#define textSecureCDNServerURL @"https://cdn.signal.org"
-// Use same reflector for service and CDN
-#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
-#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
+//#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
+//#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
+//#define textSecureCDNServerURL @"https://cdn.signal.org"
+//// Use same reflector for service and CDN
+//#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
+//#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
 
 //#else
 //
@@ -46,6 +46,13 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
 //
 //#endif
+
+// Testing
+#define textSecureWebSocketAPI @"wss://messaging.acton-signal.org/v1/websocket/"
+#define textSecureServerURL @"https://messaging.acton-signal.org/"
+#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
+#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
+#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
 
 #define textSecureAccountsAPI @"v1/accounts"
 #define textSecureAttributesAPI @"/attributes/"
