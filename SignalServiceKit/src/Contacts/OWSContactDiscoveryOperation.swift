@@ -4,56 +4,6 @@
 
 import Foundation
 
-@objc(OWSCDSOperation)
-class CDSOperation: OWSOperation {
-
-    let batchSize = 2048
-    static let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 5
-
-        return queue
-    }()
-
-    let recipientIdsToLookup: [String]
-
-    @objc
-    var registeredRecipientIds: Set<String>
-
-    @objc
-    required init(recipientIdsToLookup: [String]) {
-        self.recipientIdsToLookup = recipientIdsToLookup
-        self.registeredRecipientIds = Set()
-
-        super.init()
-
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
-        for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
-            let batchOperation = CDSBatchOperation(recipientIdsToLookup: batchIds)
-            self.addDependency(batchOperation)
-        }
-    }
-
-    // MARK: Mandatory overrides
-
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
-        Logger.debug("\(logTag) in \(#function)")
-
-        for dependency in self.dependencies {
-            guard let batchOperation = dependency as? CDSBatchOperation else {
-                owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
-                continue
-            }
-
-            self.registeredRecipientIds.formUnion(batchOperation.registeredRecipientIds)
-        }
-
-        self.reportSuccess()
-    }
-
-}
-
 @objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
@@ -189,6 +139,56 @@ enum ContactDiscoveryError: Error {
     case attestationError(underlyingError: Error)
     case clientError(underlyingError: Error)
     case serverError(underlyingError: Error)
+}
+
+@objc(OWSCDSOperation)
+class CDSOperation: OWSOperation {
+
+    let batchSize = 2048
+    static let operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 5
+
+        return queue
+    }()
+
+    let recipientIdsToLookup: [String]
+
+    @objc
+    var registeredRecipientIds: Set<String>
+
+    @objc
+    required init(recipientIdsToLookup: [String]) {
+        self.recipientIdsToLookup = recipientIdsToLookup
+        self.registeredRecipientIds = Set()
+
+        super.init()
+
+        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+        for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
+            let batchOperation = CDSBatchOperation(recipientIdsToLookup: batchIds)
+            self.addDependency(batchOperation)
+        }
+    }
+
+    // MARK: Mandatory overrides
+
+    // Called every retry, this is where the bulk of the operation's work should go.
+    override func run() {
+        Logger.debug("\(logTag) in \(#function)")
+
+        for dependency in self.dependencies {
+            guard let batchOperation = dependency as? CDSBatchOperation else {
+                owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
+                continue
+            }
+
+            self.registeredRecipientIds.formUnion(batchOperation.registeredRecipientIds)
+        }
+
+        self.reportSuccess()
+    }
+
 }
 
 public
