@@ -131,7 +131,7 @@ public class MessageFetcherJob: NSObject {
             let timestamp: UInt64 = try params.required(key: "timestamp")
             let source: String = try params.required(key: "source")
             let sourceDevice: UInt32 = try params.required(key: "sourceDevice")
-            let legacyMessage = try params.optionalBase64EncodedData(key: "message")
+            let legacyMessage: Data? = try params.optionalBase64EncodedData(key: "message")
             let content: Data? = try params.optionalBase64EncodedData(key: "content")
 
             return SSKEnvelope(timestamp: UInt64(timestamp), source: source, sourceDevice: sourceDevice, type: type, content: content, legacyMessage: legacyMessage)
