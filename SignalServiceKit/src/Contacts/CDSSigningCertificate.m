@@ -260,7 +260,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)verifyDistinguishedNameOfCertificate:(NSData *)certificateData
 {
-    OWSAssert(certificate);
     OWSAssert(certificateData);
 
     // The Security framework doesn't offer access to certificate properties
@@ -275,11 +274,16 @@ NS_ASSUME_NONNULL_BEGIN
     // NOTE: "Intel SGX Attestation Report Signing CA" is not the same as:
     //       "Intel SGX Attestation Report Signing"
     NSDictionary<NSString *, NSString *> *expectedProperties = @{
-        @"CN" : @"Intel SGX Attestation Report Signing CA",
-        @"O" : @"Intel Corporation",
-        @"L" : @"Santa Clara",
-        @"ST" : @"CA",
-        @"C" : @"US",
+        @(SN_commonName) : // "CN"
+            @"Intel SGX Attestation Report Signing CA",
+        @(SN_organizationName) : // "O"
+            @"Intel Corporation",
+        @(SN_localityName) : // "L"
+            @"Santa Clara",
+        @(SN_stateOrProvinceName) : // "ST"
+            @"CA",
+        @(SN_countryName) : // "C"
+            @"US",
     };
     if (![properties isEqualToDictionary:expectedProperties]) {
         OWSFail(@"%@ Unexpected certificate properties. %@ != %@", self.logTag, expectedProperties, properties);
