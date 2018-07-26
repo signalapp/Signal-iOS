@@ -220,11 +220,11 @@ static const CGFloat kAttachmentDownloadProgressTheta = 0.001f;
                       failure:(void (^)(NSError *error))failureHandler
 {
     NSError *decryptError;
-    NSData *plaintext = [Cryptography decryptAttachment:cipherText
-                                                withKey:attachment.encryptionKey
-                                                 digest:attachment.digest
-                                           unpaddedSize:attachment.byteCount
-                                                  error:&decryptError];
+    NSData *_Nullable plaintext = [Cryptography decryptAttachment:cipherText
+                                                          withKey:attachment.encryptionKey
+                                                           digest:attachment.digest
+                                                     unpaddedSize:attachment.byteCount
+                                                            error:&decryptError];
 
     if (decryptError) {
         DDLogError(@"%@ failed to decrypt with error: %@", self.logTag, decryptError);

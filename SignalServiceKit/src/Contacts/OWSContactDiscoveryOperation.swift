@@ -42,7 +42,10 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
         var phoneNumbersByHashes: [String: String] = [:]
 
         for recipientId in recipientIdsToLookup {
-            let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(recipientId)
+            guard let hash = Cryptography.truncatedSHA1Base64EncodedWithoutPadding(recipientId) else {
+                owsFail("\(logTag) could not hash recipient id: \(recipientId)")
+                continue
+            }
             assert(phoneNumbersByHashes[hash] == nil)
             phoneNumbersByHashes[hash] = recipientId
         }
