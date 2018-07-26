@@ -206,21 +206,20 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         }
 
         size_t srcLength = [srcData length];
-        const uint8_t *srcBuffer = (const uint8_t *)[srcData bytes];
-        if (!srcBuffer) {
-            return nil;
-        }
+
         // This assumes that dst will always be smaller than src.
         //
         // We slightly pad the buffer size to account for the worst case.
         size_t dstBufferLength = srcLength + 64 * 1024;
-        uint8_t *dstBuffer = malloc(sizeof(uint8_t) * dstBufferLength);
-        if (!dstBuffer) {
+        NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
+        if (!dstBufferData) {
+            OWSFail(@"%@ Failed to allocate buffer.", self.logTag);
             return nil;
         }
+
         size_t dstLength = compression_encode_buffer(
-            dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, SignalCompressionAlgorithm);
-        NSData *compressedData = [NSData dataWithBytesNoCopy:dstBuffer length:dstLength freeWhenDone:YES];
+            dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
+        NSData *compressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
 
         DDLogVerbose(@"%@ compressed %zd -> %zd = %0.2f",
             self.logTag,
@@ -244,19 +243,18 @@ static const compression_algorithm SignalCompressionAlgorithm = COMPRESSION_LZMA
         }
 
         size_t srcLength = [srcData length];
-        const uint8_t *srcBuffer = (const uint8_t *)[srcData bytes];
-        if (!srcBuffer) {
-            return nil;
-        }
+
         // We pad the buffer to be defensive.
         size_t dstBufferLength = uncompressedDataLength + 1024;
-        uint8_t *dstBuffer = malloc(sizeof(uint8_t) * dstBufferLength);
-        if (!dstBuffer) {
+        NSMutableData *dstBufferData = [NSMutableData dataWithLength:dstBufferLength];
+        if (!dstBufferData) {
+            OWSFail(@"%@ Failed to allocate buffer.", self.logTag);
             return nil;
         }
+
         size_t dstLength = compression_decode_buffer(
-            dstBuffer, dstBufferLength, srcBuffer, srcLength, NULL, SignalCompressionAlgorithm);
-        NSData *decompressedData = [NSData dataWithBytesNoCopy:dstBuffer length:dstLength freeWhenDone:YES];
+            dstBufferData.mutableBytes, dstBufferLength, srcData.bytes, srcLength, NULL, SignalCompressionAlgorithm);
+        NSData *decompressedData = [dstBufferData subdataWithRange:NSMakeRange(0, dstLength)];
         OWSAssert(decompressedData.length == uncompressedDataLength);
         DDLogVerbose(@"%@ decompressed %zd -> %zd = %0.2f",
             self.logTag,

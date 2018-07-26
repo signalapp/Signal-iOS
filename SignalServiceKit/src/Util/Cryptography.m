@@ -198,10 +198,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
     uint32_t dataLength = (uint32_t)data.length;
 
-    uint8_t digest[CC_SHA256_DIGEST_LENGTH];
-    CC_SHA256(data.bytes, dataLength, digest);
-    return
-        [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] subdataWithRange:NSMakeRange(0, truncatedBytes)];
+    NSMutableData *_Nullable digestData = [[NSMutableData alloc] initWithLength:CC_SHA256_DIGEST_LENGTH];
+    if (!digestData) {
+        OWSFail(@"%@ could not allocate buffer.", self.logTag);
+        return nil;
+    }
+    CC_SHA256(data.bytes, dataLength, digestData.mutableBytes);
+    return [digestData subdataWithRange:NSMakeRange(0, truncatedBytes)];
 }
 
 #pragma mark - HMAC/SHA256
@@ -219,9 +222,13 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
     size_t hmacKeyLength = (size_t)HMACKey.length;
 
-    uint8_t ourHmac[CC_SHA256_DIGEST_LENGTH] = {0};
-    CCHmac(kCCHmacAlgSHA256, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmac);
-    return [NSData dataWithBytes:ourHmac length:CC_SHA256_DIGEST_LENGTH];
+    NSMutableData *_Nullable ourHmacData = [[NSMutableData alloc] initWithLength:CC_SHA256_DIGEST_LENGTH];
+    if (!ourHmacData) {
+        OWSFail(@"%@ could not allocate buffer.", self.logTag);
+        return nil;
+    }
+    CCHmac(kCCHmacAlgSHA256, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmacData.mutableBytes);
+    return [ourHmacData copy];
 }
 
 + (nullable NSData *)computeSHA1HMAC:(NSData *)data withHMACKey:(NSData *)HMACKey
@@ -237,19 +244,32 @@ const NSUInteger kAES256_KeyByteLength = 32;
     }
     size_t hmacKeyLength = (size_t)HMACKey.length;
 
-    uint8_t ourHmac[CC_SHA256_DIGEST_LENGTH] = {0};
-    CCHmac(kCCHmacAlgSHA1, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmac);
-    return [NSData dataWithBytes:ourHmac length:CC_SHA256_DIGEST_LENGTH];
+    NSMutableData *_Nullable ourHmacData = [[NSMutableData alloc] initWithLength:CC_SHA1_DIGEST_LENGTH];
+    if (!ourHmacData) {
+        OWSFail(@"%@ could not allocate buffer.", self.logTag);
+        return nil;
+    }
+    CCHmac(kCCHmacAlgSHA1, [HMACKey bytes], hmacKeyLength, [data bytes], dataLength, ourHmacData.mutableBytes);
+    return [ourHmacData copy];
 }
 
-+ (nullable NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes
++ (nullable NSData *)truncatedSHA1HMAC:(NSData *)dataToHMAC
+                           withHMACKey:(NSData *)HMACKey
+                            truncation:(NSUInteger)truncation
 {
-    return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
+    OWSAssert(truncation >= CC_SHA1_DIGEST_LENGTH);
+
+    return [[Cryptography computeSHA1HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
 }
 
-+ (nullable NSData *)truncatedSHA256HMAC:(NSData *)dataToHMAC withHMACKey:(NSData *)HMACKey truncation:(NSUInteger)bytes
++ (nullable NSData *)truncatedSHA256HMAC:(NSData *)dataToHMAC
+                             withHMACKey:(NSData *)HMACKey
+                              truncation:(NSUInteger)truncation
 {
-    return [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, bytes)];
+    OWSAssert(truncation >= CC_SHA256_DIGEST_LENGTH);
+
+    return
+        [[Cryptography computeSHA256HMAC:dataToHMAC withHMACKey:HMACKey] subdataWithRange:NSMakeRange(0, truncation)];
 }
 
 #pragma mark - AES CBC Mode
@@ -322,30 +342,28 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     // decrypt
     size_t bufferSize = [dataToDecrypt length] + kCCBlockSizeAES128;
-    void *buffer      = malloc(bufferSize);
-    
-    if (buffer == NULL) {
-        DDLogError(@"%@ Failed to allocate memory.", self.logTag);
+    NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
+    if (!bufferData) {
+        DDLogError(@"%@ Failed to allocate buffer.", self.logTag);
         return nil;
     }
 
     size_t bytesDecrypted       = 0;
     CCCryptorStatus cryptStatus = CCCrypt(kCCDecrypt,
-                                          kCCAlgorithmAES128,
-                                          kCCOptionPKCS7Padding,
-                                          [key bytes],
-                                          [key length],
-                                          [iv bytes],
-                                          [dataToDecrypt bytes],
-                                          [dataToDecrypt length],
-                                          buffer,
-                                          bufferSize,
-                                          &bytesDecrypted);
+        kCCAlgorithmAES128,
+        kCCOptionPKCS7Padding,
+        [key bytes],
+        [key length],
+        [iv bytes],
+        [dataToDecrypt bytes],
+        [dataToDecrypt length],
+        bufferData.mutableBytes,
+        bufferSize,
+        &bytesDecrypted);
     if (cryptStatus == kCCSuccess) {
-        return [NSData dataWithBytesNoCopy:buffer length:bytesDecrypted freeWhenDone:YES];
+        return [bufferData subdataWithRange:NSMakeRange(0, bytesDecrypted)];
     } else {
         DDLogError(@"%@ Failed CBC decryption", self.logTag);
-        free(buffer);
     }
 
     return nil;
@@ -358,28 +376,41 @@ const NSUInteger kAES256_KeyByteLength = 32;
     OWSAssert(payload);
     OWSAssert(signalingKeyString);
 
-    unsigned char version[1];
-    unsigned char iv[16];
-    NSUInteger ciphertext_length = ([payload length] - 10 - 17) * sizeof(char);
-    unsigned char *ciphertext    = (unsigned char *)malloc(ciphertext_length);
-    unsigned char mac[10];
-    [payload getBytes:version range:NSMakeRange(0, 1)];
-    [payload getBytes:iv range:NSMakeRange(1, 16)];
-    [payload getBytes:ciphertext range:NSMakeRange(17, [payload length] - 10 - 17)];
-    [payload getBytes:mac range:NSMakeRange([payload length] - 10, 10)];
+    size_t versionLength = 1;
+    size_t ivLength = 16;
+    size_t macLength = 10;
+    size_t nonCiphertextLength = versionLength + ivLength + macLength;
+    size_t ciphertextLength = payload.length - nonCiphertextLength;
+
+    if (payload.length < nonCiphertextLength) {
+        OWSFail(@"%@ Invalid payload", self.logTag);
+        return nil;
+    }
+    if (payload.length >= MIN(SIZE_MAX, NSUIntegerMax) - nonCiphertextLength) {
+        OWSFail(@"%@ Invalid payload", self.logTag);
+        return nil;
+    }
+
+    NSUInteger cursor = 0;
+    NSData *versionData = [payload subdataWithRange:NSMakeRange(cursor, versionLength)];
+    cursor += versionLength;
+    NSData *ivData = [payload subdataWithRange:NSMakeRange(cursor, ivLength)];
+    cursor += ivLength;
+    NSData *ciphertextData = [payload subdataWithRange:NSMakeRange(cursor, ciphertextLength)];
+    cursor += ciphertextLength;
+    NSData *macData = [payload subdataWithRange:NSMakeRange(cursor, macLength)];
 
     NSData *signalingKey                = [NSData dataFromBase64String:signalingKeyString];
     NSData *signalingKeyAESKeyMaterial  = [signalingKey subdataWithRange:NSMakeRange(0, 32)];
     NSData *signalingKeyHMACKeyMaterial = [signalingKey subdataWithRange:NSMakeRange(32, 20)];
-    return
-        [Cryptography decryptCBCMode:[NSData dataWithBytesNoCopy:ciphertext length:ciphertext_length freeWhenDone:YES]
-                                 key:signalingKeyAESKeyMaterial
-                                  IV:[NSData dataWithBytes:iv length:16]
-                             version:[NSData dataWithBytes:version length:1]
-                             HMACKey:signalingKeyHMACKeyMaterial
-                            HMACType:TSHMACSHA256Truncated10Bytes
-                        matchingHMAC:[NSData dataWithBytes:mac length:10]
-                              digest:nil];
+    return [Cryptography decryptCBCMode:ciphertextData
+                                    key:signalingKeyAESKeyMaterial
+                                     IV:ivData
+                                version:versionData
+                                HMACKey:signalingKeyHMACKeyMaterial
+                               HMACType:TSHMACSHA256Truncated10Bytes
+                           matchingHMAC:macData
+                                 digest:nil];
 }
 
 + (nullable NSData *)decryptAttachment:(NSData *)dataToDecrypt
@@ -496,33 +527,31 @@ const NSUInteger kAES256_KeyByteLength = 32;
 
     // Encrypt
     size_t bufferSize = [paddedAttachmentData length] + kCCBlockSizeAES128;
-    void *buffer = malloc(bufferSize);
-
-    if (buffer == NULL) {
-        DDLogError(@"%@ Failed to allocate memory.", self.logTag);
+    NSMutableData *_Nullable bufferData = [NSMutableData dataWithLength:bufferSize];
+    if (!bufferData) {
+        DDLogError(@"%@ Failed to allocate buffer.", self.logTag);
         return nil;
     }
 
     size_t bytesEncrypted = 0;
     CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
-                                          kCCAlgorithmAES128,
-                                          kCCOptionPKCS7Padding,
-                                          [encryptionKey bytes],
-                                          [encryptionKey length],
-                                          [iv bytes],
-                                          [paddedAttachmentData bytes],
-                                          [paddedAttachmentData length],
-                                          buffer,
-                                          bufferSize,
-                                          &bytesEncrypted);
+        kCCAlgorithmAES128,
+        kCCOptionPKCS7Padding,
+        [encryptionKey bytes],
+        [encryptionKey length],
+        [iv bytes],
+        [paddedAttachmentData bytes],
+        [paddedAttachmentData length],
+        bufferData.mutableBytes,
+        bufferSize,
+        &bytesEncrypted);
 
     if (cryptStatus != kCCSuccess) {
         DDLogError(@"%@ %s CCCrypt failed with status: %d", self.logTag, __PRETTY_FUNCTION__, (int32_t)cryptStatus);
-        free(buffer);
         return nil;
     }
 
-    NSData *cipherText = [NSData dataWithBytesNoCopy:buffer length:bytesEncrypted freeWhenDone:YES];
+    NSData *cipherText = [bufferData subdataWithRange:NSMakeRange(0, bytesEncrypted)];
 
     NSMutableData *encryptedPaddedData = [NSMutableData data];
     [encryptedPaddedData appendData:iv];

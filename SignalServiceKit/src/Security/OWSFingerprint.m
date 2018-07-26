@@ -213,12 +213,20 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     [hash appendData:publicKey];
     [hash appendData:stableIdData];
 
-    uint8_t digest[CC_SHA512_DIGEST_LENGTH];
+    NSMutableData *_Nullable digestData = [[NSMutableData alloc] initWithLength:CC_SHA512_DIGEST_LENGTH];
+    if (!digestData) {
+        @throw [NSException exceptionWithName:NSGenericException reason:@"Couldn't allocate buffer." userInfo:nil];
+    }
     for (int i = 0; i < self.hashIterations; i++) {
         [hash appendData:publicKey];
-        CC_SHA512(hash.bytes, (unsigned int)hash.length, digest);
+
+        if (hash.length >= UINT32_MAX) {
+            @throw [NSException exceptionWithName:@"Oversize Data" reason:@"Oversize hash." userInfo:nil];
+        }
+
+        CC_SHA512(hash.bytes, (uint32_t)hash.length, digestData.mutableBytes);
         // TODO get rid of this loop-allocation
-        hash = [NSMutableData dataWithBytes:digest length:CC_SHA512_DIGEST_LENGTH];
+        hash = [digestData copy];
     }
 
     return [hash copy];

@@ -8,7 +8,6 @@
 #import "OWSLinkedDevicesTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalServiceKit/ECKeyPair+OWSPrivateKey.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDeviceProvisioner.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
@@ -151,7 +150,7 @@ NS_ASSUME_NONNULL_BEGIN
     ECKeyPair *_Nullable identityKeyPair = [[OWSIdentityManager sharedManager] identityKeyPair];
     OWSAssert(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
-    NSData *myPrivateKey = identityKeyPair.ows_privateKey;
+    NSData *myPrivateKey = identityKeyPair.privateKey;
     NSString *accountIdentifier = [TSAccountManager localNumber];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;

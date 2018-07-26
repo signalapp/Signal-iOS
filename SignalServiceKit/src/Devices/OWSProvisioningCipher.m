@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProvisioningCipher.h"
+#import <CommonCrypto/CommonCrypto.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <HKDFKit/HKDFKit.h>
 #import <SignalServiceKit/Cryptography.h>
-#import <CommonCrypto/CommonCrypto.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *initializationVector;
 
 @end
+
+#pragma mark -
 
 @implementation OWSProvisioningCipher
 
@@ -67,13 +69,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *_Nullable cipherText = [self encrypt:dataToEncrypt withKey:cipherKey];
     if (cipherText == nil) {
-        OWSFail(@"Provisioning cipher failed.");
+        OWSFail(@"%@ Provisioning cipher failed.", self.logTag);
         return nil;
     }
     
     [message appendData:cipherText];
 
-    NSData *mac = [self macForMessage:message withKey:macKey];
+    NSData *_Nullable mac = [self macForMessage:message withKey:macKey];
+    if (mac == nil) {
+        OWSFail(@"%@ mac failed.", self.logTag);
+        return nil;
+    }
     [message appendData:mac];
 
     return [message copy];
@@ -83,24 +89,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSData *iv = self.initializationVector;
     if (iv.length != kCCBlockSizeAES128) {
-        OWSFail(@"Unexpected length for iv");
+        OWSFail(@"%@ Unexpected length for iv", self.logTag);
+        return nil;
+    }
+    if (dataToEncrypt.length >= SIZE_MAX - (kCCBlockSizeAES128 + iv.length)) {
+        OWSFail(@"%@ data is too long to encrypt.", self.logTag);
         return nil;
     }
 
     // allow space for message + padding any incomplete block. PKCS7 padding will always add at least one byte.
     size_t ciphertextBufferSize = dataToEncrypt.length + kCCBlockSizeAES128;
 
-    // message format is (iv || ciphertext)
-    NSMutableData *encryptedMessage = [NSMutableData dataWithLength:iv.length + ciphertextBufferSize];
-    
-    // write the iv
-    [encryptedMessage replaceBytesInRange:NSMakeRange(0, iv.length) withBytes:iv.bytes];
-    
-    // cipher text follows iv
-    char *ciphertextBuffer = encryptedMessage.mutableBytes + iv.length;
+    NSMutableData *ciphertextData = [[NSMutableData alloc] initWithLength:ciphertextBufferSize];
 
     size_t bytesEncrypted = 0;
-
     CCCryptorStatus cryptStatus = CCCrypt(kCCEncrypt,
         kCCAlgorithmAES,
         kCCOptionPKCS7Padding,
@@ -109,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
         iv.bytes,
         dataToEncrypt.bytes,
         dataToEncrypt.length,
-        ciphertextBuffer,
+        ciphertextData.mutableBytes,
         ciphertextBufferSize,
         &bytesEncrypted);
 
@@ -118,18 +120,17 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    return [encryptedMessage subdataWithRange:NSMakeRange(0, iv.length + bytesEncrypted)];
+    // message format is (iv || ciphertext)
+    NSMutableData *encryptedMessage = [NSMutableData new];
+    [encryptedMessage appendData:iv];
+    [encryptedMessage appendData:[ciphertextData subdataWithRange:NSMakeRange(0, bytesEncrypted)]];
+    return [encryptedMessage copy];
 }
 
-- (NSData *)macForMessage:(NSData *)message withKey:(NSData *)macKey
+- (nullable NSData *)macForMessage:(NSData *)message withKey:(NSData *)macKey
 {
-    NSMutableData *hmac = [NSMutableData dataWithLength:CC_SHA256_DIGEST_LENGTH];
-    
-    CCHmac(kCCHmacAlgSHA256, macKey.bytes, macKey.length, message.bytes, message.length, hmac.mutableBytes);
-
-    return [hmac copy];
+    return [Cryptography computeSHA256HMAC:message withHMACKey:macKey];
 }
-
 
 @end
 
