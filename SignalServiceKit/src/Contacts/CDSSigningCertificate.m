@@ -69,6 +69,17 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    // The leaf is always the first certificate.
+    NSData *_Nullable leafCertificateData = [certificateDerDatas firstObject];
+    if (!leafCertificateData) {
+        DDLogError(@"%@ Could not extract leaf certificate data.", self.logTag);
+        return nil;
+    }
+    if (![self verifyDistinguishedNameOfCertificate:leafCertificateData]) {
+        OWSProdLogAndFail(@"%@ Leaf certificate has invalid name.", self.logTag);
+        return nil;
+    }
+
     NSMutableArray *certificates = [NSMutableArray new];
     for (NSData *certificateDerData in certificateDerDatas) {
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateDerData));
@@ -115,10 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
         if (!certificate) {
             OWSProdLogAndFail(@"%@ Could not load DER.", self.logTag);
-            return nil;
-        }
-        if (![self verifyDistinguishedNameOfCertificate:certificateData]) {
-            OWSProdLogAndFail(@"%@ Certificate has invalid name.", self.logTag);
             return nil;
         }
 
@@ -271,11 +278,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     //    NSString *expectedDistinguishedName
     //    = @"CN=Intel SGX Attestation Report Signing,O=Intel Corporation,L=Santa Clara,ST=CA,C=US";
-    // NOTE: "Intel SGX Attestation Report Signing CA" is not the same as:
-    //       "Intel SGX Attestation Report Signing"
     NSDictionary<NSString *, NSString *> *expectedProperties = @{
         @(SN_commonName) : // "CN"
-            @"Intel SGX Attestation Report Signing CA",
+            @"Intel SGX Attestation Report Signing",
         @(SN_organizationName) : // "O"
             @"Intel Corporation",
         @(SN_localityName) : // "L"
@@ -285,6 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
         @(SN_countryName) : // "C"
             @"US",
     };
+
     if (![properties isEqualToDictionary:expectedProperties]) {
         OWSFail(@"%@ Unexpected certificate properties. %@ != %@", self.logTag, expectedProperties, properties);
         return NO;
@@ -307,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    X509_NAME *_Nullable subjectName = X509_get_issuer_name(certificateX509);
+    X509_NAME *_Nullable subjectName = X509_get_subject_name(certificateX509);
     if (!subjectName) {
         OWSFail(@"%@ could not extract subject name.", self.logTag);
         return nil;
@@ -346,8 +352,6 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFail(@"%@ could not parse entry name data.", self.logTag);
             return nil;
         }
-        DDLogVerbose(@"%@ certificate[%@]: %@", self.logTag, oid, entryString);
-        [DDLog flushLog];
         certificateProperties[oid] = entryString;
     }
     return certificateProperties;
