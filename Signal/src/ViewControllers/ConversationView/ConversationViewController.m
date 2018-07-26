@@ -234,7 +234,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
 @property (nonatomic, nullable) NSDate *lastReloadDate;
-@property (nonatomic) BOOL didChangeTheme;
 
 @end
 
@@ -352,10 +351,6 @@ typedef enum : NSUInteger {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillChangeFrame:)
                                                  name:UIKeyboardWillChangeFrameNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(themeDidChange:)
-                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 
@@ -1184,13 +1179,6 @@ typedef enum : NSUInteger {
             DDLogDebug(@"%@ reclaiming first responder to ensure toolbar is shown.", self.logTag);
             [self becomeFirstResponder];
         }
-    }
-
-    if (self.didChangeTheme) {
-        self.didChangeTheme = NO;
-
-        [self applyTheme];
-        [self.collectionView reloadData];
     }
 }
 
@@ -4245,15 +4233,6 @@ typedef enum : NSUInteger {
         // view appears.
         [UIView performWithoutAnimation:adjustInsets];
     }
-}
-
-- (void)themeDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self applyTheme];
-    [self.collectionView reloadData];
-    self.didChangeTheme = YES;
 }
 
 - (void)applyTheme

@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.preservesSuperviewLayoutMargins = YES;
     self.contentView.preservesSuperviewLayoutMargins = YES;
-    [OWSTableItem configureCell:self];
 
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];
@@ -56,11 +55,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager
 {
-    [self.cellView configureWithRecipientId:signalAccount.recipientId contactsManager:contactsManager];
+    [self configureWithRecipientId:signalAccount.recipientId contactsManager:contactsManager];
 }
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager
 {
+    [OWSTableItem configureCell:self];
+
     [self.cellView configureWithRecipientId:recipientId contactsManager:contactsManager];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
@@ -70,6 +71,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)configureWithThread:(TSThread *)thread contactsManager:(OWSContactsManager *)contactsManager
 {
     OWSAssert(thread);
+
+    [OWSTableItem configureCell:self];
 
     [self.cellView configureWithThread:thread contactsManager:contactsManager];
 

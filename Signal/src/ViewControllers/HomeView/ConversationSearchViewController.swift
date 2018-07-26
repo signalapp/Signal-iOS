@@ -214,7 +214,6 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            OWSTableItem.configureCell(cell)
             cell.configure(withThread: searchResult.thread, contactsManager: contactsManager, blockedPhoneNumber: self.blockedPhoneNumberSet)
             return cell
         case .contacts:
@@ -227,7 +226,6 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            OWSTableItem.configureCell(cell)
             cell.configure(with: searchResult.signalAccount, contactsManager: contactsManager)
             return cell
         case .messages:
@@ -240,8 +238,6 @@ class ConversationSearchViewController: UITableViewController {
                 owsFail("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-
-            OWSTableItem.configureCell(cell)
 
             var overrideSnippet = NSAttributedString()
             var overrideDate: Date?

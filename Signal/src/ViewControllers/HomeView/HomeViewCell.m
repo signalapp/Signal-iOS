@@ -194,6 +194,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
 
+    [OWSTableItem configureCell:self];
+
     self.thread = thread;
     self.contactsManager = contactsManager;
 

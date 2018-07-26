@@ -806,7 +806,6 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     HomeViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:HomeViewCell.cellReuseIdentifier];
     OWSAssert(cell);
-    [OWSTableItem configureCell:cell];
 
     ThreadViewModel *thread = [self threadViewModelForIndexPath:indexPath];
     [cell configureWithThread:thread

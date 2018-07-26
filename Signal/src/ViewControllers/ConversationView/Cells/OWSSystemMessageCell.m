@@ -49,6 +49,7 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
 @property (nonatomic) UIStackView *vStackView;
+@property (nonatomic) UIView *cellBackgroundView;
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) NSLayoutConstraint *headerViewHeightConstraint;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
@@ -114,6 +115,7 @@ typedef void (^SystemMessageActionBlock)(void);
     self.vStackView.spacing = self.buttonVSpacing;
     self.vStackView.alignment = UIStackViewAlignmentCenter;
     self.vStackView.layoutMarginsRelativeArrangement = YES;
+    self.cellBackgroundView = [self.vStackView addBackgroundViewWithBackgroundColor:Theme.backgroundColor];
 
     UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
     cellStackView.axis = UILayoutConstraintAxisVertical;
@@ -161,6 +163,8 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(transaction);
+
+    self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
     [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
 

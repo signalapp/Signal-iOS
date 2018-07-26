@@ -143,7 +143,7 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 @interface UIStackView (OWS)
 
-- (void)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 
 @end
 

@@ -71,6 +71,9 @@ class ContactCell: UITableViewCell {
     }
 
     func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
+
+        OWSTableItem.configureCell(self)
+
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 

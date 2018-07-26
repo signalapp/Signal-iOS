@@ -236,7 +236,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
             owsFail("\(logTag) in \(#function) cell had unexpected type")
             return UITableViewCell()
         }
-        OWSTableItem.configureCell(cell)
 
         let dataSource = filteredSections
         let cnContact = dataSource[indexPath.section][indexPath.row]
