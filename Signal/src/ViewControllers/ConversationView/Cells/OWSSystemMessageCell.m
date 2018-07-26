@@ -115,7 +115,10 @@ typedef void (^SystemMessageActionBlock)(void);
     self.vStackView.spacing = self.buttonVSpacing;
     self.vStackView.alignment = UIStackViewAlignmentCenter;
     self.vStackView.layoutMarginsRelativeArrangement = YES;
-    self.cellBackgroundView = [self.vStackView addBackgroundViewWithBackgroundColor:Theme.backgroundColor];
+
+    self.cellBackgroundView = [UIView new];
+    self.cellBackgroundView.layer.cornerRadius = 5.f;
+    [self.contentView addSubview:self.cellBackgroundView];
 
     UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
     cellStackView.axis = UILayoutConstraintAxisVertical;
@@ -217,7 +220,15 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.layoutConstraints = @[
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
-        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f]
+        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f],
+
+        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.vStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.vStackView],
+        // Text in vStackView might flow right up to the edges, so only use half the gutter.
+        [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                  withInset:self.conversationStyle.fullWidthGutterLeading * 0.5f],
+        [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                  withInset:self.conversationStyle.fullWidthGutterTrailing * 0.5f],
     ];
 }
 
