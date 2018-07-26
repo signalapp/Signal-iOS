@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeLocalAuthenticationError = 777420,
     OWSErrorCodeMessageRequestFailed = 777421,
     OWSErrorCodeMessageResponseFailed = 777422,
+    OWSErrorCodeInvalidMessage = 777423,
 };
 
 extern NSString *const OWSErrorRecipientIdentifierKey;
