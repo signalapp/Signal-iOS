@@ -22,12 +22,6 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define kLegalTermsUrlString @"https://signal.org/legal/"
 #define SHOW_LEGAL_TERMS_LINK
 
-#ifdef DEBUG
-#define CONTACT_DISCOVERY_SERVICE
-#endif
-
-//#ifndef DEBUG
-
 // Production
 //#define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
 //#define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
@@ -36,23 +30,19 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureServiceReflectorHost @"textsecure-service-reflected.whispersystems.org"
 //#define textSecureCDNReflectorHost @"textsecure-service-reflected.whispersystems.org"
 
-//#else
-//
-//// Staging
-//#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
-//#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
-//#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
-//#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
-//#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
-//
-//#endif
-
-// Testing
-#define textSecureWebSocketAPI @"wss://messaging.acton-signal.org/v1/websocket/"
-#define textSecureServerURL @"https://messaging.acton-signal.org/"
+// Staging
+#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
+#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
 #define textSecureCDNServerURL @"https://cdn-staging.signal.org"
 #define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
 #define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
+
+//// Testing
+//#define textSecureWebSocketAPI @"wss://messaging.acton-signal.org/v1/websocket/"
+//#define textSecureServerURL @"https://messaging.acton-signal.org/"
+//#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
+//#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
+//#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
 
 #define textSecureAccountsAPI @"v1/accounts"
 #define textSecureAttributesAPI @"/attributes/"
