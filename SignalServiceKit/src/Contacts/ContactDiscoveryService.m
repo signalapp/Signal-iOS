@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RemoteAttestationAuth : NSObject
 
 @property (nonatomic) NSString *username;
-@property (nonatomic) NSString *authToken;
+@property (nonatomic) NSString *password;
 
 @end
 
@@ -135,9 +135,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self.auth.username;
 }
 
-- (NSString *)authToken
+- (NSString *)password
 {
-    return self.auth.authToken;
+    return self.auth.password;
 }
 
 @end
@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseDict) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                RemoteAttestationAuth *_Nullable auth = [self parseAuthToken:responseDict];
+                RemoteAttestationAuth *_Nullable auth = [self parseAuthParams:responseDict];
                 if (!auth) {
                     DDLogError(@"%@ remote attestation auth could not be parsed: %@", self.logTag, responseDict);
                     NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
@@ -283,16 +283,16 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (nullable RemoteAttestationAuth *)parseAuthToken:(id)response
+- (nullable RemoteAttestationAuth *)parseAuthParams:(id)response
 {
     if (![response isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
 
     NSDictionary *responseDict = response;
-    NSString *_Nullable token = [responseDict stringForKey:@"token"];
-    if (token.length < 1) {
-        OWSProdLogAndFail(@"%@ missing or empty token.", self.logTag);
+    NSString *_Nullable password = [responseDict stringForKey:@"password"];
+    if (password.length < 1) {
+        OWSProdLogAndFail(@"%@ missing or empty password.", self.logTag);
         return nil;
     }
 
@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     RemoteAttestationAuth *result = [RemoteAttestationAuth new];
     result.username = username;
-    result.authToken = token;
+    result.password = password;
     return result;
 }
 
@@ -320,7 +320,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSRequest *request = [OWSRequestFactory remoteAttestationRequest:keyPair
                                                            enclaveId:enclaveId
                                                         authUsername:auth.username
-                                                        authPassword:auth.authToken];
+                                                        authPassword:auth.password];
 
     [[TSNetworkManager sharedManager] makeRequest:request
         success:^(NSURLSessionDataTask *task, id responseJson) {
