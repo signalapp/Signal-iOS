@@ -65,11 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _viewConstraints = [NSMutableArray new];
 
-    UIView *selectedBackgroundView = [UIView new];
-    selectedBackgroundView.backgroundColor = [Theme.cellSelectedColor colorWithAlphaComponent:0.08f];
-
-    self.selectedBackgroundView = selectedBackgroundView;
-
     self.avatarView = [[AvatarImageView alloc] init];
     [self.contentView addSubview:self.avatarView];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
@@ -198,6 +193,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(thread);
     OWSAssert(contactsManager);
     OWSAssert(blockedPhoneNumberSet);
+
+    [OWSTableItem configureCell:self];
 
     self.thread = thread;
     self.contactsManager = contactsManager;

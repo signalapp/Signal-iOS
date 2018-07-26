@@ -71,8 +71,14 @@ class ContactCell: UITableViewCell {
     }
 
     func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
+
+        OWSTableItem.configureCell(self)
+
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
+
+        self.titleLabel.textColor = Theme.primaryColor
+        self.subtitleLabel.textColor = Theme.secondaryColor
 
         let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
         titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)

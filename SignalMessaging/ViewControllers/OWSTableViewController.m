@@ -108,6 +108,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (void)configureCell:(UITableViewCell *)cell
 {
     cell.backgroundColor = [Theme backgroundColor];
+    cell.contentView.backgroundColor = [Theme backgroundColor];
     cell.textLabel.font = [UIFont ows_regularFontWithSize:18.f];
     cell.textLabel.textColor = [Theme primaryColor];
 
@@ -483,7 +484,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(themeDidChange:)
-                                                 name:NSNotificationNameThemeDidChange
+                                                 name:ThemeDidChangeNotification
                                                object:nil];
 }
 

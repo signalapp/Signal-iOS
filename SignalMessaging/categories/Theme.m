@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const NSNotificationNameThemeDidChange = @"NSNotificationNameThemeDidChange";
+NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
 NSString *const ThemeCollection = @"ThemeCollection";
 NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
@@ -41,9 +41,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
     [UIUtil setupSignalAppearence];
 
-    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameThemeDidChange
-                                                             object:nil
-                                                           userInfo:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationNameAsync:ThemeDidChangeNotification object:nil userInfo:nil];
 }
 
 + (UIColor *)backgroundColor
@@ -98,6 +96,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor);
 }
 
++ (UIColor *)conversationButtonBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_dark05Color : UIColor.ows_light02Color);
+}
+
 #pragma mark -
 
 + (UIBarStyle)barStyle
@@ -108,6 +111,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
         return UIBarStyleDefault;
     }
 }
+
 @end
 
 NS_ASSUME_NONNULL_END

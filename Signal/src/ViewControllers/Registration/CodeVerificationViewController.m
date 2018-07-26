@@ -68,6 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
+    self.shouldUseTheme = NO;
+
     [self createViews];
 
     [self initializeKeyboardHandlers];

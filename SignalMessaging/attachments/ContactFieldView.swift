@@ -30,7 +30,7 @@ public class ContactFieldView: UIView {
                 return
             }
             let row = UIView()
-            row.backgroundColor = UIColor(rgbHex: 0xdedee1)
+            row.backgroundColor = Theme.secondaryColor
             self.addSubview(row)
             row.autoSetDimension(.height, toSize: 1)
             row.autoPinLeadingToSuperviewMargin(withInset: hMargin)
@@ -118,14 +118,14 @@ public class ContactFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = name.lowercased()
         nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = UIColor.black
+        nameLabel.textColor = Theme.secondaryColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
         let valueLabel = UILabel()
         valueLabel.text = value
         valueLabel.font = UIFont.ows_dynamicTypeBody
-        valueLabel.textColor = UIColor.ows_materialBlue
+        valueLabel.textColor = Theme.primaryColor
         valueLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(valueLabel)
 
@@ -148,7 +148,7 @@ public class ContactFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = address.localizedLabel()
         nameLabel.font = UIFont.ows_dynamicTypeSubheadline
-        nameLabel.textColor = UIColor.black
+        nameLabel.textColor = Theme.secondaryColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
 
@@ -169,7 +169,7 @@ public class ContactFieldView: UIView {
             let nameLabel = UILabel()
             nameLabel.text = propertyName
             nameLabel.font = UIFont.ows_dynamicTypeBody
-            nameLabel.textColor = UIColor.black
+            nameLabel.textColor = Theme.secondaryColor
             nameLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(nameLabel)
             nameLabel.setContentHuggingHigh()
@@ -178,7 +178,7 @@ public class ContactFieldView: UIView {
             let valueLabel = UILabel()
             valueLabel.text = propertyValue
             valueLabel.font = UIFont.ows_dynamicTypeBody
-            valueLabel.textColor = UIColor.ows_materialBlue
+            valueLabel.textColor = Theme.primaryColor
             valueLabel.lineBreakMode = .byTruncatingTail
             row.addArrangedSubview(valueLabel)
 

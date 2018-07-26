@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert([OWSContactShareButtonsView hasAnyButton:self.contactShare contactsManager:self.contactsManager]);
 
     self.layoutMargins = UIEdgeInsetsZero;
-    self.backgroundColor = [UIColor ows_light02Color];
+    self.backgroundColor = Theme.conversationButtonBackgroundColor;
 
     UILabel *label = [UILabel new];
     self.buttonView = label;

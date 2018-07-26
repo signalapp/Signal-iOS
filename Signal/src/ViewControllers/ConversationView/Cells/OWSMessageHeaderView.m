@@ -53,12 +53,10 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     [self.strokeView setContentHuggingHigh];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor ows_light90Color];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     self.subtitleLabel = [UILabel new];
-    self.subtitleLabel.textColor = [UIColor ows_light90Color];
     // The subtitle may wrap to a second line.
     self.subtitleLabel.numberOfLines = 0;
     self.subtitleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -80,6 +78,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssert(viewItem);
     OWSAssert(conversationStyle);
     OWSAssert(viewItem.unreadIndicator || viewItem.shouldShowDate);
+
+    self.titleLabel.textColor = Theme.primaryColor;
+    self.subtitleLabel.textColor = Theme.primaryColor;
 
     [self configureLabelsWithViewItem:viewItem];
 
@@ -115,9 +116,9 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
     OWSAssert(viewItem);
 
     if (viewItem.unreadIndicator) {
-        return UIColor.ows_light60Color;
+        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark60Color : UIColor.ows_light60Color);
     } else {
-        return UIColor.ows_light45Color;
+        return (Theme.isDarkThemeEnabled ? UIColor.ows_dark30Color : UIColor.ows_light45Color);
     }
 }
 

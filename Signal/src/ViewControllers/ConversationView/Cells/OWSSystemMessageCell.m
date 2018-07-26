@@ -49,6 +49,7 @@ typedef void (^SystemMessageActionBlock)(void);
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
 @property (nonatomic) UIStackView *vStackView;
+@property (nonatomic) UIView *cellBackgroundView;
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) NSLayoutConstraint *headerViewHeightConstraint;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
@@ -76,7 +77,6 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.layoutMargins = UIEdgeInsetsZero;
     self.contentView.layoutMargins = UIEdgeInsetsZero;
-    self.contentView.backgroundColor = UIColor.whiteColor;
     self.layoutConstraints = @[];
 
     self.headerView = [OWSMessageHeaderView new];
@@ -103,7 +103,6 @@ typedef void (^SystemMessageActionBlock)(void);
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [self.button setBackgroundColor:[UIColor ows_light02Color]];
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
@@ -116,6 +115,10 @@ typedef void (^SystemMessageActionBlock)(void);
     self.vStackView.spacing = self.buttonVSpacing;
     self.vStackView.alignment = UIStackViewAlignmentCenter;
     self.vStackView.layoutMarginsRelativeArrangement = YES;
+
+    self.cellBackgroundView = [UIView new];
+    self.cellBackgroundView.layer.cornerRadius = 5.f;
+    [self.contentView addSubview:self.cellBackgroundView];
 
     UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
     cellStackView.axis = UILayoutConstraintAxisVertical;
@@ -163,6 +166,10 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssert(self.conversationStyle);
     OWSAssert(self.viewItem);
     OWSAssert(transaction);
+
+    self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
+
+    [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -213,20 +220,28 @@ typedef void (^SystemMessageActionBlock)(void);
 
     self.layoutConstraints = @[
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
-        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f]
+        [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f],
+
+        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.vStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.vStackView],
+        // Text in vStackView might flow right up to the edges, so only use half the gutter.
+        [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                                  withInset:self.conversationStyle.fullWidthGutterLeading * 0.5f],
+        [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                                  withInset:self.conversationStyle.fullWidthGutterTrailing * 0.5f],
     ];
 }
 
 - (UIColor *)textColor
 {
-    return [UIColor ows_light60Color];
+    return Theme.secondaryColor;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return [UIColor ows_light60Color];
+    return Theme.secondaryColor;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction

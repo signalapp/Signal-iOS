@@ -510,7 +510,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssert(buttonsView.backgroundColor);
     shadowView.fillColor = buttonsView.backgroundColor;
-    shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
+    shadowView.layer.shadowColor = Theme.boldColor.CGColor;
     shadowView.layer.shadowOpacity = 0.12f;
     shadowView.layer.shadowOffset = CGSizeZero;
     shadowView.layer.shadowRadius = 1.f;

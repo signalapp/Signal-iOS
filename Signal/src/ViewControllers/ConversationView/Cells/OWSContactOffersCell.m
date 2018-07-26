@@ -46,7 +46,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.layoutConstraints = @[];
 
     self.titleLabel = [UILabel new];
-    self.titleLabel.textColor = [UIColor ows_light60Color];
     self.titleLabel.text = NSLocalizedString(@"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE",
         @"Title for the group of buttons show for unknown contacts offering to add them to contacts, etc.");
     self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -98,9 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTitle:title forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
     button.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [button setBackgroundColor:[UIColor ows_light02Color]];
     button.layer.cornerRadius = 4.f;
     [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
     return button;
@@ -118,7 +115,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssert(self.viewItem);
     OWSAssert([self.viewItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]);
 
+    self.backgroundColor = [Theme backgroundColor];
+
     [self configureFonts];
+
+    self.titleLabel.textColor = Theme.secondaryColor;
+    for (UIButton *button in @[
+             self.addToContactsButton,
+             self.addToProfileWhitelistButton,
+             self.blockButton,
+         ]) {
+        [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
+        [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    }
 
     OWSContactOffersInteraction *interaction = (OWSContactOffersInteraction *)self.viewItem.interaction;
 

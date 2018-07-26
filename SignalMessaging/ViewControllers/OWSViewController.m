@@ -4,6 +4,7 @@
 
 #import "OWSViewController.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (!self) {
+        self.shouldUseTheme = YES;
         return self;
     }
 
@@ -42,12 +44,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super initWithCoder:aDecoder];
     if (!self) {
+        self.shouldUseTheme = YES;
         return self;
     }
 
     [self observeActivation];
 
     return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+
+    if (self.shouldUseTheme) {
+        self.view.backgroundColor = Theme.backgroundColor;
+    }
 }
 
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view

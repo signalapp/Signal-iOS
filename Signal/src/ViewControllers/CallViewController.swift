@@ -148,6 +148,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         super.init(nibName: nil, bundle: nil)
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
+
+        self.shouldUseTheme = false
     }
 
     deinit {
