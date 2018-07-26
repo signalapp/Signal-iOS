@@ -4,65 +4,11 @@
 
 import Foundation
 
-@objc(OWSContactDiscoveryOperation)
-class ContactDiscoveryOperation: OWSOperation, LegacyContactDiscoveryBatchOperationDelegate {
-
-    let batchSize = 2048
-    let recipientIdsToLookup: [String]
-
-    @objc
-    var registeredRecipientIds: Set<String>
-
-    @objc
-    required init(recipientIdsToLookup: [String]) {
-        self.recipientIdsToLookup = recipientIdsToLookup
-        self.registeredRecipientIds = Set()
-
-        super.init()
-
-        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
-        for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
-            let batchOperation = LegacyContactDiscoveryBatchOperation(recipientIdsToLookup: batchIds)
-            batchOperation.delegate = self
-            self.addDependency(batchOperation)
-        }
-    }
-
-    // MARK: Mandatory overrides
-
-    // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
-        Logger.debug("\(logTag) in \(#function)")
-
-        for dependency in self.dependencies {
-            guard let batchOperation = dependency as? LegacyContactDiscoveryBatchOperation else {
-                owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
-                continue
-            }
-
-            self.registeredRecipientIds.formUnion(batchOperation.registeredRecipientIds)
-        }
-
-        self.reportSuccess()
-    }
-
-    // MARK: LegacyContactDiscoveryBatchOperationDelegate
-    func contactDiscoverBatchOperation(_ contactDiscoverBatchOperation: LegacyContactDiscoveryBatchOperation, didFailWithError error: Error) {
-        Logger.debug("\(logTag) in \(#function) canceling self and all dependencies.")
-
-        self.dependencies.forEach { $0.cancel() }
-        self.cancel()
-    }
-}
-
-protocol LegacyContactDiscoveryBatchOperationDelegate: class {
-    func contactDiscoverBatchOperation(_ contactDiscoverBatchOperation: LegacyContactDiscoveryBatchOperation, didFailWithError error: Error)
-}
-
+@objc(OWSLegacyContactDiscoveryOperation)
 class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
+    @objc
     var registeredRecipientIds: Set<String>
-    weak var delegate: LegacyContactDiscoveryBatchOperationDelegate?
 
     private let recipientIdsToLookup: [String]
     private var networkManager: TSNetworkManager {
@@ -71,6 +17,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     // MARK: Initializers
 
+    @objc
     required init(recipientIdsToLookup: [String]) {
         self.recipientIdsToLookup = recipientIdsToLookup
         self.registeredRecipientIds = Set()
@@ -134,16 +81,12 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // Called at most one time.
     override func didSucceed() {
         // Compare against new CDS service
-        let newCDSBatchOperation = CDSBatchOperation(recipientIdsToLookup: self.recipientIdsToLookup)
+        let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
         let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
-        cdsFeedbackOperation.addDependency(newCDSBatchOperation)
+        cdsFeedbackOperation.addDependency(modernCDSOperation)
 
-        CDSBatchOperation.operationQueue.addOperations([newCDSBatchOperation, cdsFeedbackOperation], waitUntilFinished: false)
-    }
-
-    // Called at most one time.
-    override func didFail(error: Error) {
-        self.delegate?.contactDiscoverBatchOperation(self, didFailWithError: error)
+        let operations = modernCDSOperation.dependencies + [modernCDSOperation, cdsFeedbackOperation]
+        CDSOperation.operationQueue.addOperations(operations, waitUntilFinished: false)
     }
 
     // MARK: Private Helpers
@@ -198,18 +141,61 @@ enum ContactDiscoveryError: Error {
     case serverError(underlyingError: Error)
 }
 
+@objc(OWSCDSOperation)
+class CDSOperation: OWSOperation {
+
+    let batchSize = 2048
+    static let operationQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.maxConcurrentOperationCount = 5
+
+        return queue
+    }()
+
+    let recipientIdsToLookup: [String]
+
+    @objc
+    var registeredRecipientIds: Set<String>
+
+    @objc
+    required init(recipientIdsToLookup: [String]) {
+        self.recipientIdsToLookup = recipientIdsToLookup
+        self.registeredRecipientIds = Set()
+
+        super.init()
+
+        Logger.debug("\(logTag) in \(#function) with recipientIdsToLookup: \(recipientIdsToLookup.count)")
+        for batchIds in recipientIdsToLookup.chunked(by: batchSize) {
+            let batchOperation = CDSBatchOperation(recipientIdsToLookup: batchIds)
+            self.addDependency(batchOperation)
+        }
+    }
+
+    // MARK: Mandatory overrides
+
+    // Called every retry, this is where the bulk of the operation's work should go.
+    override func run() {
+        Logger.debug("\(logTag) in \(#function)")
+
+        for dependency in self.dependencies {
+            guard let batchOperation = dependency as? CDSBatchOperation else {
+                owsFail("\(self.logTag) in \(#function) unexpected dependency: \(dependency)")
+                continue
+            }
+
+            self.registeredRecipientIds.formUnion(batchOperation.registeredRecipientIds)
+        }
+
+        self.reportSuccess()
+    }
+
+}
+
 public
 class CDSBatchOperation: OWSOperation {
 
     private let recipientIdsToLookup: [String]
     private(set) var registeredRecipientIds: Set<String>
-
-    static let operationQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-
-        return queue
-    }()
 
     private var networkManager: TSNetworkManager {
         return TSNetworkManager.shared()
@@ -411,7 +397,6 @@ class CDSBatchOperation: OWSOperation {
                                                          additionalAuthenticatedData: nil,
                                                          authTag: authTag,
                                                          key: remoteAttestation.keys.serverKey) else {
-
                                                             throw ContactDiscoveryError.parseError(description: "decryption failed")
         }
 
@@ -462,7 +447,7 @@ class CDSFeedbackOperation: OWSOperation {
             return
         }
 
-        guard let cdsOperation = dependencies.first as? CDSBatchOperation else {
+        guard let cdsOperation = dependencies.first as? CDSOperation else {
             let error = OWSErrorMakeAssertionError("\(self.logTag) in \(#function) cdsOperation was unexpectedly nil")
             self.reportError(error)
             return
