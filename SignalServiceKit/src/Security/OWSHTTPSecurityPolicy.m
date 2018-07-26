@@ -20,22 +20,16 @@
     self = [[super class] defaultPolicy];
 
     if (self) {
-        //        self.pinnedCertificates = [NSSet setWithArray:@[
-        //                                                        [self certificateDataForService:@"cacert"],
-        //                                                        ]];
-        //        self.pinnedCertificates = [NSSet setWithArray:@[
-        //            [self certificateDataForService:@"acton-ca"],
-        //        ]];
-        //
-        self.allowInvalidCertificates = YES;
+        self.pinnedCertificates = [NSSet setWithArray:@[
+            [self certificateDataForService:@"textsecure"],
+        ]];
     }
 
     return self;
 }
 
 - (NSArray *)certs {
-    return @[ (__bridge id)[self certificateForService:@"cacert"] ];
-    //    return @[ (__bridge id)[self certificateForService:@"acton-ca"] ];
+    return @[ (__bridge id)[self certificateForService:@"textsecure"] ];
 }
 
 - (NSData *)certificateDataForService:(NSString *)service {
@@ -58,29 +52,28 @@
 
 
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain {
-    //    NSMutableArray *policies = [NSMutableArray array];
-    //    [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    //
-    //    if (SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies) != errSecSuccess) {
-    //        DDLogError(@"The trust policy couldn't be set.");
-    //        return NO;
-    //    }
-    //
-    //    NSMutableArray *pinnedCertificates = [NSMutableArray array];
-    //    for (NSData *certificateData in self.pinnedCertificates) {
-    //        [pinnedCertificates
-    //            addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge
-    //            CFDataRef)certificateData)];
-    //    }
-    //
-    //    if (SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates) != errSecSuccess) {
-    //        DDLogError(@"The anchor certificates couldn't be set.");
-    //        return NO;
-    //    }
-    //
-    //    if (!AFServerTrustIsValid(serverTrust)) {
-    //        return NO;
-    //    }
+    NSMutableArray *policies = [NSMutableArray array];
+    [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
+
+    if (SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies) != errSecSuccess) {
+        DDLogError(@"The trust policy couldn't be set.");
+        return NO;
+    }
+
+    NSMutableArray *pinnedCertificates = [NSMutableArray array];
+    for (NSData *certificateData in self.pinnedCertificates) {
+        [pinnedCertificates
+            addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+    }
+
+    if (SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates) != errSecSuccess) {
+        DDLogError(@"The anchor certificates couldn't be set.");
+        return NO;
+    }
+
+    if (!AFServerTrustIsValid(serverTrust)) {
+        return NO;
+    }
 
     return YES;
 }
