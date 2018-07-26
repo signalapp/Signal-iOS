@@ -82,8 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
                            failure:(void (^)(NSError *error))failure
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSContactDiscoveryOperation *operation =
-            [[OWSContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
+        OWSLegacyContactDiscoveryOperation *operation =
+            [[OWSLegacyContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
 
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
         [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
