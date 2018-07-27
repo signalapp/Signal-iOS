@@ -550,8 +550,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                         cell.accessoryMessage =
                                             [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                                     }
-                                    [cell configureWithSignalAccount:signalAccount
-                                                     contactsManager:helper.contactsManager];
+                                    [cell configureWithRecipientId:signalAccount.recipientId
+                                                   contactsManager:helper.contactsManager];
 
                                     if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
                                         cell.selectionStyle = UITableViewCellSelectionStyleNone;

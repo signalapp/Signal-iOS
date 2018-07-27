@@ -7,14 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSContactsManager;
-@class SignalAccount;
 @class TSThread;
 
 @interface ContactTableViewCell : UITableViewCell
 
 + (NSString *)reuseIdentifier;
-
-- (void)configureWithSignalAccount:(SignalAccount *)signalAccount contactsManager:(OWSContactsManager *)contactsManager;
 
 - (void)configureWithRecipientId:(NSString *)recipientId contactsManager:(OWSContactsManager *)contactsManager;
 
