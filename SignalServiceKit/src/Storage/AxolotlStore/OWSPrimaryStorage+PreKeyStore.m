@@ -3,6 +3,7 @@
 //
 
 #import "OWSPrimaryStorage+PreKeyStore.h"
+#import "Cryptography.h"
 #import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "TSStorageKeys.h"
 #import "YapDatabaseConnection+OWS.h"

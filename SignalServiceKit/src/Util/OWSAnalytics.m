@@ -4,6 +4,7 @@
 
 #import "OWSAnalytics.h"
 #import "AppContext.h"
+#import "Cryptography.h"
 #import "OWSBackgroundTask.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"

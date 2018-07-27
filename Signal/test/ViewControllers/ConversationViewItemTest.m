@@ -6,7 +6,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>

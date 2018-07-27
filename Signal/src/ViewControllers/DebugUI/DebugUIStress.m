@@ -7,12 +7,12 @@
 #import "OWSTableViewController.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
+#import <Curve25519Kit/Randomness.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/Cryptography.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -507,7 +507,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                           memberIds:groupThread.groupModel.groupMemberIds
                                               image:groupThread.groupModel.groupImage
-                                            groupId:[SecurityUtils generateRandomBytes:16]];
+                                            groupId:[Randomness generateRandomBytes:16]];
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
     OWSAssert(thread);

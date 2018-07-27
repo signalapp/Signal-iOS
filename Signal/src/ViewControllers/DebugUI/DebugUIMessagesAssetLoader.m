@@ -203,6 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                         failure:(ActionFailureBlock)failure
 {
     OWSAssert(dataLength > 0);
+    OWSAssert(dataLength < INT_MAX);
     OWSAssert(success);
     OWSAssert(failure);
     OWSAssert(self.filename.length > 0);

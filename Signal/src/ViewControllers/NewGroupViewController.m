@@ -8,6 +8,7 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
+#import <Curve25519Kit/Randomness.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
@@ -21,7 +22,6 @@
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/NSDate+OWS.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/SecurityUtils.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/TSGroupModel.h>
 #import <SignalServiceKit/TSGroupThread.h>
@@ -507,7 +507,7 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     NSMutableArray<NSString *> *recipientIds = [self.memberRecipientIds.allObjects mutableCopy];
     [recipientIds addObject:[self.contactsViewHelper localNumber]];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+    NSData *groupId = [Randomness generateRandomBytes:16];
     return [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:self.groupAvatar groupId:groupId];
 }
 

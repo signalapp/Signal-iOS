@@ -3343,6 +3343,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 + (NSData *)createRandomNSDataOfSize:(size_t)size
 {
     OWSAssert(size % 4 == 0);
+    OWSAssert(size < INT_MAX);
 
     return [Randomness generateRandomBytes:(int)size];
 }
@@ -3833,7 +3834,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         recipientId,
         [TSAccountManager localNumber],
     ] mutableCopy];
-    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+    NSData *groupId = [Randomness generateRandomBytes:16];
     TSGroupModel *groupModel =
         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
@@ -4324,7 +4325,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         recipientId,
                         [TSAccountManager localNumber],
                     ] mutableCopy];
-                    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+                    NSData *groupId = [Randomness generateRandomBytes:16];
                     TSGroupModel *groupModel =
                         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 
@@ -4363,7 +4364,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                         recipientId,
                         [TSAccountManager localNumber],
                     ] mutableCopy];
-                    NSData *groupId = [SecurityUtils generateRandomBytes:16];
+                    NSData *groupId = [Randomness generateRandomBytes:16];
                     TSGroupModel *groupModel =
                         [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
 

@@ -4,6 +4,7 @@
 
 #import "TSAccountManager.h"
 #import "AppContext.h"
+#import "Cryptography.h"
 #import "NSData+Base64.h"
 #import "NSData+OWS.h"
 #import "NSNotificationCenter+OWS.h"
@@ -11,12 +12,12 @@
 #import "OWSError.h"
 #import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSRequestFactory.h"
-#import "SecurityUtils.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
 #import "TSVerifyCodeRequest.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
+#import <Curve25519Kit/Randomness.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -432,7 +433,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 #pragma mark Server keying material
 
 + (NSString *)generateNewAccountAuthenticationToken {
-    NSData *authToken        = [SecurityUtils generateRandomBytes:16];
+    NSData *authToken = [Randomness generateRandomBytes:16];
     NSString *authTokenPrint = [[NSData dataWithData:authToken] hexadecimalString];
     return authTokenPrint;
 }
@@ -441,7 +442,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
     /*The signalingKey is 32 bytes of AES material (256bit AES) and 20 bytes of
      * Hmac key material (HmacSHA1) concatenated into a 52 byte slug that is
      * base64 encoded. */
-    NSData *signalingKeyToken        = [SecurityUtils generateRandomBytes:52];
+    NSData *signalingKeyToken = [Randomness generateRandomBytes:52];
     NSString *signalingKeyTokenPrint = [[NSData dataWithData:signalingKeyToken] base64EncodedString];
     return signalingKeyTokenPrint;
 }
