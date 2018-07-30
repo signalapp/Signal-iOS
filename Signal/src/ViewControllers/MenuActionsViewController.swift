@@ -261,6 +261,9 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
     private let actionStackView: UIStackView
     private var actions: [MenuAction]
     private var actionViews: [MenuActionView]
+    private var hapticFeedback: HapticFeedback
+    private var hasEverHighlightedAction = false
+
     weak var delegate: MenuActionSheetDelegate?
 
     override var bounds: CGRect {
@@ -281,6 +284,7 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
         actions = []
         actionViews = []
+        hapticFeedback = HapticFeedback()
 
         super.init(frame: frame)
 
@@ -371,7 +375,13 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
             unhighlightAllActionViews()
             return
         }
+
+        if hasEverHighlightedAction, !touchedView.isHighlighted {
+            self.hapticFeedback.selectionChanged()
+        }
         touchedView.isHighlighted = true
+        hasEverHighlightedAction = true
+
         self.actionViews.filter { $0 != touchedView }.forEach {  $0.isHighlighted = false }
     }
 
@@ -441,7 +451,6 @@ class MenuActionView: UIButton {
 
     override var isHighlighted: Bool {
         didSet {
-            Logger.debug("\(logTag) in \(#function) \(oldValue) -> \(isHighlighted)")
             self.backgroundColor = isHighlighted ? UIColor.ows_light10 : UIColor.white
         }
     }
