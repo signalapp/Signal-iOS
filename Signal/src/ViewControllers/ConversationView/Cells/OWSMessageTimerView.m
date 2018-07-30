@@ -82,7 +82,9 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
         return;
     }
 
-    CGFloat secondsLeft = MAX(0, (self.expirationTimestamp - [NSDate ows_millisecondTimeStamp]) / 1000.f);
+    uint64_t nowTimestamp = [NSDate ows_millisecondTimeStamp];
+    CGFloat secondsLeft
+        = (self.expirationTimestamp > nowTimestamp ? (self.expirationTimestamp - nowTimestamp) / 1000.f : 0.f);
     CGFloat progress = 0.f;
     if (self.initialDurationSeconds > 0) {
         progress = CGFloatClamp(secondsLeft / self.initialDurationSeconds, 0.f, 1.f);
