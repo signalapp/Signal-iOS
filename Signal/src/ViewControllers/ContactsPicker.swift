@@ -328,7 +328,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
     open func updateSearchResults(searchText: String) {
         let predicate: NSPredicate
-        if searchText.count == 0 {
+        if searchText.isEmpty {
             filteredSections = sections
         } else {
             do {

@@ -362,7 +362,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         self.messageBubbleViewHeightLayoutConstraint = messageBubbleView.autoSetDimension(.height, toSize: 0)
         rows.append(row)
 
-        if rows.count == 0 {
+        if rows.isEmpty {
             // Neither attachment nor body.
             owsFail("\(self.logTag) Message has neither attachment nor body.")
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY",
