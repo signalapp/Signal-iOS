@@ -519,7 +519,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
                 return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
             }
@@ -530,7 +530,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
                 return videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -540,7 +540,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
                 return audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -550,7 +550,7 @@ public class SignalAttachment: NSObject {
             owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
@@ -723,7 +723,7 @@ public class SignalAttachment: NSObject {
                                                                 return attachment
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with: jpgImageData, fileExtension: "jpg", shouldDeleteOnDeallocation: false) else {
+            guard let dataSource = DataSourceValue.dataSource(with: jpgImageData, fileExtension: "jpg") else {
                 attachment.error = .couldNotConvertToJpeg
                 return attachment
             }
@@ -892,7 +892,7 @@ public class SignalAttachment: NSObject {
         }
 
         if CGImageDestinationFinalize(destination) {
-            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI, shouldDeleteOnDeallocation: false) else {
+            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
                 attachment.error = .couldNotRemoveMetadata
                 return attachment
             }
@@ -1070,7 +1070,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text, shouldDeleteOnDeallocation: false)
+        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
         return newAttachment(dataSource: dataSource,
                              dataUTI: kOversizeTextAttachmentUTI,
                              validUTISet: nil,

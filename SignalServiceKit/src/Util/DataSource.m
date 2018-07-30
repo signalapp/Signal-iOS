@@ -123,7 +123,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable DataSource *)dataSourceWithData:(NSData *)data
                               fileExtension:(NSString *)fileExtension
-                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(data);
 
@@ -134,43 +133,35 @@ NS_ASSUME_NONNULL_BEGIN
     DataSourceValue *instance = [DataSourceValue new];
     instance.dataValue = data;
     instance.fileExtension = fileExtension;
-    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
+    instance.shouldDeleteOnDeallocation = YES;
     return instance;
 }
 
 + (nullable DataSource *)dataSourceWithData:(NSData *)data
                                     utiType:(NSString *)utiType
-                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
-    return [self dataSourceWithData:data
-                      fileExtension:fileExtension
-         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+    return [self dataSourceWithData:data fileExtension:fileExtension];
 }
 
 + (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
-                         shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     if (!text) {
         return nil;
     }
 
     NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
-    return [self dataSourceWithData:data
-                      fileExtension:kOversizeTextAttachmentFileExtension
-         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+    return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
++ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
 {
-    return [self dataSourceWithData:data
-                      fileExtension:kSyncMessageFileExtension
-         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+    return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
 }
 
 + (DataSource *)emptyDataSource
 {
-    return [self dataSourceWithData:[NSData new] fileExtension:@"bin" shouldDeleteOnDeallocation:YES];
+    return [self dataSourceWithData:[NSData new] fileExtension:@"bin"];
 }
 
 - (NSData *)data

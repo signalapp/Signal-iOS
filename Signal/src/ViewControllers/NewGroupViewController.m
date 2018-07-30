@@ -488,9 +488,8 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                           if (model.groupImage) {
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
-                              DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data
-                                                                                       fileExtension:@"png"
-                                                                          shouldDeleteOnDeallocation:YES];
+                              DataSource *_Nullable dataSource =
+                                  [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
                               [self.messageSender enqueueTemporaryAttachment:dataSource
                                                                  contentType:OWSMimeTypeImagePng
                                                                    inMessage:message

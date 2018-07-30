@@ -37,19 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourceValue : DataSource
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
-                              fileExtension:(NSString *)fileExtension
-                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
-                                    utiType:(NSString *)utiType
-                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
-                         shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text;
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
-                   shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data;
 
 + (DataSource *)emptyDataSource;
 

@@ -657,8 +657,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             profileManager:self.profileManager];
                 DataSource *dataSource = [DataSourceValue
                     dataSourceWithSyncMessageData:[syncContactsMessage
-                                                      buildPlainTextAttachmentDataWithTransaction:transaction]
-                       shouldDeleteOnDeallocation:YES];
+                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
                 [self.messageSender enqueueTemporaryAttachment:dataSource
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
@@ -674,8 +673,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             DataSource *dataSource = [DataSourceValue
                 dataSourceWithSyncMessageData:[syncGroupsMessage
-                                                  buildPlainTextAttachmentDataWithTransaction:transaction]
-                   shouldDeleteOnDeallocation:YES];
+                                                  buildPlainTextAttachmentDataWithTransaction:transaction]];
             [self.messageSender enqueueTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
@@ -826,8 +824,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (gThread.groupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
-        DataSource *_Nullable dataSource =
-            [DataSourceValue dataSourceWithData:data fileExtension:@"png" shouldDeleteOnDeallocation:YES];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             inMessage:message

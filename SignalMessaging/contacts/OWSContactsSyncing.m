@@ -139,8 +139,7 @@ NSString *const kOWSPrimaryStorageOWSContactsSyncingLastMessageKey
 
         self.isRequestInFlight = YES;
 
-        DataSource *dataSource =
-            [DataSourceValue dataSourceWithSyncMessageData:messageData shouldDeleteOnDeallocation:YES];
+        DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
         [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeApplicationOctetStream
             inMessage:syncContactsMessage

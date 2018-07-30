@@ -102,8 +102,8 @@ NS_ASSUME_NONNULL_BEGIN
     __block DataSource *dataSource;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction]
-               shouldDeleteOnDeallocation:YES];
+            dataSourceWithSyncMessageData:[syncContactsMessage
+                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
     }];
 
     [self.messageSender enqueueTemporaryAttachment:dataSource
@@ -123,8 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block DataSource *dataSource;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]
-               shouldDeleteOnDeallocation:YES];
+            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
     }];
     [self.messageSender enqueueTemporaryAttachment:dataSource
         contentType:OWSMimeTypeApplicationOctetStream

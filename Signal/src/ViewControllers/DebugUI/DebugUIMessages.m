@@ -3324,8 +3324,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *message = [self randomOversizeText];
-    DataSource *_Nullable dataSource =
-        [DataSourceValue dataSourceWithOversizeText:message shouldDeleteOnDeallocation:YES];
+    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment
@@ -3355,9 +3354,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
-    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length]
-                                                                   utiType:uti
-                                                shouldDeleteOnDeallocation:YES];
+    DataSource *_Nullable dataSource =
+        [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
 
@@ -4364,9 +4362,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         NSString *utiType = (NSString *)kUTTypeData;
         const NSUInteger kDataLength = 32;
         DataSource *_Nullable dataSource =
-            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength]
-                                        utiType:utiType
-                     shouldDeleteOnDeallocation:YES];
+            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
         [dataSource setSourceFilename:filename];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];

@@ -634,8 +634,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
             let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText: urlString,
-                                              shouldDeleteOnDeallocation: true)
+            return DataSourceValue.dataSource(withOversizeText: urlString)
         } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.
             //

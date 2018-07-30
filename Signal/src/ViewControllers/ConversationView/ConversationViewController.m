@@ -3099,9 +3099,8 @@ typedef enum : NSUInteger {
                            }
                            OWSAssertIsOnMainThread();
 
-                           DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:imageData
-                                                                                          utiType:dataUTI
-                                                                       shouldDeleteOnDeallocation:YES];
+                           DataSource *_Nullable dataSource =
+                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
                            [dataSource setSourceFilename:filename];
                            SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
                                                                                              dataUTI:dataUTI
@@ -3940,8 +3939,7 @@ typedef enum : NSUInteger {
 
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource =
-            [DataSourceValue dataSourceWithData:data fileExtension:@"png" shouldDeleteOnDeallocation:YES];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             inMessage:message
@@ -4433,8 +4431,7 @@ typedef enum : NSUInteger {
     TSOutgoingMessage *message;
 
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-        DataSource *_Nullable dataSource =
-            [DataSourceValue dataSourceWithOversizeText:text shouldDeleteOnDeallocation:YES];
+        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         // TODO we should redundantly send the first n chars in the body field so it can be viewed
