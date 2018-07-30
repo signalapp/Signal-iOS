@@ -29,10 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES on success.
 - (BOOL)writeToPath:(NSString *)dstFilePath;
 
-// If called, this data source will try to delete its on-disk contents
-// when it is deallocated.
-- (void)setShouldDeleteOnDeallocation;
-
 - (BOOL)isValidImage;
 
 @end
@@ -41,13 +37,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourceValue : DataSource
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                              fileExtension:(NSString *)fileExtension
+                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                                    utiType:(NSString *)utiType
+                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text;
++ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
+                         shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data;
++ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
+                   shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
 + (DataSource *)emptyDataSource;
 
@@ -57,9 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourcePath : DataSource
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl;
++ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
-+ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath;
++ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
+                     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
 @end
 

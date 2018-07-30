@@ -60,11 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (void)setShouldDeleteOnDeallocation
-{
-    self.shouldDeleteOnDeallocation = YES;
-}
-
 - (BOOL)isValidImage
 {
     NSString *_Nullable dataPath = [self dataPathIfOnDisk];
@@ -126,7 +121,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                              fileExtension:(NSString *)fileExtension
+                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(data);
 
@@ -137,35 +134,43 @@ NS_ASSUME_NONNULL_BEGIN
     DataSourceValue *instance = [DataSourceValue new];
     instance.dataValue = data;
     instance.fileExtension = fileExtension;
-    // Always try to clean up temp files created by this instance.
-    [instance setShouldDeleteOnDeallocation];
+    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
     return instance;
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType
++ (nullable DataSource *)dataSourceWithData:(NSData *)data
+                                    utiType:(NSString *)utiType
+                 shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
-    return [self dataSourceWithData:data fileExtension:fileExtension];
+    return [self dataSourceWithData:data
+                      fileExtension:fileExtension
+         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
 }
 
 + (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
+                         shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     if (!text) {
         return nil;
     }
 
     NSData *data = [text.filterStringForDisplay dataUsingEncoding:NSUTF8StringEncoding];
-    return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
+    return [self dataSourceWithData:data
+                      fileExtension:kOversizeTextAttachmentFileExtension
+         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
 }
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
++ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
-    return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
+    return [self dataSourceWithData:data
+                      fileExtension:kSyncMessageFileExtension
+         shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
 }
 
 + (DataSource *)emptyDataSource
 {
-    return [self dataSourceWithData:[NSData new] fileExtension:@"bin"];
+    return [self dataSourceWithData:[NSData new] fileExtension:@"bin" shouldDeleteOnDeallocation:YES];
 }
 
 - (NSData *)data
@@ -269,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl
++ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(fileUrl);
 
@@ -278,10 +283,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
     DataSourcePath *instance = [DataSourcePath new];
     instance.filePath = fileUrl.path;
+    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
     return instance;
 }
 
 + (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
+                     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssert(filePath);
 
@@ -291,7 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DataSourcePath *instance = [DataSourcePath new];
     instance.filePath = filePath;
-    OWSAssert(!instance.shouldDeleteOnDeallocation);
+    instance.shouldDeleteOnDeallocation = shouldDeleteOnDeallocation;
     return instance;
 }
 

@@ -233,7 +233,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     if (!attachment || [attachment hasError]) {

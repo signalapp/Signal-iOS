@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -1701,7 +1701,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -3324,7 +3324,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
     NSString *message = [self randomOversizeText];
-    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:message];
+    DataSource *_Nullable dataSource =
+        [DataSourceValue dataSourceWithOversizeText:message shouldDeleteOnDeallocation:YES];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
     [ThreadUtil sendMessageWithAttachment:attachment
@@ -3354,8 +3355,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 + (void)sendRandomAttachment:(TSThread *)thread uti:(NSString *)uti length:(NSUInteger)length
 {
     OWSMessageSender *messageSender = [Environment current].messageSender;
-    DataSource *_Nullable dataSource =
-        [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length] utiType:uti];
+    DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:length]
+                                                                   utiType:uti
+                                                shouldDeleteOnDeallocation:YES];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:uti imageQuality:TSImageQualityOriginal];
 
@@ -4362,7 +4364,9 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         NSString *utiType = (NSString *)kUTTypeData;
         const NSUInteger kDataLength = 32;
         DataSource *_Nullable dataSource =
-            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength] utiType:utiType];
+            [DataSourceValue dataSourceWithData:[self createRandomNSDataOfSize:kDataLength]
+                                        utiType:utiType
+                     shouldDeleteOnDeallocation:YES];
         [dataSource setSourceFilename:filename];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -4593,7 +4597,8 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     OWSAssert(transaction);
 
     if (isAttachmentDownloaded) {
-        DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath];
+        DataSource *dataSource =
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
         NSString *filename = dataSource.sourceFilename;
         // To support "fake missing" attachments, we sometimes lie about the
         // length of the data.

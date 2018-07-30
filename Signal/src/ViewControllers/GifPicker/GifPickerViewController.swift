@@ -370,7 +370,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
 
             let filePath = asset.filePath
-            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath) else {
+            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath,
+                shouldDeleteOnDeallocation: false) else {
                 owsFail("\(strongSelf.TAG) couldn't load asset.")
                 return
             }

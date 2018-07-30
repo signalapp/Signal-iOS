@@ -634,15 +634,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
             let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText: urlString)
+            return DataSourceValue.dataSource(withOversizeText: urlString,
+                                              shouldDeleteOnDeallocation: true)
         } else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.
             //
             // NOTE: SharingThreadPickerViewController will try to unpack them
             //       and send them as normal text messages if possible.
-            return DataSourcePath.dataSource(with: url)
+            return DataSourcePath.dataSource(with: url,
+                                             shouldDeleteOnDeallocation: false)
         } else {
-            guard let dataSource = DataSourcePath.dataSource(with: url) else {
+            guard let dataSource = DataSourcePath.dataSource(with: url,
+                                                             shouldDeleteOnDeallocation: false) else {
                 return nil
             }
 

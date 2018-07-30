@@ -67,8 +67,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         var dataSource: DataSource? = nil
         self.dbConnection.readWrite { transaction in
             let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-            dataSource?.setShouldDeleteOnDeallocation()
+            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData, shouldDeleteOnDeallocation: true)
         }
 
         guard let attachmentDataSource = dataSource else {
@@ -89,8 +88,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         var dataSource: DataSource? = nil
         self.dbConnection.read { transaction in
             let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction)
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-            dataSource?.setShouldDeleteOnDeallocation()
+            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData, shouldDeleteOnDeallocation: true)
         }
 
         guard let attachmentDataSource = dataSource else {

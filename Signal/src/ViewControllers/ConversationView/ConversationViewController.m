@@ -2884,7 +2884,7 @@ typedef enum : NSUInteger {
 
     OWSAssert(type);
     OWSAssert(filename);
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url];
+    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
         OWSFail(@"%@ attachment data was unexpectedly empty for picked document url: %@", self.logTag, url);
 
@@ -3099,8 +3099,9 @@ typedef enum : NSUInteger {
                            }
                            OWSAssertIsOnMainThread();
 
-                           DataSource *_Nullable dataSource =
-                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
+                           DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:imageData
+                                                                                          utiType:dataUTI
+                                                                       shouldDeleteOnDeallocation:YES];
                            [dataSource setSourceFilename:filename];
                            SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
                                                                                              dataUTI:dataUTI
@@ -3186,7 +3187,8 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      DataSource *dataSource = [DataSourcePath dataSourceWithURL:movieURL];
+                      DataSource *dataSource =
+                          [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];
                       dataSource.sourceFilename = filename;
                       VideoCompressionResult *compressionResult =
                           [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
@@ -3667,7 +3669,8 @@ typedef enum : NSUInteger {
         return;
     }
 
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url];
+    DataSource *_Nullable dataSource =
+        [DataSourcePath dataSourceWithURL:self.audioRecorder.url shouldDeleteOnDeallocation:YES];
     self.audioRecorder = nil;
 
     if (!dataSource) {
@@ -3679,8 +3682,6 @@ typedef enum : NSUInteger {
     NSString *filename = [NSLocalizedString(@"VOICE_MESSAGE_FILE_NAME", @"Filename for voice messages.")
         stringByAppendingPathExtension:@"m4a"];
     [dataSource setSourceFilename:filename];
-    // Remove temporary file when complete.
-    [dataSource setShouldDeleteOnDeallocation];
     SignalAttachment *attachment =
         [SignalAttachment voiceMessageAttachmentWithDataSource:dataSource dataUTI:(NSString *)kUTTypeMPEG4Audio];
     DDLogVerbose(@"%@ voice memo duration: %f, file size: %zd", self.logTag, durationSeconds, [dataSource dataLength]);
@@ -3939,8 +3940,8 @@ typedef enum : NSUInteger {
 
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [dataSource setShouldDeleteOnDeallocation];
+        DataSource *_Nullable dataSource =
+            [DataSourceValue dataSourceWithData:data fileExtension:@"png" shouldDeleteOnDeallocation:YES];
         [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
             inMessage:message
@@ -4432,7 +4433,8 @@ typedef enum : NSUInteger {
     TSOutgoingMessage *message;
 
     if ([text lengthOfBytesUsingEncoding:NSUTF8StringEncoding] >= kOversizeTextMessageSizeThreshold) {
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:text];
+        DataSource *_Nullable dataSource =
+            [DataSourceValue dataSourceWithOversizeText:text shouldDeleteOnDeallocation:YES];
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource dataUTI:kOversizeTextAttachmentUTI];
         // TODO we should redundantly send the first n chars in the body field so it can be viewed

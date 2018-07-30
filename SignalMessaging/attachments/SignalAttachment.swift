@@ -519,7 +519,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
                 return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
             }
@@ -530,7 +530,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
                 return videoAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -540,7 +540,7 @@ public class SignalAttachment: NSObject {
                     owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
                     return nil
                 }
-                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+                let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
                 return audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
             }
         }
@@ -550,7 +550,7 @@ public class SignalAttachment: NSObject {
             owsFail("\(logTag) Missing expected pasteboard data for UTI: \(dataUTI)")
             return nil
         }
-        let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+        let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI, shouldDeleteOnDeallocation: false)
         return genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
@@ -723,7 +723,7 @@ public class SignalAttachment: NSObject {
                                                                 return attachment
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with: jpgImageData, fileExtension: "jpg") else {
+            guard let dataSource = DataSourceValue.dataSource(with: jpgImageData, fileExtension: "jpg", shouldDeleteOnDeallocation: false) else {
                 attachment.error = .couldNotConvertToJpeg
                 return attachment
             }
@@ -892,7 +892,7 @@ public class SignalAttachment: NSObject {
         }
 
         if CGImageDestinationFinalize(destination) {
-            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI) else {
+            guard let dataSource = DataSourceValue.dataSource(with: mutableData as Data, utiType: attachment.dataUTI, shouldDeleteOnDeallocation: false) else {
                 attachment.error = .couldNotRemoveMetadata
                 return attachment
             }
@@ -980,7 +980,8 @@ public class SignalAttachment: NSObject {
             let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
-            guard let dataSource = DataSourcePath.dataSource(with: exportURL) else {
+            guard let dataSource = DataSourcePath.dataSource(with: exportURL,
+                                                             shouldDeleteOnDeallocation: true) else {
                 owsFail("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
@@ -988,7 +989,6 @@ public class SignalAttachment: NSObject {
                 return
             }
 
-            dataSource.setShouldDeleteOnDeallocation()
             dataSource.sourceFilename = mp4Filename
 
             let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
@@ -1070,7 +1070,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
+        let dataSource = DataSourceValue.dataSource(withOversizeText: text, shouldDeleteOnDeallocation: false)
         return newAttachment(dataSource: dataSource,
                              dataUTI: kOversizeTextAttachmentUTI,
                              validUTISet: nil,
