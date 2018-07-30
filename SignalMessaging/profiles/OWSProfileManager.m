@@ -224,6 +224,9 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 OWSUserProfile *userProfile = self.localUserProfile;
                 OWSAssert(userProfile);
 
+                NSString *_Nullable oldAvatarFilePath =
+                    [self profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+
                 [userProfile updateWithProfileName:profileName
                                      avatarUrlPath:avatarUrlPath
                                     avatarFileName:avatarFileName
@@ -232,6 +235,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                                             if (avatarFileName) {
                                                 [self updateProfileAvatarCache:avatarImage filename:avatarFileName];
                                             }
+
+                                            [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
 
                                             successBlock();
                                         }];
@@ -304,7 +309,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSAssert(data);
             if (data) {
                 NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-                NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+                NSString *_Nullable filePath = [self profileAvatarFilepathWithFilename:fileName];
+                OWSAssert(filePath);
                 BOOL success = [data writeToFile:filePath atomically:YES];
                 OWSAssert(success);
                 if (success) {
@@ -357,7 +363,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
     // the profile avatar blank, etc.
     void (^clearLocalAvatar)(void) = ^{
         OWSUserProfile *userProfile = self.localUserProfile;
-        [userProfile updateWithAvatarUrlPath:nil avatarFileName:nil dbConnection:self.dbConnection completion:nil];
+        NSString *_Nullable oldAvatarFilePath = [self profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+        [userProfile updateWithAvatarUrlPath:nil
+                              avatarFileName:nil
+                                dbConnection:self.dbConnection
+                                  completion:^{
+                                      [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                                  }];
     };
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -549,7 +561,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 - (void)regenerateLocalProfile
 {
     OWSUserProfile *userProfile = self.localUserProfile;
-    [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey] dbConnection:self.dbConnection completion:nil];
+    NSString *_Nullable oldAvatarFilePath = [self profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+    [userProfile clearWithProfileKey:[OWSAES256Key generateRandomKey]
+                        dbConnection:self.dbConnection
+                          completion:^{
+                              [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                          }];
 }
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId
@@ -727,9 +744,12 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             return;
         }
 
+        NSString *_Nullable oldAvatarFilePath = [self profileAvatarFilepathWithFilename:userProfile.avatarFileName];
         [userProfile clearWithProfileKey:profileKey
                             dbConnection:self.dbConnection
                               completion:^{
+                                  [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+
                                   dispatch_async(dispatch_get_main_queue(), ^(void) {
                                       [ProfileFetcherJob runWithRecipientId:recipientId
                                                              networkManager:self.networkManager
@@ -817,7 +837,8 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
         NSString *fileName = [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
-        NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:fileName];
+        NSString *_Nullable filePath = [self profileAvatarFilepathWithFilename:fileName];
+        OWSAssert(filePath);
 
         @synchronized(self.currentAvatarDownloads)
         {
@@ -874,7 +895,13 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 } else {
                     [self updateProfileAvatarCache:image filename:fileName];
 
-                    [latestUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
+                    NSString *_Nullable oldAvatarFilePath =
+                        [self profileAvatarFilepathWithFilename:latestUserProfile.avatarFileName];
+                    [latestUserProfile updateWithAvatarFileName:fileName
+                                                   dbConnection:self.dbConnection
+                                                     completion:^{
+                                                         [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                                                     }];
                 }
 
                 // If we're updating the profile that corresponds to our local number,
@@ -883,7 +910,14 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
                 if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
                     OWSUserProfile *localUserProfile = self.localUserProfile;
                     OWSAssert(localUserProfile);
-                    [localUserProfile updateWithAvatarFileName:fileName dbConnection:self.dbConnection completion:nil];
+
+                    NSString *_Nullable oldAvatarFilePath =
+                        [self profileAvatarFilepathWithFilename:localUserProfile.avatarFileName];
+                    [localUserProfile updateWithAvatarFileName:fileName
+                                                  dbConnection:self.dbConnection
+                                                    completion:^{
+                                                        [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                                                    }];
                     [self updateProfileAvatarCache:image filename:fileName];
                 }
 
@@ -934,10 +968,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
         NSString *_Nullable profileName =
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
-        [userProfile updateWithProfileName:profileName
-                             avatarUrlPath:avatarUrlPath
-                              dbConnection:self.dbConnection
-                                completion:nil];
+        {
+            NSString *_Nullable oldAvatarFilePath = [self profileAvatarFilepathWithFilename:userProfile.avatarFileName];
+            [userProfile updateWithProfileName:profileName
+                                 avatarUrlPath:avatarUrlPath
+                                  dbConnection:self.dbConnection
+                                    completion:^{
+                                        [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                                    }];
+        }
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
@@ -946,10 +985,15 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssert(localUserProfile);
 
+            NSString *_Nullable oldAvatarFilePath =
+                [self profileAvatarFilepathWithFilename:localUserProfile.avatarFileName];
+
             [localUserProfile updateWithProfileName:profileName
                                       avatarUrlPath:avatarUrlPath
                                        dbConnection:self.dbConnection
-                                         completion:nil];
+                                         completion:^{
+                                             [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+                                         }];
         }
 
         // Whenever we change avatarUrlPath, OWSUserProfile clears avatarFileName.
@@ -1070,11 +1114,22 @@ const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
 #pragma mark - Avatar Disk Cache
 
+- (nullable NSString *)profileAvatarFilepathWithFilename:(nullable NSString *)filename
+{
+    if (!filename) {
+        return nil;
+    }
+    OWSAssert(filename.length > 0);
+
+    return [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+}
+
 - (nullable NSData *)loadProfileDataWithFilename:(NSString *)filename
 {
     OWSAssert(filename.length > 0);
 
-    NSString *filePath = [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
+    NSString *_Nullable filePath = [self profileAvatarFilepathWithFilename:filename];
+    OWSAssert(filePath);
     return [NSData dataWithContentsOfFile:filePath];
 }
 
