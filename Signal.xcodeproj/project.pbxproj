@@ -435,6 +435,7 @@
 		4C3EF802210918740007EBF7 /* SSKEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKEnvelopeTest.swift */; };
 		4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */; };
 		4C4BC6C32102D697004040C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
+		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFF4C0920F55BBA005DA313 /* MenuActionsViewController.swift */; };
 		4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB5F26820F7D060004D1B42 /* MessageActions.swift */; };
@@ -1116,6 +1117,7 @@
 		4C3EF801210918740007EBF7 /* SSKEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKEnvelopeTest.swift; sourceTree = "<group>"; };
 		4C4AEC4420EC343B0020E72B /* DismissableTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissableTextField.swift; sourceTree = "<group>"; };
 		4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContactDiscoveryOperationTest.swift; path = contact/ContactDiscoveryOperationTest.swift; sourceTree = "<group>"; };
+		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4CB5F26820F7D060004D1B42 /* MessageActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActions.swift; sourceTree = "<group>"; };
 		4CC0B59B20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationConfigurationSyncOperation.swift; sourceTree = "<group>"; };
@@ -2462,6 +2464,7 @@
 		D221A094169C9E5E00537ABF /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				4C63CBFF210A620B003AE45C /* SignalTSan.supp */,
 				4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */,
 				B6B6C3C419193F5B00C0B76B /* Translations */,
 				D221A099169C9E5E00537ABF /* main.m */,
@@ -2823,6 +2826,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				AD83FF3F1A73426500B5C81A /* audio_pause_button_blue.png in Resources */,

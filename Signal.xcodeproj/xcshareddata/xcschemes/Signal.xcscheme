@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "13CED0CFD8586E9C6BAC02E581D06068"
+               BlueprintIdentifier = "1115976DB2D993FB7AAB33CEBB52F472"
                BuildableName = "SignalServiceKit.framework"
                BlueprintName = "SignalServiceKit"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
@@ -76,13 +76,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableAddressSanitizer = "YES"
-      enableASanStackUseAfterReturn = "YES"
+      enableThreadSanitizer = "YES"
       enableUBSanitizer = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
+      stopOnEveryThreadSanitizerIssue = "YES"
       stopOnEveryUBSanitizerIssue = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
@@ -106,6 +106,11 @@
          <EnvironmentVariable
             key = "UBSAN_OPTIONS"
             value = "suppressions=SignalUBSan.supp"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "TSAN_OPTIONS"
+            value = "suppressions=SignalTSan.supp"
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
