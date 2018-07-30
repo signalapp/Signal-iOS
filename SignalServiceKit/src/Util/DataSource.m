@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSString *fileExtension;
 
 // This property is lazy-populated.
-@property (nonatomic) NSString *cachedFilePath;
+@property (nonatomic, nullable) NSString *cachedFilePath;
 
 @end
 
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)dealloc
 {
     if (self.shouldDeleteOnDeallocation) {
-        NSString *filePath = self.cachedFilePath;
+        NSString *_Nullable filePath = self.cachedFilePath;
         if (filePath) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSError *error;

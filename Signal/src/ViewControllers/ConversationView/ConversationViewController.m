@@ -3948,9 +3948,9 @@ typedef enum : NSUInteger {
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueAttachment:dataSource
+        [dataSource setShouldDeleteOnDeallocation];
+        [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
-            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);

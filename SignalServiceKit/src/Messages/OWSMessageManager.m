@@ -658,6 +658,7 @@ NS_ASSUME_NONNULL_BEGIN
                 DataSource *dataSource = [DataSourceValue
                     dataSourceWithSyncMessageData:[syncContactsMessage
                                                       buildPlainTextAttachmentDataWithTransaction:transaction]];
+                [dataSource setShouldDeleteOnDeallocation];
                 [self.messageSender enqueueTemporaryAttachment:dataSource
                     contentType:OWSMimeTypeApplicationOctetStream
                     inMessage:syncContactsMessage
@@ -674,6 +675,7 @@ NS_ASSUME_NONNULL_BEGIN
             DataSource *dataSource = [DataSourceValue
                 dataSourceWithSyncMessageData:[syncGroupsMessage
                                                   buildPlainTextAttachmentDataWithTransaction:transaction]];
+            [dataSource setShouldDeleteOnDeallocation];
             [self.messageSender enqueueTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncGroupsMessage
@@ -825,9 +827,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (gThread.groupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-        [self.messageSender enqueueAttachment:dataSource
+        [dataSource setShouldDeleteOnDeallocation];
+        [self.messageSender enqueueTemporaryAttachment:dataSource
             contentType:OWSMimeTypeImagePng
-            sourceFilename:nil
             inMessage:message
             success:^{
                 DDLogDebug(@"%@ Successfully sent group update with avatar", self.logTag);

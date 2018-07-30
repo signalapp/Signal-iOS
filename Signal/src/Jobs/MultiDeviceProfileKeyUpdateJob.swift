@@ -51,6 +51,7 @@ import SignalMessaging
         var dataSource: DataSource? = nil
         self.editingDatabaseConnection.readWrite { transaction in
              dataSource = DataSourceValue.dataSource(withSyncMessageData: syncContactsMessage.buildPlainTextAttachmentData(with: transaction))
+            dataSource?.setShouldDeleteOnDeallocation()
         }
 
         guard let attachmentDataSource = dataSource else {

@@ -490,12 +490,12 @@ const NSUInteger kNewGroupViewControllerAvatarWidth = 68;
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
                               DataSource *_Nullable dataSource =
                                   [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
-                              [self.messageSender enqueueAttachment:dataSource
-                                                        contentType:OWSMimeTypeImagePng
-                                                     sourceFilename:nil
-                                                          inMessage:message
-                                                            success:successHandler
-                                                            failure:failureHandler];
+                              [dataSource setShouldDeleteOnDeallocation];
+                              [self.messageSender enqueueTemporaryAttachment:dataSource
+                                                                 contentType:OWSMimeTypeImagePng
+                                                                   inMessage:message
+                                                                     success:successHandler
+                                                                     failure:failureHandler];
                           } else {
                               [self.messageSender enqueueMessage:message success:successHandler failure:failureHandler];
                           }
