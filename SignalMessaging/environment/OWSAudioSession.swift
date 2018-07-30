@@ -141,7 +141,7 @@ public class OWSAudioSession: NSObject {
             return oldActivity
         }
 
-        guard currentActivities.count == 0 else {
+        guard currentActivities.isEmpty else {
             Logger.debug("\(logTag) not deactivating due to currentActivities: \(currentActivities)")
             return
         }
