@@ -3176,14 +3176,6 @@ typedef enum : NSUInteger {
         }];
 }
 
-- (NSURL *)videoTempFolder
-{
-    NSString *temporaryDirectory = NSTemporaryDirectory();
-    NSString *videoDirPath = [temporaryDirectory stringByAppendingPathComponent:@"videos"];
-    [OWSFileSystem ensureDirectoryExists:videoDirPath];
-    return [NSURL fileURLWithPath:videoDirPath];
-}
-
 - (void)sendQualityAdjustedAttachmentForVideo:(NSURL *)movieURL
                                      filename:(NSString *)filename
                            skipApprovalDialog:(BOOL)skipApprovalDialog
