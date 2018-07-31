@@ -3478,6 +3478,9 @@ typedef enum : NSUInteger {
     } else {
         [UIView performWithoutAnimation:^{
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+            if (scrollToBottom) {
+                [self scrollToBottomAnimated:NO];
+            }
         }];
     }
     self.lastReloadDate = [NSDate new];
