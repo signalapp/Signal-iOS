@@ -50,7 +50,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL isGroupThread;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
-
+@property (nonatomic) BOOL alwaysShowFooter;
 @property (nonatomic, readonly) BOOL isQuotedReply;
 @property (nonatomic, readonly) BOOL hasQuotedAttachment;
 @property (nonatomic, readonly) BOOL hasQuotedText;
