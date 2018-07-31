@@ -3499,6 +3499,7 @@ typedef enum : NSUInteger {
                     continue;
                 }
                 isOnlyModifyingLastMessage = NO;
+                break;
             }
             case YapDatabaseViewChangeMove:
                 isOnlyModifyingLastMessage = NO;
