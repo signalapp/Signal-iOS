@@ -464,7 +464,7 @@ class EnumContext(BaseContext):
         writer.newline()
         
         wrapped_swift_name = self.derive_wrapped_swift_name()
-        writer.add('private func %sWrap(_ value : %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
+        writer.add('private func %sWrap(_ value: %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
@@ -475,7 +475,7 @@ class EnumContext(BaseContext):
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-        writer.add('private func %sUnwrap(_ value : %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
+        writer.add('private func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
