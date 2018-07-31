@@ -3423,16 +3423,19 @@ typedef enum : NSUInteger {
                         rowChange.collectionKey,
                         rowChange.newIndexPath,
                         rowChange.finalIndex);
-                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
 
                     ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                        viewItem.alwaysShowFooter = YES;
+
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
                             scrollToBottom = YES;
                             shouldAnimateScrollToBottom = NO;
                         }
                     }
+
+                    [self.collectionView insertItemsAtIndexPaths:@[ rowChange.newIndexPath ]];
                     break;
                 }
                 case YapDatabaseViewChangeMove: {
@@ -3449,6 +3452,10 @@ typedef enum : NSUInteger {
                         rowChange.collectionKey,
                         rowChange.indexPath,
                         rowChange.finalIndex);
+                    ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
+                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                        viewItem.alwaysShowFooter = YES;
+                    }
                     [self.collectionView reloadItemsAtIndexPaths:@[ rowChange.indexPath ]];
                     break;
                 }
@@ -4967,10 +4974,10 @@ typedef enum : NSUInteger {
                 // has the same footer and no "date break" separates us...
                 // ...but always show "failed to send" status
                 // ...and always show the "disappearing messages" animation.
-                shouldHideFooter
-                    = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
-                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.hasCellHeader
-                        && !isDisappearingMessage);
+                shouldHideFooter = !viewItem.alwaysShowFooter && [timestampText isEqualToString:nextTimestampText]
+                    && receiptStatus == nextReceiptStatus
+                    && outgoingMessage.messageState != TSOutgoingMessageStateFailed && !nextViewItem.hasCellHeader
+                    && !isDisappearingMessage;
             }
 
             // clustering
