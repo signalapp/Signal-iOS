@@ -4013,7 +4013,7 @@ typedef enum : NSUInteger {
 
 - (void)saveDraft
 {
-    if (self.inputToolbar.hidden == NO) {
+    if (!self.inputToolbar.hidden) {
         __block TSThread *thread = _thread;
         __block NSString *currentDraft = [self.inputToolbar messageText];
 
