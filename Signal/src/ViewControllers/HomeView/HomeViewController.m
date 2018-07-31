@@ -40,6 +40,23 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
     HomeViewMode_Inbox,
 };
 
+// The bulk of the content in this view is driven by a YapDB view/mapping.
+// However, we also want to optionally include ReminderView's at the top
+// and an "Archived Conversations" button at the bottom. Rather than introduce
+// index-offsets into the Mapping calculation, we introduce two pseudo groups
+// to add a top and bottom section to the content, and create cells for those
+// sections without consulting the YapMapping.
+// This is a bit of a hack, but it consolidates the hacks into the Reminder/Archive section
+// and allows us to leaves the bulk of the content logic on the happy path.
+NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
+NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
+
+typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
+    HomeViewControllerSectionReminders,
+    HomeViewControllerSectionConversations,
+    HomeViewControllerSectionArchiveButton,
+};
+
 NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversationsReuseIdentifier";
 
 @interface HomeViewController () <UITableViewDelegate,
@@ -76,6 +93,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 // Views
 
+@property (nonatomic, readonly) UIStackView *reminderStackView;
+@property (nonatomic, readonly) UITableViewCell *reminderViewCell;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
@@ -84,6 +103,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 @property (nonatomic) TSThread *lastThread;
 
 @property (nonatomic) BOOL hasArchivedThreadsRow;
+@property (nonatomic) BOOL hasVisibleReminders;
 
 @end
 
@@ -245,18 +265,13 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     }
 
     UIStackView *reminderStackView = [UIStackView new];
+    _reminderStackView = reminderStackView;
     reminderStackView.axis = UILayoutConstraintAxisVertical;
     reminderStackView.spacing = 0;
-    [self.view addSubview:reminderStackView];
-    [reminderStackView autoPinWidthToSuperview];
-    [reminderStackView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-
-    // Fixes ambiguous height of an empty stack view pinned above a scroll view on iOS10.
-    // Without this users would sometimes see the empty stackview take up most of their screen.
-    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow
-                         forConstraints:^{
-                             [reminderStackView autoSetDimension:ALDimensionHeight toSize:0];
-                         }];
+    _reminderViewCell = [UITableViewCell new];
+    self.reminderViewCell.selectionStyle = UITableViewCellSelectionStyleNone;
+    [self.reminderViewCell.contentView addSubview:reminderStackView];
+    [reminderStackView autoPinEdgesToSuperviewEdges];
 
     __weak HomeViewController *weakSelf = self;
     ReminderView *deregisteredView =
@@ -300,11 +315,8 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self.tableView registerClass:[HomeViewCell class] forCellReuseIdentifier:HomeViewCell.cellReuseIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kArchivedConversationsReuseIdentifier];
     [self.view addSubview:self.tableView];
-    [self.tableView autoPinWidthToSuperview];
-    [self.tableView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    [self.tableView autoPinEdgesToSuperviewEdges];
 
-    // TODO - have content scroll behind navbar will require changing this.
-    [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:reminderStackView];
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
@@ -340,6 +352,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
+
+    self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.missingContactsPermissionView.isHidden
+        || !self.deregisteredView.isHidden || !self.outageView.isHidden;
 }
 
 - (void)viewDidLoad
@@ -402,9 +417,12 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.searchResultsController = searchResultsController;
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
-    [searchResultsController.view autoPinWidthToSuperview];
-    [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:searchBar];
-    [searchResultsController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.tableView];
+    [searchResultsController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
+    if (@available(iOS 11, *)) {
+        [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
+    } else {
+        [searchResultsController.view autoPinToTopLayoutGuideOfViewController:self withInset:40];
+    }
     searchResultsController.view.hidden = YES;
 
     [self updateBarButtonItems];
@@ -470,23 +488,23 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
 
-    if ([self isIndexPathForArchivedConversations:indexPath]) {
+    if (!indexPath) {
         return nil;
     }
 
-    if (indexPath) {
-        [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
-
-        ConversationViewController *vc = [ConversationViewController new];
-        TSThread *thread = [self threadForIndexPath:indexPath];
-        self.lastThread = thread;
-        [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
-        [vc peekSetup];
-
-        return vc;
-    } else {
+    if (indexPath.section != HomeViewControllerSectionConversations) {
         return nil;
     }
+
+    [previewingContext setSourceRect:[self.tableView rectForRowAtIndexPath:indexPath]];
+
+    ConversationViewController *vc = [ConversationViewController new];
+    TSThread *thread = [self threadForIndexPath:indexPath];
+    self.lastThread = thread;
+    [vc configureForThread:thread action:ConversationViewActionNone focusMessageId:nil];
+    [vc peekSetup];
+
+    return vc;
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext
@@ -542,7 +560,7 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
     if (isShowingSearchResults) {
         OWSAssert(self.searchBar.text.ows_stripped.length > 0);
-        self.tableView.contentOffset = CGPointZero;
+        [self scrollSearchBarToTopAnimated:NO];
     } else if (self.lastThread) {
         OWSAssert(self.searchBar.text.ows_stripped.length == 0);
         
@@ -734,31 +752,30 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     return (NSInteger)[self.threadMappings numberOfSections];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
 {
-    NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-    if (self.hasArchivedThreadsRow) {
-        // Add the "archived conversations" row.
-        result++;
+    HomeViewControllerSection section = (HomeViewControllerSection)aSection;
+    switch (section) {
+        case HomeViewControllerSectionReminders: {
+            return self.hasVisibleReminders ? 1 : 0;
+        }
+        case HomeViewControllerSectionConversations: {
+            NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
+            return result;
+        }
+        case HomeViewControllerSectionArchiveButton: {
+            return self.hasArchivedThreadsRow ? 1 : 0;
+        }
     }
-    return result;
-}
 
-- (BOOL)isIndexPathForArchivedConversations:(NSIndexPath *)indexPath
-{
-    if (self.homeViewMode != HomeViewMode_Inbox) {
-        return NO;
-    }
-    if (indexPath.section != 0) {
-        return NO;
-    }
-    NSInteger cellCount = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)0];
-    return indexPath.row == cellCount;
+    OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    return 0;
 }
 
 - (ThreadViewModel *)threadViewModelForIndexPath:(NSIndexPath *)indexPath
 {
     TSThread *threadRecord = [self threadForIndexPath:indexPath];
+    OWSAssert(threadRecord);
 
     ThreadViewModel *_Nullable cachedThreadViewModel = [self.threadViewModelCache objectForKey:threadRecord.uniqueId];
     if (cachedThreadViewModel) {
@@ -775,11 +792,21 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self isIndexPathForArchivedConversations:indexPath]) {
-        return [self cellForArchivedConversationsRow:tableView];
-    } else {
-        return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    switch (section) {
+        case HomeViewControllerSectionReminders: {
+            return self.reminderViewCell;
+        }
+        case HomeViewControllerSectionConversations: {
+            return [self tableView:tableView cellForConversationAtIndexPath:indexPath];
+        }
+        case HomeViewControllerSectionArchiveButton: {
+            return [self cellForArchivedConversationsRow:tableView];
+        }
     }
+
+    OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)section);
+    return [UITableViewCell new];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForConversationAtIndexPath:(NSIndexPath *)indexPath
@@ -875,56 +902,70 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self isIndexPathForArchivedConversations:indexPath]) {
-        return @[];
+    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    switch (section) {
+        case HomeViewControllerSectionReminders: {
+            return @[];
+        }
+        case HomeViewControllerSectionConversations: {
+            UITableViewRowAction *deleteAction =
+                [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
+                                                   title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                                 handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
+                                                     [self tableViewCellTappedDelete:swipedIndexPath];
+                                                 }];
+
+            UITableViewRowAction *archiveAction;
+            if (self.homeViewMode == HomeViewMode_Inbox) {
+                archiveAction = [UITableViewRowAction
+                    rowActionWithStyle:UITableViewRowActionStyleNormal
+                                 title:NSLocalizedString(@"ARCHIVE_ACTION",
+                                           @"Pressing this button moves a thread from the inbox to the archive")
+                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                   [self archiveIndexPath:tappedIndexPath];
+                                   [Environment.preferences setHasArchivedAMessage:YES];
+                               }];
+
+            } else {
+                archiveAction = [UITableViewRowAction
+                    rowActionWithStyle:UITableViewRowActionStyleNormal
+                                 title:NSLocalizedString(@"UNARCHIVE_ACTION",
+                                           @"Pressing this button moves an archived thread from the archive back to "
+                                           @"the inbox")
+                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
+                                   [self archiveIndexPath:tappedIndexPath];
+                               }];
+            }
+
+            return @[ deleteAction, archiveAction ];
+        }
+        case HomeViewControllerSectionArchiveButton: {
+            return @[];
+        }
     }
-
-    UITableViewRowAction *deleteAction =
-        [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
-                                           title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
-                                         handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
-                                             [self tableViewCellTappedDelete:swipedIndexPath];
-                                         }];
-
-    UITableViewRowAction *archiveAction;
-    if (self.homeViewMode == HomeViewMode_Inbox) {
-        archiveAction = [UITableViewRowAction
-            rowActionWithStyle:UITableViewRowActionStyleNormal
-                         title:NSLocalizedString(@"ARCHIVE_ACTION",
-                                   @"Pressing this button moves a thread from the inbox to the archive")
-                       handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                           [self archiveIndexPath:tappedIndexPath];
-                           [Environment.preferences setHasArchivedAMessage:YES];
-                       }];
-
-    } else {
-        archiveAction = [UITableViewRowAction
-            rowActionWithStyle:UITableViewRowActionStyleNormal
-                         title:NSLocalizedString(@"UNARCHIVE_ACTION",
-                                   @"Pressing this button moves an archived thread from the archive back to the inbox")
-                       handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                           [self archiveIndexPath:tappedIndexPath];
-                       }];
-    }
-
-
-    return @[ deleteAction, archiveAction ];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self isIndexPathForArchivedConversations:indexPath]) {
-        return NO;
+    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    switch (section) {
+        case HomeViewControllerSectionReminders: {
+            return NO;
+        }
+        case HomeViewControllerSectionConversations: {
+            return YES;
+        }
+        case HomeViewControllerSectionArchiveButton: {
+            return NO;
+        }
     }
-
-    return YES;
 }
 
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    [self.tableView setContentOffset:CGPointZero animated:NO];
+    [self scrollSearchBarToTopAnimated:NO];
 
     [self updateSearchResultsVisibility];
 
@@ -977,11 +1018,17 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     self.searchResultsController.view.hidden = !isSearching;
 
     if (isSearching) {
-        [self.tableView setContentOffset:CGPointZero animated:NO];
+        [self scrollSearchBarToTopAnimated:NO];
         self.tableView.scrollEnabled = NO;
     } else {
         self.tableView.scrollEnabled = YES;
     }
+}
+
+- (void)scrollSearchBarToTopAnimated:(BOOL)isAnimated
+{
+    CGFloat topInset = self.topLayoutGuide.length;
+    [self.tableView setContentOffset:CGPointMake(0, -topInset) animated:isAnimated];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -1004,6 +1051,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
 {
+    if (indexPath.section != HomeViewControllerSectionConversations) {
+        OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        return;
+    }
+
     TSThread *thread = [self threadForIndexPath:indexPath];
     if ([thread isKindOfClass:[TSGroupThread class]]) {
 
@@ -1055,6 +1107,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.section != HomeViewControllerSectionConversations) {
+        OWSFail(@"%@ failure: unexpected section: %lu", self.logTag, (unsigned long)indexPath.section);
+        return;
+    }
+
     TSThread *thread = [self threadForIndexPath:indexPath];
 
     [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1075,15 +1132,22 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     DDLogInfo(@"%@ %s %ld %ld", self.logTag, __PRETTY_FUNCTION__, (long)indexPath.row, (long)indexPath.section);
 
     [self.searchBar resignFirstResponder];
-
-    if ([self isIndexPathForArchivedConversations:indexPath]) {
-        [self showArchivedConversations];
-        return;
+    HomeViewControllerSection section = (HomeViewControllerSection)indexPath.section;
+    switch (section) {
+        case HomeViewControllerSectionReminders: {
+            break;
+        }
+        case HomeViewControllerSectionConversations: {
+            TSThread *thread = [self threadForIndexPath:indexPath];
+            [self presentThread:thread action:ConversationViewActionNone];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            break;
+        }
+        case HomeViewControllerSectionArchiveButton: {
+            [self showArchivedConversations];
+            break;
+        }
     }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-    [self presentThread:thread action:ConversationViewActionNone];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action
@@ -1218,8 +1282,9 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
 {
     OWSAssertIsOnMainThread();
 
-    self.threadMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ self.currentGrouping ]
-                                                                     view:TSThreadDatabaseViewExtensionName];
+    self.threadMappings = [[YapDatabaseViewMappings alloc]
+        initWithGroups:@[ kReminderViewPseudoGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
+                  view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
 
     [self resetMappings];
