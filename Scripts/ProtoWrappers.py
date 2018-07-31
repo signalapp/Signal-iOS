@@ -199,8 +199,6 @@ class BaseContext(object):
             # TODO: fail
             return base_type
         
-        # return 'UNKNOWN'
-        
     def can_field_be_optional(self, field):
         if field.proto_type == 'uint64':
             return False
@@ -228,7 +226,34 @@ class BaseContext(object):
             if type(matching_context) is MessageContext:
                 return True
         return False
+        
+    def default_value_for_field(self, field):
+        if field.rules == 'repeated':
+            return '[]'
+        
+        if field.default_value is not None and len(field.default_value) > 0:
+            return field.default_value
 
+        if field.rules == 'optional':
+            can_be_optional = self.can_field_be_optional(field)
+            if can_be_optional:
+                return 'nil'
+        
+        if field.proto_type == 'uint64':
+            return '0'
+        elif field.proto_type == 'uint32':
+            return '0'
+        elif field.proto_type == 'fixed64':
+            return '0'
+        elif field.proto_type == 'bool':
+            return 'false'
+        elif self.is_field_an_enum(field):
+            # TODO: Assert that rules is empty.
+            enum_context = self.context_for_proto_type(field)
+            return enum_context.default_value()
+            
+        return None        
+        
 
 class FileContext(BaseContext):
     def __init__(self, args):
@@ -259,12 +284,12 @@ import Foundation
 
 
 class MessageField:
-    def __init__(self, name, index, rules, proto_type, field_default):
+    def __init__(self, name, index, rules, proto_type, default_value):
         self.name = name
         self.index = index
         self.rules = rules
         self.proto_type = proto_type
-        self.field_default = field_default
+        self.default_value = default_value
             
 
 class MessageContext(BaseContext):
@@ -353,9 +378,135 @@ public func serializedData() throws -> Data {
 }
 ''').strip())
         writer.newline()
-    
-        # asProtobuf() func
+
+        # parseData() func
         wrapped_swift_name = self.derive_wrapped_swift_name()
+        writer.add('@objc public class func parseData(_ serializedData: Data) throws -> %s {' % self.swift_name)
+        writer.push_indent()
+        writer.add('let proto = try %s(serializedData: serializedData)' % ( wrapped_swift_name, ) )
+        writer.add('return try parseProto(proto)')        
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        # parseData() func
+        writer.add('fileprivate class func parseProto(_ proto: %s) throws -> %s {' % ( wrapped_swift_name, self.swift_name, ) )
+        writer.push_indent()
+        
+        for field in self.fields():
+            default_value = self.default_value_for_field(field)
+            if default_value is None:
+                writer.add('var %s: %s' % (field.name_swift, field.type_swift))
+            else:
+                writer.add('var %s: %s = %s' % (field.name_swift, field.type_swift, default_value))
+                
+            if field.rules == 'repeated':
+                writer.add('for item in proto.%s {' % (field.name_swift))
+                writer.push_indent()
+                
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('let wrapped = %sWrap(item)' % ( enum_context.swift_name, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('let wrapped = try %s.parseProto(item)' % (self.base_swift_type_for_field(field))),
+                else:
+                    writer.add('let wrapped = item')
+                writer.add('%s.append(wrapped)' % ( field.name_swift, ) )
+            else:
+                hasAccessor = 'has' + field.name_swift[0].upper() + field.name_swift[1:]
+                if hasAccessor == 'hasId':
+                    # TODO: I'm not sure why "Apple Swift Proto" code formats the
+                    # the name in this way.
+                    hasAccessor = 'hasID'
+                writer.add('if proto.%s {' % hasAccessor)
+                writer.push_indent()
+            
+                if self.is_field_an_enum(field):
+                    # TODO: Assert that rules is empty.
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('%s = %sWrap(proto.%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
+                elif self.is_field_a_proto(field):
+                    writer.add('%s = try %s.parseProto(proto.%s)' % (field.name_swift, self.base_swift_type_for_field(field), field.name_swift)),
+                else:
+                    writer.add('%s = proto.%s' % ( field.name_swift, field.name_swift, ) )
+                
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+
+        writer.add('// MARK: - Begin Validation Logic for %s -' % self.swift_name)
+        writer.newline()
+        writer.add('// MARK: - End Validation Logic for %s -' % self.swift_name)
+        writer.newline()
+        
+        initializer_arguments = []
+        for field in self.fields():
+            initializer_arguments.append('%s: %s' % (field.name_swift, field.name_swift))
+        initializer_arguments = ', '.join(initializer_arguments)
+        writer.add('let result = %s(%s)' % ( self.swift_name, initializer_arguments, ) )
+        writer.add('return result')        
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+    
+    # @objc
+    # public init(serializedData: Data) throws {
+    #     
+    #
+    #     guard proto.hasSource else {
+    #         throw EnvelopeError.invalidProtobuf(description: "missing required field: source")
+    #     }
+    #     self.source = proto.source
+    #
+    #     guard proto.hasType else {
+    #         throw EnvelopeError.invalidProtobuf(description: "missing required field: type")
+    #     }
+    #     self.type = {
+    #         switch proto.type {
+    #         case .unknown:
+    #             return .unknown
+    #         case .ciphertext:
+    #             return .ciphertext
+    #         case .keyExchange:
+    #             return .keyExchange
+    #         case .prekeyBundle:
+    #             return .prekeyBundle
+    #         case .receipt:
+    #             return .receipt
+    #         }
+    #     }()
+    #
+    #     guard proto.hasTimestamp else {
+    #         throw EnvelopeError.invalidProtobuf(description: "missing required field: timestamp")
+    #     }
+    #     self.timestamp = proto.timestamp
+    #
+    #     guard proto.hasSourceDevice else {
+    #         throw EnvelopeError.invalidProtobuf(description: "missing required field: sourceDevice")
+    #     }
+    #     self.sourceDevice = proto.sourceDevice
+    #
+    #     if proto.hasContent {
+    #         self.content = proto.content
+    #     } else {
+    #         self.content = nil
+    #     }
+    #
+    #     if proto.hasLegacyMessage {
+    #         self.legacyMessage = proto.legacyMessage
+    #     } else {
+    #         self.legacyMessage = nil
+    #     }
+    #
+    #     if proto.relay.count > 0 {
+    #         self.relay = proto.relay
+    #     } else {
+    #         relay = nil
+    #     }
+    # }
+    #
+
+        # asProtobuf() func
         writer.add('fileprivate var asProtobuf: %s {' % wrapped_swift_name)
         writer.push_indent()
         writer.add('let proto = %s.with { (builder) in' % wrapped_swift_name)
@@ -364,7 +515,7 @@ public func serializedData() throws -> Data {
             if self.is_field_an_enum(field):
                 # TODO: Assert that rules is empty.
                 enum_context = self.context_for_proto_type(field)
-                writer.add('builder.%s = %sUnwrap(self.%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
+                writer.add('builder.%s = %s.%sUnwrap(self.%s)' % ( field.name_swift, self.swift_name, enum_context.swift_name, field.name_swift, ) )
             elif field.rules == 'repeated':
                 # TODO: Assert that type is a message.
                 list_wrapped_swift_name = None
@@ -454,6 +605,10 @@ class EnumContext(BaseContext):
             case_name = lowerCamlCaseForUnderscoredText(item_name)
             result.append( (case_name, index_str,) )
         return result
+        
+    def default_value(self):
+        for case_name, case_index in self.case_pairs():
+            return '.' + case_name
 
     def generate(self, writer):
         
@@ -476,7 +631,7 @@ class EnumContext(BaseContext):
         writer.newline()
         
         wrapped_swift_name = self.derive_wrapped_swift_name()
-        writer.add('private func %sWrap(_ value: %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
+        writer.add('private class func %sWrap(_ value: %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
@@ -487,7 +642,7 @@ class EnumContext(BaseContext):
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-        writer.add('private func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
+        writer.add('private class func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
@@ -643,9 +798,6 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             # context.field_indices.add(item_index)
             
             context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default)
-            # context.fields.append(message_field)
-                    # class MessageField:
-                    #     def __init__(self, name, index, rules, field_type, field_default):
                             
             continue
 
