@@ -22,7 +22,7 @@ import Foundation
 		case receipt = 5
 	}
 
-	private func SSKProtoEnvelope_TypeWrap(value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelope_Type {
+	private func SSKProtoEnvelope_TypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelope_Type {
 		switch value {
 			case .unknown: return .unknown
 			case .ciphertext: return .ciphertext
@@ -32,7 +32,7 @@ import Foundation
 		}
 	}
 
-	private func SSKProtoEnvelope_TypeUnwrap(value: SSKProtoEnvelope_Type) -> SignalServiceProtos_Envelope.TypeEnum {
+	private func SSKProtoEnvelope_TypeUnwrap(_ value: SSKProtoEnvelope_Type) -> SignalServiceProtos_Envelope.TypeEnum {
 		switch value {
 			case .unknown: return .unknown
 			case .ciphertext: return .ciphertext
@@ -65,7 +65,32 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_Envelope {
+	fileprivate var asProtobuf: SignalServiceProtos_Envelope {
+		let proto = SignalServiceProtos_Envelope.with { (builder) in
+			builder.type = SSKProtoEnvelope_TypeUnwrap(self.type)
+
+			if let relay = self.relay {
+				builder.relay = relay
+			}
+
+			if let source = self.source {
+				builder.source = source
+			}
+
+			builder.timestamp = self.timestamp
+
+			builder.sourceDevice = self.sourceDevice
+
+			if let legacyMessage = self.legacyMessage {
+				builder.legacyMessage = legacyMessage
+			}
+
+			if let content = self.content {
+				builder.content = content
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -96,7 +121,30 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_Content {
+	fileprivate var asProtobuf: SignalServiceProtos_Content {
+		let proto = SignalServiceProtos_Content.with { (builder) in
+			if let dataMessage = self.dataMessage {
+				builder.dataMessage = dataMessage.asProtobuf
+			}
+
+			if let callMessage = self.callMessage {
+				builder.callMessage = callMessage.asProtobuf
+			}
+
+			if let syncMessage = self.syncMessage {
+				builder.syncMessage = syncMessage.asProtobuf
+			}
+
+			if let receiptMessage = self.receiptMessage {
+				builder.receiptMessage = receiptMessage.asProtobuf
+			}
+
+			if let nullMessage = self.nullMessage {
+				builder.nullMessage = nullMessage.asProtobuf
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -125,7 +173,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_CallMessage.Offer {
+		fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Offer {
+			let proto = SignalServiceProtos_CallMessage.Offer.with { (builder) in
+				builder.id = self.id
+
+				if let sessionDescription = self.sessionDescription {
+					builder.sessionDescription = sessionDescription
+				}
+			}
+
+			return proto
 		}
 	}
 
@@ -146,7 +203,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_CallMessage.Answer {
+		fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Answer {
+			let proto = SignalServiceProtos_CallMessage.Answer.with { (builder) in
+				builder.id = self.id
+
+				if let sessionDescription = self.sessionDescription {
+					builder.sessionDescription = sessionDescription
+				}
+			}
+
+			return proto
 		}
 	}
 
@@ -171,7 +237,22 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_CallMessage.IceUpdate {
+		fileprivate var asProtobuf: SignalServiceProtos_CallMessage.IceUpdate {
+			let proto = SignalServiceProtos_CallMessage.IceUpdate.with { (builder) in
+				builder.id = self.id
+
+				builder.sdpMLineIndex = self.sdpMLineIndex
+
+				if let sdpMid = self.sdpMid {
+					builder.sdpMid = sdpMid
+				}
+
+				if let sdp = self.sdp {
+					builder.sdp = sdp
+				}
+			}
+
+			return proto
 		}
 	}
 
@@ -190,7 +271,12 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_CallMessage.Busy {
+		fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Busy {
+			let proto = SignalServiceProtos_CallMessage.Busy.with { (builder) in
+				builder.id = self.id
+			}
+
+			return proto
 		}
 	}
 
@@ -209,7 +295,12 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_CallMessage.Hangup {
+		fileprivate var asProtobuf: SignalServiceProtos_CallMessage.Hangup {
+			let proto = SignalServiceProtos_CallMessage.Hangup.with { (builder) in
+				builder.id = self.id
+			}
+
+			return proto
 		}
 	}
 
@@ -234,7 +325,36 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_CallMessage {
+	fileprivate var asProtobuf: SignalServiceProtos_CallMessage {
+		let proto = SignalServiceProtos_CallMessage.with { (builder) in
+			if let offer = self.offer {
+				builder.offer = offer.asProtobuf
+			}
+
+			var iceUpdateUnwrapped = [SignalServiceProtos_CallMessage.IceUpdate]()
+			for item in iceUpdate {
+				iceUpdateUnwrapped.append(item.asProtobuf)
+			}
+			builder.iceUpdate = iceUpdateUnwrapped
+
+			if let answer = self.answer {
+				builder.answer = answer.asProtobuf
+			}
+
+			if let busy = self.busy {
+				builder.busy = busy.asProtobuf
+			}
+
+			if let hangup = self.hangup {
+				builder.hangup = hangup.asProtobuf
+			}
+
+			if let profileKey = self.profileKey {
+				builder.profileKey = profileKey
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -254,7 +374,7 @@ import Foundation
 		case profileKeyUpdate = 4
 	}
 
-	private func SSKProtoDataMessage_FlagsWrap(value: SignalServiceProtos_DataMessage.FlagsEnum) -> SSKProtoDataMessage_Flags {
+	private func SSKProtoDataMessage_FlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessage_Flags {
 		switch value {
 			case .endSession: return .endSession
 			case .expirationTimerUpdate: return .expirationTimerUpdate
@@ -262,7 +382,7 @@ import Foundation
 		}
 	}
 
-	private func SSKProtoDataMessage_FlagsUnwrap(value: SSKProtoDataMessage_Flags) -> SignalServiceProtos_DataMessage.FlagsEnum {
+	private func SSKProtoDataMessage_FlagsUnwrap(_ value: SSKProtoDataMessage_Flags) -> SignalServiceProtos_DataMessage.Flags {
 		switch value {
 			case .endSession: return .endSession
 			case .expirationTimerUpdate: return .expirationTimerUpdate
@@ -284,13 +404,13 @@ import Foundation
 				case voiceMessage = 1
 			}
 
-			private func SSKProtoDataMessage_Quote_QuotedAttachment_FlagsWrap(value: SignalServiceProtos_DataMessage.Quote.QuotedAttachment.FlagsEnum) -> SSKProtoDataMessage_Quote_QuotedAttachment_Flags {
+			private func SSKProtoDataMessage_Quote_QuotedAttachment_FlagsWrap(_ value: SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags) -> SSKProtoDataMessage_Quote_QuotedAttachment_Flags {
 				switch value {
 					case .voiceMessage: return .voiceMessage
 				}
 			}
 
-			private func SSKProtoDataMessage_Quote_QuotedAttachment_FlagsUnwrap(value: SSKProtoDataMessage_Quote_QuotedAttachment_Flags) -> SignalServiceProtos_DataMessage.Quote.QuotedAttachment.FlagsEnum {
+			private func SSKProtoDataMessage_Quote_QuotedAttachment_FlagsUnwrap(_ value: SSKProtoDataMessage_Quote_QuotedAttachment_Flags) -> SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags {
 				switch value {
 					case .voiceMessage: return .voiceMessage
 				}
@@ -313,7 +433,24 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Quote.QuotedAttachment {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Quote.QuotedAttachment {
+				let proto = SignalServiceProtos_DataMessage.Quote.QuotedAttachment.with { (builder) in
+					if let contentType = self.contentType {
+						builder.contentType = contentType
+					}
+
+					if let thumbnail = self.thumbnail {
+						builder.thumbnail = thumbnail.asProtobuf
+					}
+
+					if let fileName = self.fileName {
+						builder.fileName = fileName
+					}
+
+					builder.flags = self.flags
+				}
+
+				return proto
 			}
 		}
 
@@ -334,7 +471,26 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_DataMessage.Quote {
+		fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Quote {
+			let proto = SignalServiceProtos_DataMessage.Quote.with { (builder) in
+				builder.id = self.id
+
+				if let text = self.text {
+					builder.text = text
+				}
+
+				if let author = self.author {
+					builder.author = author
+				}
+
+				var attachmentsUnwrapped = [SignalServiceProtos_DataMessage.Quote.QuotedAttachment]()
+				for item in attachments {
+					attachmentsUnwrapped.append(item.asProtobuf)
+				}
+				builder.attachments = attachmentsUnwrapped
+			}
+
+			return proto
 		}
 	}
 
@@ -367,7 +523,34 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Contact.Name {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Name {
+				let proto = SignalServiceProtos_DataMessage.Contact.Name.with { (builder) in
+					if let givenName = self.givenName {
+						builder.givenName = givenName
+					}
+
+					if let prefix = self.prefix {
+						builder.prefix = prefix
+					}
+
+					if let familyName = self.familyName {
+						builder.familyName = familyName
+					}
+
+					if let middleName = self.middleName {
+						builder.middleName = middleName
+					}
+
+					if let suffix = self.suffix {
+						builder.suffix = suffix
+					}
+
+					if let displayName = self.displayName {
+						builder.displayName = displayName
+					}
+				}
+
+				return proto
 			}
 		}
 
@@ -384,7 +567,7 @@ import Foundation
 				case custom = 4
 			}
 
-			private func SSKProtoDataMessage_Contact_Phone_TypeWrap(value: SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum) -> SSKProtoDataMessage_Contact_Phone_Type {
+			private func SSKProtoDataMessage_Contact_Phone_TypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum) -> SSKProtoDataMessage_Contact_Phone_Type {
 				switch value {
 					case .home: return .home
 					case .mobile: return .mobile
@@ -393,7 +576,7 @@ import Foundation
 				}
 			}
 
-			private func SSKProtoDataMessage_Contact_Phone_TypeUnwrap(value: SSKProtoDataMessage_Contact_Phone_Type) -> SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum {
+			private func SSKProtoDataMessage_Contact_Phone_TypeUnwrap(_ value: SSKProtoDataMessage_Contact_Phone_Type) -> SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum {
 				switch value {
 					case .home: return .home
 					case .mobile: return .mobile
@@ -417,7 +600,20 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Contact.Phone {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Phone {
+				let proto = SignalServiceProtos_DataMessage.Contact.Phone.with { (builder) in
+					if let value = self.value {
+						builder.value = value
+					}
+
+					if let label = self.label {
+						builder.label = label
+					}
+
+					builder.type = SSKProtoDataMessage_Contact_Phone_TypeUnwrap(self.type)
+				}
+
+				return proto
 			}
 		}
 
@@ -434,7 +630,7 @@ import Foundation
 				case custom = 4
 			}
 
-			private func SSKProtoDataMessage_Contact_Email_TypeWrap(value: SignalServiceProtos_DataMessage.Contact.Email.TypeEnum) -> SSKProtoDataMessage_Contact_Email_Type {
+			private func SSKProtoDataMessage_Contact_Email_TypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.Email.TypeEnum) -> SSKProtoDataMessage_Contact_Email_Type {
 				switch value {
 					case .home: return .home
 					case .mobile: return .mobile
@@ -443,7 +639,7 @@ import Foundation
 				}
 			}
 
-			private func SSKProtoDataMessage_Contact_Email_TypeUnwrap(value: SSKProtoDataMessage_Contact_Email_Type) -> SignalServiceProtos_DataMessage.Contact.Email.TypeEnum {
+			private func SSKProtoDataMessage_Contact_Email_TypeUnwrap(_ value: SSKProtoDataMessage_Contact_Email_Type) -> SignalServiceProtos_DataMessage.Contact.Email.TypeEnum {
 				switch value {
 					case .home: return .home
 					case .mobile: return .mobile
@@ -467,7 +663,20 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Contact.Email {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Email {
+				let proto = SignalServiceProtos_DataMessage.Contact.Email.with { (builder) in
+					if let value = self.value {
+						builder.value = value
+					}
+
+					if let label = self.label {
+						builder.label = label
+					}
+
+					builder.type = SSKProtoDataMessage_Contact_Email_TypeUnwrap(self.type)
+				}
+
+				return proto
 			}
 		}
 
@@ -483,7 +692,7 @@ import Foundation
 				case custom = 3
 			}
 
-			private func SSKProtoDataMessage_Contact_PostalAddress_TypeWrap(value: SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum) -> SSKProtoDataMessage_Contact_PostalAddress_Type {
+			private func SSKProtoDataMessage_Contact_PostalAddress_TypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum) -> SSKProtoDataMessage_Contact_PostalAddress_Type {
 				switch value {
 					case .home: return .home
 					case .work: return .work
@@ -491,7 +700,7 @@ import Foundation
 				}
 			}
 
-			private func SSKProtoDataMessage_Contact_PostalAddress_TypeUnwrap(value: SSKProtoDataMessage_Contact_PostalAddress_Type) -> SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum {
+			private func SSKProtoDataMessage_Contact_PostalAddress_TypeUnwrap(_ value: SSKProtoDataMessage_Contact_PostalAddress_Type) -> SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum {
 				switch value {
 					case .home: return .home
 					case .work: return .work
@@ -526,7 +735,44 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Contact.PostalAddress {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.PostalAddress {
+				let proto = SignalServiceProtos_DataMessage.Contact.PostalAddress.with { (builder) in
+					builder.type = SSKProtoDataMessage_Contact_PostalAddress_TypeUnwrap(self.type)
+
+					if let street = self.street {
+						builder.street = street
+					}
+
+					if let label = self.label {
+						builder.label = label
+					}
+
+					if let neighborhood = self.neighborhood {
+						builder.neighborhood = neighborhood
+					}
+
+					if let pobox = self.pobox {
+						builder.pobox = pobox
+					}
+
+					if let region = self.region {
+						builder.region = region
+					}
+
+					if let city = self.city {
+						builder.city = city
+					}
+
+					if let country = self.country {
+						builder.country = country
+					}
+
+					if let postcode = self.postcode {
+						builder.postcode = postcode
+					}
+				}
+
+				return proto
 			}
 		}
 
@@ -535,9 +781,9 @@ import Foundation
 		@objc public class SSKProtoDataMessage_Contact_Avatar: NSObject {
 
 			@objc public let avatar: SSKProtoAttachmentPointer?
-			@objc public let isProfile: bool?
+			@objc public let isProfile: Bool
 
-			@objc public init(avatar: SSKProtoAttachmentPointer?, isProfile: bool?) {
+			@objc public init(avatar: SSKProtoAttachmentPointer?, isProfile: Bool) {
 				self.avatar = avatar
 				self.isProfile = isProfile
 			}
@@ -547,7 +793,16 @@ import Foundation
 			    return try self.asProtobuf.serializedData()
 			}
 
-			private var asProtobuf: SignalServiceProtos_DataMessage.Contact.Avatar {
+			fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact.Avatar {
+				let proto = SignalServiceProtos_DataMessage.Contact.Avatar.with { (builder) in
+					if let avatar = self.avatar {
+						builder.avatar = avatar.asProtobuf
+					}
+
+					builder.isProfile = self.isProfile
+				}
+
+				return proto
 			}
 		}
 
@@ -572,7 +827,40 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_DataMessage.Contact {
+		fileprivate var asProtobuf: SignalServiceProtos_DataMessage.Contact {
+			let proto = SignalServiceProtos_DataMessage.Contact.with { (builder) in
+				if let name = self.name {
+					builder.name = name.asProtobuf
+				}
+
+				var numberUnwrapped = [SignalServiceProtos_DataMessage.Contact.Phone]()
+				for item in number {
+					numberUnwrapped.append(item.asProtobuf)
+				}
+				builder.number = numberUnwrapped
+
+				var addressUnwrapped = [SignalServiceProtos_DataMessage.Contact.PostalAddress]()
+				for item in address {
+					addressUnwrapped.append(item.asProtobuf)
+				}
+				builder.address = addressUnwrapped
+
+				var emailUnwrapped = [SignalServiceProtos_DataMessage.Contact.Email]()
+				for item in email {
+					emailUnwrapped.append(item.asProtobuf)
+				}
+				builder.email = emailUnwrapped
+
+				if let organization = self.organization {
+					builder.organization = organization
+				}
+
+				if let avatar = self.avatar {
+					builder.avatar = avatar.asProtobuf
+				}
+			}
+
+			return proto
 		}
 	}
 
@@ -603,7 +891,44 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_DataMessage {
+	fileprivate var asProtobuf: SignalServiceProtos_DataMessage {
+		let proto = SignalServiceProtos_DataMessage.with { (builder) in
+			if let body = self.body {
+				builder.body = body
+			}
+
+			if let group = self.group {
+				builder.group = group.asProtobuf
+			}
+
+			var attachmentsUnwrapped = [SignalServiceProtos_AttachmentPointer]()
+			for item in attachments {
+				attachmentsUnwrapped.append(item.asProtobuf)
+			}
+			builder.attachments = attachmentsUnwrapped
+
+			builder.expireTimer = self.expireTimer
+
+			builder.flags = self.flags
+
+			builder.timestamp = self.timestamp
+
+			if let profileKey = self.profileKey {
+				builder.profileKey = profileKey
+			}
+
+			var contactUnwrapped = [SignalServiceProtos_DataMessage.Contact]()
+			for item in contact {
+				contactUnwrapped.append(item.asProtobuf)
+			}
+			builder.contact = contactUnwrapped
+
+			if let quote = self.quote {
+				builder.quote = quote.asProtobuf
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -626,7 +951,14 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_NullMessage {
+	fileprivate var asProtobuf: SignalServiceProtos_NullMessage {
+		let proto = SignalServiceProtos_NullMessage.with { (builder) in
+			if let padding = self.padding {
+				builder.padding = padding
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -645,14 +977,14 @@ import Foundation
 		case read = 1
 	}
 
-	private func SSKProtoReceiptMessage_TypeWrap(value: SignalServiceProtos_ReceiptMessage.TypeEnum) -> SSKProtoReceiptMessage_Type {
+	private func SSKProtoReceiptMessage_TypeWrap(_ value: SignalServiceProtos_ReceiptMessage.TypeEnum) -> SSKProtoReceiptMessage_Type {
 		switch value {
 			case .delivery: return .delivery
 			case .read: return .read
 		}
 	}
 
-	private func SSKProtoReceiptMessage_TypeUnwrap(value: SSKProtoReceiptMessage_Type) -> SignalServiceProtos_ReceiptMessage.TypeEnum {
+	private func SSKProtoReceiptMessage_TypeUnwrap(_ value: SSKProtoReceiptMessage_Type) -> SignalServiceProtos_ReceiptMessage.TypeEnum {
 		switch value {
 			case .delivery: return .delivery
 			case .read: return .read
@@ -672,7 +1004,18 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_ReceiptMessage {
+	fileprivate var asProtobuf: SignalServiceProtos_ReceiptMessage {
+		let proto = SignalServiceProtos_ReceiptMessage.with { (builder) in
+			builder.type = SSKProtoReceiptMessage_TypeUnwrap(self.type)
+
+			var timestampUnwrapped = [UInt64]()
+			for item in timestamp {
+				timestampUnwrapped.append(item)
+			}
+			builder.timestamp = timestampUnwrapped
+		}
+
+		return proto
 	}
 }
 
@@ -687,12 +1030,12 @@ import Foundation
 	// MARK: - SSKProtoVerified_State
 
 	@objc public enum SSKProtoVerified_State: Int32 {
-		case default = 0
+		case `default` = 0
 		case verified = 1
 		case unverified = 2
 	}
 
-	private func SSKProtoVerified_StateWrap(value: SignalServiceProtos_Verified.StateEnum) -> SSKProtoVerified_State {
+	private func SSKProtoVerified_StateWrap(_ value: SignalServiceProtos_Verified.State) -> SSKProtoVerified_State {
 		switch value {
 			case .default: return .default
 			case .verified: return .verified
@@ -700,7 +1043,7 @@ import Foundation
 		}
 	}
 
-	private func SSKProtoVerified_StateUnwrap(value: SSKProtoVerified_State) -> SignalServiceProtos_Verified.StateEnum {
+	private func SSKProtoVerified_StateUnwrap(_ value: SSKProtoVerified_State) -> SignalServiceProtos_Verified.State {
 		switch value {
 			case .default: return .default
 			case .verified: return .verified
@@ -725,7 +1068,24 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_Verified {
+	fileprivate var asProtobuf: SignalServiceProtos_Verified {
+		let proto = SignalServiceProtos_Verified.with { (builder) in
+			if let destination = self.destination {
+				builder.destination = destination
+			}
+
+			builder.state = SSKProtoVerified_StateUnwrap(self.state)
+
+			if let identityKey = self.identityKey {
+				builder.identityKey = identityKey
+			}
+
+			if let nullMessage = self.nullMessage {
+				builder.nullMessage = nullMessage
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -758,7 +1118,22 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Sent {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Sent {
+			let proto = SignalServiceProtos_SyncMessage.Sent.with { (builder) in
+				if let destination = self.destination {
+					builder.destination = destination
+				}
+
+				if let message = self.message {
+					builder.message = message.asProtobuf
+				}
+
+				builder.timestamp = self.timestamp
+
+				builder.expirationStartTimestamp = self.expirationStartTimestamp
+			}
+
+			return proto
 		}
 	}
 
@@ -767,9 +1142,9 @@ import Foundation
 	@objc public class SSKProtoSyncMessage_Contacts: NSObject {
 
 		@objc public let blob: SSKProtoAttachmentPointer?
-		@objc public let isComplete: bool?
+		@objc public let isComplete: Bool
 
-		@objc public init(blob: SSKProtoAttachmentPointer?, isComplete: bool?) {
+		@objc public init(blob: SSKProtoAttachmentPointer?, isComplete: Bool) {
 			self.blob = blob
 			self.isComplete = isComplete
 		}
@@ -779,7 +1154,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Contacts {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Contacts {
+			let proto = SignalServiceProtos_SyncMessage.Contacts.with { (builder) in
+				if let blob = self.blob {
+					builder.blob = blob.asProtobuf
+				}
+
+				builder.isComplete = self.isComplete
+			}
+
+			return proto
 		}
 	}
 
@@ -798,7 +1182,14 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Groups {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Groups {
+			let proto = SignalServiceProtos_SyncMessage.Groups.with { (builder) in
+				if let blob = self.blob {
+					builder.blob = blob.asProtobuf
+				}
+			}
+
+			return proto
 		}
 	}
 
@@ -817,7 +1208,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Blocked {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Blocked {
+			let proto = SignalServiceProtos_SyncMessage.Blocked.with { (builder) in
+				var numbersUnwrapped = [String]()
+				for item in numbers {
+					numbersUnwrapped.append(item)
+				}
+				builder.numbers = numbersUnwrapped
+			}
+
+			return proto
 		}
 	}
 
@@ -835,7 +1235,7 @@ import Foundation
 			case configuration = 4
 		}
 
-		private func SSKProtoSyncMessage_Request_TypeWrap(value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessage_Request_Type {
+		private func SSKProtoSyncMessage_Request_TypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessage_Request_Type {
 			switch value {
 				case .unknown: return .unknown
 				case .contacts: return .contacts
@@ -845,7 +1245,7 @@ import Foundation
 			}
 		}
 
-		private func SSKProtoSyncMessage_Request_TypeUnwrap(value: SSKProtoSyncMessage_Request_Type) -> SignalServiceProtos_SyncMessage.Request.TypeEnum {
+		private func SSKProtoSyncMessage_Request_TypeUnwrap(_ value: SSKProtoSyncMessage_Request_Type) -> SignalServiceProtos_SyncMessage.Request.TypeEnum {
 			switch value {
 				case .unknown: return .unknown
 				case .contacts: return .contacts
@@ -866,7 +1266,12 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Request {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Request {
+			let proto = SignalServiceProtos_SyncMessage.Request.with { (builder) in
+				builder.type = SSKProtoSyncMessage_Request_TypeUnwrap(self.type)
+			}
+
+			return proto
 		}
 	}
 
@@ -887,7 +1292,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Read {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Read {
+			let proto = SignalServiceProtos_SyncMessage.Read.with { (builder) in
+				if let sender = self.sender {
+					builder.sender = sender
+				}
+
+				builder.timestamp = self.timestamp
+			}
+
+			return proto
 		}
 	}
 
@@ -895,9 +1309,9 @@ import Foundation
 
 	@objc public class SSKProtoSyncMessage_Configuration: NSObject {
 
-		@objc public let readReceipts: bool?
+		@objc public let readReceipts: Bool
 
-		@objc public init(readReceipts: bool?) {
+		@objc public init(readReceipts: Bool) {
 			self.readReceipts = readReceipts
 		}
 
@@ -906,7 +1320,12 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_SyncMessage.Configuration {
+		fileprivate var asProtobuf: SignalServiceProtos_SyncMessage.Configuration {
+			let proto = SignalServiceProtos_SyncMessage.Configuration.with { (builder) in
+				builder.readReceipts = self.readReceipts
+			}
+
+			return proto
 		}
 	}
 
@@ -937,7 +1356,48 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_SyncMessage {
+	fileprivate var asProtobuf: SignalServiceProtos_SyncMessage {
+		let proto = SignalServiceProtos_SyncMessage.with { (builder) in
+			if let sent = self.sent {
+				builder.sent = sent.asProtobuf
+			}
+
+			if let groups = self.groups {
+				builder.groups = groups.asProtobuf
+			}
+
+			if let contacts = self.contacts {
+				builder.contacts = contacts.asProtobuf
+			}
+
+			var readUnwrapped = [SignalServiceProtos_SyncMessage.Read]()
+			for item in read {
+				readUnwrapped.append(item.asProtobuf)
+			}
+			builder.read = readUnwrapped
+
+			if let request = self.request {
+				builder.request = request.asProtobuf
+			}
+
+			if let verified = self.verified {
+				builder.verified = verified.asProtobuf
+			}
+
+			if let blocked = self.blocked {
+				builder.blocked = blocked.asProtobuf
+			}
+
+			if let configuration = self.configuration {
+				builder.configuration = configuration.asProtobuf
+			}
+
+			if let padding = self.padding {
+				builder.padding = padding
+			}
+		}
+
+		return proto
 	}
 }
 
@@ -955,20 +1415,20 @@ import Foundation
 		case voiceMessage = 1
 	}
 
-	private func SSKProtoAttachmentPointer_FlagsWrap(value: SignalServiceProtos_AttachmentPointer.FlagsEnum) -> SSKProtoAttachmentPointer_Flags {
+	private func SSKProtoAttachmentPointer_FlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointer_Flags {
 		switch value {
 			case .voiceMessage: return .voiceMessage
 		}
 	}
 
-	private func SSKProtoAttachmentPointer_FlagsUnwrap(value: SSKProtoAttachmentPointer_Flags) -> SignalServiceProtos_AttachmentPointer.FlagsEnum {
+	private func SSKProtoAttachmentPointer_FlagsUnwrap(_ value: SSKProtoAttachmentPointer_Flags) -> SignalServiceProtos_AttachmentPointer.Flags {
 		switch value {
 			case .voiceMessage: return .voiceMessage
 		}
 	}
 
 	@objc public let height: UInt32
-	@objc public let id: fixed64?
+	@objc public let id: UInt64
 	@objc public let key: Data?
 	@objc public let contentType: String?
 	@objc public let thumbnail: Data?
@@ -978,7 +1438,7 @@ import Foundation
 	@objc public let width: UInt32
 	@objc public let flags: UInt32
 
-	@objc public init(height: UInt32, id: fixed64?, key: Data?, contentType: String?, thumbnail: Data?, size: UInt32, fileName: String?, digest: Data?, width: UInt32, flags: UInt32) {
+	@objc public init(height: UInt32, id: UInt64, key: Data?, contentType: String?, thumbnail: Data?, size: UInt32, fileName: String?, digest: Data?, width: UInt32, flags: UInt32) {
 		self.height = height
 		self.id = id
 		self.key = key
@@ -996,7 +1456,40 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_AttachmentPointer {
+	fileprivate var asProtobuf: SignalServiceProtos_AttachmentPointer {
+		let proto = SignalServiceProtos_AttachmentPointer.with { (builder) in
+			builder.height = self.height
+
+			builder.id = self.id
+
+			if let key = self.key {
+				builder.key = key
+			}
+
+			if let contentType = self.contentType {
+				builder.contentType = contentType
+			}
+
+			if let thumbnail = self.thumbnail {
+				builder.thumbnail = thumbnail
+			}
+
+			builder.size = self.size
+
+			if let fileName = self.fileName {
+				builder.fileName = fileName
+			}
+
+			if let digest = self.digest {
+				builder.digest = digest
+			}
+
+			builder.width = self.width
+
+			builder.flags = self.flags
+		}
+
+		return proto
 	}
 }
 
@@ -1018,7 +1511,7 @@ import Foundation
 		case requestInfo = 4
 	}
 
-	private func SSKProtoGroupContext_TypeWrap(value: SignalServiceProtos_GroupContext.TypeEnum) -> SSKProtoGroupContext_Type {
+	private func SSKProtoGroupContext_TypeWrap(_ value: SignalServiceProtos_GroupContext.TypeEnum) -> SSKProtoGroupContext_Type {
 		switch value {
 			case .unknown: return .unknown
 			case .update: return .update
@@ -1028,7 +1521,7 @@ import Foundation
 		}
 	}
 
-	private func SSKProtoGroupContext_TypeUnwrap(value: SSKProtoGroupContext_Type) -> SignalServiceProtos_GroupContext.TypeEnum {
+	private func SSKProtoGroupContext_TypeUnwrap(_ value: SSKProtoGroupContext_Type) -> SignalServiceProtos_GroupContext.TypeEnum {
 		switch value {
 			case .unknown: return .unknown
 			case .update: return .update
@@ -1057,7 +1550,30 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_GroupContext {
+	fileprivate var asProtobuf: SignalServiceProtos_GroupContext {
+		let proto = SignalServiceProtos_GroupContext.with { (builder) in
+			if let id = self.id {
+				builder.id = id
+			}
+
+			if let name = self.name {
+				builder.name = name
+			}
+
+			builder.type = SSKProtoGroupContext_TypeUnwrap(self.type)
+
+			if let avatar = self.avatar {
+				builder.avatar = avatar.asProtobuf
+			}
+
+			var membersUnwrapped = [String]()
+			for item in members {
+				membersUnwrapped.append(item)
+			}
+			builder.members = membersUnwrapped
+		}
+
+		return proto
 	}
 }
 
@@ -1086,7 +1602,16 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_ContactDetails.Avatar {
+		fileprivate var asProtobuf: SignalServiceProtos_ContactDetails.Avatar {
+			let proto = SignalServiceProtos_ContactDetails.Avatar.with { (builder) in
+				if let contentType = self.contentType {
+					builder.contentType = contentType
+				}
+
+				builder.length = self.length
+			}
+
+			return proto
 		}
 	}
 
@@ -1095,11 +1620,11 @@ import Foundation
 	@objc public let name: String?
 	@objc public let verified: SSKProtoVerified?
 	@objc public let color: String?
-	@objc public let blocked: bool?
+	@objc public let blocked: Bool
 	@objc public let profileKey: Data?
 	@objc public let expireTimer: UInt32
 
-	@objc public init(number: String?, avatar: SSKProtoContactDetails_Avatar?, name: String?, verified: SSKProtoVerified?, color: String?, blocked: bool?, profileKey: Data?, expireTimer: UInt32) {
+	@objc public init(number: String?, avatar: SSKProtoContactDetails_Avatar?, name: String?, verified: SSKProtoVerified?, color: String?, blocked: Bool, profileKey: Data?, expireTimer: UInt32) {
 		self.number = number
 		self.avatar = avatar
 		self.name = name
@@ -1115,7 +1640,38 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_ContactDetails {
+	fileprivate var asProtobuf: SignalServiceProtos_ContactDetails {
+		let proto = SignalServiceProtos_ContactDetails.with { (builder) in
+			if let number = self.number {
+				builder.number = number
+			}
+
+			if let avatar = self.avatar {
+				builder.avatar = avatar.asProtobuf
+			}
+
+			if let name = self.name {
+				builder.name = name
+			}
+
+			if let verified = self.verified {
+				builder.verified = verified.asProtobuf
+			}
+
+			if let color = self.color {
+				builder.color = color
+			}
+
+			builder.blocked = self.blocked
+
+			if let profileKey = self.profileKey {
+				builder.profileKey = profileKey
+			}
+
+			builder.expireTimer = self.expireTimer
+		}
+
+		return proto
 	}
 }
 
@@ -1144,19 +1700,28 @@ import Foundation
 		    return try self.asProtobuf.serializedData()
 		}
 
-		private var asProtobuf: SignalServiceProtos_GroupDetails.Avatar {
+		fileprivate var asProtobuf: SignalServiceProtos_GroupDetails.Avatar {
+			let proto = SignalServiceProtos_GroupDetails.Avatar.with { (builder) in
+				if let contentType = self.contentType {
+					builder.contentType = contentType
+				}
+
+				builder.length = self.length
+			}
+
+			return proto
 		}
 	}
 
 	@objc public let id: Data?
 	@objc public let members: [String]
 	@objc public let name: String?
-	@objc public let active: bool?
+	@objc public let active: Bool
 	@objc public let avatar: SSKProtoGroupDetails_Avatar?
 	@objc public let color: String?
 	@objc public let expireTimer: UInt32
 
-	@objc public init(id: Data?, members: [String], name: String?, active: bool?, avatar: SSKProtoGroupDetails_Avatar?, color: String?, expireTimer: UInt32) {
+	@objc public init(id: Data?, members: [String], name: String?, active: Bool, avatar: SSKProtoGroupDetails_Avatar?, color: String?, expireTimer: UInt32) {
 		self.id = id
 		self.members = members
 		self.name = name
@@ -1171,6 +1736,35 @@ import Foundation
 	    return try self.asProtobuf.serializedData()
 	}
 
-	private var asProtobuf: SignalServiceProtos_GroupDetails {
+	fileprivate var asProtobuf: SignalServiceProtos_GroupDetails {
+		let proto = SignalServiceProtos_GroupDetails.with { (builder) in
+			if let id = self.id {
+				builder.id = id
+			}
+
+			var membersUnwrapped = [String]()
+			for item in members {
+				membersUnwrapped.append(item)
+			}
+			builder.members = membersUnwrapped
+
+			if let name = self.name {
+				builder.name = name
+			}
+
+			builder.active = self.active
+
+			if let avatar = self.avatar {
+				builder.avatar = avatar.asProtobuf
+			}
+
+			if let color = self.color {
+				builder.color = color
+			}
+
+			builder.expireTimer = self.expireTimer
+		}
+
+		return proto
 	}
 }

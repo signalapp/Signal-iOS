@@ -106,7 +106,6 @@ class BaseContext(object):
     def derive_wrapped_swift_name(self):
         names = self.inherited_proto_names()
         return self.args.proto_prefix + '_' + '.'.join(names)
-        # SignalServiceProtos_DataMessage.Quote.QuotedAttachment
         
     def children(self):
         return []
@@ -148,31 +147,34 @@ class BaseContext(object):
         
         return None                
         
-        
-    def swift_type_for_proto_type(self, field):
-        
-        can_be_optional = True
+    
+    def base_swift_type_for_proto_type(self, field):
+    
         if field.proto_type == 'string':
-            base_type = 'String'
+            return 'String'
         elif field.proto_type == 'uint64':
-            base_type = 'UInt64'
-            can_be_optional = False
+            return 'UInt64'            
         elif field.proto_type == 'uint32':
-            base_type = 'UInt32'
-            can_be_optional = False
+            return 'UInt32'
+        elif field.proto_type == 'fixed64':
+            return 'UInt64'
+        elif field.proto_type == 'bool':
+            return 'Bool'
         elif field.proto_type == 'bytes':
-            base_type = 'Data'
+            return 'Data'
         else:
             matching_context = self.context_for_proto_type(field)
             if matching_context is not None:
-                base_type = matching_context.swift_name
-                if type(matching_context) is EnumContext:
-                    can_be_optional = False
+                return matching_context.swift_name
             else:
                 # Failure
-                base_type = field.proto_type
+                return field.proto_type
+    
+    def swift_type_for_proto_type(self, field):
+        base_type = self.base_swift_type_for_proto_type(field)
         
         if field.rules == 'optional':
+            can_be_optional = self.can_field_be_optional(field)
             if can_be_optional:
                 return '%s?' % base_type
             else:
@@ -182,9 +184,38 @@ class BaseContext(object):
         elif field.rules == 'repeated':
             return '[%s]' % base_type
         else:
+            # TODO: fail
             return base_type
         
         # return 'UNKNOWN'
+        
+    def can_field_be_optional(self, field):
+        if field.proto_type == 'uint64':
+            return False
+        elif field.proto_type == 'uint32':
+            return False
+        elif field.proto_type == 'fixed64':
+            return False
+        elif field.proto_type == 'bool':
+            return False
+        elif self.is_field_an_enum(field):
+            return False
+        else:
+            return True
+        
+    def is_field_an_enum(self, field):
+        matching_context = self.context_for_proto_type(field)
+        if matching_context is not None:
+            if type(matching_context) is EnumContext:
+                return True
+        return False
+        
+    def is_field_a_proto(self, field):
+        matching_context = self.context_for_proto_type(field)
+        if matching_context is not None:
+            if type(matching_context) is MessageContext:
+                return True
+        return False
 
 
 class FileContext(BaseContext):
@@ -222,7 +253,7 @@ class MessageField:
         self.rules = rules
         self.proto_type = proto_type
         self.field_default = field_default
-    
+            
 
 class MessageContext(BaseContext):
     def __init__(self, args, parent, proto_name):
@@ -313,46 +344,55 @@ public func serializedData() throws -> Data {
     
         # asProtobuf() func
         wrapped_swift_name = self.derive_wrapped_swift_name()
-        writer.add('private var asProtobuf: %s {' % wrapped_swift_name)
+        writer.add('fileprivate var asProtobuf: %s {' % wrapped_swift_name)
         writer.push_indent()
-        # for field in self.fields():
+        writer.add('let proto = %s.with { (builder) in' % wrapped_swift_name)
+        writer.push_indent()
+        for field in self.fields():
+            if self.is_field_an_enum(field):
+                # TODO: Assert that rules is empty.
+                enum_context = self.context_for_proto_type(field)
+                writer.add('builder.%s = %sUnwrap(self.%s)' % ( field.name_swift, enum_context.swift_name, field.name_swift, ) )
+            elif field.rules == 'repeated':
+                # TODO: Assert that type is a message.
+                list_wrapped_swift_name = None
+                if self.is_field_a_proto(field):
+                    message_context = self.context_for_proto_type(field)
+                    list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
+                else:
+                    # TODO: Assert not an enum.
+                    list_wrapped_swift_name = self.base_swift_type_for_proto_type(field)
+                writer.add('var %sUnwrapped = [%s]()' % (field.name_swift, list_wrapped_swift_name))
+                writer.add('for item in %s {' % (field.name_swift))
+                writer.push_indent()
+                if self.is_field_a_proto(field):
+                    writer.add('%sUnwrapped.append(item.asProtobuf)' % field.name_swift)
+                else:
+                    writer.add('%sUnwrapped.append(item)' % field.name_swift)
+                writer.pop_indent()
+                writer.add('}')
+                writer.add('builder.%s = %sUnwrapped' % (field.name_swift, field.name_swift))
+            elif field.rules == 'optional' and self.can_field_be_optional(field):
+                writer.add('if let %s = self.%s {' % (field.name_swift, field.name_swift))
+                writer.push_indent()
+                if self.is_field_a_proto(field):
+                    writer.add('builder.%s = %s.asProtobuf' % (field.name_swift, field.name_swift))
+                else:
+                    writer.add('builder.%s = %s' % (field.name_swift, field.name_swift))
+                writer.pop_indent()
+                writer.add('}')
+            else:
+                writer.add('builder.%s = self.%s' % (field.name_swift, field.name_swift))
+            writer.newline()
         #     writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
+        writer.rstrip()
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-        # private var asProtobuf: SignalServiceProtos_Envelope {
-        #     let proto = SignalServiceProtos_Envelope.with { (builder) in
-        #         builder.source = self.source
-        #
-        #         builder.type = {
-        #             switch self.type {
-        #             case .unknown:
-        #                 return .unknown
-        #             case .ciphertext:
-        #                 return .ciphertext
-        #             case .keyExchange:
-        #                 return .keyExchange
-        #             case .prekeyBundle:
-        #                 return .prekeyBundle
-        #             case .receipt:
-        #                 return .receipt
-        #             }
-        #         }()
-        #
-        #         builder.timestamp = self.timestamp
-        #         builder.sourceDevice = self.sourceDevice
-        #
-        #         if let relay = self.relay {
-        #             builder.relay = relay
-        #         }
-        #
-        #         if let content = self.content {
-        #             builder.content = content
-        #         }
-        #     }
-        #
-        #     return proto
-        # }
+        writer.add('return proto')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
         
         writer.pop_context()
 
@@ -372,6 +412,13 @@ class EnumContext(BaseContext):
         # self.item_names = set()
         # self.item_indices = set()
         self.item_map = {}
+    
+    def derive_wrapped_swift_name(self):
+        # return BaseContext.derive_wrapped_swift_name(self) + 'Enum'
+        result = BaseContext.derive_wrapped_swift_name(self)
+        if self.proto_name == 'Type':
+            result = result + 'Enum'
+        return result
     
     def item_names(self):
         return self.item_map.values()
@@ -406,6 +453,8 @@ class EnumContext(BaseContext):
         writer.push_context(self.proto_name, self.swift_name)
 
         for case_name, case_index in self.case_pairs():
+            if case_name == 'default':
+                case_name = '`default`'
             writer.add('case %s = %s' % (case_name, case_index,))
         
         writer.pop_context()
@@ -414,8 +463,8 @@ class EnumContext(BaseContext):
         writer.add('}')
         writer.newline()
         
-        wrapped_swift_name = self.derive_wrapped_swift_name() + 'Enum'
-        writer.add('private func %sWrap(value : %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
+        wrapped_swift_name = self.derive_wrapped_swift_name()
+        writer.add('private func %sWrap(_ value : %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
@@ -426,7 +475,7 @@ class EnumContext(BaseContext):
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-        writer.add('private func %sUnwrap(value : %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
+        writer.add('private func %sUnwrap(_ value : %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
         writer.push_indent()
@@ -438,29 +487,6 @@ class EnumContext(BaseContext):
         writer.add('}')
         writer.newline()
         
-        # builder.type = {                     
-                     #     switch self.type {
-                     #     case .unknown:
-                     #         return .unknown
-                     #     case .ciphertext:
-                     #         return .ciphertext
-                     #     case .keyExchange:
-                     #         return .keyExchange
-                     #     case .prekeyBundle:
-                     #         return .prekeyBundle
-                     #     case .receipt:
-                     #         return .receipt
-                     #     }
-                     # }()
-
-    # @objc
-    # public enum SSKEnvelopeType: Int32 {
-    #     case unknown = 0
-    #     case ciphertext = 1
-    #     case keyExchange = 2
-    #     case prekeyBundle = 3
-    #     case receipt = 5
-    # }
 
 def line_parser(text):
     # lineParser = LineParser(text.split('\n'))
