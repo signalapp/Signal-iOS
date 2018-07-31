@@ -141,20 +141,9 @@ NS_ASSUME_NONNULL_BEGIN
         // in iOS11 we have to ensure the navbar frame *in* layoutSubviews.
         [navbar layoutSubviews];
     } else {
-        // Pre iOS11 we size the navbar, and position it vertically once.
+        // in iOS9/10 we only need to size the navbar once
         [navbar sizeToFit];
-
-        if (OWSWindowManager.sharedManager.hasCall) {
-            CGRect oldFrame = navbar.frame;
-            CGRect newFrame = oldFrame;
-            newFrame.size.height = navbar.callBannerHeight;
-            navbar.frame = newFrame;
-        } else {
-            CGRect oldFrame = navbar.frame;
-            CGRect newFrame
-                = CGRectMake(oldFrame.origin.x, navbar.statusBarHeight, oldFrame.size.width, oldFrame.size.height);
-            navbar.frame = newFrame;
-        }
+        [navbar layoutIfNeeded];
 
         // Since the navbar's frame was updated, we need to be sure our child VC's
         // container view is updated.

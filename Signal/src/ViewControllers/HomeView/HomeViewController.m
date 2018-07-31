@@ -418,7 +418,11 @@ NSString *const kArchivedConversationsReuseIdentifier = @"kArchivedConversations
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
     [searchResultsController.view autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsZero excludingEdge:ALEdgeTop];
-    [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
+    if (@available(iOS 11, *)) {
+        [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
+    } else {
+        [searchResultsController.view autoPinToTopLayoutGuideOfViewController:self withInset:40];
+    }
     searchResultsController.view.hidden = YES;
 
     [self updateBarButtonItems];
