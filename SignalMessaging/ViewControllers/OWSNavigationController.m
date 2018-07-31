@@ -133,18 +133,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (@available(iOS 11.0, *)) {
         if (OWSWindowManager.sharedManager.hasCall) {
-            if (UIDevice.currentDevice.isIPhoneX) {
-                // iPhoneX computes status bar height differently.
-                // IOS_DEVICE_CONSTANT
-                self.additionalSafeAreaInsets = UIEdgeInsetsMake(navbar.navbarWithoutStatusHeight + 20, 0, 0, 0);
-
-            } else {
-                self.additionalSafeAreaInsets
-                    = UIEdgeInsetsMake(navbar.navbarWithoutStatusHeight + CurrentAppContext().statusBarHeight, 0, 0, 0);
-            }
+            self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
         }
+
         // in iOS11 we have to ensure the navbar frame *in* layoutSubviews.
         [navbar layoutSubviews];
     } else {
