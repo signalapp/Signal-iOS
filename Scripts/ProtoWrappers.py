@@ -12,425 +12,457 @@ import re
 
 git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
 
+        
+def lowerCamlCaseForUnderscoredText(name):
+    splits = name.split('_')
+    splits = [split.title() for split in splits]
+    splits[0] = splits[0].lower()
+    return ''.join(splits)
+
+class WriterContext:
+    def __init__(self, proto_name, swift_name, parent=None):
+        self.proto_name = proto_name
+        self.swift_name = swift_name
+        self.parent = parent
+        self.name_map = {}
 
 
-# class include:
-#     def __init__(self, isInclude, isQuote, body, comment):
-#         self.isInclude = isInclude
-#         self.isQuote = isQuote
-#         self.body = body
-#         self.comment = comment
-#
-#     def format(self):
-#         result = '%s %s%s%s' % (
-#                                 ('#include' if self.isInclude else '#import'),
-#                                 ('"' if self.isQuote else '<'),
-#                                 self.body.strip(),
-#                                 ('"' if self.isQuote else '>'),
-#                                 )
-#         if self.comment.strip():
-#             result += ' ' + self.comment.strip()
-#         return result
-#
-#
-# def is_include_or_import(line):
-#     line = line.strip()
-#     if line.startswith('#include '):
-#         return True
-#     elif line.startswith('#import '):
-#         return True
-#     else:
-#         return False
-#
-#
-# def parse_include(line):
-#     remainder = line.strip()
-#
-#     if remainder.startswith('#include '):
-#         isInclude = True
-#         remainder = remainder[len('#include '):]
-#     elif remainder.startswith('#import '):
-#         isInclude = False
-#         remainder = remainder[len('#import '):]
-#     elif remainder == '//':
-#         return None
-#     elif not remainder:
-#         return None
-#     else:
-#         print ('Unexpected import or include: '+ line)
-#         sys.exit(1)
-#
-#     comment = None
-#     if remainder.startswith('"'):
-#         isQuote = True
-#         endIndex = remainder.find('"', 1)
-#         if endIndex < 0:
-#             print ('Unexpected import or include: '+ line)
-#             sys.exit(1)
-#         body = remainder[1:endIndex]
-#         comment = remainder[endIndex+1:]
-#     elif remainder.startswith('<'):
-#         isQuote = False
-#         endIndex = remainder.find('>', 1)
-#         if endIndex < 0:
-#             print ('Unexpected import or include: '+ line)
-#             sys.exit(1)
-#         body = remainder[1:endIndex]
-#         comment = remainder[endIndex+1:]
-#     else:
-#         print ('Unexpected import or include: '+ remainder)
-#         sys.exit(1)
-#
-#     return include(isInclude, isQuote, body, comment)
-#
-#
-# def parse_includes(text):
-#     lines = text.split('\n')
-#
-#     includes = []
-#     for line in lines:
-#         include = parse_include(line)
-#         if include:
-#             includes.append(include)
-#
-#     return includes
-#
-#
-# def sort_include_block(text, filepath, filename, file_extension):
-#     lines = text.split('\n')
-#
-#     includes = parse_includes(text)
-#
-#     blocks = []
-#
-#     file_extension = file_extension.lower()
-#
-#     for include in includes:
-#         include.isInclude = False
-#
-#     if file_extension in ('c', 'cpp', 'hpp'):
-#         for include in includes:
-#             include.isInclude = True
-#     elif file_extension in ('m'):
-#         for include in includes:
-#             include.isInclude = False
-#
-#     # Make sure matching header is first.
-#     matching_header_includes = []
-#     other_includes = []
-#     def is_matching_header(include):
-#         filename_wo_ext = os.path.splitext(filename)[0]
-#         include_filename_wo_ext = os.path.splitext(os.path.basename(include.body))[0]
-#         return filename_wo_ext == include_filename_wo_ext
-#     for include in includes:
-#         if is_matching_header(include):
-#             matching_header_includes.append(include)
-#         else:
-#             other_includes.append(include)
-#     includes = other_includes
-#
-#     def formatBlock(includes):
-#         lines = [include.format() for include in includes]
-#         lines = list(set(lines))
-#         def include_sorter(a, b):
-#             # return cmp(a.lower(), b.lower())
-#             return cmp(a, b)
-#         # print 'before'
-#         # for line in lines:
-#         #     print '\t', line
-#         # print
-#         lines.sort(include_sorter)
-#         # print 'after'
-#         # for line in lines:
-#         #     print '\t', line
-#         # print
-#         # print
-#         # print 'filepath'
-#         # for line in lines:
-#         #     print '\t', line
-#         # print
-#         return '\n'.join(lines)
-#
-#     includeAngles = [include for include in includes if include.isInclude and not include.isQuote]
-#     includeQuotes = [include for include in includes if include.isInclude and include.isQuote]
-#     importAngles = [include for include in includes if (not include.isInclude) and not include.isQuote]
-#     importQuotes = [include for include in includes if (not include.isInclude) and include.isQuote]
-#     if matching_header_includes:
-#         blocks.append(formatBlock(matching_header_includes))
-#     if includeQuotes:
-#         blocks.append(formatBlock(includeQuotes))
-#     if includeAngles:
-#         blocks.append(formatBlock(includeAngles))
-#     if importQuotes:
-#         blocks.append(formatBlock(importQuotes))
-#     if importAngles:
-#         blocks.append(formatBlock(importAngles))
-#
-#     return '\n'.join(blocks) + '\n'
-#
-#
-# def sort_class_statement_block(text, filepath, filename, file_extension):
-#     lines = text.split('\n')
-#     lines = [line.strip() for line in lines if line.strip()]
-#     lines = list(set(lines))
-#     lines.sort()
-#     return '\n' + '\n'.join(lines) + '\n'
-#
-#
-# def find_matching_section(text, match_test):
-#     lines = text.split('\n')
-#     first_matching_line_index = None
-#     for index, line in enumerate(lines):
-#         if match_test(line):
-#             first_matching_line_index = index
-#             break
-#
-#     if first_matching_line_index is None:
-#         return None
-#
-#     # Absorb any leading empty lines.
-#     while first_matching_line_index > 0:
-#         prev_line = lines[first_matching_line_index - 1]
-#         if prev_line.strip():
-#             break
-#         first_matching_line_index = first_matching_line_index - 1
-#
-#     first_non_matching_line_index = None
-#     for index, line in enumerate(lines[first_matching_line_index:]):
-#         if not line.strip():
-#             # Absorb any trailing empty lines.
-#             continue
-#         if not match_test(line):
-#             first_non_matching_line_index = index + first_matching_line_index
-#             break
-#
-#     text0 = '\n'.join(lines[:first_matching_line_index])
-#     if first_non_matching_line_index is None:
-#         text1 = '\n'.join(lines[first_matching_line_index:])
-#         text2 = None
-#     else:
-#         text1 = '\n'.join(lines[first_matching_line_index:first_non_matching_line_index])
-#         text2 = '\n'.join(lines[first_non_matching_line_index:])
-#
-#     return text0, text1, text2
-#
-#
-# def sort_matching_blocks(sort_name, filepath, filename, file_extension, text, match_func, sort_func):
-#     unprocessed = text
-#     processed = None
-#     while True:
-#         section = find_matching_section(unprocessed, match_func)
-#         # print '\t', 'sort_matching_blocks', section
-#         if not section:
-#             if processed:
-#                 processed = '\n'.join((processed, unprocessed,))
-#             else:
-#                 processed = unprocessed
-#             break
-#
-#         text0, text1, text2 = section
-#
-#         if processed:
-#             processed = '\n'.join((processed, text0,))
-#         else:
-#             processed = text0
-#
-#         # print 'before:'
-#         # temp_lines = text1.split('\n')
-#         # for index, line in enumerate(temp_lines):
-#         #     if index < 3 or index + 3 >= len(temp_lines):
-#         #         print '\t', index, line
-#         # # print text1
-#         # print
-#         text1 = sort_func(text1, filepath, filename, file_extension)
-#         # print 'after:'
-#         # # print text1
-#         # temp_lines = text1.split('\n')
-#         # for index, line in enumerate(temp_lines):
-#         #     if index < 3 or index + 3 >= len(temp_lines):
-#         #         print '\t', index, line
-#         # print
-#         processed = '\n'.join((processed, text1,))
-#         if text2:
-#             unprocessed = text2
-#         else:
-#             break
-#
-#     if text != processed:
-#         print sort_name, filepath
-#     return processed
-#
-#
-# def find_class_statement_section(text):
-#     def is_class_statement(line):
-#         return line.strip().startswith('@class ')
-#
-#     return find_matching_section(text, is_class_statement)
-#
-#
-# def find_include_section(text):
-#     def is_include_line(line):
-#         return is_include_or_import(line)
-#         # return is_include_or_import_or_empty(line)
-#
-#     return find_matching_section(text, is_include_line)
-#
-#
-# def sort_includes(filepath, filename, file_extension, text):
-#     # print 'sort_includes', filepath
-#     if file_extension not in ('.h', '.m', '.mm'):
-#         return text
-#     return sort_matching_blocks('sort_includes', filepath, filename, file_extension, text, find_include_section, sort_include_block)
-#
-#
-# def sort_class_statements(filepath, filename, file_extension, text):
-#     # print 'sort_class_statements', filepath
-#     if file_extension not in ('.h', '.m', '.mm'):
-#         return text
-#     return sort_matching_blocks('sort_class_statements', filepath, filename, file_extension, text, find_class_statement_section, sort_class_statement_block)
-#
-#
-# def splitall(path):
-#     allparts = []
-#     while 1:
-#         parts = os.path.split(path)
-#         if parts[0] == path:  # sentinel for absolute paths
-#             allparts.insert(0, parts[0])
-#             break
-#         elif parts[1] == path: # sentinel for relative paths
-#             allparts.insert(0, parts[1])
-#             break
-#         else:
-#             path = parts[0]
-#             allparts.insert(0, parts[1])
-#     return allparts
-#
-#
-# def process(filepath):
-#
-#     short_filepath = filepath[len(git_repo_path):]
-#     if short_filepath.startswith(os.sep):
-#        short_filepath = short_filepath[len(os.sep):]
-#
-#     filename = os.path.basename(filepath)
-#     if filename.startswith('.'):
-#         return
-#     file_ext = os.path.splitext(filename)[1]
-#     if file_ext in ('.swift'):
-#         env_copy = os.environ.copy()
-#         env_copy["SCRIPT_INPUT_FILE_COUNT"] = "1"
-#         env_copy["SCRIPT_INPUT_FILE_0"] = '%s' % ( short_filepath, )
-#         lint_output = subprocess.check_output(['swiftlint', 'autocorrect', '--use-script-input-files'], env=env_copy)
-#         print lint_output
-#         try:
-#             lint_output = subprocess.check_output(['swiftlint', 'lint', '--use-script-input-files'], env=env_copy)
-#         except subprocess.CalledProcessError, e:
-#             lint_output = e.output
-#         print lint_output
-#
-#     with open(filepath, 'rt') as f:
-#         text = f.read()
-#
-#     original_text = text
-#
-#     text = sort_includes(filepath, filename, file_ext, text)
-#     text = sort_class_statements(filepath, filename, file_ext, text)
-#
-#     lines = text.split('\n')
-#     while lines and lines[0].startswith('//'):
-#         lines = lines[1:]
-#     text = '\n'.join(lines)
-#     text = text.strip()
-#
-#     header = '''//
-# //  Copyright (c) %s Open Whisper Systems. All rights reserved.
-# //
-#
-# ''' % (
-#     datetime.datetime.now().year,
-#     )
-#     text = header + text + '\n'
-#
-#     if original_text == text:
-#         return
-#
-#     print 'Updating:', short_filepath
-#
-#     with open(filepath, 'wt') as f:
-#         f.write(text)
-#
-#
-# def should_ignore_path(path):
-#     ignore_paths = [
-#         os.path.join(git_repo_path, '.git')
-#     ]
-#     for ignore_path in ignore_paths:
-#         if path.startswith(ignore_path):
-#             return True
-#     for component in splitall(path):
-#         if component.startswith('.'):
-#             return True
-#         if component.endswith('.framework'):
-#             return True
-#         if component in ('Pods', 'ThirdParty', 'Carthage',):
-#             return True
-#
-#     return False
-#
-#
-# def process_if_appropriate(filepath):
-#     filename = os.path.basename(filepath)
-#     if filename.startswith('.'):
-#         return
-#     file_ext = os.path.splitext(filename)[1]
-#     if file_ext not in ('.h', '.hpp', '.cpp', '.m', '.mm', '.pch', '.swift'):
-#         return
-#     if should_ignore_path(filepath):
-#         return
-#     process(filepath)
+class LineWriter:
+    def __init__(self, args):
+        self.contexts = []
+        # self.indent = 0
+        self.lines = []
+        self.args = args
+        self.current_indent = 0
+        
+    def push_indent(self):
+        self.current_indent = self.current_indent + 1
+        
+    def pop_indent(self):
+        self.current_indent = self.current_indent - 1
+        
+    def all_context_proto_names(self):
+        return [context.proto_name for context in self.contexts]
 
-# class LineParser:
-#     def __init__(self, lines):
-#         self.lines = lines
-#
-#     def
+    def current_context(self):
+        return self.contexts[-1]
+
+    def indent(self):
+        return self.current_indent
+        # return len(self.contexts)
+        
+    def push_context(self, proto_name, swift_name):
+        self.contexts.append(WriterContext(proto_name, swift_name))
+        self.push_indent()
+        
+    def pop_context(self):
+        self.contexts.pop()
+        self.pop_indent()
     
-# def process_proto_file(proto_file_path, dst_dir_path, is_verbose):
+    def add(self, line):
+        self.lines.append(('\t' * self.indent()) + line)
+    
+    def extend(self, text):
+        for line in text.split('\n'):
+            self.add(line)
+        
+    def join(self):
+        lines = [line.rstrip() for line in self.lines]
+        return '\n'.join(lines)
+        
+    def rstrip(self):
+        lines = self.lines
+        while len(lines) > 0 and len(lines[-1].strip()) == 0:
+            lines = lines[:-1]
+        self.lines = lines
+        
+    # def prefixed_name(self, proto_name):
+    #     names = self.all_context_proto_names() + [proto_name,]
+    #     return self.args.wrapper_prefix + '_'.join(names)
+
+    def is_top_level_entity(self):
+        return self.indent() == 0
+        
+    def newline(self):
+        self.add('')
 
 
-
-class FileContext:
+class BaseContext(object):
     def __init__(self):
+        self.parent = None
+        self.proto_name = None
+        
+    def inherited_proto_names(self):
+        if self.parent is None:
+            return []
+        if self.proto_name is None:
+            return []
+        return self.parent.inherited_proto_names() + [self.proto_name,]
 
+    def derive_swift_name(self):
+        names = self.inherited_proto_names()
+        return self.args.wrapper_prefix + '_'.join(names)
+
+    def derive_wrapped_swift_name(self):
+        names = self.inherited_proto_names()
+        return self.args.proto_prefix + '_' + '.'.join(names)
+        # SignalServiceProtos_DataMessage.Quote.QuotedAttachment
+        
+    def children(self):
+        return []
+        
+    def descendents(self):
+        result = []
+        for child in self.children():
+            result.append(child)
+            result.extend(child.descendents())
+        return result
+        
+    def siblings(self):
+        result = []
+        if self.parent is not None:
+            result = self.parent.children()
+        return result
+        
+    def ancestors(self):
+        result = []
+        if self.parent is not None:
+            result.append(self.parent)
+            result.extend(self.parent.ancestors())
+        return result
+        
+    def context_for_proto_type(self, field):
+        candidates = []
+        candidates.extend(self.descendents())
+        candidates.extend(self.siblings())
+        for ancestor in self.ancestors():
+            if ancestor.proto_name is None:
+                # Ignore the root context
+                continue
+            candidates.append(ancestor)
+            candidates.extend(ancestor.siblings())
+
+        for candidate in candidates:
+            if candidate.proto_name == field.proto_type:
+                return candidate
+        
+        return None                
+        
+        
+    def swift_type_for_proto_type(self, field):
+        
+        can_be_optional = True
+        if field.proto_type == 'string':
+            base_type = 'String'
+        elif field.proto_type == 'uint64':
+            base_type = 'UInt64'
+            can_be_optional = False
+        elif field.proto_type == 'uint32':
+            base_type = 'UInt32'
+            can_be_optional = False
+        elif field.proto_type == 'bytes':
+            base_type = 'Data'
+        else:
+            matching_context = self.context_for_proto_type(field)
+            if matching_context is not None:
+                base_type = matching_context.swift_name
+                if type(matching_context) is EnumContext:
+                    can_be_optional = False
+            else:
+                # Failure
+                base_type = field.proto_type
+        
+        if field.rules == 'optional':
+            if can_be_optional:
+                return '%s?' % base_type
+            else:
+                return base_type
+        elif field.rules == 'required':
+            return base_type
+        elif field.rules == 'repeated':
+            return '[%s]' % base_type
+        else:
+            return base_type
+        
+        # return 'UNKNOWN'
+
+
+class FileContext(BaseContext):
+    def __init__(self, args):
+        BaseContext.__init__(self)
+        
+        self.args = args
+        
+        self.messages = []
+        self.enums = []
+        
+    def children(self):
+        return self.enums + self.messages
+        
+    def prepare(self):
+        for child in self.children():
+            child.prepare()
+        
+    def generate(self, writer):
+        writer.extend('''//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
+
+import Foundation
+''')
+        
+        for child in self.children():
+            child.generate(writer)
+
+
+class MessageField:
+    def __init__(self, name, index, rules, proto_type, field_default):
+        self.name = name
+        self.index = index
+        self.rules = rules
+        self.proto_type = proto_type
+        self.field_default = field_default
+    
+
+class MessageContext(BaseContext):
+    def __init__(self, args, parent, proto_name):
+        BaseContext.__init__(self)
+
+        self.args = args
+        self.parent = parent
+        
+        self.proto_name = proto_name
 
         self.messages = []
         self.enums = []
         
-        self.package = None
+        self.field_map = {}
+    
+    def fields(self):
+        return self.field_map.values()
+    
+    def field_indices(self):
+        return [field.index for field in self.fields()]
 
+    def field_names(self):
+        return [field.name for field in self.fields()]
 
-class MessageContext:
-    def __init__(self):
-        self.name = None
+    def children(self):
+        return self.enums + self.messages
+        
+    def prepare(self):
+        self.swift_name = self.derive_swift_name()
+        
+        for child in self.children():
+            child.prepare()
+        
+    def generate(self, writer):
+        is_top_level_entity = writer.is_top_level_entity()
+        
+        writer.add('// MARK: - %s' % self.swift_name)
+        writer.newline()
+        
+        writer.add('@objc public class %s: NSObject {' % self.swift_name)
+        writer.newline()
+        
+        writer.push_context(self.proto_name, self.swift_name)
+        
+        if is_top_level_entity:
+            writer.invalid_protobuf_error_name = '%sError' % self.swift_name
+            writer.extend(('''
+public enum %s: Error {
+    case invalidProtobuf(description: String)
+}
+''' % writer.invalid_protobuf_error_name).strip())
+            writer.newline()
+        
+        for child in self.children():
+            child.generate(writer)
 
-        self.messages = []
-        self.enums = []
+        # Prepare fields
+        for field in self.fields():
+            field.type_swift = self.swift_type_for_proto_type(field)
+            field.name_swift = field.name
         
-        self.fields = []
-        self.field_names = set()
-        self.field_indices = set()
+        # Property Declarations
+        for field in self.fields():
+            writer.add('@objc public let %s: %s' % (field.name_swift, field.type_swift))
+        writer.newline()
+        
+        # Initializer
+        initializer_parameters = []
+        for field in self.fields():
+            initializer_parameters.append('%s: %s' % (field.name_swift, field.type_swift))
+        initializer_parameters = ', '.join(initializer_parameters)
+        writer.add('@objc public init(%s) {' % initializer_parameters)
+        writer.push_indent()
+        for field in self.fields():
+            writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        # serializedData() func
+        writer.extend(('''
+@objc
+public func serializedData() throws -> Data {
+    return try self.asProtobuf.serializedData()
+}
+''').strip())
+        writer.newline()
+    
+        # asProtobuf() func
+        wrapped_swift_name = self.derive_wrapped_swift_name()
+        writer.add('private var asProtobuf: %s {' % wrapped_swift_name)
+        writer.push_indent()
+        # for field in self.fields():
+        #     writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        # private var asProtobuf: SignalServiceProtos_Envelope {
+        #     let proto = SignalServiceProtos_Envelope.with { (builder) in
+        #         builder.source = self.source
+        #
+        #         builder.type = {
+        #             switch self.type {
+        #             case .unknown:
+        #                 return .unknown
+        #             case .ciphertext:
+        #                 return .ciphertext
+        #             case .keyExchange:
+        #                 return .keyExchange
+        #             case .prekeyBundle:
+        #                 return .prekeyBundle
+        #             case .receipt:
+        #                 return .receipt
+        #             }
+        #         }()
+        #
+        #         builder.timestamp = self.timestamp
+        #         builder.sourceDevice = self.sourceDevice
+        #
+        #         if let relay = self.relay {
+        #             builder.relay = relay
+        #         }
+        #
+        #         if let content = self.content {
+        #             builder.content = content
+        #         }
+        #     }
+        #
+        #     return proto
+        # }
+        
+        writer.pop_context()
+
+        writer.rstrip()
+        writer.add('}')
+        writer.newline()
         
         
-class EnumContext:
-    def __init__(self):
-        self.name = None
+class EnumContext(BaseContext):
+    def __init__(self, args, parent, proto_name):
+        BaseContext.__init__(self)
+
+        self.args = args
+        self.parent = parent        
+        self.proto_name = proto_name
         
-        self.item_names = set()
-        self.item_indices = set()
+        # self.item_names = set()
+        # self.item_indices = set()
         self.item_map = {}
+    
+    def item_names(self):
+        return self.item_map.values()
+    
+    def item_indices(self):
+        return self.item_map.keys()
 
+    def prepare(self):
+        self.swift_name = self.derive_swift_name()
+        
+        for child in self.children():
+            child.prepare()
 
-def line_parser(text, is_verbose):
+    def case_pairs(self):
+        indices = [int(index) for index in self.item_indices()]
+        indices = sorted(indices)
+        result = []
+        for index in indices:
+            index_str = str(index)
+            item_name = self.item_map[index_str]
+            case_name = lowerCamlCaseForUnderscoredText(item_name)
+            result.append( (case_name, index_str,) )
+        return result
+
+    def generate(self, writer):
+        
+        writer.add('// MARK: - %s' % self.swift_name)
+        writer.newline()
+        
+        writer.add('@objc public enum %s: Int32 {' % self.swift_name)
+        
+        writer.push_context(self.proto_name, self.swift_name)
+
+        for case_name, case_index in self.case_pairs():
+            writer.add('case %s = %s' % (case_name, case_index,))
+        
+        writer.pop_context()
+
+        writer.rstrip()
+        writer.add('}')
+        writer.newline()
+        
+        wrapped_swift_name = self.derive_wrapped_swift_name() + 'Enum'
+        writer.add('private func %sWrap(value : %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
+        writer.push_indent()
+        writer.add('switch value {')
+        writer.push_indent()
+        for case_name, case_index in self.case_pairs():
+            writer.add('case .%s: return .%s' % (case_name, case_name,))
+        writer.pop_indent()
+        writer.add('}')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        writer.add('private func %sUnwrap(value : %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
+        writer.push_indent()
+        writer.add('switch value {')
+        writer.push_indent()
+        for case_name, case_index in self.case_pairs():
+            writer.add('case .%s: return .%s' % (case_name, case_name,))
+        writer.pop_indent()
+        writer.add('}')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+        
+        # builder.type = {                     
+                     #     switch self.type {
+                     #     case .unknown:
+                     #         return .unknown
+                     #     case .ciphertext:
+                     #         return .ciphertext
+                     #     case .keyExchange:
+                     #         return .keyExchange
+                     #     case .prekeyBundle:
+                     #         return .prekeyBundle
+                     #     case .receipt:
+                     #         return .receipt
+                     #     }
+                     # }()
+
+    # @objc
+    # public enum SSKEnvelopeType: Int32 {
+    #     case unknown = 0
+    #     case ciphertext = 1
+    #     case keyExchange = 2
+    #     case prekeyBundle = 3
+    #     case receipt = 5
+    # }
+
+def line_parser(text):
     # lineParser = LineParser(text.split('\n'))
     
     for line in text.split('\n'):
@@ -444,19 +476,18 @@ def line_parser(text, is_verbose):
         if not line:
             continue
         
-        if is_verbose:
+        if args.verbose:
             print 'line:', line
             
         yield line
         
 
-def parse_enum(proto_file_path, parser, parent_context, enum_name, is_verbose):
+def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
 
-    if is_verbose:
+    if args.verbose:
         print '# enum:', enum_name
     
-    context = EnumContext()
-    context.name = enum_name
+    context = EnumContext(args, parent_context, enum_name)
     
     while True:
         try:
@@ -465,7 +496,7 @@ def parse_enum(proto_file_path, parser, parent_context, enum_name, is_verbose):
             raise Exception('Incomplete enum: %s' % proto_file_path)
     
         if line == '}':
-            if is_verbose:
+            if args.verbose:
                 print
             parent_context.enums.append(context)
             return
@@ -476,16 +507,14 @@ def parse_enum(proto_file_path, parser, parent_context, enum_name, is_verbose):
             item_name = item_match.group(1).strip()
             item_index = item_match.group(2).strip()
         
-            if is_verbose:
+            if args.verbose:
                 print '\t enum item[%s]: %s' % (item_index, item_name)
             
-            if item_name in context.item_names:
+            if item_name in context.item_names():
                 raise Exception('Duplicate enum name[%s]: %s' % (proto_file_path, item_name))
-            context.item_names.add(item_name)
             
-            if item_index in context.item_indices:
+            if item_index in context.item_indices():
                 raise Exception('Duplicate enum index[%s]: %s' % (proto_file_path, item_name))
-            context.item_indices.add(item_index)
             
             context.item_map[item_index] = item_name
                 
@@ -501,13 +530,12 @@ def optional_match_group(match, index):
     return group.strip()
 
 
-def parse_message(proto_file_path, parser, parent_context, message_name, is_verbose):
+def parse_message(args, proto_file_path, parser, parent_context, message_name):
 
-    if is_verbose:
+    if args.verbose:
         print '# message:', message_name
     
-    context = MessageContext()
-    context.name = message_name
+    context = MessageContext(args, parent_context, message_name)
         
     while True:
         try:
@@ -516,7 +544,7 @@ def parse_message(proto_file_path, parser, parent_context, message_name, is_verb
             raise Exception('Incomplete message: %s' % proto_file_path)
     
         if line == '}':
-            if is_verbose:
+            if args.verbose:
                 print
             parent_context.messages.append(context)
             return
@@ -525,14 +553,14 @@ def parse_message(proto_file_path, parser, parent_context, message_name, is_verb
         enum_match = enum_regex.search(line)
         if enum_match:
             enum_name = enum_match.group(1).strip()        
-            parse_enum(proto_file_path, parser, context, enum_name, is_verbose)
+            parse_enum(args, proto_file_path, parser, context, enum_name)
             continue
         
         message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()
-            parse_message(proto_file_path, parser, context, message_name, is_verbose)
+            parse_message(args, proto_file_path, parser, context, message_name)
             continue
 
         # Examples:
@@ -565,33 +593,28 @@ def parse_message(proto_file_path, parser, parent_context, message_name, is_verb
             }
             # print 'message_field:', message_field
         
-            if is_verbose:
+            if args.verbose:
                 print '\t message field[%s]: %s' % (item_index, str(message_field))
             
-            if item_name in context.field_names:
+            if item_name in context.field_names():
                 raise Exception('Duplicate message field name[%s]: %s' % (proto_file_path, item_name))
-            context.field_names.add(item_name)
+            # context.field_names.add(item_name)
             
-            if item_index in context.field_indices:
+            if item_index in context.field_indices():
                 raise Exception('Duplicate message field index[%s]: %s' % (proto_file_path, item_name))
-            context.field_indices.add(item_index)
+            # context.field_indices.add(item_index)
             
-            context.fields.append(message_field)
-            
-            # if item_name in context.item_names:
-            #     raise Exception('Duplicate message field[%s]: %s' % (proto_file_path, item_name))
-            # context.item_names.add(item_name)
-            #
-            # if item_index in context.item_map:
-            #     raise Exception('Duplicate message field[%s]: %s' % (proto_file_path, item_index))
-            # context.item_map[item_index] = item_name
-                
+            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default)
+            # context.fields.append(message_field)
+                    # class MessageField:
+                    #     def __init__(self, name, index, rules, field_type, field_default):
+                            
             continue
 
         raise Exception('Invalid message syntax[%s]: %s' % (proto_file_path, line))
     
     
-def process_proto_file(proto_file_path, dst_dir_path, is_verbose):
+def process_proto_file(args, proto_file_path, dst_file_path):
     with open(proto_file_path, 'rt') as f:
         text = f.read()
     
@@ -602,55 +625,53 @@ def process_proto_file(proto_file_path, dst_dir_path, is_verbose):
     package_regex = re.compile(r'^package\s+(.+);')
     option_regex = re.compile(r'^option ')
     
-    parser = line_parser(text, is_verbose)
+    parser = line_parser(text)
     
     # lineParser = LineParser(text.split('\n'))
     
-    context = FileContext()
+    context = FileContext(args)
     
     while True:
         try:
             line = parser.next()
         except StopIteration:
             break
-        # if not line:
-        #     break
-    # for line in text.split('\n'):
-    #     line = line.strip()
-    #     if not line:
-    #         continue
-
-        # if is_verbose:
-        #     print 'line:', line
 
         if syntax_regex.search(line):
-            if is_verbose:
+            if args.verbose:
                 print '# Ignoring syntax'
             continue
         
         if option_regex.search(line):
-            if is_verbose:
+            if args.verbose:
                 print '# Ignoring option'
             continue
         
         package_match = package_regex.search(line)
         if package_match:
-            if context.package:
+            if args.package:
                 raise Exception('More than one package statement: %s' % proto_file_path)
-            context.package = package_match.group(1).strip()
+            args.package = package_match.group(1).strip()
             
-            if is_verbose:
-                print '# package:', context.package
+            if args.verbose:
+                print '# package:', args.package
             continue
         
         message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()
-            parse_message(proto_file_path, parser, context, message_name, is_verbose)
+            parse_message(args, proto_file_path, parser, context, message_name)
             continue
     
         raise Exception('Invalid syntax[%s]: %s' % (proto_file_path, line))
+    
+    writer = LineWriter(args)
+    context.prepare()
+    context.generate(writer)
+    output = writer.join()
+    with open(dst_file_path, 'wt') as f:
+        f.write(output)
     
     
 if __name__ == "__main__":
@@ -666,6 +687,9 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', action='store_true', help='enables verbose logging')
     args = parser.parse_args()
     
+    if args.verbose:
+        print 'args:', args
+    
     proto_file_path = os.path.abspath(os.path.join(args.proto_dir, args.proto_file))
     if not os.path.exists(proto_file_path):
         raise Exception('File does not exist: %s' % proto_file_path)
@@ -674,38 +698,13 @@ if __name__ == "__main__":
     if not os.path.exists(dst_dir_path):
         raise Exception('Destination does not exist: %s' % dst_dir_path)
     
-    is_verbose = args.verbose
+    dst_file_path = os.path.join(dst_dir_path, "%s.swift" % args.wrapper_prefix)
     
-    process_proto_file(proto_file_path, dst_dir_path, is_verbose)
+    if args.verbose:
+        print 'dst_file_path:', dst_file_path
+    
+    args.package = None
+    process_proto_file(args, proto_file_path, dst_file_path)
+    
     print 'complete.'
     
-    # if args.all:
-    #     for rootdir, dirnames, filenames in os.walk(git_repo_path):
-    #         for filename in filenames:
-    #             file_path = os.path.abspath(os.path.join(rootdir, filename))
-    #             process_if_appropriate(file_path)
-    # elif args.path:
-    #     for rootdir, dirnames, filenames in os.walk(args.path):
-    #         for filename in filenames:
-    #             file_path = os.path.abspath(os.path.join(rootdir, filename))
-    #             process_if_appropriate(file_path)
-    # else:
-    #     filepaths = []
-    #
-    #     # Staging
-    #     output = commands.getoutput('git diff --cached --name-only --diff-filter=ACMR')
-    #     filepaths.extend([line.strip() for line in output.split('\n')])
-    #
-    #     # Working
-    #     output = commands.getoutput('git diff --name-only --diff-filter=ACMR')
-    #     filepaths.extend([line.strip() for line in output.split('\n')])
-    #
-    #     # Only process each path once.
-    #     filepaths = sorted(set(filepaths))
-    #
-    #     for filepath in filepaths:
-    #         filepath = os.path.abspath(os.path.join(git_repo_path, filepath))
-    #         process_if_appropriate(filepath)
-
-    # print 'git clang-format...'
-    # print commands.getoutput('git clang-format')
