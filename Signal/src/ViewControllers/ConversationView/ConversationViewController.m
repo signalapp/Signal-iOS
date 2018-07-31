@@ -3468,9 +3468,9 @@ typedef enum : NSUInteger {
         }
         
         [self updateLastVisibleTimestamp];
-        
-        if (scrollToBottom) {
-            [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
+
+        if (scrollToBottom && shouldAnimateUpdates) {
+            [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
         }
     };
     if (shouldAnimateUpdates) {
