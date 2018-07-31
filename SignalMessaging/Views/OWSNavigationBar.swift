@@ -94,11 +94,18 @@ public class OWSNavigationBar: UINavigationBar {
 
         if #available(iOS 11, *) {
             return super.sizeThatFits(size)
-        } else {
-            // pre iOS11, sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
+        } else if #available(iOS 10, *) {
+            // iOS10
+            // sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
             // That is, increasing this causes the child view controller to be pushed down.
             // (as of iOS11, this is not used and instead we use additionalSafeAreaInsets)
             return CGSize(width: fullWidth, height: navbarWithoutStatusHeight + statusBarHeight)
+        } else {
+            // iOS9
+            // sizeThatFits is repeatedly called to determine how much space to reserve for that navbar.
+            // That is, increasing this causes the child view controller to be pushed down.
+            // (as of iOS11, this is not used and instead we use additionalSafeAreaInsets)            
+            return CGSize(width: fullWidth, height: navbarWithoutStatusHeight + callBannerHeight + 20)
         }
     }
 
@@ -108,14 +115,15 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
+        guard #available(iOS 11, *) else {
+            super.layoutSubviews()
+            return
+        }
+
         self.frame = CGRect(x: 0, y: callBannerHeight, width: fullWidth, height: navbarWithoutStatusHeight)
         self.bounds = CGRect(x: 0, y: 0, width: fullWidth, height: navbarWithoutStatusHeight)
 
         super.layoutSubviews()
-
-        guard #available(iOS 11, *) else {
-            return
-        }
 
         // This is only necessary on iOS11, which has some private views within that lay outside of the navbar.
         // They aren't actually visible behind the call status bar, but they looks strange during present/dismiss

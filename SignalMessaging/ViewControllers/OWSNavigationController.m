@@ -133,35 +133,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (@available(iOS 11.0, *)) {
         if (OWSWindowManager.sharedManager.hasCall) {
-            if (UIDevice.currentDevice.isIPhoneX) {
-                // iPhoneX computes status bar height differently.
-                // IOS_DEVICE_CONSTANT
-                self.additionalSafeAreaInsets = UIEdgeInsetsMake(navbar.navbarWithoutStatusHeight + 20, 0, 0, 0);
-
-            } else {
-                self.additionalSafeAreaInsets
-                    = UIEdgeInsetsMake(navbar.navbarWithoutStatusHeight + CurrentAppContext().statusBarHeight, 0, 0, 0);
-            }
+            self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
         }
+
         // in iOS11 we have to ensure the navbar frame *in* layoutSubviews.
         [navbar layoutSubviews];
     } else {
-        // Pre iOS11 we size the navbar, and position it vertically once.
+        // in iOS9/10 we only need to size the navbar once
         [navbar sizeToFit];
-
-        if (OWSWindowManager.sharedManager.hasCall) {
-            CGRect oldFrame = navbar.frame;
-            CGRect newFrame = oldFrame;
-            newFrame.size.height = navbar.callBannerHeight;
-            navbar.frame = newFrame;
-        } else {
-            CGRect oldFrame = navbar.frame;
-            CGRect newFrame
-                = CGRectMake(oldFrame.origin.x, navbar.statusBarHeight, oldFrame.size.width, oldFrame.size.height);
-            navbar.frame = newFrame;
-        }
+        [navbar layoutIfNeeded];
 
         // Since the navbar's frame was updated, we need to be sure our child VC's
         // container view is updated.

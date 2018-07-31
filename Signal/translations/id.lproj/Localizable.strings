@@ -609,10 +609,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Mengoptimalkan Database";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ jam lalu";
+"DATE_HOURS_AGO_FORMAT" = "%@ Jam Lalu";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Menit lalu";
+"DATE_MINUTES_AGO_FORMAT" = "%@ Menit Lalu";
 
 /* The present; the current time. */
 "DATE_NOW" = "Sekarang";
@@ -868,7 +868,7 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Kunci penerima tidak cocok";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Pesan diterima tidak tersinkronisasi";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Pesan yang diterima tidak sinkron.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_VERSION" = "Menerima pesan yang tidak cocok dengan versi ini";
@@ -886,7 +886,7 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "Sebuah kegagagalan tak dikenal muncul.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Nomor aman diubah";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Nomor keamanan diubah";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Pengguna tidak terdaftar: %@";
@@ -1494,7 +1494,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Mainkan Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Anda tidak menandai %@telah terverifikasi.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Anda belum menandai %@ telah terverifikasi.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Terverifikasi";
@@ -2121,7 +2121,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Bagikan ke Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Tunjukkan nomor pengamanan";
+"SHOW_SAFETY_NUMBER_ACTION" = "Tunjukkan nomor keamanan";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Tunjukkan pembicaraan";

@@ -43,7 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
         // RTCMTLVideoView requires the MTKView class, available only in iOS9+
         // So check that it exists before proceeding.
         if ([MTKView class]) {
-            _videoRenderer = [[RTCMTLVideoView alloc] initWithFrame:CGRectZero];
+            RTCMTLVideoView *rtcMetalView = [[RTCMTLVideoView alloc] initWithFrame:CGRectZero];
+            rtcMetalView.videoContentMode = UIViewContentModeScaleAspectFill;
+            _videoRenderer = rtcMetalView;
             [self addSubview:_videoRenderer];
             [_videoRenderer autoPinEdgesToSuperviewEdges];
             // HACK: Although RTCMTLVideo view is positioned to the top edge of the screen

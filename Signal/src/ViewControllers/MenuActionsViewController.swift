@@ -71,10 +71,6 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapBackground))
         self.view.addGestureRecognizer(tapGesture)
-
-        let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeBackground))
-        swipeGesture.direction = .down
-        self.view.addGestureRecognizer(swipeGesture)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -249,11 +245,6 @@ class MenuActionsViewController: UIViewController, MenuActionSheetDelegate {
         animateDismiss(action: nil)
     }
 
-    @objc
-    func didSwipeBackground(gesture: UISwipeGestureRecognizer) {
-        animateDismiss(action: nil)
-    }
-
     // MARK: MenuActionSheetDelegate
 
     func actionSheet(_ actionSheet: MenuActionSheetView, didSelectAction action: MenuAction) {
@@ -269,6 +260,10 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
 
     private let actionStackView: UIStackView
     private var actions: [MenuAction]
+    private var actionViews: [MenuActionView]
+    private var hapticFeedback: HapticFeedback
+    private var hasEverHighlightedAction = false
+
     weak var delegate: MenuActionSheetDelegate?
 
     override var bounds: CGRect {
@@ -288,29 +283,58 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
         actionStackView.spacing = CGHairlineWidth()
 
         actions = []
+        actionViews = []
+        hapticFeedback = HapticFeedback()
 
         super.init(frame: frame)
 
         backgroundColor = UIColor.ows_light10
         addSubview(actionStackView)
-        actionStackView.ows_autoPinToSuperviewEdges()
+        actionStackView.autoPinEdgesToSuperviewEdges()
 
         self.clipsToBounds = true
 
-        // Prevent panning from percolating to the superview, which would
-        // cause us to dismiss
-        let panGestureSink = UIPanGestureRecognizer(target: nil, action: nil)
-        self.addGestureRecognizer(panGestureSink)
+        let touchGesture = UILongPressGestureRecognizer(target: self, action: #selector(didTouch(gesture:)))
+        touchGesture.minimumPressDuration = 0.0
+        touchGesture.allowableMovement = CGFloat.greatestFiniteMagnitude
+        self.addGestureRecognizer(touchGesture)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("not implemented")
     }
 
+    @objc
+    public func didTouch(gesture: UIGestureRecognizer) {
+        switch gesture.state {
+        case .possible:
+            break
+        case .began:
+            let location = gesture.location(in: self)
+            highlightActionView(location: location, fromView: self)
+        case .changed:
+            let location = gesture.location(in: self)
+            highlightActionView(location: location, fromView: self)
+        case .ended:
+            Logger.debug("\(logTag) in \(#function) ended")
+            let location = gesture.location(in: self)
+            selectActionView(location: location, fromView: self)
+        case .cancelled:
+            Logger.debug("\(logTag) in \(#function) canceled")
+            unhighlightAllActionViews()
+        case .failed:
+            Logger.debug("\(logTag) in \(#function) failed")
+            unhighlightAllActionViews()
+        }
+    }
+
     public func addAction(_ action: MenuAction) {
+        actions.append(action)
+
         let actionView = MenuActionView(action: action)
         actionView.delegate = self
-        actions.append(action)
+        actionViews.append(actionView)
+
         self.actionStackView.addArrangedSubview(actionView)
     }
 
@@ -329,6 +353,47 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
         mask.path = path.cgPath
         self.layer.mask = mask
     }
+
+    private func unhighlightAllActionViews() {
+        for actionView in actionViews {
+            actionView.isHighlighted = false
+        }
+    }
+
+    private func actionView(touchedBy touchPoint: CGPoint, fromView: UIView) -> MenuActionView? {
+        for actionView in actionViews {
+            let convertedPoint = actionView.convert(touchPoint, from: fromView)
+            if actionView.point(inside: convertedPoint, with: nil) {
+                return actionView
+            }
+        }
+        return nil
+    }
+
+    private func highlightActionView(location: CGPoint, fromView: UIView) {
+        guard let touchedView = actionView(touchedBy: location, fromView: fromView) else {
+            unhighlightAllActionViews()
+            return
+        }
+
+        if hasEverHighlightedAction, !touchedView.isHighlighted {
+            self.hapticFeedback.selectionChanged()
+        }
+        touchedView.isHighlighted = true
+        hasEverHighlightedAction = true
+
+        self.actionViews.filter { $0 != touchedView }.forEach {  $0.isHighlighted = false }
+    }
+
+    private func selectActionView(location: CGPoint, fromView: UIView) {
+        guard let selectedView: MenuActionView = actionView(touchedBy: location, fromView: fromView) else {
+            unhighlightAllActionViews()
+            return
+        }
+        selectedView.isHighlighted = true
+        self.actionViews.filter { $0 != selectedView }.forEach {  $0.isHighlighted = false }
+        delegate?.actionSheet(self, didSelectAction: selectedView.action)
+    }
 }
 
 protocol MenuActionViewDelegate: class {
@@ -337,7 +402,7 @@ protocol MenuActionViewDelegate: class {
 
 class MenuActionView: UIButton {
     public weak var delegate: MenuActionViewDelegate?
-    private let action: MenuAction
+    public let action: MenuAction
 
     required init(action: MenuAction) {
         self.action = action
@@ -378,10 +443,10 @@ class MenuActionView: UIButton {
         contentRow.isUserInteractionEnabled = false
 
         self.addSubview(contentRow)
-        contentRow.ows_autoPinToSuperviewMargins()
+        contentRow.autoPinEdgesToSuperviewMargins()
         contentRow.autoSetDimension(.height, toSize: 56, relation: .greaterThanOrEqual)
 
-        self.addTarget(self, action: #selector(didPress(sender:)), for: .touchUpInside)
+        self.isUserInteractionEnabled = false
     }
 
     override var isHighlighted: Bool {

@@ -402,7 +402,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Wirklich verlassen?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Neues Gerät verknüpfen";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Neues Gerät koppeln";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@hat Signal vielleicht erneut installiert oder das Gerät gewechselt. Verifiziert eure gemeinsame Sicherheitsnummer zur Sicherstellung der Privatsphäre.";
@@ -676,7 +676,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Zuletzt aktiv: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Verknüpft: %@";
+"DEVICE_LINKED_AT_LABEL" = "Gekoppelt: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Aktualisieren der Geräteliste gescheitert.";
@@ -1090,34 +1090,34 @@
 "LEAVE_GROUP_ACTION" = "Gruppe verlassen";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Dieser QR-Code ist ungültig. Stelle bitte sicher, dass du den QR-Code einscannst, der auf dem zu verknüpfenden Gerät angezeigt wird.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Dieser QR-Code ist ungültig. Stelle bitte sicher, dass du den QR-Code einscannst, der auf dem zu koppelnden Gerät angezeigt wird.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Verknüpfen des Geräts gescheitert";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Koppeln des Geräts gescheitert";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Dieses Gerät wird in der Lage sein, deine Gruppen und Kontakte zu sehen, alle deine Nachrichten zu lesen und Nachrichten in deinem Namen zu versenden.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Gerät verknüpfen?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Gerät koppeln?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Erneut versuchen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanne zum Verknüpfen den auf dem Gerät angezeigten QR-Code ein.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scanne zum Koppeln den auf dem Gerät angezeigten QR-Code ein.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "QR-Code einscannen";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Neues Gerät verknüpfen";
+"LINK_NEW_DEVICE_TITLE" = "Neues Gerät koppeln";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Verknüpfte Geräte";
+"LINKED_DEVICES_TITLE" = "Gekoppelte Geräte";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Verknüpfen des Geräts gescheitert";
+"LINKING_DEVICE_FAILED_TITLE" = "Gerätekopplung gescheitert";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppenmitglieder";
@@ -2208,16 +2208,16 @@
 "UNKNOWN_VALUE" = "Unbekannt";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Entfernen";
+"UNLINK_ACTION" = "Entkoppeln";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Nach Entfernen dieses Geräts wird es keine weiteren Nachrichten senden oder empfangen können.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Nach Entkoppeln dieses Geräts wird es keine weiteren Nachrichten senden oder empfangen können.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "»%@« entfernen?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "»%@« entkoppeln?";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Die Verknüpfung für dein Gerät konnte nicht entfernt werden.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal konnte dein Gerät nicht entkoppeln.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Unbenanntes Gerät";

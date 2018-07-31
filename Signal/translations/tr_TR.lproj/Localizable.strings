@@ -249,7 +249,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ engellendi";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Kullanıcı Engellenmiş";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Kullanıcı Engellendi";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Kendinizi engelleyemezsiniz.";
@@ -324,7 +324,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "Aramayı sonlandır";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Sessiz";
+"CALL_VIEW_MUTE_LABEL" = "Sessize al";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Eğer ayarlarınızı değiştirirseniz gelen aramaları kilit ekranınızdan yanıtlayabilir ve gelen aramalardaki ismi ve numarayı görebilirsiniz.\n\nDetaylar için gizlilik ayarlarına göz atın.";
@@ -703,7 +703,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Sansür Atlatma Lokasyonu";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ayarlar uygulamasından erişim verebilirsiniz";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ayarlar uygulamasından erişim verebilirsiniz.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Kişi Bilgilerini Düzenlemek İçin Kişi Erişimine İhtiyacı Var";
@@ -802,10 +802,10 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Bir Kayıt Kilidi PIN'i giriniz. Bu telefon numarasıyla Signal'e tekrar kaydolduğunuzda bu PIN kodunu girmeniz istenecektir.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Arttırılmış güvenlik için, bu telefon numarasıyla Signal'e tekrar kaydolduğunuzda sorulmak üzere bir kayıt kilidi PIN'i aktifleştirin.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Daha fazla güvenlik için, bu telefon numarası Signal'e tekrar kaydedilirken sorulacak olan Kayıt Kilidi PIN'ini etkinleştirin.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Kayıt Kilidi aktifleştirildi. Bu numarayla Signal'e tekrar kaydolduğunuzda PIN kodunuzu girmeniz gerekecek.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Kayıt Kilidi etkinleştirildi. Numaranızla Signal'e tekrar kaydolurken PIN kodunuzu girmeniz gerekecektir.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Kayıt Kilidi";
@@ -832,7 +832,7 @@
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Eklenti yazımı başarısız olduğundan dolayı gönderilemedi.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Sinyal internete bağlanamadı. Lütfen başka bir WiFi ağından deneyin veya mobil veri kullanın.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal İnternet'e bağlanamadı. Lütfen farklı bir WiFi ağından veya mobil veriden tekrar deneyin.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Mesaj gönderimi geçerli alıcı olmadığından başarısız oldu.";
@@ -979,7 +979,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Üyeler";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Artık Doğrulanmış değil";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Artık Doğrulanmış Değil";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mesaj Gönder";
@@ -1075,7 +1075,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Arkadaş Davet Et";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Aynı anda birden çok kullanıcıyı davet etmek, alıcıların birbirlerini görebilecekleri bir grup mesajı gönderir.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Aynı anda birden fazla kullanıcıyı davet etmek, alıcıların birbirlerini görebilecekleri bir grup mesajı gönderir.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Mesajlar %@ geçtikten sonra kayboluyor.";
@@ -1090,7 +1090,7 @@
 "LEAVE_GROUP_ACTION" = "Grupdan ayrıl";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Bu QR kodu geçerli değil, bağlamak istediğiniz cihazda görüntülenen QR kodunu taradığınızdan emin olun.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Bu karekod geçerli değil, bağlamak istediğiniz cihazda görüntülenen karekodu taradığınızdan emin olun.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Cihaz Bağlanması Başarısız Oldu";
@@ -1521,7 +1521,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal, panonuzda herhangi bir güvenlik numarası bulamadı. Doğru şekilde kopyaladınız mı?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal kullanıcılarının her çifti ayrı bir güvenlik numarası paylaşıyor. %@ *sizin* emniyet numaranızı gösterdiğini tekrar kontrol edin.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Signal kullanıcılarının her çifti ayrı bir güvenlik numarası paylaşır. %@ *size* özel olan güvenlik numarasını görüntülüyor olduğunu kontrol edin.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Signal'in eski bir sürümünü kullanıyorsunuz. Doğrulamadan önce güncellemeniz gerekiyor.";
@@ -2049,7 +2049,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Uygulama geçişleri esnasında Signal önizlemelerinin görülmez.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Çağrı Entegrasyonu, Signal çağrılarını kilit ekranınızda ve sistemin arama geçmişinde gösterir. İsteğe bağlı olarak kişinin adını ve numarasını da gösterebilirsiniz. ICloud etkinleştirilirse, bu arama geçmişi Apple ile paylaşılacaktır.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "IOS Çağrı Entegrasyonu, Signal çağrılarını kilit ekranınızda ve sistemin arama geçmişinde gösterir. İsteğe bağlı olarak kişinin adını ve numarasını da gösterebilirsiniz. ICloud etkinleştirilmiş ise, bu arama geçmişi Apple ile paylaşılacaktır.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Bildirimler";
@@ -2238,7 +2238,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "İzin Verilmiyor";
 
 /* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "IOS çağrı entegrasyonu ile kilit ekranınızdan gelen aramaları cevaplamak kolaydır. Varsayılan olarak arayanı anonimleştiririz, bu yüzden de özeldir.";
+"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "IOS çağrı entegrasyonu ile kilit ekranınızdan gelen aramaları cevaplamak kolaydır. Varsayılan olarak arayan bilgilerini saklarız.";
 
 /* button label shown once when when user upgrades app, in context of call kit */
 "UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Daha fazlasını gizlilik ayarlarınızdan öğrenin.";
@@ -2247,7 +2247,7 @@
 "UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Cevaplamak için Sadece Kaydırın";
 
 /* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Artık varsayılan ve konuşma başına bildirim seslerini seçebilirsiniz ve aramalar her sistem kişisi için seçtiğiniz zil sesine uygun olacaktır.";
+"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Artık varsayılan ve sohbet başına bildirim seslerini seçebilirsiniz ve aramalar her sistem kişisi için seçtiğiniz zil sesine uygun olacaktır.";
 
 /* button label shown one time, after upgrade */
 "UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Bildirim Ayarlarını Gözden Geçirin";

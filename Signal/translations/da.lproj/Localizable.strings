@@ -2121,7 +2121,7 @@
 "SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Vis sikkerhedsnummer";
 
 /* notification action */
 "SHOW_THREAD_BUTTON_TITLE" = "Vis Samtale";

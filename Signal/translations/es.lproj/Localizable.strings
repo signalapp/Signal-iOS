@@ -1431,7 +1431,7 @@
 "OPEN_SETTINGS_BUTTON" = "Ajustes";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivado la caducidad de mensajes.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha desactivado los mensajes con caducidad.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ha fijado la caducidad de mensajes a %@.";
@@ -2343,7 +2343,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Completa la configuración en la aplicación de escritorio.";
 
 /* Info Message when you disable disappearing messages */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has desactivado la caducidad de mensajes.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has desactivado los mensajes con caducidad.";
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has fijado la caducidad de mensajes a %@.";

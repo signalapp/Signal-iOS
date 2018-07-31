@@ -742,7 +742,7 @@
 "EDIT_TXT" = "แก้ไข";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "สวัสดี\n\nเมื่อไม่นานนี้ ฉันได้ใช้ Signal เพื่อรักษาการสนทนาบนไอโฟนของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งเหมือนกัน เพื่อให้เรามั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงคุยของเรา\n\nSignal ใช้งานได้บนไอโฟนและแอนดรอยด์ โหลดเลยที่นี่: %@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณมีอยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชตกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครคนอื่นเห็นสิ่งเหล่านี้ แม้แต่ผู้คนที่สร้าง Signal ก็จะไม่เห็น!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้สร้าง Signal ได้ที่นี่: %@";
+"EMAIL_INVITE_BODY" = "สวัสดี\n\nเมื่อไม่นานนี้ ฉันได้ใช้ Signal เพื่อรักษาการสนทนาบน iPhone ของฉันให้เป็นส่วนตัว ฉันอยากให้คุณติดตั้งเหมือนกัน เพื่อให้เรามั่นใจได้ว่ามีแค่คุณและฉันที่สามารถอ่านข้อความของเราหรือได้ยินเสียงคุยของเรา\n\nSignal ใช้งานได้บน iPhone และ Android โหลดเลยที่นี่: %@\n\nSignal ทำงานเหมือนแอปส่งข้อความที่คุณมีอยู่ เราสามารถส่งรูปและวิดีโอ โทรออก และเริ่มแชตกลุ่ม สิ่งที่ดีที่สุดคือไม่มีใครคนอื่นเห็นสิ่งเหล่านี้ แม้แต่ผู้คนที่สร้าง Signal ก็จะไม่เห็น!\n\nคุณสามารถอ่านเพิ่มเติมเกี่ยวกับ Open Whisper Systems ผู้สร้าง Signal ได้ที่นี่: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "เปลี่ยนมาใช้ Signal กันเถอะ";
@@ -1464,7 +1464,7 @@
 "PHONE_NUMBER_TYPE_HOME_FAX" = "แฟกซ์ที่บ้าน";
 
 /* Label for 'iPhone' phone numbers. */
-"PHONE_NUMBER_TYPE_IPHONE" = "ไอโฟน";
+"PHONE_NUMBER_TYPE_IPHONE" = "iPhone";
 
 /* Label for 'Main' phone numbers. */
 "PHONE_NUMBER_TYPE_MAIN" = "หลัก";
@@ -1761,13 +1761,13 @@
 "RETRY_BUTTON_TEXT" = "ลองใหม่";
 
 /* button title to confirm adding a recipient to a group when their safety number has recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "เพิ่มไปที่กลุ่มเสมอ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "ยืนยันที่จะเพิ่มไปที่กลุ่ม";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "โทรเสมอ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "ยืนยันที่จะโทร";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ส่งเสมอ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "ยืนยันที่จะส่ง";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "รหัสความปลอดภัย Signal ของเรา:\n%@";
