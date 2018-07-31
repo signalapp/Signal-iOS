@@ -221,13 +221,13 @@ import Foundation
 	@objc public class SSKProtoCallMessage_IceUpdate: NSObject {
 
 		@objc public let id: UInt64
-		@objc public let sdpMLineIndex: UInt32
+		@objc public let sdpMlineIndex: UInt32
 		@objc public let sdpMid: String?
 		@objc public let sdp: String?
 
-		@objc public init(id: UInt64, sdpMLineIndex: UInt32, sdpMid: String?, sdp: String?) {
+		@objc public init(id: UInt64, sdpMlineIndex: UInt32, sdpMid: String?, sdp: String?) {
 			self.id = id
-			self.sdpMLineIndex = sdpMLineIndex
+			self.sdpMlineIndex = sdpMlineIndex
 			self.sdpMid = sdpMid
 			self.sdp = sdp
 		}
@@ -241,7 +241,7 @@ import Foundation
 			let proto = SignalServiceProtos_CallMessage.IceUpdate.with { (builder) in
 				builder.id = self.id
 
-				builder.sdpMLineIndex = self.sdpMLineIndex
+				builder.sdpMlineIndex = self.sdpMlineIndex
 
 				if let sdpMid = self.sdpMid {
 					builder.sdpMid = sdpMid

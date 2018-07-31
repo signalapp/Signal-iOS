@@ -18,6 +18,18 @@ def lowerCamlCaseForUnderscoredText(name):
     splits = [split.title() for split in splits]
     splits[0] = splits[0].lower()
     return ''.join(splits)
+        
+# The generated code for "Apple Swift Protos" suppresses
+# adjacent capital letters in lowerCamlCase.
+def lowerCamlCaseForUnderscoredText_wrapped(name):
+    chars = []
+    lastWasUpper = False
+    for char in name:
+        if lastWasUpper:
+            char = char.lower()
+        chars.append(char)
+        lastWasUpper = (char.upper() == char)
+    return ''.join(chars)
 
 class WriterContext:
     def __init__(self, proto_name, swift_name, parent=None):
@@ -148,7 +160,7 @@ class BaseContext(object):
         return None                
         
     
-    def base_swift_type_for_proto_type(self, field):
+    def base_swift_type_for_field(self, field):
     
         if field.proto_type == 'string':
             return 'String'
@@ -170,8 +182,8 @@ class BaseContext(object):
                 # Failure
                 return field.proto_type
     
-    def swift_type_for_proto_type(self, field):
-        base_type = self.base_swift_type_for_proto_type(field)
+    def swift_type_for_field(self, field):
+        base_type = self.base_swift_type_for_field(field)
         
         if field.rules == 'optional':
             can_be_optional = self.can_field_be_optional(field)
@@ -312,8 +324,8 @@ public enum %s: Error {
 
         # Prepare fields
         for field in self.fields():
-            field.type_swift = self.swift_type_for_proto_type(field)
-            field.name_swift = field.name
+            field.type_swift = self.swift_type_for_field(field)
+            field.name_swift = lowerCamlCaseForUnderscoredText_wrapped(field.name)
         
         # Property Declarations
         for field in self.fields():
@@ -361,7 +373,7 @@ public func serializedData() throws -> Data {
                     list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
                 else:
                     # TODO: Assert not an enum.
-                    list_wrapped_swift_name = self.base_swift_type_for_proto_type(field)
+                    list_wrapped_swift_name = self.base_swift_type_for_field(field)
                 writer.add('var %sUnwrapped = [%s]()' % (field.name_swift, list_wrapped_swift_name))
                 writer.add('for item in %s {' % (field.name_swift))
                 writer.push_indent()
