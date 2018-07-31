@@ -172,6 +172,26 @@ NS_ASSUME_NONNULL_BEGIN
     return self.collectionView.bounds.size.width != newBounds.size.width;
 }
 
+- (nullable UICollectionViewLayoutAttributes *)initialLayoutAttributesForAppearingItemAtIndexPath:
+    (NSIndexPath *)indexPath
+{
+    UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
+        [super initialLayoutAttributesForAppearingItemAtIndexPath:indexPath];
+    // Don't fade in new cells.
+    layoutAttributes.alpha = 1.f;
+    return layoutAttributes;
+}
+
+- (nullable UICollectionViewLayoutAttributes *)finalLayoutAttributesForDisappearingItemAtIndexPath:
+    (NSIndexPath *)indexPath
+{
+    UICollectionViewLayoutAttributes *_Nullable layoutAttributes =
+        [super finalLayoutAttributesForDisappearingItemAtIndexPath:indexPath];
+    // Don't fade in new cells.
+    layoutAttributes.alpha = 1.f;
+    return layoutAttributes;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
