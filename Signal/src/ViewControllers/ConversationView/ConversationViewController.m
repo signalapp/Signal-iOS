@@ -3468,9 +3468,9 @@ typedef enum : NSUInteger {
         }
         
         [self updateLastVisibleTimestamp];
-        
-        if (scrollToBottom) {
-            [self scrollToBottomAnimated:shouldAnimateScrollToBottom && shouldAnimateUpdates];
+
+        if (scrollToBottom && shouldAnimateUpdates) {
+            [self scrollToBottomAnimated:shouldAnimateScrollToBottom];
         }
     };
     if (shouldAnimateUpdates) {
@@ -3478,6 +3478,9 @@ typedef enum : NSUInteger {
     } else {
         [UIView performWithoutAnimation:^{
             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
+            if (scrollToBottom) {
+                [self scrollToBottomAnimated:NO];
+            }
         }];
     }
     self.lastReloadDate = [NSDate new];
@@ -3489,55 +3492,40 @@ typedef enum : NSUInteger {
     OWSAssert(rowChanges);
 
     // If user sends a new outgoing message, don't animate the change.
-    BOOL isOnlyInsertingNewOutgoingMessages = YES;
-    BOOL isOnlyUpdatingLastOutgoingMessage = YES;
-    NSNumber *_Nullable lastUpdateRow = nil;
-    NSNumber *_Nullable lastNonUpdateRow = nil;
+    BOOL isOnlyModifyingLastMessage = YES;
     for (YapDatabaseViewRowChange *rowChange in rowChanges) {
         switch (rowChange.type) {
             case YapDatabaseViewChangeDelete:
-                isOnlyInsertingNewOutgoingMessages = NO;
-                isOnlyUpdatingLastOutgoingMessage = NO;
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
-                    lastNonUpdateRow = @(rowChange.indexPath.row);
-                }
+                isOnlyModifyingLastMessage = NO;
                 break;
             case YapDatabaseViewChangeInsert: {
-                isOnlyUpdatingLastOutgoingMessage = NO;
                 ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
-                if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                if (([viewItem.interaction isKindOfClass:[TSIncomingMessage class]] ||
+                        [viewItem.interaction isKindOfClass:[TSOutgoingMessage class]])
                     && rowChange.finalIndex >= oldViewItemCount) {
                     continue;
                 }
-                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
-                    lastNonUpdateRow = @(rowChange.finalIndex);
-                }
+                isOnlyModifyingLastMessage = NO;
             }
             case YapDatabaseViewChangeMove:
-                isOnlyInsertingNewOutgoingMessages = NO;
-                isOnlyUpdatingLastOutgoingMessage = NO;
-                if (!lastNonUpdateRow || lastNonUpdateRow.integerValue < rowChange.indexPath.row) {
-                    lastNonUpdateRow = @(rowChange.indexPath.row);
-                }
-                if (!lastNonUpdateRow || lastNonUpdateRow.unsignedIntegerValue < rowChange.finalIndex) {
-                    lastNonUpdateRow = @(rowChange.finalIndex);
-                }
+                isOnlyModifyingLastMessage = NO;
                 break;
             case YapDatabaseViewChangeUpdate: {
-                isOnlyInsertingNewOutgoingMessages = NO;
+                if (rowChange.changes == YapDatabaseViewChangedDependency) {
+                    continue;
+                }
                 ConversationViewItem *_Nullable viewItem = [self viewItemForIndex:(NSInteger)rowChange.finalIndex];
-                if (![viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
-                    || rowChange.indexPath.row != (NSInteger)(oldViewItemCount - 1)) {
-                    isOnlyUpdatingLastOutgoingMessage = NO;
+                if (([viewItem.interaction isKindOfClass:[TSIncomingMessage class]] ||
+                        [viewItem.interaction isKindOfClass:[TSOutgoingMessage class]])
+                    && rowChange.finalIndex >= oldViewItemCount) {
+                    continue;
                 }
-                if (!lastUpdateRow || lastUpdateRow.integerValue < rowChange.indexPath.row) {
-                    lastUpdateRow = @(rowChange.indexPath.row);
-                }
+                isOnlyModifyingLastMessage = NO;
                 break;
             }
         }
     }
-    BOOL shouldAnimateRowUpdates = !(isOnlyInsertingNewOutgoingMessages || isOnlyUpdatingLastOutgoingMessage);
+    BOOL shouldAnimateRowUpdates = !isOnlyModifyingLastMessage;
     return shouldAnimateRowUpdates;
 }
 

@@ -508,12 +508,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleView addPartnerView:shadowView];
     [self.bubbleView addPartnerView:clipView];
 
+    // Prevent the layer from animating changes.
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+
     OWSAssert(buttonsView.backgroundColor);
     shadowView.fillColor = buttonsView.backgroundColor;
     shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
     shadowView.layer.shadowOpacity = 0.12f;
     shadowView.layer.shadowOffset = CGSizeZero;
     shadowView.layer.shadowRadius = 1.f;
+
+    [CATransaction commit];
 }
 
 - (BOOL)contactShareHasSpacerTop
