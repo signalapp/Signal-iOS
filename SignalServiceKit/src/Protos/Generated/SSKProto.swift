@@ -4,13 +4,13 @@
 
 import Foundation
 
+public enum SSKProtoError: Error {
+    case invalidProtobuf(description: String)
+}
+
 // MARK: - SSKProtoEnvelope
 
 @objc public class SSKProtoEnvelope: NSObject {
-
-	public enum SSKProtoEnvelopeError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoEnvelope_Type
 
@@ -108,6 +108,19 @@ import Foundation
 
 		// MARK: - Begin Validation Logic for SSKProtoEnvelope -
 
+        guard proto.hasSource else {
+            throw SSKProtoError.invalidProtobuf(description: "missing required field: source")
+        }
+        guard proto.hasType else {
+            throw SSKProtoError.invalidProtobuf(description: "missing required field: type")
+        }
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "missing required field: timestamp")
+        }
+        guard proto.hasSourceDevice else {
+            throw SSKProtoError.invalidProtobuf(description: "missing required field: sourceDevice")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoEnvelope -
 
 		let result = SSKProtoEnvelope(type: type, relay: relay, source: source, timestamp: timestamp, sourceDevice: sourceDevice, legacyMessage: legacyMessage, content: content)
@@ -146,10 +159,6 @@ import Foundation
 // MARK: - SSKProtoContent
 
 @objc public class SSKProtoContent: NSObject {
-
-	public enum SSKProtoContentError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	@objc public let dataMessage: SSKProtoDataMessage?
 	@objc public let callMessage: SSKProtoCallMessage?
@@ -239,10 +248,6 @@ import Foundation
 // MARK: - SSKProtoCallMessage
 
 @objc public class SSKProtoCallMessage: NSObject {
-
-	public enum SSKProtoCallMessageError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoCallMessage_Offer
 
@@ -614,10 +619,6 @@ import Foundation
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
-
-	public enum SSKProtoDataMessageError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoDataMessage_Flags
 
@@ -1551,10 +1552,6 @@ import Foundation
 
 @objc public class SSKProtoNullMessage: NSObject {
 
-	public enum SSKProtoNullMessageError: Error {
-	    case invalidProtobuf(description: String)
-	}
-
 	@objc public let padding: Data?
 
 	@objc public init(padding: Data?) {
@@ -1599,10 +1596,6 @@ import Foundation
 // MARK: - SSKProtoReceiptMessage
 
 @objc public class SSKProtoReceiptMessage: NSObject {
-
-	public enum SSKProtoReceiptMessageError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoReceiptMessage_Type
 
@@ -1681,10 +1674,6 @@ import Foundation
 // MARK: - SSKProtoVerified
 
 @objc public class SSKProtoVerified: NSObject {
-
-	public enum SSKProtoVerifiedError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoVerified_State
 
@@ -1785,10 +1774,6 @@ import Foundation
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
-
-	public enum SSKProtoSyncMessageError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoSyncMessage_Sent
 
@@ -2317,10 +2302,6 @@ import Foundation
 
 @objc public class SSKProtoAttachmentPointer: NSObject {
 
-	public enum SSKProtoAttachmentPointerError: Error {
-	    case invalidProtobuf(description: String)
-	}
-
 	// MARK: - SSKProtoAttachmentPointer_Flags
 
 	@objc public enum SSKProtoAttachmentPointer_Flags: Int32 {
@@ -2473,10 +2454,6 @@ import Foundation
 
 @objc public class SSKProtoGroupContext: NSObject {
 
-	public enum SSKProtoGroupContextError: Error {
-	    case invalidProtobuf(description: String)
-	}
-
 	// MARK: - SSKProtoGroupContext_Type
 
 	@objc public enum SSKProtoGroupContext_Type: Int32 {
@@ -2596,10 +2573,6 @@ import Foundation
 // MARK: - SSKProtoContactDetails
 
 @objc public class SSKProtoContactDetails: NSObject {
-
-	public enum SSKProtoContactDetailsError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoContactDetails_Avatar
 
@@ -2772,10 +2745,6 @@ import Foundation
 // MARK: - SSKProtoGroupDetails
 
 @objc public class SSKProtoGroupDetails: NSObject {
-
-	public enum SSKProtoGroupDetailsError: Error {
-	    case invalidProtobuf(description: String)
-	}
 
 	// MARK: - SSKProtoGroupDetails_Avatar
 
