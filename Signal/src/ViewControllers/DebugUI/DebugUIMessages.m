@@ -3392,10 +3392,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
 
 
     SSKProtoEnvelope *envelope = [[SSKProtoEnvelope alloc] initWithType:SSKProtoEnvelopeTypeCiphertext
-                                                                  relay:nil
                                                                  source:source
-                                                              timestamp:timestamp
                                                            sourceDevice:1
+                                                                  relay:nil
+                                                              timestamp:timestamp
                                                           legacyMessage:nil
                                                                 content:nil];
     return envelope;
@@ -3891,10 +3891,10 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     NSData *content = plaintextData;
 
     SSKProtoEnvelope *envelope = [[SSKProtoEnvelope alloc] initWithType:envelopeType
-                                                                  relay:nil
                                                                  source:source
-                                                              timestamp:timestamp
                                                            sourceDevice:sourceDevice
+                                                                  relay:nil
+                                                              timestamp:timestamp
                                                           legacyMessage:nil
                                                                 content:content];
 

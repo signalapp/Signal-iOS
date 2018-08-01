@@ -45,25 +45,25 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let type: SSKProtoEnvelopeType
-	@objc public let relay: String?
 	@objc public let source: String?
-	@objc public let timestamp: UInt64
 	@objc public let sourceDevice: UInt32
+	@objc public let relay: String?
+	@objc public let timestamp: UInt64
 	@objc public let legacyMessage: Data?
 	@objc public let content: Data?
 
 	@objc public init(type: SSKProtoEnvelopeType,
-	                  relay: String?,
 	                  source: String?,
-	                  timestamp: UInt64,
 	                  sourceDevice: UInt32,
+	                  relay: String?,
+	                  timestamp: UInt64,
 	                  legacyMessage: Data?,
 	                  content: Data?) {
 		self.type = type
-		self.relay = relay
 		self.source = source
-		self.timestamp = timestamp
 		self.sourceDevice = sourceDevice
+		self.relay = relay
+		self.timestamp = timestamp
 		self.legacyMessage = legacyMessage
 		self.content = content
 	}
@@ -84,24 +84,24 @@ public enum SSKProtoError: Error {
 			type = SSKProtoEnvelopeTypeWrap(proto.type)
 		}
 
-		var relay: String? = nil
-		if proto.hasRelay {
-			relay = proto.relay
-		}
-
 		var source: String? = nil
 		if proto.hasSource {
 			source = proto.source
 		}
 
-		var timestamp: UInt64 = 0
-		if proto.hasTimestamp {
-			timestamp = proto.timestamp
-		}
-
 		var sourceDevice: UInt32 = 0
 		if proto.hasSourceDevice {
 			sourceDevice = proto.sourceDevice
+		}
+
+		var relay: String? = nil
+		if proto.hasRelay {
+			relay = proto.relay
+		}
+
+		var timestamp: UInt64 = 0
+		if proto.hasTimestamp {
+			timestamp = proto.timestamp
 		}
 
 		var legacyMessage: Data? = nil
@@ -132,10 +132,10 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoEnvelope -
 
 		let result = SSKProtoEnvelope(type: type,
-		                              relay: relay,
 		                              source: source,
-		                              timestamp: timestamp,
 		                              sourceDevice: sourceDevice,
+		                              relay: relay,
+		                              timestamp: timestamp,
 		                              legacyMessage: legacyMessage,
 		                              content: content)
 		return result
@@ -145,17 +145,17 @@ public enum SSKProtoError: Error {
 		let proto = SignalServiceProtos_Envelope.with { (builder) in
 			builder.type = SSKProtoEnvelope.SSKProtoEnvelopeTypeUnwrap(self.type)
 
-			if let relay = self.relay {
-				builder.relay = relay
-			}
-
 			if let source = self.source {
 				builder.source = source
 			}
 
-			builder.timestamp = self.timestamp
-
 			builder.sourceDevice = self.sourceDevice
+
+			if let relay = self.relay {
+				builder.relay = relay
+			}
+
+			builder.timestamp = self.timestamp
 
 			if let legacyMessage = self.legacyMessage {
 				builder.legacyMessage = legacyMessage
@@ -175,21 +175,21 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoContent: NSObject {
 
 	@objc public let dataMessage: SSKProtoDataMessage?
-	@objc public let callMessage: SSKProtoCallMessage?
 	@objc public let syncMessage: SSKProtoSyncMessage?
-	@objc public let receiptMessage: SSKProtoReceiptMessage?
+	@objc public let callMessage: SSKProtoCallMessage?
 	@objc public let nullMessage: SSKProtoNullMessage?
+	@objc public let receiptMessage: SSKProtoReceiptMessage?
 
 	@objc public init(dataMessage: SSKProtoDataMessage?,
-	                  callMessage: SSKProtoCallMessage?,
 	                  syncMessage: SSKProtoSyncMessage?,
-	                  receiptMessage: SSKProtoReceiptMessage?,
-	                  nullMessage: SSKProtoNullMessage?) {
+	                  callMessage: SSKProtoCallMessage?,
+	                  nullMessage: SSKProtoNullMessage?,
+	                  receiptMessage: SSKProtoReceiptMessage?) {
 		self.dataMessage = dataMessage
-		self.callMessage = callMessage
 		self.syncMessage = syncMessage
-		self.receiptMessage = receiptMessage
+		self.callMessage = callMessage
 		self.nullMessage = nullMessage
+		self.receiptMessage = receiptMessage
 	}
 
 	@objc
@@ -208,19 +208,14 @@ public enum SSKProtoError: Error {
 			dataMessage = try SSKProtoDataMessage.parseProto(proto.dataMessage)
 		}
 
-		var callMessage: SSKProtoCallMessage? = nil
-		if proto.hasCallMessage {
-			callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
-		}
-
 		var syncMessage: SSKProtoSyncMessage? = nil
 		if proto.hasSyncMessage {
 			syncMessage = try SSKProtoSyncMessage.parseProto(proto.syncMessage)
 		}
 
-		var receiptMessage: SSKProtoReceiptMessage? = nil
-		if proto.hasReceiptMessage {
-			receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
+		var callMessage: SSKProtoCallMessage? = nil
+		if proto.hasCallMessage {
+			callMessage = try SSKProtoCallMessage.parseProto(proto.callMessage)
 		}
 
 		var nullMessage: SSKProtoNullMessage? = nil
@@ -228,15 +223,20 @@ public enum SSKProtoError: Error {
 			nullMessage = try SSKProtoNullMessage.parseProto(proto.nullMessage)
 		}
 
+		var receiptMessage: SSKProtoReceiptMessage? = nil
+		if proto.hasReceiptMessage {
+			receiptMessage = try SSKProtoReceiptMessage.parseProto(proto.receiptMessage)
+		}
+
 		// MARK: - Begin Validation Logic for SSKProtoContent -
 
 		// MARK: - End Validation Logic for SSKProtoContent -
 
 		let result = SSKProtoContent(dataMessage: dataMessage,
-		                             callMessage: callMessage,
 		                             syncMessage: syncMessage,
-		                             receiptMessage: receiptMessage,
-		                             nullMessage: nullMessage)
+		                             callMessage: callMessage,
+		                             nullMessage: nullMessage,
+		                             receiptMessage: receiptMessage)
 		return result
 	}
 
@@ -246,20 +246,20 @@ public enum SSKProtoError: Error {
 				builder.dataMessage = dataMessage.asProtobuf
 			}
 
-			if let callMessage = self.callMessage {
-				builder.callMessage = callMessage.asProtobuf
-			}
-
 			if let syncMessage = self.syncMessage {
 				builder.syncMessage = syncMessage.asProtobuf
 			}
 
-			if let receiptMessage = self.receiptMessage {
-				builder.receiptMessage = receiptMessage.asProtobuf
+			if let callMessage = self.callMessage {
+				builder.callMessage = callMessage.asProtobuf
 			}
 
 			if let nullMessage = self.nullMessage {
 				builder.nullMessage = nullMessage.asProtobuf
+			}
+
+			if let receiptMessage = self.receiptMessage {
+				builder.receiptMessage = receiptMessage.asProtobuf
 			}
 		}
 
@@ -384,17 +384,17 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoCallMessageIceUpdate: NSObject {
 
 	@objc public let id: UInt64
-	@objc public let sdpMlineIndex: UInt32
 	@objc public let sdpMid: String?
+	@objc public let sdpMlineIndex: UInt32
 	@objc public let sdp: String?
 
 	@objc public init(id: UInt64,
-	                  sdpMlineIndex: UInt32,
 	                  sdpMid: String?,
+	                  sdpMlineIndex: UInt32,
 	                  sdp: String?) {
 		self.id = id
-		self.sdpMlineIndex = sdpMlineIndex
 		self.sdpMid = sdpMid
+		self.sdpMlineIndex = sdpMlineIndex
 		self.sdp = sdp
 	}
 
@@ -414,14 +414,14 @@ public enum SSKProtoError: Error {
 			id = proto.id
 		}
 
-		var sdpMlineIndex: UInt32 = 0
-		if proto.hasSdpMlineIndex {
-			sdpMlineIndex = proto.sdpMlineIndex
-		}
-
 		var sdpMid: String? = nil
 		if proto.hasSdpMid {
 			sdpMid = proto.sdpMid
+		}
+
+		var sdpMlineIndex: UInt32 = 0
+		if proto.hasSdpMlineIndex {
+			sdpMlineIndex = proto.sdpMlineIndex
 		}
 
 		var sdp: String? = nil
@@ -434,8 +434,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoCallMessageIceUpdate -
 
 		let result = SSKProtoCallMessageIceUpdate(id: id,
-		                                          sdpMlineIndex: sdpMlineIndex,
 		                                          sdpMid: sdpMid,
+		                                          sdpMlineIndex: sdpMlineIndex,
 		                                          sdp: sdp)
 		return result
 	}
@@ -444,11 +444,11 @@ public enum SSKProtoError: Error {
 		let proto = SignalServiceProtos_CallMessage.IceUpdate.with { (builder) in
 			builder.id = self.id
 
-			builder.sdpMlineIndex = self.sdpMlineIndex
-
 			if let sdpMid = self.sdpMid {
 				builder.sdpMid = sdpMid
 			}
+
+			builder.sdpMlineIndex = self.sdpMlineIndex
 
 			if let sdp = self.sdp {
 				builder.sdp = sdp
@@ -550,23 +550,23 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoCallMessage: NSObject {
 
 	@objc public let offer: SSKProtoCallMessageOffer?
-	@objc public let iceUpdate: [SSKProtoCallMessageIceUpdate]
 	@objc public let answer: SSKProtoCallMessageAnswer?
-	@objc public let busy: SSKProtoCallMessageBusy?
+	@objc public let iceUpdate: [SSKProtoCallMessageIceUpdate]
 	@objc public let hangup: SSKProtoCallMessageHangup?
+	@objc public let busy: SSKProtoCallMessageBusy?
 	@objc public let profileKey: Data?
 
 	@objc public init(offer: SSKProtoCallMessageOffer?,
-	                  iceUpdate: [SSKProtoCallMessageIceUpdate],
 	                  answer: SSKProtoCallMessageAnswer?,
-	                  busy: SSKProtoCallMessageBusy?,
+	                  iceUpdate: [SSKProtoCallMessageIceUpdate],
 	                  hangup: SSKProtoCallMessageHangup?,
+	                  busy: SSKProtoCallMessageBusy?,
 	                  profileKey: Data?) {
 		self.offer = offer
-		self.iceUpdate = iceUpdate
 		self.answer = answer
-		self.busy = busy
+		self.iceUpdate = iceUpdate
 		self.hangup = hangup
+		self.busy = busy
 		self.profileKey = profileKey
 	}
 
@@ -586,25 +586,25 @@ public enum SSKProtoError: Error {
 			offer = try SSKProtoCallMessageOffer.parseProto(proto.offer)
 		}
 
+		var answer: SSKProtoCallMessageAnswer? = nil
+		if proto.hasAnswer {
+			answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
+		}
+
 		var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
 		for item in proto.iceUpdate {
 			let wrapped = try SSKProtoCallMessageIceUpdate.parseProto(item)
 			iceUpdate.append(wrapped)
 		}
 
-		var answer: SSKProtoCallMessageAnswer? = nil
-		if proto.hasAnswer {
-			answer = try SSKProtoCallMessageAnswer.parseProto(proto.answer)
+		var hangup: SSKProtoCallMessageHangup? = nil
+		if proto.hasHangup {
+			hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
 		}
 
 		var busy: SSKProtoCallMessageBusy? = nil
 		if proto.hasBusy {
 			busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
-		}
-
-		var hangup: SSKProtoCallMessageHangup? = nil
-		if proto.hasHangup {
-			hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
 		}
 
 		var profileKey: Data? = nil
@@ -617,10 +617,10 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoCallMessage -
 
 		let result = SSKProtoCallMessage(offer: offer,
-		                                 iceUpdate: iceUpdate,
 		                                 answer: answer,
-		                                 busy: busy,
+		                                 iceUpdate: iceUpdate,
 		                                 hangup: hangup,
+		                                 busy: busy,
 		                                 profileKey: profileKey)
 		return result
 	}
@@ -631,22 +631,22 @@ public enum SSKProtoError: Error {
 				builder.offer = offer.asProtobuf
 			}
 
+			if let answer = self.answer {
+				builder.answer = answer.asProtobuf
+			}
+
 			var iceUpdateUnwrapped = [SignalServiceProtos_CallMessage.IceUpdate]()
 			for item in iceUpdate {
 				iceUpdateUnwrapped.append(item.asProtobuf)
 			}
 			builder.iceUpdate = iceUpdateUnwrapped
 
-			if let answer = self.answer {
-				builder.answer = answer.asProtobuf
+			if let hangup = self.hangup {
+				builder.hangup = hangup.asProtobuf
 			}
 
 			if let busy = self.busy {
 				builder.busy = busy.asProtobuf
-			}
-
-			if let hangup = self.hangup {
-				builder.hangup = hangup.asProtobuf
 			}
 
 			if let profileKey = self.profileKey {
@@ -681,17 +681,17 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let contentType: String?
-	@objc public let thumbnail: SSKProtoAttachmentPointer?
 	@objc public let fileName: String?
+	@objc public let thumbnail: SSKProtoAttachmentPointer?
 	@objc public let flags: UInt32
 
 	@objc public init(contentType: String?,
-	                  thumbnail: SSKProtoAttachmentPointer?,
 	                  fileName: String?,
+	                  thumbnail: SSKProtoAttachmentPointer?,
 	                  flags: UInt32) {
 		self.contentType = contentType
-		self.thumbnail = thumbnail
 		self.fileName = fileName
+		self.thumbnail = thumbnail
 		self.flags = flags
 	}
 
@@ -711,14 +711,14 @@ public enum SSKProtoError: Error {
 			contentType = proto.contentType
 		}
 
-		var thumbnail: SSKProtoAttachmentPointer? = nil
-		if proto.hasThumbnail {
-			thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
-		}
-
 		var fileName: String? = nil
 		if proto.hasFileName {
 			fileName = proto.fileName
+		}
+
+		var thumbnail: SSKProtoAttachmentPointer? = nil
+		if proto.hasThumbnail {
+			thumbnail = try SSKProtoAttachmentPointer.parseProto(proto.thumbnail)
 		}
 
 		var flags: UInt32 = 0
@@ -731,8 +731,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoDataMessageQuoteQuotedAttachment -
 
 		let result = SSKProtoDataMessageQuoteQuotedAttachment(contentType: contentType,
-		                                                      thumbnail: thumbnail,
 		                                                      fileName: fileName,
+		                                                      thumbnail: thumbnail,
 		                                                      flags: flags)
 		return result
 	}
@@ -743,12 +743,12 @@ public enum SSKProtoError: Error {
 				builder.contentType = contentType
 			}
 
-			if let thumbnail = self.thumbnail {
-				builder.thumbnail = thumbnail.asProtobuf
-			}
-
 			if let fileName = self.fileName {
 				builder.fileName = fileName
+			}
+
+			if let thumbnail = self.thumbnail {
+				builder.thumbnail = thumbnail.asProtobuf
 			}
 
 			builder.flags = self.flags
@@ -763,17 +763,17 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoDataMessageQuote: NSObject {
 
 	@objc public let id: UInt64
-	@objc public let text: String?
 	@objc public let author: String?
+	@objc public let text: String?
 	@objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
 	@objc public init(id: UInt64,
-	                  text: String?,
 	                  author: String?,
+	                  text: String?,
 	                  attachments: [SSKProtoDataMessageQuoteQuotedAttachment]) {
 		self.id = id
-		self.text = text
 		self.author = author
+		self.text = text
 		self.attachments = attachments
 	}
 
@@ -793,14 +793,14 @@ public enum SSKProtoError: Error {
 			id = proto.id
 		}
 
-		var text: String? = nil
-		if proto.hasText {
-			text = proto.text
-		}
-
 		var author: String? = nil
 		if proto.hasAuthor {
 			author = proto.author
+		}
+
+		var text: String? = nil
+		if proto.hasText {
+			text = proto.text
 		}
 
 		var attachments: [SSKProtoDataMessageQuoteQuotedAttachment] = []
@@ -814,8 +814,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoDataMessageQuote -
 
 		let result = SSKProtoDataMessageQuote(id: id,
-		                                      text: text,
 		                                      author: author,
+		                                      text: text,
 		                                      attachments: attachments)
 		return result
 	}
@@ -824,12 +824,12 @@ public enum SSKProtoError: Error {
 		let proto = SignalServiceProtos_DataMessage.Quote.with { (builder) in
 			builder.id = self.id
 
-			if let text = self.text {
-				builder.text = text
-			}
-
 			if let author = self.author {
 				builder.author = author
+			}
+
+			if let text = self.text {
+				builder.text = text
 			}
 
 			var attachmentsUnwrapped = [SignalServiceProtos_DataMessage.Quote.QuotedAttachment]()
@@ -848,23 +848,23 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoDataMessageContactName: NSObject {
 
 	@objc public let givenName: String?
-	@objc public let prefix: String?
 	@objc public let familyName: String?
-	@objc public let middleName: String?
+	@objc public let prefix: String?
 	@objc public let suffix: String?
+	@objc public let middleName: String?
 	@objc public let displayName: String?
 
 	@objc public init(givenName: String?,
-	                  prefix: String?,
 	                  familyName: String?,
-	                  middleName: String?,
+	                  prefix: String?,
 	                  suffix: String?,
+	                  middleName: String?,
 	                  displayName: String?) {
 		self.givenName = givenName
-		self.prefix = prefix
 		self.familyName = familyName
-		self.middleName = middleName
+		self.prefix = prefix
 		self.suffix = suffix
+		self.middleName = middleName
 		self.displayName = displayName
 	}
 
@@ -884,24 +884,24 @@ public enum SSKProtoError: Error {
 			givenName = proto.givenName
 		}
 
-		var prefix: String? = nil
-		if proto.hasPrefix {
-			prefix = proto.prefix
-		}
-
 		var familyName: String? = nil
 		if proto.hasFamilyName {
 			familyName = proto.familyName
 		}
 
-		var middleName: String? = nil
-		if proto.hasMiddleName {
-			middleName = proto.middleName
+		var prefix: String? = nil
+		if proto.hasPrefix {
+			prefix = proto.prefix
 		}
 
 		var suffix: String? = nil
 		if proto.hasSuffix {
 			suffix = proto.suffix
+		}
+
+		var middleName: String? = nil
+		if proto.hasMiddleName {
+			middleName = proto.middleName
 		}
 
 		var displayName: String? = nil
@@ -914,10 +914,10 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactName -
 
 		let result = SSKProtoDataMessageContactName(givenName: givenName,
-		                                            prefix: prefix,
 		                                            familyName: familyName,
-		                                            middleName: middleName,
+		                                            prefix: prefix,
 		                                            suffix: suffix,
+		                                            middleName: middleName,
 		                                            displayName: displayName)
 		return result
 	}
@@ -928,20 +928,20 @@ public enum SSKProtoError: Error {
 				builder.givenName = givenName
 			}
 
-			if let prefix = self.prefix {
-				builder.prefix = prefix
-			}
-
 			if let familyName = self.familyName {
 				builder.familyName = familyName
 			}
 
-			if let middleName = self.middleName {
-				builder.middleName = middleName
+			if let prefix = self.prefix {
+				builder.prefix = prefix
 			}
 
 			if let suffix = self.suffix {
 				builder.suffix = suffix
+			}
+
+			if let middleName = self.middleName {
+				builder.middleName = middleName
 			}
 
 			if let displayName = self.displayName {
@@ -985,15 +985,15 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let value: String?
-	@objc public let label: String?
 	@objc public let type: SSKProtoDataMessageContactPhoneType
+	@objc public let label: String?
 
 	@objc public init(value: String?,
-	                  label: String?,
-	                  type: SSKProtoDataMessageContactPhoneType) {
+	                  type: SSKProtoDataMessageContactPhoneType,
+	                  label: String?) {
 		self.value = value
-		self.label = label
 		self.type = type
+		self.label = label
 	}
 
 	@objc
@@ -1012,14 +1012,14 @@ public enum SSKProtoError: Error {
 			value = proto.value
 		}
 
-		var label: String? = nil
-		if proto.hasLabel {
-			label = proto.label
-		}
-
 		var type: SSKProtoDataMessageContactPhoneType = .home
 		if proto.hasType {
 			type = SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
+		}
+
+		var label: String? = nil
+		if proto.hasLabel {
+			label = proto.label
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContactPhone -
@@ -1031,8 +1031,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
 
 		let result = SSKProtoDataMessageContactPhone(value: value,
-		                                             label: label,
-		                                             type: type)
+		                                             type: type,
+		                                             label: label)
 		return result
 	}
 
@@ -1042,11 +1042,11 @@ public enum SSKProtoError: Error {
 				builder.value = value
 			}
 
+			builder.type = SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeUnwrap(self.type)
+
 			if let label = self.label {
 				builder.label = label
 			}
-
-			builder.type = SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeUnwrap(self.type)
 		}
 
 		return proto
@@ -1085,15 +1085,15 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let value: String?
-	@objc public let label: String?
 	@objc public let type: SSKProtoDataMessageContactEmailType
+	@objc public let label: String?
 
 	@objc public init(value: String?,
-	                  label: String?,
-	                  type: SSKProtoDataMessageContactEmailType) {
+	                  type: SSKProtoDataMessageContactEmailType,
+	                  label: String?) {
 		self.value = value
-		self.label = label
 		self.type = type
+		self.label = label
 	}
 
 	@objc
@@ -1112,14 +1112,14 @@ public enum SSKProtoError: Error {
 			value = proto.value
 		}
 
-		var label: String? = nil
-		if proto.hasLabel {
-			label = proto.label
-		}
-
 		var type: SSKProtoDataMessageContactEmailType = .home
 		if proto.hasType {
 			type = SSKProtoDataMessageContactEmailTypeWrap(proto.type)
+		}
+
+		var label: String? = nil
+		if proto.hasLabel {
+			label = proto.label
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContactEmail -
@@ -1131,8 +1131,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
 
 		let result = SSKProtoDataMessageContactEmail(value: value,
-		                                             label: label,
-		                                             type: type)
+		                                             type: type,
+		                                             label: label)
 		return result
 	}
 
@@ -1142,11 +1142,11 @@ public enum SSKProtoError: Error {
 				builder.value = value
 			}
 
+			builder.type = SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeUnwrap(self.type)
+
 			if let label = self.label {
 				builder.label = label
 			}
-
-			builder.type = SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeUnwrap(self.type)
 		}
 
 		return proto
@@ -1182,33 +1182,33 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let type: SSKProtoDataMessageContactPostalAddressType
-	@objc public let street: String?
 	@objc public let label: String?
-	@objc public let neighborhood: String?
+	@objc public let street: String?
 	@objc public let pobox: String?
-	@objc public let region: String?
+	@objc public let neighborhood: String?
 	@objc public let city: String?
-	@objc public let country: String?
+	@objc public let region: String?
 	@objc public let postcode: String?
+	@objc public let country: String?
 
 	@objc public init(type: SSKProtoDataMessageContactPostalAddressType,
-	                  street: String?,
 	                  label: String?,
-	                  neighborhood: String?,
+	                  street: String?,
 	                  pobox: String?,
-	                  region: String?,
+	                  neighborhood: String?,
 	                  city: String?,
-	                  country: String?,
-	                  postcode: String?) {
+	                  region: String?,
+	                  postcode: String?,
+	                  country: String?) {
 		self.type = type
-		self.street = street
 		self.label = label
-		self.neighborhood = neighborhood
+		self.street = street
 		self.pobox = pobox
-		self.region = region
+		self.neighborhood = neighborhood
 		self.city = city
-		self.country = country
+		self.region = region
 		self.postcode = postcode
+		self.country = country
 	}
 
 	@objc
@@ -1227,19 +1227,14 @@ public enum SSKProtoError: Error {
 			type = SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
 		}
 
-		var street: String? = nil
-		if proto.hasStreet {
-			street = proto.street
-		}
-
 		var label: String? = nil
 		if proto.hasLabel {
 			label = proto.label
 		}
 
-		var neighborhood: String? = nil
-		if proto.hasNeighborhood {
-			neighborhood = proto.neighborhood
+		var street: String? = nil
+		if proto.hasStreet {
+			street = proto.street
 		}
 
 		var pobox: String? = nil
@@ -1247,9 +1242,9 @@ public enum SSKProtoError: Error {
 			pobox = proto.pobox
 		}
 
-		var region: String? = nil
-		if proto.hasRegion {
-			region = proto.region
+		var neighborhood: String? = nil
+		if proto.hasNeighborhood {
+			neighborhood = proto.neighborhood
 		}
 
 		var city: String? = nil
@@ -1257,9 +1252,9 @@ public enum SSKProtoError: Error {
 			city = proto.city
 		}
 
-		var country: String? = nil
-		if proto.hasCountry {
-			country = proto.country
+		var region: String? = nil
+		if proto.hasRegion {
+			region = proto.region
 		}
 
 		var postcode: String? = nil
@@ -1267,19 +1262,24 @@ public enum SSKProtoError: Error {
 			postcode = proto.postcode
 		}
 
+		var country: String? = nil
+		if proto.hasCountry {
+			country = proto.country
+		}
+
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContactPostalAddress -
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactPostalAddress -
 
 		let result = SSKProtoDataMessageContactPostalAddress(type: type,
-		                                                     street: street,
 		                                                     label: label,
-		                                                     neighborhood: neighborhood,
+		                                                     street: street,
 		                                                     pobox: pobox,
-		                                                     region: region,
+		                                                     neighborhood: neighborhood,
 		                                                     city: city,
-		                                                     country: country,
-		                                                     postcode: postcode)
+		                                                     region: region,
+		                                                     postcode: postcode,
+		                                                     country: country)
 		return result
 	}
 
@@ -1287,36 +1287,36 @@ public enum SSKProtoError: Error {
 		let proto = SignalServiceProtos_DataMessage.Contact.PostalAddress.with { (builder) in
 			builder.type = SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeUnwrap(self.type)
 
-			if let street = self.street {
-				builder.street = street
-			}
-
 			if let label = self.label {
 				builder.label = label
 			}
 
-			if let neighborhood = self.neighborhood {
-				builder.neighborhood = neighborhood
+			if let street = self.street {
+				builder.street = street
 			}
 
 			if let pobox = self.pobox {
 				builder.pobox = pobox
 			}
 
-			if let region = self.region {
-				builder.region = region
+			if let neighborhood = self.neighborhood {
+				builder.neighborhood = neighborhood
 			}
 
 			if let city = self.city {
 				builder.city = city
 			}
 
-			if let country = self.country {
-				builder.country = country
+			if let region = self.region {
+				builder.region = region
 			}
 
 			if let postcode = self.postcode {
 				builder.postcode = postcode
+			}
+
+			if let country = self.country {
+				builder.country = country
 			}
 		}
 
@@ -1386,23 +1386,23 @@ public enum SSKProtoError: Error {
 
 	@objc public let name: SSKProtoDataMessageContactName?
 	@objc public let number: [SSKProtoDataMessageContactPhone]
-	@objc public let address: [SSKProtoDataMessageContactPostalAddress]
 	@objc public let email: [SSKProtoDataMessageContactEmail]
-	@objc public let organization: String?
+	@objc public let address: [SSKProtoDataMessageContactPostalAddress]
 	@objc public let avatar: SSKProtoDataMessageContactAvatar?
+	@objc public let organization: String?
 
 	@objc public init(name: SSKProtoDataMessageContactName?,
 	                  number: [SSKProtoDataMessageContactPhone],
-	                  address: [SSKProtoDataMessageContactPostalAddress],
 	                  email: [SSKProtoDataMessageContactEmail],
-	                  organization: String?,
-	                  avatar: SSKProtoDataMessageContactAvatar?) {
+	                  address: [SSKProtoDataMessageContactPostalAddress],
+	                  avatar: SSKProtoDataMessageContactAvatar?,
+	                  organization: String?) {
 		self.name = name
 		self.number = number
-		self.address = address
 		self.email = email
-		self.organization = organization
+		self.address = address
 		self.avatar = avatar
+		self.organization = organization
 	}
 
 	@objc
@@ -1427,26 +1427,26 @@ public enum SSKProtoError: Error {
 			number.append(wrapped)
 		}
 
-		var address: [SSKProtoDataMessageContactPostalAddress] = []
-		for item in proto.address {
-			let wrapped = try SSKProtoDataMessageContactPostalAddress.parseProto(item)
-			address.append(wrapped)
-		}
-
 		var email: [SSKProtoDataMessageContactEmail] = []
 		for item in proto.email {
 			let wrapped = try SSKProtoDataMessageContactEmail.parseProto(item)
 			email.append(wrapped)
 		}
 
-		var organization: String? = nil
-		if proto.hasOrganization {
-			organization = proto.organization
+		var address: [SSKProtoDataMessageContactPostalAddress] = []
+		for item in proto.address {
+			let wrapped = try SSKProtoDataMessageContactPostalAddress.parseProto(item)
+			address.append(wrapped)
 		}
 
 		var avatar: SSKProtoDataMessageContactAvatar? = nil
 		if proto.hasAvatar {
 			avatar = try SSKProtoDataMessageContactAvatar.parseProto(proto.avatar)
+		}
+
+		var organization: String? = nil
+		if proto.hasOrganization {
+			organization = proto.organization
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContact -
@@ -1455,10 +1455,10 @@ public enum SSKProtoError: Error {
 
 		let result = SSKProtoDataMessageContact(name: name,
 		                                        number: number,
-		                                        address: address,
 		                                        email: email,
-		                                        organization: organization,
-		                                        avatar: avatar)
+		                                        address: address,
+		                                        avatar: avatar,
+		                                        organization: organization)
 		return result
 	}
 
@@ -1474,24 +1474,24 @@ public enum SSKProtoError: Error {
 			}
 			builder.number = numberUnwrapped
 
-			var addressUnwrapped = [SignalServiceProtos_DataMessage.Contact.PostalAddress]()
-			for item in address {
-				addressUnwrapped.append(item.asProtobuf)
-			}
-			builder.address = addressUnwrapped
-
 			var emailUnwrapped = [SignalServiceProtos_DataMessage.Contact.Email]()
 			for item in email {
 				emailUnwrapped.append(item.asProtobuf)
 			}
 			builder.email = emailUnwrapped
 
-			if let organization = self.organization {
-				builder.organization = organization
+			var addressUnwrapped = [SignalServiceProtos_DataMessage.Contact.PostalAddress]()
+			for item in address {
+				addressUnwrapped.append(item.asProtobuf)
 			}
+			builder.address = addressUnwrapped
 
 			if let avatar = self.avatar {
 				builder.avatar = avatar.asProtobuf
+			}
+
+			if let organization = self.organization {
+				builder.organization = organization
 			}
 		}
 
@@ -1528,33 +1528,33 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let body: String?
-	@objc public let group: SSKProtoGroupContext?
 	@objc public let attachments: [SSKProtoAttachmentPointer]
-	@objc public let expireTimer: UInt32
+	@objc public let group: SSKProtoGroupContext?
 	@objc public let flags: UInt32
-	@objc public let timestamp: UInt64
+	@objc public let expireTimer: UInt32
 	@objc public let profileKey: Data?
-	@objc public let contact: [SSKProtoDataMessageContact]
+	@objc public let timestamp: UInt64
 	@objc public let quote: SSKProtoDataMessageQuote?
+	@objc public let contact: [SSKProtoDataMessageContact]
 
 	@objc public init(body: String?,
-	                  group: SSKProtoGroupContext?,
 	                  attachments: [SSKProtoAttachmentPointer],
-	                  expireTimer: UInt32,
+	                  group: SSKProtoGroupContext?,
 	                  flags: UInt32,
-	                  timestamp: UInt64,
+	                  expireTimer: UInt32,
 	                  profileKey: Data?,
-	                  contact: [SSKProtoDataMessageContact],
-	                  quote: SSKProtoDataMessageQuote?) {
+	                  timestamp: UInt64,
+	                  quote: SSKProtoDataMessageQuote?,
+	                  contact: [SSKProtoDataMessageContact]) {
 		self.body = body
-		self.group = group
 		self.attachments = attachments
-		self.expireTimer = expireTimer
+		self.group = group
 		self.flags = flags
-		self.timestamp = timestamp
+		self.expireTimer = expireTimer
 		self.profileKey = profileKey
-		self.contact = contact
+		self.timestamp = timestamp
 		self.quote = quote
+		self.contact = contact
 	}
 
 	@objc
@@ -1573,20 +1573,15 @@ public enum SSKProtoError: Error {
 			body = proto.body
 		}
 
-		var group: SSKProtoGroupContext? = nil
-		if proto.hasGroup {
-			group = try SSKProtoGroupContext.parseProto(proto.group)
-		}
-
 		var attachments: [SSKProtoAttachmentPointer] = []
 		for item in proto.attachments {
 			let wrapped = try SSKProtoAttachmentPointer.parseProto(item)
 			attachments.append(wrapped)
 		}
 
-		var expireTimer: UInt32 = 0
-		if proto.hasExpireTimer {
-			expireTimer = proto.expireTimer
+		var group: SSKProtoGroupContext? = nil
+		if proto.hasGroup {
+			group = try SSKProtoGroupContext.parseProto(proto.group)
 		}
 
 		var flags: UInt32 = 0
@@ -1594,14 +1589,24 @@ public enum SSKProtoError: Error {
 			flags = proto.flags
 		}
 
-		var timestamp: UInt64 = 0
-		if proto.hasTimestamp {
-			timestamp = proto.timestamp
+		var expireTimer: UInt32 = 0
+		if proto.hasExpireTimer {
+			expireTimer = proto.expireTimer
 		}
 
 		var profileKey: Data? = nil
 		if proto.hasProfileKey {
 			profileKey = proto.profileKey
+		}
+
+		var timestamp: UInt64 = 0
+		if proto.hasTimestamp {
+			timestamp = proto.timestamp
+		}
+
+		var quote: SSKProtoDataMessageQuote? = nil
+		if proto.hasQuote {
+			quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
 		}
 
 		var contact: [SSKProtoDataMessageContact] = []
@@ -1610,24 +1615,19 @@ public enum SSKProtoError: Error {
 			contact.append(wrapped)
 		}
 
-		var quote: SSKProtoDataMessageQuote? = nil
-		if proto.hasQuote {
-			quote = try SSKProtoDataMessageQuote.parseProto(proto.quote)
-		}
-
 		// MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
 		// MARK: - End Validation Logic for SSKProtoDataMessage -
 
 		let result = SSKProtoDataMessage(body: body,
-		                                 group: group,
 		                                 attachments: attachments,
-		                                 expireTimer: expireTimer,
+		                                 group: group,
 		                                 flags: flags,
-		                                 timestamp: timestamp,
+		                                 expireTimer: expireTimer,
 		                                 profileKey: profileKey,
-		                                 contact: contact,
-		                                 quote: quote)
+		                                 timestamp: timestamp,
+		                                 quote: quote,
+		                                 contact: contact)
 		return result
 	}
 
@@ -1637,24 +1637,28 @@ public enum SSKProtoError: Error {
 				builder.body = body
 			}
 
-			if let group = self.group {
-				builder.group = group.asProtobuf
-			}
-
 			var attachmentsUnwrapped = [SignalServiceProtos_AttachmentPointer]()
 			for item in attachments {
 				attachmentsUnwrapped.append(item.asProtobuf)
 			}
 			builder.attachments = attachmentsUnwrapped
 
-			builder.expireTimer = self.expireTimer
+			if let group = self.group {
+				builder.group = group.asProtobuf
+			}
 
 			builder.flags = self.flags
 
-			builder.timestamp = self.timestamp
+			builder.expireTimer = self.expireTimer
 
 			if let profileKey = self.profileKey {
 				builder.profileKey = profileKey
+			}
+
+			builder.timestamp = self.timestamp
+
+			if let quote = self.quote {
+				builder.quote = quote.asProtobuf
 			}
 
 			var contactUnwrapped = [SignalServiceProtos_DataMessage.Contact]()
@@ -1662,10 +1666,6 @@ public enum SSKProtoError: Error {
 				contactUnwrapped.append(item.asProtobuf)
 			}
 			builder.contact = contactUnwrapped
-
-			if let quote = self.quote {
-				builder.quote = quote.asProtobuf
-			}
 		}
 
 		return proto
@@ -1830,17 +1830,17 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let destination: String?
-	@objc public let state: SSKProtoVerifiedState
 	@objc public let identityKey: Data?
+	@objc public let state: SSKProtoVerifiedState
 	@objc public let nullMessage: Data?
 
 	@objc public init(destination: String?,
-	                  state: SSKProtoVerifiedState,
 	                  identityKey: Data?,
+	                  state: SSKProtoVerifiedState,
 	                  nullMessage: Data?) {
 		self.destination = destination
-		self.state = state
 		self.identityKey = identityKey
+		self.state = state
 		self.nullMessage = nullMessage
 	}
 
@@ -1860,14 +1860,14 @@ public enum SSKProtoError: Error {
 			destination = proto.destination
 		}
 
-		var state: SSKProtoVerifiedState = .default
-		if proto.hasState {
-			state = SSKProtoVerifiedStateWrap(proto.state)
-		}
-
 		var identityKey: Data? = nil
 		if proto.hasIdentityKey {
 			identityKey = proto.identityKey
+		}
+
+		var state: SSKProtoVerifiedState = .default
+		if proto.hasState {
+			state = SSKProtoVerifiedStateWrap(proto.state)
 		}
 
 		var nullMessage: Data? = nil
@@ -1880,8 +1880,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoVerified -
 
 		let result = SSKProtoVerified(destination: destination,
-		                              state: state,
 		                              identityKey: identityKey,
+		                              state: state,
 		                              nullMessage: nullMessage)
 		return result
 	}
@@ -1892,11 +1892,11 @@ public enum SSKProtoError: Error {
 				builder.destination = destination
 			}
 
-			builder.state = SSKProtoVerified.SSKProtoVerifiedStateUnwrap(self.state)
-
 			if let identityKey = self.identityKey {
 				builder.identityKey = identityKey
 			}
+
+			builder.state = SSKProtoVerified.SSKProtoVerifiedStateUnwrap(self.state)
 
 			if let nullMessage = self.nullMessage {
 				builder.nullMessage = nullMessage
@@ -1912,17 +1912,17 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoSyncMessageSent: NSObject {
 
 	@objc public let destination: String?
-	@objc public let message: SSKProtoDataMessage?
 	@objc public let timestamp: UInt64
+	@objc public let message: SSKProtoDataMessage?
 	@objc public let expirationStartTimestamp: UInt64
 
 	@objc public init(destination: String?,
-	                  message: SSKProtoDataMessage?,
 	                  timestamp: UInt64,
+	                  message: SSKProtoDataMessage?,
 	                  expirationStartTimestamp: UInt64) {
 		self.destination = destination
-		self.message = message
 		self.timestamp = timestamp
+		self.message = message
 		self.expirationStartTimestamp = expirationStartTimestamp
 	}
 
@@ -1942,14 +1942,14 @@ public enum SSKProtoError: Error {
 			destination = proto.destination
 		}
 
-		var message: SSKProtoDataMessage? = nil
-		if proto.hasMessage {
-			message = try SSKProtoDataMessage.parseProto(proto.message)
-		}
-
 		var timestamp: UInt64 = 0
 		if proto.hasTimestamp {
 			timestamp = proto.timestamp
+		}
+
+		var message: SSKProtoDataMessage? = nil
+		if proto.hasMessage {
+			message = try SSKProtoDataMessage.parseProto(proto.message)
 		}
 
 		var expirationStartTimestamp: UInt64 = 0
@@ -1962,8 +1962,8 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoSyncMessageSent -
 
 		let result = SSKProtoSyncMessageSent(destination: destination,
-		                                     message: message,
 		                                     timestamp: timestamp,
+		                                     message: message,
 		                                     expirationStartTimestamp: expirationStartTimestamp)
 		return result
 	}
@@ -1974,11 +1974,11 @@ public enum SSKProtoError: Error {
 				builder.destination = destination
 			}
 
+			builder.timestamp = self.timestamp
+
 			if let message = self.message {
 				builder.message = message.asProtobuf
 			}
-
-			builder.timestamp = self.timestamp
 
 			builder.expirationStartTimestamp = self.expirationStartTimestamp
 		}
@@ -2332,31 +2332,31 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoSyncMessage: NSObject {
 
 	@objc public let sent: SSKProtoSyncMessageSent?
-	@objc public let groups: SSKProtoSyncMessageGroups?
 	@objc public let contacts: SSKProtoSyncMessageContacts?
-	@objc public let read: [SSKProtoSyncMessageRead]
+	@objc public let groups: SSKProtoSyncMessageGroups?
 	@objc public let request: SSKProtoSyncMessageRequest?
-	@objc public let verified: SSKProtoVerified?
+	@objc public let read: [SSKProtoSyncMessageRead]
 	@objc public let blocked: SSKProtoSyncMessageBlocked?
+	@objc public let verified: SSKProtoVerified?
 	@objc public let configuration: SSKProtoSyncMessageConfiguration?
 	@objc public let padding: Data?
 
 	@objc public init(sent: SSKProtoSyncMessageSent?,
-	                  groups: SSKProtoSyncMessageGroups?,
 	                  contacts: SSKProtoSyncMessageContacts?,
-	                  read: [SSKProtoSyncMessageRead],
+	                  groups: SSKProtoSyncMessageGroups?,
 	                  request: SSKProtoSyncMessageRequest?,
-	                  verified: SSKProtoVerified?,
+	                  read: [SSKProtoSyncMessageRead],
 	                  blocked: SSKProtoSyncMessageBlocked?,
+	                  verified: SSKProtoVerified?,
 	                  configuration: SSKProtoSyncMessageConfiguration?,
 	                  padding: Data?) {
 		self.sent = sent
-		self.groups = groups
 		self.contacts = contacts
-		self.read = read
+		self.groups = groups
 		self.request = request
-		self.verified = verified
+		self.read = read
 		self.blocked = blocked
+		self.verified = verified
 		self.configuration = configuration
 		self.padding = padding
 	}
@@ -2377,14 +2377,19 @@ public enum SSKProtoError: Error {
 			sent = try SSKProtoSyncMessageSent.parseProto(proto.sent)
 		}
 
+		var contacts: SSKProtoSyncMessageContacts? = nil
+		if proto.hasContacts {
+			contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
+		}
+
 		var groups: SSKProtoSyncMessageGroups? = nil
 		if proto.hasGroups {
 			groups = try SSKProtoSyncMessageGroups.parseProto(proto.groups)
 		}
 
-		var contacts: SSKProtoSyncMessageContacts? = nil
-		if proto.hasContacts {
-			contacts = try SSKProtoSyncMessageContacts.parseProto(proto.contacts)
+		var request: SSKProtoSyncMessageRequest? = nil
+		if proto.hasRequest {
+			request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
 		}
 
 		var read: [SSKProtoSyncMessageRead] = []
@@ -2393,19 +2398,14 @@ public enum SSKProtoError: Error {
 			read.append(wrapped)
 		}
 
-		var request: SSKProtoSyncMessageRequest? = nil
-		if proto.hasRequest {
-			request = try SSKProtoSyncMessageRequest.parseProto(proto.request)
+		var blocked: SSKProtoSyncMessageBlocked? = nil
+		if proto.hasBlocked {
+			blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
 		}
 
 		var verified: SSKProtoVerified? = nil
 		if proto.hasVerified {
 			verified = try SSKProtoVerified.parseProto(proto.verified)
-		}
-
-		var blocked: SSKProtoSyncMessageBlocked? = nil
-		if proto.hasBlocked {
-			blocked = try SSKProtoSyncMessageBlocked.parseProto(proto.blocked)
 		}
 
 		var configuration: SSKProtoSyncMessageConfiguration? = nil
@@ -2423,12 +2423,12 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoSyncMessage -
 
 		let result = SSKProtoSyncMessage(sent: sent,
-		                                 groups: groups,
 		                                 contacts: contacts,
-		                                 read: read,
+		                                 groups: groups,
 		                                 request: request,
-		                                 verified: verified,
+		                                 read: read,
 		                                 blocked: blocked,
+		                                 verified: verified,
 		                                 configuration: configuration,
 		                                 padding: padding)
 		return result
@@ -2440,12 +2440,16 @@ public enum SSKProtoError: Error {
 				builder.sent = sent.asProtobuf
 			}
 
+			if let contacts = self.contacts {
+				builder.contacts = contacts.asProtobuf
+			}
+
 			if let groups = self.groups {
 				builder.groups = groups.asProtobuf
 			}
 
-			if let contacts = self.contacts {
-				builder.contacts = contacts.asProtobuf
+			if let request = self.request {
+				builder.request = request.asProtobuf
 			}
 
 			var readUnwrapped = [SignalServiceProtos_SyncMessage.Read]()
@@ -2454,16 +2458,12 @@ public enum SSKProtoError: Error {
 			}
 			builder.read = readUnwrapped
 
-			if let request = self.request {
-				builder.request = request.asProtobuf
+			if let blocked = self.blocked {
+				builder.blocked = blocked.asProtobuf
 			}
 
 			if let verified = self.verified {
 				builder.verified = verified.asProtobuf
-			}
-
-			if let blocked = self.blocked {
-				builder.blocked = blocked.asProtobuf
 			}
 
 			if let configuration = self.configuration {
@@ -2501,37 +2501,37 @@ public enum SSKProtoError: Error {
 		}
 	}
 
-	@objc public let height: UInt32
 	@objc public let id: UInt64
-	@objc public let key: Data?
 	@objc public let contentType: String?
-	@objc public let thumbnail: Data?
+	@objc public let key: Data?
 	@objc public let size: UInt32
-	@objc public let fileName: String?
+	@objc public let thumbnail: Data?
 	@objc public let digest: Data?
-	@objc public let width: UInt32
+	@objc public let fileName: String?
 	@objc public let flags: UInt32
+	@objc public let width: UInt32
+	@objc public let height: UInt32
 
-	@objc public init(height: UInt32,
-	                  id: UInt64,
-	                  key: Data?,
+	@objc public init(id: UInt64,
 	                  contentType: String?,
-	                  thumbnail: Data?,
+	                  key: Data?,
 	                  size: UInt32,
-	                  fileName: String?,
+	                  thumbnail: Data?,
 	                  digest: Data?,
+	                  fileName: String?,
+	                  flags: UInt32,
 	                  width: UInt32,
-	                  flags: UInt32) {
-		self.height = height
+	                  height: UInt32) {
 		self.id = id
-		self.key = key
 		self.contentType = contentType
-		self.thumbnail = thumbnail
+		self.key = key
 		self.size = size
-		self.fileName = fileName
+		self.thumbnail = thumbnail
 		self.digest = digest
-		self.width = width
+		self.fileName = fileName
 		self.flags = flags
+		self.width = width
+		self.height = height
 	}
 
 	@objc
@@ -2545,19 +2545,9 @@ public enum SSKProtoError: Error {
 	}
 
 	fileprivate class func parseProto(_ proto: SignalServiceProtos_AttachmentPointer) throws -> SSKProtoAttachmentPointer {
-		var height: UInt32 = 0
-		if proto.hasHeight {
-			height = proto.height
-		}
-
 		var id: UInt64 = 0
 		if proto.hasID {
 			id = proto.id
-		}
-
-		var key: Data? = nil
-		if proto.hasKey {
-			key = proto.key
 		}
 
 		var contentType: String? = nil
@@ -2565,9 +2555,9 @@ public enum SSKProtoError: Error {
 			contentType = proto.contentType
 		}
 
-		var thumbnail: Data? = nil
-		if proto.hasThumbnail {
-			thumbnail = proto.thumbnail
+		var key: Data? = nil
+		if proto.hasKey {
+			key = proto.key
 		}
 
 		var size: UInt32 = 0
@@ -2575,9 +2565,9 @@ public enum SSKProtoError: Error {
 			size = proto.size
 		}
 
-		var fileName: String? = nil
-		if proto.hasFileName {
-			fileName = proto.fileName
+		var thumbnail: Data? = nil
+		if proto.hasThumbnail {
+			thumbnail = proto.thumbnail
 		}
 
 		var digest: Data? = nil
@@ -2585,14 +2575,24 @@ public enum SSKProtoError: Error {
 			digest = proto.digest
 		}
 
-		var width: UInt32 = 0
-		if proto.hasWidth {
-			width = proto.width
+		var fileName: String? = nil
+		if proto.hasFileName {
+			fileName = proto.fileName
 		}
 
 		var flags: UInt32 = 0
 		if proto.hasFlags {
 			flags = proto.flags
+		}
+
+		var width: UInt32 = 0
+		if proto.hasWidth {
+			width = proto.width
+		}
+
+		var height: UInt32 = 0
+		if proto.hasHeight {
+			height = proto.height
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
@@ -2603,50 +2603,50 @@ public enum SSKProtoError: Error {
 
 		// MARK: - End Validation Logic for SSKProtoAttachmentPointer -
 
-		let result = SSKProtoAttachmentPointer(height: height,
-		                                       id: id,
-		                                       key: key,
+		let result = SSKProtoAttachmentPointer(id: id,
 		                                       contentType: contentType,
-		                                       thumbnail: thumbnail,
+		                                       key: key,
 		                                       size: size,
-		                                       fileName: fileName,
+		                                       thumbnail: thumbnail,
 		                                       digest: digest,
+		                                       fileName: fileName,
+		                                       flags: flags,
 		                                       width: width,
-		                                       flags: flags)
+		                                       height: height)
 		return result
 	}
 
 	fileprivate var asProtobuf: SignalServiceProtos_AttachmentPointer {
 		let proto = SignalServiceProtos_AttachmentPointer.with { (builder) in
-			builder.height = self.height
-
 			builder.id = self.id
-
-			if let key = self.key {
-				builder.key = key
-			}
 
 			if let contentType = self.contentType {
 				builder.contentType = contentType
 			}
 
-			if let thumbnail = self.thumbnail {
-				builder.thumbnail = thumbnail
+			if let key = self.key {
+				builder.key = key
 			}
 
 			builder.size = self.size
 
-			if let fileName = self.fileName {
-				builder.fileName = fileName
+			if let thumbnail = self.thumbnail {
+				builder.thumbnail = thumbnail
 			}
 
 			if let digest = self.digest {
 				builder.digest = digest
 			}
 
-			builder.width = self.width
+			if let fileName = self.fileName {
+				builder.fileName = fileName
+			}
 
 			builder.flags = self.flags
+
+			builder.width = self.width
+
+			builder.height = self.height
 		}
 
 		return proto
@@ -2688,21 +2688,21 @@ public enum SSKProtoError: Error {
 	}
 
 	@objc public let id: Data?
-	@objc public let name: String?
 	@objc public let type: SSKProtoGroupContextType
-	@objc public let avatar: SSKProtoAttachmentPointer?
+	@objc public let name: String?
 	@objc public let members: [String]
+	@objc public let avatar: SSKProtoAttachmentPointer?
 
 	@objc public init(id: Data?,
-	                  name: String?,
 	                  type: SSKProtoGroupContextType,
-	                  avatar: SSKProtoAttachmentPointer?,
-	                  members: [String]) {
+	                  name: String?,
+	                  members: [String],
+	                  avatar: SSKProtoAttachmentPointer?) {
 		self.id = id
-		self.name = name
 		self.type = type
-		self.avatar = avatar
+		self.name = name
 		self.members = members
+		self.avatar = avatar
 	}
 
 	@objc
@@ -2721,19 +2721,14 @@ public enum SSKProtoError: Error {
 			id = proto.id
 		}
 
-		var name: String? = nil
-		if proto.hasName {
-			name = proto.name
-		}
-
 		var type: SSKProtoGroupContextType = .unknown
 		if proto.hasType {
 			type = SSKProtoGroupContextTypeWrap(proto.type)
 		}
 
-		var avatar: SSKProtoAttachmentPointer? = nil
-		if proto.hasAvatar {
-			avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
+		var name: String? = nil
+		if proto.hasName {
+			name = proto.name
 		}
 
 		var members: [String] = []
@@ -2742,8 +2737,16 @@ public enum SSKProtoError: Error {
 			members.append(wrapped)
 		}
 
+		var avatar: SSKProtoAttachmentPointer? = nil
+		if proto.hasAvatar {
+			avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
+		}
+
 		// MARK: - Begin Validation Logic for SSKProtoGroupContext -
 
+        guard proto.hasID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
         guard proto.hasType else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
         }
@@ -2751,10 +2754,10 @@ public enum SSKProtoError: Error {
 		// MARK: - End Validation Logic for SSKProtoGroupContext -
 
 		let result = SSKProtoGroupContext(id: id,
-		                                  name: name,
 		                                  type: type,
-		                                  avatar: avatar,
-		                                  members: members)
+		                                  name: name,
+		                                  members: members,
+		                                  avatar: avatar)
 		return result
 	}
 
@@ -2764,14 +2767,10 @@ public enum SSKProtoError: Error {
 				builder.id = id
 			}
 
-			if let name = self.name {
-				builder.name = name
-			}
-
 			builder.type = SSKProtoGroupContext.SSKProtoGroupContextTypeUnwrap(self.type)
 
-			if let avatar = self.avatar {
-				builder.avatar = avatar.asProtobuf
+			if let name = self.name {
+				builder.name = name
 			}
 
 			var membersUnwrapped = [String]()
@@ -2779,6 +2778,10 @@ public enum SSKProtoError: Error {
 				membersUnwrapped.append(item)
 			}
 			builder.members = membersUnwrapped
+
+			if let avatar = self.avatar {
+				builder.avatar = avatar.asProtobuf
+			}
 		}
 
 		return proto
@@ -2846,29 +2849,29 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoContactDetails: NSObject {
 
 	@objc public let number: String?
-	@objc public let avatar: SSKProtoContactDetailsAvatar?
 	@objc public let name: String?
-	@objc public let verified: SSKProtoVerified?
+	@objc public let avatar: SSKProtoContactDetailsAvatar?
 	@objc public let color: String?
-	@objc public let blocked: Bool
+	@objc public let verified: SSKProtoVerified?
 	@objc public let profileKey: Data?
+	@objc public let blocked: Bool
 	@objc public let expireTimer: UInt32
 
 	@objc public init(number: String?,
-	                  avatar: SSKProtoContactDetailsAvatar?,
 	                  name: String?,
-	                  verified: SSKProtoVerified?,
+	                  avatar: SSKProtoContactDetailsAvatar?,
 	                  color: String?,
-	                  blocked: Bool,
+	                  verified: SSKProtoVerified?,
 	                  profileKey: Data?,
+	                  blocked: Bool,
 	                  expireTimer: UInt32) {
 		self.number = number
-		self.avatar = avatar
 		self.name = name
-		self.verified = verified
+		self.avatar = avatar
 		self.color = color
-		self.blocked = blocked
+		self.verified = verified
 		self.profileKey = profileKey
+		self.blocked = blocked
 		self.expireTimer = expireTimer
 	}
 
@@ -2888,19 +2891,14 @@ public enum SSKProtoError: Error {
 			number = proto.number
 		}
 
-		var avatar: SSKProtoContactDetailsAvatar? = nil
-		if proto.hasAvatar {
-			avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
-		}
-
 		var name: String? = nil
 		if proto.hasName {
 			name = proto.name
 		}
 
-		var verified: SSKProtoVerified? = nil
-		if proto.hasVerified {
-			verified = try SSKProtoVerified.parseProto(proto.verified)
+		var avatar: SSKProtoContactDetailsAvatar? = nil
+		if proto.hasAvatar {
+			avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
 		}
 
 		var color: String? = nil
@@ -2908,14 +2906,19 @@ public enum SSKProtoError: Error {
 			color = proto.color
 		}
 
-		var blocked: Bool = false
-		if proto.hasBlocked {
-			blocked = proto.blocked
+		var verified: SSKProtoVerified? = nil
+		if proto.hasVerified {
+			verified = try SSKProtoVerified.parseProto(proto.verified)
 		}
 
 		var profileKey: Data? = nil
 		if proto.hasProfileKey {
 			profileKey = proto.profileKey
+		}
+
+		var blocked: Bool = false
+		if proto.hasBlocked {
+			blocked = proto.blocked
 		}
 
 		var expireTimer: UInt32 = 0
@@ -2925,15 +2928,19 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoContactDetails -
 
+        guard proto.hasNumber else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoContactDetails -
 
 		let result = SSKProtoContactDetails(number: number,
-		                                    avatar: avatar,
 		                                    name: name,
-		                                    verified: verified,
+		                                    avatar: avatar,
 		                                    color: color,
-		                                    blocked: blocked,
+		                                    verified: verified,
 		                                    profileKey: profileKey,
+		                                    blocked: blocked,
 		                                    expireTimer: expireTimer)
 		return result
 	}
@@ -2944,27 +2951,27 @@ public enum SSKProtoError: Error {
 				builder.number = number
 			}
 
-			if let avatar = self.avatar {
-				builder.avatar = avatar.asProtobuf
-			}
-
 			if let name = self.name {
 				builder.name = name
 			}
 
-			if let verified = self.verified {
-				builder.verified = verified.asProtobuf
+			if let avatar = self.avatar {
+				builder.avatar = avatar.asProtobuf
 			}
 
 			if let color = self.color {
 				builder.color = color
 			}
 
-			builder.blocked = self.blocked
+			if let verified = self.verified {
+				builder.verified = verified.asProtobuf
+			}
 
 			if let profileKey = self.profileKey {
 				builder.profileKey = profileKey
 			}
+
+			builder.blocked = self.blocked
 
 			builder.expireTimer = self.expireTimer
 		}
@@ -3034,27 +3041,27 @@ public enum SSKProtoError: Error {
 @objc public class SSKProtoGroupDetails: NSObject {
 
 	@objc public let id: Data?
-	@objc public let members: [String]
 	@objc public let name: String?
-	@objc public let active: Bool
+	@objc public let members: [String]
 	@objc public let avatar: SSKProtoGroupDetailsAvatar?
-	@objc public let color: String?
+	@objc public let active: Bool
 	@objc public let expireTimer: UInt32
+	@objc public let color: String?
 
 	@objc public init(id: Data?,
-	                  members: [String],
 	                  name: String?,
-	                  active: Bool,
+	                  members: [String],
 	                  avatar: SSKProtoGroupDetailsAvatar?,
-	                  color: String?,
-	                  expireTimer: UInt32) {
+	                  active: Bool,
+	                  expireTimer: UInt32,
+	                  color: String?) {
 		self.id = id
-		self.members = members
 		self.name = name
-		self.active = active
+		self.members = members
 		self.avatar = avatar
-		self.color = color
+		self.active = active
 		self.expireTimer = expireTimer
+		self.color = color
 	}
 
 	@objc
@@ -3073,20 +3080,15 @@ public enum SSKProtoError: Error {
 			id = proto.id
 		}
 
-		var members: [String] = []
-		for item in proto.members {
-			let wrapped = item
-			members.append(wrapped)
-		}
-
 		var name: String? = nil
 		if proto.hasName {
 			name = proto.name
 		}
 
-		var active: Bool = true
-		if proto.hasActive {
-			active = proto.active
+		var members: [String] = []
+		for item in proto.members {
+			let wrapped = item
+			members.append(wrapped)
 		}
 
 		var avatar: SSKProtoGroupDetailsAvatar? = nil
@@ -3094,9 +3096,9 @@ public enum SSKProtoError: Error {
 			avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
 		}
 
-		var color: String? = nil
-		if proto.hasColor {
-			color = proto.color
+		var active: Bool = true
+		if proto.hasActive {
+			active = proto.active
 		}
 
 		var expireTimer: UInt32 = 0
@@ -3104,17 +3106,26 @@ public enum SSKProtoError: Error {
 			expireTimer = proto.expireTimer
 		}
 
+		var color: String? = nil
+		if proto.hasColor {
+			color = proto.color
+		}
+
 		// MARK: - Begin Validation Logic for SSKProtoGroupDetails -
+
+        guard proto.hasID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
 
 		// MARK: - End Validation Logic for SSKProtoGroupDetails -
 
 		let result = SSKProtoGroupDetails(id: id,
-		                                  members: members,
 		                                  name: name,
-		                                  active: active,
+		                                  members: members,
 		                                  avatar: avatar,
-		                                  color: color,
-		                                  expireTimer: expireTimer)
+		                                  active: active,
+		                                  expireTimer: expireTimer,
+		                                  color: color)
 		return result
 	}
 
@@ -3124,27 +3135,27 @@ public enum SSKProtoError: Error {
 				builder.id = id
 			}
 
+			if let name = self.name {
+				builder.name = name
+			}
+
 			var membersUnwrapped = [String]()
 			for item in members {
 				membersUnwrapped.append(item)
 			}
 			builder.members = membersUnwrapped
 
-			if let name = self.name {
-				builder.name = name
-			}
-
-			builder.active = self.active
-
 			if let avatar = self.avatar {
 				builder.avatar = avatar.asProtobuf
 			}
 
+			builder.active = self.active
+
+			builder.expireTimer = self.expireTimer
+
 			if let color = self.color {
 				builder.color = color
 			}
-
-			builder.expireTimer = self.expireTimer
 		}
 
 		return proto

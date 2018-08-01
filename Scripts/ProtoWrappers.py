@@ -293,12 +293,13 @@ public enum %s: Error {
 
 
 class MessageField:
-    def __init__(self, name, index, rules, proto_type, default_value):
+    def __init__(self, name, index, rules, proto_type, default_value, sort_index):
         self.name = name
         self.index = index
         self.rules = rules
         self.proto_type = proto_type
         self.default_value = default_value
+        self.sort_index = sort_index
             
 
 class MessageContext(BaseContext):
@@ -315,8 +316,10 @@ class MessageContext(BaseContext):
         
         self.field_map = {}
     
-    def fields(self):
-        return self.field_map.values()
+    def fields(self): 
+        fields = self.field_map.values()
+        fields = sorted(fields, key=lambda f: f.sort_index)
+        return fields
     
     def field_indices(self):
         return [field.index for field in self.fields()]
@@ -685,7 +688,8 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
     #     print '# message:', message_name
     
     context = MessageContext(args, parent_context, message_name)
-        
+    
+    sort_index = 0
     while True:
         try:
             line = parser.next()
@@ -753,8 +757,10 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 raise Exception('Duplicate message field index[%s]: %s' % (proto_file_path, item_name))
             # context.field_indices.add(item_index)
             
-            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default)
-                            
+            context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index)
+            
+            sort_index = sort_index + 1
+            
             continue
 
         raise Exception('Invalid message syntax[%s]: %s' % (proto_file_path, line))

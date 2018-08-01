@@ -134,7 +134,7 @@ public class MessageFetcherJob: NSObject {
             let legacyMessage: Data? = try params.optionalBase64EncodedData(key: "message")
             let content: Data? = try params.optionalBase64EncodedData(key: "content")
 
-            return SSKProtoEnvelope(type: type, relay: nil, source: source, timestamp: UInt64(timestamp), sourceDevice: sourceDevice, legacyMessage: legacyMessage, content: content)
+            return SSKProtoEnvelope(type: type, source: source, sourceDevice: sourceDevice, relay: nil, timestamp: UInt64(timestamp), legacyMessage: legacyMessage, content: content)
         } catch {
             owsFail("\(self.logTag) in \(#function) error building envelope: \(error)")
             return nil
