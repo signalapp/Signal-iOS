@@ -179,10 +179,7 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
-        guard let source = envelope.source else {
-            Logger.error("\(self.logTag) envelope missing source.")
-            return
-        }
+        let source = envelope.source
         let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in

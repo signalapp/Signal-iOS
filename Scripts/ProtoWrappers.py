@@ -197,11 +197,14 @@ class BaseContext(object):
             # TODO: fail
             return base_type
         
-    def can_field_be_optional(self, field):
-        if field.proto_type in ('uint64',
+    def is_field_primitive(self, field):
+        return field.proto_type in ('uint64',
             'uint32',
             'fixed64',
-            'bool', ):
+            'bool', )
+        
+    def can_field_be_optional(self, field):
+        if self.is_field_primitive(field):
             return not field.is_required
 
         # if field.proto_type == 'uint64':
@@ -404,15 +407,32 @@ class MessageContext(BaseContext):
         if len(implict_fields) > 0:
             for field in implict_fields:
                 if field.rules == 'optional':
-                    writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
-                    writer.push_indent()
-                    if self.is_field_an_enum(field):
-                        enum_context = self.context_for_proto_type(field)
-                        writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                    can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
+                    if can_be_optional:
+                        writer.add('@objc public var %s: %s? {' % (field.name_swift, field.type_swift_not_optional))
+                        writer.push_indent()
+                        writer.add('guard proto.%s else {' % field.has_accessor_name() )
+                        writer.push_indent()
+                        writer.add('return nil')
+                        writer.pop_indent()
+                        writer.add('}')
+                        if self.is_field_an_enum(field):
+                            enum_context = self.context_for_proto_type(field)
+                            writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                        else:
+                            writer.add('return proto.%s' % field.name_swift )
+                        writer.pop_indent()
+                        writer.add('}')
                     else:
-                        writer.add('return proto.%s' % field.name_swift )
-                    writer.pop_indent()
-                    writer.add('}')
+                        writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
+                        writer.push_indent()
+                        if self.is_field_an_enum(field):
+                            enum_context = self.context_for_proto_type(field)
+                            writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                        else:
+                            writer.add('return proto.%s' % field.name_swift )
+                        writer.pop_indent()
+                        writer.add('}')
 
                     writer.add('@objc public var %s: Bool {' % field.has_accessor_name() )
                     writer.push_indent()

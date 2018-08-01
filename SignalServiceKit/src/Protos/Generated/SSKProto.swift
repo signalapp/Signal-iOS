@@ -130,21 +130,30 @@ public enum SSKProtoError: Error {
     @objc public let sourceDevice: UInt32
     @objc public let timestamp: UInt64
 
-    @objc public var relay: String {
+    @objc public var relay: String? {
+        guard proto.hasRelay else {
+            return nil
+        }
         return proto.relay
     }
     @objc public var hasRelay: Bool {
         return proto.hasRelay
     }
 
-    @objc public var legacyMessage: Data {
+    @objc public var legacyMessage: Data? {
+        guard proto.hasLegacyMessage else {
+            return nil
+        }
         return proto.legacyMessage
     }
     @objc public var hasLegacyMessage: Bool {
         return proto.hasLegacyMessage
     }
 
-    @objc public var content: Data {
+    @objc public var content: Data? {
+        guard proto.hasContent else {
+            return nil
+        }
         return proto.content
     }
     @objc public var hasContent: Bool {
@@ -384,7 +393,10 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sessionDescription: String {
+    @objc public var sessionDescription: String? {
+        guard proto.hasSessionDescription else {
+            return nil
+        }
         return proto.sessionDescription
     }
     @objc public var hasSessionDescription: Bool {
@@ -464,7 +476,10 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sessionDescription: String {
+    @objc public var sessionDescription: String? {
+        guard proto.hasSessionDescription else {
+            return nil
+        }
         return proto.sessionDescription
     }
     @objc public var hasSessionDescription: Bool {
@@ -562,7 +577,10 @@ public enum SSKProtoError: Error {
 
     @objc public let id: UInt64
 
-    @objc public var sdpMid: String {
+    @objc public var sdpMid: String? {
+        guard proto.hasSdpMid else {
+            return nil
+        }
         return proto.sdpMid
     }
     @objc public var hasSdpMid: Bool {
@@ -576,7 +594,10 @@ public enum SSKProtoError: Error {
         return proto.hasSdpMlineIndex
     }
 
-    @objc public var sdp: String {
+    @objc public var sdp: String? {
+        guard proto.hasSdp else {
+            return nil
+        }
         return proto.sdp
     }
     @objc public var hasSdp: Bool {
@@ -826,7 +847,10 @@ public enum SSKProtoError: Error {
     @objc public let hangup: SSKProtoCallMessageHangup?
     @objc public let busy: SSKProtoCallMessageBusy?
 
-    @objc public var profileKey: Data {
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
         return proto.profileKey
     }
     @objc public var hasProfileKey: Bool {
@@ -975,14 +999,20 @@ public enum SSKProtoError: Error {
 
     @objc public let thumbnail: SSKProtoAttachmentPointer?
 
-    @objc public var contentType: String {
+    @objc public var contentType: String? {
+        guard proto.hasContentType else {
+            return nil
+        }
         return proto.contentType
     }
     @objc public var hasContentType: Bool {
         return proto.hasContentType
     }
 
-    @objc public var fileName: String {
+    @objc public var fileName: String? {
+        guard proto.hasFileName else {
+            return nil
+        }
         return proto.fileName
     }
     @objc public var hasFileName: Bool {
@@ -1091,7 +1121,10 @@ public enum SSKProtoError: Error {
     @objc public let author: String
     @objc public let attachments: [SSKProtoDataMessageQuoteQuotedAttachment]
 
-    @objc public var text: String {
+    @objc public var text: String? {
+        guard proto.hasText else {
+            return nil
+        }
         return proto.text
     }
     @objc public var hasText: Bool {
@@ -1222,42 +1255,60 @@ public enum SSKProtoError: Error {
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.Name
 
-    @objc public var givenName: String {
+    @objc public var givenName: String? {
+        guard proto.hasGivenName else {
+            return nil
+        }
         return proto.givenName
     }
     @objc public var hasGivenName: Bool {
         return proto.hasGivenName
     }
 
-    @objc public var familyName: String {
+    @objc public var familyName: String? {
+        guard proto.hasFamilyName else {
+            return nil
+        }
         return proto.familyName
     }
     @objc public var hasFamilyName: Bool {
         return proto.hasFamilyName
     }
 
-    @objc public var prefix: String {
+    @objc public var prefix: String? {
+        guard proto.hasPrefix else {
+            return nil
+        }
         return proto.prefix
     }
     @objc public var hasPrefix: Bool {
         return proto.hasPrefix
     }
 
-    @objc public var suffix: String {
+    @objc public var suffix: String? {
+        guard proto.hasSuffix else {
+            return nil
+        }
         return proto.suffix
     }
     @objc public var hasSuffix: Bool {
         return proto.hasSuffix
     }
 
-    @objc public var middleName: String {
+    @objc public var middleName: String? {
+        guard proto.hasMiddleName else {
+            return nil
+        }
         return proto.middleName
     }
     @objc public var hasMiddleName: Bool {
         return proto.hasMiddleName
     }
 
-    @objc public var displayName: String {
+    @objc public var displayName: String? {
+        guard proto.hasDisplayName else {
+            return nil
+        }
         return proto.displayName
     }
     @objc public var hasDisplayName: Bool {
@@ -1372,7 +1423,10 @@ public enum SSKProtoError: Error {
         return proto.hasType
     }
 
-    @objc public var label: String {
+    @objc public var label: String? {
+        guard proto.hasLabel else {
+            return nil
+        }
         return proto.label
     }
     @objc public var hasLabel: Bool {
@@ -1495,7 +1549,10 @@ public enum SSKProtoError: Error {
         return proto.hasType
     }
 
-    @objc public var label: String {
+    @objc public var label: String? {
+        guard proto.hasLabel else {
+            return nil
+        }
         return proto.label
     }
     @objc public var hasLabel: Bool {
@@ -1667,56 +1724,80 @@ public enum SSKProtoError: Error {
         return proto.hasType
     }
 
-    @objc public var label: String {
+    @objc public var label: String? {
+        guard proto.hasLabel else {
+            return nil
+        }
         return proto.label
     }
     @objc public var hasLabel: Bool {
         return proto.hasLabel
     }
 
-    @objc public var street: String {
+    @objc public var street: String? {
+        guard proto.hasStreet else {
+            return nil
+        }
         return proto.street
     }
     @objc public var hasStreet: Bool {
         return proto.hasStreet
     }
 
-    @objc public var pobox: String {
+    @objc public var pobox: String? {
+        guard proto.hasPobox else {
+            return nil
+        }
         return proto.pobox
     }
     @objc public var hasPobox: Bool {
         return proto.hasPobox
     }
 
-    @objc public var neighborhood: String {
+    @objc public var neighborhood: String? {
+        guard proto.hasNeighborhood else {
+            return nil
+        }
         return proto.neighborhood
     }
     @objc public var hasNeighborhood: Bool {
         return proto.hasNeighborhood
     }
 
-    @objc public var city: String {
+    @objc public var city: String? {
+        guard proto.hasCity else {
+            return nil
+        }
         return proto.city
     }
     @objc public var hasCity: Bool {
         return proto.hasCity
     }
 
-    @objc public var region: String {
+    @objc public var region: String? {
+        guard proto.hasRegion else {
+            return nil
+        }
         return proto.region
     }
     @objc public var hasRegion: Bool {
         return proto.hasRegion
     }
 
-    @objc public var postcode: String {
+    @objc public var postcode: String? {
+        guard proto.hasPostcode else {
+            return nil
+        }
         return proto.postcode
     }
     @objc public var hasPostcode: Bool {
         return proto.hasPostcode
     }
 
-    @objc public var country: String {
+    @objc public var country: String? {
+        guard proto.hasCountry else {
+            return nil
+        }
         return proto.country
     }
     @objc public var hasCountry: Bool {
@@ -1914,7 +1995,10 @@ public enum SSKProtoError: Error {
     @objc public let address: [SSKProtoDataMessageContactPostalAddress]
     @objc public let avatar: SSKProtoDataMessageContactAvatar?
 
-    @objc public var organization: String {
+    @objc public var organization: String? {
+        guard proto.hasOrganization else {
+            return nil
+        }
         return proto.organization
     }
     @objc public var hasOrganization: Bool {
@@ -2123,7 +2207,10 @@ public enum SSKProtoError: Error {
     @objc public let quote: SSKProtoDataMessageQuote?
     @objc public let contact: [SSKProtoDataMessageContact]
 
-    @objc public var body: String {
+    @objc public var body: String? {
+        guard proto.hasBody else {
+            return nil
+        }
         return proto.body
     }
     @objc public var hasBody: Bool {
@@ -2144,7 +2231,10 @@ public enum SSKProtoError: Error {
         return proto.hasExpireTimer
     }
 
-    @objc public var profileKey: Data {
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
         return proto.profileKey
     }
     @objc public var hasProfileKey: Bool {
@@ -2246,7 +2336,10 @@ public enum SSKProtoError: Error {
 
     fileprivate let proto: SignalServiceProtos_NullMessage
 
-    @objc public var padding: Data {
+    @objc public var padding: Data? {
+        guard proto.hasPadding else {
+            return nil
+        }
         return proto.padding
     }
     @objc public var hasPadding: Bool {
@@ -2460,7 +2553,10 @@ fileprivate let proto: SignalServiceProtos_Verified
 
 @objc public let destination: String
 
-@objc public var identityKey: Data {
+@objc public var identityKey: Data? {
+    guard proto.hasIdentityKey else {
+        return nil
+    }
     return proto.identityKey
 }
 @objc public var hasIdentityKey: Bool {
@@ -2474,7 +2570,10 @@ fileprivate let proto: SignalServiceProtos_Verified
     return proto.hasState
 }
 
-@objc public var nullMessage: Data {
+@objc public var nullMessage: Data? {
+    guard proto.hasNullMessage else {
+        return nil
+    }
     return proto.nullMessage
 }
 @objc public var hasNullMessage: Bool {
@@ -2572,7 +2671,10 @@ fileprivate let proto: SignalServiceProtos_SyncMessage.Sent
 
 @objc public let message: SSKProtoDataMessage?
 
-@objc public var destination: String {
+@objc public var destination: String? {
+    guard proto.hasDestination else {
+        return nil
+    }
     return proto.destination
 }
 @objc public var hasDestination: Bool {
@@ -3179,7 +3281,10 @@ fileprivate let proto: SignalServiceProtos_SyncMessage
 @objc public let verified: SSKProtoVerified?
 @objc public let configuration: SSKProtoSyncMessageConfiguration?
 
-@objc public var padding: Data {
+@objc public var padding: Data? {
+guard proto.hasPadding else {
+    return nil
+}
 return proto.padding
 }
 @objc public var hasPadding: Bool {
@@ -3406,14 +3511,20 @@ fileprivate let proto: SignalServiceProtos_AttachmentPointer
 
 @objc public let id: UInt64
 
-@objc public var contentType: String {
+@objc public var contentType: String? {
+guard proto.hasContentType else {
+    return nil
+}
 return proto.contentType
 }
 @objc public var hasContentType: Bool {
 return proto.hasContentType
 }
 
-@objc public var key: Data {
+@objc public var key: Data? {
+guard proto.hasKey else {
+    return nil
+}
 return proto.key
 }
 @objc public var hasKey: Bool {
@@ -3427,21 +3538,30 @@ return proto.size
 return proto.hasSize
 }
 
-@objc public var thumbnail: Data {
+@objc public var thumbnail: Data? {
+guard proto.hasThumbnail else {
+    return nil
+}
 return proto.thumbnail
 }
 @objc public var hasThumbnail: Bool {
 return proto.hasThumbnail
 }
 
-@objc public var digest: Data {
+@objc public var digest: Data? {
+guard proto.hasDigest else {
+    return nil
+}
 return proto.digest
 }
 @objc public var hasDigest: Bool {
 return proto.hasDigest
 }
 
-@objc public var fileName: String {
+@objc public var fileName: String? {
+guard proto.hasFileName else {
+    return nil
+}
 return proto.fileName
 }
 @objc public var hasFileName: Bool {
@@ -3603,7 +3723,10 @@ fileprivate let proto: SignalServiceProtos_GroupContext
 @objc public let type: SSKProtoGroupContextType
 @objc public let avatar: SSKProtoAttachmentPointer?
 
-@objc public var name: String {
+@objc public var name: String? {
+guard proto.hasName else {
+    return nil
+}
 return proto.name
 }
 @objc public var hasName: Bool {
@@ -3701,7 +3824,10 @@ return wrapper
 
 fileprivate let proto: SignalServiceProtos_ContactDetails.Avatar
 
-@objc public var contentType: String {
+@objc public var contentType: String? {
+guard proto.hasContentType else {
+return nil
+}
 return proto.contentType
 }
 @objc public var hasContentType: Bool {
@@ -3836,21 +3962,30 @@ fileprivate let proto: SignalServiceProtos_ContactDetails
 @objc public let avatar: SSKProtoContactDetailsAvatar?
 @objc public let verified: SSKProtoVerified?
 
-@objc public var name: String {
+@objc public var name: String? {
+guard proto.hasName else {
+return nil
+}
 return proto.name
 }
 @objc public var hasName: Bool {
 return proto.hasName
 }
 
-@objc public var color: String {
+@objc public var color: String? {
+guard proto.hasColor else {
+return nil
+}
 return proto.color
 }
 @objc public var hasColor: Bool {
 return proto.hasColor
 }
 
-@objc public var profileKey: Data {
+@objc public var profileKey: Data? {
+guard proto.hasProfileKey else {
+return nil
+}
 return proto.profileKey
 }
 @objc public var hasProfileKey: Bool {
@@ -3958,7 +4093,10 @@ return wrapper
 
 fileprivate let proto: SignalServiceProtos_GroupDetails.Avatar
 
-@objc public var contentType: String {
+@objc public var contentType: String? {
+guard proto.hasContentType else {
+return nil
+}
 return proto.contentType
 }
 @objc public var hasContentType: Bool {
@@ -4085,7 +4223,10 @@ fileprivate let proto: SignalServiceProtos_GroupDetails
 @objc public let id: Data
 @objc public let avatar: SSKProtoGroupDetailsAvatar?
 
-@objc public var name: String {
+@objc public var name: String? {
+guard proto.hasName else {
+return nil
+}
 return proto.name
 }
 @objc public var hasName: Bool {
@@ -4110,7 +4251,10 @@ return proto.expireTimer
 return proto.hasExpireTimer
 }
 
-@objc public var color: String {
+@objc public var color: String? {
+guard proto.hasColor else {
+return nil
+}
 return proto.color
 }
 @objc public var hasColor: Bool {
