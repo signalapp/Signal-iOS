@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
@@ -61,12 +61,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoSyncMessageContactsBuilder *contactsBuilder =
         [SSKProtoSyncMessageContactsBuilder new];
-
     [contactsBuilder setBlob:attachmentProto];
     [contactsBuilder setIsComplete:YES];
 
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
-    [syncMessageBuilder setContactsBuilder:contactsBuilder];
+    NSError *error;
+    SSKProtoSyncMessageContacts *_Nullable contactsProto = [contactsBuilder buildAndReturnError:&error];
+    if (error || !contactsProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    [syncMessageBuilder setContacts:contactsProto];
 
     return syncMessageBuilder;
 }

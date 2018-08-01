@@ -53,19 +53,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
-
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
-
     [sentBuilder setDestination:self.sentRecipientId];
     [sentBuilder setMessage:[self.message buildDataMessage:self.sentRecipientId]];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
-    [syncMessageBuilder setSentBuilder:sentBuilder];
+    NSError *error;
+    SSKProtoSyncMessageSent *_Nullable sentProto = [sentBuilder buildAndReturnError:&error];
+    if (error || !sentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
 
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setSent:sentProto];
     return syncMessageBuilder;
 }
 

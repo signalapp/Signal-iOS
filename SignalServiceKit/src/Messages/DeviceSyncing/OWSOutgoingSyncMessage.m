@@ -48,28 +48,57 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // This method should not be overridden, since we want to add random padding to *every* sync message
-- (SSKProtoSyncMessage *)buildSyncMessage
+- (nullable SSKProtoSyncMessage *)buildSyncMessage
 {
-    SSKProtoSyncMessageBuilder *builder = [self syncMessageBuilder];
-    
+    SSKProtoSyncMessageBuilder *_Nullable builder = [self syncMessageBuilder];
+    if (!builder) {
+        return nil;
+    }
+
     // Add a random 1-512 bytes to obscure sync message type
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
     builder.padding = [Cryptography generateRandomBytes:paddingBytesLength];
 
-    return [builder build];
+    NSError *error;
+    SSKProtoSyncMessage *_Nullable proto = [builder buildAndReturnError:&error];
+    if (error || !proto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return proto;
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSFail(@"Abstract method should be overridden in subclass.");
+    OWS_ABSTRACT_METHOD();
+
     return [SSKProtoSyncMessageBuilder new];
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
+    SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessage];
+    if (!syncMessage) {
+        return nil;
+    }
+
     SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
-    [contentBuilder setSyncMessage:[self buildSyncMessage]];
-    return [[contentBuilder build] data];
+    [contentBuilder setSyncMessage:syncMessage];
+
+    NSError *error;
+    SSKProtoContent *_Nullable contentProto = [contentBuilder buildAndReturnError:&error];
+    if (error || !contentProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    NSData *_Nullable data = [contentProto serializedDataAndReturnError:&error];
+    if (error || !data) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    return data;
 }
 
 @end

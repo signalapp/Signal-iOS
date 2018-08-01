@@ -616,6 +616,7 @@ public func serializedData() throws -> Data {
         # Setters
         for field in self.fields():
             if field.rules == 'repeated':
+                # Add
                 accessor_name = field.name_swift
                 accessor_name = 'add' + accessor_name[0].upper() + accessor_name[1:]
                 writer.add('@objc public func %s(_ valueParam: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
@@ -630,6 +631,37 @@ public func serializedData() throws -> Data {
                 else:
                     writer.add('items.append(valueParam)')
                 writer.add('proto.%s = items' % ( field.name_swift, ) )
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+                
+                # Set
+                accessor_name = field.name_swift
+                accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
+                writer.add('@objc public func %s(_ wrappedItems: [%s]) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.push_indent()
+                list_wrapped_swift_name = None
+                if self.is_field_a_proto(field):
+                    message_context = self.context_for_proto_type(field)
+                    list_wrapped_swift_name = message_context.derive_wrapped_swift_name()
+                else:
+                    # TODO: Assert not an enum.
+                    list_wrapped_swift_name = self.base_swift_type_for_field(field)
+                writer.add('var unwrappedItems = [%s]()' % list_wrapped_swift_name)
+                writer.add('for wrappedItem in wrappedItems {')
+                writer.push_indent()
+                
+                if self.is_field_an_enum(field):
+                    enum_context = self.context_for_proto_type(field)
+                    writer.add('unwrappedItems.append(%sUnwrap(wrappedItem))' % enum_context.swift_name )
+                elif self.is_field_a_proto(field):
+                    writer.add('unwrappedItems.append(wrappedItem.proto)')
+                else:
+                    writer.add('unwrappedItems.append(wrappedItem)')
+                    
+                writer.pop_indent()
+                writer.add('}')
+                writer.add('proto.%s = unwrappedItems' % ( field.name_swift, ) )
                 writer.pop_indent()
                 writer.add('}')
                 writer.newline()

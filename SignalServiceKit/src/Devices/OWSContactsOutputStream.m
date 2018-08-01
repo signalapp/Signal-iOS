@@ -43,7 +43,15 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         verifiedBuilder.destination = recipientIdentity.recipientId;
         verifiedBuilder.identityKey = [recipientIdentity.identityKey prependKeyType];
         verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
-        contactBuilder.verifiedBuilder = verifiedBuilder;
+
+        NSError *error;
+        SSKProtoVerified *_Nullable verified = [verifiedBuilder buildAndReturnError:&error];
+        if (error || !verified) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return;
+        }
+
+        contactBuilder.verified = verified;
     }
 
     UIImage *_Nullable rawAvatar = [contactsManager avatarImageForCNContactId:signalAccount.contact.cnContactId];
@@ -53,10 +61,16 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         if (avatarPng) {
             SSKProtoContactDetailsAvatarBuilder *avatarBuilder =
                 [SSKProtoContactDetailsAvatarBuilder new];
-
             [avatarBuilder setContentType:OWSMimeTypeImagePng];
             [avatarBuilder setLength:(uint32_t)avatarPng.length];
-            [contactBuilder setAvatarBuilder:avatarBuilder];
+
+            NSError *error;
+            SSKProtoContactDetailsAvatar *_Nullable avatar = [avatarBuilder buildAndReturnError:&error];
+            if (error || !avatar) {
+                OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+                return;
+            }
+            [contactBuilder setAvatar:avatar];
         }
     }
 
@@ -78,7 +92,17 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         [contactBuilder setBlocked:YES];
     }
 
-    NSData *contactData = [[contactBuilder build] data];
+    NSError *error;
+    SSKProtoContactDetails *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];
+    if (error || !contactProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return;
+    }
+    NSData *_Nullable contactData = [contactProto serializedDataAndReturnError:&error];
+    if (error || !contactData) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
+        return;
+    }
 
     uint32_t contactDataLength = (uint32_t)contactData.length;
     [self.delegateStream writeRawVarint32:contactDataLength];

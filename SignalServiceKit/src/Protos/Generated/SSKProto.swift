@@ -672,6 +672,14 @@ public enum SSKProtoError: Error {
             proto.iceUpdate = items
         }
 
+        @objc public func setIceUpdate(_ wrappedItems: [SSKProtoCallMessageIceUpdate]) {
+            var unwrappedItems = [SignalServiceProtos_CallMessage.IceUpdate]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.iceUpdate = unwrappedItems
+        }
+
         @objc public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
             proto.hangup = valueParam.proto
         }
@@ -916,6 +924,14 @@ public enum SSKProtoError: Error {
             var items = proto.attachments
             items.append(valueParam.proto)
             proto.attachments = items
+        }
+
+        @objc public func setAttachments(_ wrappedItems: [SSKProtoDataMessageQuoteQuotedAttachment]) {
+            var unwrappedItems = [SignalServiceProtos_DataMessage.Quote.QuotedAttachment]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.attachments = unwrappedItems
         }
 
         @objc public func build() throws -> SSKProtoDataMessageQuote {
@@ -1619,16 +1635,40 @@ public enum SSKProtoError: Error {
             proto.number = items
         }
 
+        @objc public func setNumber(_ wrappedItems: [SSKProtoDataMessageContactPhone]) {
+            var unwrappedItems = [SignalServiceProtos_DataMessage.Contact.Phone]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.number = unwrappedItems
+        }
+
         @objc public func addEmail(_ valueParam: SSKProtoDataMessageContactEmail) {
             var items = proto.email
             items.append(valueParam.proto)
             proto.email = items
         }
 
+        @objc public func setEmail(_ wrappedItems: [SSKProtoDataMessageContactEmail]) {
+            var unwrappedItems = [SignalServiceProtos_DataMessage.Contact.Email]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.email = unwrappedItems
+        }
+
         @objc public func addAddress(_ valueParam: SSKProtoDataMessageContactPostalAddress) {
             var items = proto.address
             items.append(valueParam.proto)
             proto.address = items
+        }
+
+        @objc public func setAddress(_ wrappedItems: [SSKProtoDataMessageContactPostalAddress]) {
+            var unwrappedItems = [SignalServiceProtos_DataMessage.Contact.PostalAddress]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.address = unwrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoDataMessageContactAvatar) {
@@ -1776,6 +1816,14 @@ public enum SSKProtoError: Error {
             proto.attachments = items
         }
 
+        @objc public func setAttachments(_ wrappedItems: [SSKProtoAttachmentPointer]) {
+            var unwrappedItems = [SignalServiceProtos_AttachmentPointer]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.attachments = unwrappedItems
+        }
+
         @objc public func setGroup(_ valueParam: SSKProtoGroupContext) {
             proto.group = valueParam.proto
         }
@@ -1804,6 +1852,14 @@ public enum SSKProtoError: Error {
             var items = proto.contact
             items.append(valueParam.proto)
             proto.contact = items
+        }
+
+        @objc public func setContact(_ wrappedItems: [SSKProtoDataMessageContact]) {
+            var unwrappedItems = [SignalServiceProtos_DataMessage.Contact]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.contact = unwrappedItems
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -2017,6 +2073,14 @@ public enum SSKProtoError: Error {
             var items = proto.timestamp
             items.append(valueParam)
             proto.timestamp = items
+        }
+
+        @objc public func setTimestamp(_ wrappedItems: [UInt64]) {
+            var unwrappedItems = [UInt64]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.timestamp = unwrappedItems
         }
 
         @objc public func build() throws -> SSKProtoReceiptMessage {
@@ -2425,6 +2489,14 @@ public enum SSKProtoError: Error {
             proto.numbers = items
         }
 
+        @objc public func setNumbers(_ wrappedItems: [String]) {
+            var unwrappedItems = [String]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.numbers = unwrappedItems
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
             let wrapper = try SSKProtoSyncMessageBlocked.parseProto(proto)
             return wrapper
@@ -2707,6 +2779,14 @@ public enum SSKProtoError: Error {
             var items = proto.read
             items.append(valueParam.proto)
             proto.read = items
+        }
+
+        @objc public func setRead(_ wrappedItems: [SSKProtoSyncMessageRead]) {
+            var unwrappedItems = [SignalServiceProtos_SyncMessage.Read]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem.proto)
+            }
+            proto.read = unwrappedItems
         }
 
         @objc public func setBlocked(_ valueParam: SSKProtoSyncMessageBlocked) {
@@ -3089,6 +3169,14 @@ public enum SSKProtoError: Error {
             var items = proto.members
             items.append(valueParam)
             proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            var unwrappedItems = [String]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.members = unwrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
@@ -3479,6 +3567,14 @@ public enum SSKProtoError: Error {
             var items = proto.members
             items.append(valueParam)
             proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            var unwrappedItems = [String]()
+            for wrappedItem in wrappedItems {
+                unwrappedItems.append(wrappedItem)
+            }
+            proto.members = unwrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {

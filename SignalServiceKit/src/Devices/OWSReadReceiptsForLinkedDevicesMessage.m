@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     for (OWSLinkedDeviceReadReceipt *readReceipt in self.readReceipts) {
@@ -41,9 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
             [SSKProtoSyncMessageReadBuilder new];
         [readProtoBuilder setSender:readReceipt.senderId];
         [readProtoBuilder setTimestamp:readReceipt.messageIdTimestamp];
-        [syncMessageBuilder addRead:[readProtoBuilder build]];
-    }
 
+        NSError *error;
+        SSKProtoSyncMessageRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
+        if (error || !readProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+        [syncMessageBuilder addRead:readProto];
+    }
     return syncMessageBuilder;
 }
 

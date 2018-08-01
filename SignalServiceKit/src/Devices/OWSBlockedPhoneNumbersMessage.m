@@ -32,14 +32,19 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    SSKProtoSyncMessageBlockedBuilder *blockedPhoneNumbersBuilder =
-        [SSKProtoSyncMessageBlockedBuilder new];
-    [blockedPhoneNumbersBuilder setNumbersArray:_phoneNumbers];
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
-    [syncMessageBuilder setBlocked:[blockedPhoneNumbersBuilder build]];
+    SSKProtoSyncMessageBlockedBuilder *blockedBuilder = [SSKProtoSyncMessageBlockedBuilder new];
+    [blockedBuilder setNumbers:_phoneNumbers];
+    NSError *error;
+    SSKProtoSyncMessageBlocked *_Nullable blockedProto = [blockedBuilder buildAndReturnError:&error];
+    if (error || !blockedProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
 
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setBlocked:blockedProto];
     return syncMessageBuilder;
 }
 

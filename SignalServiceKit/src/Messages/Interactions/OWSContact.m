@@ -796,7 +796,14 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         contactBuilder.organization = contactName.organizationName.ows_stripped;
     }
     nameBuilder.displayName = contactName.displayName;
-    [contactBuilder setNameBuilder:nameBuilder];
+
+    NSError *error;
+    SSKProtoDataMessageContactName *_Nullable nameProto = [nameBuilder buildAndReturnError:&error];
+    if (error || !nameProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    [contactBuilder setName:nameProto];
 
     for (OWSContactPhoneNumber *phoneNumber in contact.phoneNumbers) {
         SSKProtoDataMessageContactPhoneBuilder *phoneBuilder =
@@ -819,7 +826,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
                 phoneBuilder.type = SSKProtoDataMessageContactPhoneTypeCustom;
                 break;
         }
-        [contactBuilder addNumber:phoneBuilder.build];
+        SSKProtoDataMessageContactPhone *_Nullable numberProto = [phoneBuilder buildAndReturnError:&error];
+        if (error || !numberProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+        [contactBuilder addNumber:numberProto];
     }
 
     for (OWSContactEmail *email in contact.emails) {
@@ -843,7 +855,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
                 emailBuilder.type = SSKProtoDataMessageContactEmailTypeCustom;
                 break;
         }
-        [contactBuilder addEmail:emailBuilder.build];
+        SSKProtoDataMessageContactEmail *_Nullable emailProto = [emailBuilder buildAndReturnError:&error];
+        if (error || !emailProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+        [contactBuilder addEmail:emailProto];
     }
 
     for (OWSContactAddress *address in contact.addresses) {
@@ -873,7 +890,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
         if (address.country.ows_stripped.length > 0) {
             addressBuilder.country = address.country.ows_stripped;
         }
-        [contactBuilder addAddress:addressBuilder.build];
+        SSKProtoDataMessageContactPostalAddress *_Nullable addressProto = [addressBuilder buildAndReturnError:&error];
+        if (error || !addressProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+        [contactBuilder addAddress:addressProto];
     }
 
     if (contact.avatarAttachmentId != nil) {
@@ -881,10 +903,19 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             [SSKProtoDataMessageContactAvatarBuilder new];
         avatarBuilder.avatar =
             [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
-        contactBuilder.avatar = [avatarBuilder build];
+        SSKProtoDataMessageContactAvatar *_Nullable avatarProto = [avatarBuilder buildAndReturnError:&error];
+        if (error || !avatarProto) {
+            OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+            return nil;
+        }
+        contactBuilder.avatar = avatarProto;
     }
 
-    SSKProtoDataMessageContact *contactProto = [contactBuilder build];
+    SSKProtoDataMessageContact *_Nullable contactProto = [contactBuilder buildAndReturnError:&error];
+    if (error || !contactProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
     if (contactProto.number.count < 1 && contactProto.email.count < 1 && contactProto.address.count < 1) {
         OWSProdLogAndFail(@"%@ contact has neither phone, email or address.", self.logTag);
         return nil;

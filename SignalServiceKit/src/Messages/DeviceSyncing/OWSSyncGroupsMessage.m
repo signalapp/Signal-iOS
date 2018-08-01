@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
 
     if (self.attachmentIds.count != 1) {
@@ -37,11 +37,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoSyncMessageGroupsBuilder *groupsBuilder =
         [SSKProtoSyncMessageGroupsBuilder new];
-
     [groupsBuilder setBlob:attachmentProto];
 
+    NSError *error;
+    SSKProtoSyncMessageGroups *_Nullable groupsProto = [groupsBuilder buildAndReturnError:&error];
+    if (error || !groupsProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
-    [syncMessageBuilder setGroupsBuilder:groupsBuilder];
+    [syncMessageBuilder setGroups:groupsProto];
 
     return syncMessageBuilder;
 }

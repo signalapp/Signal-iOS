@@ -32,17 +32,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-
     SSKProtoSyncMessageConfigurationBuilder *configurationBuilder =
         [SSKProtoSyncMessageConfigurationBuilder new];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
 
+    NSError *error;
+    SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];
+    if (error || !configurationProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
     SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessageBuilder new];
-
-    builder.configurationBuilder = configurationBuilder;
-
+    builder.configuration = configurationProto;
     return builder;
 }
 

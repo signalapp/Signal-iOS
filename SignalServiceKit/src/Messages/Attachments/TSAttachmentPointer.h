@@ -2,10 +2,11 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalServiceKit-Swift.h"
 #import "TSAttachment.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SSKProtoAttachmentPointer;
 
 typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
     TSAttachmentPointerStateEnqueued = 0,

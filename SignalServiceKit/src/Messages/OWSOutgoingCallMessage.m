@@ -134,14 +134,14 @@ NS_ASSUME_NONNULL_BEGIN
     [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
     
     NSError *error;
-    SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
+    SSKProtoContent *_Nullable result = [builder buildAndReturnError:&error];
     if (error || !result) {
         OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
         return nil;
     }
     NSData *_Nullable data = [result serializedDataAndReturnError:&error];
-    if (error || !result) {
-        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+    if (error || !data) {
+        OWSFail(@"%@ could not serialize protobuf: %@", self.logTag, error);
         return nil;
     }
     return data;
@@ -152,25 +152,45 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessageBuilder new];
 
     if (self.offerMessage) {
-        [builder setOffer:[self.offerMessage asProtobuf]];
+        SSKProtoCallMessageOffer *_Nullable proto = [self.offerMessage asProtobuf];
+        if (!proto) {
+            return nil;
+        }
+        [builder setOffer:proto];
     }
 
     if (self.answerMessage) {
-        [builder setAnswer:[self.answerMessage asProtobuf]];
+        SSKProtoCallMessageAnswer *_Nullable proto = [self.answerMessage asProtobuf];
+        if (!proto) {
+            return nil;
+        }
+        [builder setAnswer:proto];
     }
 
     if (self.iceUpdateMessages) {
         for (OWSCallIceUpdateMessage *iceUpdateMessage in self.iceUpdateMessages) {
-            [builder addIceUpdate:[iceUpdateMessage asProtobuf]];
+            SSKProtoCallMessageIceUpdate *_Nullable proto = [iceUpdateMessage asProtobuf];
+            if (!proto) {
+                return nil;
+            }
+            [builder addIceUpdate:proto];
         }
     }
 
     if (self.hangupMessage) {
-        [builder setHangup:[self.hangupMessage asProtobuf]];
+        SSKProtoCallMessageHangup *_Nullable proto = [self.hangupMessage asProtobuf];
+        if (!proto) {
+            return nil;
+        }
+        [builder setHangup:proto];
     }
 
     if (self.busyMessage) {
-        [builder setBusy:[self.busyMessage asProtobuf]];
+        SSKProtoCallMessageBusy *_Nullable proto = [self.busyMessage asProtobuf];
+        if (!proto) {
+            return nil;
+        }
+        [builder setBusy:proto];
     }
 
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];

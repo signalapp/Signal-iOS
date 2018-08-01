@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     OWSAssert(self.identityKey.length == kIdentityKeyLength);
     OWSAssert(self.verificationForRecipientId.length > 0);
@@ -62,8 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
-
-    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
 
     SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
     verifiedBuilder.destination = self.verificationForRecipientId;
@@ -78,9 +76,16 @@ NS_ASSUME_NONNULL_BEGIN
     // padded by the superclass while being sent. The end result is we send a NullMessage of a non-distinct size, and a
     // verification sync which is ~1-512 bytes larger then that.
     verifiedBuilder.nullMessage = [Cryptography generateRandomBytes:self.paddingBytesLength];
-    
-    syncMessageBuilder.verifiedBuilder = verifiedBuilder;
-    
+
+    NSError *error;
+    SSKProtoVerified *_Nullable verifiedProto = [verifiedBuilder buildAndReturnError:&error];
+    if (error || !verifiedProto) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
+    [syncMessageBuilder setVerified:verifiedProto];
     return syncMessageBuilder;
 }
 
