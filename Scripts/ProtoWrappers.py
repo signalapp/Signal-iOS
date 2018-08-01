@@ -109,7 +109,7 @@ class BaseContext(object):
 
     def derive_swift_name(self):
         names = self.inherited_proto_names()
-        return self.args.wrapper_prefix + '_'.join(names)
+        return self.args.wrapper_prefix + ''.join(names)
 
     def derive_wrapped_swift_name(self):
         names = self.inherited_proto_names()
@@ -275,6 +275,11 @@ class FileContext(BaseContext):
 import Foundation
 ''')
 
+        writer.extend('''
+// WARNING: This code is generated. Only edit within the markers.
+'''.strip())
+        writer.newline()        
+        
         writer.invalid_protobuf_error_name = '%sError' % self.args.wrapper_prefix
         writer.extend(('''
 public enum %s: Error {
@@ -329,6 +334,9 @@ class MessageContext(BaseContext):
             child.prepare()
         
     def generate(self, writer):
+        for child in self.messages:
+            child.generate(writer)
+        
         writer.add('// MARK: - %s' % self.swift_name)
         writer.newline()
         
@@ -337,7 +345,7 @@ class MessageContext(BaseContext):
         
         writer.push_context(self.proto_name, self.swift_name)
         
-        for child in self.children():
+        for child in self.enums:
             child.generate(writer)
 
         # Prepare fields
@@ -431,10 +439,11 @@ public func serializedData() throws -> Data {
         writer.newline()
         
         # Preserve existing validation logic.
-        validation_block = args.validation_map[self.swift_name]
-        if validation_block:
-            writer.add_raw(validation_block)
-            writer.newline()
+        if self.swift_name in args.validation_map:
+            validation_block = args.validation_map[self.swift_name]
+            if validation_block:
+                writer.add_raw(validation_block)
+                writer.newline()
         
         writer.add('// MARK: - End Validation Logic for %s -' % self.swift_name)
         writer.newline()
@@ -577,10 +586,8 @@ class EnumContext(BaseContext):
         writer.add('private class func %sWrap(_ value: %s) -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
-        writer.push_indent()
         for case_name, case_index in self.case_pairs():
             writer.add('case .%s: return .%s' % (case_name, case_name,))
-        writer.pop_indent()
         writer.add('}')
         writer.pop_indent()
         writer.add('}')
@@ -588,10 +595,8 @@ class EnumContext(BaseContext):
         writer.add('private class func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
         writer.push_indent()
         writer.add('switch value {')
-        writer.push_indent()
         for case_name, case_index in self.case_pairs():
             writer.add('case .%s: return .%s' % (case_name, case_name,))
-        writer.pop_indent()
         writer.add('}')
         writer.pop_indent()
         writer.add('}')

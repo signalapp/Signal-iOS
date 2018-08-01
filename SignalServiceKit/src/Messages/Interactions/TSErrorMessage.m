@@ -84,7 +84,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
 }
 
-- (instancetype)initWithEnvelope:(SSKEnvelope *)envelope
+- (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
@@ -146,7 +146,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     }
 }
 
-+ (instancetype)corruptedMessageWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -159,7 +159,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return [[self alloc] initWithFailedMessageType:TSErrorMessageInvalidMessage];
 }
 
-+ (instancetype)invalidVersionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -167,7 +167,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidVersion];
 }
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
@@ -175,7 +175,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                         failedMessageType:TSErrorMessageInvalidKeyException];
 }
 
-+ (instancetype)missingSessionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     return

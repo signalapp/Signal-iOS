@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Blocking
 
-- (BOOL)isEnvelopeBlocked:(SSKEnvelope *)envelope
+- (BOOL)isEnvelopeBlocked:(SSKProtoEnvelope *)envelope
 {
     OWSAssert(envelope);
 
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Decryption
 
-- (void)decryptEnvelope:(SSKEnvelope *)envelope
+- (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
            successBlock:(DecryptSuccessBlock)successBlockParameter
            failureBlock:(DecryptFailureBlock)failureBlockParameter
 {
@@ -129,7 +129,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         switch (envelope.type) {
-            case SSKEnvelopeTypeCiphertext: {
+            case SSKProtoEnvelopeTypeCiphertext: {
                 [self decryptSecureMessage:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted secure message.", self.logTag);
@@ -146,7 +146,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // Return to avoid double-acknowledging.
                 return;
             }
-            case SSKEnvelopeTypePrekeyBundle: {
+            case SSKProtoEnvelopeTypePrekeyBundle: {
                 [self decryptPreKeyBundle:envelope
                     successBlock:^(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction) {
                         DDLogDebug(@"%@ decrypted pre-key whisper message", self.logTag);
@@ -165,9 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
             // These message types don't have a payload to decrypt.
-            case SSKEnvelopeTypeReceipt:
-            case SSKEnvelopeTypeKeyExchange:
-            case SSKEnvelopeTypeUnknown: {
+            case SSKProtoEnvelopeTypeReceipt:
+            case SSKProtoEnvelopeTypeKeyExchange:
+            case SSKProtoEnvelopeTypeUnknown: {
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     successBlock(nil, transaction);
                 }];
@@ -193,7 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     failureBlock();
 }
 
-- (void)decryptSecureMessage:(SSKEnvelope *)envelope
+- (void)decryptSecureMessage:(SSKProtoEnvelope *)envelope
                 successBlock:(DecryptSuccessBlock)successBlock
                 failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
@@ -210,7 +210,7 @@ NS_ASSUME_NONNULL_BEGIN
               failureBlock:failureBlock];
 }
 
-- (void)decryptPreKeyBundle:(SSKEnvelope *)envelope
+- (void)decryptPreKeyBundle:(SSKProtoEnvelope *)envelope
                successBlock:(DecryptSuccessBlock)successBlock
                failureBlock:(void (^)(NSError *_Nullable error))failureBlock
 {
@@ -230,7 +230,7 @@ NS_ASSUME_NONNULL_BEGIN
               failureBlock:failureBlock];
 }
 
-- (void)decryptEnvelope:(SSKEnvelope *)envelope
+- (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
          cipherTypeName:(NSString *)cipherTypeName
      cipherMessageBlock:(id<CipherMessage> (^_Nonnull)(NSData *))cipherMessageBlock
            successBlock:(DecryptSuccessBlock)successBlock
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)processException:(NSException *)exception envelope:(SSKEnvelope *)envelope
+- (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
 {
     DDLogError(@"%@ Got exception: %@ of type: %@ with reason: %@",
         self.logTag,
@@ -326,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
-                         envelope:(SSKEnvelope *)envelope
+                         envelope:(SSKProtoEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];

@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
-@class SSKEnvelope;
+@class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
 // This class is used to write incoming (decrypted, unprocessed)

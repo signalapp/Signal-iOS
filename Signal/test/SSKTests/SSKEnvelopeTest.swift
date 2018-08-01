@@ -7,7 +7,7 @@ import XCTest
 import SignalServiceKit
 import SwiftProtobuf
 
-class SSKEnvelopeTest: XCTestCase {
+class SSKProtoEnvelopeTest: XCTestCase {
 
     override func setUp() {
         super.setUp()
@@ -21,12 +21,12 @@ class SSKEnvelopeTest: XCTestCase {
 
     func testParse_EmptyData() {
         let data = Data()
-        XCTAssertThrowsError(try SSKEnvelope(serializedData: data))
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data))
     }
 
     func testParse_UnparseableData() {
         let data = "asdf".data(using: .utf8)!
-        XCTAssertThrowsError(try SSKEnvelope(serializedData: data)) { error in
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { error in
             XCTAssert(error is SwiftProtobuf.BinaryDecodingError)
         }
     }
@@ -42,7 +42,7 @@ class SSKEnvelopeTest: XCTestCase {
         let encodedData = "CAESDCsxNTU1MTIzMTIzNCjKm4WazSw4AQ=="
         let data = Data(base64Encoded: encodedData)!
 
-        XCTAssertNoThrow(try SSKEnvelope(serializedData: data))
+        XCTAssertNoThrow(try SSKProtoEnvelope(serializedData: data))
     }
 
     func testParse_invalidData() {
@@ -56,9 +56,9 @@ class SSKEnvelopeTest: XCTestCase {
         let encodedData = "EgwrMTU1NTEyMzEyMzQojdmOms0sOAE="
         let data = Data(base64Encoded: encodedData)!
 
-        XCTAssertThrowsError(try SSKEnvelope(serializedData: data)) { (error) -> Void in
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { (error) -> Void in
             switch error {
-            case SSKEnvelope.EnvelopeError.invalidProtobuf:
+            case SSKProtoEnvelope.EnvelopeError.invalidProtobuf:
                 break
             default:
                 XCTFail("unexpected error: \(error)")

@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKEnvelope;
+@class SSKProtoEnvelope;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -55,18 +55,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                          inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType;
 
-+ (instancetype)corruptedMessageWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)corruptedMessageInUnknownThread;
 
-+ (instancetype)invalidVersionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)invalidKeyExceptionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
                                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)missingSessionWithEnvelope:(SSKEnvelope *)envelope
++ (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;

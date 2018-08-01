@@ -3372,7 +3372,7 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
                                completion:nil];
 }
 
-+ (SSKEnvelope *)createEnvelopeForThread:(TSThread *)thread
++ (SSKProtoEnvelope *)createEnvelopeForThread:(TSThread *)thread
 {
     OWSAssert(thread);
 
@@ -3390,13 +3390,14 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
         }
     }();
 
-    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
-                                                            source:source
-                                                      sourceDevice:1
-                                                              type:SSKEnvelopeTypeCiphertext
-                                                           content:nil
-                                                     legacyMessage:nil];
 
+    SSKProtoEnvelope *envelope = [[SSKProtoEnvelope alloc] initWithType:SSKProtoEnvelopeTypeCiphertext
+                                                                  relay:nil
+                                                                 source:source
+                                                              timestamp:timestamp
+                                                           sourceDevice:1
+                                                          legacyMessage:nil
+                                                                content:nil];
     return envelope;
 }
 
@@ -3886,15 +3887,16 @@ typedef OWSContact * (^OWSContactBlock)(YapDatabaseReadWriteTransaction *transac
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
     NSString *source = recipientId;
     uint32_t sourceDevice = 1;
-    SSKEnvelopeType envelopeType = SSKEnvelopeTypeCiphertext;
+    SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKEnvelope *envelope = [[SSKEnvelope alloc] initWithTimestamp:timestamp
-                                                            source:source
-                                                      sourceDevice:sourceDevice
-                                                              type:envelopeType
-                                                           content:content
-                                                     legacyMessage:nil];
+    SSKProtoEnvelope *envelope = [[SSKProtoEnvelope alloc] initWithType:envelopeType
+                                                                  relay:nil
+                                                                 source:source
+                                                              timestamp:timestamp
+                                                           sourceDevice:sourceDevice
+                                                          legacyMessage:nil
+                                                                content:content];
 
     NSError *error;
     NSData *_Nullable envelopeData = [envelope serializedDataAndReturnError:&error];

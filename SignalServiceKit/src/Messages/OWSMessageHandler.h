@@ -6,14 +6,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSSignalServiceProtosContent;
 @class OWSSignalServiceProtosDataMessage;
-@class SSKEnvelope;
+@class SSKProtoEnvelope;
 
-NSString *envelopeAddress(SSKEnvelope *envelope);
+NSString *envelopeAddress(SSKProtoEnvelope *envelope);
 
 @interface OWSMessageHandler : NSObject
 
-- (NSString *)descriptionForEnvelopeType:(SSKEnvelope *)envelope;
-- (NSString *)descriptionForEnvelope:(SSKEnvelope *)envelope;
+- (NSString *)descriptionForEnvelopeType:(SSKProtoEnvelope *)envelope;
+- (NSString *)descriptionForEnvelope:(SSKProtoEnvelope *)envelope;
 - (NSString *)descriptionForContent:(OWSSignalServiceProtosContent *)content;
 - (NSString *)descriptionForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage;
 

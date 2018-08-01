@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKEnvelope;
+@class SSKProtoEnvelope;
 @class YapDatabaseReadWriteTransaction;
 
 typedef void (^DecryptSuccessBlock)(NSData *_Nullable plaintextData, YapDatabaseReadWriteTransaction *transaction);
@@ -22,7 +22,7 @@ typedef void (^DecryptFailureBlock)(void);
 //
 // Exactly one of successBlock & failureBlock will be called,
 // once.
-- (void)decryptEnvelope:(SSKEnvelope *)envelope
+- (void)decryptEnvelope:(SSKProtoEnvelope *)envelope
            successBlock:(DecryptSuccessBlock)successBlock
            failureBlock:(DecryptFailureBlock)failureBlock;
 

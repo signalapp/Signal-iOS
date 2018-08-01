@@ -38,7 +38,7 @@ public class MessageFetcherJob: NSObject {
 
         Logger.info("\(self.logTag) fetching messages via REST.")
 
-        let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKEnvelope], more: Bool) -> Promise<Void> in
+        let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("\(self.logTag) received envelope.")
                 do {
@@ -85,7 +85,7 @@ public class MessageFetcherJob: NSObject {
         timer = nil
     }
 
-    private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKEnvelope], more: Bool)? {
+    private func parseMessagesResponse(responseObject: Any?) -> (envelopes: [SSKProtoEnvelope], more: Bool)? {
         guard let responseObject = responseObject else {
             Logger.error("\(self.logTag) response object was surpringly nil")
             return nil
@@ -110,7 +110,7 @@ public class MessageFetcherJob: NSObject {
             }
         }()
 
-        let envelopes: [SSKEnvelope] = messageDicts.compactMap { buildEnvelope(messageDict: $0) }
+        let envelopes: [SSKProtoEnvelope] = messageDicts.compactMap { buildEnvelope(messageDict: $0) }
 
         return (
             envelopes: envelopes,
@@ -118,12 +118,12 @@ public class MessageFetcherJob: NSObject {
         )
     }
 
-    private func buildEnvelope(messageDict: [String: Any]) -> SSKEnvelope? {
+    private func buildEnvelope(messageDict: [String: Any]) -> SSKProtoEnvelope? {
         do {
             let params = ParamParser(dictionary: messageDict)
 
             let typeInt: Int32 = try params.required(key: "type")
-            guard let type: SSKEnvelope.SSKEnvelopeType = SSKEnvelope.SSKEnvelopeType(rawValue: typeInt) else {
+            guard let type: SSKProtoEnvelope.SSKProtoEnvelopeType = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: typeInt) else {
                 Logger.error("\(self.logTag) `typeInt` was invalid: \(typeInt)")
                 throw ParamParser.ParseError.invalidFormat("type")
             }
@@ -134,14 +134,14 @@ public class MessageFetcherJob: NSObject {
             let legacyMessage: Data? = try params.optionalBase64EncodedData(key: "message")
             let content: Data? = try params.optionalBase64EncodedData(key: "content")
 
-            return SSKEnvelope(timestamp: UInt64(timestamp), source: source, sourceDevice: sourceDevice, type: type, content: content, legacyMessage: legacyMessage)
+            return SSKProtoEnvelope(type: type, relay: nil, source: source, timestamp: UInt64(timestamp), sourceDevice: sourceDevice, legacyMessage: legacyMessage, content: content)
         } catch {
             owsFail("\(self.logTag) in \(#function) error building envelope: \(error)")
             return nil
         }
     }
 
-    private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKEnvelope], more: Bool)> {
+    private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
         return Promise { fulfill, reject in
             let request = OWSRequestFactory.getMessagesRequest()
             self.networkManager.makeRequest(
@@ -165,8 +165,12 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private func acknowledgeDelivery(envelope: SSKEnvelope) {
-        let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: envelope.source, timestamp: envelope.timestamp)
+    private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
+        guard let source = envelope.source else {
+            Logger.error("\(self.logTag) envelope missing source.")
+            return
+        }
+        let request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: source, timestamp: envelope.timestamp)
         self.networkManager.makeRequest(request,
                                         success: { (_: URLSessionDataTask?, _: Any?) -> Void in
                                             Logger.debug("\(self.logTag) acknowledged delivery for message at timestamp: \(envelope.timestamp)")
