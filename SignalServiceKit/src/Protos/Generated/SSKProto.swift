@@ -117,16 +117,16 @@ public enum SSKProtoError: Error {
 		// MARK: - Begin Validation Logic for SSKProtoEnvelope -
 
         guard proto.hasSource else {
-            throw SSKProtoError.invalidProtobuf(description: "missing required field: source")
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: source")
         }
         guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "missing required field: type")
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
         }
         guard proto.hasTimestamp else {
-            throw SSKProtoError.invalidProtobuf(description: "missing required field: timestamp")
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
         guard proto.hasSourceDevice else {
-            throw SSKProtoError.invalidProtobuf(description: "missing required field: sourceDevice")
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sourceDevice")
         }
 
 		// MARK: - End Validation Logic for SSKProtoEnvelope -
@@ -1024,6 +1024,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContactPhone -
 
+        guard proto.hasValue else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactPhone -
 
 		let result = SSKProtoDataMessageContactPhone(value: value,
@@ -1119,6 +1123,10 @@ public enum SSKProtoError: Error {
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoDataMessageContactEmail -
+
+        guard proto.hasValue else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: value")
+        }
 
 		// MARK: - End Validation Logic for SSKProtoDataMessageContactEmail -
 
@@ -1767,6 +1775,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoReceiptMessage -
 
+        guard proto.hasType else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoReceiptMessage -
 
 		let result = SSKProtoReceiptMessage(type: type,
@@ -2011,6 +2023,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoSyncMessageContacts -
 
+        guard proto.hasBlob else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoSyncMessageContacts -
 
 		let result = SSKProtoSyncMessageContacts(blob: blob,
@@ -2058,6 +2074,10 @@ public enum SSKProtoError: Error {
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoSyncMessageGroups -
+
+        guard proto.hasBlob else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: blob")
+        }
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessageGroups -
 
@@ -2182,6 +2202,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoSyncMessageRequest -
 
+        guard proto.hasType else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoSyncMessageRequest -
 
 		let result = SSKProtoSyncMessageRequest(type: type)
@@ -2232,6 +2256,13 @@ public enum SSKProtoError: Error {
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoSyncMessageRead -
+
+        guard proto.hasSender else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
+        }
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
 
 		// MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
@@ -2566,6 +2597,10 @@ public enum SSKProtoError: Error {
 
 		// MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
 
+        guard proto.hasID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+
 		// MARK: - End Validation Logic for SSKProtoAttachmentPointer -
 
 		let result = SSKProtoAttachmentPointer(height: height,
@@ -2708,6 +2743,10 @@ public enum SSKProtoError: Error {
 		}
 
 		// MARK: - Begin Validation Logic for SSKProtoGroupContext -
+
+        guard proto.hasType else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
+        }
 
 		// MARK: - End Validation Logic for SSKProtoGroupContext -
 
