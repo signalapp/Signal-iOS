@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosCallMessageOffer;
+@class SSKProtoCallMessageOffer;
 
 /**
  * Sent by the call initiator to Signal their intention to set up a call with the recipient.
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) UInt64 callId;
 @property (nonatomic, readonly, copy) NSString *sessionDescription;
 
-- (OWSSignalServiceProtosCallMessageOffer *)asProtobuf;
+- (nullable SSKProtoCallMessageOffer *)asProtobuf;
 
 @end
 

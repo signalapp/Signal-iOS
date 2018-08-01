@@ -21,15 +21,15 @@ NSString *OWSVerificationStateToString(OWSVerificationState verificationState)
     }
 }
 
-OWSSignalServiceProtosVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
+SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState verificationState)
 {
     switch (verificationState) {
         case OWSVerificationStateDefault:
-            return OWSSignalServiceProtosVerifiedStateDefault;
+            return SSKProtoVerifiedStateDefault;
         case OWSVerificationStateVerified:
-            return OWSSignalServiceProtosVerifiedStateVerified;
+            return SSKProtoVerifiedStateVerified;
         case OWSVerificationStateNoLongerVerified:
-            return OWSSignalServiceProtosVerifiedStateUnverified;
+            return SSKProtoVerifiedStateUnverified;
     }
 }
 

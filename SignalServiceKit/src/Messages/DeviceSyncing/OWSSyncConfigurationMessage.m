@@ -3,7 +3,7 @@
 //
 
 #import "OWSSyncConfigurationMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,14 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
 
-    OWSSignalServiceProtosSyncMessageConfigurationBuilder *configurationBuilder =
-        [OWSSignalServiceProtosSyncMessageConfigurationBuilder new];
+    SSKProtoSyncMessageConfigurationBuilder *configurationBuilder =
+        [SSKProtoSyncMessageConfigurationBuilder new];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
 
-    OWSSignalServiceProtosSyncMessageBuilder *builder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *builder = [SSKProtoSyncMessageBuilder new];
 
     builder.configurationBuilder = configurationBuilder;
 

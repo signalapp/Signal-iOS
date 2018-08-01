@@ -11,7 +11,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReadReceiptsForSenderMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSStorage.h"
 #import "OWSSyncConfigurationMessage.h"
 #import "TSAccountManager.h"
@@ -21,6 +20,7 @@
 #import "TextSecureKitEnv.h"
 #import "Threading.h"
 #import "YapDatabaseConnection+OWS.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -440,14 +440,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     [readReceipt removeWithTransaction:transaction];
 }
 
-- (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+- (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssert(readReceiptProtos);
     OWSAssert(transaction);
 
-    for (OWSSignalServiceProtosSyncMessageRead *readReceiptProto in readReceiptProtos) {
+    for (SSKProtoSyncMessageRead *readReceiptProto in readReceiptProtos) {
         NSString *_Nullable senderId = readReceiptProto.sender;
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 

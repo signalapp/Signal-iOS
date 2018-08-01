@@ -3,9 +3,9 @@
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
+- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 
 @end
 
@@ -53,11 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
 
-    OWSSignalServiceProtosSyncMessageSentBuilder *sentBuilder = [OWSSignalServiceProtosSyncMessageSentBuilder new];
+    SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSentBuilder new];
     [sentBuilder setTimestamp:self.message.timestamp];
 
     [sentBuilder setDestination:self.sentRecipientId];

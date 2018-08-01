@@ -1,25 +1,26 @@
-//  Created by Michael Kirk on 12/4/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosCallMessageOffer;
-@class OWSSignalServiceProtosCallMessageAnswer;
-@class OWSSignalServiceProtosCallMessageIceUpdate;
-@class OWSSignalServiceProtosCallMessageHangup;
-@class OWSSignalServiceProtosCallMessageBusy;
+@class SSKProtoCallMessageAnswer;
+@class SSKProtoCallMessageBusy;
+@class SSKProtoCallMessageHangup;
+@class SSKProtoCallMessageIceUpdate;
+@class SSKProtoCallMessageOffer;
 
 @protocol OWSCallMessageHandler <NSObject>
 
-- (void)receivedOffer:(OWSSignalServiceProtosCallMessageOffer *)offer
+- (void)receivedOffer:(SSKProtoCallMessageOffer *)offer
          fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedOffer(_:from:));
-- (void)receivedAnswer:(OWSSignalServiceProtosCallMessageAnswer *)answer
+- (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
           fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedAnswer(_:from:));
-- (void)receivedIceUpdate:(OWSSignalServiceProtosCallMessageIceUpdate *)iceUpdate
+- (void)receivedIceUpdate:(SSKProtoCallMessageIceUpdate *)iceUpdate
              fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedIceUpdate(_:from:));
-- (void)receivedHangup:(OWSSignalServiceProtosCallMessageHangup *)hangup
+- (void)receivedHangup:(SSKProtoCallMessageHangup *)hangup
           fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedHangup(_:from:));
-- (void)receivedBusy:(OWSSignalServiceProtosCallMessageBusy *)busy
+- (void)receivedBusy:(SSKProtoCallMessageBusy *)busy
         fromCallerId:(NSString *)callerId NS_SWIFT_NAME(receivedBusy(_:from:));
 
 @end

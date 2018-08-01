@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingCallMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosCallMessageBusy;
+@class SSKProtoCallMessageBusy;
 
 /**
  * Sent by the call recipient after receiving a call offer when they are already in a call.
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UInt64 callId;
 
-- (OWSSignalServiceProtosCallMessageBusy *)asProtobuf;
+- (nullable SSKProtoCallMessageBusy *)asProtobuf;
 
 @end
 

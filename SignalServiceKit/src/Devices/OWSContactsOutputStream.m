@@ -11,10 +11,10 @@
 #import "OWSBlockingManager.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSRecipientIdentity.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "SignalAccount.h"
 #import "TSContactThread.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +31,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssert(signalAccount.contact);
     OWSAssert(contactsManager);
 
-    OWSSignalServiceProtosContactDetailsBuilder *contactBuilder = [OWSSignalServiceProtosContactDetailsBuilder new];
+    SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetailsBuilder new];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setNumber:signalAccount.recipientId];
 #ifdef CONVERSATION_COLORS_ENABLED
@@ -39,7 +39,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
 #endif
 
     if (recipientIdentity != nil) {
-        OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+        SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
         verifiedBuilder.destination = recipientIdentity.recipientId;
         verifiedBuilder.identityKey = [recipientIdentity.identityKey prependKeyType];
         verifiedBuilder.state = OWSVerificationStateToProtoState(recipientIdentity.verificationState);
@@ -51,8 +51,8 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     if (rawAvatar) {
         avatarPng = UIImagePNGRepresentation(rawAvatar);
         if (avatarPng) {
-            OWSSignalServiceProtosContactDetailsAvatarBuilder *avatarBuilder =
-                [OWSSignalServiceProtosContactDetailsAvatarBuilder new];
+            SSKProtoContactDetailsAvatarBuilder *avatarBuilder =
+                [SSKProtoContactDetailsAvatarBuilder new];
 
             [avatarBuilder setContentType:OWSMimeTypeImagePng];
             [avatarBuilder setLength:(uint32_t)avatarPng.length];

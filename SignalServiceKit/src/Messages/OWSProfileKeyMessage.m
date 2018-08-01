@@ -3,10 +3,10 @@
 //
 
 #import "OWSProfileKeyMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProfileManagerProtocol.h"
 #import "ProtoBuf+OWS.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,14 +41,14 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
     
-    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    SSKProtoDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder setTimestamp:self.timestamp];
     [builder addLocalProfileKey];
-    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsProfileKeyUpdate];
+    [builder setFlags:SSKProtoDataMessageFlagsProfileKeyUpdate];
     
     if (recipientId.length > 0) {
         // Once we've shared our profile key with a user (perhaps due to being

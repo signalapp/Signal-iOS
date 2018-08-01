@@ -3,7 +3,6 @@
 //
 
 #import "TSQuotedMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentPointer.h"
@@ -12,6 +11,7 @@
 #import "TSInteraction.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -103,7 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(OWSSignalServiceProtosDataMessage *)dataMessage
++ (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                                    thread:(TSThread *)thread
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -113,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    OWSSignalServiceProtosDataMessageQuote *quoteProto = [dataMessage quote];
+    SSKProtoDataMessageQuote *quoteProto = [dataMessage quote];
 
     if (![quoteProto hasId] || [quoteProto id] == 0) {
         OWSFail(@"%@ quoted message missing id", self.logTag);
@@ -137,7 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-    for (OWSSignalServiceProtosDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
+    for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
         hasAttachment = YES;
         OWSAttachmentInfo *attachmentInfo = [[OWSAttachmentInfo alloc] initWithAttachmentId:nil
                                                                                 contentType:quotedAttachment.contentType
@@ -166,7 +166,7 @@ NS_ASSUME_NONNULL_BEGIN
                 thread.uniqueId,
                 (unsigned long)timestamp);
 
-            OWSSignalServiceProtosAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
+            SSKProtoAttachmentPointer *thumbnailAttachmentProto = quotedAttachment.thumbnail;
             TSAttachmentPointer *thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto];
             [thumbnailPointer saveWithTransaction:transaction];

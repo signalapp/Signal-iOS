@@ -5,8 +5,8 @@
 #import "OWSOutgoingSyncMessage.h"
 #import "Cryptography.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,9 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // This method should not be overridden, since we want to add random padding to *every* sync message
-- (OWSSignalServiceProtosSyncMessage *)buildSyncMessage
+- (SSKProtoSyncMessage *)buildSyncMessage
 {
-    OWSSignalServiceProtosSyncMessageBuilder *builder = [self syncMessageBuilder];
+    SSKProtoSyncMessageBuilder *builder = [self syncMessageBuilder];
     
     // Add a random 1-512 bytes to obscure sync message type
     size_t paddingBytesLength = arc4random_uniform(512) + 1;
@@ -59,15 +59,15 @@ NS_ASSUME_NONNULL_BEGIN
     return [builder build];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     OWSFail(@"Abstract method should be overridden in subclass.");
-    return [OWSSignalServiceProtosSyncMessageBuilder new];
+    return [SSKProtoSyncMessageBuilder new];
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
     [contentBuilder setSyncMessage:[self buildSyncMessage]];
     return [[contentBuilder build] data];
 }

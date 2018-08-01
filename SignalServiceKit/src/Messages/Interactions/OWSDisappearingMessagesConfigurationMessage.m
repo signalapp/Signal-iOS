@@ -5,7 +5,7 @@
 #import "OWSDisappearingMessagesConfigurationMessage.h"
 #import "NSDate+OWS.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,11 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
+- (SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSSignalServiceProtosDataMessageBuilder *dataMessageBuilder = [super dataMessageBuilder];
+    SSKProtoDataMessageBuilder *dataMessageBuilder = [super dataMessageBuilder];
     [dataMessageBuilder setTimestamp:self.timestamp];
-    [dataMessageBuilder setFlags:OWSSignalServiceProtosDataMessageFlagsExpirationTimerUpdate];
+    [dataMessageBuilder setFlags:SSKProtoDataMessageFlagsExpirationTimerUpdate];
     if (self.configuration.isEnabled) {
         [dataMessageBuilder setExpireTimer:self.configuration.durationSeconds];
     } else {

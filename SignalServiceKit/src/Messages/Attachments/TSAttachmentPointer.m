@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-+ (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto
++ (TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
 {
     OWSAssert(attachmentProto.id != 0);
     OWSAssert(attachmentProto.key != nil);
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSAttachmentType attachmentType = TSAttachmentTypeDefault;
     if ([attachmentProto hasFlags]) {
         UInt32 flags = attachmentProto.flags;
-        if ((flags & (UInt32)OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage) > 0) {
+        if ((flags & (UInt32)SSKProtoAttachmentPointerFlagsVoiceMessage) > 0) {
             attachmentType = TSAttachmentTypeVoiceMessage;
         }
     }

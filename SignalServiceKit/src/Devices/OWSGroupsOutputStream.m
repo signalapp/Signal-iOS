@@ -5,10 +5,10 @@
 #import "OWSGroupsOutputStream.h"
 #import "MIMETypeUtil.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import <ProtocolBuffers/CodedOutputStream.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *group = groupThread.groupModel;
     OWSAssert(group);
 
-    OWSSignalServiceProtosGroupDetailsBuilder *groupBuilder = [OWSSignalServiceProtosGroupDetailsBuilder new];
+    SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetailsBuilder new];
     [groupBuilder setId:group.groupId];
     [groupBuilder setName:group.groupName];
     [groupBuilder setMembersArray:group.groupMemberIds];
@@ -32,8 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSData *avatarPng;
     if (group.groupImage) {
-        OWSSignalServiceProtosGroupDetailsAvatarBuilder *avatarBuilder =
-            [OWSSignalServiceProtosGroupDetailsAvatarBuilder new];
+        SSKProtoGroupDetailsAvatarBuilder *avatarBuilder =
+            [SSKProtoGroupDetailsAvatarBuilder new];
 
         [avatarBuilder setContentType:OWSMimeTypeImagePng];
         avatarPng = UIImagePNGRepresentation(group.groupImage);

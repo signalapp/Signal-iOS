@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosSyncMessageRead;
+@class SSKProtoSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
@@ -49,7 +49,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
 #pragma mark - Linked Device Read Receipts
 
-- (void)processReadReceiptsFromLinkedDevice:(NSArray<OWSSignalServiceProtosSyncMessageRead *> *)readReceiptProtos
+- (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
 

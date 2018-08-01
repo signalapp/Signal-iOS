@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSSignalServiceProtosAttachmentPointer;
+@class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
 @class YapDatabaseReadWriteTransaction;
 
@@ -90,9 +90,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Protobuf
 
-+ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
 
-- (OWSSignalServiceProtosAttachmentPointer *)buildProto;
+- (SSKProtoAttachmentPointer *)buildProto;
 
 @end
 

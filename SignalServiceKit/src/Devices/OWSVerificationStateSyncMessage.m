@@ -5,7 +5,7 @@
 #import "OWSVerificationStateSyncMessage.h"
 #import "Cryptography.h"
 #import "OWSIdentityManager.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     OWSAssert(self.identityKey.length == kIdentityKeyLength);
     OWSAssert(self.verificationForRecipientId.length > 0);
@@ -63,9 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
 
-    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
     verifiedBuilder.destination = self.verificationForRecipientId;
     verifiedBuilder.identityKey = self.identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     // will figure that out on it's own.
     OWSAssert(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    OWSSignalServiceProtosVerifiedBuilder *verifiedBuilder = [OWSSignalServiceProtosVerifiedBuilder new];
+    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerifiedBuilder new];
     verifiedBuilder.destination = self.verificationForRecipientId;
     verifiedBuilder.identityKey = self.identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(self.verificationState);

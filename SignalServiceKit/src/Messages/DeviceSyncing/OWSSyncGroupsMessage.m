@@ -5,12 +5,12 @@
 #import "OWSSyncGroupsMessage.h"
 #import "NSDate+OWS.h"
 #import "OWSGroupsOutputStream.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,21 +26,21 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
 
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync groups message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
-    OWSSignalServiceProtosAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+    SSKProtoAttachmentPointer *attachmentProto = [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
 
-    OWSSignalServiceProtosSyncMessageGroupsBuilder *groupsBuilder =
-        [OWSSignalServiceProtosSyncMessageGroupsBuilder new];
+    SSKProtoSyncMessageGroupsBuilder *groupsBuilder =
+        [SSKProtoSyncMessageGroupsBuilder new];
 
     [groupsBuilder setBlob:attachmentProto];
 
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     [syncMessageBuilder setGroupsBuilder:groupsBuilder];
 
     return syncMessageBuilder;

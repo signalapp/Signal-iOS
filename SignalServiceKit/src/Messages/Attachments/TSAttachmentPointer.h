@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSignalServiceProtos.pb.h"
+#import "SignalServiceKit-Swift.h"
 #import "TSAttachment.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                   sourceFilename:(nullable NSString *)sourceFilename
                   attachmentType:(TSAttachmentType)attachmentType NS_DESIGNATED_INITIALIZER;
 
-+ (TSAttachmentPointer *)attachmentPointerFromProto:(OWSSignalServiceProtosAttachmentPointer *)attachmentProto;
++ (TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto;
 
 @property (atomic) TSAttachmentPointerState state;
 @property (nullable, atomic) NSString *mostRecentFailureLocalizedText;

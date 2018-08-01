@@ -9,7 +9,6 @@
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
@@ -18,6 +17,7 @@
 #import "TSGroupThread.h"
 #import "TSQuotedMessage.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -802,12 +802,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 #pragma mark -
 
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
+- (SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
     TSThread *thread = self.thread;
     OWSAssert(thread);
     
-    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
 
 
@@ -830,11 +830,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     BOOL attachmentWasGroupAvatar = NO;
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *gThread = (TSGroupThread *)thread;
-        OWSSignalServiceProtosGroupContextBuilder *groupBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
+        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContextBuilder new];
 
         switch (self.groupMetaMessage) {
             case TSGroupMessageQuit:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeQuit];
+                [groupBuilder setType:SSKProtoGroupContextTypeQuit];
                 break;
             case TSGroupMessageUpdate:
             case TSGroupMessageNew: {
@@ -845,11 +845,11 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
                 [groupBuilder setMembersArray:gThread.groupModel.groupMemberIds];
                 [groupBuilder setName:gThread.groupModel.groupName];
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeUpdate];
+                [groupBuilder setType:SSKProtoGroupContextTypeUpdate];
                 break;
             }
             default:
-                [groupBuilder setType:OWSSignalServiceProtosGroupContextTypeDeliver];
+                [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
                 break;
         }
         [groupBuilder setId:gThread.groupModel.groupId];
@@ -866,14 +866,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 
     // Quoted Reply
-    OWSSignalServiceProtosDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
+    SSKProtoDataMessageQuoteBuilder *_Nullable quotedMessageBuilder = self.quotedMessageBuilder;
     if (quotedMessageBuilder) {
         [builder setQuoteBuilder:quotedMessageBuilder];
     }
 
     // Contact Share
     if (self.contactShare) {
-        OWSSignalServiceProtosDataMessageContact *_Nullable contactProto =
+        SSKProtoDataMessageContact *_Nullable contactProto =
             [OWSContacts protoForContact:self.contactShare];
         if (contactProto) {
             [builder addContact:contactProto];
@@ -885,14 +885,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return builder;
 }
 
-- (nullable OWSSignalServiceProtosDataMessageQuoteBuilder *)quotedMessageBuilder
+- (nullable SSKProtoDataMessageQuoteBuilder *)quotedMessageBuilder
 {
     if (!self.quotedMessage) {
         return nil;
     }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
 
-    OWSSignalServiceProtosDataMessageQuoteBuilder *quoteBuilder = [OWSSignalServiceProtosDataMessageQuoteBuilder new];
+    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuoteBuilder new];
     [quoteBuilder setId:quotedMessage.timestamp];
     [quoteBuilder setAuthor:quotedMessage.authorId];
 
@@ -907,8 +907,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         for (OWSAttachmentInfo *attachment in quotedMessage.quotedAttachments) {
             hasQuotedAttachment = YES;
 
-            OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
-                [OWSSignalServiceProtosDataMessageQuoteQuotedAttachmentBuilder new];
+            SSKProtoDataMessageQuoteQuotedAttachmentBuilder *quotedAttachmentBuilder =
+                [SSKProtoDataMessageQuoteQuotedAttachmentBuilder new];
 
             quotedAttachmentBuilder.contentType = attachment.contentType;
             quotedAttachmentBuilder.fileName = attachment.sourceFilename;
@@ -930,18 +930,18 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (OWSSignalServiceProtosDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
 {
     OWSAssert(self.thread);
-    OWSSignalServiceProtosDataMessageBuilder *builder = [self dataMessageBuilder];
+    SSKProtoDataMessageBuilder *builder = [self dataMessageBuilder];
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
 
     return [builder build];
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
     contentBuilder.dataMessage = [self buildDataMessage:recipient.recipientId];
     return [[contentBuilder build] data];
 }

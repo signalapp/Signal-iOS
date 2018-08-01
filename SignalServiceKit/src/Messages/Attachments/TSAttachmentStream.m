@@ -769,7 +769,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: Protobuf serialization
 
-+ (nullable OWSSignalServiceProtosAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
 {
     OWSAssert(attachmentId.length > 0);
 
@@ -787,9 +787,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (OWSSignalServiceProtosAttachmentPointer *)buildProto
+- (SSKProtoAttachmentPointer *)buildProto
 {
-    OWSSignalServiceProtosAttachmentPointerBuilder *builder = [OWSSignalServiceProtosAttachmentPointerBuilder new];
+    SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointerBuilder new];
 
     builder.id = self.serverId;
 
@@ -802,7 +802,7 @@ NS_ASSUME_NONNULL_BEGIN
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
-    builder.flags = self.isVoiceMessage ? OWSSignalServiceProtosAttachmentPointerFlagsVoiceMessage : 0;
+    builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
 
     if (self.shouldHaveImageSize) {
         CGSize imageSize = self.imageSize;

@@ -1,20 +1,20 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSSignalServiceProtos.pb.h"
+#import "SignalServiceKit-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
 
-@interface PBGeneratedMessageBuilder (OWS)
-
-@end
+//@interface PBGeneratedMessageBuilder (OWS)
+//
+//@end
 
 #pragma mark -
 
-@interface OWSSignalServiceProtosDataMessageBuilder (OWS)
+@interface SSKProtoDataMessageBuilder (OWS)
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId;
 - (void)addLocalProfileKey;
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSSignalServiceProtosCallMessageBuilder (OWS)
+@interface SSKProtoCallMessageBuilder (OWS)
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId;
 

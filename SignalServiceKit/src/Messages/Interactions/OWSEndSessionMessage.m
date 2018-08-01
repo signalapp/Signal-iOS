@@ -3,7 +3,7 @@
 //
 
 #import "OWSEndSessionMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,11 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
+- (SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSSignalServiceProtosDataMessageBuilder *builder = [super dataMessageBuilder];
+    SSKProtoDataMessageBuilder *builder = [super dataMessageBuilder];
     [builder setTimestamp:self.timestamp];
-    [builder setFlags:OWSSignalServiceProtosDataMessageFlagsEndSession];
+    [builder setFlags:SSKProtoDataMessageFlagsEndSession];
 
     return builder;
 }

@@ -5,9 +5,9 @@
 #import "OWSOutgoingNullMessage.h"
 #import "Cryptography.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "OWSVerificationStateSyncMessage.h"
 #import "TSContactThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,10 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    OWSSignalServiceProtosNullMessageBuilder *nullMessageBuilder = [OWSSignalServiceProtosNullMessageBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
+    SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessageBuilder new];
 
     NSUInteger contentLength = self.verificationStateSyncMessage.unpaddedVerifiedLength;
 

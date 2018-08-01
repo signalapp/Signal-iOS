@@ -8,13 +8,13 @@
 #import "NSDate+OWS.h"
 #import "OWSContactsOutputStream.h"
 #import "OWSIdentityManager.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProfileManagerProtocol.h"
 #import "SignalAccount.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
 #import "TextSecureKitEnv.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -49,23 +49,23 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     if (self.attachmentIds.count != 1) {
         DDLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
             (unsigned long)self.attachmentIds.count);
     }
 
-    OWSSignalServiceProtosAttachmentPointer *attachmentProto =
+    SSKProtoAttachmentPointer *attachmentProto =
         [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
 
-    OWSSignalServiceProtosSyncMessageContactsBuilder *contactsBuilder =
-        [OWSSignalServiceProtosSyncMessageContactsBuilder new];
+    SSKProtoSyncMessageContactsBuilder *contactsBuilder =
+        [SSKProtoSyncMessageContactsBuilder new];
 
     [contactsBuilder setBlob:attachmentProto];
     [contactsBuilder setIsComplete:YES];
 
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     [syncMessageBuilder setContactsBuilder:contactsBuilder];
 
     return syncMessageBuilder;

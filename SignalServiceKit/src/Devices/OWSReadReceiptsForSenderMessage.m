@@ -4,8 +4,8 @@
 
 #import "OWSReadReceiptsForSenderMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "SignalRecipient.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -54,20 +54,20 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSAssert(recipient);
 
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
+    SSKProtoContentBuilder *contentBuilder = [SSKProtoContentBuilder new];
     [contentBuilder setReceiptMessage:[self buildReceiptMessage:recipient.recipientId]];
     return [[contentBuilder build] data];
 }
 
-- (OWSSignalServiceProtosReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
 {
-    OWSSignalServiceProtosReceiptMessageBuilder *builder = [OWSSignalServiceProtosReceiptMessageBuilder new];
+    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessageBuilder new];
 
-    [builder setType:OWSSignalServiceProtosReceiptMessageTypeRead];
+    [builder setType:SSKProtoReceiptMessageTypeRead];
     OWSAssert(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {
         [builder addTimestamp:[messageTimestamp unsignedLongLongValue]];

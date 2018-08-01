@@ -4,7 +4,7 @@
 
 #import "OWSSyncGroupsRequestMessage.h"
 #import "NSDate+OWS.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,13 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder
+- (SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    OWSSignalServiceProtosGroupContextBuilder *groupContextBuilder = [OWSSignalServiceProtosGroupContextBuilder new];
-    [groupContextBuilder setType:OWSSignalServiceProtosGroupContextTypeRequestInfo];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContextBuilder new];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeRequestInfo];
     [groupContextBuilder setId:self.groupId];
 
-    OWSSignalServiceProtosDataMessageBuilder *builder = [OWSSignalServiceProtosDataMessageBuilder new];
+    SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessageBuilder new];
     [builder setTimestamp:self.timestamp];
     [builder setGroupBuilder:groupContextBuilder];
 

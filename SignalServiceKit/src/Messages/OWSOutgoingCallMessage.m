@@ -9,10 +9,10 @@
 #import "OWSCallHangupMessage.h"
 #import "OWSCallIceUpdateMessage.h"
 #import "OWSCallOfferMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
 #import "ProtoBuf+OWS.h"
 #import "SignalRecipient.h"
 #import "TSContactThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -126,28 +126,30 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-//
-///**
-// * override thread accessor in superclass, since this model is never saved.
-// * TODO review
-// */
-//- (TSThread *)thread
-//{
-//    return _thread;
-//}
-
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     OWSAssert(recipient);
 
-    OWSSignalServiceProtosContentBuilder *contentBuilder = [OWSSignalServiceProtosContentBuilder new];
-    [contentBuilder setCallMessage:[self buildCallMessage:recipient.recipientId]];
-    return [[contentBuilder build] data];
+    SSKProtoContentBuilder *builder = [SSKProtoContentBuilder new];
+    [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
+    
+    NSError *error;
+    SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    NSData *_Nullable data = [result serializedDataAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return data;
 }
 
-- (OWSSignalServiceProtosCallMessage *)buildCallMessage:(NSString *)recipientId
+- (nullable SSKProtoCallMessage *)buildCallMessage:(NSString *)recipientId
 {
-    OWSSignalServiceProtosCallMessageBuilder *builder = [OWSSignalServiceProtosCallMessageBuilder new];
+    SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessageBuilder new];
 
     if (self.offerMessage) {
         [builder setOffer:[self.offerMessage asProtobuf]];
@@ -172,8 +174,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [builder addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId];
-
-    return [builder build];
+    
+    NSError *error;
+    SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return result;
 }
 
 #pragma mark - TSYapDatabaseObject overrides

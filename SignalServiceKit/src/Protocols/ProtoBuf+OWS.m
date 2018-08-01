@@ -2,47 +2,47 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
+#import "ProtoBuf+OWS.h"
 #import "Cryptography.h"
 #import "ProfileManagerProtocol.h"
-#import "ProtoBuf+OWS.h"
 #import "TSThread.h"
 #import "TextSecureKitEnv.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation PBGeneratedMessageBuilder (OWS)
-
-- (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
-{
-    OWSAssert(thread);
-
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-
-    // For 1:1 threads, we want to include the profile key IFF the
-    // contact is in the whitelist.
-    //
-    // For Group threads, we want to include the profile key IFF the
-    // recipient OR the group is in the whitelist.
-    if (recipientId.length > 0 && [profileManager isUserInProfileWhitelist:recipientId]) {
-        return YES;
-    } else if ([profileManager isThreadInProfileWhitelist:thread]) {
-        return YES;
-    }
-
-    return NO;
-}
-
-- (OWSAES256Key *)localProfileKey
-{
-    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
-    return profileManager.localProfileKey;
-}
-
-@end
+//@implementation PBGeneratedMessageBuilder (OWS)
+//
+//- (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
+//{
+//    OWSAssert(thread);
+//
+//    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+//
+//    // For 1:1 threads, we want to include the profile key IFF the
+//    // contact is in the whitelist.
+//    //
+//    // For Group threads, we want to include the profile key IFF the
+//    // recipient OR the group is in the whitelist.
+//    if (recipientId.length > 0 && [profileManager isUserInProfileWhitelist:recipientId]) {
+//        return YES;
+//    } else if ([profileManager isThreadInProfileWhitelist:thread]) {
+//        return YES;
+//    }
+//
+//    return NO;
+//}
+//
+//- (OWSAES256Key *)localProfileKey
+//{
+//    id<ProfileManagerProtocol> profileManager = [TextSecureKitEnv sharedEnv].profileManager;
+//    return profileManager.localProfileKey;
+//}
+//
+//@end
 
 #pragma mark -
 
-@implementation OWSSignalServiceProtosDataMessageBuilder (OWS)
+@implementation SSKProtoDataMessageBuilder (OWS)
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
 {
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@implementation OWSSignalServiceProtosCallMessageBuilder (OWS)
+@implementation SSKProtoCallMessageBuilder (OWS)
 
 - (void)addLocalProfileKeyIfNecessary:(TSThread *)thread recipientId:(NSString *)recipientId
 {

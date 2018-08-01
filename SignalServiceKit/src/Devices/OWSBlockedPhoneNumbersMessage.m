@@ -3,7 +3,7 @@
 //
 
 #import "OWSBlockedPhoneNumbersMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -32,12 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (OWSSignalServiceProtosSyncMessageBuilder *)syncMessageBuilder
+- (SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
-    OWSSignalServiceProtosSyncMessageBlockedBuilder *blockedPhoneNumbersBuilder =
-        [OWSSignalServiceProtosSyncMessageBlockedBuilder new];
+    SSKProtoSyncMessageBlockedBuilder *blockedPhoneNumbersBuilder =
+        [SSKProtoSyncMessageBlockedBuilder new];
     [blockedPhoneNumbersBuilder setNumbersArray:_phoneNumbers];
-    OWSSignalServiceProtosSyncMessageBuilder *syncMessageBuilder = [OWSSignalServiceProtosSyncMessageBuilder new];
+    SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessageBuilder new];
     [syncMessageBuilder setBlocked:[blockedPhoneNumbersBuilder build]];
 
     return syncMessageBuilder;

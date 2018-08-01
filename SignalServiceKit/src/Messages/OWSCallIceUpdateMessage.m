@@ -1,8 +1,9 @@
-//  Created by Michael Kirk on 12/6/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//
 
 #import "OWSCallIceUpdateMessage.h"
-#import "OWSSignalServiceProtos.pb.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @implementation OWSCallIceUpdateMessage
 
@@ -24,17 +25,23 @@
     return self;
 }
 
-- (OWSSignalServiceProtosCallMessageIceUpdate *)asProtobuf
+- (nullable SSKProtoCallMessageIceUpdate *)asProtobuf
 {
-    OWSSignalServiceProtosCallMessageIceUpdateBuilder *builder =
-        [OWSSignalServiceProtosCallMessageIceUpdateBuilder new];
+    SSKProtoCallMessageIceUpdateBuilder *builder =
+        [SSKProtoCallMessageIceUpdateBuilder new];
 
     [builder setId:self.callId];
     [builder setSdp:self.sdp];
     [builder setSdpMlineIndex:self.sdpMLineIndex];
     [builder setSdpMid:self.sdpMid];
 
-    return [builder build];
+    NSError *error;
+    SSKProtoCallMessageIceUpdate *_Nullable result = [builder buildAndReturnError:&error];
+    if (error || !result) {
+        OWSFail(@"%@ could not build protobuf: %@", self.logTag, error);
+        return nil;
+    }
+    return result;    
 }
 
 @end

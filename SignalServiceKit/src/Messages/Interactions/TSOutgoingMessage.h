@@ -49,9 +49,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     TSGroupMessageRequestInfo,
 };
 
-@class OWSSignalServiceProtosAttachmentPointer;
-@class OWSSignalServiceProtosContentBuilder;
-@class OWSSignalServiceProtosDataMessageBuilder;
+@class SSKProtoAttachmentPointer;
+@class SSKProtoContentBuilder;
+@class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
@@ -130,13 +130,13 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (NSData *)buildPlainTextData:(SignalRecipient *)recipient;
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient;
 
 /**
  * Intermediate protobuf representation
  * Subclasses can augment if they want to manipulate the data message before building.
  */
-- (OWSSignalServiceProtosDataMessageBuilder *)dataMessageBuilder;
+- (SSKProtoDataMessageBuilder *)dataMessageBuilder;
 
 /**
  * Should this message be synced to the users other registered devices? This is
