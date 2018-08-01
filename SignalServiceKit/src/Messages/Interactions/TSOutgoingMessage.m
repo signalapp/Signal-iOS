@@ -356,17 +356,17 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)dealloc
 {
-    [self cleanUpTemporaryAttachmentsIfNecessary];
+    [self removeTemporaryAttachments];
 }
 
 // Each message has the responsibility for eagerly cleaning up its attachments.
 // Normally this is done in [TSMessage removeWithTransaction], but that doesn't
 // apply for "transient", unsaved messages (i.e. shouldBeSaved == NO).  These
 // messages should clean up their attachments upon deallocation.
-- (void)cleanUpTemporaryAttachmentsIfNecessary
+- (void)removeTemporaryAttachments
 {
     if (self.shouldBeSaved) {
-        // Message in not transient; no need to clean up attachments.
+        // Message is not transient; no need to clean up attachments.
         return;
     }
     NSArray<NSString *> *_Nullable attachmentIds = self.attachmentIds;
