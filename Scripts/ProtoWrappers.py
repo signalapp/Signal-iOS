@@ -52,6 +52,8 @@ class LineWriter:
         
     def pop_indent(self):
         self.current_indent = self.current_indent - 1
+        if self.current_indent < 0:
+            raise Exception('Invalid indentation')
         
     def all_context_proto_names(self):
         return [context.proto_name for context in self.contexts]
@@ -194,8 +196,7 @@ class BaseContext(object):
         elif field.rules == 'repeated':
             return '[%s]' % base_type
         else:
-            # TODO: fail
-            return base_type
+            raise Exception('Unknown field type')
         
     def is_field_primitive(self, field):
         return field.proto_type in ('uint64',
@@ -441,6 +442,7 @@ class MessageContext(BaseContext):
                     writer.newline()
                 elif field.rules == 'repeated':
                     writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
+                    writer.push_indent()
                     writer.add('return proto.%s' % field.name_swift )
                     writer.pop_indent()
                     writer.add('}')
